@@ -1,42 +1,73 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { StatusBar } from 'react-native';
-import { Provider as PaperProvider } from 'react-native-paper';
-
-// Import screens
-import OnboardingScreen from './src/screens/OnboardingScreen';
-import RegisterScreen from './src/screens/RegisterScreen';
-import AnamneseScreen from './src/screens/AnamneseScreen';
-import WellnessScreen from './src/screens/WellnessScreen';
-import ActivitiesScreen from './src/screens/ActivitiesScreen';
-import ProtocolScreen from './src/screens/ProtocolScreen';
-import MarketplaceScreen from './src/screens/MarketplaceScreen';
-import CommunityScreen from './src/screens/CommunityScreen';
-import HealthProviderScreen from './src/screens/HealthProviderScreen';
-import MainTabNavigator from './src/navigation/MainTabNavigator';
-
-const Stack = createStackNavigator();
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
 
 const App: React.FC = () => {
   return (
-    <PaperProvider>
-      <NavigationContainer>
-        <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
-        <Stack.Navigator
-          initialRouteName="Onboarding"
-          screenOptions={{
-            headerShown: false,
-          }}
-        >
-          <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-          <Stack.Screen name="Register" component={RegisterScreen} />
-          <Stack.Screen name="Anamnese" component={AnamneseScreen} />
-          <Stack.Screen name="Main" component={MainTabNavigator} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </PaperProvider>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.content}>
+        <Text style={styles.title}>LikeMe - Health & Wellness</Text>
+        <Text style={styles.subtitle}>Sua jornada para uma vida mais saudável começa aqui</Text>
+        
+        <View style={styles.features}>
+          <Text style={styles.feature}>🏥 Acompanhe seu Bem-estar</Text>
+          <Text style={styles.feature}>💚 Monitore sua saúde</Text>
+          <Text style={styles.feature}>👩‍⚕️ Conecte-se com Profissionais</Text>
+          <Text style={styles.feature}>📱 App em desenvolvimento</Text>
+        </View>
+
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>Em breve</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#4CAF50',
+  },
+  content: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#fff',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#fff',
+    textAlign: 'center',
+    marginBottom: 40,
+    opacity: 0.9,
+  },
+  features: {
+    marginBottom: 40,
+  },
+  feature: {
+    fontSize: 18,
+    color: '#fff',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  button: {
+    backgroundColor: '#fff',
+    paddingHorizontal: 30,
+    paddingVertical: 15,
+    borderRadius: 25,
+  },
+  buttonText: {
+    color: '#4CAF50',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+});
 
 export default App;

@@ -1,32 +1,12 @@
 {
   "expo": {
-    "name": "LikeMe - Health & Wellness",
+    "name": "LikeMe",
     "slug": "likeme-front-end",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#4CAF50"
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.likeme.health"
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#4CAF50"
-      },
-      "package": "com.likeme.health"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    }
+    "platforms": ["ios", "android", "web"],
+    "jsEngine": "jsc",
+    "sdkVersion": "52.0.0"
   }
 }

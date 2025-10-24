@@ -10,7 +10,6 @@ import {
   Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import LinearGradient from 'react-native-linear-gradient';
 import { Button, Card } from 'react-native-paper';
 
 const RegisterScreen: React.FC = () => {
@@ -54,10 +53,7 @@ const RegisterScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient
-        colors={['#4CAF50', '#81C784']}
-        style={styles.gradient}
-      >
+      <View style={styles.gradient}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.header}>
             <Text style={styles.title}>Criar Conta</Text>
@@ -137,7 +133,7 @@ const RegisterScreen: React.FC = () => {
             </View>
           </Card>
         </ScrollView>
-      </LinearGradient>
+      </View>
     </SafeAreaView>
   );
 };
@@ -148,6 +144,7 @@ const styles = StyleSheet.create({
   },
   gradient: {
     flex: 1,
+    backgroundColor: '#4CAF50',
   },
   scrollContent: {
     flexGrow: 1,

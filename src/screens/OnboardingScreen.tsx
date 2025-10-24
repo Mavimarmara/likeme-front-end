@@ -4,12 +4,10 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Image,
-  Dimensions,
   SafeAreaView,
+  Dimensions,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import LinearGradient from 'react-native-linear-gradient';
 
 const { width, height } = Dimensions.get('window');
 
@@ -49,10 +47,7 @@ const OnboardingScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient
-        colors={['#4CAF50', '#81C784']}
-        style={styles.gradient}
-      >
+      <View style={styles.gradient}>
         <View style={styles.content}>
           <View style={styles.imageContainer}>
             <Text style={styles.emoji}>{slides[currentSlide].image}</Text>
@@ -87,7 +82,7 @@ const OnboardingScreen: React.FC = () => {
             </TouchableOpacity>
           </View>
         </View>
-      </LinearGradient>
+      </View>
     </SafeAreaView>
   );
 };
@@ -98,6 +93,7 @@ const styles = StyleSheet.create({
   },
   gradient: {
     flex: 1,
+    backgroundColor: '#4CAF50',
   },
   content: {
     flex: 1,

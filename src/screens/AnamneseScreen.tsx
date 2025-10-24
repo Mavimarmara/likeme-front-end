@@ -9,7 +9,6 @@ import {
   Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import LinearGradient from 'react-native-linear-gradient';
 import { Card, RadioButton, Button } from 'react-native-paper';
 
 const AnamneseScreen: React.FC = () => {
@@ -88,10 +87,7 @@ const AnamneseScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient
-        colors={['#4CAF50', '#81C784']}
-        style={styles.gradient}
-      >
+      <View style={styles.gradient}>
         <View style={styles.header}>
           <Text style={styles.title}>Anamnese</Text>
           <Text style={styles.subtitle}>
@@ -154,7 +150,7 @@ const AnamneseScreen: React.FC = () => {
             </View>
           </View>
         </Card>
-      </LinearGradient>
+      </View>
     </SafeAreaView>
   );
 };
@@ -165,6 +161,7 @@ const styles = StyleSheet.create({
   },
   gradient: {
     flex: 1,
+    backgroundColor: '#4CAF50',
   },
   header: {
     padding: 20,

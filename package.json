@@ -4,9 +4,10 @@
   "description": "React Native app for health and wellness",
   "main": "index.js",
   "scripts": {
-    "android": "react-native run-android",
-    "ios": "react-native run-ios",
-    "start": "react-native start",
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
@@ -14,14 +15,17 @@
     "@react-navigation/bottom-tabs": "^6.5.11",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/stack": "^6.3.20",
-    "expo": "^54.0.20",
-    "react": "18.2.0",
-    "react-native": "0.72.6",
-    "react-native-gesture-handler": "^2.13.4",
-    "react-native-linear-gradient": "^2.8.3",
+    "expo": "~52.0.0",
+    "expo-asset": "^12.0.9",
+    "expo-constants": "^18.0.10",
+    "expo-file-system": "^19.0.17",
+    "expo-linear-gradient": "~14.0.0",
+    "react": "18.3.1",
+    "react-native": "0.76.3",
+    "react-native-gesture-handler": "~2.20.0",
     "react-native-paper": "^5.11.1",
-    "react-native-safe-area-context": "^4.7.4",
-    "react-native-screens": "^3.25.0",
+    "react-native-safe-area-context": "~4.12.0",
+    "react-native-screens": "~4.0.0",
     "react-native-vector-icons": "^10.0.2"
   },
   "devDependencies": {
@@ -43,5 +47,11 @@
   },
   "jest": {
     "preset": "react-native"
+  },
+  "overrides": {
+    "react-native-appwrite": {
+      "expo-file-system": "18.*.*",
+      "react-native": ">=0.76.7 <1.0.0"
+    }
   }
 }
