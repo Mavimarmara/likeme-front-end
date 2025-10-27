@@ -5,8 +5,15 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
-    "platforms": ["ios", "android", "web"],
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "jsEngine": "jsc",
-    "sdkVersion": "52.0.0"
+    "sdkVersion": "52.0.0",
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

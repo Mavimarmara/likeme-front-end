@@ -3,12 +3,14 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 // Import screens
-import WellnessScreen from '../screens/WellnessScreen';
-import ActivitiesScreen from '../screens/ActivitiesScreen';
-import ProtocolScreen from '../screens/ProtocolScreen';
-import MarketplaceScreen from '../screens/MarketplaceScreen';
-import CommunityScreen from '../screens/CommunityScreen';
-import HealthProviderScreen from '../screens/HealthProviderScreen';
+import {
+  WellnessScreen,
+  ActivitiesScreen,
+  ProtocolScreen,
+  HealthProviderScreen,
+} from '../screens/wellness';
+import { MarketplaceScreen } from '../screens/marketplace';
+import { CommunityScreen } from '../screens/community';
 
 const Tab = createBottomTabNavigator();
 
