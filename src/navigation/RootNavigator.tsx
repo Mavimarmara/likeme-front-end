@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 // Import screens
-import { OnboardingScreen, RegisterScreen, AnamneseScreen } from '../screens/auth';
+import { OnboardingScreen, WelcomeScreen, RegisterScreen, AnamneseScreen } from '../screens/auth';
 import MainTabNavigator from './MainTabNavigator';
 
 const Stack = createStackNavigator();
@@ -22,6 +22,11 @@ const RootNavigator: React.FC = () => {
           name="Onboarding" 
           component={OnboardingScreen}
           options={{ title: 'Bem-vindo' }}
+        />
+        <Stack.Screen 
+          name="Welcome" 
+          component={WelcomeScreen}
+          options={{ title: 'Boas-vindas' }}
         />
         <Stack.Screen 
           name="Register" 

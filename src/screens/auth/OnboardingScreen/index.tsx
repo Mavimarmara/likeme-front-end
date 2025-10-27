@@ -8,13 +8,13 @@ const OnboardingScreen: React.FC = () => {
   const navigation = useNavigation();
 
   const handleNext = () => {
-    // Navegar para próxima etapa do onboarding
-    navigation.navigate('Register' as never);
+    // Navegar para tela de boas-vindas
+    navigation.navigate('Welcome' as never);
   };
 
   const handleLogin = () => {
-    // Navegar para tela de login (por enquanto vai para Register)
-    navigation.navigate('Register' as never);
+    // Navegar para tela de boas-vindas (por enquanto)
+    navigation.navigate('Welcome' as never);
   };
 
   return (
