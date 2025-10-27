@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,15 @@ import { COLORS, FONT_SIZES, SPACING } from '../../../constants';
 const WelcomeScreen: React.FC = () => {
   const navigation = useNavigation();
   const [name, setName] = useState('');
+  const inputRef = useRef<TextInput>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleContinue = () => {
     if (!name.trim()) {
@@ -51,6 +60,7 @@ const WelcomeScreen: React.FC = () => {
 
           <View style={styles.inputContainer}>
             <TextInput
+              ref={inputRef}
               style={styles.nameInput}
               value={name}
               onChangeText={setName}

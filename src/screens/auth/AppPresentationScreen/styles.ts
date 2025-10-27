@@ -1,0 +1,125 @@
+import { StyleSheet, Dimensions } from 'react-native';
+import { COLORS, FONT_SIZES, SPACING, BORDER_RADIUS } from '../../../constants';
+
+const { width, height } = Dimensions.get('window');
+
+export const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F5F5DC',
+  },
+  
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.MD,
+    paddingVertical: SPACING.SM,
+    backgroundColor: '#F5F5DC',
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  backButtonText: {
+    fontSize: 24,
+    color: COLORS.TEXT,
+    fontWeight: 'bold',
+  },
+  headerTitle: {
+    flex: 1,
+    fontSize: FONT_SIZES.LG,
+    fontWeight: 'bold',
+    color: COLORS.TEXT,
+    textAlign: 'center',
+    marginRight: 40,
+  },
+
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+  },
+
+  imageContainer: {
+    alignItems: 'center',
+    paddingHorizontal: SPACING.LG,
+    paddingTop: SPACING.LG,
+  },
+  image: {
+    width: width * 0.8,
+    height: height * 0.4,
+    borderRadius: BORDER_RADIUS.LG,
+  },
+
+  pagination: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: SPACING.MD,
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginHorizontal: 4,
+  },
+  activeDot: {
+    backgroundColor: COLORS.PRIMARY,
+  },
+  inactiveDot: {
+    backgroundColor: '#CCCCCC',
+  },
+
+  content: {
+    paddingHorizontal: SPACING.LG,
+    paddingVertical: SPACING.LG,
+  },
+  title: {
+    fontSize: FONT_SIZES.XL,
+    fontWeight: 'bold',
+    color: COLORS.TEXT,
+    textAlign: 'center',
+    marginBottom: SPACING.MD,
+    lineHeight: 32,
+  },
+  description: {
+    fontSize: FONT_SIZES.MD,
+    color: COLORS.TEXT,
+    textAlign: 'center',
+    lineHeight: 24,
+  },
+
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.LG,
+    paddingVertical: SPACING.LG,
+    backgroundColor: '#F5F5DC',
+  },
+  skipButton: {
+    paddingVertical: SPACING.SM,
+    paddingHorizontal: SPACING.MD,
+  },
+  skipText: {
+    fontSize: FONT_SIZES.MD,
+    color: COLORS.TEXT,
+    textDecorationLine: 'underline',
+  },
+  nextButton: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: COLORS.BLACK,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  nextButtonText: {
+    fontSize: 24,
+    color: COLORS.WHITE,
+    fontWeight: 'bold',
+  },
+});

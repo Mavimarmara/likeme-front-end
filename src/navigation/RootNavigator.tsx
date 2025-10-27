@@ -2,7 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import { OnboardingScreen, WelcomeScreen, IntroScreen, RegisterScreen, AnamneseScreen } from '../screens/auth';
+import { OnboardingScreen, WelcomeScreen, IntroScreen, AppPresentationScreen, RegisterScreen, AnamneseScreen } from '../screens/auth';
 import MainTabNavigator from './MainTabNavigator';
 
 const Stack = createStackNavigator();
@@ -30,6 +30,11 @@ const RootNavigator: React.FC = () => {
           name="Intro" 
           component={IntroScreen}
           options={{ title: 'Introdução' }}
+        />
+        <Stack.Screen 
+          name="AppPresentation" 
+          component={AppPresentationScreen}
+          options={{ title: 'Apresentação' }}
         />
         <Stack.Screen 
           name="Register" 
