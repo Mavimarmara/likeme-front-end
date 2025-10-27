@@ -23,11 +23,8 @@ const WelcomeScreen: React.FC = () => {
       return;
     }
 
-    // TODO: Salvar nome do usuário
     console.log('Nome do usuário:', name.trim());
-    
-    // Navegar para próxima tela
-    navigation.navigate('Register' as never);
+    navigation.navigate('Intro' as never, { userName: name.trim() });
   };
 
   return (
@@ -36,7 +33,6 @@ const WelcomeScreen: React.FC = () => {
         style={styles.keyboardAvoidingView}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity 
             style={styles.backButton}
@@ -47,15 +43,12 @@ const WelcomeScreen: React.FC = () => {
           <Text style={styles.headerTitle}>LIKE:ME</Text>
         </View>
 
-        {/* Main Content */}
         <View style={styles.content}>
-          {/* Welcome Text */}
           <View style={styles.welcomeContainer}>
             <Text style={styles.welcomeText}>Wellcome!</Text>
             <Text style={styles.questionText}>How can I call you?</Text>
           </View>
 
-          {/* Name Input */}
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.nameInput}
@@ -69,7 +62,6 @@ const WelcomeScreen: React.FC = () => {
             />
           </View>
 
-          {/* Continue Button */}
           <TouchableOpacity 
             style={[styles.continueButton, !name.trim() && styles.continueButtonDisabled]}
             onPress={handleContinue}

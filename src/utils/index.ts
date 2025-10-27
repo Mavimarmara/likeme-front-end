@@ -2,7 +2,6 @@ import { Dimensions } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
-// Screen dimensions utilities
 export const screenUtils = {
   width,
   height,
@@ -10,7 +9,6 @@ export const screenUtils = {
   isTablet: width >= 768,
 };
 
-// Date utilities
 export const dateUtils = {
   formatDate: (date: Date): string => {
     return date.toLocaleDateString('pt-BR');
@@ -39,7 +37,6 @@ export const dateUtils = {
   },
 };
 
-// String utilities
 export const stringUtils = {
   capitalize: (str: string): string => {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
@@ -59,7 +56,6 @@ export const stringUtils = {
   },
 };
 
-// Number utilities
 export const numberUtils = {
   formatCurrency: (amount: number, currency: string = 'BRL'): string => {
     return new Intl.NumberFormat('pt-BR', {
@@ -77,7 +73,6 @@ export const numberUtils = {
   },
 };
 
-// Validation utilities
 export const validationUtils = {
   isValidEmail: (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -90,16 +85,12 @@ export const validationUtils = {
   },
   
   isValidCPF: (cpf: string): boolean => {
-    // Remove non-numeric characters
     const cleanCPF = cpf.replace(/\D/g, '');
     
-    // Check if it has 11 digits
     if (cleanCPF.length !== 11) return false;
     
-    // Check if all digits are the same
     if (/^(\d)\1{10}$/.test(cleanCPF)) return false;
     
-    // Validate CPF algorithm
     let sum = 0;
     for (let i = 0; i < 9; i++) {
       sum += parseInt(cleanCPF.charAt(i)) * (10 - i);
@@ -120,19 +111,14 @@ export const validationUtils = {
   },
 };
 
-// Storage utilities (for future use)
 export const storageUtils = {
-  // These will be implemented when adding AsyncStorage
   getItem: async (key: string): Promise<string | null> => {
-    // TODO: Implement with AsyncStorage
     return null;
   },
   
   setItem: async (key: string, value: string): Promise<void> => {
-    // TODO: Implement with AsyncStorage
   },
   
   removeItem: async (key: string): Promise<void> => {
-    // TODO: Implement with AsyncStorage
   },
 };

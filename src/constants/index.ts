@@ -1,11 +1,9 @@
-// App Constants
 export const APP_CONFIG = {
   NAME: 'LIKE:ME',
   TAGLINE: 'LIKE YOUR LIFE',
   VERSION: '1.0.0',
 } as const;
 
-// Colors
 export const COLORS = {
   PRIMARY: '#4CAF50',
   SECONDARY: '#FFD700',
@@ -20,14 +18,12 @@ export const COLORS = {
   INFO: '#2196F3',
 } as const;
 
-// Gradients
 export const GRADIENTS = {
   PINK: '#FFB6C1',
   YELLOW: '#FFD700',
   GREEN: '#32CD32',
 } as const;
 
-// Spacing
 export const SPACING = {
   XS: 4,
   SM: 8,
@@ -37,7 +33,6 @@ export const SPACING = {
   XXL: 48,
 } as const;
 
-// Font Sizes
 export const FONT_SIZES = {
   XS: 12,
   SM: 14,
@@ -48,7 +43,6 @@ export const FONT_SIZES = {
   XXXL: 36,
 } as const;
 
-// Border Radius
 export const BORDER_RADIUS = {
   SM: 8,
   MD: 12,

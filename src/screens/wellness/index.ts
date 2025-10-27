@@ -1,4 +1,3 @@
-// Wellness screens
 export { default as WellnessScreen } from './WellnessScreen';
 export { default as ActivitiesScreen } from './ActivitiesScreen';
 export { default as ProtocolScreen } from './ProtocolScreen';

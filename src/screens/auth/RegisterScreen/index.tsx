@@ -29,7 +29,6 @@ const RegisterScreen: React.FC = () => {
   };
 
   const handleRegister = () => {
-    // Validações básicas
     if (!formData.name.trim()) {
       Alert.alert('Erro', 'Nome é obrigatório');
       return;
@@ -50,7 +49,6 @@ const RegisterScreen: React.FC = () => {
       return;
     }
 
-    // TODO: Implementar registro
     Alert.alert('Sucesso', 'Conta criada com sucesso!', [
       {
         text: 'OK',

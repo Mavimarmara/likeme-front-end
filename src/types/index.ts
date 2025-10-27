@@ -1,4 +1,3 @@
-// Navigation Types
 export type RootStackParamList = {
   Onboarding: undefined;
   Register: undefined;
@@ -15,15 +14,13 @@ export type MainTabParamList = {
   HealthProvider: undefined;
 };
 
-// Screen Props Types
 export interface ScreenProps<T extends keyof RootStackParamList> {
-  navigation: any; // TODO: Type properly with React Navigation
+  navigation: any;
   route: {
     params: RootStackParamList[T];
   };
 }
 
-// User Types
 export interface User {
   id: string;
   name: string;
@@ -33,7 +30,6 @@ export interface User {
   updatedAt: Date;
 }
 
-// Health Types
 export interface HealthMetric {
   id: string;
   userId: string;
@@ -43,7 +39,6 @@ export interface HealthMetric {
   recordedAt: Date;
 }
 
-// Activity Types
 export interface Activity {
   id: string;
   title: string;
@@ -54,13 +49,12 @@ export interface Activity {
   userId: string;
 }
 
-// Protocol Types
 export interface Protocol {
   id: string;
   name: string;
   description: string;
   steps: ProtocolStep[];
-  duration: number; // in days
+  duration: number;
   userId: string;
 }
 
@@ -72,7 +66,6 @@ export interface ProtocolStep {
   completed: boolean;
 }
 
-// Marketplace Types
 export interface Product {
   id: string;
   name: string;
@@ -84,7 +77,6 @@ export interface Product {
   inStock: boolean;
 }
 
-// Community Types
 export interface Post {
   id: string;
   userId: string;
@@ -102,7 +94,6 @@ export interface Comment {
   createdAt: Date;
 }
 
-// Health Provider Types
 export interface HealthProvider {
   id: string;
   name: string;

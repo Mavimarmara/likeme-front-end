@@ -2,8 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
-// Import screens
-import { OnboardingScreen, WelcomeScreen, RegisterScreen, AnamneseScreen } from '../screens/auth';
+import { OnboardingScreen, WelcomeScreen, IntroScreen, RegisterScreen, AnamneseScreen } from '../screens/auth';
 import MainTabNavigator from './MainTabNavigator';
 
 const Stack = createStackNavigator();
@@ -17,7 +16,6 @@ const RootNavigator: React.FC = () => {
           headerShown: false,
         }}
       >
-        {/* Onboarding Flow */}
         <Stack.Screen 
           name="Onboarding" 
           component={OnboardingScreen}
@@ -29,6 +27,11 @@ const RootNavigator: React.FC = () => {
           options={{ title: 'Boas-vindas' }}
         />
         <Stack.Screen 
+          name="Intro" 
+          component={IntroScreen}
+          options={{ title: 'Introdução' }}
+        />
+        <Stack.Screen 
           name="Register" 
           component={RegisterScreen}
           options={{ title: 'Cadastro' }}
@@ -38,8 +41,6 @@ const RootNavigator: React.FC = () => {
           component={AnamneseScreen}
           options={{ title: 'Anamnese' }}
         />
-        
-        {/* Main App */}
         <Stack.Screen 
           name="Main" 
           component={MainTabNavigator}

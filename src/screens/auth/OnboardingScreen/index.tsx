@@ -8,12 +8,10 @@ const OnboardingScreen: React.FC = () => {
   const navigation = useNavigation();
 
   const handleNext = () => {
-    // Navegar para tela de boas-vindas
     navigation.navigate('Welcome' as never);
   };
 
   const handleLogin = () => {
-    // Navegar para tela de boas-vindas (por enquanto)
     navigation.navigate('Welcome' as never);
   };
 
