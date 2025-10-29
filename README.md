@@ -225,6 +225,165 @@ npx expo start --dev-client
 npx expo start --dev-client --debug
 ```
 
+## 🧪 Testes
+
+O projeto inclui testes unitários e de integração para garantir a qualidade e funcionalidade do código.
+
+### Executando os Testes
+
+```bash
+# Executar todos os testes
+npm test
+
+# Executar testes em modo watch (re-executa quando arquivos mudam)
+npm test -- --watch
+
+# Executar testes de um arquivo específico
+npm test -- --testPathPattern=UnauthenticatedScreen
+
+# Executar testes com cobertura
+npm test -- --coverage
+
+# Executar testes em modo silencioso
+npm test -- --silent
+```
+
+### Estrutura dos Testes
+
+```
+src/
+├── screens/
+│   └── auth/
+│       └── UnauthenticatedScreen/
+│           ├── index.tsx
+│           └── index.spec.tsx          # Testes da tela
+├── components/
+│   └── ui/
+│       ├── Button.tsx
+│       └── Button.spec.tsx             # Testes do componente
+└── __tests__/                          # Testes globais
+    ├── setup.ts                        # Configuração dos testes
+    └── utils.test.ts                   # Testes de utilitários
+```
+
+### Tipos de Testes Implementados
+
+#### 1. Testes de Componentes
+- **Renderização**: Verifica se componentes renderizam corretamente
+- **Interações**: Testa cliques, navegação e eventos
+- **Props**: Valida comportamento com diferentes props
+
+#### 2. Testes de Navegação
+- **Navegação entre telas**: Verifica se a navegação funciona
+- **Parâmetros de rota**: Testa passagem de dados entre telas
+- **Stack Navigator**: Valida configuração do navegador
+
+#### 3. Testes de Funcionalidades
+- **Formulários**: Validação de inputs e submissão
+- **Estado**: Gerenciamento de estado dos componentes
+- **Hooks**: Testa custom hooks e hooks do React
+
+### Exemplo de Teste
+
+```typescript
+// UnauthenticatedScreen/index.spec.tsx
+import React from 'react';
+import { render, fireEvent } from '@testing-library/react-native';
+import UnauthenticatedScreen from './index';
+
+// Mock da navegação
+const mockNavigation = {
+  navigate: jest.fn(),
+};
+
+jest.mock('@react-navigation/native', () => ({
+  useNavigation: () => mockNavigation,
+}));
+
+describe('UnauthenticatedScreen', () => {
+  it('renders correctly', () => {
+    const { getByText } = render(<UnauthenticatedScreen />);
+    
+    expect(getByText('LIKE YOUR LIFE')).toBeTruthy();
+    expect(getByText('Next')).toBeTruthy();
+    expect(getByText('Login')).toBeTruthy();
+  });
+
+  it('handles next button press', () => {
+    const { getByText } = render(<UnauthenticatedScreen />);
+    
+    const nextButton = getByText('Next');
+    fireEvent.press(nextButton);
+    
+    expect(mockNavigation.navigate).toHaveBeenCalledWith('Welcome');
+  });
+});
+```
+
+### Configuração dos Testes
+
+O projeto usa:
+- **Jest**: Framework de testes
+- **React Native Testing Library**: Utilitários para testar componentes React Native
+- **React Test Renderer**: Renderização de componentes para testes
+
+### Mocks e Stubs
+
+```typescript
+// Mock de navegação
+jest.mock('@react-navigation/native', () => ({
+  useNavigation: () => mockNavigation,
+}));
+
+// Mock de assets SVG
+jest.mock('@/assets', () => ({
+  Logo: 'Logo',
+}));
+
+// Mock de componentes externos
+jest.mock('react-native-safe-area-context', () => ({
+  SafeAreaView: 'SafeAreaView',
+}));
+```
+
+### Cobertura de Testes
+
+Para verificar a cobertura de testes:
+
+```bash
+# Gerar relatório de cobertura
+npm test -- --coverage
+
+# Ver cobertura no navegador
+npm test -- --coverage --coverageReporters=html
+```
+
+### Boas Práticas
+
+1. **Nomenclatura**: Use nomes descritivos para os testes
+2. **Arrange-Act-Assert**: Estruture os testes em 3 fases
+3. **Mocks**: Use mocks para dependências externas
+4. **Isolamento**: Cada teste deve ser independente
+5. **Cobertura**: Mantenha alta cobertura de código
+
+### Troubleshooting
+
+**Problema**: Testes falhando com erro de SVG
+```bash
+# Solução: Adicionar mock para SVG
+jest.mock('@/assets', () => ({
+  Logo: 'Logo',
+}));
+```
+
+**Problema**: Erro de navegação nos testes
+```bash
+# Solução: Mock do useNavigation
+jest.mock('@react-navigation/native', () => ({
+  useNavigation: () => mockNavigation,
+}));
+```
+
 ### Build e Deploy
 ```bash
 # Build de desenvolvimento

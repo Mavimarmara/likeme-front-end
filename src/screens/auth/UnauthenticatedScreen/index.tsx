@@ -8,7 +8,7 @@ const UnauthenticatedScreen: React.FC = () => {
   const navigation = useNavigation();
 
   const handleNext = () => {
-    navigation.navigate('Loading' as never);
+    navigation.navigate('Welcome' as never);
   };
 
   const handleLogin = () => {

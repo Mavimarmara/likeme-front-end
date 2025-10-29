@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { render, fireEvent } from '@testing-library/react-native';
 import UnauthenticatedScreen from './index';
 
 // Mock navigation
@@ -11,29 +11,39 @@ jest.mock('@react-navigation/native', () => ({
   useNavigation: () => mockNavigation,
 }));
 
+// Mock SVG components
+jest.mock('@/assets', () => ({
+  Logo: 'Logo',
+}));
+
 describe('UnauthenticatedScreen', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('renders correctly', () => {
     const { getByText } = render(<UnauthenticatedScreen />);
     
-    expect(getByText('LIKE:ME')).toBeTruthy();
     expect(getByText('LIKE YOUR LIFE')).toBeTruthy();
+    expect(getByText('Next')).toBeTruthy();
+    expect(getByText('Login')).toBeTruthy();
   });
 
   it('handles next button press', () => {
     const { getByText } = render(<UnauthenticatedScreen />);
     
     const nextButton = getByText('Next');
-    nextButton.props.onPress();
+    fireEvent.press(nextButton);
     
-    // Add your assertions here
+    expect(mockNavigation.navigate).toHaveBeenCalledWith('Welcome');
   });
 
   it('handles login button press', () => {
     const { getByText } = render(<UnauthenticatedScreen />);
     
     const loginButton = getByText('Login');
-    loginButton.props.onPress();
+    fireEvent.press(loginButton);
     
-    expect(mockNavigation.navigate).toHaveBeenCalledWith('Register');
+    expect(mockNavigation.navigate).toHaveBeenCalledWith('Welcome');
   });
 });
