@@ -31,7 +31,7 @@ const UnauthenticatedStep1: React.FC<UnauthenticatedStep1Props> = ({ onNext, onL
       </View>
 
       <View style={styles.logoContainer}>
-        <Logo width={200} height={60} />
+        <Logo width={280} height={84} />
       </View>
 
       <View style={styles.taglineContainer}>

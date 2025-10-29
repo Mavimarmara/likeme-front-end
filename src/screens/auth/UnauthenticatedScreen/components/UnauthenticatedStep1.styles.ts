@@ -25,9 +25,9 @@ export const styles = StyleSheet.create({
     flexDirection: 'column',
     gap: 8,
     left: 16,
+    right: 16,
     position: 'absolute',
-    top: 679,
-    width: 362,
+    bottom: 70,
     paddingBottom: 40,
   },
 
@@ -91,8 +91,8 @@ export const styles = StyleSheet.create({
   logoContainer: {
     position: 'absolute',
     top: '42%',
-    left: '50%',
-    transform: [{ translateX: -100 }],
+    left: 0,
+    right: 0,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -108,8 +108,8 @@ export const styles = StyleSheet.create({
     transform: [{ translateX: -138 }],
   },
   taglineText: {
-    fontSize: 24,
-    fontWeight: '700',
+    fontSize: 18,
+    fontWeight: '400',
     color: 'rgba(30, 58, 138, 1)',
     textAlign: 'center',
   },
