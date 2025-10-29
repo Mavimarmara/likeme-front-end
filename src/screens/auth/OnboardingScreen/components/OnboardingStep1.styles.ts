@@ -1,52 +1,8 @@
-import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Dimensions,
-} from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
-interface OnboardingStep1Props {
-  onNext: () => void;
-  onLogin: () => void;
-}
-
-const OnboardingStep1: React.FC<OnboardingStep1Props> = ({ onNext, onLogin }) => {
-  return (
-    <View style={styles.container}>
-      {/* Gradientes coloridos no fundo */}
-      <View style={styles.gradientContainer}>
-        <View style={styles.pinkGradient} />
-        <View style={styles.yellowGradient} />
-        <View style={styles.greenGradient} />
-      </View>
-      
-      <View style={styles.content}>
-        {/* Título e subtítulo */}
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>LIKE:ME</Text>
-          <Text style={styles.subtitle}>LIKE YOUR LIFE</Text>
-        </View>
-
-        {/* Botões */}
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.nextButton} onPress={onNext}>
-            <Text style={styles.nextText}>Next</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.loginButton} onPress={onLogin}>
-            <Text style={styles.loginText}>Login</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </View>
-  );
-};
-
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5F5DC', // Bege claro
@@ -152,5 +108,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
-
-export default OnboardingStep1;
