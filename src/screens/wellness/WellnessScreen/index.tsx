@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Card } from '../../../components/ui';
+import { Card } from '@/components/ui';
 import { styles } from './styles';
-import { COLORS } from '../../../constants';
+import { COLORS } from '@/constants';
 
 const WellnessScreen: React.FC = () => {
   return (

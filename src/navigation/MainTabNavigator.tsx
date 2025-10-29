@@ -7,9 +7,9 @@ import {
   ActivitiesScreen,
   ProtocolScreen,
   HealthProviderScreen,
-} from '../screens/wellness';
-import { MarketplaceScreen } from '../screens/marketplace';
-import { CommunityScreen } from '../screens/community';
+} from '@/screens/wellness';
+import { MarketplaceScreen } from '@/screens/marketplace';
+import { CommunityScreen } from '@/screens/community';
 
 const Tab = createBottomTabNavigator();
 

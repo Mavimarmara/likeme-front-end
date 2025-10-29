@@ -1,3 +1,39 @@
 {
-  "extends": "@tsconfig/react-native/tsconfig.json"
+  "extends": "@tsconfig/react-native/tsconfig.json",
+  "compilerOptions": {
+    "strict": false,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "jsx": "react-jsx",
+    "lib": ["es2017"],
+    "moduleResolution": "node",
+    "noEmit": true,
+    "target": "esnext",
+    "resolveJsonModule": true,
+    "typeRoots": ["./types", "./node_modules/@types"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@/assets/*": ["assets/*"],
+      "@/components/*": ["src/components/*"],
+      "@/screens/*": ["src/screens/*"],
+      "@/navigation/*": ["src/navigation/*"],
+      "@/services/*": ["src/services/*"],
+      "@/constants/*": ["src/constants/*"],
+      "@/types/*": ["types/*"]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "types/**/*.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/*.test.ts",
+    "**/*.test.tsx"
+  ]
 }

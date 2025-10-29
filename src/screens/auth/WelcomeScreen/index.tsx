@@ -11,7 +11,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { styles } from './styles';
-import { COLORS, FONT_SIZES, SPACING } from '../../../constants';
+import { COLORS, FONT_SIZES, SPACING } from '@/constants';
+import { Logo } from '@/assets';
 
 const WelcomeScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -49,7 +50,7 @@ const WelcomeScreen: React.FC = () => {
           >
             <Text style={styles.backButtonText}>‹</Text>
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>LIKE:ME</Text>
+          <Logo width={120} height={36} />
         </View>
 
         <View style={styles.content}>

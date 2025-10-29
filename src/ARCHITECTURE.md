@@ -100,29 +100,29 @@ src/
 ### Importando Telas
 ```typescript
 // Import específico
-import { WellnessScreen } from '../screens/wellness';
+import { WellnessScreen } from '@/screens/wellness';
 
 // Import múltiplo
-import { WellnessScreen, ActivitiesScreen } from '../screens/wellness';
+import { WellnessScreen, ActivitiesScreen } from '@/screens/wellness';
 
 // Import de todas as telas
-import * as Screens from '../screens';
+import * as Screens from '@/screens';
 ```
 
 ### Importando Componentes
 ```typescript
 // Componentes UI
-import { Button, Card } from '../components/ui';
+import { Button, Card } from '@/components/ui';
 
 // Todos os componentes
-import * as Components from '../components';
+import * as Components from '@/components';
 ```
 
 ### Importando Utilitários
 ```typescript
-import { dateUtils, validationUtils } from '../utils';
-import { COLORS, SPACING } from '../constants';
-import { User, Activity } from '../types';
+import { dateUtils, validationUtils } from '@/utils';
+import { COLORS, SPACING } from '@/constants';
+import { User, Activity } from '@/types';
 ```
 
 ## 🚀 Benefícios

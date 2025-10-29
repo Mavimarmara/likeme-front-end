@@ -19,7 +19,7 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from './styles';
-import { COLORS } from '../../../constants';
+import { COLORS } from '@/constants';
 
 interface [ScreenName]Props {
   // Props específicas da tela
@@ -43,7 +43,7 @@ export default [ScreenName];
 
 ```typescript
 import { StyleSheet } from 'react-native';
-import { COLORS, FONT_SIZES, SPACING } from '../../../constants';
+import { COLORS, FONT_SIZES, SPACING } from '@/constants';
 
 export const styles = StyleSheet.create({
   container: {
