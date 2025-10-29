@@ -8,7 +8,6 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: SPACING.MD,
     paddingVertical: SPACING.SM,
-    backgroundColor: '#F5F5DC',
     position: 'relative',
   },
   backButton: {
