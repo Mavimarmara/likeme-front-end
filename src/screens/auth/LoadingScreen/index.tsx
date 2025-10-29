@@ -60,8 +60,8 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Animated.View style={[styles.splash, { opacity: fadeAnim }]}>        
-        <View style={styles.gradienteEfeito}>
+      <Animated.View style={[styles.splashContainer, { opacity: fadeAnim }]}>        
+        <View style={styles.gradientEffect}>
           <Animated.View
             style={[
               styles.scrollContainer,
@@ -70,21 +70,21 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
               },
             ]}
           >
-            <Image
-              source={GradientEffect}
-              style={styles.efeitoGradiente}
-              resizeMode="cover"
-            />
-            <Image
-              source={GradientEffect}
-              style={styles.efeitoGradiente}
-              resizeMode="cover"
-            />
-            <Image
-              source={GradientEffect}
-              style={styles.efeitoGradiente}
-              resizeMode="cover"
-            />
+                  <Image
+                    source={GradientEffect}
+                    style={styles.gradientImage}
+                    resizeMode="cover"
+                  />
+                  <Image
+                    source={GradientEffect}
+                    style={styles.gradientImage}
+                    resizeMode="cover"
+                  />
+                  <Image
+                    source={GradientEffect}
+                    style={styles.gradientImage}
+                    resizeMode="cover"
+                  />
           </Animated.View>
         </View>
 
@@ -92,9 +92,9 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
           <PartialLogo width="100%" height="100%" />
         </View>
 
-        <View style={styles.doisPontos} />
+        <View style={styles.dots} />
 
-        <View style={styles.taglineEfeito}>
+        <View style={styles.taglineContainer}>
           <Text style={styles.taglineText}>YOUR RHYTHM</Text>
         </View>
       </Animated.View>

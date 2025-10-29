@@ -5,14 +5,12 @@ const { width, height } = Dimensions.get('window');
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5DC', // Bege claro como na imagem
+    backgroundColor: '#F5F5DC',
   },
   keyboardAvoidingView: {
     flex: 1,
   },
   
-
-  // Content - seguindo exatamente o design do Figma
   content: {
     alignItems: 'flex-start',
     display: 'flex',
@@ -24,7 +22,6 @@ export const styles = StyleSheet.create({
     paddingTop: 60,
   },
   
-  // Text Container - baseado no .text do Figma
   textContainer: {
     alignItems: 'flex-start',
     display: 'flex',
@@ -35,7 +32,6 @@ export const styles = StyleSheet.create({
     width: 362,
   },
   
-  // Welcome Text - baseado no .text-wrapper do Figma
   welcomeText: {
     alignItems: 'center',
     alignSelf: 'stretch',
@@ -52,7 +48,6 @@ export const styles = StyleSheet.create({
     position: 'relative',
   },
   
-  // Question Text - baseado no .div do Figma
   questionText: {
     alignItems: 'center',
     alignSelf: 'stretch',
@@ -67,7 +62,6 @@ export const styles = StyleSheet.create({
     position: 'relative',
   },
   
-  // Input Container - baseado no .input do Figma
   inputContainer: {
     alignItems: 'flex-start',
     display: 'flex',
@@ -78,7 +72,6 @@ export const styles = StyleSheet.create({
     width: 362,
   },
   
-  // Input Frame - baseado no .frame do Figma
   inputFrame: {
     alignItems: 'flex-start',
     alignSelf: 'stretch',
@@ -90,17 +83,16 @@ export const styles = StyleSheet.create({
     width: '100%',
   },
   
-  // Name Input - baseado no .input-box do Figma
   nameInput: {
     alignSelf: 'stretch',
-    backgroundColor: 'rgba(253, 251, 238, 1)', // --functional-colors-main-colors-secondary-secondary-light
+    backgroundColor: 'rgba(253, 251, 238, 1)',
     borderRadius: 18,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
     shadowRadius: 8,
-    elevation: 4, // Para Android
-    color: 'rgba(110, 106, 106, 1)', // --functional-colors-neutral-colors-low-low-dark
+    elevation: 4,
+    color: 'rgba(110, 106, 106, 1)',
     fontFamily: 'DM Sans',
     fontSize: 14,
     fontWeight: '400',
@@ -113,14 +105,12 @@ export const styles = StyleSheet.create({
     width: '100%',
   },
   
-  // Input Spacer - baseado no .frame-2 do Figma
   inputSpacer: {
     height: 20,
     position: 'relative',
     width: 358,
   },
   
-  // Continue Button
   continueButton: {
     backgroundColor: 'rgba(0, 17, 55, 1)',
     borderRadius: 25,
