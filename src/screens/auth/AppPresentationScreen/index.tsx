@@ -9,9 +9,9 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import { Header } from '@/components/ui';
 import { styles } from './styles';
 import { COLORS, FONT_SIZES, SPACING, BORDER_RADIUS } from '@/constants';
-import { Logo } from '@/assets';
 
 const { width } = Dimensions.get('window');
 
@@ -83,15 +83,7 @@ const AppPresentationScreen: React.FC<AppPresentationScreenProps> = ({ route }) 
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={handleBack}
-        >
-          <Text style={styles.backButtonText}>‹</Text>
-        </TouchableOpacity>
-        <Logo width={120} height={36} />
-      </View>
+      <Header onBackPress={handleBack} />
 
       <ScrollView 
         style={styles.scrollView}

@@ -6,9 +6,9 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { Header } from '@/components/ui';
 import { styles } from './styles';
 import { COLORS, FONT_SIZES, SPACING, BORDER_RADIUS } from '@/constants';
-import { Logo } from '@/assets';
 
 interface IntroScreenProps {
   route: {
@@ -59,15 +59,7 @@ const IntroScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.backButtonText}>‹</Text>
-        </TouchableOpacity>
-        <Logo width={120} height={36} />
-      </View>
+      <Header onBackPress={() => navigation.goBack()} />
 
       <View style={styles.content}>
         <View style={styles.greetingContainer}>

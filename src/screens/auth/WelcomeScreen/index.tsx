@@ -10,9 +10,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import { Header } from '@/components/ui';
 import { styles } from './styles';
-import { COLORS, FONT_SIZES, SPACING } from '@/constants';
-import { Logo } from '@/assets';
 
 const WelcomeScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -43,34 +42,29 @@ const WelcomeScreen: React.FC = () => {
         style={styles.keyboardAvoidingView}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <View style={styles.header}>
-          <TouchableOpacity 
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-          >
-            <Text style={styles.backButtonText}>‹</Text>
-          </TouchableOpacity>
-          <Logo width={120} height={36} />
-        </View>
+        <Header onBackPress={() => navigation.goBack()} />
 
         <View style={styles.content}>
-          <View style={styles.welcomeContainer}>
+          <View style={styles.textContainer}>
             <Text style={styles.welcomeText}>Wellcome!</Text>
             <Text style={styles.questionText}>How can I call you?</Text>
           </View>
 
           <View style={styles.inputContainer}>
-            <TextInput
-              ref={inputRef}
-              style={styles.nameInput}
-              value={name}
-              onChangeText={setName}
-              placeholder="Your name"
-              placeholderTextColor="#999"
-              autoFocus
-              returnKeyType="done"
-              onSubmitEditing={handleContinue}
-            />
+            <View style={styles.inputFrame}>
+              <TextInput
+                ref={inputRef}
+                style={styles.nameInput}
+                value={name}
+                onChangeText={setName}
+                placeholder="Your name"
+                placeholderTextColor="rgba(110, 106, 106, 1)"
+                autoFocus
+                returnKeyType="done"
+                onSubmitEditing={handleContinue}
+              />
+            </View>
+            <View style={styles.inputSpacer} />
           </View>
 
           <TouchableOpacity 

@@ -1,5 +1,4 @@
 import { StyleSheet, Dimensions } from 'react-native';
-import { COLORS, FONT_SIZES, SPACING, BORDER_RADIUS } from '@/constants';
 
 const { width, height } = Dimensions.get('window');
 
@@ -12,89 +11,135 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   
-  // Header
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.MD,
-    paddingVertical: SPACING.SM,
-    backgroundColor: '#F5F5DC',
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  backButtonText: {
-    fontSize: 24,
-    color: COLORS.TEXT,
-    fontWeight: 'bold',
-  },
-  headerTitle: {
-    flex: 1,
-    fontSize: FONT_SIZES.LG,
-    fontWeight: 'bold',
-    color: COLORS.TEXT,
-    textAlign: 'center',
-    marginRight: 40, // Compensar o botão de voltar
-  },
 
-  // Content
+  // Content - seguindo exatamente o design do Figma
   content: {
-    flex: 1,
-    paddingHorizontal: SPACING.LG,
-    paddingTop: SPACING.XL,
+    alignItems: 'flex-start',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 40,
+    position: 'relative',
+    width: 362,
+    alignSelf: 'center',
+    paddingTop: 60,
   },
   
-  // Welcome Section
-  welcomeContainer: {
-    marginBottom: SPACING.XXL,
+  // Text Container - baseado no .text do Figma
+  textContainer: {
+    alignItems: 'flex-start',
+    display: 'flex',
+    flex: 0,
+    flexDirection: 'column',
+    gap: 16,
+    position: 'relative',
+    width: 362,
   },
+  
+  // Welcome Text - baseado no .text-wrapper do Figma
   welcomeText: {
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    color: 'rgba(0, 17, 55, 1)',
+    display: 'flex',
+    fontFamily: 'Bricolage Grotesque',
     fontSize: 48,
-    fontWeight: 'bold',
-    color: COLORS.TEXT,
-    marginBottom: SPACING.MD,
+    fontWeight: '700',
+    height: 57,
+    justifyContent: 'center',
+    letterSpacing: 0,
+    lineHeight: 16,
+    marginTop: -1,
+    position: 'relative',
   },
+  
+  // Question Text - baseado no .div do Figma
   questionText: {
-    fontSize: FONT_SIZES.LG,
-    color: COLORS.TEXT,
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    color: 'rgba(0, 17, 55, 1)',
+    display: 'flex',
+    fontFamily: 'DM Sans',
+    fontSize: 20,
     fontWeight: '400',
+    justifyContent: 'center',
+    letterSpacing: 0,
+    lineHeight: 25,
+    position: 'relative',
   },
-
-  // Input Section
+  
+  // Input Container - baseado no .input do Figma
   inputContainer: {
-    marginBottom: SPACING.XXL,
+    alignItems: 'flex-start',
+    display: 'flex',
+    flex: 0,
+    flexDirection: 'column',
+    gap: 8,
+    position: 'relative',
+    width: 362,
   },
+  
+  // Input Frame - baseado no .frame do Figma
+  inputFrame: {
+    alignItems: 'flex-start',
+    alignSelf: 'stretch',
+    display: 'flex',
+    flex: 0,
+    flexDirection: 'column',
+    gap: 8,
+    position: 'relative',
+    width: '100%',
+  },
+  
+  // Name Input - baseado no .input-box do Figma
   nameInput: {
-    backgroundColor: '#F0F0F0',
-    borderRadius: BORDER_RADIUS.MD,
-    paddingHorizontal: SPACING.LG,
-    paddingVertical: SPACING.MD,
-    fontSize: FONT_SIZES.LG,
-    color: COLORS.TEXT,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    textAlign: 'center',
+    alignSelf: 'stretch',
+    backgroundColor: 'rgba(253, 251, 238, 1)', // --functional-colors-main-colors-secondary-secondary-light
+    borderRadius: 18,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 4, // Para Android
+    color: 'rgba(110, 106, 106, 1)', // --functional-colors-neutral-colors-low-low-dark
+    fontFamily: 'DM Sans',
+    fontSize: 14,
+    fontWeight: '400',
+    letterSpacing: 0.2,
+    lineHeight: 20,
+    marginRight: -27.61,
+    marginTop: -1,
+    padding: 12,
+    paddingHorizontal: 16,
+    width: '100%',
   },
-
+  
+  // Input Spacer - baseado no .frame-2 do Figma
+  inputSpacer: {
+    height: 20,
+    position: 'relative',
+    width: 358,
+  },
+  
   // Continue Button
   continueButton: {
-    backgroundColor: COLORS.PRIMARY,
-    borderRadius: BORDER_RADIUS.LG,
-    paddingVertical: SPACING.MD,
-    paddingHorizontal: SPACING.XL,
+    backgroundColor: 'rgba(0, 17, 55, 1)',
+    borderRadius: 25,
+    paddingVertical: 16,
+    paddingHorizontal: 32,
     alignItems: 'center',
-    marginTop: 'auto',
-    marginBottom: SPACING.XL,
+    justifyContent: 'center',
+    marginTop: 20,
+    alignSelf: 'center',
+    minWidth: 200,
   },
   continueButtonDisabled: {
-    backgroundColor: '#CCCCCC',
+    backgroundColor: 'rgba(178, 178, 178, 1)',
+    opacity: 0.6,
   },
   continueButtonText: {
-    color: COLORS.WHITE,
-    fontSize: FONT_SIZES.MD,
+    color: 'rgba(255, 255, 255, 1)',
+    fontSize: 16,
     fontWeight: '600',
+    fontFamily: 'DM Sans',
   },
 });

@@ -9,32 +9,6 @@ export const styles = StyleSheet.create({
     backgroundColor: '#F5F5DC',
   },
   
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.MD,
-    paddingVertical: SPACING.SM,
-    backgroundColor: '#F5F5DC',
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  backButtonText: {
-    fontSize: 24,
-    color: COLORS.TEXT,
-    fontWeight: 'bold',
-  },
-  headerTitle: {
-    flex: 1,
-    fontSize: FONT_SIZES.LG,
-    fontWeight: 'bold',
-    color: COLORS.TEXT,
-    textAlign: 'center',
-    marginRight: 40,
-  },
 
   scrollView: {
     flex: 1,
