@@ -5,15 +5,15 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Logo } from '@/assets';
-import { styles } from './OnboardingStep1.styles';
+import { styles } from './UnauthenticatedStep1.styles';
 
 
-interface OnboardingStep1Props {
+interface UnauthenticatedStep1Props {
   onNext: () => void;
   onLogin: () => void;
 }
 
-const OnboardingStep1: React.FC<OnboardingStep1Props> = ({ onNext, onLogin }) => {
+const UnauthenticatedStep1: React.FC<UnauthenticatedStep1Props> = ({ onNext, onLogin }) => {
   return (
     <View style={styles.container}>
       {/* Gradientes coloridos no fundo */}
@@ -46,4 +46,4 @@ const OnboardingStep1: React.FC<OnboardingStep1Props> = ({ onNext, onLogin }) =>
 };
 
 
-export default OnboardingStep1;
+export default UnauthenticatedStep1;

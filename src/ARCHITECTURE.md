@@ -11,10 +11,10 @@ src/
 │   └── index.ts         # Exportações centralizadas
 ├── screens/             # Telas organizadas por domínio
 │   ├── auth/           # Autenticação e onboarding
-│   │   ├── OnboardingScreen/
+│   │   ├── UnauthenticatedScreen/
 │   │   │   ├── index.tsx
 │   │   │   ├── styles.ts
-│   │   │   └── OnboardingScreen.spec.tsx
+│   │   │   └── UnauthenticatedScreen.spec.tsx
 │   │   ├── RegisterScreen/
 │   │   │   ├── index.tsx
 │   │   │   ├── styles.ts
@@ -45,7 +45,7 @@ src/
 │   └── MainTabNavigator.tsx
 ├── onboarding/        # Componentes específicos do onboarding
 │   ├── components/
-│   │   └── OnboardingStep1.tsx
+│   │   └── UnauthenticatedStep1.tsx
 │   ├── index.ts
 │   └── README.md
 ├── hooks/              # Custom hooks (futuro)

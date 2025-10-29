@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import OnboardingScreen from './index';
+import UnauthenticatedScreen from './index';
 
 // Mock navigation
 const mockNavigation = {
@@ -11,16 +11,16 @@ jest.mock('@react-navigation/native', () => ({
   useNavigation: () => mockNavigation,
 }));
 
-describe('OnboardingScreen', () => {
+describe('UnauthenticatedScreen', () => {
   it('renders correctly', () => {
-    const { getByText } = render(<OnboardingScreen />);
+    const { getByText } = render(<UnauthenticatedScreen />);
     
     expect(getByText('LIKE:ME')).toBeTruthy();
     expect(getByText('LIKE YOUR LIFE')).toBeTruthy();
   });
 
   it('handles next button press', () => {
-    const { getByText } = render(<OnboardingScreen />);
+    const { getByText } = render(<UnauthenticatedScreen />);
     
     const nextButton = getByText('Next');
     nextButton.props.onPress();
@@ -29,7 +29,7 @@ describe('OnboardingScreen', () => {
   });
 
   it('handles login button press', () => {
-    const { getByText } = render(<OnboardingScreen />);
+    const { getByText } = render(<UnauthenticatedScreen />);
     
     const loginButton = getByText('Login');
     loginButton.props.onPress();

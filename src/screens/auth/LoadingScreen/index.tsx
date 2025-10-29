@@ -50,7 +50,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
           useNativeDriver: true,
         }),
       ]).start(() => {
-        navigation.navigate('Onboarding');
+        navigation.navigate('Unauthenticated');
       });
     };
 

@@ -1,4 +1,4 @@
-export { default as OnboardingScreen } from './OnboardingScreen';
+export { default as UnauthenticatedScreen } from './UnauthenticatedScreen';
 export { default as LoadingScreen } from './LoadingScreen';
 export { default as WelcomeScreen } from './WelcomeScreen';
 export { default as IntroScreen } from './IntroScreen';
