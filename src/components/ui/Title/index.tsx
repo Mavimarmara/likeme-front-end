@@ -6,16 +6,21 @@ interface TitleProps {
   title: string;
   subtitle?: string;
   variant?: 'large' | 'medium' | 'small';
+  rightAdornment?: React.ReactNode;
 }
 
 const Title: React.FC<TitleProps> = ({ 
   title, 
   subtitle, 
-  variant = 'large' 
+  variant = 'large',
+  rightAdornment,
 }) => {
   return (
     <View style={styles.container}>
-      <Text style={[styles.title, styles[variant]]}>{title}</Text>
+      <View style={styles.titleRow}>
+        <Text style={[styles.title, styles[variant]]}>{title}</Text>
+        {rightAdornment && <View style={styles.adornmentWrapper}>{rightAdornment}</View>}
+      </View>
       {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
     </View>
   );

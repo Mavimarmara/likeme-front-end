@@ -11,9 +11,25 @@ export const styles = StyleSheet.create({
     width: '100%',
   },
   
+  titleRow: {
+    alignSelf: 'stretch',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    height: 48,
+  },
+  
+  adornmentWrapper: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 48,
+    width: 90,
+    overflow: 'hidden',
+  },
+  
   title: {
     alignItems: 'center',
-    alignSelf: 'stretch',
+    alignSelf: 'auto',
     color: 'rgba(0, 17, 55, 1)',
     display: 'flex',
     fontFamily: 'Bricolage Grotesque',
@@ -25,19 +41,16 @@ export const styles = StyleSheet.create({
   
   large: {
     fontSize: 48,
-    height: 60,
     lineHeight: 48,
   },
   
   medium: {
     fontSize: 32,
-    height: 40,
     lineHeight: 32,
   },
   
   small: {
     fontSize: 24,
-    height: 30,
     lineHeight: 24,
   },
   

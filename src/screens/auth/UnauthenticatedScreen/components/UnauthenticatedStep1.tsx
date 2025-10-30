@@ -52,15 +52,15 @@ const UnauthenticatedStep1: React.FC<UnauthenticatedStep1Props> = ({ onNext, onL
       <Animated.View style={[styles.background, { opacity: bgOpacity }]}>
         <Image source={GradientSplash2} />
       </Animated.View>
-
+      
       <Animated.View style={[styles.buttonContainer, { opacity: buttonsOpacity }]}>
-        <TouchableOpacity style={styles.nextButton} onPress={onNext}>
+          <TouchableOpacity style={styles.nextButton} onPress={onNext}>
           <Text style={styles.nextButtonLabel}>Next</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.loginButton} onPress={onLogin}>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.loginButton} onPress={onLogin}>
           <Text style={styles.loginButtonLabel}>Login</Text>
-        </TouchableOpacity>
+          </TouchableOpacity>
       </Animated.View>
 
       <View style={styles.logoContainer}>
@@ -70,7 +70,7 @@ const UnauthenticatedStep1: React.FC<UnauthenticatedStep1Props> = ({ onNext, onL
         <Animated.View style={[styles.logoOverlay, { transform: [{ translateX: slideRight }] }]}>
           <PartialLogo2 width={170} height={54} />
         </Animated.View>
-      </View>
+        </View>
 
       <View style={styles.taglineContainer}>
         <Text style={styles.taglineText}>LIKE YOUR LIFE</Text>

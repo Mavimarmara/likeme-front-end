@@ -20,6 +20,14 @@ export const styles = StyleSheet.create({
     alignSelf: 'center',
     paddingTop: 60,
   },
+
+  titleAdornment: {
+    justifyContent: 'center',
+    width: '100%',
+    height: '100%',
+    transform: [{ scale: 1.3 }],
+    marginBottom: 5
+  },
   
   inputContainer: {
     alignItems: 'flex-start',

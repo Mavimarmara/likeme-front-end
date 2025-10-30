@@ -5,14 +5,16 @@ import {
   Platform,
   Alert,
   TextInput as RNTextInput,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
 import { Header, Title, TextInput } from '@/components/ui';
+import { GradientSplash3 } from '@/assets';
 import { styles } from './styles';
 
-const WelcomeScreen: React.FC = () => {
-  const navigation = useNavigation();
+type Props = { navigation: any };
+
+const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
   const [name, setName] = useState('');
   const inputRef = useRef<RNTextInput>(null);
 
@@ -47,6 +49,7 @@ const WelcomeScreen: React.FC = () => {
             title="Welcome!"
             subtitle="How can I call you?"
             variant="large"
+            rightAdornment={<Image source={GradientSplash3} style={styles.titleAdornment} resizeMode="cover" />}
           />
 
           <View style={styles.inputContainer}>
