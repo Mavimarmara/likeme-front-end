@@ -2,11 +2,11 @@ import React, { useEffect, useRef } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
   Animated,
   Dimensions,
   Image,
 } from 'react-native';
+import { PrimaryButton, SecondaryButton, ButtonGroup } from '@/components/ui';
 import { GradientSplash2, PartialLogo, PartialLogo2 } from '@/assets';
 import { styles } from './UnauthenticatedStep1.styles';
 
@@ -54,13 +54,10 @@ const UnauthenticatedStep1: React.FC<UnauthenticatedStep1Props> = ({ onNext, onL
       </Animated.View>
       
       <Animated.View style={[styles.buttonContainer, { opacity: buttonsOpacity }]}>
-          <TouchableOpacity style={styles.nextButton} onPress={onNext}>
-          <Text style={styles.nextButtonLabel}>Next</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.loginButton} onPress={onLogin}>
-          <Text style={styles.loginButtonLabel}>Login</Text>
-          </TouchableOpacity>
+        <ButtonGroup>
+          <PrimaryButton label="Next" onPress={onNext} />
+          <SecondaryButton label="Login" onPress={onLogin} />
+        </ButtonGroup>
       </Animated.View>
 
       <View style={styles.logoContainer}>

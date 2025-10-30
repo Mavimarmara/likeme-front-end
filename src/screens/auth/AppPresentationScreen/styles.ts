@@ -68,11 +68,16 @@ export const styles = StyleSheet.create({
 
   footer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     alignItems: 'center',
     paddingHorizontal: SPACING.LG,
     paddingVertical: SPACING.LG,
     backgroundColor: '#F5F5DC',
+  },
+  footerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    columnGap: 12,
   },
   skipButton: {
     paddingVertical: SPACING.SM,
@@ -95,5 +100,14 @@ export const styles = StyleSheet.create({
     fontSize: 24,
     color: COLORS.WHITE,
     fontWeight: 'bold',
+  },
+  topActions: {
+    position: 'absolute',
+    top: SPACING.MD,
+    right: SPACING.LG,
+    flexDirection: 'row',
+    alignItems: 'center',
+    columnGap: 12,
+    zIndex: 10,
   },
 });

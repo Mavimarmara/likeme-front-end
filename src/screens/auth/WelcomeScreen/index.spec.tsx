@@ -2,6 +2,35 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import WelcomeScreen from './index';
 
+// Evita problemas com SVGs/ícones no Header
+jest.mock('@/components/ui', () => {
+  const real = jest.requireActual('@/components/ui');
+  return {
+    ...real,
+    Header: () => null,
+  };
+});
+
+describe('WelcomeScreen', () => {
+  it('navega para Intro ao pressionar Enter em qualquer teclado', () => {
+    const navigate = jest.fn();
+
+    const { getByPlaceholderText } = render(
+      <WelcomeScreen navigation={{ navigate, goBack: jest.fn() }} />
+    );
+
+    const input = getByPlaceholderText('Your name');
+    fireEvent.changeText(input, 'John');
+    fireEvent(input, 'submitEditing');
+
+    expect(navigate).toHaveBeenCalledWith('Intro', { userName: 'John' });
+  });
+});
+
+import React from 'react';
+import { render, fireEvent } from '@testing-library/react-native';
+import WelcomeScreen from './index';
+
 // Mock navigation
 const mockNavigation = {
   navigate: jest.fn(),

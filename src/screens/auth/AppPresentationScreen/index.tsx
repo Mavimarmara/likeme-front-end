@@ -8,56 +8,20 @@ import {
   Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { } from '@react-navigation/native';
 import { Header } from '@/components/ui';
+import { PRESENTATION_PAGES } from '@/constants/presentation';
 import { styles } from './styles';
 import { COLORS, FONT_SIZES, SPACING, BORDER_RADIUS } from '@/constants';
 
 const { width } = Dimensions.get('window');
 
-interface PresentationPage {
-  id: string;
-  image: string;
-  title: string;
-  description: string;
-  order: number;
-}
+type Props = { navigation: any };
 
-interface AppPresentationScreenProps {
-  route: {
-    params: {
-      pages: PresentationPage[];
-    };
-  };
-}
-
-const AppPresentationScreen: React.FC<AppPresentationScreenProps> = ({ route }) => {
-  const navigation = useNavigation();
+const AppPresentationScreen: React.FC<Props> = ({ navigation }) => {
   const [currentPage, setCurrentPage] = useState(0);
   
-  const pages = route.params?.pages || [
-    {
-      id: '1',
-      image: 'https://via.placeholder.com/300x400/4CAF50/FFFFFF?text=Health+Tracking',
-      title: 'So many tips and apps... and self care still feels confusing?',
-      description: 'Here, everything that matters is in one place - from health trackers, to wellbeing programs and a curated marketplace.',
-      order: 1
-    },
-    {
-      id: '2',
-      image: 'https://via.placeholder.com/300x400/FF9800/FFFFFF?text=Wellness+Programs',
-      title: 'Personalized wellness programs',
-      description: 'Get customized health plans based on your goals, preferences, and medical history.',
-      order: 2
-    },
-    {
-      id: '3',
-      image: 'https://via.placeholder.com/300x400/2196F3/FFFFFF?text=Health+Community',
-      title: 'Connect with health professionals',
-      description: 'Access qualified doctors, nutritionists, and wellness coaches in our curated marketplace.',
-      order: 3
-    }
-  ];
+  const pages = PRESENTATION_PAGES;
 
   const handleNext = () => {
     if (currentPage < pages.length - 1) {
@@ -84,6 +48,17 @@ const AppPresentationScreen: React.FC<AppPresentationScreenProps> = ({ route }) 
   return (
     <SafeAreaView style={styles.container}>
       <Header onBackPress={handleBack} />
+
+      {currentPage === 0 && (
+        <View style={styles.topActions}>
+          <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
+            <Text style={styles.skipText}>Skip</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
+            <Text style={styles.nextButtonText}>›</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       <ScrollView 
         style={styles.scrollView}
@@ -117,19 +92,22 @@ const AppPresentationScreen: React.FC<AppPresentationScreenProps> = ({ route }) 
       </ScrollView>
 
       <View style={styles.footer}>
-        <TouchableOpacity 
-          style={styles.skipButton}
-          onPress={handleSkip}
-        >
-          <Text style={styles.skipText}>Skip</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={styles.nextButton}
-          onPress={handleNext}
-        >
-          <Text style={styles.nextButtonText}>›</Text>
-        </TouchableOpacity>
+        {currentPage >= 1 && (
+          <View style={styles.footerActions}>
+            <TouchableOpacity 
+              style={styles.skipButton}
+              onPress={handleSkip}
+            >
+              <Text style={styles.skipText}>Skip</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.nextButton}
+              onPress={handleNext}
+            >
+              <Text style={styles.nextButtonText}>›</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     </SafeAreaView>
   );

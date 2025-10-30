@@ -21,6 +21,13 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingTop: SPACING.XXL,
   },
+  titleAdornment: {
+    justifyContent: 'center',
+    width: '100%',
+    height: '100%',
+    transform: [{ scale: 1.5 }],
+    marginBottom: 5
+  },
   greetingText: {
     fontSize: 48,
     fontWeight: 'bold',
