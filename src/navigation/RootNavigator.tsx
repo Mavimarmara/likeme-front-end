@@ -14,6 +14,7 @@ const RootNavigator: React.FC = () => {
         initialRouteName="Loading"
         screenOptions={{
           headerShown: false,
+          animationEnabled: false,
         }}
       >
                <Stack.Screen
@@ -24,7 +25,7 @@ const RootNavigator: React.FC = () => {
               <Stack.Screen
                 name="Unauthenticated"
                 component={UnauthenticatedScreen}
-                options={{ title: 'Tela Deslogada' }}
+                options={{ title: 'Tela Deslogada', animationEnabled: false }}
               />
                <Stack.Screen
                  name="Welcome"

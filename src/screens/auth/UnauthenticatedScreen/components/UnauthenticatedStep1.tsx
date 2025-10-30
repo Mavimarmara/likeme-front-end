@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
+  Animated,
+  Dimensions,
   Image,
 } from 'react-native';
-import { Graphic, Logo } from '@/assets';
+import { GradientSplash2, PartialLogo, PartialLogo2 } from '@/assets';
 import { styles } from './UnauthenticatedStep1.styles';
 
 interface UnauthenticatedStep1Props {
@@ -14,13 +16,44 @@ interface UnauthenticatedStep1Props {
 }
 
 const UnauthenticatedStep1: React.FC<UnauthenticatedStep1Props> = ({ onNext, onLogin }) => {
+  const { width } = Dimensions.get('window');
+  const slideLeft = useRef(new Animated.Value(0)).current;
+  const slideRight = useRef(new Animated.Value(width * 0.5)).current;
+  const bgOpacity = useRef(new Animated.Value(0)).current;
+  const buttonsOpacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(slideLeft, {
+        toValue: -59,
+        duration: 420,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideRight, {
+        toValue: 89,
+        duration: 420,
+        useNativeDriver: true,
+      }),
+      Animated.timing(bgOpacity, {
+        toValue: 1,
+        duration: 320,
+        useNativeDriver: true,
+      }),
+      Animated.timing(buttonsOpacity, {
+        toValue: 1,
+        duration: 420,
+        delay: 120,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [slideLeft, slideRight, bgOpacity, buttonsOpacity]);
   return (
     <View style={styles.container}>
-      <View style={styles.background}>
-        <Graphic width="100%" height="100%" />
-      </View>
+      <Animated.View style={[styles.background, { opacity: bgOpacity }]}>
+        <Image source={GradientSplash2} />
+      </Animated.View>
 
-      <View style={styles.buttonContainer}>
+      <Animated.View style={[styles.buttonContainer, { opacity: buttonsOpacity }]}>
         <TouchableOpacity style={styles.nextButton} onPress={onNext}>
           <Text style={styles.nextButtonLabel}>Next</Text>
         </TouchableOpacity>
@@ -28,10 +61,15 @@ const UnauthenticatedStep1: React.FC<UnauthenticatedStep1Props> = ({ onNext, onL
         <TouchableOpacity style={styles.loginButton} onPress={onLogin}>
           <Text style={styles.loginButtonLabel}>Login</Text>
         </TouchableOpacity>
-      </View>
+      </Animated.View>
 
       <View style={styles.logoContainer}>
-        <Logo width={280} height={84} />
+        <Animated.View style={[styles.logoOverlay, { transform: [{ translateX: slideLeft }] }]}>
+          <PartialLogo width={170} height={54} />
+        </Animated.View>
+        <Animated.View style={[styles.logoOverlay, { transform: [{ translateX: slideRight }] }]}>
+          <PartialLogo2 width={170} height={54} />
+        </Animated.View>
       </View>
 
       <View style={styles.taglineContainer}>

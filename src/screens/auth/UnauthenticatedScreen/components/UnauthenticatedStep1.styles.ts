@@ -12,11 +12,9 @@ export const styles = StyleSheet.create({
   },
   
   background: {
-    height: '107.16%',
-    left: '45.29%',
     position: 'absolute',
     top: 0,
-    width: '87.28%',
+    right: 0,
   },
 
   buttonContainer: {
@@ -97,11 +95,21 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
+  logoOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
   taglineContainer: {
     height: 48,
     left: '50%',
     position: 'absolute',
-    top: '50%',
+    top: '46%',
     width: 276,
     justifyContent: 'center',
     alignItems: 'center',
