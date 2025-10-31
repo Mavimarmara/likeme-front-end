@@ -1,34 +1,163 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { render, fireEvent } from '@testing-library/react-native';
 import RegisterScreen from './index';
 
+jest.mock('react-native-safe-area-context', () => {
+  const ReactNative = require('react-native');
+  return {
+    SafeAreaView: ReactNative.View,
+  };
+});
+
+jest.mock('@/assets', () => ({
+  GradientSplash3: 'GradientSplash3',
+}));
+
+jest.mock('@/components/ui', () => {
+  const React = require('react');
+  const { View, Text, TouchableOpacity, TextInput as RNTextInput } = require('react-native');
+  return {
+    Header: () => null,
+    Title: ({ title }: { title: string }) => <Text>{title}</Text>,
+    TextInput: React.forwardRef(({ label, placeholder, onChangeText, value }: any, ref: any) => (
+      <View>
+        {label && <Text>{label}</Text>}
+        <RNTextInput
+          ref={ref}
+          placeholder={placeholder}
+          onChangeText={onChangeText}
+          value={value}
+          testID={`input-${placeholder}`}
+        />
+      </View>
+    )),
+    PrimaryButton: ({ label, onPress }: { label: string; onPress: () => void }) => (
+      <TouchableOpacity onPress={onPress} testID={`button-${label.toLowerCase().replace(/\s+/g, '-')}`}>
+        <Text>{label}</Text>
+      </TouchableOpacity>
+    ),
+    SecondaryButton: ({ label, onPress }: { label: string; onPress: () => void }) => (
+      <TouchableOpacity onPress={onPress} testID={`button-${label.toLowerCase().replace(/\s+/g, '-')}`}>
+        <Text>{label}</Text>
+      </TouchableOpacity>
+    ),
+    ButtonGroup: ({ children }: { children: React.ReactNode }) => <View>{children}</View>,
+  };
+});
+
 describe('RegisterScreen', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('renders correctly', () => {
-    const { getByText } = render(<RegisterScreen />);
-    
-    expect(getByText('Criar Conta')).toBeTruthy();
-    expect(getByText('Preencha os dados abaixo')).toBeTruthy();
+    const mockNavigation = {
+      navigate: jest.fn(),
+      goBack: jest.fn(),
+    };
+    const mockRoute = {
+      params: {},
+    };
+
+    const { getByText } = render(
+      <RegisterScreen navigation={mockNavigation} route={mockRoute} />
+    );
+
+    expect(getByText("Let's start,")).toBeTruthy();
+    expect(getByText('Next')).toBeTruthy();
+    expect(getByText('Skip information')).toBeTruthy();
   });
 
-  it('displays form fields', () => {
-    const { getByText } = render(<RegisterScreen />);
-    
-    expect(getByText('Nome completo')).toBeTruthy();
-    expect(getByText('Email')).toBeTruthy();
-    expect(getByText('Telefone')).toBeTruthy();
-    expect(getByText('Senha')).toBeTruthy();
-    expect(getByText('Confirmar senha')).toBeTruthy();
+  it('navigates to PersonalObjectives when Next button is pressed', () => {
+    const mockNavigation = {
+      navigate: jest.fn(),
+      goBack: jest.fn(),
+    };
+    const mockRoute = {
+      params: {
+        userName: 'John',
+      },
+    };
+
+    const { getByText } = render(
+      <RegisterScreen navigation={mockNavigation} route={mockRoute} />
+    );
+
+    const nextButton = getByText('Next');
+    fireEvent.press(nextButton);
+
+    expect(mockNavigation.navigate).toHaveBeenCalledWith('PersonalObjectives', {
+      userName: 'John',
+    });
   });
 
-  it('shows register button', () => {
-    const { getByText } = render(<RegisterScreen />);
-    
-    expect(getByText('Criar Conta')).toBeTruthy();
+  it('navigates to PersonalObjectives with fullName when Next button is pressed and fullName is set', () => {
+    const mockNavigation = {
+      navigate: jest.fn(),
+      goBack: jest.fn(),
+    };
+    const mockRoute = {
+      params: {
+        userName: 'John',
+      },
+    };
+
+    const { getByText, getByTestId } = render(
+      <RegisterScreen navigation={mockNavigation} route={mockRoute} />
+    );
+
+    const fullNameInput = getByTestId('input-Full Name');
+    fireEvent.changeText(fullNameInput, 'John Doe');
+
+    const nextButton = getByText('Next');
+    fireEvent.press(nextButton);
+
+    expect(mockNavigation.navigate).toHaveBeenCalledWith('PersonalObjectives', {
+      userName: 'John Doe',
+    });
   });
 
-  it('shows login link', () => {
-    const { getByText } = render(<RegisterScreen />);
-    
-    expect(getByText('Já tem uma conta? Faça login')).toBeTruthy();
+  it('navigates to PersonalObjectives when Skip button is pressed', () => {
+    const mockNavigation = {
+      navigate: jest.fn(),
+      goBack: jest.fn(),
+    };
+    const mockRoute = {
+      params: {
+        userName: 'John',
+      },
+    };
+
+    const { getByText } = render(
+      <RegisterScreen navigation={mockNavigation} route={mockRoute} />
+    );
+
+    const skipButton = getByText('Skip information');
+    fireEvent.press(skipButton);
+
+    expect(mockNavigation.navigate).toHaveBeenCalledWith('PersonalObjectives', {
+      userName: 'John',
+    });
+  });
+
+  it('navigates to PersonalObjectives with fallback userName when neither fullName nor route params are provided', () => {
+    const mockNavigation = {
+      navigate: jest.fn(),
+      goBack: jest.fn(),
+    };
+    const mockRoute = {
+      params: {},
+    };
+
+    const { getByText } = render(
+      <RegisterScreen navigation={mockNavigation} route={mockRoute} />
+    );
+
+    const nextButton = getByText('Next');
+    fireEvent.press(nextButton);
+
+    expect(mockNavigation.navigate).toHaveBeenCalledWith('PersonalObjectives', {
+      userName: 'Usuário',
+    });
   });
 });

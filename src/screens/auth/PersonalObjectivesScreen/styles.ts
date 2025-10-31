@@ -8,9 +8,6 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f4f3ec',
   },
-  keyboardAvoidingView: {
-    flex: 1,
-  },
   scrollView: {
     flex: 1,
   },
@@ -21,7 +18,7 @@ export const styles = StyleSheet.create({
     alignItems: 'flex-start',
     display: 'flex',
     flexDirection: 'column',
-    gap: 40,
+    gap: 24,
     position: 'relative',
     width: 362,
     alignSelf: 'center',
@@ -35,42 +32,20 @@ export const styles = StyleSheet.create({
     transform: [{ scale: 1.3 }],
     marginBottom: 5,
   },
-  invitationSection: {
-    width: '100%',
-    alignItems: 'flex-start',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 8,
-  },
-  invitationQuestion: {
+  question: {
     color: 'rgba(0, 17, 55, 1)',
     fontFamily: 'DM Sans',
     fontSize: 16,
     fontWeight: '400',
     lineHeight: 20,
-    marginBottom: 8,
-  },
-  infoSection: {
     width: '100%',
-    alignItems: 'flex-start',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 16,
   },
-  infoText: {
-    color: 'rgba(0, 17, 55, 1)',
-    fontFamily: 'DM Sans',
-    fontSize: 16,
-    fontWeight: '400',
-    lineHeight: 24,
-    textAlign: 'left',
-  },
-  fieldsContainer: {
+  chipsContainer: {
     width: '100%',
-    alignItems: 'flex-start',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 16,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    marginTop: 8,
   },
   footer: {
     position: 'absolute',
@@ -91,3 +66,4 @@ export const styles = StyleSheet.create({
     paddingTop: 0,
   },
 });
+

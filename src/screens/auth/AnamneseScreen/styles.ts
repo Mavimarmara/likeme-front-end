@@ -1,38 +1,40 @@
 import { StyleSheet } from 'react-native';
-import { COLORS, FONT_SIZES, SPACING, BORDER_RADIUS } from '@/constants';
+import { SPACING, COLORS } from '@/constants';
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.BACKGROUND,
+    backgroundColor: '#f4f3ec',
   },
   content: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: SPACING.LG,
+    paddingHorizontal: SPACING.LG,
   },
   title: {
-    fontSize: FONT_SIZES.XXL,
+    fontSize: 32,
     fontWeight: 'bold',
     color: COLORS.TEXT,
     marginBottom: SPACING.SM,
+    textAlign: 'center',
   },
   subtitle: {
-    fontSize: FONT_SIZES.MD,
-    color: COLORS.TEXT_LIGHT,
-    textAlign: 'center',
+    fontSize: 16,
+    color: COLORS.TEXT,
     marginBottom: SPACING.XL,
+    textAlign: 'center',
   },
   button: {
-    backgroundColor: COLORS.PRIMARY,
+    backgroundColor: COLORS.BLACK,
+    borderRadius: 18,
     paddingVertical: SPACING.MD,
     paddingHorizontal: SPACING.XL,
-    borderRadius: BORDER_RADIUS.LG,
+    alignItems: 'center',
   },
   buttonText: {
     color: COLORS.WHITE,
-    fontSize: FONT_SIZES.MD,
+    fontSize: 16,
     fontWeight: '600',
   },
 });

@@ -6,3 +6,4 @@ export { default as TextInput } from './TextInput';
 export { default as PrimaryButton } from './Button/Primary';
 export { default as SecondaryButton } from './Button/Secondary';
 export { default as ButtonGroup } from './ButtonGroup';
+export { default as Chip } from './Chip';

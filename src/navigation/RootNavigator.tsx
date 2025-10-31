@@ -2,7 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import { UnauthenticatedScreen, LoadingScreen, WelcomeScreen, IntroScreen, AppPresentationScreen, RegisterScreen, LoginScreen, AnamneseScreen } from '@/screens/auth';
+import { UnauthenticatedScreen, LoadingScreen, WelcomeScreen, IntroScreen, AppPresentationScreen, RegisterScreen, LoginScreen, AnamneseScreen, PersonalObjectivesScreen } from '@/screens/auth';
 import MainTabNavigator from './MainTabNavigator';
 
 const Stack = createStackNavigator();
@@ -56,6 +56,11 @@ const RootNavigator: React.FC = () => {
                  name="Anamnese"
                  component={AnamneseScreen}
                  options={{ title: 'Anamnese' }}
+               />
+               <Stack.Screen
+                 name="PersonalObjectives"
+                 component={PersonalObjectivesScreen}
+                 options={{ title: 'Objetivos Pessoais' }}
                />
         <Stack.Screen 
           name="Main" 

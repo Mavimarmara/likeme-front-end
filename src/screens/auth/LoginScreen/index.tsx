@@ -49,7 +49,7 @@ const LoginScreen: React.FC = () => {
       Alert.alert('Sucesso', 'Login realizado com sucesso!', [
         {
           text: 'OK',
-          onPress: () => navigation.navigate('Anamnese' as never),
+          onPress: () => navigation.navigate('PersonalObjectives' as never),
         },
       ]);
     } catch (error) {
@@ -68,7 +68,7 @@ const LoginScreen: React.FC = () => {
       Alert.alert('Sucesso', `Login com ${provider} realizado com sucesso!`, [
         {
           text: 'OK',
-          onPress: () => navigation.navigate('Anamnese' as never),
+          onPress: () => navigation.navigate('PersonalObjectives' as never),
         },
       ]);
     } catch (error) {
