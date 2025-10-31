@@ -7,3 +7,4 @@ export { default as RegisterScreen } from './RegisterScreen';
 export { default as LoginScreen } from './LoginScreen';
 export { default as AnamneseScreen } from './AnamneseScreen';
 export { default as PersonalObjectivesScreen } from './PersonalObjectivesScreen';
+export { default as SelfAwarenessIntroScreen } from './SelfAwarenessIntroScreen';
