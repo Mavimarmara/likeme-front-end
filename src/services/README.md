@@ -1,12 +1,201 @@
-# Auth0 Integration
+# Integração Auth0 - Frontend e Backend
 
-Este projeto está configurado para usar Auth0 como provedor de autenticação, com comunicação direta para o backend `likeme-back-end`.
+Este documento descreve a integração do Auth0 entre o frontend (React Native/Expo) e o backend (Node.js).
+
+## Responsabilidades
+
+### Frontend (React Native/Expo)
+
+1. **Autenticação com Auth0**
+   - Autentica usuário com Auth0 (email/password ou social)
+   - Obtém tokens do Auth0: `accessToken`, `idToken`, `refreshToken`
+   - Gerencia refresh token quando necessário
+
+2. **Comunicação com Backend**
+   - Envia `idToken` do Auth0 para o backend validar
+   - Recebe token de sessão do backend
+   - Armazena token de sessão localmente (AsyncStorage)
+   - Usa token de sessão do backend para todas as requisições autenticadas
+
+3. **Gerenciamento de Sessão**
+   - Armazena token de sessão do backend
+   - Remove token ao fazer logout
+   - Detecta erros 401 e redireciona para login
+
+### Backend (Node.js)
+
+1. **Validação de Token Auth0**
+   - Recebe `idToken` do frontend
+   - Valida `idToken` com Auth0 (verifica assinatura e expiração)
+   - Extrai informações do usuário do token
+
+2. **Gerenciamento de Usuário**
+   - Cria ou atualiza usuário no banco de dados
+   - Associa usuário do Auth0 com registro local
+
+3. **Geração de Token de Sessão**
+   - Gera token JWT próprio para sessão do usuário
+   - Retorna token de sessão para o frontend
+   - Valida token de sessão em todas as requisições protegidas
+
+4. **Endpoints Necessários**
+   - `POST /api/auth/login` - Valida Auth0 token e retorna token de sessão
+   - `POST /api/auth/logout` - Invalida token de sessão (opcional)
+   - Todos os endpoints protegidos devem validar o token de sessão
+
+## Fluxo de Autenticação
+
+### 1. Login/Cadastro
+
+```
+Frontend                          Auth0                          Backend
+   |                                |                                |
+   |-- Login/Cadastro ------------->|                                |
+   |                                |                                |
+   |<-- accessToken, idToken -------|                                |
+   |                                |                                |
+   |-- idToken + user info -------->|                                |
+   |                                |                                |
+   |                                |-- Valida idToken ------------->|
+   |                                |                                |
+   |                                |<-- User info ------------------|
+   |                                |                                |
+   |                                |-- Cria/Atualiza usuário ----->|
+   |                                |                                |
+   |<-- Token de sessão ------------|-- Retorna token de sessão ---|
+   |                                |                                |
+   |-- Armazena token localmente    |                                |
+```
+
+### 2. Requisições Autenticadas
+
+```
+Frontend                          Backend
+   |                                |
+   |-- Requisição + token --------->|
+   |                                |
+   |                                |-- Valida token de sessão
+   |                                |
+   |<-- Resposta -------------------|
+```
+
+### 3. Logout
+
+```
+Frontend                          Auth0                          Backend
+   |                                |                                |
+   |-- Logout Auth0 -------------->|                                |
+   |                                |                                |
+   |-- Logout backend ------------->|                                |
+   |                                |                                |
+   |                                |-- Invalida token de sessão --->|
+   |                                |                                |
+   |-- Remove token local           |                                |
+```
+
+## Estrutura de Tokens
+
+### Auth0 Tokens (Frontend obtém do Auth0)
+
+- **accessToken**: Token de acesso do Auth0 (usado para chamar APIs do Auth0)
+- **idToken**: Token de identidade (JWT) contendo informações do usuário
+- **refreshToken**: Token para renovar accessToken
+
+### Token de Sessão (Backend retorna)
+
+- **token**: Token JWT gerado pelo backend
+- Contém informações da sessão do usuário
+- Usado para autenticar requisições ao backend
+
+## Endpoints do Backend
+
+### POST /api/auth/login
+
+**Request:**
+```json
+{
+  "idToken": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "email": "user@example.com",
+    "name": "John Doe",
+    "picture": "https://..."
+  }
+}
+```
+
+**Headers:**
+```
+Authorization: Bearer {idToken}
+Content-Type: application/json
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Login realizado com sucesso",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": "uuid",
+    "email": "user@example.com",
+    "name": "John Doe"
+  }
+}
+```
+
+### POST /api/auth/logout (opcional)
+
+**Headers:**
+```
+Authorization: Bearer {sessionToken}
+Content-Type: application/json
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Logout realizado com sucesso"
+}
+```
+
+## Implementação Frontend
+
+### AuthService
+
+```typescript
+// Login com Auth0
+const authResult = await AuthService.loginWithEmail({ email, password });
+
+// Enviar para backend e obter token de sessão
+const backendResponse = await AuthService.sendToBackend(authResult);
+// Token de sessão é automaticamente armazenado
+
+// Fazer requisições autenticadas
+const data = await apiClient.get('/api/personal-objectives');
+// Token de sessão é automaticamente incluído no header
+```
+
+### ApiClient
+
+Todas as requisições através do `apiClient` incluem automaticamente o token de sessão:
+
+```typescript
+// Token é automaticamente incluído no header Authorization
+const response = await apiClient.get('/api/personal-objectives');
+```
+
+## Segurança
+
+1. **idToken**: Enviado apenas uma vez para o backend validar
+2. **Token de Sessão**: Armazenado localmente, usado para todas as requisições
+3. **Refresh Token**: Mantido no Auth0, usado apenas para renovar accessToken
+4. **Validação**: Backend valida todos os tokens antes de processar requisições
+5. **Expiração**: Tokens têm tempo de expiração, backend deve retornar 401 quando expirado
 
 ## Configuração
 
-### 1. Variáveis de Ambiente
-
-Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
+### Variáveis de Ambiente (.env)
 
 ```env
 # Auth0 Configuration
@@ -15,80 +204,12 @@ EXPO_PUBLIC_AUTH0_CLIENT_ID=your-auth0-client-id
 EXPO_PUBLIC_AUTH0_AUDIENCE=your-api-identifier
 
 # Backend Configuration
-EXPO_PUBLIC_BACKEND_URL=https://your-backend-url.com
+EXPO_PUBLIC_BACKEND_URL=http://localhost:3000
 ```
 
-### 2. Configuração do Auth0
+### Backend
 
-No dashboard do Auth0, configure:
-
-- **Application Type**: Native
-- **Allowed Callback URLs**: `com.likeme://your-auth0-domain.auth0.com/callback`
-- **Allowed Logout URLs**: `com.likeme://your-auth0-domain.auth0.com/callback`
-- **Connections**: Habilite Database (Username-Password-Authentication) e Social (Facebook, Google, Apple)
-
-### 3. Configuração do Backend
-
-O backend deve ter um endpoint `/api/v1/auth/login` que recebe:
-
-```json
-{
-  "accessToken": "string",
-  "idToken": "string", 
-  "user": {
-    "email": "string",
-    "name": "string",
-    "picture": "string"
-  }
-}
-```
-
-## Funcionalidades Implementadas
-
-### AuthService
-
-- ✅ Login com email/senha
-- ✅ Cadastro com email/senha
-- ✅ Login social (Facebook, Google, Apple)
-- ✅ Logout
-- ✅ Refresh token
-- ✅ Comunicação com backend
-
-### Telas
-
-- ✅ **RegisterScreen**: Cadastro de novos usuários
-- ✅ **LoginScreen**: Login de usuários existentes
-- ✅ Validação de formulários
-- ✅ Loading states
-- ✅ Tratamento de erros
-
-## Fluxo de Autenticação
-
-1. **Cadastro**: Usuário preenche email/senha → Auth0 cria conta → Dados enviados para backend
-2. **Login**: Usuário preenche credenciais → Auth0 valida → Dados enviados para backend
-3. **Login Social**: Usuário escolhe provedor → Auth0 redireciona → Dados enviados para backend
-4. **Sucesso**: Usuário é direcionado para AnamneseScreen
-
-## Estrutura de Arquivos
-
-```
-src/
-├── services/
-│   ├── authService.ts      # Serviço principal do Auth0
-│   └── index.ts
-├── config/
-│   ├── environment.ts      # Configurações de ambiente
-│   └── index.ts
-└── screens/auth/
-    ├── RegisterScreen/     # Tela de cadastro
-    ├── LoginScreen/        # Tela de login
-    └── ...
-```
-
-## Próximos Passos
-
-1. Configurar as variáveis de ambiente com os valores reais
-2. Testar a integração com o backend
-3. Implementar persistência de sessão
-4. Adicionar tratamento de refresh token automático
-5. Implementar logout global
+O backend deve estar configurado para:
+- Validar tokens Auth0 usando a SDK do Auth0
+- Gerar tokens JWT próprios para sessão
+- Validar tokens de sessão em middleware de autenticação

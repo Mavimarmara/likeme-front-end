@@ -38,7 +38,12 @@ class AuthService {
         password: credentials.password,
         realm: 'Username-Password-Authentication',
         scope: 'openid profile email',
+        audience: AUTH0_CONFIG.audience,
       });
+
+      if (!result.idToken) {
+        throw new Error('Erro de configuração: idToken não foi retornado pelo Auth0. Verifique a configuração do audience.');
+      }
 
       const userInfo = await auth0.auth.userInfo({
         token: result.accessToken,
@@ -56,6 +61,9 @@ class AuthService {
       };
     } catch (error) {
       console.error('Login error:', error);
+      if (error instanceof Error && error.message.includes('idToken')) {
+        throw error;
+      }
       throw new Error('Falha no login. Verifique suas credenciais.');
     }
   }
@@ -85,7 +93,12 @@ class AuthService {
       const result = await auth0.webAuth.authorize({
         scope: 'openid profile email',
         connection: provider,
+        audience: AUTH0_CONFIG.audience,
       });
+
+      if (!result.idToken) {
+        throw new Error('Erro de configuração: idToken não foi retornado pelo Auth0. Verifique a configuração do audience.');
+      }
 
       const userInfo = await auth0.auth.userInfo({
         token: result.accessToken,
@@ -103,6 +116,9 @@ class AuthService {
       };
     } catch (error) {
       console.error(`${provider} login error:`, error);
+      if (error instanceof Error && error.message.includes('idToken')) {
+        throw error;
+      }
       throw new Error(`Falha no login com ${provider}.`);
     }
   }
@@ -121,34 +137,42 @@ class AuthService {
 
   async sendToBackend(authResult: AuthResult): Promise<any> {
     try {
-      // Usar getApiUrl para manter consistência, mas o endpoint pode ser /api/auth/login ou /api/v1/auth/login
       const response = await fetch(getApiUrl('/api/auth/login'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          accessToken: authResult.accessToken,
           idToken: authResult.idToken,
           user: authResult.user,
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Falha na comunicação com o backend');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Falha na comunicação com o backend');
       }
 
       const backendResponse = await response.json();
       
-      // Salvar token do backend se existir
-      if (backendResponse.token || backendResponse.accessToken || backendResponse.data?.token) {
-        const token = backendResponse.token || backendResponse.accessToken || backendResponse.data?.token;
-        await storageService.setToken(token);
+      const sessionToken = backendResponse.token 
+        || backendResponse.accessToken 
+        || backendResponse.data?.token
+        || backendResponse.data?.accessToken;
+      
+      if (sessionToken) {
+        await storageService.setToken(sessionToken);
+      } else {
+        console.warn('Backend não retornou token de sessão. Usando accessToken do Auth0.');
+        await storageService.setToken(authResult.accessToken);
       }
       
       return backendResponse;
     } catch (error) {
       console.error('Backend communication error:', error);
+      if (error instanceof Error) {
+        throw error;
+      }
       throw new Error('Falha na comunicação com o servidor.');
     }
   }
@@ -156,9 +180,26 @@ class AuthService {
   async logout(): Promise<void> {
     try {
       await auth0.webAuth.clearSession();
+      
+      try {
+        const token = await storageService.getToken();
+        if (token) {
+          await fetch(getApiUrl('/api/auth/logout'), {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+          }).catch(() => {});
+        }
+      } catch (error) {
+        console.warn('Erro ao fazer logout no backend:', error);
+      }
+      
       await storageService.removeToken();
     } catch (error) {
       console.error('Logout error:', error);
+      await storageService.removeToken();
     }
   }
 }

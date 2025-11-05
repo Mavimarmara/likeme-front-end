@@ -19,8 +19,8 @@ class ApiClient {
     this.baseUrl = BACKEND_CONFIG.baseUrl || 'http://localhost:3000';
   }
 
-  private async getHeaders(includeAuth = true): Promise<HeadersInit> {
-    const headers: HeadersInit = {
+  private async getHeaders(includeAuth = true): Promise<Record<string, string>> {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       'accept': '*/*',
     };
@@ -37,6 +37,11 @@ class ApiClient {
 
   private async handleResponse<T>(response: Response): Promise<T> {
     if (!response.ok) {
+      if (response.status === 401) {
+        await storageService.removeToken();
+        throw new Error('Sessão expirada. Faça login novamente.');
+      }
+
       const errorData = await response.json().catch(() => ({}));
       const error: ApiError = {
         message: errorData.message || `HTTP error! status: ${response.status}`,
@@ -52,7 +57,6 @@ class ApiClient {
     try {
       let url = `${this.baseUrl}${endpoint}`;
       
-      // Se o endpoint já começa com /api, não adicionar versão
       if (useVersion && !endpoint.startsWith('/api')) {
         url = `${this.baseUrl}/api/v1${endpoint}`;
       }
