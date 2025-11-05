@@ -65,5 +65,11 @@ export const styles = StyleSheet.create({
     paddingBottom: 0,
     paddingTop: 0,
   },
+  loadingContainer: {
+    width: '100%',
+    paddingVertical: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 

@@ -1,6 +1,7 @@
 import Auth0 from 'react-native-auth0';
 import { Alert } from 'react-native';
 import { AUTH0_CONFIG, getApiUrl } from '@/config';
+import storageService from './storageService';
 
 export interface AuthResult {
   accessToken: string;
@@ -106,14 +107,6 @@ class AuthService {
     }
   }
 
-  async logout(): Promise<void> {
-    try {
-      await auth0.webAuth.clearSession();
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  }
-
   async refreshToken(refreshToken: string): Promise<string> {
     try {
       const result = await auth0.auth.refreshToken({
@@ -145,10 +138,26 @@ class AuthService {
       }
 
       const backendResponse = await response.json();
+      
+      // Salvar token do backend se existir
+      if (backendResponse.token || backendResponse.accessToken || backendResponse.data?.token) {
+        const token = backendResponse.token || backendResponse.accessToken || backendResponse.data?.token;
+        await storageService.setToken(token);
+      }
+      
       return backendResponse;
     } catch (error) {
       console.error('Backend communication error:', error);
       throw new Error('Falha na comunicação com o servidor.');
+    }
+  }
+
+  async logout(): Promise<void> {
+    try {
+      await auth0.webAuth.clearSession();
+      await storageService.removeToken();
+    } catch (error) {
+      console.error('Logout error:', error);
     }
   }
 }

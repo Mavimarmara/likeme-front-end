@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import { UnauthenticatedScreen, LoadingScreen, WelcomeScreen, IntroScreen, AppPresentationScreen, RegisterScreen, LoginScreen, AnamneseScreen, PersonalObjectivesScreen, SelfAwarenessIntroScreen } from '@/screens/auth';
+import ErrorScreen from '@/screens/ErrorScreen';
 import MainTabNavigator from './MainTabNavigator';
 
 const Stack = createStackNavigator();
@@ -67,6 +68,11 @@ const RootNavigator: React.FC = () => {
                  component={SelfAwarenessIntroScreen}
                  options={{ title: 'Jornada de Autoconsciência' }}
                />
+        <Stack.Screen 
+          name="Error" 
+          component={ErrorScreen}
+          options={{ title: 'Erro' }}
+        />
         <Stack.Screen 
           name="Main" 
           component={MainTabNavigator}

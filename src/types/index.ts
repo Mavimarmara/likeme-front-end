@@ -103,3 +103,5 @@ export interface HealthProvider {
   avatar?: string;
   availableSlots: Date[];
 }
+
+export * from './personalObjectives';

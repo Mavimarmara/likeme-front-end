@@ -1,41 +1,55 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   ScrollView,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header, Title, Chip, PrimaryButton, SecondaryButton, ButtonGroup } from '@/components/ui';
 import { GradientSplash3 } from '@/assets';
+import { personalObjectivesService } from '@/services';
+import { PersonalObjective } from '@/types';
+import { showError } from '@/utils';
 import { styles } from './styles';
 
 type Props = { navigation: any; route: any };
 
-const OBJECTIVES = [
-  'Get to know me better',
-  'Improve my habits',
-  'Find wellbeing programs',
-  'Improve my sleep',
-  'Gain insights on my wellbeing',
-  'Eat better',
-  'Buy health products',
-  'Find a community',
-  'Track my treatment/program',
-  'Move more',
-  'Track my mood',
-];
-
 const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
   const userName = route.params?.userName || 'Usuário';
+  const [objectives, setObjectives] = useState<PersonalObjective[]>([]);
   const [selectedObjectives, setSelectedObjectives] = useState<Set<string>>(new Set());
+  const [loading, setLoading] = useState(true);
 
-  const toggleObjective = (objective: string) => {
+  useEffect(() => {
+    loadObjectives();
+  }, []);
+
+  const loadObjectives = async () => {
+    try {
+      setLoading(true);
+      const response = await personalObjectivesService.getPersonalObjectives({
+        page: 1,
+        limit: 100,
+      });
+      setObjectives(response.data.objectives);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar objetivos';
+      showError(navigation, errorMessage, () => {
+        loadObjectives();
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleObjective = (objectiveId: string) => {
     const newSelected = new Set(selectedObjectives);
-    if (newSelected.has(objective)) {
-      newSelected.delete(objective);
+    if (newSelected.has(objectiveId)) {
+      newSelected.delete(objectiveId);
     } else {
-      newSelected.add(objective);
+      newSelected.add(objectiveId);
     }
     setSelectedObjectives(newSelected);
   };
@@ -68,16 +82,22 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
             What are the main things we can help you with?
           </Text>
 
-          <View style={styles.chipsContainer}>
-            {OBJECTIVES.map((objective) => (
-              <Chip
-                key={objective}
-                label={objective}
-                selected={selectedObjectives.has(objective)}
-                onPress={() => toggleObjective(objective)}
-              />
-            ))}
-          </View>
+          {loading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#1E3A8A" />
+            </View>
+          ) : (
+            <View style={styles.chipsContainer}>
+              {objectives.map((objective) => (
+                <Chip
+                  key={objective.id}
+                  label={objective.name}
+                  selected={selectedObjectives.has(objective.id)}
+                  onPress={() => toggleObjective(objective.id)}
+                />
+              ))}
+            </View>
+          )}
         </View>
       </ScrollView>
 
