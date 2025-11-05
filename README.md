@@ -72,6 +72,8 @@ npm run ios
 yarn ios
 # ou
 npx expo start --reset-cache --clear --ios
+# ou
+npx expo start --reset-cache --clear --ios --tunnel
 ```
 
 **Android:**

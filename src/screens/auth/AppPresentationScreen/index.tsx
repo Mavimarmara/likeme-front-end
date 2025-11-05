@@ -49,17 +49,6 @@ const AppPresentationScreen: React.FC<Props> = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <Header onBackPress={handleBack} />
 
-      {currentPage === 0 && (
-        <View style={styles.topActions}>
-          <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
-            <Text style={styles.skipText}>Skip</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-            <Text style={styles.nextButtonText}>›</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-
       <ScrollView 
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
@@ -92,7 +81,6 @@ const AppPresentationScreen: React.FC<Props> = ({ navigation }) => {
       </ScrollView>
 
       <View style={styles.footer}>
-        {currentPage >= 1 && (
           <View style={styles.footerActions}>
             <TouchableOpacity 
               style={styles.skipButton}
@@ -107,7 +95,6 @@ const AppPresentationScreen: React.FC<Props> = ({ navigation }) => {
               <Text style={styles.nextButtonText}>›</Text>
             </TouchableOpacity>
           </View>
-        )}
       </View>
     </SafeAreaView>
   );
