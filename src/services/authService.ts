@@ -121,7 +121,8 @@ class AuthService {
 
   async sendToBackend(authResult: AuthResult): Promise<any> {
     try {
-      const response = await fetch(getApiUrl('/auth/login'), {
+      // Usar getApiUrl para manter consistência, mas o endpoint pode ser /api/auth/login ou /api/v1/auth/login
+      const response = await fetch(getApiUrl('/api/auth/login'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
