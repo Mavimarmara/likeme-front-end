@@ -4,10 +4,9 @@ import {
   Text,
   ScrollView,
   Image,
-  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Header, Title, Chip, PrimaryButton, SecondaryButton, ButtonGroup } from '@/components/ui';
+import { Header, Title, Chip, PrimaryButton, SecondaryButton, ButtonGroup, Loading } from '@/components/ui';
 import { GradientSplash3 } from '@/assets';
 import { personalObjectivesService } from '@/services';
 import { PersonalObjective } from '@/types';
@@ -83,9 +82,7 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
           </Text>
 
           {loading ? (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#1E3A8A" />
-            </View>
+            <Loading message="Carregando objetivos..." />
           ) : (
             <View style={styles.chipsContainer}>
               {objectives.map((objective) => (

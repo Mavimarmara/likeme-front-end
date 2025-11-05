@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import { UnauthenticatedScreen, LoadingScreen, WelcomeScreen, IntroScreen, AppPresentationScreen, RegisterScreen, LoginScreen, AnamneseScreen, PersonalObjectivesScreen, SelfAwarenessIntroScreen } from '@/screens/auth';
 import ErrorScreen from '@/screens/ErrorScreen';
+import AppLoadingScreen from '@/screens/LoadingScreen';
 import MainTabNavigator from './MainTabNavigator';
 
 const Stack = createStackNavigator();
@@ -72,6 +73,11 @@ const RootNavigator: React.FC = () => {
           name="Error" 
           component={ErrorScreen}
           options={{ title: 'Erro' }}
+        />
+        <Stack.Screen 
+          name="AppLoading" 
+          component={AppLoadingScreen}
+          options={{ title: 'Carregando' }}
         />
         <Stack.Screen 
           name="Main" 

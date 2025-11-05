@@ -46,3 +46,43 @@ export const showError = (
   } as never);
 };
 
+export interface LoadingNavigationParams {
+  loadingMessage?: string;
+}
+
+/**
+ * Navega para a tela de loading
+ * @param navigation - Objeto de navegação do React Navigation
+ * @param loadingMessage - Mensagem de loading a ser exibida
+ */
+export const navigateToLoading = (
+  navigation: any,
+  loadingMessage?: string
+) => {
+  navigation.dispatch(
+    CommonActions.reset({
+      index: 0,
+      routes: [
+        {
+          name: 'AppLoading',
+          params: {
+            loadingMessage: loadingMessage || 'Carregando...',
+          },
+        },
+      ],
+    })
+  );
+};
+
+/**
+ * Alternativa mais simples usando navigate
+ */
+export const showLoading = (
+  navigation: any,
+  loadingMessage?: string
+) => {
+  navigation.navigate('AppLoading' as never, {
+    loadingMessage: loadingMessage || 'Carregando...',
+  } as never);
+};
+
