@@ -13,9 +13,10 @@ import { styles } from './UnauthenticatedStep1.styles';
 interface UnauthenticatedStep1Props {
   onNext: () => void;
   onLogin: () => void;
+  isLoading?: boolean;
 }
 
-const UnauthenticatedStep1: React.FC<UnauthenticatedStep1Props> = ({ onNext, onLogin }) => {
+const UnauthenticatedStep1: React.FC<UnauthenticatedStep1Props> = ({ onNext, onLogin, isLoading = false }) => {
   const { width } = Dimensions.get('window');
   const slideLeft = useRef(new Animated.Value(0)).current;
   const slideRight = useRef(new Animated.Value(width * 0.5)).current;
@@ -55,8 +56,8 @@ const UnauthenticatedStep1: React.FC<UnauthenticatedStep1Props> = ({ onNext, onL
       
       <Animated.View style={[styles.buttonContainer, { opacity: buttonsOpacity }]}>
         <ButtonGroup>
-          <PrimaryButton label="Next" onPress={onNext} />
-          <SecondaryButton label="Login" onPress={onLogin} />
+          <PrimaryButton label="Next" onPress={onNext} disabled={isLoading} />
+          <SecondaryButton label="Login" onPress={onLogin} loading={isLoading} />
         </ButtonGroup>
       </Animated.View>
 

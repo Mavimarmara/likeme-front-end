@@ -13,7 +13,20 @@
     "jsEngine": "jsc",
     "sdkVersion": "54.0.0",
     "plugins": [
-      "expo-font"
-    ]
+      "expo-font",
+      [
+        "react-native-auth0",
+        {
+          "domain": "likeme.us.auth0.com"
+        }
+      ]
+    ],
+    "scheme": "likeme",
+    "android": {
+      "package": "com.likeme.app"
+    },
+    "ios": {
+      "bundleIdentifier": "com.likeme.app"
+    }
   }
 }

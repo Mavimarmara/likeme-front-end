@@ -7,7 +7,7 @@
     "esModuleInterop": true,
     "jsx": "react-jsx",
     "lib": ["es2017"],
-    "moduleResolution": "node",
+    "moduleResolution": "node10",
     "noEmit": true,
     "target": "esnext",
     "resolveJsonModule": true,
@@ -21,7 +21,7 @@
       "@/navigation/*": ["src/navigation/*"],
       "@/services/*": ["src/services/*"],
       "@/constants/*": ["src/constants/*"],
-      "@/types/*": ["types/*"]
+      "@/types/*": ["src/types/*"]
     }
   },
   "include": [

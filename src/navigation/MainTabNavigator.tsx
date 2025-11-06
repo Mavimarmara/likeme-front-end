@@ -10,6 +10,7 @@ import {
 } from '@/screens/wellness';
 import { MarketplaceScreen } from '@/screens/marketplace';
 import { CommunityScreen } from '@/screens/community';
+import { ProfileScreen } from '@/screens/profile';
 
 const Tab = createBottomTabNavigator();
 
@@ -38,6 +39,9 @@ const MainTabNavigator: React.FC = () => {
               break;
             case 'HealthProvider':
               iconName = 'local-hospital';
+              break;
+            case 'Profile':
+              iconName = 'person';
               break;
             default:
               iconName = 'help';
@@ -86,6 +90,11 @@ const MainTabNavigator: React.FC = () => {
         name="HealthProvider" 
         component={HealthProviderScreen}
         options={{ title: 'Provedor de Saúde' }}
+      />
+      <Tab.Screen 
+        name="Profile" 
+        component={ProfileScreen}
+        options={{ title: 'Perfil' }}
       />
     </Tab.Navigator>
   );

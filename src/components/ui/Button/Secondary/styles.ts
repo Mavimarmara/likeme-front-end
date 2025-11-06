@@ -24,6 +24,9 @@ export const styles = StyleSheet.create({
     lineHeight: 20,
     textAlign: 'center',
   },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
 });
 
 

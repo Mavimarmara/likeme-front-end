@@ -137,3 +137,12 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Expo
+.expo/
+.expo-shared/
+dist/
+
+# Android/iOS (gerados pelo expo prebuild)
+android/
+ios/

@@ -8,3 +8,4 @@ export { default as SecondaryButton } from './Button/Secondary';
 export { default as ButtonGroup } from './ButtonGroup';
 export { default as Chip } from './Chip';
 export { default as Loading } from './Loading';
+export { default as LogoutButton } from './LogoutButton';
