@@ -31,13 +31,15 @@ Um aplicativo React Native completo para saúde e bem-estar, com funcionalidades
 
 ## 🛠 Tecnologias Utilizadas
 
-- **Expo SDK 52**
-- **React Native 0.76.3**
+- **Expo SDK 54**
+- **React Native 0.81.5**
 - **React Navigation 6.x**
 - **React Native Paper** (UI Components)
 - **React Native Vector Icons**
 - **Expo Linear Gradient**
 - **TypeScript**
+- **EAS Build** (Builds nativos)
+- **Auth0** (Autenticação)
 
 ## 📦 Instalação
 
@@ -102,6 +104,9 @@ npx expo start --web
 3. Escaneie o QR code com o Expo Go (Android) ou Camera (iOS)
 
 ### Usando EAS Build (Para produção)
+
+#### Configuração Inicial
+
 ```bash
 # Instalar EAS CLI
 npm install -g @expo/eas-cli
@@ -111,12 +116,52 @@ eas login
 
 # Configurar build
 eas build:configure
+```
 
+#### Criar Builds
+
+```bash
 # Build para Android
+npm run build:android
+# ou
 eas build --platform android
 
 # Build para iOS
+npm run build:ios
+# ou
 eas build --platform ios
+
+# Build para ambas as plataformas
+npm run build:all
+# ou
+eas build --platform all
+```
+
+#### Submeter para Lojas
+
+```bash
+# Android (Google Play)
+npm run submit:android
+# ou
+eas submit --platform android
+
+# iOS (TestFlight)
+npm run submit:ios
+# ou
+eas submit --platform ios
+```
+
+#### Verificar Informações do Projeto
+
+```bash
+# Ver informações do projeto
+eas project:info
+
+# Ver builds
+eas build:list
+
+# Ver status de submissões
+eas submit:list
 ```
 
 ## 🏗 Estrutura do Projeto

@@ -23,10 +23,18 @@
     ],
     "scheme": "likeme",
     "android": {
-      "package": "com.likeme.app"
+      "package": "com.likeme.app",
+      "versionCode": 1
     },
     "ios": {
-      "bundleIdentifier": "com.likeme.app"
+      "bundleIdentifier": "com.likeme.app",
+      "buildNumber": "1"
+    },
+    "owner": "pixelpulselab",
+    "extra": {
+      "eas": {
+        "projectId": "53bbcaf5-ed26-4155-a37b-a0c938635855"
+      }
     }
   }
 }
