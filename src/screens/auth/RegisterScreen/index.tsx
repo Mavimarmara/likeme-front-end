@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -6,15 +6,18 @@ import {
   KeyboardAvoidingView,
   Platform,
   Image,
+  StatusBar,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Header, Title, TextInput, PrimaryButton, SecondaryButton, ButtonGroup } from '@/components/ui';
-import { GradientSplash3 } from '@/assets';
+import { GradientSplash5 } from '@/assets';
 import { styles } from './styles';
+import { COLORS } from '@/constants';
 
 type Props = { navigation: any; route: any };
 
 const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
+  const insets = useSafeAreaInsets();
   const [invitationCode, setInvitationCode] = useState('');
   const [fullName, setFullName] = useState(route.params?.userName || '');
   const [age, setAge] = useState('');
@@ -22,6 +25,16 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
   const [weight, setWeight] = useState('');
   const [height, setHeight] = useState('');
   const [insurance, setInsurance] = useState('');
+
+  const topSectionStyle = useMemo(
+    () => [
+      styles.topSection,
+      {
+        paddingTop: Math.max(insets.top, Platform.OS === 'android' ? 16 : 0),
+      },
+    ],
+    [insets.top]
+  );
 
   const handleNext = () => {
     navigation.navigate('PersonalObjectives' as never, { userName: fullName || route.params?.userName || 'Usuário' });
@@ -32,97 +45,105 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        style={styles.keyboardAvoidingView}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      >
-        <Header onBackPress={() => navigation.goBack()} />
+    <SafeAreaView style={styles.safeArea} edges={['bottom', 'left', 'right']}>
+      <StatusBar barStyle="dark-content" backgroundColor={COLORS.BACKGROUND_SECONDARY} />
 
-        <ScrollView 
-          style={styles.scrollView}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContent}
+      <View style={styles.container}>
+        <KeyboardAvoidingView
+          style={styles.keyboardAvoidingView}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-          <View style={styles.content}>
-            <Title
-              title="Let's start,"
-              variant="large"
-              rightAdornment={<Image source={GradientSplash3} style={styles.titleAdornment} resizeMode="cover" />}
-            />
+          <ScrollView
+            style={styles.scrollView}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContent}
+          >
+            <View style={topSectionStyle}>
+              <Header onBackPress={() => navigation.goBack()} />
 
-            <View style={styles.invitationSection}>
-              <Text style={styles.invitationQuestion}>Did you come from a provider's invitation?</Text>
-              <TextInput
-                label="Enter code"
-                value={invitationCode}
-                onChangeText={setInvitationCode}
-                placeholder="Code"
-              />
-            </View>
-
-            <View style={styles.infoSection}>
-              <Text style={styles.infoText}>
-                For us to be able to personalize your experience, we need some more information.
-              </Text>
-
-              <View style={styles.fieldsContainer}>
-                <TextInput
-                  label="Full Name"
-                  value={fullName}
-                  onChangeText={setFullName}
-                  placeholder="Full Name"
+              <View style={styles.headerContent}>
+                <Title
+                  title="Let's start,"
+                  variant="large"
+                  rightAdornment={<Image source={GradientSplash5} style={styles.titleAdornment} resizeMode="cover" />}
                 />
 
-                <TextInput
-                  label="Age"
-                  value={age}
-                  onChangeText={setAge}
-                  placeholder="Age"
-                  keyboardType="numeric"
-                />
-
-                <TextInput
-                  label="Gender"
-                  value={gender}
-                  onChangeText={setGender}
-                  placeholder="Gender"
-                />
-
-                <TextInput
-                  label="Weight"
-                  value={weight}
-                  onChangeText={setWeight}
-                  placeholder="Weight"
-                  keyboardType="numeric"
-                />
-
-                <TextInput
-                  label="Height"
-                  value={height}
-                  onChangeText={setHeight}
-                  placeholder="Height"
-                  keyboardType="numeric"
-                />
-
-                <TextInput
-                  label="Insurance"
-                  value={insurance}
-                  onChangeText={setInsurance}
-                  placeholder="Insurance"
-                />
+                <View style={styles.invitationSection}>
+                  <Text style={styles.invitationQuestion}>Did you come from a provider's invitation?</Text>
+                  <TextInput
+                    label="Enter code"
+                    value={invitationCode}
+                    onChangeText={setInvitationCode}
+                    placeholder="Code"
+                  />
+                </View>
               </View>
             </View>
-          </View>
-        </ScrollView>
 
-        <View style={styles.footer}>
-          <ButtonGroup style={styles.buttonGroup}>
-            <PrimaryButton label="Next" onPress={handleNext} />
-            <SecondaryButton label="Skip information" onPress={handleSkip} />
-          </ButtonGroup>
-        </View>
-      </KeyboardAvoidingView>
+            <View style={styles.content}>
+              <View style={styles.infoSection}>
+                <Text style={styles.infoText}>
+                  For us to be able to personalize your experience, we need some more information.
+                </Text>
+
+                <View style={styles.fieldsContainer}>
+                  <TextInput
+                    label="Full Name"
+                    value={fullName}
+                    onChangeText={setFullName}
+                    placeholder="Full Name"
+                  />
+
+                  <TextInput
+                    label="Age"
+                    value={age}
+                    onChangeText={setAge}
+                    placeholder="Age"
+                    keyboardType="numeric"
+                  />
+
+                  <TextInput
+                    label="Gender"
+                    value={gender}
+                    onChangeText={setGender}
+                    placeholder="Gender"
+                  />
+
+                  <TextInput
+                    label="Weight"
+                    value={weight}
+                    onChangeText={setWeight}
+                    placeholder="Weight"
+                    keyboardType="numeric"
+                  />
+
+                  <TextInput
+                    label="Height"
+                    value={height}
+                    onChangeText={setHeight}
+                    placeholder="Height"
+                    keyboardType="numeric"
+                  />
+
+                  <TextInput
+                    label="Insurance"
+                    value={insurance}
+                    onChangeText={setInsurance}
+                    placeholder="Insurance"
+                  />
+                </View>
+              </View>
+            </View>
+          </ScrollView>
+
+          <View style={styles.footer}>
+            <ButtonGroup style={styles.buttonGroup}>
+              <PrimaryButton label="Next" onPress={handleNext} />
+              <SecondaryButton label="Skip information" onPress={handleSkip} />
+            </ButtonGroup>
+          </View>
+        </KeyboardAvoidingView>
+      </View>
     </SafeAreaView>
   );
 };

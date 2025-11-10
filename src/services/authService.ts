@@ -39,17 +39,18 @@ class AuthService {
     const projectNameForProxy = this.getProjectNameForProxy();
 
     if (AUTH_CONFIG.useAuthProxy) {
-      if (AUTH_CONFIG.proxyUrl) {
-        return AUTH_CONFIG.proxyUrl;
-      }
+      const proxyOptions: AuthSession.AuthSessionRedirectUriOptions & {
+        useProxy?: boolean;
+        projectNameForProxy?: string;
+      } = {
+        useProxy: true,
+      };
 
       if (projectNameForProxy) {
-        return `https://auth.expo.dev/${projectNameForProxy}`;
+        proxyOptions.projectNameForProxy = projectNameForProxy;
       }
 
-      console.warn(
-        '[Auth] Proxy habilitado, mas não foi possível resolver o project name. Retornando URI padrão.'
-      );
+      return AuthSession.makeRedirectUri(proxyOptions as any);
     }
 
     return AuthSession.makeRedirectUri({

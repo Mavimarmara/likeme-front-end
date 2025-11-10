@@ -4,7 +4,7 @@ import { SPACING, COLORS } from '@/constants';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f4f3ec',
+    backgroundColor: COLORS.BACKGROUND,
   },
   content: {
     flex: 1,

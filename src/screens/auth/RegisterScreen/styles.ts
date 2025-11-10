@@ -1,12 +1,16 @@
 import { StyleSheet, Dimensions } from 'react-native';
-import { SPACING } from '@/constants';
+import { COLORS, SPACING } from '@/constants';
 
 const { width } = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: COLORS.BACKGROUND_SECONDARY,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#f4f3ec',
+    backgroundColor: COLORS.BACKGROUND,
   },
   keyboardAvoidingView: {
     flex: 1,
@@ -15,25 +19,39 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 120,
+    paddingBottom: 170,
   },
-  content: {
-    alignItems: 'flex-start',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 40,
-    position: 'relative',
-    width: 362,
-    alignSelf: 'center',
-    paddingTop: 60,
-    paddingHorizontal: SPACING.LG,
+  topSection: {
+    width: '100%',
+    backgroundColor: COLORS.BACKGROUND_SECONDARY,
+    borderBottomLeftRadius: 64,
+    borderBottomRightRadius: 64,
+    overflow: 'hidden',
+    paddingHorizontal: SPACING.XS,
+  },
+  headerContent: {
+    width: '100%',
+    paddingBottom: SPACING.XL,
+    paddingHorizontal: SPACING.MD,
+    gap: 24,
+    marginTop: 31,
   },
   titleAdornment: {
     justifyContent: 'center',
     width: '100%',
     height: '100%',
-    transform: [{ scale: 1.3 }],
+    transform: [{ scale: 1.0 }],
     marginBottom: 5,
+  },
+  content: {
+    alignItems: 'stretch',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 32,
+    width: '100%',
+    paddingHorizontal: SPACING.MD,
+    paddingTop: SPACING.XL,
+    paddingBottom: SPACING.LG,
   },
   invitationSection: {
     width: '100%',
@@ -56,6 +74,7 @@ export const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     gap: 16,
+    paddingHorizontal: SPACING.XS,
   },
   infoText: {
     color: 'rgba(0, 17, 55, 1)',

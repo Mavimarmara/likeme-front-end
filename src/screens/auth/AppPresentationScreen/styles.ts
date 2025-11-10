@@ -6,7 +6,7 @@ const { width, height } = Dimensions.get('window');
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5DC',
+    backgroundColor: COLORS.BACKGROUND,
   },
   
 
@@ -71,8 +71,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
     paddingHorizontal: SPACING.LG,
-    paddingVertical: SPACING.LG,
-    backgroundColor: '#F5F5DC',
+    paddingVertical: SPACING.LG
   },
   footerActions: {
     flexDirection: 'row',

@@ -4,7 +4,7 @@ import { COLORS, FONT_SIZES, SPACING, BORDER_RADIUS } from '@/constants';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5DC', // Bege claro como na imagem
+    backgroundColor: COLORS.BACKGROUND,
   },
   
 

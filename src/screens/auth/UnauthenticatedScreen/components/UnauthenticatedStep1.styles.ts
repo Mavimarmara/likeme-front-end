@@ -1,10 +1,11 @@
+import { COLORS } from '@/constants';
 import { StyleSheet, Dimensions } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#f4f3ec',
+    backgroundColor: COLORS.BACKGROUND,
     height: 852,
     minWidth: 393,
     position: 'relative',
