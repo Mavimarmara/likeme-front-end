@@ -1,13 +1,17 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   View,
   Text,
   Animated,
   Dimensions,
+  Image,
+  ImageStyle,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { PartialLogo, GradientSplash } from '@/assets';
-import { styles } from './styles';
+import { PartialLogo, GradientSplash7, GradientSplash8, GradientSplash9 } from '@/assets';
+import { styles, GRADIENT_STRIP_HEIGHT, GRADIENT_STRIP_WIDTH } from './styles';
+const AnimatedImage = Animated.createAnimatedComponent(Image);
+const GRADIENT_SOURCES = [GradientSplash7, GradientSplash8, GradientSplash9];
 
 const { height } = Dimensions.get('window');
 
@@ -20,6 +24,39 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
   const [step, setStep] = useState(0);
 
   const TAGLINES = ['YOUR RHYTHM', 'YOUR JOURNEY', 'YOUR ROUTINE'];
+
+  const gradientAssets = useMemo(
+    () => GRADIENT_SOURCES.map((source) => Image.resolveAssetSource(source)),
+    []
+  );
+
+  const gradientHeights = useMemo(
+    () =>
+      gradientAssets.map((asset) => {
+        if (!asset) {
+          return GRADIENT_STRIP_HEIGHT;
+        }
+        const scale = asset.width ? GRADIENT_STRIP_WIDTH / asset.width : 1;
+        const originalHeight = asset.height ?? GRADIENT_STRIP_HEIGHT;
+        return originalHeight * scale;
+      }),
+    [gradientAssets]
+  );
+
+  const cumulativeOffsets = useMemo(() => {
+    const offsets: number[] = [];
+    let sum = 0;
+    gradientHeights.forEach((heightValue, index) => {
+      sum += heightValue;
+      offsets[index] = -sum;
+    });
+    return offsets;
+  }, [gradientHeights]);
+
+  const totalGradientHeight = useMemo(
+    () => gradientHeights.reduce((acc, heightValue) => acc + heightValue, 0),
+    [gradientHeights]
+  );
 
   useEffect(() => {
     const run = async () => {
@@ -39,14 +76,19 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
       await timing(fadeAnim, 1, 300);
       await delay(300);
 
+      const firstOffset = cumulativeOffsets[0] ?? -GRADIENT_STRIP_HEIGHT;
+
       await Promise.all([
-        timing(scrollAnim, -height / 3, 1200),
+        timing(scrollAnim, firstOffset, 1200),
         fadeTagToStep(1, 160, 1040),
       ]);
       await delay(240);
 
+      const secondOffset =
+        cumulativeOffsets[1] ?? cumulativeOffsets[0] ?? -GRADIENT_STRIP_HEIGHT;
+
       await Promise.all([
-        timing(scrollAnim, (-height * 2) / 3, 1200),
+        timing(scrollAnim, secondOffset, 1200),
         fadeTagToStep(2, 160, 1040),
       ]);
 
@@ -67,12 +109,30 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
               styles.scrollContainer,
               {
                 transform: [{ translateY: scrollAnim }],
+                height:
+                  totalGradientHeight || GRADIENT_STRIP_HEIGHT * GRADIENT_SOURCES.length,
               },
             ]}
           >
-                  <GradientSplash style={styles.gradientImage} />
-                  <GradientSplash style={styles.gradientImage} />
-                  <GradientSplash style={styles.gradientImage} />
+            {GRADIENT_SOURCES.map((source, index) => {
+              const asset = Image.resolveAssetSource(source);
+              const scale = asset.width ? GRADIENT_STRIP_WIDTH / asset.width : 1;
+              const heightScaled =
+                gradientHeights[index] ??
+                (asset.height ? asset.height * scale : GRADIENT_STRIP_HEIGHT);
+              const combinedStyle: ImageStyle = {
+                width: GRADIENT_STRIP_WIDTH,
+                height: heightScaled,
+              };
+              return (
+                <AnimatedImage
+                  key={index}
+                  source={source}
+                  style={combinedStyle}
+                  resizeMode="cover"
+                />
+              );
+            })}
           </Animated.View>
         </View>
 

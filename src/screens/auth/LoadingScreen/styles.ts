@@ -1,6 +1,9 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, ImageStyle } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
+
+export const GRADIENT_STRIP_WIDTH = 176;
+export const GRADIENT_STRIP_HEIGHT = 866;
 
 export const styles = StyleSheet.create({
   container: {
@@ -16,19 +19,14 @@ export const styles = StyleSheet.create({
   },
   gradientEffect: {
     height: 247,
-    left: (width - 176) / 2,
+    left: (width - GRADIENT_STRIP_WIDTH) / 2,
     position: 'absolute',
     top: height * 0.4 - 225,
-    width: 176,
+    width: GRADIENT_STRIP_WIDTH,
     overflow: 'hidden',
   },
   scrollContainer: {
     flexDirection: 'column',
-    height: 866 * 3,
-  },
-  gradientImage: {
-    height: 866,
-    width: 176,
   },
   like: {
     height: 54,

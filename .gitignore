@@ -146,3 +146,4 @@ dist/
 # Android/iOS (gerados pelo expo prebuild)
 android/
 ios/
+devices.json
