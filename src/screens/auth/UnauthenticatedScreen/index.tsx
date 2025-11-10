@@ -22,7 +22,7 @@ const UnauthenticatedScreen: React.FC<Props> = ({ navigation }) => {
       const authResult = await AuthService.login();
       await AuthService.sendToBackend(authResult);
       
-      navigation.navigate('PersonalObjectives' as never, {
+      navigation.navigate('Register' as never, {
         userName: authResult.user.name || authResult.user.email,
       } as never);
     } catch (error) {

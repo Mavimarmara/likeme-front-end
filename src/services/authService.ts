@@ -1,7 +1,8 @@
 import * as AuthSession from 'expo-auth-session';
+import Constants from 'expo-constants';
 import * as Crypto from 'expo-crypto';
 import { Alert } from 'react-native';
-import { AUTH0_CONFIG, getApiUrl } from '@/config';
+import { AUTH0_CONFIG, AUTH_CONFIG, getApiUrl } from '@/config';
 import storageService from './storageService';
 
 export interface AuthResult {
@@ -35,7 +36,26 @@ class AuthService {
   }
 
   private getRedirectUri(): string {
-    return AuthSession.makeRedirectUri();
+    const projectNameForProxy = this.getProjectNameForProxy();
+
+    if (AUTH_CONFIG.useAuthProxy) {
+      if (AUTH_CONFIG.proxyUrl) {
+        return AUTH_CONFIG.proxyUrl;
+      }
+
+      if (projectNameForProxy) {
+        return `https://auth.expo.dev/${projectNameForProxy}`;
+      }
+
+      console.warn(
+        '[Auth] Proxy habilitado, mas não foi possível resolver o project name. Retornando URI padrão.'
+      );
+    }
+
+    return AuthSession.makeRedirectUri({
+      scheme: AUTH_CONFIG.scheme,
+      path: AUTH_CONFIG.redirectPath,
+    });
   }
 
   async login(): Promise<AuthResult> {
@@ -65,16 +85,26 @@ class AuthService {
 
       console.log('Discovery successful');
 
+      const redirectUri = this.getRedirectUri();
+      const projectNameForProxy = this.getProjectNameForProxy();
+      console.log('Auth config useAuthProxy:', AUTH_CONFIG.useAuthProxy);
+      console.log('Auth redirect URI resolved:', redirectUri);
+      if (projectNameForProxy) {
+        console.log('Auth project name for proxy:', projectNameForProxy);
+      }
+
       const request = new AuthSession.AuthRequest({
         clientId: AUTH0_CONFIG.clientId,
         scopes: ['openid', 'profile', 'email'],
         responseType: AuthSession.ResponseType.Code,
-        redirectUri: this.getRedirectUri(),
+        redirectUri,
         usePKCE: true,
         extraParams: AUTH0_CONFIG.audience && AUTH0_CONFIG.audience !== 'your-api-identifier' 
           ? { audience: AUTH0_CONFIG.audience }
           : {},
       });
+      
+      console.log('Auth request redirect URI:', request.redirectUri);
 
       console.log('Prompting for authentication...');
       const result = await request.promptAsync(discovery);
@@ -194,6 +224,31 @@ class AuthService {
       }
       throw new Error('Erro desconhecido durante o login');
     }
+  }
+
+  private getProjectNameForProxy(): string | undefined {
+    if (AUTH_CONFIG.projectNameForProxy) {
+      return AUTH_CONFIG.projectNameForProxy;
+    }
+
+    const expoConfig = Constants.expoConfig;
+    if (!expoConfig) {
+      return undefined;
+    }
+
+    if (expoConfig.originalFullName) {
+      return expoConfig.originalFullName;
+    }
+
+    if (expoConfig.owner && expoConfig.slug) {
+      return `@${expoConfig.owner}/${expoConfig.slug}`;
+    }
+
+    if (expoConfig.slug) {
+      return expoConfig.slug;
+    }
+
+    return undefined;
   }
 
   async refreshToken(refreshToken: string): Promise<string> {
