@@ -1,6 +1,9 @@
+import { ImageSourcePropType } from 'react-native';
+import { Presentation1, Presentation2, Presentation3 } from '@/assets';
+
 export interface PresentationPage {
   id: string;
-  image: string;
+  image: ImageSourcePropType;
   title: string;
   description: string;
   order: number;
@@ -9,7 +12,7 @@ export interface PresentationPage {
 export const PRESENTATION_PAGES: PresentationPage[] = [
   {
     id: '1',
-    image: 'https://via.placeholder.com/300x400/4CAF50/FFFFFF?text=Health+Tracking',
+    image: Presentation1,
     title: 'So many tips and apps... and self care still feels confusing?',
     description:
       'Here, everything that matters is in one place - from health trackers, to wellbeing programs and a curated marketplace.',
@@ -17,18 +20,18 @@ export const PRESENTATION_PAGES: PresentationPage[] = [
   },
   {
     id: '2',
-    image: 'https://via.placeholder.com/300x400/FF9800/FFFFFF?text=Wellness+Programs',
-    title: 'Personalized wellness programs',
+    image: Presentation2,
+    title: 'Here, you’re the main character, so we start by exploring your lifestyle!',
     description:
-      'Get customized health plans based on your goals, preferences, and medical history.',
+      'Your body and mind and have unique markers. Each data shared or question answered helps us track them and guide you on what comes next.',
     order: 2,
   },
   {
     id: '3',
-    image: 'https://via.placeholder.com/300x400/2196F3/FFFFFF?text=Health+Community',
-    title: 'Connect with health professionals',
+    image: Presentation3,
+    title: 'No pressure. There’s no magic formula. There’s your way.',
     description:
-      'Access qualified doctors, nutritionists, and wellness coaches in our curated marketplace.',
+      'We can track your habits, suggest self care programs, help you with health products refill and so much more... here, you call the shots.',
     order: 3,
   },
 ];

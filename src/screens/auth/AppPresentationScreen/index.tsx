@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -8,11 +8,11 @@ import {
   Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { } from '@react-navigation/native';
 import { Header } from '@/components/ui';
 import { PRESENTATION_PAGES } from '@/constants/presentation';
 import { styles } from './styles';
 import { COLORS, FONT_SIZES, SPACING, BORDER_RADIUS } from '@/constants';
+import { AuthService } from '@/services';
 
 const { width } = Dimensions.get('window');
 
@@ -20,19 +20,33 @@ type Props = { navigation: any };
 
 const AppPresentationScreen: React.FC<Props> = ({ navigation }) => {
   const [currentPage, setCurrentPage] = useState(0);
-  
-  const pages = PRESENTATION_PAGES;
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
+
+  const pages = useMemo(() => PRESENTATION_PAGES, []);
+
+  const startAuthFlow = useCallback(async () => {
+    if (isAuthenticating) {
+      return;
+    }
+    setIsAuthenticating(true);
+    try {
+      await AuthService.login();
+    } catch (error) {
+      console.error('Presentation login error:', error);
+      setIsAuthenticating(false);
+    }
+  }, [isAuthenticating]);
 
   const handleNext = () => {
     if (currentPage < pages.length - 1) {
       setCurrentPage(currentPage + 1);
     } else {
-      navigation.navigate('Register' as never);
+      startAuthFlow();
     }
   };
 
   const handleSkip = () => {
-    navigation.navigate('Register' as never);
+    startAuthFlow();
   };
 
   const handleBack = () => {
@@ -56,22 +70,21 @@ const AppPresentationScreen: React.FC<Props> = ({ navigation }) => {
       >
         <View style={styles.imageContainer}>
           <Image 
-            source={{ uri: currentPageData.image }}
+            source={currentPageData.image}
             style={styles.image}
             resizeMode="cover"
           />
-        </View>
-
-        <View style={styles.pagination}>
-          {pages.map((_, index) => (
-            <View
-              key={index}
-              style={[
-                styles.dot,
-                index === currentPage ? styles.activeDot : styles.inactiveDot,
-              ]}
-            />
-          ))}
+          <View style={[styles.pagination, styles.paginationAligned]}>
+            {pages.map((_, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.dot,
+                  index === currentPage ? styles.activeDot : styles.inactiveDot,
+                ]}
+              />
+            ))}
+          </View>
         </View>
 
         <View style={styles.content}>
@@ -83,14 +96,22 @@ const AppPresentationScreen: React.FC<Props> = ({ navigation }) => {
       <View style={styles.footer}>
           <View style={styles.footerActions}>
             <TouchableOpacity 
-              style={styles.skipButton}
+              style={[
+                styles.skipButton,
+                isAuthenticating && styles.skipButtonDisabled,
+              ]}
               onPress={handleSkip}
+              disabled={isAuthenticating}
             >
               <Text style={styles.skipText}>Skip</Text>
             </TouchableOpacity>
             <TouchableOpacity 
-              style={styles.nextButton}
+              style={[
+                styles.nextButton,
+                isAuthenticating && styles.nextButtonDisabled,
+              ]}
               onPress={handleNext}
+              disabled={isAuthenticating}
             >
               <Text style={styles.nextButtonText}>›</Text>
             </TouchableOpacity>

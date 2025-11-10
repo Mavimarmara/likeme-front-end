@@ -39,7 +39,7 @@ export const FONT_SIZES = {
   SM: 14,
   MD: 16,
   LG: 18,
-  XL: 24,
+  XL: 20,
   XXL: 32,
   XXXL: 36,
 } as const;

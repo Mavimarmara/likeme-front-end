@@ -9,7 +9,6 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.BACKGROUND,
   },
   
-
   scrollView: {
     flex: 1,
   },
@@ -19,20 +18,30 @@ export const styles = StyleSheet.create({
 
   imageContainer: {
     alignItems: 'center',
-    paddingHorizontal: SPACING.LG,
-    paddingTop: SPACING.LG,
+    paddingHorizontal: SPACING.MD,
+    paddingTop: SPACING.XL,
+    position: 'relative',
   },
   image: {
-    width: width * 0.8,
-    height: height * 0.4,
+    width: width - SPACING.MD * 2,
+    height: height * 0.55,
     borderRadius: BORDER_RADIUS.LG,
+    marginBottom: SPACING.XS,
   },
 
   pagination: {
+    position: 'absolute',
+    top: 0,
+    left: SPACING.MD,
+    right: SPACING.MD,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: SPACING.MD,
+    paddingVertical: SPACING.XS,
+    pointerEvents: 'none',
+  },
+  paginationAligned: {
+    height: height * 1.12,
   },
   dot: {
     width: 8,
@@ -48,21 +57,23 @@ export const styles = StyleSheet.create({
   },
 
   content: {
-    paddingHorizontal: SPACING.LG,
-    paddingVertical: SPACING.LG,
+    paddingHorizontal: SPACING.MD,
+    paddingVertical: SPACING.MD,
+    flexGrow: 1,
+    justifyContent: 'center',
   },
   title: {
     fontSize: FONT_SIZES.XL,
-    fontWeight: 'bold',
+    fontWeight: '500',
     color: COLORS.TEXT,
-    textAlign: 'center',
+    textAlign: 'left',
     marginBottom: SPACING.MD,
-    lineHeight: 32,
+    lineHeight: 20,
   },
   description: {
-    fontSize: FONT_SIZES.MD,
+    fontSize: FONT_SIZES.SM,
     color: COLORS.TEXT,
-    textAlign: 'center',
+    textAlign: 'left',
     lineHeight: 24,
   },
 
@@ -70,7 +81,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    paddingHorizontal: SPACING.LG,
+    paddingHorizontal: SPACING.MD,
     paddingVertical: SPACING.LG
   },
   footerActions: {
@@ -81,6 +92,9 @@ export const styles = StyleSheet.create({
   skipButton: {
     paddingVertical: SPACING.SM,
     paddingHorizontal: SPACING.MD,
+  },
+  skipButtonDisabled: {
+    opacity: 0.5,
   },
   skipText: {
     fontSize: FONT_SIZES.MD,
@@ -99,6 +113,9 @@ export const styles = StyleSheet.create({
     fontSize: 24,
     color: COLORS.WHITE,
     fontWeight: 'bold',
+  },
+  nextButtonDisabled: {
+    opacity: 0.6,
   },
   topActions: {
     position: 'absolute',
