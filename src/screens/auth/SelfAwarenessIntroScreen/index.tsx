@@ -21,7 +21,7 @@ const SelfAwarenessIntroScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <Header onBackPress={() => navigation.goBack()} />
-
+      {/*TODO: Adicionar tela quando houver as perguntas*/}
       <View style={styles.content}>
         <View style={styles.textContainer}>
           <Text style={styles.title}>

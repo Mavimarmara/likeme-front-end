@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, TouchableOpacity } from 'react-native';
-import { RightArrow, LogoMini } from '@/assets';
+import { View, TouchableOpacity, ImageBackground } from 'react-native';
+import { LogoMini, BackgroundIconButton } from '@/assets';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { styles } from './styles';
 
 interface HeaderProps {
@@ -20,7 +21,13 @@ const Header: React.FC<HeaderProps> = ({
           onPress={onBackPress}
           activeOpacity={0.7}
         >
-          <RightArrow width={24} height={24} />
+          <ImageBackground
+            source={BackgroundIconButton}
+            style={styles.backButtonBackground}
+            imageStyle={styles.backButtonImage}
+          >
+            <Icon name="chevron-left" size={18} color="#0F1B33" />
+          </ImageBackground>
         </TouchableOpacity>
       )}
       <LogoMini width={87} height={16} />

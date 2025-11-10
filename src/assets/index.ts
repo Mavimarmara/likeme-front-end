@@ -19,3 +19,4 @@ export const GradientSplash9 = require('../../assets/GradientSplash9.png');
 export const Presentation1 = require('../../assets/Presentation1.png');
 export const Presentation2 = require('../../assets/Presentation2.png');
 export const Presentation3 = require('../../assets/Presentation3.png');
+export const BackgroundIconButton = require('../../assets/BackgroundIconButton.png');

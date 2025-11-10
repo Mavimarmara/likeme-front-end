@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '@/components/ui';
@@ -30,12 +31,28 @@ const AppPresentationScreen: React.FC<Props> = ({ navigation }) => {
     }
     setIsAuthenticating(true);
     try {
-      await AuthService.login();
+      const authResult = await AuthService.login();
+      await AuthService.sendToBackend(authResult);
+      navigation.navigate(
+        'Register' as never,
+        {
+          userName: authResult.user.name || authResult.user.email,
+        } as never
+      );
     } catch (error) {
       console.error('Presentation login error:', error);
+      if (error instanceof Error && error.message.includes('cancel')) {
+        // Usuário cancelou; apenas reabilita os botões
+        setIsAuthenticating(false);
+        return;
+      }
+      Alert.alert(
+        'Erro ao autenticar',
+        error instanceof Error ? error.message : 'Não foi possível iniciar o login.'
+      );
       setIsAuthenticating(false);
     }
-  }, [isAuthenticating]);
+  }, [isAuthenticating, navigation]);
 
   const handleNext = () => {
     if (currentPage < pages.length - 1) {

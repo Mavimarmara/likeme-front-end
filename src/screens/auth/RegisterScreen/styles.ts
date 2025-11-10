@@ -27,7 +27,6 @@ export const styles = StyleSheet.create({
     borderBottomLeftRadius: 64,
     borderBottomRightRadius: 64,
     overflow: 'hidden',
-    paddingHorizontal: SPACING.MD,
   },
   headerContent: {
     width: '100%',

@@ -19,6 +19,7 @@ const AnamneseScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <Header onBackPress={() => navigation.goBack()} />
+      {/*TODO: Adicionar tela quando houver as perguntas*/}
       <View style={styles.content}>
         <Text style={styles.title}>Anamnese</Text>
         <Text style={styles.subtitle}>Questionário de saúde personalizado</Text>

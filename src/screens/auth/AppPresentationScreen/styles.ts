@@ -82,7 +82,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
     paddingHorizontal: SPACING.MD,
-    paddingVertical: SPACING.LG
+    paddingVertical: SPACING.MD
   },
   footerActions: {
     flexDirection: 'row',
