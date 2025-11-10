@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { ImageStyle, StyleSheet, Dimensions } from 'react-native';
 import { COLORS, SPACING } from '@/constants';
 
 const { width } = Dimensions.get('window');
@@ -27,7 +27,7 @@ export const styles = StyleSheet.create({
     borderBottomLeftRadius: 64,
     borderBottomRightRadius: 64,
     overflow: 'hidden',
-    paddingHorizontal: SPACING.XS,
+    paddingHorizontal: SPACING.MD,
   },
   headerContent: {
     width: '100%',
@@ -37,12 +37,8 @@ export const styles = StyleSheet.create({
     marginTop: 31,
   },
   titleAdornment: {
-    justifyContent: 'center',
-    width: '100%',
-    height: '100%',
-    transform: [{ scale: 1.0 }],
-    marginBottom: 5,
-  },
+    position: 'absolute',
+  } as ImageStyle,
   content: {
     alignItems: 'stretch',
     display: 'flex',

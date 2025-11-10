@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
   ScrollView,
   Image,
+  useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header, Title, Chip, PrimaryButton, SecondaryButton, ButtonGroup, Loading } from '@/components/ui';
-import { GradientSplash3 } from '@/assets';
+import { GradientSplash6 } from '@/assets';
 import { personalObjectivesService } from '@/services';
 import { PersonalObjective } from '@/types';
 import { showError } from '@/utils';
@@ -20,6 +21,16 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
   const [objectives, setObjectives] = useState<PersonalObjective[]>([]);
   const [selectedObjectives, setSelectedObjectives] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
+  const { width: windowWidth } = useWindowDimensions();
+  const adornmentStyle = useMemo(() => {
+    const size = windowWidth * 0.45;
+    return {
+      width: size,
+      height: size,
+      right: -size * 0.10,
+      top: -size * 0.3,
+    };
+  }, [windowWidth]);
 
   useEffect(() => {
     loadObjectives();
@@ -71,11 +82,17 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
         contentContainerStyle={styles.scrollContent}
       >
         <View style={styles.content}>
-          <Title
-            title={`${userName},`}
-            variant="large"
-            rightAdornment={<Image source={GradientSplash3} style={styles.titleAdornment} resizeMode="cover" />}
-          />
+          <View style={styles.headerContainer}>
+            <Image
+              source={GradientSplash6}
+              style={[styles.titleAdornment, adornmentStyle]}
+              resizeMode="contain"
+            />
+            <Title
+              title={`${userName},`}
+              variant="large"
+            />
+          </View>
 
           <Text style={styles.question}>
             What are the main things we can help you with?

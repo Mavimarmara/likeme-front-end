@@ -7,6 +7,7 @@ import {
   Platform,
   Image,
   StatusBar,
+  useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Header, Title, TextInput, PrimaryButton, SecondaryButton, ButtonGroup } from '@/components/ui';
@@ -18,6 +19,7 @@ type Props = { navigation: any; route: any };
 
 const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
   const insets = useSafeAreaInsets();
+  const { width: windowWidth } = useWindowDimensions();
   const [invitationCode, setInvitationCode] = useState('');
   const [fullName, setFullName] = useState(route.params?.userName || '');
   const [age, setAge] = useState('');
@@ -44,6 +46,8 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
     navigation.navigate('PersonalObjectives' as never, { userName: fullName || route.params?.userName || 'Usuário' });
   };
 
+  const adornmentSize = windowWidth * 0.45;
+
   return (
     <SafeAreaView style={styles.safeArea} edges={['bottom', 'left', 'right']}>
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.BACKGROUND_SECONDARY} />
@@ -62,10 +66,22 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
               <Header onBackPress={() => navigation.goBack()} />
 
               <View style={styles.headerContent}>
+                <Image
+                  source={GradientSplash5}
+                  style={[
+                    styles.titleAdornment,
+                    {
+                      width: adornmentSize,
+                      height: adornmentSize,
+                      right: -adornmentSize * 0.25,
+                      top: -adornmentSize * 0.36,
+                    },
+                  ]}
+                  resizeMode="contain"
+                />
                 <Title
                   title="Let's start,"
                   variant="large"
-                  rightAdornment={<Image source={GradientSplash5} style={styles.titleAdornment} resizeMode="cover" />}
                 />
 
                 <View style={styles.invitationSection}>
