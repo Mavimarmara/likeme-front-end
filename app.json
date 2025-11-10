@@ -28,7 +28,10 @@
     },
     "ios": {
       "bundleIdentifier": "com.likeme.app",
-      "buildNumber": "1"
+      "buildNumber": "1",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "owner": "pixelpulselab",
     "extra": {

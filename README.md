@@ -69,6 +69,9 @@ npx expo start
 
 **iOS:**
 ```bash
+# Abrir o simulador (caso ainda não esteja em execução)
+open -a Simulator
+
 npm run ios
 # ou
 yarn ios
