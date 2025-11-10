@@ -5,7 +5,9 @@ export const AUTH0_CONFIG = {
 };
 
 export const BACKEND_CONFIG = {
-  baseUrl: process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:3000',
+  baseUrl:
+    process.env.EXPO_PUBLIC_BACKEND_URL ||
+    'https://likeme-back-end-one.vercel.app/',
   apiVersion: 'v1',
 };
 

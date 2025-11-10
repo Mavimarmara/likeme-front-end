@@ -202,14 +202,3 @@ const response = await apiClient.get('/api/personal-objectives');
 EXPO_PUBLIC_AUTH0_DOMAIN=your-auth0-domain.auth0.com
 EXPO_PUBLIC_AUTH0_CLIENT_ID=your-auth0-client-id
 EXPO_PUBLIC_AUTH0_AUDIENCE=your-api-identifier
-
-# Backend Configuration
-EXPO_PUBLIC_BACKEND_URL=http://localhost:3000
-```
-
-### Backend
-
-O backend deve estar configurado para:
-- Validar tokens Auth0 usando a SDK do Auth0
-- Gerar tokens JWT próprios para sessão
-- Validar tokens de sessão em middleware de autenticação
