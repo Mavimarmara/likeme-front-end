@@ -3,10 +3,7 @@ import { View, Text, FlatList, ActivityIndicator, TouchableOpacity } from 'react
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import PostDetailsHeader from '@/components/ui/PostDetailsHeader';
-import CommentCard from '@/components/ui/CommentCard';
-import FloatingMenu from '@/components/ui/FloatingMenu';
-import { Post } from '@/components/ui/PostCard';
+import { PostDetailsHeader, CommentCard, FloatingMenu, Post } from '@/components/ui';
 import commentsService, { Comment, PaginatedCommentsResponse } from '@/services/commentsService';
 import { CommunityStackParamList } from '@/types';
 import { styles } from './styles';

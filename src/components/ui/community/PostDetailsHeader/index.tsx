@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Image, ImageSourcePropType } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { styles } from './styles';
-import { Post } from '../PostCard';
+import { Post } from '@/components/ui';
 
 type Props = {
   post: Post;

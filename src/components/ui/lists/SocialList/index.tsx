@@ -1,8 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import LiveBanner, { LiveBannerData } from '../LiveBanner';
-import PostsSection from '../PostsSection';
-import { Post } from '../PostCard';
+import { LiveBanner, LiveBannerData, PostsSection, Post } from '@/components/ui';
 import { styles } from './styles';
 
 export interface Community {
