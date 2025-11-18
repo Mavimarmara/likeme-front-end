@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import { Toggle, SocialList, ProgramsList, LiveBannerData, Post } from '@/components/ui';
+import { Toggle, SocialList, ProgramsList, LiveBannerData, Post, Header } from '@/components/ui';
 import type { Community, Program } from '@/components/ui';
 import postsService, { PaginatedPostsResponse } from '@/services/postsService';
 import { styles } from './styles';
@@ -208,6 +208,7 @@ const CommunityScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Header onBackPress={() => navigation.goBack()} />
       <View style={styles.content}>
         <Toggle<CommunityMode>
           options={TOGGLE_OPTIONS}

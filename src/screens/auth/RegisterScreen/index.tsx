@@ -8,11 +8,12 @@ import {
   Image,
   StatusBar,
   useWindowDimensions,
+  Alert,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Header, Title, TextInput, PrimaryButton, SecondaryButton, ButtonGroup } from '@/components/ui';
 import { GradientSplash5 } from '@/assets';
-import { storageService } from '@/services';
+import { storageService, personsService, PersonData } from '@/services';
 import { styles } from './styles';
 import { COLORS } from '@/constants';
 
@@ -28,6 +29,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
   const [weight, setWeight] = useState('');
   const [height, setHeight] = useState('');
   const [insurance, setInsurance] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const topSectionStyle = useMemo(
     () => [
@@ -40,9 +42,46 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
   );
 
   const handleNext = async () => {
-    const now = new Date().toISOString();
-    await storageService.setRegisterCompletedAt(now);
-    navigation.navigate('PersonalObjectives' as never, { userName: fullName || route.params?.userName || 'Usuário' });
+    try {
+      setIsLoading(true);
+
+      // Validação dos campos obrigatórios
+      if (!fullName.trim()) {
+        Alert.alert('Campo obrigatório', 'Por favor, preencha o nome completo.');
+        setIsLoading(false);
+        return;
+      }
+
+      // Dividir fullName em firstName e lastName
+      const nameParts = fullName.trim().split(/\s+/);
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || firstName;
+
+      // Preparar dados para a API
+      const personData: PersonData = {
+        firstName,
+        lastName,
+        ...(gender.trim() && { gender: gender.trim() }),
+        ...(age.trim() && { age: age.trim() }),
+        ...(weight.trim() && { weight: weight.trim() }),
+        ...(height.trim() && { height: height.trim() }),
+        ...(insurance.trim() && { insurance: insurance.trim() }),
+      };
+
+      // Salvar dados na API
+      await personsService.createOrUpdatePerson(personData);
+
+      // Salvar timestamp de registro completo
+      const now = new Date().toISOString();
+      await storageService.setRegisterCompletedAt(now);
+
+      // Navegar para a próxima tela
+      navigation.navigate('PersonalObjectives' as never, { userName: fullName || route.params?.userName || 'Usuário' });
+    } catch (error: any) {
+      console.error('Erro ao salvar dados da pessoa:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSkip = async () => {
@@ -159,8 +198,16 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
 
           <View style={styles.footer}>
             <ButtonGroup style={styles.buttonGroup}>
-              <PrimaryButton label="Next" onPress={handleNext} />
-              <SecondaryButton label="Skip information" onPress={handleSkip} />
+              <PrimaryButton 
+                label={isLoading ? 'Salvando...' : 'Next'} 
+                onPress={handleNext} 
+                disabled={isLoading}
+              />
+              <SecondaryButton 
+                label="Skip information" 
+                onPress={handleSkip}
+                disabled={isLoading}
+              />
             </ButtonGroup>
           </View>
         </KeyboardAvoidingView>

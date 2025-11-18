@@ -7,3 +7,5 @@ export { default as postsService } from './postsService';
 export type { Post, PaginatedPostsResponse, GetPostsParams } from './postsService';
 export { default as commentsService } from './commentsService';
 export type { Comment, PaginatedCommentsResponse, GetCommentsParams } from './commentsService';
+export { default as personsService } from './personsService';
+export type { PersonData, PersonResponse } from './personsService';
