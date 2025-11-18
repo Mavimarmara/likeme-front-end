@@ -10,6 +10,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PartialLogo, GradientSplash7, GradientSplash8, GradientSplash9 } from '@/assets';
 import { styles, GRADIENT_STRIP_HEIGHT, GRADIENT_STRIP_WIDTH } from './styles';
+import { storageService } from '@/services';
+import { getApiUrl } from '@/config';
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 const GRADIENT_SOURCES = [GradientSplash7, GradientSplash8, GradientSplash9];
 
@@ -93,6 +95,36 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
       ]);
 
       await delay(360);
+
+      // Tentar renovar o token
+      try {
+        const token = await storageService.getToken();
+        if (token) {
+          // Fazer chamada GET /api/auth/token com o token atual
+          const response = await fetch(getApiUrl('/api/auth/token'), {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+
+          if (response.ok) {
+            // Token válido, redirecionar para Authenticated
+            const data = await response.json();
+            // Se o backend retornar um novo token, atualizar
+            if (data.token || data.accessToken) {
+              await storageService.setToken(data.token || data.accessToken);
+            }
+            navigation.replace('Authenticated');
+            return;
+          }
+        }
+      } catch (error) {
+        console.error('Erro ao renovar token:', error);
+      }
+
+      // Se não houver token ou a renovação falhar, redirecionar para Unauthenticated
       navigation.replace('Unauthenticated');
     };
 
