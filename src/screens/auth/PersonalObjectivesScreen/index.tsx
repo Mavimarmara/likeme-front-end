@@ -88,10 +88,10 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
               style={[styles.titleAdornment, adornmentStyle]}
               resizeMode="contain"
             />
-            <Title
-              title={`${userName},`}
-              variant="large"
-            />
+          <Title
+            title={`${userName},`}
+            variant="large"
+          />
           </View>
 
           <Text style={styles.question}>
