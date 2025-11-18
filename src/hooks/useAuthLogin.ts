@@ -13,7 +13,7 @@ export const useAuthLogin = (navigation: any) => {
     setIsLoading(true);
     try {
       const authResult = await AuthService.login();
-      await AuthService.sendToBackend(authResult);
+      await AuthService.validateToken(authResult);
       
       navigation.navigate('Register' as never, {
         userName: authResult.user.name || authResult.user.email,

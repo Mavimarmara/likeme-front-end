@@ -168,7 +168,7 @@ Content-Type: application/json
 const authResult = await AuthService.loginWithEmail({ email, password });
 
 // Enviar para backend e obter token de sessão
-const backendResponse = await AuthService.sendToBackend(authResult);
+const backendResponse = await AuthService.validateToken(authResult);
 // Token de sessão é automaticamente armazenado
 
 // Fazer requisições autenticadas

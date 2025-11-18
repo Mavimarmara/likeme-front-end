@@ -278,10 +278,10 @@ class AuthService {
     }
   }
 
-  async sendToBackend(authResult: AuthResult): Promise<any> {
+  async validateToken(authResult: AuthResult): Promise<any> {
     try {
       const url = getApiUrl('/api/auth/login');
-      console.log('Sending to backend:', url);
+      console.log('Validating token with backend:', url);
       
       const response = await fetch(url, {
         method: 'POST',
