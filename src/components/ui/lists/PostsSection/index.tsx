@@ -12,6 +12,7 @@ type Props = {
   searchQuery: string;
   onPostPress: (post: Post) => void;
   onSearchChange: (text: string) => void;
+  onSearchPress?: () => void;
   onLoadMore: () => void;
   onFilterPress?: () => void;
 };
@@ -24,6 +25,7 @@ const PostsSection: React.FC<Props> = ({
   searchQuery,
   onPostPress,
   onSearchChange,
+  onSearchPress,
   onLoadMore,
   onFilterPress,
 }) => {
@@ -68,7 +70,11 @@ const PostsSection: React.FC<Props> = ({
             style={styles.searchInput}
           />
         </View>
-        <TouchableOpacity style={styles.searchButton} activeOpacity={0.7}>
+        <TouchableOpacity 
+          style={styles.searchButton} 
+          activeOpacity={0.7}
+          onPress={onSearchPress}
+        >
           <Icon name="search" size={20} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity

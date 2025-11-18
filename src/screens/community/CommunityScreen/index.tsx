@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { Toggle, SocialList, ProgramsList, LiveBannerData, Post, Header } from '@/components/ui';
 import type { Community, Program } from '@/components/ui';
-import postsService, { PaginatedPostsResponse } from '@/services/postsService';
+import postsService, { ApiPostsResponse } from '@/services/postsService';
 import { BackgroundWithGradient } from '@/assets';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/navigation/CommunityStackNavigator';
@@ -110,20 +110,20 @@ const CommunityScreen: React.FC = () => {
         }
         setError(null);
 
-        const response: PaginatedPostsResponse = await postsService.getPosts({
+        const response: ApiPostsResponse = await postsService.getPosts({
           page,
-          pageSize: PAGE_SIZE,
+          limit: PAGE_SIZE,
           search: search || undefined,
         });
 
         if (append) {
-          setPosts((prev) => [...prev, ...response.data]);
+          setPosts((prev) => [...prev, ...response.data.posts]);
         } else {
-          setPosts(response.data);
+          setPosts(response.data.posts);
         }
 
         setCurrentPage(page);
-        setHasMore(response.pagination.hasMore);
+        setHasMore(response.data.pagination.hasMore);
       } catch (err) {
         hasErrorRef.current = true;
         const errorMessage =
@@ -193,9 +193,17 @@ const CommunityScreen: React.FC = () => {
 
   const handleSearchChange = (text: string) => {
     setSearchQuery(text);
-    setCurrentPage(1);
-    setHasMore(true);
   };
+
+  const handleSearchPress = useCallback(() => {
+    if (selectedMode === 'Social') {
+      setCurrentPage(1);
+      setHasMore(true);
+      previousSearchQuery.current = searchQuery;
+      hasLoadedInitially.current = false;
+      loadPosts(1, searchQuery);
+    }
+  }, [searchQuery, selectedMode, loadPosts]);
 
   const handleLoadMore = useCallback(() => {
     if (!loadingMore && hasMore && !loading && selectedMode === 'Social') {
@@ -236,6 +244,7 @@ const CommunityScreen: React.FC = () => {
             searchQuery={searchQuery}
             onPostPress={handlePostPress}
             onSearchChange={handleSearchChange}
+            onSearchPress={handleSearchPress}
             onLoadMore={handleLoadMore}
             onFilterPress={handleFilterPress}
           />

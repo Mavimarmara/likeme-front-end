@@ -2,40 +2,41 @@ import apiClient from './apiClient';
 
 export interface Post {
   id: string;
-  title: string;
-  description: string;
-  category: string;
-  author: {
-    id: string;
-    name: string;
-    avatar?: string;
-  };
-  commentsCount: number;
-  createdAt?: string;
+  communityId: string;
+  userId: string;
+  content: string;
+  media: string[];
+  metadata?: Record<string, any>;
+  createdAt: string;
 }
 
-export interface PaginatedPostsResponse {
-  data: Post[];
-  pagination: {
-    page: number;
-    pageSize: number;
-    total: number;
-    totalPages: number;
-    hasMore: boolean;
+export interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasMore: boolean;
+}
+
+export interface ApiPostsResponse {
+  success: boolean;
+  data: {
+    posts: Post[];
+    pagination: Pagination;
   };
+  message: string;
 }
 
 export interface GetPostsParams {
   page?: number;
-  pageSize?: number;
+  limit?: number;
   search?: string;
-  category?: string;
 }
 
 class PostsService {
-  private readonly endpoint = '/api/v1/posts';
+  private readonly endpoint = '/api/communities/user/me/posts';
 
-  async getPosts(params: GetPostsParams = {}): Promise<PaginatedPostsResponse> {
+  async getPosts(params: GetPostsParams = {}): Promise<ApiPostsResponse> {
     try {
       const queryParams: Record<string, string> = {};
       
@@ -43,19 +44,15 @@ class PostsService {
         queryParams.page = String(params.page);
       }
       
-      if (params.pageSize !== undefined) {
-        queryParams.pageSize = String(params.pageSize);
+      if (params.limit !== undefined) {
+        queryParams.limit = String(params.limit);
       }
-      
+
       if (params.search) {
         queryParams.search = params.search;
       }
-      
-      if (params.category) {
-        queryParams.category = params.category;
-      }
 
-      const response = await apiClient.get<PaginatedPostsResponse>(
+      const response = await apiClient.get<ApiPostsResponse>(
         this.endpoint,
         queryParams,
         true,

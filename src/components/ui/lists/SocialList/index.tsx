@@ -25,6 +25,7 @@ type Props = {
   searchQuery: string;
   onPostPress: (post: Post) => void;
   onSearchChange: (text: string) => void;
+  onSearchPress?: () => void;
   onLoadMore: () => void;
   onFilterPress?: () => void;
 };
@@ -42,6 +43,7 @@ const SocialList: React.FC<Props> = ({
   searchQuery,
   onPostPress,
   onSearchChange,
+  onSearchPress,
   onLoadMore,
   onFilterPress,
 }) => {
@@ -60,6 +62,7 @@ const SocialList: React.FC<Props> = ({
         searchQuery={searchQuery}
         onPostPress={onPostPress}
         onSearchChange={onSearchChange}
+        onSearchPress={onSearchPress}
         onLoadMore={onLoadMore}
         onFilterPress={onFilterPress}
       />
