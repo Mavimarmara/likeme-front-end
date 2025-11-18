@@ -6,7 +6,7 @@ const { width } = Dimensions.get('window');
 export const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.BACKGROUND_SECONDARY,
+    backgroundColor: COLORS.BACKGROUND,
   },
   container: {
     flex: 1,
@@ -91,10 +91,9 @@ export const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#f4f3ec',
+    backgroundColor: COLORS.BACKGROUND,
     paddingHorizontal: SPACING.MD,
     paddingTop: SPACING.MD,
-    paddingBottom: SPACING.LG,
   },
   buttonGroup: {
     position: 'relative',
