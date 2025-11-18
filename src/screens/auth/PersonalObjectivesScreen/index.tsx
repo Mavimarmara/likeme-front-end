@@ -9,7 +9,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header, Title, Chip, PrimaryButton, SecondaryButton, ButtonGroup, Loading } from '@/components/ui';
 import { GradientSplash6 } from '@/assets';
-import { personalObjectivesService } from '@/services';
+import { personalObjectivesService, storageService } from '@/services';
 import { PersonalObjective } from '@/types';
 import { showError } from '@/utils';
 import { styles } from './styles';
@@ -64,11 +64,15 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
     setSelectedObjectives(newSelected);
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    const now = new Date().toISOString();
+    await storageService.setObjectivesSelectedAt(now);
     navigation.navigate('Main' as never, { screen: 'Community' } as never);
   };
 
-  const handleSkip = () => {
+  const handleSkip = async () => {
+    const now = new Date().toISOString();
+    await storageService.setObjectivesSelectedAt(now);
     navigation.navigate('Main' as never, { screen: 'Community' } as never);
   };
 

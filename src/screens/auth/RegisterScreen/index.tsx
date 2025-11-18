@@ -12,6 +12,7 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Header, Title, TextInput, PrimaryButton, SecondaryButton, ButtonGroup } from '@/components/ui';
 import { GradientSplash5 } from '@/assets';
+import { storageService } from '@/services';
 import { styles } from './styles';
 import { COLORS } from '@/constants';
 
@@ -38,11 +39,15 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
     [insets.top]
   );
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    const now = new Date().toISOString();
+    await storageService.setRegisterCompletedAt(now);
     navigation.navigate('PersonalObjectives' as never, { userName: fullName || route.params?.userName || 'Usuário' });
   };
 
-  const handleSkip = () => {
+  const handleSkip = async () => {
+    const now = new Date().toISOString();
+    await storageService.setRegisterCompletedAt(now);
     navigation.navigate('PersonalObjectives' as never, { userName: fullName || route.params?.userName || 'Usuário' });
   };
 

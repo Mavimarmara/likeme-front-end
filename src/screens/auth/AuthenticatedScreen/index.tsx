@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native';
 import { styles } from './styles';
+import storageService from '@/services/storageService';
 
 type Props = {
   navigation: any;
@@ -8,15 +9,34 @@ type Props = {
 };
 
 const AuthenticatedScreen: React.FC<Props> = ({ navigation }) => {
+  const [isChecking, setIsChecking] = useState(true);
+
   useEffect(() => {
-    // Redireciona para MainTabNavigator na aba Community quando o componente monta
-    navigation.replace('Main' as never, { screen: 'Community' } as never);
+    const checkOnboardingStatus = async () => {
+      try {
+        const registerCompletedAt = await storageService.getRegisterCompletedAt();
+        const objectivesSelectedAt = await storageService.getObjectivesSelectedAt();
+        
+        if (!registerCompletedAt) {
+          navigation.replace('Register' as never);
+        } else if (!objectivesSelectedAt) {
+          navigation.replace('PersonalObjectives' as never, { userName: 'Usuário' } as never);
+        } else {
+          navigation.replace('Main' as never, { screen: 'Community' } as never);
+        }
+      } catch (error) {
+        console.error('Error checking onboarding status:', error);
+        navigation.replace('Register' as never);
+      } finally {
+        setIsChecking(false);
+      }
+    };
+
+    checkOnboardingStatus();
   }, [navigation]);
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Tela de transição - será substituída imediatamente pela navegação */}
-    </SafeAreaView>
+    <SafeAreaView style={styles.container} />
   );
 };
 
