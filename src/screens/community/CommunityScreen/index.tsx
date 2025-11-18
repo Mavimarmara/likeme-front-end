@@ -89,10 +89,19 @@ const CommunityScreen: React.FC = () => {
   const hasLoadedInitially = useRef(false);
   const previousSearchQuery = useRef<string>('');
   const previousMode = useRef<CommunityMode>('Social');
+  const isLoadingRef = useRef(false);
+  const hasErrorRef = useRef(false);
 
   const loadPosts = useCallback(
     async (page: number, search?: string, append: boolean = false) => {
+      if (isLoadingRef.current) {
+        return;
+      }
+
       try {
+        isLoadingRef.current = true;
+        hasErrorRef.current = false;
+        
         if (page === 1) {
           setLoading(true);
         } else {
@@ -115,12 +124,19 @@ const CommunityScreen: React.FC = () => {
         setCurrentPage(page);
         setHasMore(response.pagination.hasMore);
       } catch (err) {
+        hasErrorRef.current = true;
         const errorMessage =
           err instanceof Error ? err.message : 'Erro ao carregar posts';
         setError(errorMessage);
+        setHasMore(false);
+        
+        if (page === 1) {
+          setPosts([]);
+        }
       } finally {
         setLoading(false);
         setLoadingMore(false);
+        isLoadingRef.current = false;
       }
     },
     []
@@ -131,13 +147,20 @@ const CommunityScreen: React.FC = () => {
       return;
     }
 
+    if (isLoadingRef.current) {
+      return;
+    }
+
     const searchChanged = previousSearchQuery.current !== searchQuery;
     const modeChanged = previousMode.current !== selectedMode;
     
-    if (!hasLoadedInitially.current || searchChanged || modeChanged) {
+    const shouldLoad = !hasLoadedInitially.current || searchChanged || modeChanged;
+    
+    if (shouldLoad) {
       hasLoadedInitially.current = true;
       previousSearchQuery.current = searchQuery;
       previousMode.current = selectedMode;
+      hasErrorRef.current = false;
       
       if (searchChanged || modeChanged) {
         setCurrentPage(1);
@@ -145,7 +168,7 @@ const CommunityScreen: React.FC = () => {
       }
       loadPosts(1, searchQuery);
     }
-  }, [searchQuery, selectedMode, loadPosts]);
+  }, [searchQuery, selectedMode]);
 
   const handleCommunityPress = (community: Community) => {
     setSelectedCommunityId(community.id);

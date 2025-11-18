@@ -1,29 +1,23 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-} from 'react-native';
+import { View, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { } from '@react-navigation/native';
 import { Header, Title, ButtonGroup, PrimaryButton, SecondaryButton } from '@/components/ui';
 import { GradientSplash4 } from '@/assets';
+import { useAuthLogin } from '@/hooks/useAuthLogin';
 import { styles } from './styles';
-import { COLORS, FONT_SIZES, SPACING, BORDER_RADIUS } from '@/constants';
 
 type Props = { navigation: any; route: any };
 
 const IntroScreen: React.FC<Props> = ({ navigation, route }) => {
-  
   const userName = route.params?.userName || 'Usuário';
+  const { handleLogin, isLoading } = useAuthLogin(navigation);
 
   const handleShowPresentation = () => {
     navigation.navigate('AppPresentation' as never);
   };
 
   const handleGoToApp = () => {
-    navigation.navigate('Register' as never);
+    handleLogin();
   };
 
   return (
@@ -42,8 +36,8 @@ const IntroScreen: React.FC<Props> = ({ navigation, route }) => {
 
         <View style={styles.buttonContainer}>
           <ButtonGroup style={{ position: 'relative', left: 0, right: 0, bottom: 0, paddingBottom: 0 }}>
-            <PrimaryButton label="Yes, sure" onPress={handleShowPresentation} />
-            <SecondaryButton label="No, I want to go straight to the app" onPress={handleGoToApp} />
+            <PrimaryButton label="Yes, sure" onPress={handleShowPresentation} disabled={isLoading} />
+            <SecondaryButton label="No, I want to go straight to the app" onPress={handleGoToApp} loading={isLoading} />
           </ButtonGroup>
         </View>
       </View>

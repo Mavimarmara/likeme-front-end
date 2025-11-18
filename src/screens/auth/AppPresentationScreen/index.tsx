@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -6,14 +6,12 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
-  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '@/components/ui';
 import { PRESENTATION_PAGES } from '@/constants/presentation';
+import { useAuthLogin } from '@/hooks/useAuthLogin';
 import { styles } from './styles';
-import { COLORS, FONT_SIZES, SPACING, BORDER_RADIUS } from '@/constants';
-import { AuthService } from '@/services';
 
 const { width } = Dimensions.get('window');
 
@@ -21,49 +19,20 @@ type Props = { navigation: any };
 
 const AppPresentationScreen: React.FC<Props> = ({ navigation }) => {
   const [currentPage, setCurrentPage] = useState(0);
-  const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const { handleLogin, isLoading } = useAuthLogin(navigation);
 
   const pages = useMemo(() => PRESENTATION_PAGES, []);
-
-  const startAuthFlow = useCallback(async () => {
-    if (isAuthenticating) {
-      return;
-    }
-    setIsAuthenticating(true);
-    try {
-      const authResult = await AuthService.login();
-      await AuthService.sendToBackend(authResult);
-      navigation.navigate(
-        'Register' as never,
-        {
-          userName: authResult.user.name || authResult.user.email,
-        } as never
-      );
-    } catch (error) {
-      console.error('Presentation login error:', error);
-      if (error instanceof Error && error.message.includes('cancel')) {
-        // Usuário cancelou; apenas reabilita os botões
-        setIsAuthenticating(false);
-        return;
-      }
-      Alert.alert(
-        'Erro ao autenticar',
-        error instanceof Error ? error.message : 'Não foi possível iniciar o login.'
-      );
-      setIsAuthenticating(false);
-    }
-  }, [isAuthenticating, navigation]);
 
   const handleNext = () => {
     if (currentPage < pages.length - 1) {
       setCurrentPage(currentPage + 1);
     } else {
-      startAuthFlow();
+      handleLogin();
     }
   };
 
   const handleSkip = () => {
-    startAuthFlow();
+    handleLogin();
   };
 
   const handleBack = () => {
@@ -115,20 +84,20 @@ const AppPresentationScreen: React.FC<Props> = ({ navigation }) => {
             <TouchableOpacity 
               style={[
                 styles.skipButton,
-                isAuthenticating && styles.skipButtonDisabled,
+                isLoading && styles.skipButtonDisabled,
               ]}
               onPress={handleSkip}
-              disabled={isAuthenticating}
+              disabled={isLoading}
             >
               <Text style={styles.skipText}>Skip</Text>
             </TouchableOpacity>
             <TouchableOpacity 
               style={[
                 styles.nextButton,
-                isAuthenticating && styles.nextButtonDisabled,
+                isLoading && styles.nextButtonDisabled,
               ]}
               onPress={handleNext}
-              disabled={isAuthenticating}
+              disabled={isLoading}
             >
               <Text style={styles.nextButtonText}>›</Text>
             </TouchableOpacity>
