@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { View } from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { Toggle, SocialList, ProgramsList, LiveBannerData, Post, Header } from '@/components/ui';
 import type { Community, Program } from '@/components/ui';
 import postsService, { PaginatedPostsResponse } from '@/services/postsService';
+import { BackgroundWithGradient } from '@/assets';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/navigation/CommunityStackNavigator';
 
@@ -208,6 +209,11 @@ const CommunityScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Image
+        source={BackgroundWithGradient}
+        style={StyleSheet.absoluteFill}
+        resizeMode="cover"
+      />
       <Header onBackPress={() => navigation.goBack()} />
       <View style={styles.content}>
         <Toggle<CommunityMode>

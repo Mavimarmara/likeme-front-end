@@ -84,7 +84,11 @@ const MainTabNavigator: React.FC = () => {
       <Tab.Screen 
         name="Community" 
         component={CommunityStackNavigator}
-        options={{ title: 'Comunidade', headerShown: false }}
+        options={{ 
+          title: 'Comunidade', 
+          headerShown: false,
+          tabBarStyle: { display: 'none' },
+        }}
       />
       <Tab.Screen 
         name="HealthProvider" 
