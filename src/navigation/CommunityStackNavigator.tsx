@@ -14,20 +14,12 @@ const CommunityStackNavigator: React.FC = () => {
   return (
     <Stack.Navigator
       screenOptions={{
-        headerShown: true,
-        headerStyle: {
-          backgroundColor: '#4CAF50',
-        },
-        headerTintColor: '#fff',
-        headerTitleStyle: {
-          fontWeight: 'bold',
-        },
+        headerShown: false,
       }}
     >
       <Stack.Screen
         name="CommunityList"
         component={CommunityScreen}
-        options={{ title: 'Comunidade' }}
       />
       <Stack.Screen
         name="PostDetails"
