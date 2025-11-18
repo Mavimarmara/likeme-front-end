@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 // @ts-ignore - useNavigation pode não estar tipado corretamente
 import { useNavigation } from '@react-navigation/native';
-import { Toggle, SocialList, Community, ProgramsList, Program, LiveBannerData, Post } from '@/components/ui';
+import { Header, Toggle, SocialList, Community, ProgramsList, Program, LiveBannerData, Post } from '@/components/ui';
 import postsService, { PaginatedPostsResponse } from '@/services/postsService';
 import { styles } from './styles';
 
@@ -174,6 +174,7 @@ const CommunityScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Header onBackPress={() => navigation.goBack()} />
       <View style={styles.content}>
         <Toggle<CommunityMode>
           options={TOGGLE_OPTIONS}
