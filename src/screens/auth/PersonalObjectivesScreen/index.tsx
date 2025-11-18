@@ -65,11 +65,11 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   const handleNext = () => {
-    navigation.navigate('Community' as never);
+    navigation.navigate('Main' as never, { screen: 'Community' } as never);
   };
 
   const handleSkip = () => {
-    navigation.navigate('Community' as never);
+    navigation.navigate('Main' as never, { screen: 'Community' } as never);
   };
 
   return (
