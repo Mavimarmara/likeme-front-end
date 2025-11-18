@@ -1,12 +1,23 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Toggle, SocialList, Community, ProgramsList, Program } from '@/components/ui';
+import { Toggle, SocialList, Community, ProgramsList, Program, LiveBannerData } from '@/components/ui';
 import { styles } from './styles';
 
 type CommunityMode = 'Social' | 'Programs';
 
 const TOGGLE_OPTIONS: readonly [CommunityMode, CommunityMode] = ['Social', 'Programs'] as const;
+
+// Dados mock de Live - substituir por dados reais da API
+const mockLiveBanner: LiveBannerData = {
+  id: '1',
+  title: 'What are the main causes of daily stress? With Dr. John Peter',
+  host: 'Dr. John Peter',
+  status: 'Live Now',
+  startTime: '08:15 pm',
+  endTime: '10:00 pm',
+  thumbnail: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400', // URL de exemplo
+};
 
 // Dados mock - substituir por dados reais da API
 const mockCommunities: Community[] = [
@@ -73,6 +84,11 @@ const CommunityScreen: React.FC = () => {
     setSelectedMode(mode);
   };
 
+  const handleLivePress = (live: LiveBannerData) => {
+    // Aqui você pode adicionar lógica para navegar para a live
+    console.log('Navegar para live:', live.id);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
@@ -87,6 +103,8 @@ const CommunityScreen: React.FC = () => {
             communities={mockCommunities}
             onCommunityPress={handleCommunityPress}
             selectedCommunityId={selectedCommunityId}
+            liveBanner={mockLiveBanner}
+            onLivePress={handleLivePress}
           />
         ) : (
           <ProgramsList

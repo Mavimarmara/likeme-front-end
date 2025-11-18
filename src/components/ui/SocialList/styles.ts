@@ -8,6 +8,7 @@ export const styles = StyleSheet.create({
   listContent: {
     padding: SPACING.MD,
     paddingBottom: SPACING.XL,
+    paddingTop: 0,
   },
   communityCard: {
     backgroundColor: COLORS.WHITE,
@@ -55,6 +56,10 @@ export const styles = StyleSheet.create({
     fontSize: FONT_SIZES.MD,
     color: COLORS.TEXT_LIGHT,
     textAlign: 'center',
+  },
+  liveBannerContainer: {
+    marginTop: SPACING.MD,
+    marginBottom: SPACING.SM,
   },
 });
 

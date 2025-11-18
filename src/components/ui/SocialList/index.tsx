@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity } from 'react-native';
+import LiveBanner, { LiveBannerData } from '../LiveBanner';
 import { styles } from './styles';
 
 export interface Community {
@@ -14,12 +15,16 @@ type Props = {
   communities: Community[];
   onCommunityPress: (community: Community) => void;
   selectedCommunityId?: string;
+  liveBanner?: LiveBannerData | null;
+  onLivePress?: (live: LiveBannerData) => void;
 };
 
 const SocialList: React.FC<Props> = ({
   communities,
   onCommunityPress,
   selectedCommunityId,
+  liveBanner,
+  onLivePress,
 }) => {
   const renderCommunity = ({ item }: { item: Community }) => {
     const isSelected = item.id === selectedCommunityId;
@@ -43,6 +48,15 @@ const SocialList: React.FC<Props> = ({
     );
   };
 
+  const renderLiveBanner = () => {
+    if (!liveBanner || !onLivePress) return null;
+    return (
+      <View style={styles.liveBannerContainer}>
+        <LiveBanner live={liveBanner} onPress={onLivePress} />
+      </View>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -51,6 +65,7 @@ const SocialList: React.FC<Props> = ({
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
+        ListHeaderComponent={renderLiveBanner()}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyText}>Nenhuma comunidade encontrada</Text>
