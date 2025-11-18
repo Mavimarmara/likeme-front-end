@@ -15,3 +15,6 @@ export { default as ProgramsList, type Program } from './ProgramsList';
 export { default as LiveBanner, type LiveBannerData, type LiveStatus } from './LiveBanner';
 export { default as PostCard, type Post } from './PostCard';
 export { default as PostsSection } from './PostsSection';
+export { default as PostDetailsHeader } from './PostDetailsHeader';
+export { default as CommentCard } from './CommentCard';
+export { default as FloatingMenu } from './FloatingMenu';

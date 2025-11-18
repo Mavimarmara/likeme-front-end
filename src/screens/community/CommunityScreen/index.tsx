@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+// @ts-ignore - useNavigation pode não estar tipado corretamente
+import { useNavigation } from '@react-navigation/native';
 import { Toggle, SocialList, Community, ProgramsList, Program, LiveBannerData, Post } from '@/components/ui';
 import postsService, { PaginatedPostsResponse } from '@/services/postsService';
 import { styles } from './styles';
@@ -69,6 +71,8 @@ const mockPrograms: Program[] = [
 const PAGE_SIZE = 10;
 
 const CommunityScreen: React.FC = () => {
+  // @ts-ignore
+  const navigation = useNavigation();
   const [selectedMode, setSelectedMode] = useState<CommunityMode>('Social');
   const [selectedCommunityId, setSelectedCommunityId] = useState<string | undefined>();
   const [selectedProgramId, setSelectedProgramId] = useState<string | undefined>();
@@ -148,8 +152,7 @@ const CommunityScreen: React.FC = () => {
   };
 
   const handlePostPress = (post: Post) => {
-    // Aqui você pode adicionar lógica para navegar para os detalhes do post
-    console.log('Navegar para post:', post.id);
+    navigation.navigate('PostDetails', { post });
   };
 
   const handleSearchChange = (text: string) => {

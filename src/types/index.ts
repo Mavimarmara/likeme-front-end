@@ -12,6 +12,12 @@ export type MainTabParamList = {
   Marketplace: undefined;
   Community: undefined;
   HealthProvider: undefined;
+  Profile: undefined;
+};
+
+export type CommunityStackParamList = {
+  CommunityList: undefined;
+  PostDetails: { post: any };
 };
 
 export interface ScreenProps<T extends keyof RootStackParamList> {

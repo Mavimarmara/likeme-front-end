@@ -5,3 +5,5 @@ export { default as apiClient } from './apiClient';
 export { default as personalObjectivesService } from './personalObjectivesService';
 export { default as postsService } from './postsService';
 export type { Post, PaginatedPostsResponse, GetPostsParams } from './postsService';
+export { default as commentsService } from './commentsService';
+export type { Comment, PaginatedCommentsResponse, GetCommentsParams } from './commentsService';

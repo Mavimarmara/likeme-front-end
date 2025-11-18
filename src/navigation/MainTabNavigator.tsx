@@ -9,7 +9,7 @@ import {
   HealthProviderScreen,
 } from '@/screens/wellness';
 import { MarketplaceScreen } from '@/screens/marketplace';
-import { CommunityScreen } from '@/screens/community';
+import CommunityStackNavigator from './CommunityStackNavigator';
 import { ProfileScreen } from '@/screens/profile';
 
 const Tab = createBottomTabNavigator();
@@ -83,8 +83,8 @@ const MainTabNavigator: React.FC = () => {
       />
       <Tab.Screen 
         name="Community" 
-        component={CommunityScreen}
-        options={{ title: 'Comunidade' }}
+        component={CommunityStackNavigator}
+        options={{ title: 'Comunidade', headerShown: false }}
       />
       <Tab.Screen 
         name="HealthProvider" 
