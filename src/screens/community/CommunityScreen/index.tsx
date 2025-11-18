@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Toggle, SocialList, Community, ProgramsList, Program, LiveBannerData } from '@/components/ui';
+import { Toggle, SocialList, Community, ProgramsList, Program, LiveBannerData, Post } from '@/components/ui';
+import postsService, { PaginatedPostsResponse } from '@/services/postsService';
 import { styles } from './styles';
 
 type CommunityMode = 'Social' | 'Programs';
@@ -65,10 +66,67 @@ const mockPrograms: Program[] = [
   },
 ];
 
+const PAGE_SIZE = 10;
+
 const CommunityScreen: React.FC = () => {
   const [selectedMode, setSelectedMode] = useState<CommunityMode>('Social');
   const [selectedCommunityId, setSelectedCommunityId] = useState<string | undefined>();
   const [selectedProgramId, setSelectedProgramId] = useState<string | undefined>();
+
+  // Estados para posts
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Função para carregar posts
+  const loadPosts = useCallback(
+    async (page: number, search?: string, append: boolean = false) => {
+      try {
+        if (page === 1) {
+          setLoading(true);
+        } else {
+          setLoadingMore(true);
+        }
+        setError(null);
+
+        const response: PaginatedPostsResponse = await postsService.getPosts({
+          page,
+          pageSize: PAGE_SIZE,
+          search: search || undefined,
+        });
+
+        if (append) {
+          setPosts((prev) => [...prev, ...response.data]);
+        } else {
+          setPosts(response.data);
+        }
+
+        setCurrentPage(page);
+        setHasMore(response.pagination.hasMore);
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Erro ao carregar posts';
+        setError(errorMessage);
+        console.error('Error loading posts:', err);
+      } finally {
+        setLoading(false);
+        setLoadingMore(false);
+      }
+    },
+    []
+  );
+
+  // Carregar posts quando a busca mudar ou quando mudar para modo Social
+  useEffect(() => {
+    if (selectedMode === 'Social') {
+      loadPosts(1, searchQuery);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery, selectedMode]);
 
   const handleCommunityPress = (community: Community) => {
     setSelectedCommunityId(community.id);
@@ -89,6 +147,28 @@ const CommunityScreen: React.FC = () => {
     console.log('Navegar para live:', live.id);
   };
 
+  const handlePostPress = (post: Post) => {
+    // Aqui você pode adicionar lógica para navegar para os detalhes do post
+    console.log('Navegar para post:', post.id);
+  };
+
+  const handleSearchChange = (text: string) => {
+    setSearchQuery(text);
+    setCurrentPage(1);
+    setHasMore(true);
+  };
+
+  const handleLoadMore = useCallback(() => {
+    if (!loadingMore && hasMore && !loading && selectedMode === 'Social') {
+      loadPosts(currentPage + 1, searchQuery, true);
+    }
+  }, [currentPage, hasMore, loadingMore, loading, searchQuery, selectedMode, loadPosts]);
+
+  const handleFilterPress = () => {
+    // Aqui você pode adicionar lógica para abrir filtros
+    console.log('Abrir filtros');
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
@@ -105,6 +185,15 @@ const CommunityScreen: React.FC = () => {
             selectedCommunityId={selectedCommunityId}
             liveBanner={mockLiveBanner}
             onLivePress={handleLivePress}
+            posts={posts}
+            loading={loading}
+            loadingMore={loadingMore}
+            error={error}
+            searchQuery={searchQuery}
+            onPostPress={handlePostPress}
+            onSearchChange={handleSearchChange}
+            onLoadMore={handleLoadMore}
+            onFilterPress={handleFilterPress}
           />
         ) : (
           <ProgramsList
