@@ -110,7 +110,7 @@ const CommunityScreen: React.FC = () => {
         }
         setError(null);
 
-        const response: ApiPostsResponse = await communityService.getPosts({
+        const response: ApiPostsResponse = await communityService.getPublicPosts({
           page,
           limit: PAGE_SIZE,
           search: search || undefined,
