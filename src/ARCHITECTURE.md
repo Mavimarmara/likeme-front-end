@@ -25,13 +25,7 @@ src/
 │   │   │   └── AnamneseScreen.spec.tsx
 │   │   └── index.ts
 │   ├── wellness/       # Bem-estar e saúde
-│   │   ├── WellnessScreen/
-│   │   │   ├── index.tsx
-│   │   │   ├── styles.ts
-│   │   │   └── WellnessScreen.spec.tsx
 │   │   ├── ActivitiesScreen/
-│   │   ├── ProtocolScreen/
-│   │   ├── HealthProviderScreen/
 │   │   └── index.ts
 │   ├── marketplace/    # Loja e produtos
 │   │   ├── MarketplaceScreen/
@@ -100,10 +94,10 @@ src/
 ### Importando Telas
 ```typescript
 // Import específico
-import { WellnessScreen } from '@/screens/wellness';
+import { ActivitiesScreen } from '@/screens/wellness';
 
 // Import múltiplo
-import { WellnessScreen, ActivitiesScreen } from '@/screens/wellness';
+import { ActivitiesScreen, CommunityScreen } from '@/screens';
 
 // Import de todas as telas
 import * as Screens from '@/screens';

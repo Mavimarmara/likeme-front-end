@@ -7,12 +7,9 @@ Um aplicativo React Native completo para saúde e bem-estar, com funcionalidades
 - **Onboarding**: Introdução ao app com slides interativos
 - **Cadastro**: Sistema de registro de usuários
 - **Anamnese**: Questionário de saúde personalizado
-- **Wellness**: Dashboard de bem-estar com métricas
 - **Atividades**: Gerenciamento de atividades de saúde
-- **Protocolos**: Protocolos personalizados de tratamento
 - **Marketplace**: Loja de produtos de saúde
 - **Comunidade**: Rede social para compartilhamento
-- **Provedores de Saúde**: Busca e agendamento com profissionais
 
 ## 📱 Telas Implementadas
 
@@ -22,12 +19,9 @@ Um aplicativo React Native completo para saúde e bem-estar, com funcionalidades
 - AnamneseScreen: Questionário de saúde
 
 ### Telas Principais
-- WellnessScreen: Dashboard de bem-estar
 - ActivitiesScreen: Gerenciamento de atividades
-- ProtocolScreen: Protocolos de tratamento
 - MarketplaceScreen: Loja de produtos
 - CommunityScreen: Rede social
-- HealthProviderScreen: Provedores de saúde
 
 ## 🛠 Tecnologias Utilizadas
 
@@ -185,10 +179,7 @@ likeme-front-end/
 │   │   │   ├── RegisterScreen/
 │   │   │   └── AnamneseScreen/
 │   │   ├── wellness/       # Bem-estar e saúde
-│   │   │   ├── WellnessScreen/
-│   │   │   ├── ActivitiesScreen/
-│   │   │   ├── ProtocolScreen/
-│   │   │   └── HealthProviderScreen/
+│   │   │   └── ActivitiesScreen/
 │   │   ├── marketplace/    # Loja e produtos
 │   │   └── community/      # Comunidade e social
 │   ├── navigation/         # Configuração de navegação

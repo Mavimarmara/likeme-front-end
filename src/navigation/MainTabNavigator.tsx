@@ -2,12 +2,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-import {
-  WellnessScreen,
-  ActivitiesScreen,
-  ProtocolScreen,
-  HealthProviderScreen,
-} from '@/screens/wellness';
+import { ActivitiesScreen } from '@/screens/wellness';
 import { MarketplaceScreen } from '@/screens/marketplace';
 import CommunityStackNavigator from './CommunityStackNavigator';
 import { ProfileScreen } from '@/screens/profile';
@@ -22,23 +17,14 @@ const MainTabNavigator: React.FC = () => {
           let iconName: string;
 
           switch (route.name) {
-            case 'Wellness':
-              iconName = 'favorite';
-              break;
             case 'Activities':
               iconName = 'fitness-center';
-              break;
-            case 'Protocol':
-              iconName = 'assignment';
               break;
             case 'Marketplace':
               iconName = 'store';
               break;
             case 'Community':
               iconName = 'group';
-              break;
-            case 'HealthProvider':
-              iconName = 'local-hospital';
               break;
             case 'Profile':
               iconName = 'person';
@@ -62,19 +48,9 @@ const MainTabNavigator: React.FC = () => {
       })}
     >
       <Tab.Screen 
-        name="Wellness" 
-        component={WellnessScreen}
-        options={{ title: 'Bem-estar' }}
-      />
-      <Tab.Screen 
         name="Activities" 
         component={ActivitiesScreen}
         options={{ title: 'Atividades' }}
-      />
-      <Tab.Screen 
-        name="Protocol" 
-        component={ProtocolScreen}
-        options={{ title: 'Protocolo' }}
       />
       <Tab.Screen 
         name="Marketplace" 
@@ -89,11 +65,6 @@ const MainTabNavigator: React.FC = () => {
           headerShown: false,
           tabBarStyle: { display: 'none' },
         }}
-      />
-      <Tab.Screen 
-        name="HealthProvider" 
-        component={HealthProviderScreen}
-        options={{ title: 'Provedor de Saúde' }}
       />
       <Tab.Screen 
         name="Profile" 
