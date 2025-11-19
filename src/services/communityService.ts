@@ -1,0 +1,87 @@
+import apiClient from './apiClient';
+
+export interface Post {
+  id: string;
+  communityId: string;
+  userId: string;
+  content: string;
+  media: string[];
+  metadata?: Record<string, any>;
+  createdAt: string;
+}
+
+export interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasMore: boolean;
+}
+
+export interface ApiPostsResponse {
+  success: boolean;
+  data: {
+    posts: Post[];
+    pagination: Pagination;
+  };
+  message: string;
+}
+
+export interface GetPostsParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+}
+
+class CommunityService {
+  private readonly userPostsEndpoint = '/api/communities/user/me/posts';
+  private readonly publicPostsEndpoint = '/api/communities/public/posts';
+
+  private buildQueryParams(params: GetPostsParams = {}): Record<string, string> {
+    const queryParams: Record<string, string> = {};
+
+    if (params.page !== undefined) {
+      queryParams.page = String(params.page);
+    }
+
+    if (params.limit !== undefined) {
+      queryParams.limit = String(params.limit);
+    }
+
+    if (params.search) {
+      queryParams.search = params.search;
+    }
+
+    return queryParams;
+  }
+
+  private async fetchPosts(
+    endpoint: string,
+    params: GetPostsParams = {}
+  ): Promise<ApiPostsResponse> {
+    try {
+      const response = await apiClient.get<ApiPostsResponse>(
+        endpoint,
+        this.buildQueryParams(params),
+        true,
+        false
+      );
+
+      return response;
+    } catch (error) {
+      console.error('Error fetching community posts:', error);
+      throw error;
+    }
+  }
+
+  async getPosts(params: GetPostsParams = {}): Promise<ApiPostsResponse> {
+    return this.fetchPosts(this.userPostsEndpoint, params);
+  }
+
+  async getPublicPosts(params: GetPostsParams = {}): Promise<ApiPostsResponse> {
+    return this.fetchPosts(this.publicPostsEndpoint, params);
+  }
+}
+
+export default new CommunityService();
+

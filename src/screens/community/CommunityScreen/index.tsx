@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { Toggle, SocialList, ProgramsList, LiveBannerData, Post, Header } from '@/components/ui';
 import type { Community, Program } from '@/components/ui';
-import postsService, { ApiPostsResponse } from '@/services/postsService';
+import communityService, { ApiPostsResponse } from '@/services/communityService';
 import { BackgroundWithGradient } from '@/assets';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/navigation/CommunityStackNavigator';
@@ -110,7 +110,7 @@ const CommunityScreen: React.FC = () => {
         }
         setError(null);
 
-        const response: ApiPostsResponse = await postsService.getPosts({
+        const response: ApiPostsResponse = await communityService.getPosts({
           page,
           limit: PAGE_SIZE,
           search: search || undefined,
