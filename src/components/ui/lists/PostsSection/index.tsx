@@ -15,6 +15,7 @@ type Props = {
   onSearchPress?: () => void;
   onLoadMore: () => void;
   onFilterPress?: () => void;
+  footerComponent?: React.ReactNode;
 };
 
 const PostsSection: React.FC<Props> = ({
@@ -28,6 +29,7 @@ const PostsSection: React.FC<Props> = ({
   onSearchPress,
   onLoadMore,
   onFilterPress,
+  footerComponent,
 }) => {
 
   const renderPost = ({ item }: { item: Post }) => (
@@ -107,7 +109,12 @@ const PostsSection: React.FC<Props> = ({
           onEndReached={onLoadMore}
           onEndReachedThreshold={0.5}
           ListHeaderComponent={renderHeader}
-          ListFooterComponent={renderFooter}
+          ListFooterComponent={() => (
+            <>
+              {renderFooter()}
+              {footerComponent}
+            </>
+          )}
           ListEmptyComponent={renderEmpty}
         />
       )}

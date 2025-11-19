@@ -19,6 +19,23 @@ class ApiClient {
     this.baseUrl = BACKEND_CONFIG.baseUrl || 'http://localhost:3000';
   }
 
+  private logAuthHeader(
+    method: string,
+    endpoint: string,
+    headers: Record<string, string>
+  ) {
+    const authorization = headers['Authorization'];
+    if (authorization) {
+      console.log(
+        `[Auth] ${method.toUpperCase()} ${endpoint} usando token: ${authorization}`
+      );
+    } else {
+      console.log(
+        `[Auth] ${method.toUpperCase()} ${endpoint} sem token no header`
+      );
+    }
+  }
+
   private async getHeaders(includeAuth = true): Promise<Record<string, string>> {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -82,6 +99,12 @@ class ApiClient {
         return false;
       }
 
+      if (newToken) {
+        console.log('[Auth] tokenId recebido:', newToken);
+      } else {
+        console.log('[Auth] tokenId não informado na resposta do backend.');
+      }
+
       await storageService.setToken(newToken);
       return true;
     } catch (error) {
@@ -139,11 +162,14 @@ class ApiClient {
         }
       }
 
-      const execute = async () =>
-        fetch(url, {
+      const execute = async () => {
+        const headers = await this.getHeaders(includeAuth);
+        this.logAuthHeader('GET', url, headers);
+        return fetch(url, {
           method: 'GET',
-          headers: await this.getHeaders(includeAuth),
+          headers,
         });
+      };
 
       const response = await this.requestWithRefresh(execute, includeAuth);
 
@@ -159,12 +185,16 @@ class ApiClient {
 
   async post<T>(endpoint: string, data?: any, includeAuth = true): Promise<T> {
     try {
-      const execute = async () =>
-        fetch(`${this.baseUrl}${endpoint}`, {
+      const execute = async () => {
+        const url = `${this.baseUrl}${endpoint}`;
+        const headers = await this.getHeaders(includeAuth);
+        this.logAuthHeader('POST', url, headers);
+        return fetch(url, {
           method: 'POST',
-          headers: await this.getHeaders(includeAuth),
+          headers,
           body: data ? JSON.stringify(data) : undefined,
         });
+      };
 
       const response = await this.requestWithRefresh(execute, includeAuth);
 
@@ -180,12 +210,16 @@ class ApiClient {
 
   async put<T>(endpoint: string, data?: any, includeAuth = true): Promise<T> {
     try {
-      const execute = async () =>
-        fetch(`${this.baseUrl}${endpoint}`, {
+      const execute = async () => {
+        const url = `${this.baseUrl}${endpoint}`;
+        const headers = await this.getHeaders(includeAuth);
+        this.logAuthHeader('PUT', url, headers);
+        return fetch(url, {
           method: 'PUT',
-          headers: await this.getHeaders(includeAuth),
+          headers,
           body: data ? JSON.stringify(data) : undefined,
         });
+      };
 
       const response = await this.requestWithRefresh(execute, includeAuth);
 
@@ -201,11 +235,15 @@ class ApiClient {
 
   async delete<T>(endpoint: string, includeAuth = true): Promise<T> {
     try {
-      const execute = async () =>
-        fetch(`${this.baseUrl}${endpoint}`, {
+      const execute = async () => {
+        const url = `${this.baseUrl}${endpoint}`;
+        const headers = await this.getHeaders(includeAuth);
+        this.logAuthHeader('DELETE', url, headers);
+        return fetch(url, {
           method: 'DELETE',
-          headers: await this.getHeaders(includeAuth),
+          headers,
         });
+      };
 
       const response = await this.requestWithRefresh(execute, includeAuth);
 

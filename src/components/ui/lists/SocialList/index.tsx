@@ -28,6 +28,7 @@ type Props = {
   onSearchPress?: () => void;
   onLoadMore: () => void;
   onFilterPress?: () => void;
+  footerComponent?: React.ReactNode;
 };
 
 const SocialList: React.FC<Props> = ({
@@ -46,6 +47,7 @@ const SocialList: React.FC<Props> = ({
   onSearchPress,
   onLoadMore,
   onFilterPress,
+  footerComponent,
 }) => {
   return (
     <View style={styles.container}>
@@ -65,6 +67,7 @@ const SocialList: React.FC<Props> = ({
         onSearchPress={onSearchPress}
         onLoadMore={onLoadMore}
         onFilterPress={onFilterPress}
+        footerComponent={footerComponent}
       />
     </View>
   );
