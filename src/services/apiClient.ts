@@ -1,4 +1,4 @@
-import { BACKEND_CONFIG } from '@/config';
+import { BACKEND_CONFIG, getApiUrl } from '@/config';
 import storageService from './storageService';
 
 export interface ApiResponse<T> {
@@ -38,7 +38,6 @@ class ApiClient {
   private async handleResponse<T>(response: Response): Promise<T> {
     if (!response.ok) {
       if (response.status === 401) {
-        await storageService.removeToken();
         throw new Error('Sessão expirada. Faça login novamente.');
       }
 
@@ -51,6 +50,70 @@ class ApiClient {
     }
 
     return response.json();
+  }
+
+  private async refreshBackendToken(): Promise<boolean> {
+    try {
+      const currentToken = await storageService.getToken();
+      if (!currentToken) {
+        return false;
+      }
+
+      const response = await fetch(getApiUrl('/api/auth/token'), {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${currentToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        return false;
+      }
+
+      const data = await response.json().catch(() => null);
+      const newToken =
+        data?.data?.token ||
+        data?.token ||
+        data?.data?.accessToken ||
+        data?.accessToken;
+
+      if (!newToken) {
+        return false;
+      }
+
+      await storageService.setToken(newToken);
+      return true;
+    } catch (error) {
+      console.error('Erro ao tentar obter token do backend:', error);
+      return false;
+    }
+  }
+
+  private async requestWithRefresh(
+    execute: () => Promise<Response>,
+    includeAuth: boolean
+  ): Promise<Response> {
+    let response = await execute();
+
+    if (!includeAuth || response.status !== 401) {
+      return response;
+    }
+
+    const refreshed = await this.refreshBackendToken();
+
+    if (!refreshed) {
+      await storageService.removeToken();
+      return response;
+    }
+
+    response = await execute();
+
+    if (response.status === 401) {
+      await storageService.removeToken();
+    }
+
+    return response;
   }
 
   async get<T>(endpoint: string, params?: Record<string, any>, includeAuth = true, useVersion = false): Promise<T> {
@@ -76,10 +139,13 @@ class ApiClient {
         }
       }
 
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: await this.getHeaders(includeAuth),
-      });
+      const execute = async () =>
+        fetch(url, {
+          method: 'GET',
+          headers: await this.getHeaders(includeAuth),
+        });
+
+      const response = await this.requestWithRefresh(execute, includeAuth);
 
       return this.handleResponse<T>(response);
     } catch (error) {
@@ -93,11 +159,14 @@ class ApiClient {
 
   async post<T>(endpoint: string, data?: any, includeAuth = true): Promise<T> {
     try {
-      const response = await fetch(`${this.baseUrl}${endpoint}`, {
-        method: 'POST',
-        headers: await this.getHeaders(includeAuth),
-        body: data ? JSON.stringify(data) : undefined,
-      });
+      const execute = async () =>
+        fetch(`${this.baseUrl}${endpoint}`, {
+          method: 'POST',
+          headers: await this.getHeaders(includeAuth),
+          body: data ? JSON.stringify(data) : undefined,
+        });
+
+      const response = await this.requestWithRefresh(execute, includeAuth);
 
       return this.handleResponse<T>(response);
     } catch (error) {
@@ -111,11 +180,14 @@ class ApiClient {
 
   async put<T>(endpoint: string, data?: any, includeAuth = true): Promise<T> {
     try {
-      const response = await fetch(`${this.baseUrl}${endpoint}`, {
-        method: 'PUT',
-        headers: await this.getHeaders(includeAuth),
-        body: data ? JSON.stringify(data) : undefined,
-      });
+      const execute = async () =>
+        fetch(`${this.baseUrl}${endpoint}`, {
+          method: 'PUT',
+          headers: await this.getHeaders(includeAuth),
+          body: data ? JSON.stringify(data) : undefined,
+        });
+
+      const response = await this.requestWithRefresh(execute, includeAuth);
 
       return this.handleResponse<T>(response);
     } catch (error) {
@@ -129,10 +201,13 @@ class ApiClient {
 
   async delete<T>(endpoint: string, includeAuth = true): Promise<T> {
     try {
-      const response = await fetch(`${this.baseUrl}${endpoint}`, {
-        method: 'DELETE',
-        headers: await this.getHeaders(includeAuth),
-      });
+      const execute = async () =>
+        fetch(`${this.baseUrl}${endpoint}`, {
+          method: 'DELETE',
+          headers: await this.getHeaders(includeAuth),
+        });
+
+      const response = await this.requestWithRefresh(execute, includeAuth);
 
       return this.handleResponse<T>(response);
     } catch (error) {
