@@ -97,7 +97,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
 
         const mappedPosts: Post[] = (feedData.posts || [])
           .map((communityPost) =>
-            mapCommunityPostToPost(communityPost, feedData.files)
+            mapCommunityPostToPost(communityPost, feedData.files, feedData.users)
           )
           .filter((post): post is Post => post !== null);
 

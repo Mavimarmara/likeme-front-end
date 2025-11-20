@@ -4,7 +4,6 @@ import { COLORS, FONT_SIZES, SPACING, BORDER_RADIUS } from '@/constants';
 export const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    marginHorizontal: SPACING.MD,
     marginBottom: SPACING.MD,
     borderRadius: BORDER_RADIUS.MD,
     overflow: 'hidden',

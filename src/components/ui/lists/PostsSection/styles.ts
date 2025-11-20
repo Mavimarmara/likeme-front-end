@@ -6,7 +6,6 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    paddingHorizontal: SPACING.MD,
     paddingTop: SPACING.MD,
     paddingBottom: SPACING.SM,
   },
@@ -18,7 +17,6 @@ export const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: SPACING.MD,
     paddingBottom: SPACING.MD,
     gap: SPACING.SM,
   },
@@ -31,7 +29,6 @@ export const styles = StyleSheet.create({
   searchInput: {
     backgroundColor: COLORS.BACKGROUND_SECONDARY,
     borderRadius: BORDER_RADIUS.ROUND,
-    paddingHorizontal: SPACING.MD,
     paddingVertical: SPACING.SM,
     fontSize: FONT_SIZES.MD,
     height: 44,
@@ -53,7 +50,6 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   listContent: {
-    paddingHorizontal: SPACING.MD,
     paddingBottom: SPACING.XL,
   },
   loadingContainer: {

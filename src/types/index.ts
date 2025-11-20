@@ -69,6 +69,11 @@ export interface Post {
   likes: number;
   comments: Comment[];
   createdAt: Date;
+  category?: string;
+  overline?: string;
+  title?: string;
+  userName?: string;
+  userAvatar?: string;
 }
 
 export interface Comment {

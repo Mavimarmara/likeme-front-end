@@ -1,10 +1,11 @@
-import type { CommunityPost, CommunityFile } from '@/types/community';
+import type { CommunityPost, CommunityFile, CommunityUser } from '@/types/community';
 import type { Post } from '@/types';
 import { logger } from '@/utils/logger';
 
 export const mapCommunityPostToPost = (
   communityPost: CommunityPost,
-  files?: CommunityFile[]
+  files?: CommunityFile[],
+  users?: CommunityUser[]
 ): Post | null => {
   const postId = communityPost.postId || communityPost._id || '';
   const userId = communityPost.postedUserId || communityPost.userId || '';
@@ -25,6 +26,11 @@ export const mapCommunityPostToPost = (
     const file = files.find(f => f.fileId === communityPost.data?.fileId);
     imageUrl = file?.fileUrl;
   }
+
+  const user = users?.find(u => u.userId === userId);
+  const userName = user?.displayName || undefined;
+  const userAvatar = user?.avatarFileId ? 
+    files?.find(f => f.fileId === user.avatarFileId)?.fileUrl : undefined;
 
   const likes = communityPost.reactionsCount || 0;
   const comments: Post['comments'] = [];
@@ -56,6 +62,11 @@ export const mapCommunityPostToPost = (
     likes,
     comments,
     createdAt: new Date(communityPost.createdAt),
+    category: (communityPost as any).category || (communityPost as any).dataType || undefined,
+    overline: (communityPost as any).overline || undefined,
+    title: communityPost.data?.title || undefined,
+    userName,
+    userAvatar,
   };
 
   logger.debug('Mapped post:', { 

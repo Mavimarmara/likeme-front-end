@@ -9,7 +9,7 @@ export const styles = StyleSheet.create({
   content: {
     flex: 1,
     zIndex: 1,
-    paddingHorizontal: SPACING.LG,
+    paddingHorizontal: SPACING.MD,
     paddingBottom: SPACING.XL,
   },
   suggestedSection: {

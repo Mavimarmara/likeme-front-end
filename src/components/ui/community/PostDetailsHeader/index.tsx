@@ -1,19 +1,15 @@
 import React from 'react';
-import { View, Text, Image, ImageSourcePropType } from 'react-native';
+import { View, Text, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { styles } from './styles';
-import { Post } from '@/components/ui';
+import type { Post } from '@/types';
 
 type Props = {
   post: Post;
 };
 
 const PostDetailsHeader: React.FC<Props> = ({ post }) => {
-  const isAvatarUri = post.author.avatar && typeof post.author.avatar === 'string';
-
-  const formatTimeAgo = (dateString?: string) => {
-    if (!dateString) return 'há pouco tempo';
-    const date = new Date(dateString);
+  const formatTimeAgo = (date: Date) => {
     const now = new Date();
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
     
@@ -23,39 +19,49 @@ const PostDetailsHeader: React.FC<Props> = ({ post }) => {
     return `${Math.floor(diffInSeconds / 86400)} dias atrás`;
   };
 
+  const displayTitle = post.title || post.content?.split('\n')[0] || post.content || '';
+  const displayDescription = post.title 
+    ? post.content?.replace(post.title, '').trim() || ''
+    : post.content?.split('\n').slice(1).join(' ').trim() || '';
+  
+  const commentsCount = post.comments?.length || 0;
+
   return (
     <View style={styles.container}>
-      <View style={styles.categoryTag}>
-        <Text style={styles.categoryText}>{post.category}</Text>
-      </View>
+      {post.category && (
+        <View style={styles.categoryTag}>
+          <Text style={styles.categoryText}>{post.category}</Text>
+        </View>
+      )}
 
       <View style={styles.authorSection}>
-        {post.author.avatar ? (
-          isAvatarUri ? (
-            <Image
-              source={{ uri: post.author.avatar as string }}
-              style={styles.avatar}
-            />
-          ) : (
-            <Image source={post.author.avatar as ImageSourcePropType} style={styles.avatar} />
-          )
+        {post.userAvatar ? (
+          <Image
+            source={{ uri: post.userAvatar }}
+            style={styles.avatar}
+          />
         ) : (
           <View style={styles.avatarPlaceholder}>
             <Icon name="person" size={20} color="#666" />
           </View>
         )}
         <View style={styles.authorInfo}>
-          <Text style={styles.authorName}>{post.author.name}</Text>
+          <Text style={styles.authorName}>{post.userName || `Usuário ${post.userId.slice(0, 8)}`}</Text>
           <Text style={styles.timeAgo}>{formatTimeAgo(post.createdAt)}</Text>
         </View>
       </View>
 
-      <Text style={styles.title}>{post.title}</Text>
-      <Text style={styles.description}>{post.description}</Text>
+      {displayTitle && (
+        <Text style={styles.title}>{displayTitle}</Text>
+      )}
+
+      {displayDescription && (
+        <Text style={styles.description}>{displayDescription}</Text>
+      )}
 
       <View style={styles.commentsInfo}>
         <Icon name="chat-bubble-outline" size={20} color="#000" />
-        <Text style={styles.commentsCount}>{post.commentsCount} comentários</Text>
+        <Text style={styles.commentsCount}>{commentsCount} comentários</Text>
       </View>
     </View>
   );

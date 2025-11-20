@@ -7,7 +7,6 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.BACKGROUND_SECONDARY,
     borderRadius: BORDER_RADIUS.ROUND,
     padding: SPACING.XS,
-    marginHorizontal: SPACING.MD,
     marginVertical: SPACING.MD,
   },
   option: {

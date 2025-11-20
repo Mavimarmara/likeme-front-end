@@ -3,31 +3,68 @@ import { View, Text, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { styles } from './styles';
 import { COLORS } from '@/constants';
-import { dateUtils } from '@/utils';
 import type { Post } from '@/types';
 
 type Props = {
   post: Post;
   onPress?: (post: Post) => void;
+  category?: string;
+  overline?: string;
 };
 
-const PostCard: React.FC<Props> = ({ post, onPress }) => {
-  const formatDate = (date: Date): string => {
-    if (dateUtils.isToday(date)) {
-      return 'Hoje';
+const PostCard: React.FC<Props> = ({ post, onPress, category, overline }) => {
+  const getTitle = (): string => {
+    if (post.title) return post.title;
+    if (!post.content) return '';
+    
+    const lines = post.content.split('\n').filter(line => line.trim());
+    if (lines.length > 0) {
+      const firstLine = lines[0].trim();
+      if (firstLine.length > 30 && firstLine.length < 150) {
+        return firstLine;
+      }
     }
-    if (dateUtils.isYesterday(date)) {
-      return 'Ontem';
+    
+    const sentences = post.content.split(/[.!?]/).filter(s => s.trim());
+    if (sentences.length > 0) {
+      const firstSentence = sentences[0].trim();
+      if (firstSentence.length > 30 && firstSentence.length < 150) {
+        return firstSentence;
+      }
     }
-    return dateUtils.formatDate(date);
+    
+    const truncated = post.content.substring(0, 120).trim();
+    if (truncated.length >= 30) {
+      return truncated;
+    }
+    
+    return post.content.substring(0, 100);
   };
 
-  const formatLikes = (count: number): string => {
-    if (count >= 1000) {
-      return `${(count / 1000).toFixed(1)}k`;
+  const getContent = (): string => {
+    if (!post.content) return '';
+    
+    const title = getTitle();
+    let remaining = post.content;
+    
+    if (post.title && post.content.startsWith(post.title)) {
+      remaining = post.content.substring(post.title.length).trim();
+    } else if (post.content.startsWith(title)) {
+      remaining = post.content.substring(title.length).trim();
     }
-    return count.toString();
+    
+    if (remaining.length > 0) {
+      return remaining;
+    }
+    
+    return '';
   };
+
+  const displayCategory = category || post.category;
+  const displayOverline = overline || post.overline;
+  const title = getTitle();
+  const content = getContent();
+  const commentsCount = post.comments.length > 0 ? post.comments.length : 0;
 
   const handlePress = () => {
     onPress?.(post);
@@ -39,54 +76,62 @@ const PostCard: React.FC<Props> = ({ post, onPress }) => {
       activeOpacity={0.8}
       onPress={handlePress}
     >
-      <View style={styles.header}>
-        <View style={styles.avatarPlaceholder}>
-          <Icon name="person" size={20} color={COLORS.TEXT_LIGHT} />
+      {displayCategory && (
+        <View style={styles.categoryTag}>
+          <Text style={styles.categoryText}>{displayCategory}</Text>
         </View>
-        <View style={styles.headerInfo}>
-          <Text style={styles.authorName}>Usuário {post.userId.slice(0, 8)}</Text>
-          <Text style={styles.dateText}>{formatDate(post.createdAt)}</Text>
+      )}
+
+      <View style={styles.authorSection}>
+        {post.userAvatar ? (
+          <Image
+            source={{ uri: post.userAvatar }}
+            style={styles.avatar}
+          />
+        ) : (
+          <View style={styles.avatarPlaceholder}>
+            <Icon name="person" size={20} color={COLORS.TEXT_LIGHT} />
+          </View>
+        )}
+        <View style={styles.authorInfo}>
+          {post.userName && (
+            <Text style={styles.authorName}>{post.userName}</Text>
+          )}
+          {displayOverline && (
+            <Text style={styles.overline}>{displayOverline}</Text>
+          )}
         </View>
       </View>
 
-      {post.content ? (
-        <Text style={styles.content} numberOfLines={4}>
-          {post.content}
+      {title ? (
+        <Text style={styles.title} numberOfLines={3}>
+          {title}
         </Text>
       ) : null}
 
-      {post.image ? (
-        <Image
-          source={{ uri: post.image }}
-          style={styles.image}
-          resizeMode="cover"
-        />
+      {content ? (
+        <Text style={styles.description} numberOfLines={3}>
+          {content}
+        </Text>
       ) : null}
 
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.actionButton} activeOpacity={0.7}>
-          <Icon
-            name="favorite-border"
-            size={20}
-            color={COLORS.TEXT_LIGHT}
-          />
-          <Text style={styles.actionText}>{formatLikes(post.likes)}</Text>
+        <TouchableOpacity 
+          style={styles.seeMoreButton} 
+          activeOpacity={0.7}
+          onPress={handlePress}
+        >
+          <Text style={styles.seeMoreText}>See more</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.actionButton} activeOpacity={0.7}>
+        <View style={styles.commentsInfo}>
           <Icon
             name="chat-bubble-outline"
-            size={20}
-            color={COLORS.TEXT_LIGHT}
+            size={18}
+            color="#1565C0"
           />
-          <Text style={styles.actionText}>
-            {post.comments.length > 0 ? post.comments.length : '0'}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.actionButton} activeOpacity={0.7}>
-          <Icon name="share" size={20} color={COLORS.TEXT_LIGHT} />
-        </TouchableOpacity>
+          <Text style={styles.commentsCount}>{commentsCount}</Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
