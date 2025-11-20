@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, Text, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { TextInput, PostCard } from '@/components/ui';
+import { TextInput } from '@/components/ui';
+import { PostCard } from '@/components/ui/community';
 import type { Post } from '@/types';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { logger } from '@/utils/logger';
@@ -12,7 +13,6 @@ type Props = {
   loadingMore: boolean;
   error: string | null;
   searchQuery: string;
-  onPostPress: (post: Post) => void;
   onSearchChange: (text: string) => void;
   onSearchPress?: () => void;
   onLoadMore: () => void;
@@ -26,7 +26,6 @@ const PostsSection: React.FC<Props> = ({
   loadingMore,
   error,
   searchQuery,
-  onPostPress,
   onSearchChange,
   onSearchPress,
   onLoadMore,
@@ -49,7 +48,7 @@ const PostsSection: React.FC<Props> = ({
   }, [posts, loading, loadingMore, error]);
 
   const renderPost = ({ item }: { item: Post }) => (
-    <PostCard post={item} onPress={onPostPress} />
+    <PostCard post={item} />
   );
 
   const renderFooter = () => (

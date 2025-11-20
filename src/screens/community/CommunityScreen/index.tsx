@@ -143,9 +143,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     console.log('Navegar para live:', live.id);
   };
 
-  const handlePostPress = (post: Post) => {
-    navigation.navigate('PostDetails', { post });
-  };
 
   const handleSearchChange = (text: string) => {
     setSearchQuery(text);
@@ -291,7 +288,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
             loadingMore={loadingMore}
             error={error}
             searchQuery={searchQuery}
-            onPostPress={handlePostPress}
             onSearchChange={handleSearchChange}
             onSearchPress={handleSearchPress}
             onLoadMore={handleLoadMore}

@@ -12,7 +12,6 @@ type Props = {
   loadingMore: boolean;
   error: string | null;
   searchQuery: string;
-  onPostPress: (post: Post) => void;
   onSearchChange: (text: string) => void;
   onSearchPress?: () => void;
   onLoadMore: () => void;
@@ -28,7 +27,6 @@ const SocialList: React.FC<Props> = ({
   loadingMore,
   error,
   searchQuery,
-  onPostPress,
   onSearchChange,
   onSearchPress,
   onLoadMore,
@@ -48,7 +46,6 @@ const SocialList: React.FC<Props> = ({
         loadingMore={loadingMore}
         error={error}
         searchQuery={searchQuery}
-        onPostPress={onPostPress}
         onSearchChange={onSearchChange}
         onSearchPress={onSearchPress}
         onLoadMore={onLoadMore}

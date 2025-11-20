@@ -76,5 +76,11 @@ export const styles = StyleSheet.create({
     color: '#1565C0',
     fontWeight: '600',
   },
+  commentsSection: {
+    marginTop: 16,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#E0E0E0',
+  },
 });
 

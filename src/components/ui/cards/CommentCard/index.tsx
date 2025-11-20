@@ -60,6 +60,13 @@ const CommentCard: React.FC<Props> = ({
     }
   };
 
+  const capitalizeWords = (text: string): string => {
+    return text
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
+
   return (
     <View style={[styles.container, level > 0 && styles.replyContainer]}>
       <View style={styles.commentHeader}>
@@ -77,56 +84,20 @@ const CommentCard: React.FC<Props> = ({
             <Icon name="person" size={16} color="#666" />
           </View>
         )}
-        <View style={styles.authorInfo}>
-          <Text style={styles.authorName}>{comment.author.name}</Text>
-          <Text style={styles.timeAgo}>{formatTimeAgo(comment.createdAt)}</Text>
-        </View>
+        <Text style={styles.authorName}>{capitalizeWords(comment.author.name)}</Text>
       </View>
 
       <Text style={styles.content}>{comment.content}</Text>
 
-      <View style={styles.actions}>
+      {hasReplies && (
         <TouchableOpacity
-          style={styles.actionButton}
-          onPress={() => onUpvote && onUpvote(comment.id)}
+          style={styles.hideButton}
+          onPress={handleToggleReplies}
           activeOpacity={0.7}
         >
-          <Icon name="arrow-upward" size={18} color="#000" />
-          <Text style={styles.actionCount}>{comment.upvotes}</Text>
+          <Text style={styles.hideText}>{isExpanded ? 'hide' : 'show'}</Text>
         </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={() => onDownvote && onDownvote(comment.id)}
-          activeOpacity={0.7}
-        >
-          <Icon name="arrow-downward" size={18} color="#000" />
-        </TouchableOpacity>
-
-        {onReply && (
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => onReply(comment)}
-            activeOpacity={0.7}
-          >
-            <Icon name="chat-bubble-outline" size={18} color="#000" />
-            {hasReplies && (
-              <Text style={styles.replyCount}>{comment.replies?.length}</Text>
-            )}
-          </TouchableOpacity>
-        )}
-
-        {hasReplies && onToggleReplies && (
-          <TouchableOpacity
-            style={styles.hideButton}
-            onPress={handleToggleReplies}
-            activeOpacity={0.7}
-          >
-            <Icon name={isExpanded ? 'expand-less' : 'expand-more'} size={18} color="#000" />
-            <Text style={styles.hideText}>{isExpanded ? 'Hide' : 'Show'}</Text>
-          </TouchableOpacity>
-        )}
-      </View>
+      )}
 
       {hasReplies && isExpanded && showReplies && (
         <View style={styles.repliesContainer}>

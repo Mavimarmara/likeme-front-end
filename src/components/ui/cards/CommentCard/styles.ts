@@ -3,14 +3,11 @@ import { COLORS, FONT_SIZES, SPACING, BORDER_RADIUS } from '@/constants';
 
 export const styles = StyleSheet.create({
   container: {
-    backgroundColor: COLORS.WHITE,
-    padding: SPACING.MD,
-    marginBottom: SPACING.SM,
-    borderRadius: BORDER_RADIUS.MD,
+    marginBottom: SPACING.MD,
   },
   replyContainer: {
     marginLeft: SPACING.LG,
-    backgroundColor: COLORS.BACKGROUND,
+    marginTop: SPACING.SM,
   },
   commentHeader: {
     flexDirection: 'row',
@@ -32,60 +29,32 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: SPACING.SM,
   },
-  authorInfo: {
-    flex: 1,
-  },
   authorName: {
-    fontSize: FONT_SIZES.SM,
-    fontWeight: '600',
-    color: COLORS.TEXT,
-  },
-  timeAgo: {
-    fontSize: FONT_SIZES.XS,
-    color: COLORS.TEXT_LIGHT,
-    marginTop: 2,
+    fontSize: 11,
+    fontWeight: '400',
+    color: '#9E9E9E',
+    letterSpacing: 0.1,
   },
   content: {
-    fontSize: FONT_SIZES.SM,
-    color: COLORS.TEXT,
-    lineHeight: 20,
-    marginBottom: SPACING.SM,
-  },
-  actions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.MD,
-  },
-  actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.XS,
-  },
-  actionCount: {
-    fontSize: FONT_SIZES.SM,
-    color: COLORS.TEXT,
-    fontWeight: '600',
-  },
-  replyCount: {
-    fontSize: FONT_SIZES.XS,
-    color: COLORS.TEXT_LIGHT,
-    marginLeft: 2,
+    fontSize: 12,
+    fontWeight: '500',
+    fontStyle: 'normal',
+    color: '#6E6A6A',
+    lineHeight: 19,
+    letterSpacing: 0.1,
+    marginBottom: SPACING.XS,
   },
   hideButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.XS,
-    marginLeft: 'auto',
+    marginTop: SPACING.XS,
   },
   hideText: {
-    fontSize: FONT_SIZES.XS,
-    color: COLORS.TEXT_LIGHT,
+    fontSize: 11,
+    color: '#9E9E9E',
+    fontWeight: '400',
+    letterSpacing: 0.1,
   },
   repliesContainer: {
-    marginTop: SPACING.MD,
-    paddingLeft: SPACING.SM,
-    borderLeftWidth: 2,
-    borderLeftColor: COLORS.BACKGROUND,
+    marginTop: SPACING.SM,
   },
 });
 

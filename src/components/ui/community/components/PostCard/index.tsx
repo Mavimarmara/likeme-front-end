@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Badge, SecondaryButton } from '@/components/ui';
+import { Badge, SecondaryButton, CommentCard } from '@/components/ui';
 import { styles } from './styles';
 import { COLORS } from '@/constants';
 import type { Post } from '@/types';
@@ -13,6 +13,9 @@ type Props = {
 };
 
 const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
+  const [isCommentsOpen, setIsCommentsOpen] = useState(false);
+  const [isContentExpanded, setIsContentExpanded] = useState(false);
+
   const capitalizeWords = (text: string): string => {
     return text
       .split(' ')
@@ -72,16 +75,16 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
   const content = getContent();
   const commentsCount = post.comments.length > 0 ? post.comments.length : 0;
 
-  const handlePress = () => {
-    onPress?.(post);
+  const handleCommentsPress = () => {
+    setIsCommentsOpen(!isCommentsOpen);
+  };
+
+  const handleSeeMorePress = () => {
+    setIsContentExpanded(!isContentExpanded);
   };
 
   return (
-    <TouchableOpacity
-      style={styles.container}
-      activeOpacity={0.8}
-      onPress={handlePress}
-    >
+    <View style={styles.container}>
       {displayCategory && <Badge label={displayCategory} />}
 
       <View style={styles.authorSection}>
@@ -107,27 +110,59 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
       ) : null}
 
       {content ? (
-        <Text style={styles.description} numberOfLines={3}>
+        <Text style={styles.description} numberOfLines={isContentExpanded ? undefined : 3}>
           {content}
         </Text>
       ) : null}
 
       <View style={styles.footer}>
-        <SecondaryButton 
-          label="See more"
-          onPress={handlePress}
-        />
+        {content && (
+          <SecondaryButton 
+            label={isContentExpanded ? "See less" : "See more"}
+            onPress={handleSeeMorePress}
+          />
+        )}
 
-        <View style={styles.commentsInfo}>
+        <TouchableOpacity 
+          style={styles.commentsInfo}
+          onPress={handleCommentsPress}
+          activeOpacity={0.7}
+        >
           <Icon
             name="chat-bubble-outline"
             size={18}
             color="#1565C0"
           />
           <Text style={styles.commentsCount}>{commentsCount}</Text>
-        </View>
+        </TouchableOpacity>
       </View>
-    </TouchableOpacity>
+
+      {isCommentsOpen && post.comments && post.comments.length > 0 && (
+        <View style={styles.commentsSection}>
+          {post.comments.map((comment) => (
+            <CommentCard
+              key={comment.id}
+              comment={{
+                id: comment.id,
+                postId: post.id,
+                author: {
+                  id: comment.userId,
+                  name: `User ${comment.userId.slice(0, 8)}`,
+                  avatar: undefined,
+                },
+                content: comment.content,
+                upvotes: 0,
+                downvotes: 0,
+                createdAt: comment.createdAt instanceof Date 
+                  ? comment.createdAt.toISOString() 
+                  : new Date(comment.createdAt).toISOString(),
+              }}
+              showReplies={true}
+            />
+          ))}
+        </View>
+      )}
+    </View>
   );
 };
 
