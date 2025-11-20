@@ -1,7 +1,7 @@
 import React from 'react';
 import { SafeAreaView } from 'react-native';
 import { UnauthenticatedStep1 } from './components';
-import { useAuthLogin } from '@/hooks/useAuthLogin';
+import { useAuthLogin } from '@/hooks';
 import { styles } from './styles';
 
 type Props = {

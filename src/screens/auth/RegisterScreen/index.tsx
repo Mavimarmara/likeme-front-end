@@ -13,7 +13,8 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Header, Title, TextInput, PrimaryButton, SecondaryButton, ButtonGroup } from '@/components/ui';
 import { GradientSplash5 } from '@/assets';
-import { storageService, personsService, PersonData } from '@/services';
+import { storageService, personsService } from '@/services';
+import type { PersonData } from '@/types/person';
 import { styles } from './styles';
 import { COLORS } from '@/constants';
 

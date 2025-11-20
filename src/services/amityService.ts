@@ -1,4 +1,5 @@
 import apiClient from './infrastructure/apiClient';
+import { logger } from '@/utils/logger';
 
 export interface AmityAuthTokenResponse {
   success: boolean;
@@ -31,7 +32,7 @@ class AmityService {
 
       return response.data.accessToken;
     } catch (error) {
-      console.error('Erro ao obter token do Amity:', error);
+      logger.error('Erro ao obter token do Amity:', error);
       if (error instanceof Error) {
         throw error;
       }

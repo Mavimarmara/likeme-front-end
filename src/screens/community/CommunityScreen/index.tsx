@@ -1,16 +1,16 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { View, Image, StyleSheet, Text, FlatList, TouchableOpacity, useWindowDimensions, Alert } from 'react-native';
+import React, { useState, useCallback, useMemo } from 'react';
+import { View, Image, StyleSheet, Text, FlatList, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import { Toggle, SocialList, ProgramsList, LiveBannerData, Post, Header } from '@/components/ui';
+import { Toggle, SocialList, ProgramsList, LiveBannerData, Header } from '@/components/ui';
 import type { Community, Program } from '@/components/ui';
-import { AuthService, communityService } from '@/services';
+import type { Post } from '@/types';
 import { BackgroundWithGradient } from '@/assets';
 import { styles } from './styles';
-import type { CommunityStackParamList } from '@/navigation/CommunityStackNavigator';
+import type { CommunityStackParamList } from '@/types/navigation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { COLORS } from '@/constants';
-import type { UserFeedApiResponse, CommunityPost, CommunityFile } from '@/services';
+import { useUserFeed, useLogout } from '@/hooks';
 
 type CommunityMode = 'Social' | 'Programs';
 
@@ -120,46 +120,30 @@ const SUGGESTED_PRODUCTS: SuggestedProduct[] = [
   },
 ];
 
-const PAGE_SIZE = 10;
-
 type NavigationProp = StackNavigationProp<CommunityStackParamList, 'CommunityList'>;
 type Props = { navigation: NavigationProp };
-
-const mapCommunityPostToPost = (communityPost: CommunityPost, files?: CommunityFile[]): Post => {
-  let imageUrl: string | undefined;
-  if (communityPost.data?.fileId && files) {
-    const file = files.find(f => f.fileId === communityPost.data?.fileId);
-    imageUrl = file?.fileUrl;
-  }
-
-  const likes = communityPost.reactionsCount || 0;
-  const comments: Post['comments'] = [];
-
-  return {
-    id: communityPost.postId || communityPost.id || '',
-    userId: communityPost.userId || communityPost.userPublicId || '',
-    content: communityPost.data?.text || communityPost.data?.title || '',
-    image: imageUrl,
-    likes,
-    comments,
-    createdAt: communityPost.createdAt ? new Date(communityPost.createdAt) : new Date(),
-  };
-};
 
 const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   const [selectedMode, setSelectedMode] = useState<CommunityMode>('Social');
   const [selectedCommunityId, setSelectedCommunityId] = useState<string | undefined>();
   const [selectedProgramId, setSelectedProgramId] = useState<string | undefined>();
-
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [loadingMore, setLoadingMore] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [activeProductSlide, setActiveProductSlide] = useState(0);
   const { width: windowWidth } = useWindowDimensions();
+
+  const { logout } = useLogout({ navigation });
+  const {
+    posts,
+    loading,
+    loadingMore,
+    error,
+    hasMore,
+    loadMore,
+    search,
+  } = useUserFeed({
+    enabled: selectedMode === 'Social',
+    searchQuery,
+  });
 
   const productSlides = useMemo(() => {
     const slides: SuggestedProduct[][] = [];
@@ -168,103 +152,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     }
     return slides;
   }, []);
-  
-  const hasLoadedInitially = useRef(false);
-  const previousSearchQuery = useRef<string>('');
-  const previousMode = useRef<CommunityMode>('Social');
-  const isLoadingRef = useRef(false);
-  const hasErrorRef = useRef(false);
-
-  const loadPosts = useCallback(
-    async (page: number, search?: string, append: boolean = false) => {
-      if (isLoadingRef.current) {
-        return;
-      }
-
-      try {
-        isLoadingRef.current = true;
-        hasErrorRef.current = false;
-        
-        if (page === 1) {
-          setLoading(true);
-        } else {
-          setLoadingMore(true);
-        }
-        setError(null);
-
-        const userFeedResponse: UserFeedApiResponse = await communityService.getUserFeed({
-          page,
-          limit: PAGE_SIZE,
-        });
-
-        if (!userFeedResponse.success || !userFeedResponse.data) {
-          throw new Error(userFeedResponse.message || 'Erro ao carregar feed do usuário');
-        }
-
-        console.log('userFeedResponse', userFeedResponse.data.posts);
-
-        const mappedPosts: Post[] = (userFeedResponse.data.posts || []).map((communityPost) =>
-          mapCommunityPostToPost(communityPost, userFeedResponse.data?.files)
-        );
-
-        if (append) {
-          setPosts((prev) => [...prev, ...mappedPosts]);
-        } else {
-          setPosts(mappedPosts);
-        }
-
-        setCurrentPage(page);
-        
-        const hasMorePages = userFeedResponse.pagination 
-          ? page < userFeedResponse.pagination.totalPages 
-          : userFeedResponse.data.paging?.next !== undefined;
-        setHasMore(hasMorePages);
-      } catch (err) {
-        hasErrorRef.current = true;
-        const errorMessage =
-          err instanceof Error ? err.message : 'Erro ao carregar posts';
-        setError(errorMessage);
-        setHasMore(false);
-        
-        if (page === 1) {
-          setPosts([]);
-        }
-      } finally {
-        setLoading(false);
-        setLoadingMore(false);
-        isLoadingRef.current = false;
-      }
-    },
-    []
-  );
-
-  useEffect(() => {
-    if (selectedMode !== 'Social') {
-      return;
-    }
-
-    if (isLoadingRef.current) {
-      return;
-    }
-
-    const searchChanged = previousSearchQuery.current !== searchQuery;
-    const modeChanged = previousMode.current !== selectedMode;
-    
-    const shouldLoad = !hasLoadedInitially.current || searchChanged || modeChanged;
-    
-    if (shouldLoad) {
-      hasLoadedInitially.current = true;
-      previousSearchQuery.current = searchQuery;
-      previousMode.current = selectedMode;
-      hasErrorRef.current = false;
-      
-      if (searchChanged || modeChanged) {
-        setCurrentPage(1);
-        setHasMore(true);
-      }
-      loadPosts(1, searchQuery);
-    }
-  }, [searchQuery, selectedMode]);
 
   const handleCommunityPress = (community: Community) => {
     setSelectedCommunityId(community.id);
@@ -292,53 +179,21 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleSearchPress = useCallback(() => {
     if (selectedMode === 'Social') {
-      setCurrentPage(1);
-      setHasMore(true);
-      previousSearchQuery.current = searchQuery;
-      hasLoadedInitially.current = false;
-      loadPosts(1, searchQuery);
+      search(searchQuery);
     }
-  }, [searchQuery, selectedMode, loadPosts]);
+  }, [searchQuery, selectedMode, search]);
 
   const handleLoadMore = useCallback(() => {
-    if (!loadingMore && hasMore && !loading && selectedMode === 'Social') {
-      loadPosts(currentPage + 1, searchQuery, true);
+    if (selectedMode === 'Social') {
+      loadMore();
     }
-  }, [currentPage, hasMore, loadingMore, loading, searchQuery, selectedMode, loadPosts]);
+  }, [selectedMode, loadMore]);
 
   const handleFilterPress = () => {
     console.log('Abrir filtros');
   };
 
-  const handleLogout = useCallback(async () => {
-    Alert.alert(
-      'Confirmar Logout',
-      'Tem certeza que deseja sair?',
-      [
-        {
-          text: 'Cancelar',
-          style: 'cancel',
-        },
-        {
-          text: 'Sair',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await AuthService.logout();
-              const rootNavigation = navigation.getParent() || navigation;
-              rootNavigation.reset({
-                index: 0,
-                routes: [{ name: 'Unauthenticated' as never }],
-              });
-            } catch (error) {
-              console.error('Erro ao fazer logout:', error);
-              Alert.alert('Erro', 'Não foi possível fazer logout. Tente novamente.');
-            }
-          },
-        },
-      ]
-    );
-  }, [navigation]);
+  const handleLogout = logout;
 
   const handleProductsMomentumEnd = useCallback(
     (event: any) => {

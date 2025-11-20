@@ -1,12 +1,7 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { CommunityScreen, PostDetailsScreen } from '@/screens/community';
-import { Post } from '@/components/ui';
-
-export type CommunityStackParamList = {
-  CommunityList: undefined;
-  PostDetails: { post: Post };
-};
+import type { CommunityStackParamList } from '@/types/navigation';
 
 const Stack = createStackNavigator<CommunityStackParamList>();
 

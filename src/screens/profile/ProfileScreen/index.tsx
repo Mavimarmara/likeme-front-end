@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LogoutButton, Title } from '@/components/ui';
-import { storageService, StoredUser } from '@/services';
+import { storageService } from '@/services';
+import type { StoredUser } from '@/types/auth';
 import { styles } from './styles';
 
 type Props = {

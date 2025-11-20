@@ -90,5 +90,42 @@ export const styles = StyleSheet.create({
     color: COLORS.TEXT,
     fontWeight: '600',
   },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SPACING.SM,
+  },
+  headerInfo: {
+    flex: 1,
+  },
+  dateText: {
+    fontSize: FONT_SIZES.XS,
+    color: COLORS.TEXT_LIGHT,
+    marginTop: 2,
+  },
+  content: {
+    fontSize: FONT_SIZES.MD,
+    color: COLORS.TEXT,
+    lineHeight: 20,
+    marginBottom: SPACING.MD,
+  },
+  image: {
+    width: '100%',
+    height: 200,
+    borderRadius: BORDER_RADIUS.MD,
+    marginBottom: SPACING.MD,
+  },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.XS,
+    paddingVertical: SPACING.XS,
+    paddingHorizontal: SPACING.SM,
+  },
+  actionText: {
+    fontSize: FONT_SIZES.SM,
+    color: COLORS.TEXT_LIGHT,
+    fontWeight: '500',
+  },
 });
 

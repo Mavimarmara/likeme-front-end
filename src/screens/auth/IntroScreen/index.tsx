@@ -3,7 +3,7 @@ import { View, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header, Title, ButtonGroup, PrimaryButton, SecondaryButton } from '@/components/ui';
 import { GradientSplash4 } from '@/assets';
-import { useAuthLogin } from '@/hooks/useAuthLogin';
+import { useAuthLogin } from '@/hooks';
 import { styles } from './styles';
 
 type Props = { navigation: any; route: any };

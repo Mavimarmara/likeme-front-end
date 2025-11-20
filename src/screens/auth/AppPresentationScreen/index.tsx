@@ -10,7 +10,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '@/components/ui';
 import { PRESENTATION_PAGES } from '@/constants/presentation';
-import { useAuthLogin } from '@/hooks/useAuthLogin';
+import { useAuthLogin } from '@/hooks';
 import { styles } from './styles';
 
 const { width } = Dimensions.get('window');

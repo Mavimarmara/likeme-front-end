@@ -51,3 +51,8 @@ export const BORDER_RADIUS = {
   XL: 24,
   ROUND: 50,
 } as const;
+
+export const PAGINATION = {
+  DEFAULT_PAGE_SIZE: 10,
+  MAX_PAGE_SIZE: 100,
+} as const;

@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { TextInput, PostCard, Post } from '@/components/ui';
+import { TextInput, PostCard } from '@/components/ui';
+import type { Post } from '@/types';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { styles } from './styles';
 

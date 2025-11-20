@@ -1,31 +1,9 @@
-export type RootStackParamList = {
-  Unauthenticated: undefined;
-  Register: undefined;
-  Anamnese: undefined;
-  Main: undefined;
-};
-
-export type MainTabParamList = {
-  Wellness: undefined;
-  Activities: undefined;
-  Protocol: undefined;
-  Marketplace: undefined;
-  Community: undefined;
-  HealthProvider: undefined;
-  Profile: undefined;
-};
-
-export type CommunityStackParamList = {
-  CommunityList: undefined;
-  PostDetails: { post: any };
-};
-
-export interface ScreenProps<T extends keyof RootStackParamList> {
-  navigation: any;
-  route: {
-    params: RootStackParamList[T];
-  };
-}
+export * from './navigation';
+export * from './community';
+export * from './auth';
+export * from './person';
+export * from './infrastructure';
+export * from './personalObjectives';
 
 export interface User {
   id: string;
@@ -109,6 +87,3 @@ export interface HealthProvider {
   avatar?: string;
   availableSlots: Date[];
 }
-
-export * from './personalObjectives';
-export * from './amity';

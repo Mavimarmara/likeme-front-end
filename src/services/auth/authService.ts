@@ -4,23 +4,8 @@ import * as Crypto from 'expo-crypto';
 import { Alert } from 'react-native';
 import { AUTH0_CONFIG, AUTH_CONFIG, getApiUrl } from '@/config';
 import storageService from './storageService';
-
-export interface AuthResult {
-  accessToken: string;
-  idToken: string;
-  refreshToken?: string;
-  user: {
-    email: string;
-    name?: string;
-    picture?: string;
-  };
-}
-
-export interface RegisterCredentials {
-  email: string;
-  password: string;
-  name?: string;
-}
+import { logger } from '@/utils/logger';
+import type { AuthResult, RegisterCredentials } from '@/types/auth';
 
 class AuthService {
   private getAuthUrl(): string {
@@ -73,7 +58,7 @@ class AuthService {
       try {
         discovery = await AuthSession.fetchDiscoveryAsync(`https://${AUTH0_CONFIG.domain}`);
       } catch (error) {
-        console.error('Discovery error:', error);
+        logger.error('Discovery error:', error);
         if (error instanceof Error && error.message.includes('JSON')) {
           throw new Error(`Erro ao conectar com Auth0. Verifique se o domínio ${AUTH0_CONFIG.domain} está correto.`);
         }
@@ -119,7 +104,7 @@ class AuthService {
         if (result.type === 'error') {
           const error = (result as any).error;
           const errorDescription = error?.description || error?.error_description || error?.message || 'Erro desconhecido';
-          console.error('Auth error details:', errorDescription);
+          logger.error('Auth error details:', errorDescription);
           
           if (errorDescription.includes('Service not found') || errorDescription.includes('your-api-identifier')) {
             throw new Error('Configuração do Auth0 Audience incorreta. Verifique a variável EXPO_PUBLIC_AUTH0_AUDIENCE no arquivo .env e configure com o identifier da sua API no Auth0 Dashboard.');
@@ -155,7 +140,7 @@ class AuthService {
         );
         console.log('Token exchange successful');
       } catch (error) {
-        console.error('Token exchange error:', error);
+        logger.error('Token exchange error:', error);
         if (error instanceof Error) {
           if (error.message.includes('code_verifier') || error.message.includes('codeVerifier')) {
             throw new Error('Erro PKCE: O code_verifier não foi encontrado. Isso pode acontecer se a sessão foi perdida. Tente fazer login novamente.');
@@ -169,7 +154,7 @@ class AuthService {
       }
 
       if (!tokenResponse.idToken) {
-        console.error('Token response:', JSON.stringify(tokenResponse, null, 2));
+        logger.debug('Token response:', JSON.stringify(tokenResponse, null, 2));
         throw new Error('Erro de configuração: idToken não foi retornado pelo Auth0. Verifique a configuração do audience.');
       }
 
@@ -184,14 +169,14 @@ class AuthService {
 
       if (!userInfoResponse.ok) {
         const errorText = await userInfoResponse.text();
-        console.error('UserInfo error response:', errorText);
+        logger.error('UserInfo error response:', errorText);
         throw new Error(`Falha ao obter informações do usuário: ${userInfoResponse.status}`);
       }
 
       const contentType = userInfoResponse.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
         const responseText = await userInfoResponse.text();
-        console.error('UserInfo não retornou JSON:', responseText.substring(0, 200));
+        logger.error('UserInfo não retornou JSON:', responseText.substring(0, 200));
         throw new Error('Resposta inválida do servidor Auth0');
       }
 
@@ -208,8 +193,8 @@ class AuthService {
         },
       };
     } catch (error) {
-      console.error('Login error:', error);
-      console.error('Error details:', {
+      logger.error('Login error:', error);
+      logger.error('Error details:', {
         message: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
       });
@@ -273,7 +258,7 @@ class AuthService {
       const data = await response.json();
       return data.access_token;
     } catch (error) {
-      console.error('Token refresh error:', error);
+      logger.error('Token refresh error:', error);
       throw new Error('Falha ao renovar token.');
     }
   }
@@ -304,12 +289,12 @@ class AuthService {
             errorMessage = errorData.message || errorMessage;
           } catch (e) {
             const errorText = await response.text();
-            console.error('Backend error response:', errorText.substring(0, 200));
+            logger.error('Backend error response:', errorText.substring(0, 200));
             errorMessage = errorText.substring(0, 100) || errorMessage;
           }
         } else {
           const errorText = await response.text();
-          console.error('Backend error response (not JSON):', errorText.substring(0, 200));
+          logger.error('Backend error response (not JSON):', errorText.substring(0, 200));
         }
         
         throw new Error(errorMessage);
@@ -318,7 +303,7 @@ class AuthService {
       const contentType = response.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
         const responseText = await response.text();
-        console.error('Backend não retornou JSON:', responseText.substring(0, 200));
+        logger.error('Backend não retornou JSON:', responseText.substring(0, 200));
         throw new Error('Resposta inválida do servidor');
       }
 
@@ -332,7 +317,7 @@ class AuthService {
       if (sessionToken) {
         await storageService.setToken(sessionToken);
       } else {
-        console.warn('Backend não retornou token de sessão. Usando accessToken do Auth0.');
+        logger.warn('Backend não retornou token de sessão. Usando accessToken do Auth0.');
         await storageService.setToken(authResult.accessToken);
       }
 
@@ -351,7 +336,7 @@ class AuthService {
       
       return backendResponse;
     } catch (error) {
-      console.error('Backend communication error:', error);
+      logger.error('Backend communication error:', error);
       if (error instanceof Error) {
         throw error;
       }
@@ -373,12 +358,12 @@ class AuthService {
           }).catch(() => {});
         }
       } catch (error) {
-        console.warn('Erro ao fazer logout no backend:', error);
+        logger.warn('Erro ao fazer logout no backend:', error);
       }
       
       await storageService.clearAll();
     } catch (error) {
-      console.error('Logout error:', error);
+      logger.error('Logout error:', error);
       await storageService.clearAll();
     }
   }

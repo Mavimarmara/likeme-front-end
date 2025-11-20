@@ -1,23 +1,18 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { logger } from '@/utils/logger';
+import type { StoredUser } from '@/types/auth';
 
 const TOKEN_KEY = '@likeme:auth_token';
 const USER_KEY = '@likeme:user';
 const REGISTER_COMPLETED_AT_KEY = '@likeme:register_completed_at';
 const OBJECTIVES_SELECTED_AT_KEY = '@likeme:objectives_selected_at';
 
-export interface StoredUser {
-  email: string;
-  name?: string;
-  picture?: string;
-  nickname?: string;
-}
-
 class StorageService {
   async setToken(token: string): Promise<void> {
     try {
       await AsyncStorage.setItem(TOKEN_KEY, token);
     } catch (error) {
-      console.error('Error saving token:', error);
+      logger.error('Error saving token:', error);
       throw new Error('Falha ao salvar token');
     }
   }
@@ -26,7 +21,7 @@ class StorageService {
     try {
       return await AsyncStorage.getItem(TOKEN_KEY);
     } catch (error) {
-      console.error('Error getting token:', error);
+      logger.error('Error getting token:', error);
       return null;
     }
   }
@@ -35,7 +30,7 @@ class StorageService {
     try {
       await AsyncStorage.removeItem(TOKEN_KEY);
     } catch (error) {
-      console.error('Error removing token:', error);
+      logger.error('Error removing token:', error);
     }
   }
 
@@ -43,7 +38,7 @@ class StorageService {
     try {
       await AsyncStorage.setItem(USER_KEY, JSON.stringify(user));
     } catch (error) {
-      console.error('Error saving user:', error);
+      logger.error('Error saving user:', error);
     }
   }
 
@@ -55,7 +50,7 @@ class StorageService {
       }
       return null;
     } catch (error) {
-      console.error('Error getting user:', error);
+      logger.error('Error getting user:', error);
       return null;
     }
   }
@@ -64,7 +59,7 @@ class StorageService {
     try {
       await AsyncStorage.removeItem(USER_KEY);
     } catch (error) {
-      console.error('Error removing user:', error);
+      logger.error('Error removing user:', error);
     }
   }
 
@@ -76,7 +71,7 @@ class StorageService {
         await AsyncStorage.removeItem(REGISTER_COMPLETED_AT_KEY);
       }
     } catch (error) {
-      console.error('Error saving register completed at:', error);
+      logger.error('Error saving register completed at:', error);
     }
   }
 
@@ -84,7 +79,7 @@ class StorageService {
     try {
       return await AsyncStorage.getItem(REGISTER_COMPLETED_AT_KEY);
     } catch (error) {
-      console.error('Error getting register completed at:', error);
+      logger.error('Error getting register completed at:', error);
       return null;
     }
   }
@@ -97,7 +92,7 @@ class StorageService {
         await AsyncStorage.removeItem(OBJECTIVES_SELECTED_AT_KEY);
       }
     } catch (error) {
-      console.error('Error saving objectives selected at:', error);
+      logger.error('Error saving objectives selected at:', error);
     }
   }
 
@@ -105,7 +100,7 @@ class StorageService {
     try {
       return await AsyncStorage.getItem(OBJECTIVES_SELECTED_AT_KEY);
     } catch (error) {
-      console.error('Error getting objectives selected at:', error);
+      logger.error('Error getting objectives selected at:', error);
       return null;
     }
   }
@@ -117,7 +112,7 @@ class StorageService {
       await AsyncStorage.removeItem(REGISTER_COMPLETED_AT_KEY);
       await AsyncStorage.removeItem(OBJECTIVES_SELECTED_AT_KEY);
     } catch (error) {
-      console.error('Error clearing storage:', error);
+      logger.error('Error clearing storage:', error);
     }
   }
 }

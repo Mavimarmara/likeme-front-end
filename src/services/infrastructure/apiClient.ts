@@ -1,16 +1,7 @@
 import { BACKEND_CONFIG, getApiUrl } from '@/config';
 import storageService from '../auth/storageService';
-
-export interface ApiResponse<T> {
-  success: boolean;
-  message: string;
-  data: T;
-}
-
-export interface ApiError {
-  message: string;
-  status?: number;
-}
+import { logger } from '@/utils/logger';
+import type { ApiResponse, ApiError } from '@/types/infrastructure';
 
 class ApiClient {
   private baseUrl: string;
@@ -108,7 +99,7 @@ class ApiClient {
       await storageService.setToken(newToken);
       return true;
     } catch (error) {
-      console.error('Erro ao tentar obter token do backend:', error);
+      logger.error('Erro ao tentar obter token do backend:', error);
       return false;
     }
   }
@@ -176,7 +167,7 @@ class ApiClient {
 
       return this.handleResponse<T>(response);
     } catch (error) {
-      console.error('API GET error:', error);
+      logger.error('API GET error:', error);
       if (error instanceof Error) {
         throw error;
       }
@@ -201,7 +192,7 @@ class ApiClient {
 
       return this.handleResponse<T>(response);
     } catch (error) {
-      console.error('API POST error:', error);
+      logger.error('API POST error:', error);
       if (error instanceof Error) {
         throw error;
       }
@@ -226,7 +217,7 @@ class ApiClient {
 
       return this.handleResponse<T>(response);
     } catch (error) {
-      console.error('API PUT error:', error);
+      logger.error('API PUT error:', error);
       if (error instanceof Error) {
         throw error;
       }
@@ -250,7 +241,7 @@ class ApiClient {
 
       return this.handleResponse<T>(response);
     } catch (error) {
-      console.error('API DELETE error:', error);
+      logger.error('API DELETE error:', error);
       if (error instanceof Error) {
         throw error;
       }

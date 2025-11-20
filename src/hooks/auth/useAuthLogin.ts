@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { Alert } from 'react-native';
 import { AuthService } from '@/services';
+import { logger } from '@/utils/logger';
 
 export const useAuthLogin = (navigation: any) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -19,7 +20,7 @@ export const useAuthLogin = (navigation: any) => {
         userName: authResult.user.name || authResult.user.email,
       } as never);
     } catch (error) {
-      console.error('Login error:', error);
+      logger.error('Login error:', error);
       if (error instanceof Error) {
         const errorMessage = error.message.toLowerCase();
         if (
