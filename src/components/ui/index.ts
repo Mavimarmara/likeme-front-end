@@ -21,3 +21,6 @@ export * from './menu';
 
 // Feedback
 export * from './feedback';
+
+// Badge
+export { default as Badge } from './badge';

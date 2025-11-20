@@ -29,17 +29,17 @@ const PostDetailsHeader: React.FC<Props> = ({ post }) => {
   return (
     <View style={styles.container}>
       {post.category && (
-        <View style={styles.categoryTag}>
-          <Text style={styles.categoryText}>{post.category}</Text>
-        </View>
+      <View style={styles.categoryTag}>
+        <Text style={styles.categoryText}>{post.category}</Text>
+      </View>
       )}
 
       <View style={styles.authorSection}>
         {post.userAvatar ? (
-          <Image
+            <Image
             source={{ uri: post.userAvatar }}
-            style={styles.avatar}
-          />
+              style={styles.avatar}
+            />
         ) : (
           <View style={styles.avatarPlaceholder}>
             <Icon name="person" size={20} color="#666" />

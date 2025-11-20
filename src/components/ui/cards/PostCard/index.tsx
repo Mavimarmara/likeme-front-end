@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { Badge } from '@/components/ui';
 import { styles } from './styles';
 import { COLORS } from '@/constants';
 import type { Post } from '@/types';
@@ -76,11 +77,7 @@ const PostCard: React.FC<Props> = ({ post, onPress, category, overline }) => {
       activeOpacity={0.8}
       onPress={handlePress}
     >
-      {displayCategory && (
-        <View style={styles.categoryTag}>
-          <Text style={styles.categoryText}>{displayCategory}</Text>
-        </View>
-      )}
+      {displayCategory && <Badge label={displayCategory} />}
 
       <View style={styles.authorSection}>
         {post.userAvatar ? (
@@ -93,14 +90,9 @@ const PostCard: React.FC<Props> = ({ post, onPress, category, overline }) => {
             <Icon name="person" size={20} color={COLORS.TEXT_LIGHT} />
           </View>
         )}
-        <View style={styles.authorInfo}>
-          {post.userName && (
-            <Text style={styles.authorName}>{post.userName}</Text>
-          )}
-          {displayOverline && (
-            <Text style={styles.overline}>{displayOverline}</Text>
-          )}
-        </View>
+        {displayOverline && (
+          <Text style={styles.overline}>{displayOverline}</Text>
+        )}
       </View>
 
       {title ? (

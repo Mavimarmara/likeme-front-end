@@ -55,13 +55,13 @@ const PostsSection: React.FC<Props> = ({
   const renderFooter = () => (
     <>
       {loadingMore && (
-        <View style={styles.loadingFooter}>
-          <ActivityIndicator size="small" color="#4CAF50" />
-        </View>
+      <View style={styles.loadingFooter}>
+        <ActivityIndicator size="small" color="#4CAF50" />
+      </View>
       )}
       {footerComponent}
     </>
-  );
+    );
 
   const renderEmpty = () => {
     if (loading) return null;
