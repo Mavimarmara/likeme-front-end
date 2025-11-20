@@ -1,31 +1,91 @@
 export interface CommunityPost {
-  id: string;
+  _id?: string;
   postId?: string;
   parentPostId?: string;
+  postedUserId?: string;
   userId?: string;
-  userPublicId?: string;
-  communityId?: string;
+  targetId?: string;
+  targetType?: string;
   data?: {
     text?: string;
     title?: string;
     fileId?: string;
     thumbnailFileId?: string;
+    [key: string]: unknown;
   };
   reactionsCount?: number;
   commentsCount?: number;
-  createdAt?: string;
+  createdAt: string;
   updatedAt?: string;
 }
 
 export interface CommunityFile {
-  fileId?: string;
-  fileUrl?: string;
+  fileId: string;
+  fileUrl: string;
   type?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CommunityComment {
+  commentId: string;
+  userId: string;
+  referenceId?: string;
+  data?: {
+    text?: string;
+    [key: string]: unknown;
+  };
+  reactionsCount: number;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface CommunityUser {
+  userId: string;
+  displayName: string;
+  avatarFileId?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface Community {
+  communityId: string;
+  displayName: string;
+  description?: string;
+  avatarFileId?: string;
+  isPublic: boolean;
+  membersCount: number;
+  postsCount: number;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface CommunityUserRelation {
+  userId: string;
+  communityId: string;
+  communityMembership: string;
+  roles?: string[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CommunityCategory {
+  categoryId: string;
+  name: string;
+  avatarFileId?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface CommunityFeedData {
   posts?: CommunityPost[];
+  postChildren?: CommunityPost[];
+  comments?: CommunityComment[];
+  users?: CommunityUser[];
   files?: CommunityFile[];
+  communities?: Community[];
+  communityUsers?: CommunityUserRelation[];
+  categories?: CommunityCategory[];
   paging?: {
     next?: string;
     previous?: string;
@@ -33,9 +93,18 @@ export interface CommunityFeedData {
 }
 
 export interface UserFeedApiResponse {
-  success: boolean;
+  success?: boolean;
   status?: string;
-  data?: CommunityFeedData;
+  data?: {
+    status?: string;
+    data?: CommunityFeedData;
+    pagination?: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
+  };
   pagination?: {
     page: number;
     limit: number;

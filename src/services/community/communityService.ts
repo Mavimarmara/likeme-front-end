@@ -26,7 +26,7 @@ class CommunityService {
         true,
         false
       );
-
+console.log('userFeedResponse', userFeedResponse);
       return userFeedResponse;
     } catch (error) {
       logger.error('Error fetching user feed:', error);

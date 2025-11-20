@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { communityService } from '@/services';
 import type { Post } from '@/types';
+import type { CommunityFeedData } from '@/types/community';
 import { mapCommunityPostToPost } from '@/utils/community/mappers';
 import { PAGINATION } from '@/constants';
+import { logger } from '@/utils/logger';
 
 interface UseUserFeedOptions {
   enabled?: boolean;
@@ -62,13 +64,52 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
           limit: pageSize,
         });
 
-        if (!userFeedResponse.success || !userFeedResponse.data) {
+        const isSuccess = userFeedResponse.success === true || 
+                         userFeedResponse.status === 'ok' || 
+                         userFeedResponse.data?.status === 'ok';
+        
+        let feedData: CommunityFeedData | undefined;
+        if (userFeedResponse.data?.data) {
+          feedData = userFeedResponse.data.data;
+        } else if (userFeedResponse.data && 'posts' in userFeedResponse.data) {
+          feedData = userFeedResponse.data as CommunityFeedData;
+        }
+        
+        const pagination = userFeedResponse.data?.pagination || userFeedResponse.pagination;
+        
+        if (!isSuccess || !feedData) {
           throw new Error(userFeedResponse.message || 'Erro ao carregar feed do usuário');
         }
 
-        const mappedPosts: Post[] = (userFeedResponse.data.posts || []).map((communityPost) =>
-          mapCommunityPostToPost(communityPost, userFeedResponse.data?.files)
-        );
+        logger.debug('User feed response:', {
+          success: userFeedResponse.success,
+          status: userFeedResponse.status || userFeedResponse.data?.status,
+          postsCount: feedData.posts?.length || 0,
+          filesCount: feedData.files?.length || 0,
+          hasPagination: !!pagination,
+        });
+
+        logger.debug('Raw posts from API:', {
+          postsArray: feedData.posts,
+          postsLength: feedData.posts?.length || 0,
+          firstPostRaw: feedData.posts?.[0] || null,
+        });
+
+        const mappedPosts: Post[] = (feedData.posts || [])
+          .map((communityPost) =>
+            mapCommunityPostToPost(communityPost, feedData.files)
+          )
+          .filter((post): post is Post => post !== null);
+
+        logger.debug('Mapped posts:', {
+          count: mappedPosts.length,
+          posts: mappedPosts.map(p => ({
+            id: p.id,
+            userId: p.userId,
+            contentLength: p.content?.length || 0,
+            hasImage: !!p.image,
+          })),
+        });
 
         if (append) {
           setPosts((prev) => [...prev, ...mappedPosts]);
@@ -78,9 +119,9 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
 
         setCurrentPage(page);
         
-        const hasMorePages = userFeedResponse.pagination 
-          ? page < userFeedResponse.pagination.totalPages 
-          : userFeedResponse.data.paging?.next !== undefined;
+        const hasMorePages = pagination 
+          ? page < pagination.totalPages 
+          : feedData.paging?.next !== undefined;
         setHasMore(hasMorePages);
       } catch (err) {
         hasErrorRef.current = true;

@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { TextInput, PostCard } from '@/components/ui';
 import type { Post } from '@/types';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { logger } from '@/utils/logger';
 import { styles } from './styles';
 
 type Props = {
@@ -32,6 +33,20 @@ const PostsSection: React.FC<Props> = ({
   onFilterPress,
   footerComponent,
 }) => {
+  useEffect(() => {
+    logger.debug('PostsSection - Posts received:', {
+      postsCount: posts.length,
+      loading,
+      loadingMore,
+      error,
+      firstPost: posts[0] ? {
+        id: posts[0].id,
+        userId: posts[0].userId,
+        contentLength: posts[0].content?.length || 0,
+        hasImage: !!posts[0].image,
+      } : null,
+    });
+  }, [posts, loading, loadingMore, error]);
 
   const renderPost = ({ item }: { item: Post }) => (
     <PostCard post={item} onPress={onPostPress} />
@@ -50,11 +65,18 @@ const PostsSection: React.FC<Props> = ({
 
   const renderEmpty = () => {
     if (loading) return null;
+    
+    const emptyMessage = error 
+      ? `Erro: ${error}` 
+      : posts.length === 0 
+        ? 'Nenhum post encontrado' 
+        : null;
+    
+    if (!emptyMessage) return null;
+    
     return (
       <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>
-          {error || 'Nenhum post encontrado'}
-        </Text>
+        <Text style={styles.emptyText}>{emptyMessage}</Text>
       </View>
     );
   };

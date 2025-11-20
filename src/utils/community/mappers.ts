@@ -1,11 +1,26 @@
 import type { CommunityPost, CommunityFile } from '@/types/community';
 import type { Post } from '@/types';
+import { logger } from '@/utils/logger';
 
 export const mapCommunityPostToPost = (
   communityPost: CommunityPost,
   files?: CommunityFile[]
-): Post => {
+): Post | null => {
+  const postId = communityPost.postId || communityPost._id || '';
+  const userId = communityPost.postedUserId || communityPost.userId || '';
+
+  if (!postId) {
+    logger.warn('Post sem ID válido:', communityPost);
+    return null;
+  }
+
+  if (!communityPost.createdAt) {
+    logger.warn('Post sem createdAt:', communityPost);
+    return null;
+  }
+
   let imageUrl: string | undefined;
+  
   if (communityPost.data?.fileId && files) {
     const file = files.find(f => f.fileId === communityPost.data?.fileId);
     imageUrl = file?.fileUrl;
@@ -14,14 +29,51 @@ export const mapCommunityPostToPost = (
   const likes = communityPost.reactionsCount || 0;
   const comments: Post['comments'] = [];
 
-  return {
-    id: communityPost.postId || communityPost.id || '',
-    userId: communityPost.userId || communityPost.userPublicId || '',
-    content: communityPost.data?.text || communityPost.data?.title || '',
+  let content = '';
+  
+  if (communityPost.data) {
+    if (typeof communityPost.data === 'string') {
+      content = communityPost.data;
+    } else if (typeof communityPost.data === 'object') {
+      content = 
+        communityPost.data.text || 
+        communityPost.data.title || 
+        (Object.keys(communityPost.data).length > 0
+          ? JSON.stringify(communityPost.data)
+          : '');
+    }
+  }
+
+  if (!content) {
+    content = 'Post sem conteúdo';
+  }
+
+  const post: Post = {
+    id: postId,
+    userId: userId,
+    content,
     image: imageUrl,
     likes,
     comments,
-    createdAt: communityPost.createdAt ? new Date(communityPost.createdAt) : new Date(),
+    createdAt: new Date(communityPost.createdAt),
   };
+
+  logger.debug('Mapped post:', { 
+    postId: post.id, 
+    userId: post.userId, 
+    contentLength: post.content.length,
+    hasImage: !!post.image,
+    likes: post.likes,
+    originalPost: {
+      _id: communityPost._id,
+      postId: communityPost.postId,
+      postedUserId: communityPost.postedUserId,
+      userId: communityPost.userId,
+      dataType: (communityPost as any).dataType,
+      data: communityPost.data,
+    }
+  });
+
+  return post;
 };
 
