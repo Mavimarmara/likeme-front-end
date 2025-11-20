@@ -3,7 +3,7 @@ import { View, Image, StyleSheet, Text, FlatList, TouchableOpacity, useWindowDim
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { Toggle, SocialList, ProgramsList, LiveBannerData, Header } from '@/components/ui';
-import type { Community, Program } from '@/components/ui';
+import type { Program } from '@/components/ui';
 import type { Post } from '@/types';
 import { BackgroundWithGradient } from '@/assets';
 import { styles } from './styles';
@@ -25,27 +25,6 @@ const mockLiveBanner: LiveBannerData = {
   endTime: '10:00 pm',
   thumbnail: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400',
 };
-
-const mockCommunities: Community[] = [
-  {
-    id: '1',
-    name: 'Comunidade de Bem-Estar',
-    description: 'Uma comunidade dedicada ao bem-estar físico e mental',
-    membersCount: 1250,
-  },
-  {
-    id: '2',
-    name: 'Fitness & Saúde',
-    description: 'Compartilhe suas rotinas de exercícios e dicas de saúde',
-    membersCount: 890,
-  },
-  {
-    id: '3',
-    name: 'Mindfulness',
-    description: 'Práticas de meditação e atenção plena',
-    membersCount: 650,
-  },
-];
 
 const mockPrograms: Program[] = [
   {
@@ -125,7 +104,6 @@ type Props = { navigation: NavigationProp };
 
 const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   const [selectedMode, setSelectedMode] = useState<CommunityMode>('Social');
-  const [selectedCommunityId, setSelectedCommunityId] = useState<string | undefined>();
   const [selectedProgramId, setSelectedProgramId] = useState<string | undefined>();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeProductSlide, setActiveProductSlide] = useState(0);
@@ -152,10 +130,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     }
     return slides;
   }, []);
-
-  const handleCommunityPress = (community: Community) => {
-    setSelectedCommunityId(community.id);
-  };
 
   const handleProgramPress = (program: Program) => {
     setSelectedProgramId(program.id);
@@ -310,9 +284,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
         
         {selectedMode === 'Social' ? (
           <SocialList
-            communities={mockCommunities}
-            onCommunityPress={handleCommunityPress}
-            selectedCommunityId={selectedCommunityId}
             liveBanner={mockLiveBanner}
             onLivePress={handleLivePress}
             posts={posts}

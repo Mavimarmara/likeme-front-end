@@ -1,23 +1,12 @@
 import React from 'react';
 import { View } from 'react-native';
-import { LiveBanner, LiveBannerData, PostsSection, Post } from '@/components/ui';
+import { LiveBanner, LiveBannerData, PostsSection } from '@/components/ui';
+import type { Post } from '@/types';
 import { styles } from './styles';
 
-export interface Community {
-  id: string;
-  name: string;
-  description: string;
-  membersCount: number;
-  image?: string;
-}
-
 type Props = {
-  communities: Community[];
-  onCommunityPress: (community: Community) => void;
-  selectedCommunityId?: string;
   liveBanner?: LiveBannerData | null;
   onLivePress?: (live: LiveBannerData) => void;
-  // Props para PostsSection
   posts: Post[];
   loading: boolean;
   loadingMore: boolean;
@@ -32,9 +21,6 @@ type Props = {
 };
 
 const SocialList: React.FC<Props> = ({
-  communities,
-  onCommunityPress,
-  selectedCommunityId,
   liveBanner,
   onLivePress,
   posts,

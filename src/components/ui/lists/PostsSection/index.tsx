@@ -37,14 +37,16 @@ const PostsSection: React.FC<Props> = ({
     <PostCard post={item} onPress={onPostPress} />
   );
 
-  const renderFooter = () => {
-    if (!loadingMore) return null;
-    return (
-      <View style={styles.loadingFooter}>
-        <ActivityIndicator size="small" color="#4CAF50" />
-      </View>
-    );
-  };
+  const renderFooter = () => (
+    <>
+      {loadingMore && (
+        <View style={styles.loadingFooter}>
+          <ActivityIndicator size="small" color="#4CAF50" />
+        </View>
+      )}
+      {footerComponent}
+    </>
+  );
 
   const renderEmpty = () => {
     if (loading) return null;
@@ -110,12 +112,7 @@ const PostsSection: React.FC<Props> = ({
           onEndReached={onLoadMore}
           onEndReachedThreshold={0.5}
           ListHeaderComponent={renderHeader}
-          ListFooterComponent={() => (
-            <>
-              {renderFooter()}
-              {footerComponent}
-            </>
-          )}
+          ListFooterComponent={renderFooter}
           ListEmptyComponent={renderEmpty}
         />
       )}
