@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { View, Image, StyleSheet, Text, FlatList, TouchableOpacity, useWindowDimensions } from 'react-native';
+import { View, Image, StyleSheet, Text, FlatList, TouchableOpacity, useWindowDimensions, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { Toggle, SocialList, ProgramsList, LiveBannerData, Post, Header } from '@/components/ui';
 import type { Community, Program } from '@/components/ui';
 import communityService, { ApiPostsResponse } from '@/services/communityService';
+import { AuthService } from '@/services';
 import { BackgroundWithGradient } from '@/assets';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/navigation/CommunityStackNavigator';
@@ -275,6 +276,37 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     console.log('Abrir filtros');
   };
 
+  const handleLogout = useCallback(async () => {
+    Alert.alert(
+      'Confirmar Logout',
+      'Tem certeza que deseja sair?',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Sair',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await AuthService.logout();
+              // Navegar para a tela Unauthenticated no RootNavigator
+              const rootNavigation = navigation.getParent() || navigation;
+              rootNavigation.reset({
+                index: 0,
+                routes: [{ name: 'Unauthenticated' as never }],
+              });
+            } catch (error) {
+              console.error('Erro ao fazer logout:', error);
+              Alert.alert('Erro', 'Não foi possível fazer logout. Tente novamente.');
+            }
+          },
+        },
+      ]
+    );
+  }, [navigation]);
+
   const handleProductsMomentumEnd = useCallback(
     (event: any) => {
       const { contentOffset, layoutMeasurement } = event.nativeEvent;
@@ -376,7 +408,11 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
         style={StyleSheet.absoluteFill}
         resizeMode="cover"
       />
-      <Header showBackButton={false} />
+      <Header 
+        showBackButton={false} 
+        showLogoutButton={true}
+        onLogoutPress={handleLogout}
+      />
       <View style={styles.content}>
         <Toggle<CommunityMode>
           options={TOGGLE_OPTIONS}

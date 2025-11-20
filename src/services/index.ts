@@ -2,6 +2,8 @@ export { default as AuthService } from './authService';
 export { default as storageService } from './storageService';
 export type { StoredUser } from './storageService';
 export { default as apiClient } from './apiClient';
+export { default as amityService } from './amityService';
+export type { AmityAuthTokenResponse } from './amityService';
 export { default as personalObjectivesService } from './personalObjectivesService';
 export { default as communityService } from './communityService';
 export type { Post, ApiPostsResponse, GetPostsParams } from './communityService';

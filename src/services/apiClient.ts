@@ -117,23 +117,24 @@ class ApiClient {
     execute: () => Promise<Response>,
     includeAuth: boolean
   ): Promise<Response> {
+    // Medida paliativa: sempre tentar renovar o token antes de fazer requisições autenticadas
+    if (includeAuth) {
+      await this.refreshBackendToken();
+    }
+
     let response = await execute();
 
-    if (!includeAuth || response.status !== 401) {
-      return response;
-    }
+    // Se ainda receber 401 após renovação, tentar novamente uma vez
+    if (includeAuth && response.status === 401) {
+      const refreshed = await this.refreshBackendToken();
 
-    const refreshed = await this.refreshBackendToken();
+      if (refreshed) {
+        response = await execute();
+      }
 
-    if (!refreshed) {
-      await storageService.removeToken();
-      return response;
-    }
-
-    response = await execute();
-
-    if (response.status === 401) {
-      await storageService.removeToken();
+      if (response.status === 401) {
+        await storageService.removeToken();
+      }
     }
 
     return response;

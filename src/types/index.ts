@@ -111,3 +111,4 @@ export interface HealthProvider {
 }
 
 export * from './personalObjectives';
+export * from './amity';
