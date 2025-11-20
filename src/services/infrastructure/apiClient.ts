@@ -1,5 +1,5 @@
 import { BACKEND_CONFIG, getApiUrl } from '@/config';
-import storageService from './storageService';
+import storageService from '../auth/storageService';
 
 export interface ApiResponse<T> {
   success: boolean;

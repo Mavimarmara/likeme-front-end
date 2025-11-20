@@ -1,4 +1,4 @@
-import apiClient from './apiClient';
+import apiClient from '../infrastructure/apiClient';
 
 export interface PersonData {
   firstName: string;

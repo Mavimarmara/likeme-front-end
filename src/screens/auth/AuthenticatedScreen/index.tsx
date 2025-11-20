@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native';
 import { styles } from './styles';
-import storageService from '@/services/storageService';
+import { storageService } from '@/services';
 
 type Props = {
   navigation: any;

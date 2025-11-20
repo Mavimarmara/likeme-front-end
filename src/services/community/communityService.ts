@@ -1,7 +1,5 @@
-import apiClient from './apiClient';
-import { GlobalFeedApiResponse, GlobalFeedParams } from '../types/amity';
+import apiClient from '../infrastructure/apiClient';
 
-// Manter interfaces antigas para compatibilidade (deprecated)
 export interface Post {
   id: string;
   communityId: string;
@@ -35,9 +33,75 @@ export interface GetPostsParams {
   search?: string;
 }
 
+export interface CommunityPost {
+  id: string;
+  postId?: string;
+  parentPostId?: string;
+  userId?: string;
+  userPublicId?: string;
+  communityId?: string;
+  data?: {
+    text?: string;
+    title?: string;
+    fileId?: string;
+    thumbnailFileId?: string;
+  };
+  reactionsCount?: number;
+  commentsCount?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CommunityFile {
+  fileId?: string;
+  fileUrl?: string;
+  type?: string;
+}
+
+export interface CommunityUser {
+  userId?: string;
+  userPublicId?: string;
+  displayName?: string;
+  avatarFileId?: string;
+  avatarCustomUrl?: string;
+}
+
+export interface CommunityFeedData {
+  posts?: CommunityPost[];
+  postChildren?: CommunityPost[];
+  comments?: any[];
+  users?: CommunityUser[];
+  files?: CommunityFile[];
+  communities?: any[];
+  communityUsers?: any[];
+  categories?: any[];
+  paging?: {
+    next?: string;
+    previous?: string;
+  };
+}
+
+export interface UserFeedApiResponse {
+  success: boolean;
+  status?: string;
+  data?: CommunityFeedData;
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+  message?: string;
+}
+
+export interface UserFeedParams {
+  page?: number;
+  limit?: number;
+}
+
 class CommunityService {
   private readonly userPostsEndpoint = '/api/communities/me/posts';
-  private readonly publicPostsEndpoint = '/api/communities/posts';
+  private readonly publicPostsEndpoint = '/api/communities/feed';
 
   private buildQueryParams(params: GetPostsParams = {}): Record<string, string> {
     const queryParams: Record<string, string> = {};
@@ -76,11 +140,7 @@ class CommunityService {
     }
   }
 
-  /**
-   * Busca o feed global usando as interfaces do Amity
-   * Retorna a estrutura completa com posts, comments, users, files, communities, etc.
-   */
-  async getGlobalFeed(params: GlobalFeedParams = {}): Promise<GlobalFeedApiResponse> {
+  async getUserFeed(params: UserFeedParams = {}): Promise<UserFeedApiResponse> {
     try {
       const queryParams: Record<string, string> = {};
       
@@ -92,21 +152,20 @@ class CommunityService {
         queryParams.limit = String(params.limit);
       }
 
-      const response = await apiClient.get<GlobalFeedApiResponse>(
+      const userFeedResponse = await apiClient.get<UserFeedApiResponse>(
         this.publicPostsEndpoint,
         queryParams,
         true,
         false
       );
 
-      return response;
+      return userFeedResponse;
     } catch (error) {
-      console.error('Error fetching global feed:', error);
+      console.error('Error fetching user feed:', error);
       throw error;
     }
   }
 
-  // Métodos antigos mantidos para compatibilidade (deprecated)
   async getPosts(params: GetPostsParams = {}): Promise<ApiPostsResponse> {
     return this.fetchPosts(this.userPostsEndpoint, params);
   }

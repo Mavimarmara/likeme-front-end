@@ -4,13 +4,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { Toggle, SocialList, ProgramsList, LiveBannerData, Post, Header } from '@/components/ui';
 import type { Community, Program } from '@/components/ui';
-import communityService, { ApiPostsResponse } from '@/services/communityService';
-import { AuthService } from '@/services';
+import { AuthService, communityService } from '@/services';
 import { BackgroundWithGradient } from '@/assets';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/navigation/CommunityStackNavigator';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { COLORS } from '@/constants';
+import type { UserFeedApiResponse, CommunityPost, CommunityFile } from '@/services';
 
 type CommunityMode = 'Social' | 'Programs';
 
@@ -125,6 +125,27 @@ const PAGE_SIZE = 10;
 type NavigationProp = StackNavigationProp<CommunityStackParamList, 'CommunityList'>;
 type Props = { navigation: NavigationProp };
 
+const mapCommunityPostToPost = (communityPost: CommunityPost, files?: CommunityFile[]): Post => {
+  let imageUrl: string | undefined;
+  if (communityPost.data?.fileId && files) {
+    const file = files.find(f => f.fileId === communityPost.data?.fileId);
+    imageUrl = file?.fileUrl;
+  }
+
+  const likes = communityPost.reactionsCount || 0;
+  const comments: Post['comments'] = [];
+
+  return {
+    id: communityPost.postId || communityPost.id || '',
+    userId: communityPost.userId || communityPost.userPublicId || '',
+    content: communityPost.data?.text || communityPost.data?.title || '',
+    image: imageUrl,
+    likes,
+    comments,
+    createdAt: communityPost.createdAt ? new Date(communityPost.createdAt) : new Date(),
+  };
+};
+
 const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   const [selectedMode, setSelectedMode] = useState<CommunityMode>('Social');
   const [selectedCommunityId, setSelectedCommunityId] = useState<string | undefined>();
@@ -171,20 +192,33 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
         }
         setError(null);
 
-        const response: ApiPostsResponse = await communityService.getPublicPosts({
+        const userFeedResponse: UserFeedApiResponse = await communityService.getUserFeed({
           page,
           limit: PAGE_SIZE,
-          search: search || undefined,
         });
 
+        if (!userFeedResponse.success || !userFeedResponse.data) {
+          throw new Error(userFeedResponse.message || 'Erro ao carregar feed do usuário');
+        }
+
+        console.log('userFeedResponse', userFeedResponse.data.posts);
+
+        const mappedPosts: Post[] = (userFeedResponse.data.posts || []).map((communityPost) =>
+          mapCommunityPostToPost(communityPost, userFeedResponse.data?.files)
+        );
+
         if (append) {
-          setPosts((prev) => [...prev, ...response.data.posts]);
+          setPosts((prev) => [...prev, ...mappedPosts]);
         } else {
-          setPosts(response.data.posts);
+          setPosts(mappedPosts);
         }
 
         setCurrentPage(page);
-        setHasMore(response.data.pagination.hasMore);
+        
+        const hasMorePages = userFeedResponse.pagination 
+          ? page < userFeedResponse.pagination.totalPages 
+          : userFeedResponse.data.paging?.next !== undefined;
+        setHasMore(hasMorePages);
       } catch (err) {
         hasErrorRef.current = true;
         const errorMessage =
@@ -291,7 +325,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
           onPress: async () => {
             try {
               await AuthService.logout();
-              // Navegar para a tela Unauthenticated no RootNavigator
               const rootNavigation = navigation.getParent() || navigation;
               rootNavigation.reset({
                 index: 0,

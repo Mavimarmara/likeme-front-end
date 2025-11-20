@@ -1,13 +1,25 @@
-export { default as AuthService } from './authService';
-export { default as storageService } from './storageService';
-export type { StoredUser } from './storageService';
-export { default as apiClient } from './apiClient';
+export { default as AuthService } from './auth/authService';
+export { default as storageService } from './auth/storageService';
+export type { StoredUser } from './auth/storageService';
+
+export { default as apiClient } from './infrastructure/apiClient';
+
 export { default as amityService } from './amityService';
 export type { AmityAuthTokenResponse } from './amityService';
-export { default as personalObjectivesService } from './personalObjectivesService';
-export { default as communityService } from './communityService';
-export type { Post, ApiPostsResponse, GetPostsParams } from './communityService';
-export { default as commentsService } from './commentsService';
-export type { Comment, PaginatedCommentsResponse, GetCommentsParams } from './commentsService';
-export { default as personsService } from './personsService';
-export type { PersonData, PersonResponse } from './personsService';
+
+export { default as communityService } from './community/communityService';
+export type { 
+  Post, 
+  ApiPostsResponse, 
+  GetPostsParams,
+  UserFeedApiResponse,
+  UserFeedParams,
+  CommunityPost,
+  CommunityFile,
+  CommunityUser,
+  CommunityFeedData
+} from './community/communityService';
+
+export { default as personsService } from './person/personsService';
+export type { PersonData, PersonResponse } from './person/personsService';
+export { default as personalObjectivesService } from './person/personalObjectivesService';

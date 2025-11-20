@@ -2,7 +2,22 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, ImageSourcePropType } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { styles } from './styles';
-import { Comment } from '@/services/commentsService';
+
+type Comment = {
+  id: string;
+  postId: string;
+  author: {
+    id: string;
+    name: string;
+    avatar?: string;
+  };
+  content: string;
+  upvotes: number;
+  downvotes: number;
+  createdAt: string;
+  replies?: Comment[];
+  replyToId?: string;
+};
 
 type Props = {
   comment: Comment;
