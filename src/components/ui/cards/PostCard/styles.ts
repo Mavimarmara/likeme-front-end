@@ -36,7 +36,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 8,
   },
-  overline: {
+  authorName: {
     fontSize: 11,
     color: '#9E9E9E',
     fontWeight: '400',
@@ -44,34 +44,27 @@ export const styles = StyleSheet.create({
   },
   title: {
     fontSize: 17,
-    fontWeight: 'bold',
-    color: '#1565C0',
+    fontWeight: '500',
+    fontStyle: 'normal',
+    color: '#001137',
     marginBottom: 8,
     lineHeight: 23,
+    letterSpacing: 0.1,
   },
   description: {
-    fontSize: 13,
-    color: '#424242',
+    fontSize: 12,
+    fontWeight: '500',
+    fontStyle: 'normal',
+    color: '#6E6A6A',
     lineHeight: 19,
     marginBottom: 16,
+    letterSpacing: 0.1,
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 4,
-  },
-  seeMoreButton: {
-    borderWidth: 1,
-    borderColor: '#1565C0',
-    borderRadius: BORDER_RADIUS.ROUND,
-    paddingHorizontal: 12,
-    paddingVertical: 5,
-  },
-  seeMoreText: {
-    fontSize: 13,
-    color: '#1565C0',
-    fontWeight: '500',
   },
   commentsInfo: {
     flexDirection: 'row',

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Badge } from '@/components/ui';
+import { Badge, SecondaryButton } from '@/components/ui';
 import { styles } from './styles';
 import { COLORS } from '@/constants';
 import type { Post } from '@/types';
@@ -10,10 +10,16 @@ type Props = {
   post: Post;
   onPress?: (post: Post) => void;
   category?: string;
-  overline?: string;
 };
 
-const PostCard: React.FC<Props> = ({ post, onPress, category, overline }) => {
+const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
+  const capitalizeWords = (text: string): string => {
+    return text
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
+
   const getTitle = (): string => {
     if (post.title) return post.title;
     if (!post.content) return '';
@@ -62,7 +68,6 @@ const PostCard: React.FC<Props> = ({ post, onPress, category, overline }) => {
   };
 
   const displayCategory = category || post.category;
-  const displayOverline = overline || post.overline;
   const title = getTitle();
   const content = getContent();
   const commentsCount = post.comments.length > 0 ? post.comments.length : 0;
@@ -90,8 +95,8 @@ const PostCard: React.FC<Props> = ({ post, onPress, category, overline }) => {
             <Icon name="person" size={20} color={COLORS.TEXT_LIGHT} />
           </View>
         )}
-        {displayOverline && (
-          <Text style={styles.overline}>{displayOverline}</Text>
+        {post.userName && (
+          <Text style={styles.authorName}>{capitalizeWords(post.userName)}</Text>
         )}
       </View>
 
@@ -108,13 +113,10 @@ const PostCard: React.FC<Props> = ({ post, onPress, category, overline }) => {
       ) : null}
 
       <View style={styles.footer}>
-        <TouchableOpacity 
-          style={styles.seeMoreButton} 
-          activeOpacity={0.7}
+        <SecondaryButton 
+          label="See more"
           onPress={handlePress}
-        >
-          <Text style={styles.seeMoreText}>See more</Text>
-        </TouchableOpacity>
+        />
 
         <View style={styles.commentsInfo}>
           <Icon

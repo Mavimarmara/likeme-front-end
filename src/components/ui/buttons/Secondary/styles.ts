@@ -10,7 +10,6 @@ export const styles = StyleSheet.create({
     borderRadius: 18,
     display: 'flex',
     gap: 2,
-    height: 50,
     justifyContent: 'center',
     paddingVertical: 9,
     paddingHorizontal: 16,
