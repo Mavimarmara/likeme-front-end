@@ -11,6 +11,9 @@ export const styles = StyleSheet.create({
     zIndex: 1,
     paddingBottom: SPACING.XL,
   },
+  toggleContainer: {
+    paddingHorizontal: SPACING.MD,
+  },
   suggestedSection: {
     marginTop: SPACING.XL,
     backgroundColor: COLORS.WHITE,

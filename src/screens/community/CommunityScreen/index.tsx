@@ -380,11 +380,13 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
         onLogoutPress={handleLogout}
       />
       <View style={styles.content}>
-        <Toggle<CommunityMode>
-          options={TOGGLE_OPTIONS}
-          selected={selectedMode}
-          onSelect={handleModeSelect}
-        />
+        <View style={styles.toggleContainer}>
+          <Toggle<CommunityMode>
+            options={TOGGLE_OPTIONS}
+            selected={selectedMode}
+            onSelect={handleModeSelect}
+          />
+        </View>
         
         {selectedMode === 'Social' ? (
           <SocialList
