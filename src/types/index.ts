@@ -61,6 +61,22 @@ export interface Product {
   inStock: boolean;
 }
 
+export interface PollOption {
+  id: string;
+  text: string;
+  votes: number;
+  percentage: number;
+}
+
+export interface Poll {
+  id: string;
+  question: string;
+  options: PollOption[];
+  totalVotes: number;
+  endedAt?: Date;
+  isFinished: boolean;
+}
+
 export interface Post {
   id: string;
   userId: string;
@@ -74,6 +90,7 @@ export interface Post {
   title?: string;
   userName?: string;
   userAvatar?: string;
+  poll?: Poll;
 }
 
 export interface Comment {

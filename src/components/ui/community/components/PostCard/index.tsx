@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Badge, SecondaryButton, CommentCard } from '@/components/ui';
+import { Badge, CommentCard } from '@/components/ui';
+import { PollCard } from '@/components/ui/community';
 import { styles } from './styles';
 import { COLORS } from '@/constants';
 import type { Post } from '@/types';
@@ -85,42 +86,66 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
 
   return (
     <View style={styles.container}>
-      {displayCategory && <Badge label={displayCategory} />}
-
-      <View style={styles.authorSection}>
-        {post.userAvatar ? (
-          <Image
-            source={{ uri: post.userAvatar }}
-            style={styles.avatar}
-          />
-        ) : (
-          <View style={styles.avatarPlaceholder}>
-            <Icon name="person" size={20} color={COLORS.TEXT_LIGHT} />
+      <View style={styles.contentContainer}>
+        {displayCategory && (
+          <View style={styles.badgeContainer}>
+            <Badge label={displayCategory} />
           </View>
         )}
-        {post.userName && (
-          <Text style={styles.authorName}>{capitalizeWords(post.userName)}</Text>
-        )}
+
+        <View>
+          <View style={styles.authorSection}>
+            {post.userAvatar ? (
+              <Image
+                source={{ uri: post.userAvatar }}
+                style={styles.avatar}
+              />
+            ) : (
+              <View style={styles.avatarPlaceholder}>
+                <Icon name="person" size={12} color={COLORS.TEXT_LIGHT} />
+              </View>
+            )}
+            {post.userName && (
+              <Text style={styles.authorName}>{capitalizeWords(post.userName)}</Text>
+            )}
+          </View>
+
+          {title ? (
+            <View style={styles.titleContainer}>
+              <Text style={styles.title}>
+                {title}
+              </Text>
+            </View>
+          ) : null}
+
+          {content ? (
+            <Text style={styles.description} numberOfLines={isContentExpanded ? undefined : 3}>
+              {content}
+            </Text>
+          ) : null}
+        </View>
       </View>
 
-      {title ? (
-        <Text style={styles.title} numberOfLines={3}>
-          {title}
-        </Text>
-      ) : null}
-
-      {content ? (
-        <Text style={styles.description} numberOfLines={isContentExpanded ? undefined : 3}>
-          {content}
-        </Text>
-      ) : null}
+      {post.poll && (
+        <PollCard
+          poll={post.poll}
+          userAvatar={post.userAvatar}
+          userName={post.userName}
+          overline={post.overline}
+        />
+      )}
 
       <View style={styles.footer}>
         {content && (
-          <SecondaryButton 
-            label={isContentExpanded ? "See less" : "See more"}
+          <TouchableOpacity 
+            style={styles.seeMoreButton}
             onPress={handleSeeMorePress}
-          />
+            activeOpacity={0.7}
+          >
+            <Text style={styles.seeMoreButtonText}>
+              {isContentExpanded ? "See less" : "See more"}
+            </Text>
+          </TouchableOpacity>
         )}
 
         <TouchableOpacity 
@@ -130,8 +155,8 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
         >
           <Icon
             name="chat-bubble-outline"
-            size={18}
-            color="#1565C0"
+            size={24}
+            color="#0154f8"
           />
           <Text style={styles.commentsCount}>{commentsCount}</Text>
         </TouchableOpacity>

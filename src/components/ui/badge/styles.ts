@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
   container: {
     alignSelf: 'flex-start',
-    backgroundColor: 'rgba(232, 245, 233, 0.95)',
+    backgroundColor: 'rgba(216, 228, 214, 0.72)',
     borderRadius: 12,
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
@@ -11,22 +11,21 @@ export const styles = StyleSheet.create({
     borderBottomRightRadius: 11,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.08,
-    shadowRadius: 2,
-    elevation: 1,
+    height: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    // Note: React Native doesn't support backdrop-filter/blur natively
+    // For a blur effect, you would need react-native-blur or similar library
+    // This is a close approximation with opacity
   },
   text: {
     fontSize: 12,
     fontWeight: '500',
-    color: '#616161',
+    color: '#6e6a6a',
     fontStyle: 'normal',
-    letterSpacing: 0.1,
+    letterSpacing: 0.2,
+    lineHeight: 22,
+    textAlign: 'center',
   },
 });
 

@@ -26,42 +26,56 @@ const LiveBanner: React.FC<Props> = ({ live, onPress }) => {
     return time;
   };
 
-  const getTimeDisplay = () => {
-    if (live.status === 'Live Now') {
-      return `Live Now ${formatTime(live.startTime)} - ${formatTime(live.endTime)}`;
-    }
-    return `Scheduled ${formatTime(live.startTime)} - ${formatTime(live.endTime)}`;
-  };
-
   const isImageUri = typeof live.thumbnail === 'string';
 
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
         {isImageUri ? (
-          <Image source={{ uri: live.thumbnail }} style={styles.image} />
+          <Image source={{ uri: live.thumbnail as string }} style={styles.image} />
         ) : (
-          <Image source={live.thumbnail} style={styles.image} />
+          <Image source={live.thumbnail as ImageSourcePropType} style={styles.image} />
         )}
-        <View style={styles.imageOverlay} />
-        <TouchableOpacity
-          style={styles.liveButton}
-          onPress={() => onPress(live)}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.liveButtonText}>Go to live</Text>
-        </TouchableOpacity>
+        <View style={styles.imageOverlay}>
+          <TouchableOpacity
+            style={styles.liveButton}
+            onPress={() => onPress(live)}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.liveButtonText}>Go to live</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={styles.infoContainer}>
-        <View style={styles.cameraIcon}>
-          <Icon name="videocam" size={20} color="#000000" />
+        <View style={styles.contentWrapper}>
+          <View style={styles.titleSection}>
+            <View style={styles.cameraIcon}>
+              <Icon name="videocam" size={24} color="#001137" />
+            </View>
+            <View style={styles.titleContainer}>
+              <Text style={styles.title} numberOfLines={2}>
+                {live.title}
+              </Text>
+              <Text style={styles.host}>With {live.host}</Text>
+            </View>
+          </View>
+          <View style={styles.timeContainer}>
+            {live.status === 'Live Now' && (
+              <>
+                <Text style={styles.timeLabel}>Live Now</Text>
+                <Text style={styles.time}>
+                  {formatTime(live.startTime)} - {formatTime(live.endTime)}
+                </Text>
+              </>
+            )}
+            {live.status === 'Scheduled' && (
+              <Text style={styles.time}>
+                {formatTime(live.startTime)} - {formatTime(live.endTime)}
+              </Text>
+            )}
+          </View>
         </View>
-        <Text style={styles.title} numberOfLines={2}>
-          {live.title}
-        </Text>
-        <Text style={styles.host}>With {live.host}</Text>
-        <Text style={styles.time}>{getTimeDisplay()}</Text>
       </View>
     </View>
   );
