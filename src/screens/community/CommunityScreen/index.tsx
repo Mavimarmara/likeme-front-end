@@ -319,7 +319,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
             selectedProgramId={selectedProgramId}
           />
         )}
-        {selectedMode === 'Programs' && renderSuggestedProducts()}
       </View>
     </SafeAreaView>
   );
