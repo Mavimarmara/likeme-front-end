@@ -1,0 +1,112 @@
+import { StyleSheet } from 'react-native';
+import { SPACING, BORDER_RADIUS } from '@/constants';
+
+export const styles = StyleSheet.create({
+  container: {
+    width: 170,
+    gap: SPACING.SM,
+  },
+  imageContainer: {
+    width: 170,
+    height: 164,
+    borderRadius: 22,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  imageOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 82,
+    backgroundColor: '#292929',
+    opacity: 0.64,
+  },
+  contentOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'space-between',
+    padding: SPACING.SM,
+  },
+  tagBadge: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 14,
+    paddingVertical: 0,
+    minHeight: 24,
+    borderRadius: 12,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    borderBottomLeftRadius: 11,
+    borderBottomRightRadius: 11,
+    justifyContent: 'center',
+  },
+  tagText: {
+    fontSize: 12,
+    fontWeight: '500',
+    letterSpacing: 0.2,
+    lineHeight: 22,
+  },
+  bottomInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.XS,
+  },
+  price: {
+    fontSize: 14,
+    fontWeight: '400',
+    color: '#ffffff',
+    letterSpacing: 0.2,
+  },
+  likeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.XS,
+  },
+  likesCount: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#f6cffb',
+    letterSpacing: 0.2,
+    lineHeight: 22,
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingLeft: SPACING.XS,
+    paddingRight: 2,
+  },
+  title: {
+    fontSize: 14,
+    fontWeight: '400',
+    color: '#001137',
+    letterSpacing: 0.2,
+    flex: 1,
+  },
+  arrowButton: {
+    width: 54,
+    height: 48,
+    backgroundColor: '#fbf7e5',
+    borderRadius: 27,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+});
+

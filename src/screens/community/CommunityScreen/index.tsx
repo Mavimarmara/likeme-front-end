@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import { Toggle, SocialList, ProgramsList, LiveBannerData, Header, ProductsCarousel, Product } from '@/components/ui';
+import { Toggle, SocialList, ProgramsList, LiveBannerData, Header, ProductsCarousel, Product, PlansCarousel, Plan } from '@/components/ui';
 import type { Program } from '@/components/ui';
 import type { Post, Event } from '@/types';
 import { BackgroundWithGradient } from '@/assets';
@@ -125,6 +125,39 @@ const SUGGESTED_PRODUCTS: Product[] = [
   },
 ];
 
+const SUGGESTED_PLANS: Plan[] = [
+  {
+    id: '1',
+    title: 'Strategies to relax in your day to day',
+    price: 130.99,
+    tag: 'Curated for you',
+    tagColor: 'orange',
+    image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800',
+    likes: 10,
+    currency: 'BRL',
+  },
+  {
+    id: '2',
+    title: 'How to evolve to a deep sleep',
+    price: 5.99,
+    tag: 'Marker based',
+    tagColor: 'green',
+    image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800',
+    likes: 10,
+    currency: 'BRL',
+  },
+  {
+    id: '3',
+    title: 'Lorem ipsum dolor sit amet, consectetur',
+    price: 0,
+    tag: '',
+    tagColor: 'default',
+    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800',
+    likes: 10,
+    currency: 'BRL',
+  },
+];
+
 type NavigationProp = StackNavigationProp<CommunityStackParamList, 'CommunityList'>;
 type Props = { navigation: NavigationProp };
 
@@ -153,6 +186,14 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleProductLike = (product: Product) => {
     console.log('Curtir produto:', product.id);
+  };
+
+  const handlePlanPress = (plan: Plan) => {
+    console.log('Ver plano:', plan.id);
+  };
+
+  const handlePlanLike = (plan: Plan) => {
+    console.log('Curtir plano:', plan.id);
   };
 
   const handleProgramPress = (program: Program) => {
@@ -200,13 +241,22 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
 
   const renderSuggestedProducts = () => {
     return (
-      <ProductsCarousel
-        title="Products recommended for your sleep journey by Dr. Peter Valasquez"
-        subtitle="Discover our options selected just for you"
-        products={SUGGESTED_PRODUCTS}
-        onProductPress={handleProductPress}
-        onProductLike={handleProductLike}
-      />
+      <>
+        <ProductsCarousel
+          title="Products recommended for your sleep journey by Dr. Peter Valasquez"
+          subtitle="Discover our options selected just for you"
+          products={SUGGESTED_PRODUCTS}
+          onProductPress={handleProductPress}
+          onProductLike={handleProductLike}
+        />
+        <PlansCarousel
+          title="Plans for you based on the evolution of your markers"
+          subtitle="Discover our options selected just for you"
+          plans={SUGGESTED_PLANS}
+          onPlanPress={handlePlanPress}
+          onPlanLike={handlePlanLike}
+        />
+      </>
     );
   };
 
