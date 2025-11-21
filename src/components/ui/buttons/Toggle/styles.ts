@@ -1,41 +1,58 @@
 import { StyleSheet } from 'react-native';
-import { COLORS, FONT_SIZES, SPACING, BORDER_RADIUS } from '@/constants';
+import { SPACING } from '@/constants';
 
 export const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    backgroundColor: COLORS.BACKGROUND_SECONDARY,
-    borderRadius: BORDER_RADIUS.ROUND,
-    padding: SPACING.XS,
+    backgroundColor: 'rgba(253, 251, 238, 0.8)',
+    borderRadius: 24,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    borderBottomLeftRadius: 22,
+    borderBottomRightRadius: 22,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 4,
     marginVertical: SPACING.MD,
   },
   option: {
     flex: 1,
-    paddingVertical: SPACING.SM,
+    paddingVertical: 12,
     paddingHorizontal: SPACING.MD,
-    borderRadius: BORDER_RADIUS.ROUND,
+    borderRadius: 24,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    borderBottomLeftRadius: 22,
+    borderBottomRightRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
+    minHeight: 48,
   },
   optionSelected: {
-    backgroundColor: COLORS.WHITE,
-    shadowColor: COLORS.BLACK,
+    backgroundColor: '#fbf7e5',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 4,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 4,
   },
   optionText: {
-    fontSize: FONT_SIZES.MD,
-    color: COLORS.TEXT_LIGHT,
+    fontSize: 14,
     fontWeight: '500',
+    color: '#6e6a6a',
+    textAlign: 'center',
   },
   optionTextSelected: {
-    color: '#4A5568',
-    fontWeight: '600',
+    color: '#001137',
+    fontWeight: '500',
   },
 });
 
