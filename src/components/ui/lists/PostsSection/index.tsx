@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, Text, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { TextInput } from '@/components/ui';
-import { PostCard, NextEventsSection } from '@/components/ui/community';
+import { PostCard, NextEventsSection, ProviderChatCard, ProviderChat } from '@/components/ui/community';
 import type { Post, Event } from '@/types';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { logger } from '@/utils/logger';
@@ -21,6 +21,8 @@ type Props = {
   events?: Event[];
   onEventPress?: (event: Event) => void;
   onEventSave?: (event: Event) => void;
+  providerChat?: ProviderChat;
+  onProviderChatPress?: (chat: ProviderChat) => void;
 };
 
 const PostsSection: React.FC<Props> = ({
@@ -37,6 +39,8 @@ const PostsSection: React.FC<Props> = ({
   events,
   onEventPress,
   onEventSave,
+  providerChat,
+  onProviderChatPress,
 }) => {
   useEffect(() => {
     logger.debug('PostsSection - Posts received:', {
@@ -69,6 +73,12 @@ const PostsSection: React.FC<Props> = ({
           events={events}
           onEventPress={onEventPress}
           onEventSave={onEventSave}
+        />
+      )}
+      {providerChat && (
+        <ProviderChatCard
+          chat={providerChat}
+          onPress={onProviderChatPress}
         />
       )}
       {footerComponent}

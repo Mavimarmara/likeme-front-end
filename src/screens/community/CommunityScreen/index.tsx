@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import { Toggle, SocialList, ProgramsList, LiveBannerData, Header, ProductsCarousel, Product, PlansCarousel, Plan } from '@/components/ui';
+import { Toggle, SocialList, ProgramsList, LiveBannerData, Header, ProductsCarousel, Product, PlansCarousel, Plan, ProviderChat } from '@/components/ui';
 import type { Program } from '@/components/ui';
 import type { Post, Event } from '@/types';
 import { BackgroundWithGradient } from '@/assets';
@@ -216,6 +216,19 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     console.log('Salvar evento:', event.id);
   };
 
+  const mockProviderChat: ProviderChat = {
+    id: '1',
+    providerName: 'Ethan Parker',
+    providerAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200',
+    lastMessage: 'Hello, Carol!\nWhat do you think about updating y...',
+    timestamp: '10:14',
+    unreadCount: 1,
+  };
+
+  const handleProviderChatPress = (chat: ProviderChat) => {
+    console.log('Abrir chat com provider:', chat.id);
+  };
+
 
   const handleSearchChange = (text: string) => {
     setSearchQuery(text);
@@ -296,6 +309,8 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
             events={mockEvents}
             onEventPress={handleEventPress}
             onEventSave={handleEventSave}
+            providerChat={mockProviderChat}
+            onProviderChatPress={handleProviderChatPress}
           />
         ) : (
           <ProgramsList

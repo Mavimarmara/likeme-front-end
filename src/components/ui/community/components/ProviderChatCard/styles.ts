@@ -1,0 +1,113 @@
+import { StyleSheet } from 'react-native';
+import { SPACING, BORDER_RADIUS } from '@/constants';
+
+export const styles = StyleSheet.create({
+  container: {
+    gap: SPACING.MD,
+    alignItems: 'center',
+    marginTop: SPACING.MD,
+    marginBottom: SPACING.MD,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#000000',
+    lineHeight: 18,
+  },
+  card: {
+    backgroundColor: '#fbf7e5',
+    borderRadius: 28,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 28,
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 32,
+    paddingHorizontal: SPACING.MD,
+    paddingVertical: SPACING.LG,
+    width: '100%',
+    maxWidth: 395,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  content: {
+    flexDirection: 'row',
+    gap: SPACING.SM,
+    alignItems: 'center',
+    paddingVertical: SPACING.MD,
+  },
+  avatar: {
+    width: 69,
+    height: 64,
+    borderRadius: 35,
+  },
+  avatarPlaceholder: {
+    width: 69,
+    height: 64,
+    borderRadius: 35,
+    backgroundColor: '#d8e4d6',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  infoContainer: {
+    flex: 1,
+    gap: SPACING.SM,
+    maxWidth: 254,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+  },
+  providerName: {
+    fontSize: 20,
+    fontWeight: '400',
+    color: '#001137',
+    flex: 1,
+    marginRight: SPACING.SM,
+  },
+  timestamp: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#6e6a6a',
+    textAlign: 'right',
+    minWidth: 40,
+  },
+  messageRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.SM,
+    width: '100%',
+  },
+  messageContainer: {
+    flex: 1,
+    maxWidth: 226,
+  },
+  messagePreview: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#6e6a6a',
+    lineHeight: 22,
+  },
+  notificationBadge: {
+    width: 18,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#F44336',
+    justifyContent: 'center',
+    alignItems: 'center',
+    minWidth: 18,
+  },
+  notificationText: {
+    fontSize: 12,
+    fontWeight: '400',
+    color: '#001137',
+    lineHeight: 20,
+  },
+});
+

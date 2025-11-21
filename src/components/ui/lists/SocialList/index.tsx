@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import { LiveBanner, LiveBannerData, PostsSection } from '@/components/ui';
+import { LiveBanner, LiveBannerData, PostsSection, ProviderChat } from '@/components/ui';
 import type { Post, Event } from '@/types';
 import { styles } from './styles';
 
@@ -20,6 +20,8 @@ type Props = {
   events?: Event[];
   onEventPress?: (event: Event) => void;
   onEventSave?: (event: Event) => void;
+  providerChat?: ProviderChat;
+  onProviderChatPress?: (chat: ProviderChat) => void;
 };
 
 const SocialList: React.FC<Props> = ({
@@ -38,6 +40,8 @@ const SocialList: React.FC<Props> = ({
   events,
   onEventPress,
   onEventSave,
+  providerChat,
+  onProviderChatPress,
 }) => {
   return (
     <View style={styles.container}>
@@ -60,6 +64,8 @@ const SocialList: React.FC<Props> = ({
         events={events}
         onEventPress={onEventPress}
         onEventSave={onEventSave}
+        providerChat={providerChat}
+        onProviderChatPress={onProviderChatPress}
       />
     </View>
   );
