@@ -1,10 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { Toggle, SocialList, ProgramsList, LiveBannerData, Header, ProductsCarousel, Product, PlansCarousel, Plan, ProviderChat } from '@/components/ui';
-import type { Program } from '@/components/ui';
 import type { Post, Event } from '@/types';
+import type { Program, ProgramDetail } from '@/types/program';
 import { BackgroundWithGradient } from '@/assets';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
@@ -27,14 +27,14 @@ const mockLiveBanner: LiveBannerData = {
 const mockPrograms: Program[] = [
   {
     id: '1',
-    name: 'Programa de 30 Dias',
+    name: 'The best sleep for an offline life',
     description: 'Um programa completo de transformação em 30 dias',
     duration: '30 dias',
     participantsCount: 450,
   },
   {
     id: '2',
-    name: 'Desafio Semanal',
+    name: 'Mental Health in the Workplace',
     description: 'Desafios semanais para melhorar sua qualidade de vida',
     duration: '7 dias',
     participantsCount: 320,
@@ -47,6 +47,92 @@ const mockPrograms: Program[] = [
     participantsCount: 180,
   },
 ];
+
+const mockProgramDetails: ProgramDetail = {
+  id: '1',
+  name: 'The best sleep for an offline life',
+  description: 'This protocol establishes guidelines to promote a healthy work environment, prevent psychological distress, and provide appropriate support to those in need.',
+  duration: '30 dias',
+  participantsCount: 450,
+  modules: [
+    {
+      id: '1',
+      title: 'Module 1',
+      isCompleted: true,
+      content: [
+        {
+          id: '1.1',
+          type: 'video',
+          title: '1.1 Content',
+          thumbnail: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
+          duration: '3 minutes vídeo',
+        },
+      ],
+      activities: [
+        {
+          id: '1.2',
+          type: 'survey',
+          question: 'What motivated you to purchase this protocol?',
+          options: [
+            'Bad sleep Habits',
+            'Insomnia',
+            'Medical Recommendation',
+            "I'd like to learn more about sleep",
+          ],
+          isSubmitted: true,
+        },
+      ],
+    },
+    {
+      id: '2',
+      title: 'Module 2',
+      isCompleted: true,
+    },
+    {
+      id: '3',
+      title: 'Module 3',
+      isCompleted: false,
+      content: [
+        {
+          id: '3.1',
+          type: 'video',
+          title: '1.1 Content',
+          thumbnail: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
+          duration: '3 minutes vídeo',
+        },
+      ],
+      activities: [
+        {
+          id: '3.2',
+          type: 'survey',
+          question: 'What motivated you to purchase this protocol?',
+          options: [
+            'Bad sleep Habits',
+            'Insomnia',
+            'Medical Recommendation',
+            "I'd like to learn more about sleep",
+          ],
+          isSubmitted: false,
+        },
+      ],
+    },
+    {
+      id: '4',
+      title: 'Module 4',
+      isCompleted: false,
+    },
+    {
+      id: '5',
+      title: 'Module 5',
+      isCompleted: false,
+    },
+    {
+      id: '6',
+      title: 'Module 6',
+      isCompleted: false,
+    },
+  ],
+};
 
 const mockEvents: Event[] = [
   {
@@ -167,6 +253,14 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const { logout } = useLogout({ navigation });
+
+  // Inicializa o primeiro programa quando muda para Programs
+  useEffect(() => {
+    if (selectedMode === 'Programs' && !selectedProgramId && mockPrograms.length > 0) {
+      setSelectedProgramId(mockPrograms[0].id);
+    }
+  }, [selectedMode]);
+
   const {
     posts,
     loading,
@@ -315,6 +409,9 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
         ) : (
           <ProgramsList
             programs={mockPrograms}
+            programDetails={
+              selectedProgramId === '1' ? mockProgramDetails : undefined
+            }
             onProgramPress={handleProgramPress}
             selectedProgramId={selectedProgramId}
           />

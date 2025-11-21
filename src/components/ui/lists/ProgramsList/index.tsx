@@ -1,66 +1,92 @@
-import React from 'react';
-import { View, Text, FlatList, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, ScrollView } from 'react-native';
+import { ProgramSelector, ModuleAccordion } from '@/components/ui';
 import { styles } from './styles';
-
-export interface Program {
-  id: string;
-  name: string;
-  description: string;
-  duration: string;
-  participantsCount: number;
-  image?: string;
-}
+import type { Program, ProgramDetail } from '@/types/program';
 
 type Props = {
   programs: Program[];
+  programDetails?: ProgramDetail;
   onProgramPress: (program: Program) => void;
   selectedProgramId?: string;
 };
 
 const ProgramsList: React.FC<Props> = ({
   programs,
+  programDetails,
   onProgramPress,
   selectedProgramId,
 }) => {
-  const renderProgram = ({ item }: { item: Program }) => {
-    const isSelected = item.id === selectedProgramId;
+  const [expandedModules, setExpandedModules] = useState<Set<string>>(
+    new Set()
+  );
 
-    return (
-      <TouchableOpacity
-        style={[styles.programCard, isSelected && styles.programCardSelected]}
-        onPress={() => onProgramPress(item)}
-        activeOpacity={0.7}
-      >
-        <View style={styles.programContent}>
-          <Text style={styles.programName}>{item.name}</Text>
-          <Text style={styles.programDescription} numberOfLines={2}>
-            {item.description}
-          </Text>
-          <View style={styles.programInfo}>
-            <Text style={styles.programDuration}>{item.duration}</Text>
-            <Text style={styles.programParticipants}>
-              {item.participantsCount} participantes
-            </Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-    );
+  const handleModuleToggle = (moduleId: string) => {
+    const newExpanded = new Set(expandedModules);
+    if (newExpanded.has(moduleId)) {
+      newExpanded.delete(moduleId);
+    } else {
+      newExpanded.add(moduleId);
+    }
+    setExpandedModules(newExpanded);
   };
+
+  const selectedProgram = programs.find((p) => p.id === selectedProgramId);
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={programs}
-        renderItem={renderProgram}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContent}
+      {programs.length > 0 && (
+        <View style={styles.selectorContainer}>
+          <ProgramSelector
+            programs={programs}
+            selectedProgramId={selectedProgramId}
+            onSelect={onProgramPress}
+          />
+        </View>
+      )}
+
+      {programDetails && selectedProgram ? (
+        <ScrollView
+          contentContainerStyle={styles.detailsContent}
         showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>Nenhum programa encontrado</Text>
+          style={styles.scrollView}
+          nestedScrollEnabled={true}
+        >
+          <View style={styles.programHeader}>
+            <Text style={styles.programTitle}>{programDetails.name}</Text>
+            <View style={styles.descriptionContainer}>
+              <Text style={styles.programDescription}>
+                {programDetails.description}
+              </Text>
+            </View>
           </View>
-        }
+
+          <View style={styles.modulesContainer}>
+            {programDetails.modules.map((module) => (
+              <ModuleAccordion
+                key={module.id}
+                module={{
+                  ...module,
+                  isExpanded: expandedModules.has(module.id),
+                }}
+                onToggle={handleModuleToggle}
       />
+            ))}
+          </View>
+        </ScrollView>
+      ) : selectedProgramId ? (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>
+            Detalhes do programa não disponíveis
+          </Text>
+        </View>
+      ) : (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>
+            Selecione um programa para ver os detalhes
+          </Text>
+        </View>
+      )}
     </View>
   );
 };

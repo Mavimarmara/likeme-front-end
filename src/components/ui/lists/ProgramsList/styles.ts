@@ -1,65 +1,54 @@
 import { StyleSheet } from 'react-native';
-import { COLORS, FONT_SIZES, SPACING, BORDER_RADIUS } from '@/constants';
+import { COLORS, FONT_SIZES, SPACING } from '@/constants';
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  listContent: {
-    padding: SPACING.MD,
-    paddingBottom: SPACING.XL,
+  selectorContainer: {
+    zIndex: 10,
   },
-  programCard: {
-    backgroundColor: COLORS.WHITE,
-    borderRadius: BORDER_RADIUS.MD,
-    padding: SPACING.MD,
-    marginBottom: SPACING.MD,
-    shadowColor: COLORS.BLACK,
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+  scrollView: {
+    flex: 1,
   },
-  programCardSelected: {
-    borderWidth: 2,
-    borderColor: COLORS.PRIMARY,
+  detailsContent: {
+    paddingHorizontal: SPACING.MD,
+    paddingBottom: SPACING.XXL,
+    paddingTop: SPACING.MD,
   },
-  programContent: {
-    gap: SPACING.XS,
+  programHeader: {
+    marginBottom: 48,
+    alignItems: 'flex-end',
+    width: 331,
+    alignSelf: 'center',
   },
-  programName: {
-    fontSize: FONT_SIZES.LG,
-    fontWeight: '600',
-    color: COLORS.TEXT,
+  programTitle: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#001137',
+    lineHeight: 32,
+    marginBottom: 16,
+  },
+  descriptionContainer: {
+    width: 330,
   },
   programDescription: {
-    fontSize: FONT_SIZES.SM,
-    color: COLORS.TEXT_LIGHT,
+    fontSize: 14,
+    fontWeight: '400',
+    color: '#001137',
     lineHeight: 20,
+    letterSpacing: 0.2,
   },
-  programInfo: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  modulesContainer: {
+    width: '100%',
     alignItems: 'center',
-    marginTop: SPACING.XS,
-  },
-  programDuration: {
-    fontSize: FONT_SIZES.XS,
-    color: COLORS.TEXT_LIGHT,
-    fontWeight: '500',
-  },
-  programParticipants: {
-    fontSize: FONT_SIZES.XS,
-    color: COLORS.TEXT_LIGHT,
   },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: SPACING.XXL,
+    paddingHorizontal: SPACING.MD,
   },
   emptyText: {
     fontSize: FONT_SIZES.MD,
