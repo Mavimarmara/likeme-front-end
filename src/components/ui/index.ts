@@ -24,3 +24,6 @@ export * from './feedback';
 
 // Badge
 export { default as Badge } from './badge';
+
+// Carousel
+export * from './carousel';

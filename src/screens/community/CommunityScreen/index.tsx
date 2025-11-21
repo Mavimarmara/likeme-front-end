@@ -1,15 +1,13 @@
-import React, { useState, useCallback, useMemo } from 'react';
-import { View, Image, StyleSheet, Text, FlatList, TouchableOpacity, useWindowDimensions } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Image, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import { Toggle, SocialList, ProgramsList, LiveBannerData, Header } from '@/components/ui';
+import { Toggle, SocialList, ProgramsList, LiveBannerData, Header, ProductsCarousel, Product } from '@/components/ui';
 import type { Program } from '@/components/ui';
 import type { Post, Event } from '@/types';
 import { BackgroundWithGradient } from '@/assets';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import { COLORS } from '@/constants';
 import { useUserFeed, useLogout } from '@/hooks';
 
 type CommunityMode = 'Social' | 'Programs';
@@ -92,21 +90,10 @@ const mockEvents: Event[] = [
   },
 ];
 
-type SuggestedProduct = {
-  id: string;
-  title: string;
-  subtitle: string;
-  price: number;
-  tag: string;
-  image: string;
-  likes: number;
-};
-
-const SUGGESTED_PRODUCTS: SuggestedProduct[] = [
+const SUGGESTED_PRODUCTS: Product[] = [
   {
     id: '1',
     title: 'Omega 3. Sleep suplement',
-    subtitle: 'Products recommended for your sleep journey',
     price: 99.5,
     tag: 'Sleep better',
     image: 'https://images.unsplash.com/photo-1494390248081-4e521a5940db?w=800',
@@ -115,7 +102,6 @@ const SUGGESTED_PRODUCTS: SuggestedProduct[] = [
   {
     id: '2',
     title: 'Smart lamp',
-    subtitle: 'Create the perfect ambience to rest',
     price: 352,
     tag: 'On sale',
     image: 'https://images.unsplash.com/photo-1505693314120-0d443867891c?w=800',
@@ -123,21 +109,19 @@ const SUGGESTED_PRODUCTS: SuggestedProduct[] = [
   },
   {
     id: '3',
+    title: 'Weigh Blanket',
+    price: 55.2,
+    tag: 'Sleep better',
+    image: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=800',
+    likes: 10,
+  },
+  {
+    id: '4',
     title: 'Herbal tea kit',
-    subtitle: 'Relaxing flavors curated by experts',
     price: 64,
     tag: 'New',
     image: 'https://images.unsplash.com/photo-1505576391880-b3f9d713dc5a?w=800',
     likes: 8,
-  },
-  {
-    id: '4',
-    title: 'Weighted blanket',
-    subtitle: 'Improve sleep quality with comfort',
-    price: 210,
-    tag: 'Best seller',
-    image: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=800',
-    likes: 18,
   },
 ];
 
@@ -148,8 +132,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   const [selectedMode, setSelectedMode] = useState<CommunityMode>('Social');
   const [selectedProgramId, setSelectedProgramId] = useState<string | undefined>();
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeProductSlide, setActiveProductSlide] = useState(0);
-  const { width: windowWidth } = useWindowDimensions();
 
   const { logout } = useLogout({ navigation });
   const {
@@ -165,13 +147,13 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     searchQuery,
   });
 
-  const productSlides = useMemo(() => {
-    const slides: SuggestedProduct[][] = [];
-    for (let i = 0; i < SUGGESTED_PRODUCTS.length; i += 2) {
-      slides.push(SUGGESTED_PRODUCTS.slice(i, i + 2));
-    }
-    return slides;
-  }, []);
+  const handleProductPress = (product: Product) => {
+    console.log('Ver produto:', product.id);
+  };
+
+  const handleProductLike = (product: Product) => {
+    console.log('Curtir produto:', product.id);
+  };
 
   const handleProgramPress = (program: Program) => {
     setSelectedProgramId(program.id);
@@ -216,97 +198,15 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleLogout = logout;
 
-  const handleProductsMomentumEnd = useCallback(
-    (event: any) => {
-      const { contentOffset, layoutMeasurement } = event.nativeEvent;
-      if (!layoutMeasurement?.width) {
-        return;
-      }
-      const index = Math.round(contentOffset.x / layoutMeasurement.width);
-      setActiveProductSlide(index);
-    },
-    []
-  );
-
   const renderSuggestedProducts = () => {
-    const slideWidth = Math.max(windowWidth - 48, 0);
-
-    const formatPrice = (price: number) => `$${price.toFixed(2)}`;
-
     return (
-      <View style={styles.suggestedSection}>
-        <Text style={styles.suggestedOverline}>Suggestions from providers</Text>
-        <Text style={styles.suggestedTitle}>
-          Products recommended for your sleep journey by Dr. Peter Valasquez
-        </Text>
-        <Text style={styles.suggestedDescription}>
-          Discover our options selected just for you
-        </Text>
-
-        <FlatList
-          data={productSlides}
-          keyExtractor={(_, index) => `product-slide-${index}`}
-          horizontal
-          pagingEnabled
-          showsHorizontalScrollIndicator={false}
-          onMomentumScrollEnd={handleProductsMomentumEnd}
-          renderItem={({ item }) => (
-            <View style={[styles.productSlide, { width: slideWidth }]}>
-              {item.map((product, index) => (
-                <View
-                  key={product.id}
-                  style={[
-                    styles.productCardWrapper,
-                    index === item.length - 1 && styles.productCardWrapperLast,
-                  ]}
-                >
-                  <View style={styles.productCard}>
-                    <Image
-                      source={{ uri: product.image }}
-                      style={styles.productImage}
-                      resizeMode="cover"
-                    />
-                    <View style={styles.productTag}>
-                      <Text style={styles.productTagText}>{product.tag}</Text>
-                    </View>
-                    <View style={styles.productInfoRow}>
-                      <Text style={styles.productPrice}>
-                        {formatPrice(product.price)}
-                      </Text>
-                      <View style={styles.productLikes}>
-                        <Icon name="favorite-border" size={16} color={COLORS.WHITE} />
-                        <Text style={styles.productLikesText}>{product.likes}</Text>
-                      </View>
-                    </View>
-                    <Text style={styles.productName}>{product.title}</Text>
-                    <Text style={styles.productSubtitleText}>{product.subtitle}</Text>
-                    <TouchableOpacity
-                      style={styles.productActionButton}
-                      activeOpacity={0.8}
-                      onPress={() => console.log('Ver produto', product.id)}
-                    >
-                      <Icon name="arrow-forward" size={18} color={COLORS.TEXT} />
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              ))}
-              {item.length === 1 && <View style={styles.productCardPlaceholder} />}
-            </View>
-          )}
-        />
-
-        <View style={styles.sliderIndicators}>
-          {productSlides.map((_, index) => (
-            <View
-              key={`indicator-${index}`}
-              style={[
-                styles.sliderIndicator,
-                activeProductSlide === index && styles.sliderIndicatorActive,
-              ]}
-            />
-          ))}
-        </View>
-      </View>
+      <ProductsCarousel
+        title="Products recommended for your sleep journey by Dr. Peter Valasquez"
+        subtitle="Discover our options selected just for you"
+        products={SUGGESTED_PRODUCTS}
+        onProductPress={handleProductPress}
+        onProductLike={handleProductLike}
+      />
     );
   };
 
