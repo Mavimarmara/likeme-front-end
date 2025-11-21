@@ -4,6 +4,7 @@ export * from './auth';
 export * from './person';
 export * from './infrastructure';
 export * from './personalObjectives';
+export * from './event';
 
 export interface User {
   id: string;

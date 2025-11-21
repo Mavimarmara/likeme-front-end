@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { View, Text, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { TextInput } from '@/components/ui';
-import { PostCard } from '@/components/ui/community';
-import type { Post } from '@/types';
+import { PostCard, NextEventsSection } from '@/components/ui/community';
+import type { Post, Event } from '@/types';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { logger } from '@/utils/logger';
 import { styles } from './styles';
@@ -18,6 +18,9 @@ type Props = {
   onLoadMore: () => void;
   onFilterPress?: () => void;
   footerComponent?: React.ReactNode;
+  events?: Event[];
+  onEventPress?: (event: Event) => void;
+  onEventSave?: (event: Event) => void;
 };
 
 const PostsSection: React.FC<Props> = ({
@@ -31,6 +34,9 @@ const PostsSection: React.FC<Props> = ({
   onLoadMore,
   onFilterPress,
   footerComponent,
+  events,
+  onEventPress,
+  onEventSave,
 }) => {
   useEffect(() => {
     logger.debug('PostsSection - Posts received:', {
@@ -57,6 +63,13 @@ const PostsSection: React.FC<Props> = ({
       <View style={styles.loadingFooter}>
         <ActivityIndicator size="small" color="#4CAF50" />
       </View>
+      )}
+      {events && events.length > 0 && (
+        <NextEventsSection
+          events={events}
+          onEventPress={onEventPress}
+          onEventSave={onEventSave}
+        />
       )}
       {footerComponent}
     </>

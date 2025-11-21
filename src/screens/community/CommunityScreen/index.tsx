@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { Toggle, SocialList, ProgramsList, LiveBannerData, Header } from '@/components/ui';
 import type { Program } from '@/components/ui';
-import type { Post } from '@/types';
+import type { Post, Event } from '@/types';
 import { BackgroundWithGradient } from '@/assets';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
@@ -47,6 +47,48 @@ const mockPrograms: Program[] = [
     description: 'Acompanhamento completo durante todo o ano',
     duration: '365 dias',
     participantsCount: 180,
+  },
+];
+
+const mockEvents: Event[] = [
+  {
+    id: '1',
+    title: 'Home Mobility Challenge',
+    date: '04 June',
+    time: '08:30 am',
+    thumbnail: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400',
+    participants: [
+      { id: '1', name: 'A', color: 'Green' },
+      { id: '2', name: 'B', color: 'Blue' },
+      { id: '3', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100' },
+    ],
+    participantsCount: 8,
+  },
+  {
+    id: '2',
+    title: 'Trail Run - United State',
+    date: '05 June',
+    time: '06:30 am',
+    thumbnail: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400',
+    participants: [
+      { id: '1', name: 'A', color: 'Green' },
+      { id: '2', name: 'B', color: 'Pink' },
+      { id: '3', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100' },
+    ],
+    participantsCount: 25,
+  },
+  {
+    id: '3',
+    title: 'Yoga Session - Morning Flow',
+    date: '06 June',
+    time: '07:00 am',
+    thumbnail: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400',
+    participants: [
+      { id: '1', name: 'A', color: 'Blue' },
+      { id: '2', name: 'B', color: 'Light Pink' },
+      { id: '3', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100' },
+    ],
+    participantsCount: 15,
   },
 ];
 
@@ -141,6 +183,14 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleLivePress = (live: LiveBannerData) => {
     console.log('Navegar para live:', live.id);
+  };
+
+  const handleEventPress = (event: Event) => {
+    console.log('Navegar para evento:', event.id);
+  };
+
+  const handleEventSave = (event: Event) => {
+    console.log('Salvar evento:', event.id);
   };
 
 
@@ -293,6 +343,9 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
             onLoadMore={handleLoadMore}
             onFilterPress={handleFilterPress}
             footerComponent={renderSuggestedProducts()}
+            events={mockEvents}
+            onEventPress={handleEventPress}
+            onEventSave={handleEventSave}
           />
         ) : (
           <ProgramsList

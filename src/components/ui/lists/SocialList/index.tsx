@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { LiveBanner, LiveBannerData, PostsSection } from '@/components/ui';
-import type { Post } from '@/types';
+import type { Post, Event } from '@/types';
 import { styles } from './styles';
 
 type Props = {
@@ -17,6 +17,9 @@ type Props = {
   onLoadMore: () => void;
   onFilterPress?: () => void;
   footerComponent?: React.ReactNode;
+  events?: Event[];
+  onEventPress?: (event: Event) => void;
+  onEventSave?: (event: Event) => void;
 };
 
 const SocialList: React.FC<Props> = ({
@@ -32,6 +35,9 @@ const SocialList: React.FC<Props> = ({
   onLoadMore,
   onFilterPress,
   footerComponent,
+  events,
+  onEventPress,
+  onEventSave,
 }) => {
   return (
     <View style={styles.container}>
@@ -51,6 +57,9 @@ const SocialList: React.FC<Props> = ({
         onLoadMore={onLoadMore}
         onFilterPress={onFilterPress}
         footerComponent={footerComponent}
+        events={events}
+        onEventPress={onEventPress}
+        onEventSave={onEventSave}
       />
     </View>
   );
