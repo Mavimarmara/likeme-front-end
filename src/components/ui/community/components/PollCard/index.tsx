@@ -28,24 +28,24 @@ const PollCard: React.FC<Props> = ({ poll, userAvatar, userName, overline }) => 
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.authorSection}>
-          {userAvatar ? (
-            <Image
-              source={{ uri: userAvatar }}
-              style={styles.avatar}
-            />
-          ) : (
-            <View style={styles.avatarPlaceholder}>
+        {userAvatar ? (
+          <Image
+            source={{ uri: userAvatar }}
+            style={styles.avatar}
+          />
+        ) : (
+          <View style={styles.avatarPlaceholder}>
               <Icon name="person" size={12} color={COLORS.TEXT_LIGHT} />
-            </View>
-          )}
+          </View>
+        )}
           {userName && (
             <Text style={styles.authorName}>{userName}</Text>
-          )}
+        )}
         </View>
       </View>
 
       <View style={styles.questionContainer}>
-        <Text style={styles.question}>{poll.question}</Text>
+      <Text style={styles.question}>{poll.question}</Text>
       </View>
 
       <View style={styles.optionsContainer}>
@@ -55,9 +55,9 @@ const PollCard: React.FC<Props> = ({ poll, userAvatar, userName, overline }) => 
               <View style={styles.optionContent}>
                 <View style={styles.radioButton} />
                 <Text style={styles.optionText}>{option.text}</Text>
+                </View>
+                <Text style={styles.percentage}>{option.percentage}%</Text>
               </View>
-              <Text style={styles.percentage}>{option.percentage}%</Text>
-            </View>
             <View style={styles.progressContainer}>
               <View style={styles.progressBarBackground} />
               <View style={[styles.progressBarFill, { width: `${option.percentage}%` }]} />

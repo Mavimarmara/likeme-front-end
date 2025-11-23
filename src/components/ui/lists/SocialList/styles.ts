@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { COLORS, SPACING } from '@/constants';
+import { SPACING } from '@/constants';
 
 export const styles = StyleSheet.create({
   container: {
@@ -8,5 +8,19 @@ export const styles = StyleSheet.create({
   liveBannerContainer: {
     paddingTop: SPACING.MD,
     paddingBottom: SPACING.SM,
+    paddingHorizontal: SPACING.MD,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: SPACING.XL,
+  },
+  sectionContainer: {
+    paddingHorizontal: SPACING.MD,
+    marginTop: SPACING.XL,
+  },
+  loadingFooter: {
+    paddingVertical: SPACING.MD,
   },
 });

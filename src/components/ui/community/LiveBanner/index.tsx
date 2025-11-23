@@ -37,27 +37,27 @@ const LiveBanner: React.FC<Props> = ({ live, onPress }) => {
           <Image source={live.thumbnail as ImageSourcePropType} style={styles.image} />
         )}
         <View style={styles.imageOverlay}>
-          <TouchableOpacity
-            style={styles.liveButton}
-            onPress={() => onPress(live)}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.liveButtonText}>Go to live</Text>
-          </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.liveButton}
+          onPress={() => onPress(live)}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.liveButtonText}>Go to live</Text>
+        </TouchableOpacity>
         </View>
       </View>
 
       <View style={styles.infoContainer}>
         <View style={styles.contentWrapper}>
           <View style={styles.titleSection}>
-            <View style={styles.cameraIcon}>
+        <View style={styles.cameraIcon}>
               <Icon name="videocam" size={24} color="#001137" />
-            </View>
+        </View>
             <View style={styles.titleContainer}>
-              <Text style={styles.title} numberOfLines={2}>
-                {live.title}
-              </Text>
-              <Text style={styles.host}>With {live.host}</Text>
+        <Text style={styles.title} numberOfLines={2}>
+          {live.title}
+        </Text>
+        <Text style={styles.host}>With {live.host}</Text>
             </View>
           </View>
           <View style={styles.timeContainer}>

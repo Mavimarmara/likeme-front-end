@@ -346,27 +346,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleLogout = logout;
 
-  const renderSuggestedProducts = () => {
-    return (
-      <>
-        <ProductsCarousel
-          title="Products recommended for your sleep journey by Dr. Peter Valasquez"
-          subtitle="Discover our options selected just for you"
-          products={SUGGESTED_PRODUCTS}
-          onProductPress={handleProductPress}
-          onProductLike={handleProductLike}
-        />
-        <PlansCarousel
-          title="Plans for you based on the evolution of your markers"
-          subtitle="Discover our options selected just for you"
-          plans={SUGGESTED_PLANS}
-          onPlanPress={handlePlanPress}
-          onPlanLike={handlePlanLike}
-        />
-      </>
-    );
-  };
-
   return (
     <SafeAreaView style={styles.container}>
       <Image
@@ -381,11 +360,11 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
       />
       <View style={styles.content}>
         <View style={styles.toggleContainer}>
-          <Toggle<CommunityMode>
-            options={TOGGLE_OPTIONS}
-            selected={selectedMode}
-            onSelect={handleModeSelect}
-          />
+        <Toggle<CommunityMode>
+          options={TOGGLE_OPTIONS}
+          selected={selectedMode}
+          onSelect={handleModeSelect}
+        />
         </View>
         
         {selectedMode === 'Social' ? (
@@ -401,12 +380,17 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
             onSearchPress={handleSearchPress}
             onLoadMore={handleLoadMore}
             onFilterPress={handleFilterPress}
-            footerComponent={renderSuggestedProducts()}
             events={mockEvents}
             onEventPress={handleEventPress}
             onEventSave={handleEventSave}
             providerChat={mockProviderChat}
             onProviderChatPress={handleProviderChatPress}
+            products={SUGGESTED_PRODUCTS}
+            onProductPress={handleProductPress}
+            onProductLike={handleProductLike}
+            plans={SUGGESTED_PLANS}
+            onPlanPress={handlePlanPress}
+            onPlanLike={handlePlanLike}
           />
         ) : (
           <ProgramsList

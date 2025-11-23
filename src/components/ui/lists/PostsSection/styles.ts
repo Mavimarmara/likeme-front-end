@@ -4,6 +4,7 @@ import { COLORS, FONT_SIZES, SPACING, BORDER_RADIUS } from '@/constants';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingHorizontal: SPACING.MD,
   },
   header: {
     paddingTop: SPACING.MD,

@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import { View, Text, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { TextInput } from '@/components/ui';
-import { PostCard, NextEventsSection, ProviderChatCard, ProviderChat } from '@/components/ui/community';
-import type { Post, Event } from '@/types';
+import { PostCard } from '@/components/ui/community';
+import type { Post } from '@/types';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { logger } from '@/utils/logger';
 import { styles } from './styles';
@@ -17,12 +17,6 @@ type Props = {
   onSearchPress?: () => void;
   onLoadMore: () => void;
   onFilterPress?: () => void;
-  footerComponent?: React.ReactNode;
-  events?: Event[];
-  onEventPress?: (event: Event) => void;
-  onEventSave?: (event: Event) => void;
-  providerChat?: ProviderChat;
-  onProviderChatPress?: (chat: ProviderChat) => void;
 };
 
 const PostsSection: React.FC<Props> = ({
@@ -35,12 +29,6 @@ const PostsSection: React.FC<Props> = ({
   onSearchPress,
   onLoadMore,
   onFilterPress,
-  footerComponent,
-  events,
-  onEventPress,
-  onEventSave,
-  providerChat,
-  onProviderChatPress,
 }) => {
   useEffect(() => {
     logger.debug('PostsSection - Posts received:', {
@@ -57,33 +45,14 @@ const PostsSection: React.FC<Props> = ({
     });
   }, [posts, loading, loadingMore, error]);
 
-  const renderPost = ({ item }: { item: Post }) => (
-    <PostCard post={item} />
-  );
-
-  const renderFooter = () => (
-    <>
-      {loadingMore && (
+  const renderLoadingFooter = () => {
+    if (!loadingMore) return null;
+    return (
       <View style={styles.loadingFooter}>
         <ActivityIndicator size="small" color="#4CAF50" />
       </View>
-      )}
-      {events && events.length > 0 && (
-        <NextEventsSection
-          events={events}
-          onEventPress={onEventPress}
-          onEventSave={onEventSave}
-        />
-      )}
-      {providerChat && (
-        <ProviderChatCard
-          chat={providerChat}
-          onPress={onProviderChatPress}
-        />
-      )}
-      {footerComponent}
-    </>
     );
+  };
 
   const renderEmpty = () => {
     if (loading) return null;
@@ -137,28 +106,27 @@ const PostsSection: React.FC<Props> = ({
     </>
   );
 
+  if (loading && posts.length === 0) {
+    return (
+      <View style={styles.container}>
+        {renderHeader()}
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#4CAF50" />
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      {loading && posts.length === 0 ? (
+      {renderHeader()}
+      {posts.length === 0 ? renderEmpty() : (
         <>
-          {renderHeader()}
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#4CAF50" />
-          </View>
+          {posts.map((post) => (
+            <PostCard key={post.id} post={post} />
+          ))}
+          {renderLoadingFooter()}
         </>
-      ) : (
-        <FlatList
-          data={posts}
-          renderItem={renderPost}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.listContent}
-          showsVerticalScrollIndicator={false}
-          onEndReached={onLoadMore}
-          onEndReachedThreshold={0.5}
-          ListHeaderComponent={renderHeader}
-          ListFooterComponent={renderFooter}
-          ListEmptyComponent={renderEmpty}
-        />
       )}
     </View>
   );
