@@ -27,13 +27,12 @@ export const styles = StyleSheet.create({
   },
   badgeContainer: {
     width: 110,
-    marginBottom: SPACING.XS,
   },
   authorSection: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.XS,
-    marginBottom: SPACING.XS,
+    marginBottom: SPACING.SM,
   },
   avatar: {
     width: 24,

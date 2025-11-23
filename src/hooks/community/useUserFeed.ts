@@ -62,6 +62,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
         const userFeedResponse = await communityService.getUserFeed({
           page,
           limit: pageSize,
+          search: search,
         });
 
         const isSuccess = userFeedResponse.success === true || 
@@ -97,17 +98,20 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
 
         const mappedPosts: Post[] = (feedData.posts || [])
           .map((communityPost) =>
-            mapCommunityPostToPost(communityPost, feedData.files, feedData.users)
+            mapCommunityPostToPost(communityPost, feedData.files, feedData.users, feedData.comments)
           )
           .filter((post): post is Post => post !== null);
 
         logger.debug('Mapped posts:', {
           count: mappedPosts.length,
+          commentsCount: feedData.comments?.length || 0,
           posts: mappedPosts.map(p => ({
             id: p.id,
             userId: p.userId,
             contentLength: p.content?.length || 0,
             hasImage: !!p.image,
+            commentsCount: p.comments?.length || 0,
+            hasPoll: !!p.poll,
           })),
         });
 

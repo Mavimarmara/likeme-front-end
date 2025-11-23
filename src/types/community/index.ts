@@ -6,11 +6,24 @@ export interface CommunityPost {
   userId?: string;
   targetId?: string;
   targetType?: string;
+  structureType?: string;
+  tags?: string | string[];
   data?: {
     text?: string;
     title?: string;
     fileId?: string;
     thumbnailFileId?: string;
+    question?: string;
+    options?: Array<{
+      id?: string;
+      text?: string;
+      votes?: number;
+      voteCount?: number;
+      [key: string]: unknown;
+    }>;
+    endedAt?: string;
+    endDate?: string;
+    tags?: string | string[];
     [key: string]: unknown;
   };
   reactionsCount?: number;
@@ -117,5 +130,6 @@ export interface UserFeedApiResponse {
 export interface UserFeedParams {
   page?: number;
   limit?: number;
+  search?: string;
 }
 

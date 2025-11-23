@@ -20,6 +20,10 @@ class CommunityService {
         queryParams.limit = String(params.limit);
       }
 
+      if (params.search && params.search.trim() !== '') {
+        queryParams.search = params.search.trim();
+      }
+
       const userFeedResponse = await apiClient.get<UserFeedApiResponse>(
         this.userFeeEndpoint,
         queryParams,

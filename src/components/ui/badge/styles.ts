@@ -10,7 +10,6 @@ export const styles = StyleSheet.create({
     borderBottomLeftRadius: 11,
     borderBottomRightRadius: 11,
     paddingHorizontal: 12,
-    paddingVertical: 6,
     height: 24,
     justifyContent: 'center',
     alignItems: 'center',

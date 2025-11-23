@@ -71,10 +71,32 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
     return '';
   };
 
-  const displayCategory = category || post.category;
+  // Usar tags para o badge - se não houver tags, não mostrar badge
+  // Filtrar a string "Tags" se vier como valor literal
+  const getFirstTag = (): string | null => {
+    if (!post.tags) return null;
+    
+    if (Array.isArray(post.tags)) {
+      const validTag = post.tags.find(tag => 
+        tag && typeof tag === 'string' && tag.toLowerCase() !== 'tags'
+      );
+      return validTag || null;
+    }
+    
+    if (typeof post.tags === 'string' && post.tags.toLowerCase() !== 'tags') {
+      return post.tags;
+    }
+    
+    return null;
+  };
+  
+  const badgeLabel = getFirstTag();
   const title = getTitle();
   const content = getContent();
-  const commentsCount = post.comments.length > 0 ? post.comments.length : 0;
+  // Usar commentsCount do post se disponível, senão usar o tamanho do array de comentários
+  const commentsCount = post.commentsCount !== undefined 
+    ? post.commentsCount 
+    : (post.comments?.length || 0);
 
   const handleCommentsPress = () => {
     setIsCommentsOpen(!isCommentsOpen);
@@ -87,9 +109,9 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
   return (
     <View style={styles.container}>
       <View style={styles.contentContainer}>
-        {displayCategory && (
+        {badgeLabel && (
           <View style={styles.badgeContainer}>
-            <Badge label={displayCategory} />
+            <Badge label={badgeLabel} />
           </View>
         )}
 
@@ -172,8 +194,8 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
                 postId: post.id,
                 author: {
                   id: comment.userId,
-                  name: `User ${comment.userId.slice(0, 8)}`,
-                  avatar: undefined,
+                  name: comment.userName || `User ${comment.userId.slice(0, 8)}`,
+                  avatar: comment.userAvatar,
                 },
                 content: comment.content,
                 upvotes: 0,

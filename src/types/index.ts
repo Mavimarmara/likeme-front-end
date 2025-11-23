@@ -86,8 +86,10 @@ export interface Post {
   image?: string;
   likes: number;
   comments: Comment[];
+  commentsCount?: number;
   createdAt: Date;
   category?: string;
+  tags?: string | string[];
   overline?: string;
   title?: string;
   userName?: string;
@@ -100,6 +102,8 @@ export interface Comment {
   userId: string;
   content: string;
   createdAt: Date;
+  userName?: string;
+  userAvatar?: string;
 }
 
 export interface HealthProvider {
