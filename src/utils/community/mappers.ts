@@ -13,18 +13,27 @@ const mapCommunityCommentToComment = (
   
   const user = users?.find(u => u.userId === communityComment.userId);
   
-  // Mapear reactions se disponíveis e for um array
-  const reactions: Comment['reactions'] = Array.isArray(communityComment.reactions) 
-    ? communityComment.reactions.map(reaction => ({
-        id: reaction.reactionId || String(Math.random()),
-        userId: reaction.userId || '',
-        type: reaction.reactionName || reaction.reactionType || 'like',
-      }))
-    : undefined;
-
-  // Calcular upvotes e downvotes baseado nas reactions
-  const upvotes = reactions?.filter(r => r.type === 'like' || r.type === 'upvote' || r.type === '👍').length || 0;
-  const downvotes = reactions?.filter(r => r.type === 'dislike' || r.type === 'downvote' || r.type === '👎').length || 0;
+  // Calcular upvotes e downvotes baseado no objeto de reactions
+  // reactions é um objeto como { "like": 1, "dislike": 0 }
+  const reactionsObj = communityComment.reactions || {};
+  const upvotes = reactionsObj['like'] || reactionsObj['upvote'] || reactionsObj['👍'] || 0;
+  const downvotes = reactionsObj['dislike'] || reactionsObj['downvote'] || reactionsObj['👎'] || 0;
+  
+  // Converter o objeto de reactions para array se necessário (para manter compatibilidade)
+  const reactionsArray: Array<{ id: string; userId: string; type: string }> = [];
+  if (Object.keys(reactionsObj).length > 0) {
+    Object.entries(reactionsObj).forEach(([type, count]) => {
+      const countNum = typeof count === 'number' ? count : 0;
+      for (let i = 0; i < countNum; i++) {
+        reactionsArray.push({
+          id: `${communityComment.commentId}-${type}-${i}`,
+          userId: '',
+          type,
+        });
+      }
+    });
+  }
+  const reactions: Comment['reactions'] = reactionsArray.length > 0 ? reactionsArray : undefined;
   
   return {
     id: communityComment.commentId,

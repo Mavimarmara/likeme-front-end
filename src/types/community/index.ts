@@ -57,7 +57,7 @@ export interface CommunityComment {
     [key: string]: unknown;
   };
   reactionsCount?: number;
-  reactions?: CommunityReaction[];
+  reactions?: Record<string, number>; // Ex: { "like": 1, "dislike": 0 }
   createdAt: string;
   updatedAt?: string;
 }
