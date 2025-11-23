@@ -117,7 +117,7 @@ const SocialList: React.FC<Props> = ({
         {footerComponent}
 
         {products && products.length > 0 && (
-          <View style={styles.sectionContainer}>
+          <View>
             <ProductsCarousel
               title="Products recommended for your sleep journey by Dr. Peter Valasquez"
               subtitle="Discover our options selected just for you"
@@ -129,7 +129,7 @@ const SocialList: React.FC<Props> = ({
         )}
 
         {plans && plans.length > 0 && (
-          <View style={styles.sectionContainer}>
+          <View>
             <PlansCarousel
               title="Plans for you based on the evolution of your markers"
               subtitle="Discover our options selected just for you"
