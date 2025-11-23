@@ -97,6 +97,12 @@ export interface Post {
   poll?: Poll;
 }
 
+export interface Reaction {
+  id: string;
+  userId: string;
+  type: 'like' | 'dislike' | string;
+}
+
 export interface Comment {
   id: string;
   userId: string;
@@ -104,6 +110,9 @@ export interface Comment {
   createdAt: Date;
   userName?: string;
   userAvatar?: string;
+  reactionsCount?: number;
+  reactions?: Reaction[];
+  commentsCount?: number;
 }
 
 export interface HealthProvider {

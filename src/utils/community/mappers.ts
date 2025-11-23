@@ -13,6 +13,19 @@ const mapCommunityCommentToComment = (
   
   const user = users?.find(u => u.userId === communityComment.userId);
   
+  // Mapear reactions se disponíveis e for um array
+  const reactions: Comment['reactions'] = Array.isArray(communityComment.reactions) 
+    ? communityComment.reactions.map(reaction => ({
+        id: reaction.reactionId || String(Math.random()),
+        userId: reaction.userId || '',
+        type: reaction.reactionName || reaction.reactionType || 'like',
+      }))
+    : undefined;
+
+  // Calcular upvotes e downvotes baseado nas reactions
+  const upvotes = reactions?.filter(r => r.type === 'like' || r.type === 'upvote' || r.type === '👍').length || 0;
+  const downvotes = reactions?.filter(r => r.type === 'dislike' || r.type === 'downvote' || r.type === '👎').length || 0;
+  
   return {
     id: communityComment.commentId,
     userId: communityComment.userId,
@@ -21,6 +34,8 @@ const mapCommunityCommentToComment = (
     userName: user?.displayName,
     userAvatar: user?.avatarFileId ? 
       files?.find(f => f.fileId === user.avatarFileId)?.fileUrl : undefined,
+    reactionsCount: communityComment.reactionsCount,
+    reactions,
   };
 };
 

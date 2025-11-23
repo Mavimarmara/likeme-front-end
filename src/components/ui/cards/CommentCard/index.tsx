@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, ImageSourcePropType } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { CommentReactions } from '@/components/ui/community';
 import { styles } from './styles';
 
 type Comment = {
@@ -12,8 +13,10 @@ type Comment = {
     avatar?: string;
   };
   content: string;
-  upvotes: number;
-  downvotes: number;
+  upvotes?: number;
+  downvotes?: number;
+  reactionsCount?: number;
+  commentsCount?: number;
   createdAt: string;
   replies?: Comment[];
   replyToId?: string;
@@ -88,6 +91,16 @@ const CommentCard: React.FC<Props> = ({
       </View>
 
       <Text style={styles.content}>{comment.content}</Text>
+
+      <CommentReactions
+        upvotes={comment.upvotes || 0}
+        downvotes={comment.downvotes || 0}
+        commentsCount={comment.commentsCount}
+        onUpvote={() => onUpvote?.(comment.id)}
+        onDownvote={() => onDownvote?.(comment.id)}
+        onReply={() => onReply?.(comment)}
+        onToggle={hasReplies ? handleToggleReplies : undefined}
+      />
 
       {hasReplies && (
         <TouchableOpacity

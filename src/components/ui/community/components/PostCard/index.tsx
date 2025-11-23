@@ -198,8 +198,10 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
                   avatar: comment.userAvatar,
                 },
                 content: comment.content,
-                upvotes: 0,
-                downvotes: 0,
+                upvotes: comment.reactions?.filter(r => r.type === 'like' || r.type === 'upvote' || r.type === '👍').length || 0,
+                downvotes: comment.reactions?.filter(r => r.type === 'dislike' || r.type === 'downvote' || r.type === '👎').length || 0,
+                reactionsCount: comment.reactionsCount,
+                commentsCount: comment.commentsCount,
                 createdAt: comment.createdAt instanceof Date 
                   ? comment.createdAt.toISOString() 
                   : new Date(comment.createdAt).toISOString(),

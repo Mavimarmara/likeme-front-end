@@ -40,6 +40,14 @@ export interface CommunityFile {
   updatedAt?: string;
 }
 
+export interface CommunityReaction {
+  reactionId?: string;
+  userId?: string;
+  reactionName?: string;
+  reactionType?: string;
+  [key: string]: unknown;
+}
+
 export interface CommunityComment {
   commentId: string;
   userId: string;
@@ -48,7 +56,8 @@ export interface CommunityComment {
     text?: string;
     [key: string]: unknown;
   };
-  reactionsCount: number;
+  reactionsCount?: number;
+  reactions?: CommunityReaction[];
   createdAt: string;
   updatedAt?: string;
 }
