@@ -369,16 +369,16 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
       />
       <View style={styles.content}>
         <View style={styles.toggleContainer}>
-        <Toggle<CommunityMode>
-          options={TOGGLE_OPTIONS}
-          selected={selectedMode}
-          onSelect={handleModeSelect}
-        />
+          <Toggle<CommunityMode>
+            options={TOGGLE_OPTIONS}
+            selected={selectedMode}
+            onSelect={handleModeSelect}
+          />
         </View>
         
         {selectedMode === 'Social' ? (
           <SocialList
-          programs={mockPrograms}
+            programs={mockPrograms}
             liveBanner={mockLiveBanner}
             onLivePress={handleLivePress}
             posts={posts}

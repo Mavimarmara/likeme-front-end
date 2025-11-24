@@ -105,7 +105,6 @@ export const styles = StyleSheet.create({
     backgroundColor: 'rgba(240, 238, 225, 0.16)',
     borderWidth: 1,
     borderColor: '#fbf7e5',
-    paddingHorizontal: SPACING.MD,
     paddingVertical: 9,
     borderRadius: 18,
     borderTopLeftRadius: 18,

@@ -55,7 +55,6 @@ export const styles = StyleSheet.create({
     backgroundColor: 'rgba(240, 238, 225, 0.16)',
     borderWidth: 1.5,
     borderColor: '#001137',
-    paddingHorizontal: SPACING.MD,
     paddingVertical: 9,
     borderRadius: 18,
     borderTopLeftRadius: 18,
@@ -84,7 +83,6 @@ export const styles = StyleSheet.create({
   },
   optionButton: {
     minHeight: 32,
-    paddingHorizontal: SPACING.MD,
     paddingVertical: 0,
     borderRadius: 18,
     borderTopLeftRadius: 18,
@@ -114,7 +112,6 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
     backgroundColor: '#001137',
-    paddingHorizontal: SPACING.MD,
     paddingVertical: 12,
     borderRadius: 24,
     borderTopLeftRadius: 24,

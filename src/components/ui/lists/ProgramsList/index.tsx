@@ -48,7 +48,7 @@ const ProgramsList: React.FC<Props> = ({
       {programDetails && selectedProgram ? (
         <ScrollView
           contentContainerStyle={styles.detailsContent}
-        showsVerticalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
           style={styles.scrollView}
           nestedScrollEnabled={true}
         >

@@ -53,7 +53,6 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: SPACING.XXL,
-    paddingHorizontal: SPACING.MD,
   },
   emptyText: {
     fontSize: FONT_SIZES.MD,

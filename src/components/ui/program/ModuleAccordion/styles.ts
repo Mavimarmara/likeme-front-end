@@ -1,8 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { SPACING } from '@/constants';
 
-const CONTENT_WIDTH = 360;
-
 export const styles = StyleSheet.create({
   container: {
     width: '100%',
@@ -14,8 +12,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingTop: 24,
     paddingBottom: 0,
-    paddingHorizontal: 0,
-    width: CONTENT_WIDTH,
+    width: '100%',
   },
   headerExpanded: {
     backgroundColor: '#fbf7e5',
@@ -23,7 +20,6 @@ export const styles = StyleSheet.create({
     paddingBottom: 8,
     borderTopLeftRadius: 32,
     borderTopRightRadius: 32,
-    paddingHorizontal: SPACING.MD,
   },
   headerLeft: {
     flexDirection: 'row',
@@ -53,9 +49,8 @@ export const styles = StyleSheet.create({
   content: {
     backgroundColor: '#fbf7e5',
     paddingVertical: SPACING.MD,
-    paddingHorizontal: SPACING.MD,
     gap: 24,
-    width: CONTENT_WIDTH,
+    width: "100%",
     borderBottomLeftRadius: 32,
     borderBottomRightRadius: 32,
     alignSelf: 'center',
@@ -65,7 +60,7 @@ export const styles = StyleSheet.create({
     backgroundColor: '#e1dfcf',
     marginTop: 24,
     marginBottom: 8,
-    width: CONTENT_WIDTH,
+    width: "100%",
   },
 });
 
