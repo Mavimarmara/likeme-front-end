@@ -53,6 +53,14 @@ const mapCommunityPostToPoll = (
     return undefined;
   }
 
+  logger.debug('Processing poll post:', {
+    postId: communityPost.postId || communityPost._id,
+    structureType: communityPost.structureType,
+    hasPollOptions: !!communityPost.pollOptions,
+    pollOptionsCount: communityPost.pollOptions?.length || 0,
+    question: communityPost.data?.text,
+  });
+
   if (!communityPost.pollOptions || communityPost.pollOptions.length === 0) {
     logger.debug('Poll post sem pollOptions:', {
       postId: communityPost.postId || communityPost._id,
@@ -71,13 +79,32 @@ const mapCommunityPostToPoll = (
     return undefined;
   }
 
-  const pollOptions = communityPost.pollOptions.map((option, index) => {
+  // Ordenar opções por sequenceNumber (igual ao backend faz)
+  const sortedPollOptions = [...communityPost.pollOptions].sort((a, b) => {
+    const seqA = a.sequenceNumber ?? 0;
+    const seqB = b.sequenceNumber ?? 0;
+    return seqA - seqB;
+  });
+
+  logger.debug('Poll options sorted:', {
+    postId: communityPost.postId || communityPost._id,
+    originalCount: communityPost.pollOptions.length,
+    sortedCount: sortedPollOptions.length,
+    sequenceNumbers: sortedPollOptions.map((opt, idx) => ({
+      index: idx,
+      sequenceNumber: opt.sequenceNumber,
+      text: opt.data?.text?.substring(0, 30),
+    })),
+  });
+
+  const pollOptions = sortedPollOptions.map((option, index) => {
     const text = option.data?.text || '';
     
     if (!text) {
       logger.warn('Poll option sem text (data.text):', {
         optionId: option.postId || option._id,
         index,
+        sequenceNumber: option.sequenceNumber,
         data: option.data,
       });
     }
@@ -99,13 +126,6 @@ const mapCommunityPostToPoll = (
   }));
 
   const endedAt = communityPost.data?.endedAt || communityPost.data?.endDate;
-  
-  logger.debug('Poll mapeado:', {
-    postId: communityPost.postId || communityPost._id,
-    question,
-    optionsCount: pollOptionsWithPercentage.length,
-    totalVotes,
-  });
   
   return {
     id: communityPost.postId || communityPost._id || '',
@@ -209,14 +229,6 @@ export const mapCommunityPostToPost = (
       }
     }
   }
-  
-  logger.debug('Tags mapping:', {
-    postId,
-    rawTags,
-    mappedTags: tags,
-    rawTagsType: typeof rawTags,
-    isArray: Array.isArray(rawTags),
-  });
 
   const commentsCount = communityPost.commentsCount !== undefined 
     ? communityPost.commentsCount 
@@ -239,24 +251,7 @@ export const mapCommunityPostToPost = (
     userAvatar,
     poll,
   };
-
-  logger.debug('Mapped post:', { 
-    postId: post.id, 
-    userId: post.userId, 
-    contentLength: post.content.length,
-    hasImage: !!post.image,
-    likes: post.likes,
-    commentsCount: post.comments.length,
-    hasPoll: !!post.poll,
-    structureType: communityPost.structureType,
-    pollOptionsCount: communityPost.pollOptions?.length || 0,
-    pollDetails: post.poll ? {
-      question: post.poll.question,
-      optionsCount: post.poll.options.length,
-      totalVotes: post.poll.totalVotes,
-    } : undefined,
-  });
-
+  
   return post;
 };
 

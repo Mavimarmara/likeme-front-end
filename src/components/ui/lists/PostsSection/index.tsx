@@ -30,21 +30,6 @@ const PostsSection: React.FC<Props> = ({
   onLoadMore,
   onFilterPress,
 }) => {
-  useEffect(() => {
-    logger.debug('PostsSection - Posts received:', {
-      postsCount: posts.length,
-      loading,
-      loadingMore,
-      error,
-      firstPost: posts[0] ? {
-        id: posts[0].id,
-        userId: posts[0].userId,
-        contentLength: posts[0].content?.length || 0,
-        hasImage: !!posts[0].image,
-      } : null,
-    });
-  }, [posts, loading, loadingMore, error]);
-
   const renderLoadingFooter = () => {
     if (!loadingMore) return null;
     return (

@@ -25,6 +25,11 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
   };
 
   const getTitle = (): string => {
+    // Se for uma poll, usar a pergunta da poll como título
+    if (post.poll?.question) {
+      return post.poll.question;
+    }
+    
     if (post.title) return post.title;
     if (!post.content) return '';
     
@@ -149,12 +154,7 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
       </View>
 
       {post.poll && (
-        <PollCard
-          poll={post.poll}
-          userAvatar={post.userAvatar}
-          userName={post.userName}
-          overline={post.overline}
-        />
+        <PollCard poll={post.poll} />
       )}
 
       <View style={styles.footer}>

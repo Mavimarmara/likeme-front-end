@@ -1,18 +1,13 @@
 import React from 'react';
-import { View, Text, Image } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { View, Text } from 'react-native';
 import { styles } from './styles';
-import { COLORS } from '@/constants';
 import type { Poll } from '@/types';
 
 type Props = {
   poll: Poll;
-  userAvatar?: string;
-  userName?: string;
-  overline?: string;
 };
 
-const PollCard: React.FC<Props> = ({ poll, userAvatar, userName, overline }) => {
+const PollCard: React.FC<Props> = ({ poll }) => {
   const formatDate = (date: Date): string => {
     const months = [
       'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
@@ -26,28 +21,6 @@ const PollCard: React.FC<Props> = ({ poll, userAvatar, userName, overline }) => 
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.authorSection}>
-        {userAvatar ? (
-          <Image
-            source={{ uri: userAvatar }}
-            style={styles.avatar}
-          />
-        ) : (
-          <View style={styles.avatarPlaceholder}>
-              <Icon name="person" size={12} color={COLORS.TEXT_LIGHT} />
-          </View>
-        )}
-          {userName && (
-            <Text style={styles.authorName}>{userName}</Text>
-        )}
-        </View>
-      </View>
-
-      <View style={styles.questionContainer}>
-      <Text style={styles.question}>{poll.question}</Text>
-      </View>
-
       <View style={styles.optionsContainer}>
         {poll.options.map((option) => (
           <View key={option.id} style={styles.option}>
@@ -76,4 +49,3 @@ const PollCard: React.FC<Props> = ({ poll, userAvatar, userName, overline }) => 
 };
 
 export default PollCard;
-
