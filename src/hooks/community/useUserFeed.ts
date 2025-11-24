@@ -96,11 +96,17 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
           firstPostRaw: feedData.posts?.[0] || null,
         });
 
-        const mappedPosts: Post[] = (feedData.posts || [])
-          .map((communityPost) =>
-            mapCommunityPostToPost(communityPost, feedData.files, feedData.users, feedData.comments)
+        const mappedPostsPromises = (feedData.posts || []).map((communityPost) =>
+          mapCommunityPostToPost(
+            communityPost, 
+            feedData.files, 
+            feedData.users, 
+            feedData.comments
           )
-          .filter((post): post is Post => post !== null);
+        );
+        
+        const mappedPostsResults = await Promise.all(mappedPostsPromises);
+        const mappedPosts: Post[] = mappedPostsResults.filter((post): post is Post => post !== null);
 
         logger.debug('Mapped posts:', {
           count: mappedPosts.length,

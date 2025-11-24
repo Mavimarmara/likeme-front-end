@@ -3,10 +3,12 @@ import { logger } from '@/utils/logger';
 import type {
   UserFeedApiResponse,
   UserFeedParams,
+  PollDetailApiResponse,
 } from '@/types/community';
 
 class CommunityService {
   private readonly userFeeEndpoint = '/api/communities/feed';
+  private readonly pollDetailEndpoint = '/api/v3/polls';
 
   async getUserFeed(params: UserFeedParams = {}): Promise<UserFeedApiResponse> {
     try {
@@ -30,10 +32,39 @@ class CommunityService {
         true,
         false
       );
-console.log('userFeedResponse', userFeedResponse);
+console.log('userFeedResponse', JSON.stringify(userFeedResponse));
       return userFeedResponse;
     } catch (error) {
       logger.error('Error fetching user feed:', error);
+      throw error;
+    }
+  }
+
+  async getPollDetail(pollId: string): Promise<PollDetailApiResponse> {
+    try {
+      if (!pollId || pollId.trim() === '') {
+        throw new Error('Poll ID is required');
+      }
+
+      const endpoint = `${this.pollDetailEndpoint}/${pollId.trim()}`;
+      
+      const pollResponse = await apiClient.get<PollDetailApiResponse>(
+        endpoint,
+        undefined,
+        true,
+        false
+      );
+
+      logger.debug('Poll detail response:', {
+        pollId,
+        success: pollResponse.success,
+        hasData: !!pollResponse.data,
+        hasPoll: !!pollResponse.poll,
+      });
+
+      return pollResponse;
+    } catch (error) {
+      logger.error('Error fetching poll detail:', error);
       throw error;
     }
   }
