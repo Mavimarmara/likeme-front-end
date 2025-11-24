@@ -115,7 +115,21 @@ const mapCommunityPostToPoll = (
   }));
 
   const endedAt = communityPost.data?.endedAt || communityPost.data?.endDate;
-  const pollId = communityPost.data?.pollId;
+  
+  // Buscar pollId no post principal ou nas opções (onde geralmente está)
+  let pollId = communityPost.data?.pollId;
+  
+  // Se não encontrou no post principal, tentar buscar na primeira opção
+  if (!pollId && sortedPollOptions.length > 0) {
+    pollId = sortedPollOptions[0].data?.pollId;
+  }
+  
+  logger.debug('Poll ID encontrado:', {
+    postId: communityPost.postId || communityPost._id,
+    pollIdFromMain: communityPost.data?.pollId,
+    pollIdFromOptions: sortedPollOptions[0]?.data?.pollId,
+    finalPollId: pollId,
+  });
   
   return {
     id: communityPost.postId || communityPost._id || '',

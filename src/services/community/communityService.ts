@@ -79,7 +79,7 @@ console.log('userFeedResponse', JSON.stringify(userFeedResponse));
       }
 
       // Endpoint fixo, pollId vai no body
-      const endpoint = '/api/communities/polls/votes';
+      const endpoint = `/api/communities/polls/${pollId.trim()}/votes`;
       
       const voteResponse = await apiClient.put<any>(
         endpoint,

@@ -111,10 +111,21 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
     try {
       // Usar o pollId real da enquete (data.pollId), não o postId
       const realPollId = post.poll?.pollId;
+      
       if (!realPollId) {
-        logger.error('Poll ID não encontrado na enquete');
+        logger.error('Poll ID não encontrado na enquete', {
+          postId: post.id,
+          pollId: post.poll?.id,
+          pollData: post.poll,
+        });
         return;
       }
+      
+      logger.debug('Votando na enquete:', {
+        pollId: realPollId,
+        optionId,
+        postId: post.id,
+      });
       
       await communityService.votePoll(realPollId, [optionId]);
       logger.info('Voto registrado com sucesso:', { pollId: realPollId, optionId });
