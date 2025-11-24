@@ -5,6 +5,8 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  programsContainer: {
+  },
   liveBannerContainer: {
     paddingTop: SPACING.MD,
     paddingBottom: SPACING.SM,

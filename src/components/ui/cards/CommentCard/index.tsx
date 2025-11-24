@@ -69,45 +69,35 @@ const CommentCard: React.FC<Props> = ({
     return `${Math.floor(diffInSeconds / 86400)} dias atrás`;
   };
 
-  const removeReactionIfNeeded = async (reactionName: 'like' | 'dislike') => {
-    try {
-      await communityService.removeCommentReaction(comment.id, reactionName);
-    } catch (error) {
-      logger.error('Erro ao remover reação do comentário:', error);
-      throw error;
-    }
-  };
-
-  const addReaction = async (reactionName: 'like' | 'dislike') => {
-    try {
-      await communityService.addCommentReaction(comment.id, reactionName);
-    } catch (error) {
-      logger.error('Erro ao adicionar reação ao comentário:', error);
-      throw error;
-    }
-  };
-
   const handleUpvotePress = async () => {
     if (reactionLoading) return;
 
     setReactionLoading(true);
-    try {
-      if (currentReaction === 'like') {
-        await removeReactionIfNeeded('like');
-        setCurrentReaction(null);
-        setUpvotes((prev) => Math.max(prev - 1, 0));
-      } else {
-        if (currentReaction === 'dislike') {
-          await removeReactionIfNeeded('dislike');
-          setDownvotes((prev) => Math.max(prev - 1, 0));
-        }
-        await addReaction('like');
-        setCurrentReaction('like');
-        setUpvotes((prev) => prev + 1);
+    const previousReaction = currentReaction;
+    setCurrentReaction(previousReaction === 'like' ? null : 'like');
+
+    if (previousReaction === 'like') {
+      setUpvotes((prev) => Math.max(prev - 1, 0));
+    } else {
+      setUpvotes((prev) => prev + 1);
+      if (previousReaction === 'dislike') {
+        setDownvotes((prev) => Math.max(prev - 1, 0));
       }
-      onUpvote?.(comment.id);
+    }
+
+    onUpvote?.(comment.id);
+
+    try {
+      if (previousReaction === 'like') {
+        await communityService.removeCommentReaction(comment.id, 'like');
+      } else {
+        if (previousReaction === 'dislike') {
+          await communityService.removeCommentReaction(comment.id, 'dislike');
+        }
+        await communityService.addCommentReaction(comment.id, 'like');
+      }
     } catch (error) {
-      logger.error('Erro ao processar like no comentário:', error);
+      logger.warn('Erro ao aplicar like (ignorado):', error);
     } finally {
       setReactionLoading(false);
     }
@@ -117,23 +107,31 @@ const CommentCard: React.FC<Props> = ({
     if (reactionLoading) return;
 
     setReactionLoading(true);
-    try {
-      if (currentReaction === 'dislike') {
-        await removeReactionIfNeeded('dislike');
-        setCurrentReaction(null);
-        setDownvotes((prev) => Math.max(prev - 1, 0));
-      } else {
-        if (currentReaction === 'like') {
-          await removeReactionIfNeeded('like');
-          setUpvotes((prev) => Math.max(prev - 1, 0));
-        }
-        await addReaction('dislike');
-        setCurrentReaction('dislike');
-        setDownvotes((prev) => prev + 1);
+    const previousReaction = currentReaction;
+    setCurrentReaction(previousReaction === 'dislike' ? null : 'dislike');
+
+    if (previousReaction === 'dislike') {
+      setDownvotes((prev) => Math.max(prev - 1, 0));
+    } else {
+      setDownvotes((prev) => prev + 1);
+      if (previousReaction === 'like') {
+        setUpvotes((prev) => Math.max(prev - 1, 0));
       }
-      onDownvote?.(comment.id);
+    }
+
+    onDownvote?.(comment.id);
+
+    try {
+      if (previousReaction === 'dislike') {
+        await communityService.removeCommentReaction(comment.id, 'dislike');
+      } else {
+        if (previousReaction === 'like') {
+          await communityService.removeCommentReaction(comment.id, 'like');
+        }
+        await communityService.addCommentReaction(comment.id, 'dislike');
+      }
     } catch (error) {
-      logger.error('Erro ao processar dislike no comentário:', error);
+      logger.warn('Erro ao aplicar dislike (ignorado):', error);
     } finally {
       setReactionLoading(false);
     }

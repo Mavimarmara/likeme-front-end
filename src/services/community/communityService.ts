@@ -104,7 +104,7 @@ console.log('userFeedResponse', JSON.stringify(userFeedResponse));
     }
   }
 
-  async addCommentReaction(commentId: string, reactionName: 'like' | 'dislike' = 'like'): Promise<void> {
+  async addCommentReaction(commentId: string, reactionName: 'like' | 'dislike' = 'like'): Promise<boolean> {
     try {
       if (!commentId || commentId.trim() === '') {
         throw new Error('Comment ID is required');
@@ -121,13 +121,14 @@ console.log('userFeedResponse', JSON.stringify(userFeedResponse));
       );
 
       logger.debug('Comment reaction added:', { commentId, reactionName });
+      return true;
     } catch (error) {
-      logger.error('Error adding comment reaction:', error);
-      throw error;
+      logger.warn('Error adding comment reaction (ignored):', error);
+      return false;
     }
   }
 
-  async removeCommentReaction(commentId: string, reactionName: 'like' | 'dislike' = 'like'): Promise<void> {
+  async removeCommentReaction(commentId: string, reactionName: 'like' | 'dislike' = 'like'): Promise<boolean> {
     try {
       if (!commentId || commentId.trim() === '') {
         throw new Error('Comment ID is required');
@@ -144,9 +145,10 @@ console.log('userFeedResponse', JSON.stringify(userFeedResponse));
       );
 
       logger.debug('Comment reaction removed:', { commentId, reactionName });
+      return true;
     } catch (error) {
-      logger.error('Error removing comment reaction:', error);
-      throw error;
+      logger.warn('Error removing comment reaction (ignored):', error);
+      return false;
     }
   }
 }

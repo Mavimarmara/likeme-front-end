@@ -378,6 +378,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
         
         {selectedMode === 'Social' ? (
           <SocialList
+          programs={mockPrograms}
             liveBanner={mockLiveBanner}
             onLivePress={handleLivePress}
             posts={posts}

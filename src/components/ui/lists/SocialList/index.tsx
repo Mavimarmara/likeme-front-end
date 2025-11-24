@@ -11,8 +11,10 @@ import {
   PlansCarousel,
   Product,
   Plan,
+  ProgramSelector,
 } from '@/components/ui';
 import type { Post, Event } from '@/types';
+import type { Program } from '@/types/program';
 import type { FilterType } from '@/components/ui/modals/FilterModal';
 import { styles } from './styles';
 
@@ -42,6 +44,9 @@ type Props = {
   plans?: Plan[];
   onPlanPress?: (plan: Plan) => void;
   onPlanLike?: (plan: Plan) => void;
+  programs?: Program[];
+  selectedProgramId?: string;
+  onProgramPress?: (program: Program) => void;
 };
 
 const SocialList: React.FC<Props> = ({
@@ -70,9 +75,21 @@ const SocialList: React.FC<Props> = ({
   plans,
   onPlanPress,
   onPlanLike,
+  programs,
+  selectedProgramId,
+  onProgramPress,
 }) => {
   return (
     <View style={styles.container}>
+      {programs && programs.length > 0 && (
+        <View style={styles.programsContainer}>
+          <ProgramSelector
+            programs={programs}
+            selectedProgramId={selectedProgramId}
+            onSelect={onProgramPress}
+          />
+        </View>
+      )}
       {liveBanner && onLivePress && (
         <View style={styles.liveBannerContainer}>
           <LiveBanner live={liveBanner} onPress={onLivePress} />

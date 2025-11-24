@@ -4,9 +4,8 @@ import { SPACING } from '@/constants';
 export const styles = StyleSheet.create({
   container: {
     marginBottom: SPACING.LG,
-    paddingHorizontal: SPACING.MD,
+    paddingHorizontal: SPACING.SM,
     paddingVertical: SPACING.SM,
-    backgroundColor: '#fbf7e5',
     borderRadius: 24,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
