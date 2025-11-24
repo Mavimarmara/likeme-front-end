@@ -16,33 +16,7 @@ export interface CommunityPost {
     title?: string;
     fileId?: string;
     thumbnailFileId?: string;
-    pollId?: string; // ID da poll (para opções de poll)
-    poll?: {
-      // Dados completos da poll (nova estrutura do backend)
-      pollId?: string;
-      question?: string;
-      options?: Array<{
-        optionId?: string;
-        text?: string;
-        voteCount?: number;
-        votes?: number;
-        [key: string]: unknown;
-      }>;
-      totalVoteCount?: number;
-      totalVotes?: number;
-      endedAt?: string;
-      endDate?: string;
-      isFinished?: boolean;
-      [key: string]: unknown;
-    };
-    question?: string;
-    options?: Array<{
-      id?: string;
-      text?: string;
-      votes?: number;
-      voteCount?: number;
-      [key: string]: unknown;
-    }>;
+    pollId?: string;
     endedAt?: string;
     endDate?: string;
     tags?: string | string[];
@@ -123,6 +97,7 @@ export interface CommunityCategory {
 
 export interface CommunityFeedData {
   posts?: CommunityPost[];
+  postChildren?: CommunityPost[];
   comments?: CommunityComment[];
   users?: CommunityUser[];
   files?: CommunityFile[];
@@ -161,36 +136,5 @@ export interface UserFeedParams {
   page?: number;
   limit?: number;
   search?: string;
-}
-
-export interface PollDetail {
-  pollId: string;
-  question: string;
-  options?: Array<{
-    optionId?: string;
-    text?: string;
-    voteCount?: number;
-    votes?: number;
-    [key: string]: unknown;
-  }>;
-  totalVoteCount?: number;
-  totalVotes?: number;
-  endedAt?: string;
-  endDate?: string;
-  isFinished?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export interface PollDetailApiResponse {
-  success?: boolean;
-  status?: string;
-  data?: {
-    status?: string;
-    poll?: PollDetail;
-    [key: string]: unknown;
-  };
-  poll?: PollDetail;
-  message?: string;
 }
 
