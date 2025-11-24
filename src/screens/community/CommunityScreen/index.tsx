@@ -72,6 +72,7 @@ const mockProgramDetails: ProgramDetail = {
         {
           id: '1.2',
           type: 'survey',
+          title: '1.2 Activity',
           question: 'What motivated you to purchase this protocol?',
           options: [
             'Bad sleep Habits',
@@ -105,6 +106,7 @@ const mockProgramDetails: ProgramDetail = {
         {
           id: '3.2',
           type: 'survey',
+          title: '1.2 Activity',
           question: 'What motivated you to purchase this protocol?',
           options: [
             'Bad sleep Habits',

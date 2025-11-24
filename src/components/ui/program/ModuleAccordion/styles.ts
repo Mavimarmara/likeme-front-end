@@ -12,10 +12,11 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: SPACING.MD,
     paddingRight: SPACING.MD,
+    paddingTop: SPACING.MD,
     width: '100%',
   },
   headerExpanded: {
-    backgroundColor: '#FBF7EE',
+    backgroundColor: '#fbf7e5',
   },
   headerLeft: {
     flexDirection: 'row',
@@ -43,7 +44,7 @@ export const styles = StyleSheet.create({
     lineHeight: 24,
   },
   content: {
-    backgroundColor: '#FBF7EE',
+    backgroundColor: '#fbf7e5',
     paddingVertical: 16,
     gap: SPACING.LG,
     borderBottomLeftRadius: 32,

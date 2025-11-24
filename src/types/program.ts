@@ -28,6 +28,7 @@ export interface ProgramContent {
 export interface ProgramActivity {
   id: string;
   type: 'survey' | 'quiz' | 'exercise';
+  title: string;
   question: string;
   options?: string[];
   isSubmitted: boolean;
