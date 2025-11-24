@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { styles } from './styles';
 import type { Event } from '@/types/event';
+import { BlurView } from 'expo-blur';
 
 type Props = {
   event: Event;
@@ -80,6 +81,7 @@ const EventCard: React.FC<Props> = ({ event, onPress, onSave }) => {
         </View>
 
         <View style={styles.bottomSection}>
+          <BlurView intensity={30} tint="dark" style={styles.bottomBlur} />
           <Text style={styles.title} numberOfLines={2}>
             {event.title}
           </Text>

@@ -3,8 +3,6 @@ import { SPACING } from '@/constants';
 
 export const styles = StyleSheet.create({
   container: {
-    paddingLeft: SPACING.MD,
-    paddingRight: 0,
     paddingVertical: 0,
     marginTop: SPACING.MD,
   },

@@ -23,9 +23,7 @@ export const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: 82,
-    backgroundColor: '#292929',
-    opacity: 0.64,
+    height: 50,
   },
   contentOverlay: {
     position: 'absolute',

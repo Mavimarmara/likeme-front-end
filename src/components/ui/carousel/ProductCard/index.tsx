@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { BlurView } from 'expo-blur';
 import { styles } from './styles';
 
 export interface Product {
@@ -28,7 +29,7 @@ const ProductCard: React.FC<Props> = ({ product, onPress, onLike }) => {
           source={{ uri: product.image }}
           style={styles.image}
         />
-        <View style={styles.imageOverlay} />
+        <BlurView intensity={10} tint="dark" style={styles.imageOverlay} />
         <View style={styles.contentOverlay}>
           <View style={styles.tagBadge}>
             <Text style={styles.tagText}>{product.tag}</Text>

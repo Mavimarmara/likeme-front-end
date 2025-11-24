@@ -12,7 +12,6 @@ export const styles = StyleSheet.create({
     paddingHorizontal: SPACING.XL,
     paddingTop: SPACING.XXL,
     paddingBottom: SPACING.XL,
-    marginTop: SPACING.XL,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,

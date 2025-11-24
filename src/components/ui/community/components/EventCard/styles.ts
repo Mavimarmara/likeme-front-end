@@ -83,13 +83,17 @@ export const styles = StyleSheet.create({
     color: '#001137',
   },
   bottomSection: {
-    backgroundColor: 'rgba(0, 0, 0, 0.32)',
     paddingHorizontal: SPACING.MD,
     paddingTop: SPACING.SM,
     paddingBottom: SPACING.SM,
     borderBottomLeftRadius: 22,
     borderBottomRightRadius: 22,
     gap: SPACING.SM,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  bottomBlur: {
+    ...StyleSheet.absoluteFillObject,
   },
   title: {
     fontSize: 16,

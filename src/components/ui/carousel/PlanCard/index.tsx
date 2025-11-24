@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { BlurView } from 'expo-blur';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { styles } from './styles';
 
@@ -46,7 +47,7 @@ const PlanCard: React.FC<Props> = ({ plan, onPress, onLike }) => {
           source={{ uri: plan.image }}
           style={styles.image}
         />
-        <View style={styles.imageOverlay} />
+        <BlurView intensity={10} tint="dark" style={styles.imageOverlay} />
         <View style={styles.contentOverlay}>
           <View style={[styles.tagBadge, { backgroundColor: 'rgba(0, 17, 55, 0.64)' }]}>
             <Text style={[styles.tagText, { color: getTagColor() }]}>
