@@ -13,6 +13,15 @@ class CommunityService {
   async getUserFeed(params: UserFeedParams = {}): Promise<UserFeedApiResponse> {
     try {
       const queryParams: Record<string, string> = {};
+      const formatListParam = (value?: string | string[]) => {
+        if (!value) {
+          return undefined;
+        }
+        if (Array.isArray(value)) {
+          return value.filter((item) => item && item.trim().length > 0).join(',');
+        }
+        return value.trim();
+      };
       
       if (params.page !== undefined) {
         queryParams.page = String(params.page);
@@ -24,6 +33,32 @@ class CommunityService {
 
       if (params.search && params.search.trim() !== '') {
         queryParams.search = params.search.trim();
+      }
+
+      const postTypesParam = formatListParam(params.postTypes);
+      if (postTypesParam) {
+        queryParams.postTypes = postTypesParam;
+      }
+
+      const authorIdsParam = formatListParam(params.authorIds);
+      if (authorIdsParam) {
+        queryParams.authorIds = authorIdsParam;
+      }
+
+      if (params.startDate) {
+        queryParams.startDate = params.startDate;
+      }
+
+      if (params.endDate) {
+        queryParams.endDate = params.endDate;
+      }
+
+      if (params.orderBy) {
+        queryParams.orderBy = params.orderBy;
+      }
+
+      if (params.order) {
+        queryParams.order = params.order;
       }
 
       const userFeedResponse = await apiClient.get<UserFeedApiResponse>(

@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { communityService } from '@/services';
 import type { Post } from '@/types';
-import type { CommunityFeedData } from '@/types/community';
+import type { CommunityFeedData, UserFeedParams } from '@/types/community';
 import { mapCommunityPostToPost } from '@/utils/community/mappers';
 import { PAGINATION } from '@/constants';
 import { logger } from '@/utils/logger';
@@ -10,6 +10,7 @@ interface UseUserFeedOptions {
   enabled?: boolean;
   searchQuery?: string;
   pageSize?: number;
+  params?: Partial<UserFeedParams>;
 }
 
 const DEFAULT_PAGE_SIZE = PAGINATION.DEFAULT_PAGE_SIZE;
@@ -28,7 +29,12 @@ interface UseUserFeedReturn {
 }
 
 export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn => {
-  const { enabled = true, searchQuery = '', pageSize = DEFAULT_PAGE_SIZE } = options;
+  const {
+    enabled = true,
+    searchQuery = '',
+    pageSize = DEFAULT_PAGE_SIZE,
+    params = {},
+  } = options;
 
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
@@ -37,8 +43,12 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const paramsKey = JSON.stringify(params ?? {});
+  const memoizedParams = useMemo(() => params ?? {}, [paramsKey]);
+
   const hasLoadedInitially = useRef(false);
   const previousSearchQuery = useRef<string>('');
+  const previousParamsKey = useRef<string>('');
   const isLoadingRef = useRef(false);
   const hasErrorRef = useRef(false);
 
@@ -58,11 +68,11 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
           setLoadingMore(true);
         }
         setError(null);
-
         const userFeedResponse = await communityService.getUserFeed({
           page,
           limit: pageSize,
           search: search,
+          ...memoizedParams,
         });
 
         const isSuccess = userFeedResponse.success === true || 
@@ -136,7 +146,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
         isLoadingRef.current = false;
       }
     },
-    [pageSize]
+    [pageSize, memoizedParams]
   );
 
   const loadMore = useCallback(() => {
@@ -171,20 +181,22 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
     }
 
     const searchChanged = previousSearchQuery.current !== searchQuery;
-    const shouldLoad = !hasLoadedInitially.current || searchChanged;
+    const paramsChanged = previousParamsKey.current !== paramsKey;
+    const shouldLoad = !hasLoadedInitially.current || searchChanged || paramsChanged;
     
     if (shouldLoad) {
       hasLoadedInitially.current = true;
       previousSearchQuery.current = searchQuery;
+      previousParamsKey.current = paramsKey;
       hasErrorRef.current = false;
       
-      if (searchChanged) {
+      if (searchChanged || paramsChanged) {
         setCurrentPage(1);
         setHasMore(true);
       }
       loadPosts(1, searchQuery);
     }
-  }, [searchQuery, enabled, loadPosts]);
+  }, [searchQuery, enabled, loadPosts, paramsKey]);
 
   return {
     posts,

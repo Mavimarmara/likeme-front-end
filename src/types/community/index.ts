@@ -136,5 +136,11 @@ export interface UserFeedParams {
   page?: number;
   limit?: number;
   search?: string;
+  postTypes?: string | string[];
+  authorIds?: string | string[];
+  startDate?: string;
+  endDate?: string;
+  orderBy?: 'createdAt' | 'updatedAt' | 'reactionsCount';
+  order?: 'asc' | 'desc';
 }
 

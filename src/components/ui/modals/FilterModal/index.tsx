@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Modal, ScrollView, TextInput as RNTextInp
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { styles } from './styles';
 import { SPACING } from '@/constants';
+import type { CommunityFeedFilters } from '@/types/community/filters';
 
 const COLORS = {
   TEXT_DARK: '#001137',
@@ -16,18 +17,13 @@ export type FilterOption = {
   color?: string;
 };
 
-export type FilterType = {
-  postType?: string[];
-  publicationDate?: string;
-  sortBy?: string;
-  author?: string;
-};
+export type FilterType = CommunityFeedFilters;
 
 type Props = {
   visible: boolean;
   onClose: () => void;
-  onSave: (filters: FilterType) => void;
-  selectedFilters?: FilterType;
+  onSave: (filters: CommunityFeedFilters) => void;
+  selectedFilters?: CommunityFeedFilters;
 };
 
 const POST_TYPES: FilterOption[] = [

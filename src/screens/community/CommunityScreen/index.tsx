@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -9,6 +9,7 @@ import { BackgroundWithGradient } from '@/assets';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
 import { useUserFeed, useLogout } from '@/hooks';
+import { mapFiltersToFeedParams } from '@/utils/community/filterMapper';
 
 type CommunityMode = 'Social' | 'Programs';
 
@@ -266,6 +267,11 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     }
   }, [selectedMode]);
 
+  const feedFilterParams = useMemo(
+    () => mapFiltersToFeedParams(selectedFilters),
+    [selectedFilters]
+  );
+
   const {
     posts,
     loading,
@@ -277,6 +283,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   } = useUserFeed({
     enabled: selectedMode === 'Social',
     searchQuery,
+    params: feedFilterParams,
   });
 
   const handleProductPress = (product: Product) => {
