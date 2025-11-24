@@ -38,16 +38,6 @@ const VideoContent: React.FC<Props> = ({ content }) => {
             <Text style={styles.videoDuration}>{content.duration}</Text>
           )}
         </View>
-
-        <View style={styles.actions}>
-          <TouchableOpacity style={styles.downloadButton} activeOpacity={0.7}>
-            <Text style={styles.downloadButtonText}>Download</Text>
-            <Icon name="download" size={18} color="#fbf7e5" />
-          </TouchableOpacity>
-          <View style={styles.volumeButton}>
-            <Icon name="volume-off" size={24} color="#001137" />
-          </View>
-        </View>
       </View>
     </View>
   );
