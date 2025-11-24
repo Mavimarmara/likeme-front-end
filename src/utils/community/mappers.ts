@@ -115,9 +115,11 @@ const mapCommunityPostToPoll = (
   }));
 
   const endedAt = communityPost.data?.endedAt || communityPost.data?.endDate;
+  const pollId = communityPost.data?.pollId;
   
   return {
     id: communityPost.postId || communityPost._id || '',
+    pollId: pollId || undefined, // ID real da enquete (data.pollId)
     question,
     options: pollOptionsWithPercentage,
     totalVotes,

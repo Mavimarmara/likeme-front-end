@@ -6,6 +6,8 @@ import { PollCard } from '@/components/ui/community';
 import { styles } from './styles';
 import { COLORS } from '@/constants';
 import type { Post } from '@/types';
+import communityService from '@/services/community/communityService';
+import { logger } from '@/utils/logger';
 
 type Props = {
   post: Post;
@@ -105,6 +107,25 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
     setIsContentExpanded(!isContentExpanded);
   };
 
+  const handlePollVote = async (pollId: string, optionId: string) => {
+    try {
+      // Usar o pollId real da enquete (data.pollId), não o postId
+      const realPollId = post.poll?.pollId;
+      if (!realPollId) {
+        logger.error('Poll ID não encontrado na enquete');
+        return;
+      }
+      
+      await communityService.votePoll(realPollId, [optionId]);
+      logger.info('Voto registrado com sucesso:', { pollId: realPollId, optionId });
+      // TODO: Atualizar o estado do post para refletir o novo voto
+      // Isso pode requerer recarregar o feed ou atualizar o post localmente
+    } catch (error) {
+      logger.error('Erro ao votar na enquete:', error);
+      // TODO: Mostrar mensagem de erro para o usuário
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.contentContainer}>
@@ -148,7 +169,11 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
       </View>
 
       {post.poll && (
-        <PollCard poll={post.poll} />
+        <PollCard 
+          poll={post.poll} 
+          onVote={handlePollVote}
+          disabled={false}
+        />
       )}
 
       <View style={styles.footer}>

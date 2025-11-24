@@ -72,6 +72,7 @@ export interface PollOption {
 
 export interface Poll {
   id: string;
+  pollId?: string; // ID real da enquete (data.pollId)
   question: string;
   options: PollOption[];
   totalVotes: number;

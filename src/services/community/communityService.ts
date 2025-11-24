@@ -3,7 +3,6 @@ import { logger } from '@/utils/logger';
 import type {
   UserFeedApiResponse,
   UserFeedParams,
-  PollDetailApiResponse,
 } from '@/types/community';
 
 class CommunityService {
@@ -40,7 +39,7 @@ console.log('userFeedResponse', JSON.stringify(userFeedResponse));
     }
   }
 
-  async getPollDetail(pollId: string): Promise<PollDetailApiResponse> {
+  async getPollDetail(pollId: string): Promise<any> {
     try {
       if (!pollId || pollId.trim() === '') {
         throw new Error('Poll ID is required');
@@ -48,7 +47,7 @@ console.log('userFeedResponse', JSON.stringify(userFeedResponse));
 
       const endpoint = `${this.pollDetailEndpoint}/${pollId.trim()}`;
       
-      const pollResponse = await apiClient.get<PollDetailApiResponse>(
+      const pollResponse = await apiClient.get<any>(
         endpoint,
         undefined,
         true,
@@ -65,6 +64,41 @@ console.log('userFeedResponse', JSON.stringify(userFeedResponse));
       return pollResponse;
     } catch (error) {
       logger.error('Error fetching poll detail:', error);
+      throw error;
+    }
+  }
+
+  async votePoll(pollId: string, answerIds: string[]): Promise<any> {
+    try {
+      if (!pollId || pollId.trim() === '') {
+        throw new Error('Poll ID is required');
+      }
+
+      if (!answerIds || answerIds.length === 0) {
+        throw new Error('At least one answer ID is required');
+      }
+
+      // Endpoint fixo, pollId vai no body
+      const endpoint = '/api/communities/polls/votes';
+      
+      const voteResponse = await apiClient.put<any>(
+        endpoint,
+        { 
+          pollId: pollId.trim(),
+          answerIds 
+        },
+        true
+      );
+
+      logger.debug('Poll vote response:', {
+        pollId,
+        answerIds,
+        success: !!voteResponse,
+      });
+
+      return voteResponse;
+    } catch (error) {
+      logger.error('Error voting on poll:', error);
       throw error;
     }
   }

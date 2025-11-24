@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Modal, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, Modal, ScrollView, TextInput as RNTextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { styles } from './styles';
 import { SPACING } from '@/constants';
 
 const COLORS = {
   TEXT_DARK: '#001137',
+  TEXT_LIGHT: '#666666',
 };
 
 export type FilterOption = {
@@ -123,6 +124,7 @@ const FilterModal: React.FC<Props> = ({
                   styles.optionText,
                   isSelected && styles.optionTextSelected,
                 ]}
+                numberOfLines={1}
               >
                 {option.label}
               </Text>
@@ -181,14 +183,16 @@ const FilterModal: React.FC<Props> = ({
               false
             )}
 
-            {/* Autor - por enquanto apenas placeholder */}
+            {/* Autor */}
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Autor</Text>
-              <View style={styles.authorInput}>
-                <Text style={styles.authorPlaceholder}>
-                  Digite o nome do autor
-                </Text>
-              </View>
+              <RNTextInput
+                style={styles.authorInput}
+                placeholder="Digite o nome do autor"
+                placeholderTextColor={COLORS.TEXT_LIGHT}
+                value={selectedAuthor}
+                onChangeText={setSelectedAuthor}
+              />
             </View>
           </ScrollView>
 

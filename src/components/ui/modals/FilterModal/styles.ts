@@ -38,6 +38,8 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 12,
     elevation: 8,
+    display: 'flex',
+    flexDirection: 'column',
   },
   header: {
     flexDirection: 'row',
@@ -57,8 +59,13 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   content: {
-    flex: 1,
+    flexGrow: 1,
+    flexShrink: 1,
     marginBottom: SPACING.MD,
+  },
+  contentContainer: {
+    flexGrow: 1,
+    paddingBottom: SPACING.SM,
   },
   section: {
     marginBottom: SPACING.LG,
@@ -72,7 +79,7 @@ export const styles = StyleSheet.create({
   optionsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: SPACING.XS,
+    marginHorizontal: -SPACING.XS / 2,
   },
   filterOption: {
     flexDirection: 'row',
@@ -85,9 +92,10 @@ export const styles = StyleSheet.create({
     borderBottomRightRadius: 10,
     paddingVertical: 7,
     paddingHorizontal: SPACING.MD,
-    gap: 9,
+    marginHorizontal: SPACING.XS / 2,
+    marginBottom: SPACING.XS,
+    width: '47%',
     minWidth: 140,
-    flexBasis: '47%',
     shadowColor: COLORS.BLACK,
     shadowOffset: {
       width: 0,
@@ -104,6 +112,7 @@ export const styles = StyleSheet.create({
   },
   optionIcon: {
     fontSize: 16,
+    marginRight: 9,
   },
   optionText: {
     fontSize: 14,
@@ -127,12 +136,9 @@ export const styles = StyleSheet.create({
     paddingVertical: 9,
     paddingHorizontal: SPACING.MD,
     minHeight: 36,
-    justifyContent: 'center',
-  },
-  authorPlaceholder: {
     fontSize: 14,
     fontWeight: '400',
-    color: COLORS.TEXT_LIGHT,
+    color: COLORS.TEXT_DARK,
   },
   saveButton: {
     backgroundColor: 'rgba(240, 238, 225, 0.16)',

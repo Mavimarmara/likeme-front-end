@@ -1,13 +1,15 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { styles } from './styles';
 import type { Poll } from '@/types';
 
 type Props = {
   poll: Poll;
+  onVote?: (pollId: string, optionId: string) => void;
+  disabled?: boolean;
 };
 
-const PollCard: React.FC<Props> = ({ poll }) => {
+const PollCard: React.FC<Props> = ({ poll, onVote, disabled = false }) => {
   const formatDate = (date: Date): string => {
     const months = [
       'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
@@ -19,11 +21,22 @@ const PollCard: React.FC<Props> = ({ poll }) => {
     return `${day} ${month}. ${year}`;
   };
 
+  const handleOptionPress = (optionId: string) => {
+    if (disabled || poll.isFinished || !onVote) return;
+    onVote(poll.id, optionId);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.optionsContainer}>
         {poll.options.map((option) => (
-          <View key={option.id} style={styles.option}>
+          <TouchableOpacity
+            key={option.id}
+            style={styles.option}
+            onPress={() => handleOptionPress(option.id)}
+            disabled={disabled || poll.isFinished}
+            activeOpacity={disabled || poll.isFinished ? 1 : 0.7}
+          >
             <View style={styles.optionHeader}>
               <View style={styles.optionContent}>
                 <View style={styles.radioButton} />
@@ -35,7 +48,7 @@ const PollCard: React.FC<Props> = ({ poll }) => {
               <View style={styles.progressBarBackground} />
               <View style={[styles.progressBarFill, { width: `${option.percentage}%` }]} />
             </View>
-          </View>
+          </TouchableOpacity>
         ))}
       </View>
 
