@@ -68,7 +68,6 @@ const PostsSection: React.FC<Props> = ({
           <TextInput
             placeholder="Search"
             value={searchQuery}
-            onChangeText={onSearchChange}
             onSubmitEditing={onSearchPress}
             returnKeyType="search"
             containerStyle={styles.searchInputContainer}

@@ -86,17 +86,6 @@ const mapCommunityPostToPoll = (
     return seqA - seqB;
   });
 
-  logger.debug('Poll options sorted:', {
-    postId: communityPost.postId || communityPost._id,
-    originalCount: communityPost.pollOptions.length,
-    sortedCount: sortedPollOptions.length,
-    sequenceNumbers: sortedPollOptions.map((opt, idx) => ({
-      index: idx,
-      sequenceNumber: opt.sequenceNumber,
-      text: opt.data?.text?.substring(0, 30),
-    })),
-  });
-
   const pollOptions = sortedPollOptions.map((option, index) => {
     const text = option.data?.text || '';
     

@@ -25,13 +25,7 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
   };
 
   const getTitle = (): string => {
-    // Se for uma poll, usar a pergunta da poll como título
-    if (post.poll?.question) {
-      return post.poll.question;
-    }
-    
     if (post.title) return post.title;
-    if (!post.content) return '';
     
     const lines = post.content.split('\n').filter(line => line.trim());
     if (lines.length > 0) {
@@ -170,21 +164,25 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
           </TouchableOpacity>
         )}
 
-        <TouchableOpacity 
-          style={styles.commentsInfo}
-          onPress={handleCommentsPress}
-          activeOpacity={0.7}
-        >
-          <Icon
-            name="chat-bubble-outline"
-            size={24}
-            color="#0154f8"
-          />
-          <Text style={styles.commentsCount}>{commentsCount}</Text>
-        </TouchableOpacity>
+        {/* Não mostrar botão de comentários quando for uma enquete */}
+        {!post.poll && (
+          <TouchableOpacity 
+            style={styles.commentsInfo}
+            onPress={handleCommentsPress}
+            activeOpacity={0.7}
+          >
+            <Icon
+              name="chat-bubble-outline"
+              size={24}
+              color="#0154f8"
+            />
+            <Text style={styles.commentsCount}>{commentsCount}</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
-      {isCommentsOpen && post.comments && post.comments.length > 0 && (
+      {/* Não mostrar seção de comentários quando for uma enquete */}
+      {!post.poll && isCommentsOpen && post.comments && post.comments.length > 0 && (
         <View style={styles.commentsSection}>
           {post.comments.map((comment) => (
             <CommentCard
