@@ -8,6 +8,7 @@ import type {
 class CommunityService {
   private readonly userFeeEndpoint = '/api/communities/feed';
   private readonly pollDetailEndpoint = '/api/v3/polls';
+  private readonly commentReactionEndpoint = '/api/communities/comments';
 
   async getUserFeed(params: UserFeedParams = {}): Promise<UserFeedApiResponse> {
     try {
@@ -99,6 +100,52 @@ console.log('userFeedResponse', JSON.stringify(userFeedResponse));
       return voteResponse;
     } catch (error) {
       logger.error('Error voting on poll:', error);
+      throw error;
+    }
+  }
+
+  async addCommentReaction(commentId: string, reactionName: 'like' | 'dislike' = 'like'): Promise<void> {
+    try {
+      if (!commentId || commentId.trim() === '') {
+        throw new Error('Comment ID is required');
+      }
+
+      const endpoint = `${this.commentReactionEndpoint}/${commentId.trim()}/reactions`;
+
+      await apiClient.post(
+        endpoint,
+        {
+          reactionName,
+        },
+        true
+      );
+
+      logger.debug('Comment reaction added:', { commentId, reactionName });
+    } catch (error) {
+      logger.error('Error adding comment reaction:', error);
+      throw error;
+    }
+  }
+
+  async removeCommentReaction(commentId: string, reactionName: 'like' | 'dislike' = 'like'): Promise<void> {
+    try {
+      if (!commentId || commentId.trim() === '') {
+        throw new Error('Comment ID is required');
+      }
+
+      const endpoint = `${this.commentReactionEndpoint}/${commentId.trim()}/reactions`;
+
+      await apiClient.delete(
+        endpoint,
+        {
+          reactionName,
+        },
+        true
+      );
+
+      logger.debug('Comment reaction removed:', { commentId, reactionName });
+    } catch (error) {
+      logger.error('Error removing comment reaction:', error);
       throw error;
     }
   }

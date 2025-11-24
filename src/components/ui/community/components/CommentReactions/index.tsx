@@ -8,6 +8,8 @@ type Props = {
   upvotes: number;
   downvotes?: number;
   commentsCount?: number;
+  selectedReaction?: 'like' | 'dislike' | null;
+  disabled?: boolean;
   onUpvote?: () => void;
   onDownvote?: () => void;
   onReply?: () => void;
@@ -18,41 +20,74 @@ const CommentReactions: React.FC<Props> = ({
   upvotes,
   downvotes = 0,
   commentsCount = 0,
+  selectedReaction = null,
+  disabled = false,
   onUpvote,
   onDownvote,
   onReply,
   onToggle,
 }) => {
   const displayUpvotes = upvotes > 0 ? upvotes : 0;
+  const displayDownvotes = downvotes > 0 ? downvotes : 0;
+  const isLikeSelected = selectedReaction === 'like';
+  const isDislikeSelected = selectedReaction === 'dislike';
+  const isDisabled = disabled;
 
   return (
     <View style={styles.container}>
       <View style={styles.leftSection}>
         <TouchableOpacity
-          style={styles.reactionButton}
+          style={[
+            styles.reactionButton,
+            isLikeSelected && styles.reactionButtonSelected,
+            isDisabled && styles.reactionButtonDisabled,
+          ]}
           onPress={onUpvote}
           activeOpacity={0.7}
+          disabled={isDisabled}
         >
           <Icon
             name="keyboard-arrow-up"
             size={18}
-            color="#001137"
+            color={isLikeSelected ? COLORS.WHITE : '#001137'}
           />
           {displayUpvotes > 0 && (
-            <Text style={styles.reactionCount}>{displayUpvotes}</Text>
+            <Text
+              style={[
+                styles.reactionCount,
+                isLikeSelected && styles.reactionCountSelected,
+              ]}
+            >
+              {displayUpvotes}
+            </Text>
           )}
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.reactionButton}
+          style={[
+            styles.reactionButton,
+            isDislikeSelected && styles.reactionButtonSelected,
+            isDisabled && styles.reactionButtonDisabled,
+          ]}
           onPress={onDownvote}
           activeOpacity={0.7}
+          disabled={isDisabled}
         >
           <Icon
             name="keyboard-arrow-down"
             size={18}
-            color="#001137"
+            color={isDislikeSelected ? COLORS.WHITE : '#001137'}
           />
+          {displayDownvotes > 0 && (
+            <Text
+              style={[
+                styles.reactionCount,
+                isDislikeSelected && styles.reactionCountSelected,
+              ]}
+            >
+              {displayDownvotes}
+            </Text>
+          )}
         </TouchableOpacity>
       </View>
 

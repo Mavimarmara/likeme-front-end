@@ -39,6 +39,12 @@ export const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 4,
   },
+  reactionButtonSelected: {
+    backgroundColor: '#0154f8',
+  },
+  reactionButtonDisabled: {
+    opacity: 0.6,
+  },
   reactionCount: {
     fontFamily: 'DM Sans',
     fontSize: 14,
@@ -46,6 +52,9 @@ export const styles = StyleSheet.create({
     lineHeight: 20,
     color: '#001137', // TEXT_DARK do design
     textAlign: 'center',
+  },
+  reactionCountSelected: {
+    color: COLORS.WHITE,
   },
   commentButton: {
     flexDirection: 'row',

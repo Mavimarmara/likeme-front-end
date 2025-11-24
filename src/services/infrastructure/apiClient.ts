@@ -225,7 +225,7 @@ class ApiClient {
     }
   }
 
-  async delete<T>(endpoint: string, includeAuth = true): Promise<T> {
+  async delete<T>(endpoint: string, data?: any, includeAuth = true): Promise<T> {
     try {
       const execute = async () => {
         const url = `${this.baseUrl}${endpoint}`;
@@ -234,6 +234,7 @@ class ApiClient {
         return fetch(url, {
           method: 'DELETE',
           headers,
+          body: data ? JSON.stringify(data) : undefined,
         });
       };
 

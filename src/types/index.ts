@@ -114,6 +114,7 @@ export interface Comment {
   reactionsCount?: number;
   reactions?: Reaction[];
   commentsCount?: number;
+  userReaction?: 'like' | 'dislike';
 }
 
 export interface HealthProvider {

@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Image, ImageSourcePropType } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { CommentReactions } from '@/components/ui/community';
 import { styles } from './styles';
+import communityService from '@/services/community/communityService';
+import { logger } from '@/utils/logger';
 
 type Comment = {
   id: string;
@@ -20,6 +22,7 @@ type Comment = {
   createdAt: string;
   replies?: Comment[];
   replyToId?: string;
+  userReaction?: 'like' | 'dislike';
 };
 
 type Props = {
@@ -44,6 +47,16 @@ const CommentCard: React.FC<Props> = ({
   const [isExpanded, setIsExpanded] = useState(true);
   const hasReplies = comment.replies && comment.replies.length > 0;
   const isAvatarUri = comment.author.avatar && typeof comment.author.avatar === 'string';
+  const [currentReaction, setCurrentReaction] = useState<'like' | 'dislike' | null>(comment.userReaction || null);
+  const [upvotes, setUpvotes] = useState(comment.upvotes || 0);
+  const [downvotes, setDownvotes] = useState(comment.downvotes || 0);
+  const [reactionLoading, setReactionLoading] = useState(false);
+
+  useEffect(() => {
+    setCurrentReaction(comment.userReaction || null);
+    setUpvotes(comment.upvotes || 0);
+    setDownvotes(comment.downvotes || 0);
+  }, [comment]);
 
   const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
@@ -54,6 +67,76 @@ const CommentCard: React.FC<Props> = ({
     if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutos atrás`;
     if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} horas atrás`;
     return `${Math.floor(diffInSeconds / 86400)} dias atrás`;
+  };
+
+  const removeReactionIfNeeded = async (reactionName: 'like' | 'dislike') => {
+    try {
+      await communityService.removeCommentReaction(comment.id, reactionName);
+    } catch (error) {
+      logger.error('Erro ao remover reação do comentário:', error);
+      throw error;
+    }
+  };
+
+  const addReaction = async (reactionName: 'like' | 'dislike') => {
+    try {
+      await communityService.addCommentReaction(comment.id, reactionName);
+    } catch (error) {
+      logger.error('Erro ao adicionar reação ao comentário:', error);
+      throw error;
+    }
+  };
+
+  const handleUpvotePress = async () => {
+    if (reactionLoading) return;
+
+    setReactionLoading(true);
+    try {
+      if (currentReaction === 'like') {
+        await removeReactionIfNeeded('like');
+        setCurrentReaction(null);
+        setUpvotes((prev) => Math.max(prev - 1, 0));
+      } else {
+        if (currentReaction === 'dislike') {
+          await removeReactionIfNeeded('dislike');
+          setDownvotes((prev) => Math.max(prev - 1, 0));
+        }
+        await addReaction('like');
+        setCurrentReaction('like');
+        setUpvotes((prev) => prev + 1);
+      }
+      onUpvote?.(comment.id);
+    } catch (error) {
+      logger.error('Erro ao processar like no comentário:', error);
+    } finally {
+      setReactionLoading(false);
+    }
+  };
+
+  const handleDownvotePress = async () => {
+    if (reactionLoading) return;
+
+    setReactionLoading(true);
+    try {
+      if (currentReaction === 'dislike') {
+        await removeReactionIfNeeded('dislike');
+        setCurrentReaction(null);
+        setDownvotes((prev) => Math.max(prev - 1, 0));
+      } else {
+        if (currentReaction === 'like') {
+          await removeReactionIfNeeded('like');
+          setUpvotes((prev) => Math.max(prev - 1, 0));
+        }
+        await addReaction('dislike');
+        setCurrentReaction('dislike');
+        setDownvotes((prev) => prev + 1);
+      }
+      onDownvote?.(comment.id);
+    } catch (error) {
+      logger.error('Erro ao processar dislike no comentário:', error);
+    } finally {
+      setReactionLoading(false);
+    }
   };
 
   const handleToggleReplies = () => {
@@ -93,11 +176,13 @@ const CommentCard: React.FC<Props> = ({
       <Text style={styles.content}>{comment.content}</Text>
 
       <CommentReactions
-        upvotes={comment.upvotes || 0}
-        downvotes={comment.downvotes || 0}
+        upvotes={upvotes}
+        downvotes={downvotes}
         commentsCount={comment.commentsCount}
-        onUpvote={() => onUpvote?.(comment.id)}
-        onDownvote={() => onDownvote?.(comment.id)}
+        selectedReaction={currentReaction}
+        disabled={reactionLoading}
+        onUpvote={handleUpvotePress}
+        onDownvote={handleDownvotePress}
         onReply={() => onReply?.(comment)}
         onToggle={hasReplies ? handleToggleReplies : undefined}
       />

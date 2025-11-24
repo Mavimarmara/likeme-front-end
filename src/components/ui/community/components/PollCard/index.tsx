@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { styles } from './styles';
 import type { Poll } from '@/types';
@@ -10,6 +10,12 @@ type Props = {
 };
 
 const PollCard: React.FC<Props> = ({ poll, onVote, disabled = false }) => {
+  const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const preselected = poll.options.find((option: any) => option.isSelected)?.id;
+    setSelectedOptionId(preselected ?? null);
+  }, [poll]);
   const formatDate = (date: Date): string => {
     const months = [
       'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
@@ -23,13 +29,16 @@ const PollCard: React.FC<Props> = ({ poll, onVote, disabled = false }) => {
 
   const handleOptionPress = (optionId: string) => {
     if (disabled || poll.isFinished || !onVote) return;
+    setSelectedOptionId(optionId);
     onVote(poll.id, optionId);
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.optionsContainer}>
-        {poll.options.map((option) => (
+        {poll.options.map((option) => {
+          const isSelected = selectedOptionId === option.id;
+          return (
           <TouchableOpacity
             key={option.id}
             style={styles.option}
@@ -39,7 +48,9 @@ const PollCard: React.FC<Props> = ({ poll, onVote, disabled = false }) => {
           >
             <View style={styles.optionHeader}>
               <View style={styles.optionContent}>
-                <View style={styles.radioButton} />
+                <View style={[styles.radioButton, isSelected && styles.radioButtonSelected]}>
+                  {isSelected && <View style={styles.radioButtonInner} />}
+                </View>
                 <Text style={styles.optionText}>{option.text}</Text>
                 </View>
                 <Text style={styles.percentage}>{option.percentage}%</Text>
@@ -49,7 +60,8 @@ const PollCard: React.FC<Props> = ({ poll, onVote, disabled = false }) => {
               <View style={[styles.progressBarFill, { width: `${option.percentage}%` }]} />
             </View>
           </TouchableOpacity>
-        ))}
+        );
+      })}
       </View>
 
       {poll.isFinished && poll.endedAt && (
