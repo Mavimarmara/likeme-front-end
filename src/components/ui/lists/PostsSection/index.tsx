@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { TextInput } from '@/components/ui';
+import FilterModal, { type FilterType } from '@/components/ui/modals/FilterModal';
 import { PostCard } from '@/components/ui/community';
 import type { Post } from '@/types';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -17,6 +18,8 @@ type Props = {
   onSearchPress?: () => void;
   onLoadMore: () => void;
   onFilterPress?: () => void;
+  onFilterSave?: (filters: FilterType) => void;
+  selectedFilters?: FilterType;
 };
 
 const PostsSection: React.FC<Props> = ({
@@ -29,7 +32,24 @@ const PostsSection: React.FC<Props> = ({
   onSearchPress,
   onLoadMore,
   onFilterPress,
+  onFilterSave,
+  selectedFilters,
 }) => {
+  const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
+
+  const handleFilterPress = () => {
+    setIsFilterModalVisible(true);
+    onFilterPress?.();
+  };
+
+  const handleFilterClose = () => {
+    setIsFilterModalVisible(false);
+  };
+
+  const handleFilterSave = (filters: FilterType) => {
+    onFilterSave?.(filters);
+    setIsFilterModalVisible(false);
+  };
   const renderLoadingFooter = () => {
     if (!loadingMore) return null;
     return (
@@ -84,7 +104,7 @@ const PostsSection: React.FC<Props> = ({
         <TouchableOpacity
           style={styles.filterButton}
           activeOpacity={0.7}
-          onPress={onFilterPress}
+          onPress={handleFilterPress}
         >
           <Icon name="filter-list" size={20} color="#000" />
         </TouchableOpacity>
@@ -114,6 +134,12 @@ const PostsSection: React.FC<Props> = ({
           {renderLoadingFooter()}
         </>
       )}
+      <FilterModal
+        visible={isFilterModalVisible}
+        onClose={handleFilterClose}
+        onSave={handleFilterSave}
+        selectedFilters={selectedFilters}
+      />
     </View>
   );
 };

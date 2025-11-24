@@ -30,3 +30,6 @@ export * from './carousel';
 
 // Program
 export * from './program';
+
+// Modals
+export * from './modals';

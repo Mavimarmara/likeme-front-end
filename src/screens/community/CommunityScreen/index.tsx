@@ -247,10 +247,13 @@ const SUGGESTED_PLANS: Plan[] = [
 type NavigationProp = StackNavigationProp<CommunityStackParamList, 'CommunityList'>;
 type Props = { navigation: NavigationProp };
 
+import type { FilterType } from '@/components/ui/modals/FilterModal';
+
 const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   const [selectedMode, setSelectedMode] = useState<CommunityMode>('Social');
   const [selectedProgramId, setSelectedProgramId] = useState<string | undefined>();
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedFilters, setSelectedFilters] = useState<FilterType>({});
 
   const { logout } = useLogout({ navigation });
 
@@ -344,6 +347,12 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     console.log('Abrir filtros');
   };
 
+  const handleFilterSave = (filters: FilterType) => {
+    setSelectedFilters(filters);
+    console.log('Filtros salvos:', filters);
+    // TODO: Aplicar filtros na busca de posts
+  };
+
   const handleLogout = logout;
 
   return (
@@ -380,6 +389,8 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
             onSearchPress={handleSearchPress}
             onLoadMore={handleLoadMore}
             onFilterPress={handleFilterPress}
+            onFilterSave={handleFilterSave}
+            selectedFilters={selectedFilters}
             events={mockEvents}
             onEventPress={handleEventPress}
             onEventSave={handleEventSave}

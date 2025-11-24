@@ -13,6 +13,7 @@ import {
   Plan,
 } from '@/components/ui';
 import type { Post, Event } from '@/types';
+import type { FilterType } from '@/components/ui/modals/FilterModal';
 import { styles } from './styles';
 
 type Props = {
@@ -27,6 +28,8 @@ type Props = {
   onSearchPress?: () => void;
   onLoadMore: () => void;
   onFilterPress?: () => void;
+  onFilterSave?: (filters: FilterType) => void;
+  selectedFilters?: FilterType;
   footerComponent?: React.ReactNode;
   events?: Event[];
   onEventPress?: (event: Event) => void;
@@ -53,6 +56,8 @@ const SocialList: React.FC<Props> = ({
   onSearchPress,
   onLoadMore,
   onFilterPress,
+  onFilterSave,
+  selectedFilters,
   footerComponent,
   events,
   onEventPress,
@@ -96,6 +101,8 @@ const SocialList: React.FC<Props> = ({
           onSearchPress={onSearchPress}
           onLoadMore={onLoadMore}
           onFilterPress={onFilterPress}
+          onFilterSave={onFilterSave}
+          selectedFilters={selectedFilters}
         />
 
         {loadingMore && (
