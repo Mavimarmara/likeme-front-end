@@ -323,7 +323,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleProviderChatPress = (chat: ProviderChat) => {
-    console.log('Abrir chat com provider:', chat.id);
+    navigation.navigate('ChatScreen', { chat });
   };
 
 

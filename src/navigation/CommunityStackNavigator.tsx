@@ -1,6 +1,6 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import { CommunityScreen, PostDetailsScreen } from '@/screens/community';
+import { CommunityScreen, PostDetailsScreen, ChatScreen } from '@/screens/community';
 import type { CommunityStackParamList } from '@/types/navigation';
 
 const Stack = createStackNavigator<CommunityStackParamList>();
@@ -20,6 +20,11 @@ const CommunityStackNavigator: React.FC = () => {
         name="PostDetails"
         component={PostDetailsScreen}
         options={{ title: 'Post' }}
+      />
+      <Stack.Screen
+        name="ChatScreen"
+        component={ChatScreen}
+        options={{ title: 'Chat' }}
       />
     </Stack.Navigator>
   );

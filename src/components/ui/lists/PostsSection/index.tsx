@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { TextInput } from '@/components/ui';
+import { View, Text, ActivityIndicator } from 'react-native';
+import { SearchBar } from '@/components/ui';
 import FilterModal, { type FilterType } from '@/components/ui/modals/FilterModal';
 import { PostCard } from '@/components/ui/community';
 import type { Post } from '@/types';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import { logger } from '@/utils/logger';
 import { styles } from './styles';
 
@@ -83,33 +82,14 @@ const PostsSection: React.FC<Props> = ({
         <Text style={styles.title}>Posts</Text>
       </View>
 
-      <View style={styles.searchContainer}>
-        <View style={styles.searchBar}>
-          <TextInput
-            placeholder="Search"
-            value={searchQuery}
-            onChangeText={onSearchChange}
-            onSubmitEditing={onSearchPress}
-            returnKeyType="search"
-            containerStyle={styles.searchInputContainer}
-            style={styles.searchInput}
-          />
-        </View>
-        <TouchableOpacity 
-          style={styles.searchButton} 
-          activeOpacity={0.7}
-          onPress={onSearchPress}
-        >
-          <Icon name="search" size={20} color="#000" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.filterButton}
-          activeOpacity={0.7}
-          onPress={handleFilterPress}
-        >
-          <Icon name="filter-list" size={20} color="#000" />
-        </TouchableOpacity>
-      </View>
+      <SearchBar
+        placeholder="Search"
+        value={searchQuery}
+        onChangeText={onSearchChange}
+        onSearchPress={onSearchPress}
+        onFilterPress={handleFilterPress}
+        showFilterButton={true}
+      />
     </>
   );
 

@@ -20,6 +20,7 @@ import type { Post } from '@/components/ui';
 export type CommunityStackParamList = {
   CommunityList: undefined;
   PostDetails: { post: Post };
+  ChatScreen: { chat?: import('@/components/ui/community').ProviderChat };
 };
 
 export interface ScreenProps<T extends keyof RootStackParamList> {
