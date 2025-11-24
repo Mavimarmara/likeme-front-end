@@ -1,6 +1,9 @@
 import { StyleSheet } from 'react-native';
 import { SPACING } from '@/constants';
 
+const CARD_WIDTH = 305;
+const HEADER_WIDTH = 328;
+
 export const styles = StyleSheet.create({
   container: {
     gap: 8,
@@ -10,7 +13,8 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: 328,
+    width: HEADER_WIDTH,
+    alignSelf: 'center',
   },
   title: {
     fontSize: 16,
@@ -31,12 +35,13 @@ export const styles = StyleSheet.create({
     borderColor: '#8fa3a1',
   },
   content: {
-    width: 305,
+    width: CARD_WIDTH,
     gap: 10,
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 319,
     borderRadius: 16,
+    alignSelf: 'center',
   },
   questionContainer: {
     width: '100%',

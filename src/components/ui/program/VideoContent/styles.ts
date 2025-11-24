@@ -1,6 +1,9 @@
 import { StyleSheet } from 'react-native';
 import { SPACING } from '@/constants';
 
+const CARD_WIDTH = 360;
+const HEADER_WIDTH = 328;
+
 export const styles = StyleSheet.create({
   container: {
     gap: 8,
@@ -10,7 +13,8 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: 328,
+    width: HEADER_WIDTH,
+    alignSelf: 'center',
   },
   title: {
     fontSize: 16,
@@ -31,8 +35,8 @@ export const styles = StyleSheet.create({
     borderColor: '#8fa3a1',
   },
   videoCard: {
-    width: 393,
-    height: 513,
+    width: CARD_WIDTH,
+    height: 500,
     borderRadius: 64,
     borderTopLeftRadius: 64,
     borderTopRightRadius: 64,
@@ -47,6 +51,7 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.04,
     shadowRadius: 8,
     elevation: 4,
+    alignSelf: 'center',
   },
   thumbnail: {
     width: '100%',
@@ -69,8 +74,8 @@ export const styles = StyleSheet.create({
   videoInfo: {
     position: 'absolute',
     bottom: 60,
-    left: 20,
-    right: 20,
+    left: 24,
+    right: 24,
     gap: 8,
   },
   videoTitle: {

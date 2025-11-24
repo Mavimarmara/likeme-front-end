@@ -1,9 +1,12 @@
 import { StyleSheet } from 'react-native';
 import { SPACING } from '@/constants';
 
+const CONTENT_WIDTH = 360;
+
 export const styles = StyleSheet.create({
   container: {
     width: '100%',
+    alignItems: 'center',
   },
   header: {
     flexDirection: 'row',
@@ -12,10 +15,15 @@ export const styles = StyleSheet.create({
     paddingTop: 24,
     paddingBottom: 0,
     paddingHorizontal: 0,
+    width: CONTENT_WIDTH,
   },
   headerExpanded: {
     backgroundColor: '#fbf7e5',
     paddingTop: 16,
+    paddingBottom: 8,
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
+    paddingHorizontal: SPACING.MD,
   },
   headerLeft: {
     flexDirection: 'row',
@@ -44,14 +52,20 @@ export const styles = StyleSheet.create({
   },
   content: {
     backgroundColor: '#fbf7e5',
-    paddingTop: 0,
-    paddingBottom: 0,
+    paddingVertical: SPACING.MD,
+    paddingHorizontal: SPACING.MD,
     gap: 24,
+    width: CONTENT_WIDTH,
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
+    alignSelf: 'center',
   },
   separator: {
     height: 1,
     backgroundColor: '#e1dfcf',
-    marginTop: 16,
+    marginTop: 24,
+    marginBottom: 8,
+    width: CONTENT_WIDTH,
   },
 });
 

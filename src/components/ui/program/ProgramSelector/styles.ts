@@ -3,11 +3,27 @@ import { SPACING } from '@/constants';
 
 export const styles = StyleSheet.create({
   container: {
-    marginBottom: SPACING.MD,
+    marginBottom: SPACING.LG,
+    paddingHorizontal: SPACING.MD,
+    paddingVertical: SPACING.SM,
+    backgroundColor: '#fbf7e5',
+    borderRadius: 24,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    borderBottomLeftRadius: 22,
+    borderBottomRightRadius: 22,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 4,
   },
   scrollContent: {
     gap: SPACING.XS,
-    paddingHorizontal: SPACING.MD,
+    paddingHorizontal: SPACING.SM,
   },
   button: {
     minHeight: 36,

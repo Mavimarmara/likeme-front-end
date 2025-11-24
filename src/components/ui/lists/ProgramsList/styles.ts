@@ -4,23 +4,27 @@ import { COLORS, FONT_SIZES, SPACING } from '@/constants';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingBottom: SPACING.XXL,
   },
   selectorContainer: {
     zIndex: 10,
+    alignSelf: 'center',
+    width: '100%',
   },
   scrollView: {
     flex: 1,
   },
   detailsContent: {
-    paddingHorizontal: SPACING.MD,
     paddingBottom: SPACING.XXL,
-    paddingTop: SPACING.MD,
+    paddingTop: SPACING.LG,
+    alignItems: 'center',
+    gap: SPACING.XL * 2,
   },
   programHeader: {
-    marginBottom: 48,
-    alignItems: 'flex-end',
+    alignItems: 'flex-start',
     width: 331,
     alignSelf: 'center',
+    gap: SPACING.MD,
   },
   programTitle: {
     fontSize: 32,
@@ -30,7 +34,7 @@ export const styles = StyleSheet.create({
     marginBottom: 16,
   },
   descriptionContainer: {
-    width: 330,
+    width: '100%',
   },
   programDescription: {
     fontSize: 14,
