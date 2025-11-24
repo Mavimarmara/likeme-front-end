@@ -9,6 +9,7 @@ export const styles = StyleSheet.create({
   header: {
     paddingTop: SPACING.MD,
     paddingBottom: SPACING.SM,
+    paddingHorizontal: SPACING.MD,
   },
   title: {
     fontSize: FONT_SIZES.XL,

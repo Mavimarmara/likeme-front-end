@@ -96,7 +96,6 @@ const PostsSection: React.FC<Props> = ({
   if (loading && posts.length === 0) {
     return (
       <View style={styles.container}>
-        {renderHeader()}
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#4CAF50" />
         </View>
@@ -105,8 +104,9 @@ const PostsSection: React.FC<Props> = ({
   }
 
   return (
-    <View style={styles.container}>
+    <View>
       {renderHeader()}
+      <View style={styles.container}>
       {posts.length === 0 ? renderEmpty() : (
         <>
           {posts.map((post) => (
@@ -121,6 +121,7 @@ const PostsSection: React.FC<Props> = ({
         onSave={handleFilterSave}
         selectedFilters={selectedFilters}
       />
+      </View>
     </View>
   );
 };

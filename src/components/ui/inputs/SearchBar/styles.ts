@@ -13,7 +13,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.BACKGROUND_SECONDARY,
+    backgroundColor: '#FBF7EE',
     borderRadius: BORDER_RADIUS.ROUND,
     height: 36,
     paddingLeft: SPACING.MD,
@@ -34,10 +34,12 @@ export const styles = StyleSheet.create({
     color: COLORS.TEXT,
     padding: 0,
     paddingVertical: 0,
-    height: '100%',
+    height: 36,
     paddingRight: SPACING.XS,
     paddingLeft: 0,
-    lineHeight: 32,
+    lineHeight: 30,
+    textAlignVertical: 'center',
+    includeFontPadding: false,
   },
   searchButtonInside: {
     width: 39,
@@ -71,18 +73,19 @@ export const styles = StyleSheet.create({
   filterButton: {
     width: 40,
     height: 36,
-    borderRadius: 18,
-    backgroundColor: COLORS.BACKGROUND_SECONDARY,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 4,
+  },
+  filterButtonBackground: {
+    width: 40,
+    height: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  filterButtonImage: {
+    width: 40,
+    height: 36,
+    resizeMode: 'cover',
   },
 });
 

@@ -52,12 +52,14 @@ const SearchBar: React.FC<SearchBarProps> = ({
         </TouchableOpacity>
       </View>
       {showFilterButton && (
-        <TouchableOpacity
-          style={styles.filterButton}
-          activeOpacity={0.7}
-          onPress={onFilterPress}
-        >
-          <Icon name="filter-list" size={20} color="#000" />
+        <TouchableOpacity style={styles.filterButton} activeOpacity={0.7} onPress={onFilterPress}>
+          <ImageBackground
+            source={BackgroundIconButton}
+            style={styles.filterButtonBackground}
+            imageStyle={styles.filterButtonImage}
+          >
+            <Icon name="tune" size={15} color="#001137" />
+          </ImageBackground>
         </TouchableOpacity>
       )}
     </View>
