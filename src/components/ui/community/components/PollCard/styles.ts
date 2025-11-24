@@ -12,6 +12,13 @@ export const styles = StyleSheet.create({
   option: {
     gap: SPACING.SM,
     paddingLeft: SPACING.SM,
+    paddingVertical: SPACING.XS,
+    borderRadius: BORDER_RADIUS.MD,
+  },
+  optionSelected: {
+    backgroundColor: '#fbf7e5',
+    padding: SPACING.SM,
+    borderRadius: BORDER_RADIUS.LG,
   },
   optionHeader: {
     flexDirection: 'row',
@@ -30,6 +37,18 @@ export const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#001137',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  radioButtonSelected: {
+    borderColor: '#0154f8',
+    borderWidth: 2,
+  },
+  radioButtonInner: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#0154f8',
   },
   optionText: {
     fontSize: 14,
@@ -48,6 +67,14 @@ export const styles = StyleSheet.create({
     minWidth: 50,
     textAlign: 'right',
   },
+  optionTextSelected: {
+    color: '#0154f8',
+    fontWeight: '600',
+  },
+  percentageSelected: {
+    color: '#0154f8',
+    fontWeight: '600',
+  },
   progressContainer: {
     height: 12,
     position: 'relative',
@@ -65,6 +92,9 @@ export const styles = StyleSheet.create({
     height: 12,
     backgroundColor: '#d8e4d6',
     borderRadius: 13,
+  },
+  progressBarFillSelected: {
+    backgroundColor: '#0154f8',
   },
   footerText: {
     fontSize: 12,

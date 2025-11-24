@@ -41,23 +41,48 @@ const PollCard: React.FC<Props> = ({ poll, onVote, disabled = false }) => {
           return (
           <TouchableOpacity
             key={option.id}
-            style={styles.option}
+            style={[styles.option, isSelected && styles.optionSelected]}
             onPress={() => handleOptionPress(option.id)}
             disabled={disabled || poll.isFinished}
             activeOpacity={disabled || poll.isFinished ? 1 : 0.7}
           >
             <View style={styles.optionHeader}>
               <View style={styles.optionContent}>
-                <View style={[styles.radioButton, isSelected && styles.radioButtonSelected]}>
+                <View
+                  style={[
+                    styles.radioButton,
+                    isSelected && styles.radioButtonSelected,
+                  ]}
+                >
                   {isSelected && <View style={styles.radioButtonInner} />}
                 </View>
-                <Text style={styles.optionText}>{option.text}</Text>
+                <Text
+                  style={[
+                    styles.optionText,
+                    isSelected && styles.optionTextSelected,
+                  ]}
+                >
+                  {option.text}
+                </Text>
                 </View>
-                <Text style={styles.percentage}>{option.percentage}%</Text>
+                <Text
+                  style={[
+                    styles.percentage,
+                    isSelected && styles.percentageSelected,
+                  ]}
+                >
+                  {option.percentage}%
+                </Text>
               </View>
             <View style={styles.progressContainer}>
               <View style={styles.progressBarBackground} />
-              <View style={[styles.progressBarFill, { width: `${option.percentage}%` }]} />
+              <View
+                style={[
+                  styles.progressBarFill,
+                  { width: `${option.percentage}%` },
+                  isSelected && styles.progressBarFillSelected,
+                ]}
+              />
             </View>
           </TouchableOpacity>
         );
