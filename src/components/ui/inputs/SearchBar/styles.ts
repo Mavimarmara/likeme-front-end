@@ -33,16 +33,12 @@ export const styles = StyleSheet.create({
     fontSize: FONT_SIZES.SM,
     color: COLORS.TEXT,
     padding: 0,
-    paddingVertical: 0,
+    paddingVertical: 10,
     paddingHorizontal: 0,
-    height: 36,
-    lineHeight: 36,
     paddingRight: SPACING.XS,
     paddingLeft: 0,
     textAlignVertical: 'center',
     includeFontPadding: false,
-    marginTop: Platform.select({ ios: -2, android: 0 }),
-    paddingBottom: 15
   },
   searchButtonInside: {
     width: 39,
