@@ -29,9 +29,6 @@ const FloatingMenu: React.FC<Props> = ({ items, selectedId }) => {
           <View style={styles.selectedIconWrapper}>
             <Image source={MenuButtonBackground} style={styles.selectedIcon} resizeMode="contain" />
           </View>
-          <Text style={styles.selectedLabel}>
-            {selectedItem?.fullLabel || selectedItem?.label}
-          </Text>
         </View>
 
         <View style={styles.actionsPill}>
@@ -51,6 +48,11 @@ const FloatingMenu: React.FC<Props> = ({ items, selectedId }) => {
                   size={20}
                   color={isSelected ? '#0154F8' : '#001137'}
                 />
+                {isSelected && (
+                  <Text style={styles.selectedLabel}>
+                    {item.fullLabel || item.label}
+                  </Text>
+                )}
               </TouchableOpacity>
             );
           })}

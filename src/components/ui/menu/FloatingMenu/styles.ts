@@ -9,22 +9,18 @@ export const styles = StyleSheet.create({
   container: {
     position: 'absolute',
     bottom: SPACING.XL,
-    right: SPACING.MD,
     zIndex: 1000,
+    width: "100%"
   },
   menuWrapper: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.MD,
+    gap: SPACING.SM,
+    width: "100%"
   },
   selectedPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: SOFT_BEIGE,
     borderRadius: 28,
-    paddingHorizontal: SPACING.MD,
-    paddingVertical: SPACING.SM,
-    gap: SPACING.SM,
     shadowColor: '#00000014',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
@@ -63,14 +59,16 @@ export const styles = StyleSheet.create({
     elevation: 4,
   },
   iconButton: {
-    width: 48,
+    minWidth: 48,
     height: 48,
     borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
   },
   iconButtonSelected: {
-    backgroundColor: '#FFFFFF',
+    flexDirection: 'row',
+    paddingHorizontal: SPACING.SM,
+    gap: SPACING.XS,
     shadowColor: '#0000000A',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.5,
