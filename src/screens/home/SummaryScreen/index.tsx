@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { View, SafeAreaView, ScrollView } from 'react-native';
 import { FloatingMenu } from '@/components/ui/menu';
 import { NextEventsSection } from '@/components/ui/community';
+import { ProductsCarousel, type Product } from '@/components/ui/carousel';
 import type { Event } from '@/types/event';
 import { styles } from './styles';
 
@@ -52,6 +53,41 @@ const mockEvents: Event[] = [
   },
 ];
 
+const RECOMMENDED_PRODUCTS: Product[] = [
+  {
+    id: '1',
+    title: 'Omega 3. Sleep suplement',
+    price: 99.5,
+    tag: 'Sleep better',
+    image: 'https://images.unsplash.com/photo-1494390248081-4e521a5940db?w=800',
+    likes: 10,
+  },
+  {
+    id: '2',
+    title: 'Smart lamp',
+    price: 352,
+    tag: 'On sale',
+    image: 'https://images.unsplash.com/photo-1505693314120-0d443867891c?w=800',
+    likes: 10,
+  },
+  {
+    id: '3',
+    title: 'Weigh Blanket',
+    price: 55.2,
+    tag: 'Sleep better',
+    image: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=800',
+    likes: 10,
+  },
+  {
+    id: '4',
+    title: 'Herbal tea kit',
+    price: 64,
+    tag: 'New',
+    image: 'https://images.unsplash.com/photo-1505576391880-b3f9d713dc5a?w=800',
+    likes: 8,
+  },
+];
+
 const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   const rootNavigation = navigation.getParent() ?? navigation;
 
@@ -99,6 +135,16 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
     // Adicionar lógica para salvar evento
   };
 
+  const handleProductPress = (product: Product) => {
+    console.log('Ver produto:', product.id);
+    // Adicionar navegação para detalhes do produto se necessário
+  };
+
+  const handleProductLike = (product: Product) => {
+    console.log('Curtir produto:', product.id);
+    // Adicionar lógica para curtir produto
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
@@ -107,6 +153,15 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
             events={mockEvents}
             onEventPress={handleEventPress}
             onEventSave={handleEventSave}
+          />
+        </View>
+        <View style={styles.productsContainer}>
+          <ProductsCarousel
+            title="Products recommended for your sleep journey by Dr. Peter Valasquez"
+            subtitle="Discover our options selected just for you"
+            products={RECOMMENDED_PRODUCTS}
+            onProductPress={handleProductPress}
+            onProductLike={handleProductLike}
           />
         </View>
       </ScrollView>

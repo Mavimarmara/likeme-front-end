@@ -12,5 +12,8 @@ export const styles = StyleSheet.create({
     paddingHorizontal: SPACING.MD,
     paddingTop: SPACING.MD,
   },
+  productsContainer: {
+    paddingTop: SPACING.LG,
+  },
 });
 
