@@ -1,6 +1,9 @@
-import { StyleSheet, ViewStyle } from 'react-native';
-import type { AnimatableNumericValue } from 'react-native';
+import { StyleSheet, ViewStyle, StyleProp } from 'react-native';
 import { SPACING } from '@/constants';
+
+export const DEFAULT_BORDER_RADIUS = 22;
+export const BLUR_INTENSITY = 30;
+export const BLUR_TINT: 'light' | 'dark' | 'default' = 'dark';
 
 export const styles = StyleSheet.create({
   container: {
@@ -39,10 +42,49 @@ export const styles = StyleSheet.create({
   },
 });
 
+/**
+ * Normaliza o valor de borderRadius para um número
+ */
+const normalizeBorderRadius = (borderRadius: ViewStyle['borderRadius']): number => {
+  if (typeof borderRadius === 'number') {
+    return borderRadius;
+  }
+  if (typeof borderRadius === 'string') {
+    const parsed = parseFloat(borderRadius);
+    return isNaN(parsed) ? DEFAULT_BORDER_RADIUS : parsed;
+  }
+  return DEFAULT_BORDER_RADIUS;
+};
+
+/**
+ * Extrai o borderRadius de um StyleProp<ViewStyle>
+ */
+export const extractBorderRadius = (style: StyleProp<ViewStyle>): number => {
+  if (!style) return DEFAULT_BORDER_RADIUS;
+  
+  const styleObj = Array.isArray(style)
+    ? Object.assign({}, ...style.filter(Boolean))
+    : style;
+  
+  const borderRadius = (styleObj as ViewStyle)?.borderRadius;
+  return normalizeBorderRadius(borderRadius);
+};
+
+/**
+ * Normaliza um StyleProp para um objeto ViewStyle
+ */
+export const normalizeStyle = (style: StyleProp<ViewStyle>): ViewStyle => {
+  if (!style) return {};
+  
+  if (Array.isArray(style)) {
+    return Object.assign({}, ...style.filter(Boolean));
+  }
+  
+  return style as ViewStyle;
+};
+
 export const getBlurStyle = (footerHeight: number, borderRadius: ViewStyle['borderRadius']): ViewStyle => {
-  const radius = typeof borderRadius === 'number' 
-    ? borderRadius 
-    : (typeof borderRadius === 'string' ? parseFloat(borderRadius) || 22 : 22);
+  const radius = normalizeBorderRadius(borderRadius);
   
   return {
     position: 'absolute',
@@ -56,9 +98,7 @@ export const getBlurStyle = (footerHeight: number, borderRadius: ViewStyle['bord
 };
 
 export const getFooterSectionStyle = (borderRadius: ViewStyle['borderRadius']): ViewStyle => {
-  const radius = typeof borderRadius === 'number' 
-    ? borderRadius 
-    : (typeof borderRadius === 'string' ? parseFloat(borderRadius) || 22 : 22);
+  const radius = normalizeBorderRadius(borderRadius);
   
   return {
     borderBottomLeftRadius: radius,
