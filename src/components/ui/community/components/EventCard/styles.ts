@@ -2,30 +2,16 @@ import { StyleSheet } from 'react-native';
 import { SPACING, BORDER_RADIUS } from '@/constants';
 
 export const styles = StyleSheet.create({
-  container: {
+  cardContainer: {
     width: 194,
     height: 208,
     borderRadius: 22,
-    overflow: 'hidden',
-    marginRight: SPACING.SM,
   },
-  backgroundImage: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'space-between',
-    paddingTop: SPACING.SM,
-    paddingBottom: 0,
-  },
-  topSection: {
+  topSectionContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: SPACING.SM,
+    width: '100%',
   },
   avatarsContainer: {
     flexDirection: 'row',
@@ -81,19 +67,6 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
     color: '#001137',
-  },
-  bottomSection: {
-    paddingHorizontal: SPACING.MD,
-    paddingTop: SPACING.SM,
-    paddingBottom: SPACING.SM,
-    borderBottomLeftRadius: 22,
-    borderBottomRightRadius: 22,
-    gap: SPACING.SM,
-    position: 'relative',
-    overflow: 'hidden',
-  },
-  bottomBlur: {
-    ...StyleSheet.absoluteFillObject,
   },
   title: {
     fontSize: 16,

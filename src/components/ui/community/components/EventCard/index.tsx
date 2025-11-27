@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { BlurCard } from '@/components/ui/cards';
 import { styles } from './styles';
 import type { Event } from '@/types/event';
-import { BlurView } from 'expo-blur';
 
 type Props = {
   event: Event;
@@ -55,42 +55,42 @@ const EventCard: React.FC<Props> = ({ event, onPress, onSave }) => {
     return `${event.date} ${event.time}`;
   };
 
-  return (
-    <TouchableOpacity
-      style={styles.container}
-      onPress={() => onPress?.(event)}
-      activeOpacity={0.9}
-    >
-      <Image
-        source={{ uri: event.thumbnail }}
-        style={styles.backgroundImage}
-      />
+  const topSection = (
+    <View style={styles.topSectionContent}>
+      {renderAvatars()}
       
-      <View style={styles.content}>
-        <View style={styles.topSection}>
-          {renderAvatars()}
-          
-          <TouchableOpacity
-            style={styles.saveButton}
-            onPress={() => onSave?.(event)}
-            activeOpacity={0.7}
-          >
-            <Icon name="bookmark-border" size={18} color="#001137" />
-            <Text style={styles.saveButtonText}>Save</Text>
-          </TouchableOpacity>
-        </View>
+      <TouchableOpacity
+        style={styles.saveButton}
+        onPress={() => onSave?.(event)}
+        activeOpacity={0.7}
+      >
+        <Icon name="bookmark-border" size={18} color="#001137" />
+        <Text style={styles.saveButtonText}>Save</Text>
+      </TouchableOpacity>
+    </View>
+  );
 
-        <View style={styles.bottomSection}>
-          <BlurView intensity={30} tint="dark" style={styles.bottomBlur} />
-          <Text style={styles.title} numberOfLines={2}>
-            {event.title}
-          </Text>
-          <View style={styles.dateBadge}>
-            <Text style={styles.dateText}>{formatDateTime()}</Text>
-          </View>
+  const footerSection = {
+    component: (
+      <>
+        <Text style={styles.title} numberOfLines={2}>
+          {event.title}
+        </Text>
+        <View style={styles.dateBadge}>
+          <Text style={styles.dateText}>{formatDateTime()}</Text>
         </View>
-      </View>
-    </TouchableOpacity>
+      </>
+    ),
+  };
+
+  return (
+    <BlurCard
+      backgroundImage={event.thumbnail}
+      topSection={topSection}
+      footerSection={footerSection}
+      onPress={() => onPress?.(event)}
+      style={[styles.cardContainer, { blurIntensity: 30, blurTint: 'dark' }]}
+    />
   );
 };
 

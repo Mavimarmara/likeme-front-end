@@ -63,9 +63,9 @@ const FloatingMenu: React.FC<Props> = ({ items, selectedId }) => {
                   color={isSelected ? '#0154F8' : '#001137'}
                 />
                 {isSelected && (
-                  <Text style={styles.selectedLabel}>
+                          <Text style={styles.selectedLabel}>
                     {item.fullLabel || item.label}
-                  </Text>
+          </Text>
                 )}
               </TouchableOpacity>
             );
