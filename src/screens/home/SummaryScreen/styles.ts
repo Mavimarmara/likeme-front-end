@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { SPACING } from '@/constants';
 
 export const styles = StyleSheet.create({
   container: {
@@ -6,6 +7,10 @@ export const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  eventsContainer: {
+    paddingHorizontal: SPACING.MD,
+    paddingTop: SPACING.MD,
   },
 });
 
