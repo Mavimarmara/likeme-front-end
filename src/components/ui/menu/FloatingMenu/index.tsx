@@ -1,57 +1,61 @@
-import React, { useState } from 'react';
-import { View, TouchableOpacity, Text } from 'react-native';
+import React, { useMemo } from 'react';
+import { View, TouchableOpacity, Text, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { MenuButtonBackground } from '@/assets';
 import { styles } from './styles';
 
 type MenuItem = {
   id: string;
   icon: string;
   label: string;
+  fullLabel?: string;
   onPress: () => void;
 };
 
 type Props = {
   items: MenuItem[];
+  selectedId?: string;
 };
 
-const FloatingMenu: React.FC<Props> = ({ items }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  const toggleMenu = () => {
-    setIsExpanded(!isExpanded);
-  };
+const FloatingMenu: React.FC<Props> = ({ items, selectedId }) => {
+  const selectedItem = useMemo(() => {
+    return items.find((item) => item.id === selectedId) ?? items[0];
+  }, [items, selectedId]);
 
   return (
     <View style={styles.container}>
-      {isExpanded && (
-        <View style={styles.menuItems}>
-          {items.map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              style={styles.menuItem}
-              onPress={() => {
-                item.onPress();
-                setIsExpanded(false);
-              }}
-              activeOpacity={0.7}
-            >
-              <Icon name={item.icon} size={24} color="#000" />
-              <Text style={styles.menuItemLabel}>{item.label}</Text>
-            </TouchableOpacity>
-          ))}
+      <View style={styles.menuWrapper}>
+        <View style={styles.selectedPill}>
+          <View style={styles.selectedIconWrapper}>
+            <Image source={MenuButtonBackground} style={styles.selectedIcon} resizeMode="contain" />
+          </View>
+          <Text style={styles.selectedLabel}>
+            {selectedItem?.fullLabel || selectedItem?.label}
+          </Text>
         </View>
-      )}
-      <TouchableOpacity
-        style={[styles.toggleButton, isExpanded && styles.toggleButtonActive]}
-        onPress={toggleMenu}
-        activeOpacity={0.8}
-      >
-        <Icon
-          name={isExpanded ? 'close' : 'add'}
-          size={28}
-          color="#FFF"
-        />
-      </TouchableOpacity>
+
+        <View style={styles.actionsPill}>
+          {items.map((item) => {
+            const isSelected = item.id === selectedItem?.id;
+            return (
+              <TouchableOpacity
+                key={item.id}
+                style={[styles.iconButton, isSelected && styles.iconButtonSelected]}
+                onPress={item.onPress}
+                activeOpacity={0.8}
+                accessibilityRole="button"
+                accessibilityLabel={item.fullLabel || item.label}
+              >
+                <Icon
+                  name={item.icon}
+                  size={20}
+                  color={isSelected ? '#0154F8' : '#001137'}
+                />
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </View>
     </View>
   );
 };

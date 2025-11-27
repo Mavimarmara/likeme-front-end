@@ -2,20 +2,13 @@ export type RootStackParamList = {
   Unauthenticated: undefined;
   Register: undefined;
   Anamnese: undefined;
-  Main: undefined;
-};
-
-export type MainTabParamList = {
-  Wellness: undefined;
-  Activities: undefined;
-  Protocol: undefined;
-  Marketplace: undefined;
   Community: undefined;
-  HealthProvider: undefined;
+  Activities: undefined;
+  Marketplace: undefined;
   Profile: undefined;
 };
 
-import type { Post } from '@/components/ui';
+import type { Post } from '@/types';
 
 export type CommunityStackParamList = {
   CommunityList: undefined;

@@ -5,7 +5,10 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { UnauthenticatedScreen, AuthenticatedScreen, LoadingScreen, WelcomeScreen, IntroScreen, AppPresentationScreen, RegisterScreen, AnamneseScreen, PersonalObjectivesScreen, SelfAwarenessIntroScreen } from '@/screens/auth';
 import ErrorScreen from '@/screens/ErrorScreen';
 import AppLoadingScreen from '@/screens/LoadingScreen';
-import MainTabNavigator from './MainTabNavigator';
+import { CommunityStackNavigator } from '@/navigation';
+import { ActivitiesScreen } from '@/screens/wellness';
+import { MarketplaceScreen } from '@/screens/marketplace';
+import { ProfileScreen } from '@/screens/profile';
 
 const Stack = createStackNavigator();
 
@@ -79,10 +82,25 @@ const RootNavigator: React.FC = () => {
           component={AppLoadingScreen}
           options={{ title: 'Carregando' }}
         />
-        <Stack.Screen 
-          name="Main" 
-          component={MainTabNavigator}
-          options={{ title: 'LikeMe' }}
+        <Stack.Screen
+          name="Community"
+          component={CommunityStackNavigator}
+          options={{ title: 'Comunidade' }}
+        />
+        <Stack.Screen
+          name="Activities"
+          component={ActivitiesScreen}
+          options={{ title: 'Atividades' }}
+        />
+        <Stack.Screen
+          name="Marketplace"
+          component={MarketplaceScreen}
+          options={{ title: 'Marketplace' }}
+        />
+        <Stack.Screen
+          name="Profile"
+          component={ProfileScreen}
+          options={{ title: 'Perfil' }}
         />
       </Stack.Navigator>
     </NavigationContainer>

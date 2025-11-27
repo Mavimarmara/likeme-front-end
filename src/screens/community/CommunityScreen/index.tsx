@@ -3,6 +3,7 @@ import { View, Image, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { Toggle, SocialList, ProgramsList, LiveBannerData, Header, ProductsCarousel, Product, PlansCarousel, Plan, ProviderChat } from '@/components/ui';
+import { FloatingMenu } from '@/components/ui/menu';
 import type { Post, Event } from '@/types';
 import type { Program, ProgramDetail } from '@/types/program';
 import { BackgroundWithGradient } from '@/assets';
@@ -302,6 +303,42 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     console.log('Curtir plano:', plan.id);
   };
 
+  const rootNavigation = navigation.getParent()?.getParent?.() ?? navigation.getParent();
+
+  const menuItems = useMemo(
+    () => [
+      {
+        id: 'activities',
+        icon: 'fitness-center',
+        label: 'Atividades',
+        fullLabel: 'Atividades',
+        onPress: () => rootNavigation?.navigate('Activities' as never),
+      },
+      {
+        id: 'marketplace',
+        icon: 'store',
+        label: 'Marketplace',
+        fullLabel: 'Marketplace',
+        onPress: () => rootNavigation?.navigate('Marketplace' as never),
+      },
+      {
+        id: 'community',
+        icon: 'group',
+        label: 'Comunidade',
+        fullLabel: 'Comunidade',
+        onPress: () => rootNavigation?.navigate('Community' as never),
+      },
+      {
+        id: 'profile',
+        icon: 'person',
+        label: 'Perfil',
+        fullLabel: 'Perfil',
+        onPress: () => rootNavigation?.navigate('Profile' as never),
+      },
+    ],
+    [rootNavigation]
+  );
+
   const handleProgramPress = (program: Program) => {
     setSelectedProgramId(program.id);
   };
@@ -424,6 +461,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
           />
         )}
       </View>
+      <FloatingMenu items={menuItems} selectedId="community" />
     </SafeAreaView>
   );
 };

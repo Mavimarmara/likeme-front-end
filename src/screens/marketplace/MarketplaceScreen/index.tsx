@@ -1,8 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SearchBar } from '@/components/ui/inputs';
+import { FloatingMenu } from '@/components/ui/menu';
+import type { RootStackParamList } from '@/types/navigation';
 import { styles } from './styles';
 
 const HERO_STATS = [
@@ -84,7 +87,11 @@ const CURATED_BUNDLES = [
   },
 ] as const;
 
-const MarketplaceScreen: React.FC = () => {
+type MarketplaceScreenProps = {
+  navigation: StackNavigationProp<RootStackParamList, 'Marketplace'>;
+};
+
+const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
@@ -101,6 +108,42 @@ const MarketplaceScreen: React.FC = () => {
       return matchesCategory && matchesSearch;
     });
   }, [selectedCategory, searchQuery]);
+
+  const rootNavigation = navigation.getParent() ?? navigation;
+
+  const menuItems = useMemo(
+    () => [
+      {
+        id: 'activities',
+        icon: 'fitness-center',
+        label: 'Atividades',
+        fullLabel: 'Atividades',
+        onPress: () => rootNavigation.navigate('Activities' as never),
+      },
+      {
+        id: 'marketplace',
+        icon: 'store',
+        label: 'Marketplace',
+        fullLabel: 'Marketplace',
+        onPress: () => rootNavigation.navigate('Marketplace' as never),
+      },
+      {
+        id: 'community',
+        icon: 'group',
+        label: 'Comunidade',
+        fullLabel: 'Comunidade',
+        onPress: () => rootNavigation.navigate('Community' as never),
+      },
+      {
+        id: 'profile',
+        icon: 'person',
+        label: 'Perfil',
+        fullLabel: 'Perfil',
+        onPress: () => rootNavigation.navigate('Profile' as never),
+      },
+    ],
+    [rootNavigation]
+  );
 
   const renderSectionHeader = (title: string) => (
     <View style={styles.sectionHeader}>
@@ -272,8 +315,9 @@ const MarketplaceScreen: React.FC = () => {
             <Text style={styles.newsletterButtonText}>Ativar alertas personalizados</Text>
             <Icon name="arrow-forward" size={18} color="#001137" />
           </TouchableOpacity>
-        </View>
+      </View>
       </ScrollView>
+      <FloatingMenu items={menuItems} selectedId="marketplace" />
     </SafeAreaView>
   );
 };
