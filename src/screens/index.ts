@@ -3,3 +3,4 @@ export * from './wellness';
 export * from './marketplace';
 export * from './community';
 export * from './profile';
+export * from './home';

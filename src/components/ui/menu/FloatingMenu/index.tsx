@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { View, TouchableOpacity, Text, Image } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { MenuButtonBackground } from '@/assets';
 import { styles } from './styles';
@@ -18,22 +19,35 @@ type Props = {
 };
 
 const FloatingMenu: React.FC<Props> = ({ items, selectedId }) => {
-  const selectedItem = useMemo(() => {
-    return items.find((item) => item.id === selectedId) ?? items[0];
-  }, [items, selectedId]);
+  const navigation = useNavigation();
+
+  const handleHomePress = () => {
+    navigation.navigate('Home' as never);
+  };
+
+  const isHomeSelected = selectedId === 'home';
 
   return (
     <View style={styles.container}>
       <View style={styles.menuWrapper}>
-        <View style={styles.selectedPill}>
+        <TouchableOpacity 
+          style={[styles.selectedPill, isHomeSelected && styles.selectedPillWithLabel]}
+          onPress={handleHomePress}
+          activeOpacity={0.8}
+          accessibilityRole="button"
+          accessibilityLabel="Ir para Home"
+        >
           <View style={styles.selectedIconWrapper}>
             <Image source={MenuButtonBackground} style={styles.selectedIcon} resizeMode="contain" />
           </View>
-        </View>
+          {isHomeSelected && (
+            <Text style={styles.selectedPillLabel}>Home</Text>
+          )}
+        </TouchableOpacity>
 
         <View style={styles.actionsPill}>
           {items.map((item) => {
-            const isSelected = item.id === selectedItem?.id;
+            const isSelected = item.id === selectedId;
             return (
               <TouchableOpacity
                 key={item.id}

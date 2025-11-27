@@ -27,6 +27,16 @@ export const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 4,
   },
+  selectedPillWithLabel: {
+    paddingHorizontal: SPACING.MD,
+    gap: SPACING.SM,
+  },
+  selectedPillLabel: {
+    fontFamily: 'DM Sans',
+    fontSize: 14,
+    fontWeight: '500',
+    color: ACCENT_BLUE,
+  },
   selectedIconWrapper: {
     width: 56,
     height: 56,

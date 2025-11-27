@@ -6,6 +6,8 @@ export type RootStackParamList = {
   Activities: undefined;
   Marketplace: undefined;
   Profile: undefined;
+  Home: undefined;
+  Summary: undefined;
 };
 
 import type { Post } from '@/types';

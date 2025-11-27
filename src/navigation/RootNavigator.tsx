@@ -9,6 +9,7 @@ import { CommunityStackNavigator } from '@/navigation';
 import { ActivitiesScreen } from '@/screens/wellness';
 import { MarketplaceScreen } from '@/screens/marketplace';
 import { ProfileScreen } from '@/screens/profile';
+import { HomeScreen, SummaryScreen } from '@/screens/home';
 
 const Stack = createStackNavigator();
 
@@ -101,6 +102,16 @@ const RootNavigator: React.FC = () => {
           name="Profile"
           component={ProfileScreen}
           options={{ title: 'Perfil' }}
+        />
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{ title: 'Home', animationEnabled: false }}
+        />
+        <Stack.Screen
+          name="Summary"
+          component={SummaryScreen}
+          options={{ title: 'Resumo' }}
         />
       </Stack.Navigator>
     </NavigationContainer>
