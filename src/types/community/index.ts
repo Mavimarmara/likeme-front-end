@@ -144,3 +144,31 @@ export interface UserFeedParams {
   order?: 'asc' | 'desc';
 }
 
+export interface ListCommunitiesParams {
+  page?: number;
+  limit?: number;
+  sortBy?: 'createdAt' | 'updatedAt' | 'displayName' | 'membersCount' | 'postsCount';
+  includeDeleted?: boolean;
+}
+
+export interface ListCommunitiesApiResponse {
+  success?: boolean;
+  status?: string;
+  data?: {
+    communities?: Community[];
+    pagination?: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
+  };
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+  message?: string;
+}
+

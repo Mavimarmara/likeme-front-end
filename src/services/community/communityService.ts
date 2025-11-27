@@ -3,12 +3,15 @@ import { logger } from '@/utils/logger';
 import type {
   UserFeedApiResponse,
   UserFeedParams,
+  ListCommunitiesParams,
+  ListCommunitiesApiResponse,
 } from '@/types/community';
 
 class CommunityService {
   private readonly userFeeEndpoint = '/api/communities/feed';
   private readonly pollDetailEndpoint = '/api/v3/polls';
   private readonly commentReactionEndpoint = '/api/communities/comments';
+  private readonly communitiesEndpoint = '/api/communities';
 
   async getUserFeed(params: UserFeedParams = {}): Promise<UserFeedApiResponse> {
     try {
@@ -184,6 +187,47 @@ console.log('userFeedResponse', JSON.stringify(userFeedResponse));
     } catch (error) {
       logger.warn('Error removing comment reaction (ignored):', error);
       return false;
+    }
+  }
+
+  async listCommunities(params: ListCommunitiesParams = {}): Promise<ListCommunitiesApiResponse> {
+    try {
+      const queryParams: Record<string, string> = {};
+      
+      if (params.page !== undefined) {
+        queryParams.page = String(params.page);
+      }
+      
+      if (params.limit !== undefined) {
+        queryParams.limit = String(params.limit);
+      }
+
+      if (params.sortBy) {
+        queryParams.sortBy = params.sortBy;
+      }
+
+      if (params.includeDeleted !== undefined) {
+        queryParams.includeDeleted = String(params.includeDeleted);
+      }
+
+      const communitiesResponse = await apiClient.get<ListCommunitiesApiResponse>(
+        this.communitiesEndpoint,
+        queryParams,
+        true,
+        false
+      );
+
+      logger.debug('Communities list response:', {
+        page: params.page,
+        limit: params.limit,
+        success: communitiesResponse.success,
+        hasData: !!communitiesResponse.data,
+      });
+
+      return communitiesResponse;
+    } catch (error) {
+      logger.error('Error fetching communities list:', error);
+      throw error;
     }
   }
 }

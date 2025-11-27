@@ -1,7 +1,13 @@
 import React, { useMemo } from 'react';
 import { View, SafeAreaView, ScrollView } from 'react-native';
 import { FloatingMenu } from '@/components/ui/menu';
-import { NextEventsSection } from '@/components/ui/community';
+import { 
+  NextEventsSection,
+  RecommendedCommunitiesSection,
+  OtherCommunitiesSection,
+  type RecommendedCommunity,
+  type OtherCommunity,
+} from '@/components/ui/community';
 import { ProductsCarousel, type Product } from '@/components/ui/carousel';
 import type { Event } from '@/types/event';
 import { styles } from './styles';
@@ -88,6 +94,64 @@ const RECOMMENDED_PRODUCTS: Product[] = [
   },
 ];
 
+const RECOMMENDED_COMMUNITIES: RecommendedCommunity[] = [
+  {
+    id: '1',
+    title: 'Sports to make you smile every day',
+    badge: 'To reduce stress',
+    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
+  },
+  {
+    id: '2',
+    title: 'The Dreamy Nights Community',
+    badge: 'To improve sleep',
+    image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800',
+  },
+];
+
+const OTHER_COMMUNITIES: OtherCommunity[] = [
+  {
+    id: '1',
+    title: 'Where balance begins\nin your gut',
+    badge: 'Nutrition',
+    image: 'https://images.unsplash.com/photo-1494390248081-4e521a5940db?w=400',
+    rating: 5,
+    price: '$65.54',
+  },
+  {
+    id: '2',
+    title: 'Steady heart,\nsteady mind',
+    badge: 'Keep mooving',
+    image: 'https://images.unsplash.com/photo-1505693314120-0d443867891c?w=400',
+    rating: 5,
+    price: '$56.99',
+  },
+  {
+    id: '3',
+    title: 'Know your rhythm,\nown your flow',
+    badge: 'Oral Health',
+    image: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400',
+    rating: 5,
+    price: '$20.00',
+  },
+  {
+    id: '4',
+    title: 'Mornings made\nfor clarity',
+    badge: 'To reduce stress',
+    image: 'https://images.unsplash.com/photo-1505576391880-b3f9d713dc5a?w=400',
+    rating: 5,
+    price: '$36.50',
+  },
+  {
+    id: '5',
+    title: 'Hormones in harmony',
+    badge: 'To reduce stress',
+    image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400',
+    rating: 5,
+    price: '$100.00',
+  },
+];
+
 const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   const rootNavigation = navigation.getParent() ?? navigation;
 
@@ -145,6 +209,21 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
     // Adicionar lógica para curtir produto
   };
 
+  const handleRecommendedCommunityPress = (community: RecommendedCommunity) => {
+    console.log('Comunidade recomendada pressionada:', community.id);
+    // Adicionar navegação para detalhes da comunidade se necessário
+  };
+
+  const handleOtherCommunityPress = (community: OtherCommunity) => {
+    console.log('Outra comunidade pressionada:', community.id);
+    // Adicionar navegação para detalhes da comunidade se necessário
+  };
+
+  const handleSearchChange = (text: string) => {
+    console.log('Buscar comunidades:', text);
+    // Adicionar lógica de busca
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
@@ -155,6 +234,12 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
             onEventSave={handleEventSave}
           />
         </View>
+        <View style={styles.communitiesContainer}>
+          <RecommendedCommunitiesSection
+            communities={RECOMMENDED_COMMUNITIES}
+            onCommunityPress={handleRecommendedCommunityPress}
+          />
+        </View>
         <View style={styles.productsContainer}>
           <ProductsCarousel
             title="Products recommended for your sleep journey by Dr. Peter Valasquez"
@@ -162,6 +247,13 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
             products={RECOMMENDED_PRODUCTS}
             onProductPress={handleProductPress}
             onProductLike={handleProductLike}
+          />
+        </View>
+        <View style={styles.otherCommunitiesContainer}>
+          <OtherCommunitiesSection
+            communities={OTHER_COMMUNITIES}
+            onCommunityPress={handleOtherCommunityPress}
+            onSearchChange={handleSearchChange}
           />
         </View>
       </ScrollView>

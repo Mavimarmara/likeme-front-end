@@ -9,10 +9,15 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   eventsContainer: {
-    paddingHorizontal: SPACING.MD,
     paddingTop: SPACING.MD,
   },
+  communitiesContainer: {
+    paddingTop: SPACING.LG,
+  },
   productsContainer: {
+    paddingTop: SPACING.LG,
+  },
+  otherCommunitiesContainer: {
     paddingTop: SPACING.LG,
   },
 });

@@ -1,0 +1,106 @@
+import { StyleSheet } from 'react-native';
+import { SPACING, FONT_SIZES, BORDER_RADIUS } from '@/constants';
+
+export const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: SPACING.MD,
+    paddingTop: SPACING.MD,
+    gap: SPACING.MD,
+  },
+  title: {
+    fontFamily: 'DM Sans',
+    fontSize: FONT_SIZES.SM,
+    fontWeight: '500',
+    color: '#000000',
+    lineHeight: 14,
+  },
+  communitiesList: {
+    gap: SPACING.SM,
+  },
+  card: {
+    height: 164,
+    borderRadius: 24,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 28,
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 32,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  cardImage: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: '100%',
+    height: '100%',
+  },
+  gradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  cardContent: {
+    flex: 1,
+    padding: SPACING.MD,
+    justifyContent: 'space-between',
+  },
+  badgeContainer: {
+    alignSelf: 'flex-start',
+  },
+  badge: {
+    backgroundColor: 'rgba(0, 17, 55, 0.64)',
+    paddingHorizontal: 14,
+    paddingVertical: 0,
+    minHeight: 24,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  badgeText: {
+    fontFamily: 'DM Sans',
+    fontSize: FONT_SIZES.XS,
+    fontWeight: '500',
+    color: '#F6DEA9',
+    lineHeight: 22,
+    letterSpacing: 0.2,
+    textAlign: 'center',
+  },
+  cardBottom: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    gap: SPACING.SM,
+  },
+  cardTitle: {
+    flex: 1,
+    fontFamily: 'DM Sans',
+    fontSize: FONT_SIZES.XL,
+    fontWeight: '500',
+    color: '#FFFFFF',
+    lineHeight: 20,
+    marginRight: SPACING.SM,
+  },
+  seeMoreButton: {
+    width: 54,
+    height: 48,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  buttonBackground: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonImage: {
+    borderRadius: BORDER_RADIUS.MD,
+  },
+});
+
