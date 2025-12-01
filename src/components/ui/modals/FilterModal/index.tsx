@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Modal, ScrollView, TextInput as RNTextInput } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { View, Text, ScrollView, TextInput as RNTextInput } from 'react-native';
+import { ModalBase, SelectButton, SubmitButton } from '../shared';
 import { styles } from './styles';
 import { SPACING } from '@/constants';
 import type { CommunityFeedFilters } from '@/types/community/filters';
@@ -103,129 +103,79 @@ const FilterModal: React.FC<Props> = ({
             : selected === option.id;
 
           return (
-            <TouchableOpacity
+            <SelectButton
               key={option.id}
-              style={[
-                styles.filterOption,
-                isSelected && styles.filterOptionSelected,
-              ]}
+              label={option.label}
+              icon={option.icon}
+              isSelected={isSelected}
               onPress={() => onSelect(option.id)}
-              activeOpacity={0.7}
-            >
-              {option.icon && (
-                <Text style={styles.optionIcon}>{option.icon}</Text>
-              )}
-              <Text
-                style={[
-                  styles.optionText,
-                  isSelected && styles.optionTextSelected,
-                ]}
-                numberOfLines={1}
-              >
-                {option.label}
-              </Text>
-            </TouchableOpacity>
+            />
           );
         })}
       </View>
     </View>
   );
 
+  const isSaveDisabled =
+    selectedPostTypes.length === 0 &&
+    !selectedSortBy &&
+    !selectedDate &&
+    !selectedAuthor;
+
   return (
-    <Modal
+    <ModalBase
       visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
+      onClose={onClose}
+      title="Filter"
+      footer={
+        <SubmitButton
+          label="Save"
+          onPress={handleSave}
+          disabled={isSaveDisabled}
+        />
+      }
     >
-      <View style={styles.overlay}>
-        <View style={styles.modalContainer}>
-          <View style={styles.header}>
-            <Text style={styles.title}>Filter</Text>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={onClose}
-              activeOpacity={0.7}
-            >
-              <Icon name="close" size={24} color={COLORS.TEXT_DARK} />
-            </TouchableOpacity>
-          </View>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
+        {renderSection(
+          'Tipo de post',
+          POST_TYPES,
+          selectedPostTypes,
+          handlePostTypeToggle,
+          true
+        )}
 
-          <ScrollView
-            style={styles.content}
-            showsVerticalScrollIndicator={false}
-          >
-            {renderSection(
-              'Tipo de post',
-              POST_TYPES,
-              selectedPostTypes,
-              handlePostTypeToggle,
-              true
-            )}
+        {renderSection(
+          'Data de publicação',
+          DATE_OPTIONS,
+          selectedDate,
+          setSelectedDate,
+          false
+        )}
 
-            {renderSection(
-              'Data de publicação',
-              DATE_OPTIONS,
-              selectedDate,
-              setSelectedDate,
-              false
-            )}
+        {renderSection(
+          'Ordenação',
+          SORT_OPTIONS,
+          selectedSortBy,
+          setSelectedSortBy,
+          false
+        )}
 
-            {renderSection(
-              'Ordenação',
-              SORT_OPTIONS,
-              selectedSortBy,
-              setSelectedSortBy,
-              false
-            )}
-
-            {/* Autor */}
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Autor</Text>
-              <RNTextInput
-                style={styles.authorInput}
-                placeholder="Digite o nome do autor"
-                placeholderTextColor={COLORS.TEXT_LIGHT}
-                value={selectedAuthor}
-                onChangeText={setSelectedAuthor}
-              />
-            </View>
-          </ScrollView>
-
-          <TouchableOpacity
-            style={[
-              styles.saveButton,
-              (selectedPostTypes.length === 0 &&
-                !selectedSortBy &&
-                !selectedDate &&
-                !selectedAuthor) &&
-                styles.saveButtonDisabled,
-            ]}
-            onPress={handleSave}
-            activeOpacity={0.7}
-            disabled={
-              selectedPostTypes.length === 0 &&
-              !selectedSortBy &&
-              !selectedDate &&
-              !selectedAuthor
-            }
-          >
-            <Text
-              style={[
-                styles.saveButtonText,
-                (selectedPostTypes.length === 0 &&
-                  !selectedSortBy &&
-                  !selectedDate &&
-                  !selectedAuthor) &&
-                  styles.saveButtonTextDisabled,
-              ]}
-            >
-              Save
-            </Text>
-          </TouchableOpacity>
+        {/* Autor */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Autor</Text>
+          <RNTextInput
+            style={styles.authorInput}
+            placeholder="Digite o nome do autor"
+            placeholderTextColor={COLORS.TEXT_LIGHT}
+            value={selectedAuthor}
+            onChangeText={setSelectedAuthor}
+          />
         </View>
-      </View>
-    </Modal>
+      </ScrollView>
+    </ModalBase>
   );
 };
 

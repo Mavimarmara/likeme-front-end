@@ -1,15 +1,8 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Modal, ScrollView } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { View, Text } from 'react-native';
+import { ModalBase, SelectButton, SubmitButton } from '../shared';
 import { styles } from './styles';
-import { SPACING } from '@/constants';
 import type { CommunityCategory } from '@/types/community';
-
-const COLORS = {
-  TEXT_DARK: '#001137',
-  TEXT_LIGHT: '#666666',
-  PRIMARY: '#0154f8',
-};
 
 // Mapeamento de categorias para ícones e cores (baseado no FilterModal)
 const CATEGORY_MAP: Record<string, { icon: string; color: string }> = {
@@ -67,72 +60,36 @@ const CategoryModal: React.FC<Props> = ({
   };
 
   return (
-    <Modal
+    <ModalBase
       visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
+      onClose={onClose}
+      showTitle={false}
+      footer={
+        <SubmitButton label="Save" onPress={handleSave} />
+      }
     >
-      <View style={styles.overlay}>
-        <View style={styles.modalContainer}>
-          <View style={styles.header}>
-            <View style={styles.headerSpacer} />
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={onClose}
-              activeOpacity={0.7}
-            >
-              <Icon name="close" size={24} color={COLORS.TEXT_DARK} />
-            </TouchableOpacity>
+      <View style={styles.optionsGrid}>
+        {categories.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>Nenhuma categoria disponível</Text>
           </View>
-
-          <View style={styles.content}>
-            <View style={styles.optionsGrid}>
-              {categories.length === 0 ? (
-                <View style={styles.emptyContainer}>
-                  <Text style={styles.emptyText}>Nenhuma categoria disponível</Text>
-                </View>
-              ) : (
-                categories.map((category) => {
-                  const isSelected = category.categoryId === selectedCategoryId;
-                  const categoryInfo = getCategoryInfo(category.name);
-                  return (
-                    <TouchableOpacity
-                      key={category.categoryId}
-                      style={[
-                        styles.filterOption,
-                        isSelected && styles.filterOptionSelected,
-                      ]}
-                      onPress={() => handleCategoryPress(category)}
-                      activeOpacity={0.7}
-                    >
-                      <Text style={styles.optionIcon}>{categoryInfo.icon}</Text>
-                      <Text
-                        style={[
-                          styles.optionText,
-                          isSelected && styles.optionTextSelected,
-                        ]}
-                        numberOfLines={1}
-                      >
-                        {category.name}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })
-              )}
-            </View>
-          </View>
-
-          <TouchableOpacity
-            style={styles.saveButton}
-            onPress={handleSave}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.saveButtonText}>Save</Text>
-          </TouchableOpacity>
-        </View>
+        ) : (
+          categories.map((category) => {
+            const isSelected = category.categoryId === selectedCategoryId;
+            const categoryInfo = getCategoryInfo(category.name);
+            return (
+              <SelectButton
+                key={category.categoryId}
+                label={category.name}
+                icon={categoryInfo.icon}
+                isSelected={isSelected}
+                onPress={() => handleCategoryPress(category)}
+              />
+            );
+          })
+        )}
       </View>
-    </Modal>
+    </ModalBase>
   );
 };
 
