@@ -6,11 +6,13 @@ import { Toggle, SocialList, ProgramsList, LiveBannerData, Header, ProductsCarou
 import { FloatingMenu } from '@/components/ui/menu';
 import type { Post, Event } from '@/types';
 import type { Program, ProgramDetail } from '@/types/program';
+import type { CommunityCategory } from '@/types/community';
 import { BackgroundWithGradient } from '@/assets';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
-import { useUserFeed, useLogout } from '@/hooks';
+import { useUserFeed, useLogout, useCommunities } from '@/hooks';
 import { mapFiltersToFeedParams } from '@/utils/community/filterMapper';
+import { mapCommunityToProgram } from '@/utils/community/mappers';
 
 type CommunityMode = 'Social' | 'Programs';
 
@@ -26,29 +28,7 @@ const mockLiveBanner: LiveBannerData = {
   thumbnail: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400',
 };
 
-const mockPrograms: Program[] = [
-  {
-    id: '1',
-    name: 'The best sleep for an offline life',
-    description: 'Um programa completo de transformação em 30 dias',
-    duration: '30 dias',
-    participantsCount: 450,
-  },
-  {
-    id: '2',
-    name: 'Mental Health in the Workplace',
-    description: 'Desafios semanais para melhorar sua qualidade de vida',
-    duration: '7 dias',
-    participantsCount: 320,
-  },
-  {
-    id: '3',
-    name: 'Programa Anual',
-    description: 'Acompanhamento completo durante todo o ano',
-    duration: '365 dias',
-    participantsCount: 180,
-  },
-];
+// mockPrograms removido - agora usando dados reais da API via useCommunities
 
 const mockProgramDetails: ProgramDetail = {
   id: '1',
@@ -256,17 +236,42 @@ import type { FilterType } from '@/components/ui/modals/FilterModal';
 const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   const [selectedMode, setSelectedMode] = useState<CommunityMode>('Social');
   const [selectedProgramId, setSelectedProgramId] = useState<string | undefined>();
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilters, setSelectedFilters] = useState<FilterType>({});
 
   const { logout } = useLogout({ navigation });
 
+  // Buscar comunidades da API
+  const {
+    communities: rawCommunities,
+    categories,
+    loading: communitiesLoading,
+    loadingMore: communitiesLoadingMore,
+    error: communitiesError,
+    hasMore: communitiesHasMore,
+    loadMore: loadMoreCommunities,
+    refresh: refreshCommunities,
+  } = useCommunities({
+    enabled: true,
+    pageSize: 10,
+    params: {
+      sortBy: 'createdAt',
+      includeDeleted: false,
+    },
+  });
+
+  // Mapear comunidades para o formato Program
+  const programs = useMemo(() => {
+    return rawCommunities.map((community) => mapCommunityToProgram(community));
+  }, [rawCommunities]);
+
   // Inicializa o primeiro programa quando muda para Programs
   useEffect(() => {
-    if (selectedMode === 'Programs' && !selectedProgramId && mockPrograms.length > 0) {
-      setSelectedProgramId(mockPrograms[0].id);
+    if (selectedMode === 'Programs' && !selectedProgramId && programs.length > 0) {
+      setSelectedProgramId(programs[0].id);
     }
-  }, [selectedMode]);
+  }, [selectedMode, programs, selectedProgramId]);
 
   const feedFilterParams = useMemo(
     () => mapFiltersToFeedParams(selectedFilters),
@@ -339,8 +344,24 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     [rootNavigation]
   );
 
-  const handleProgramPress = (program: Program) => {
-    setSelectedProgramId(program.id);
+  const MARKER_ID = '__MARKER__';
+
+  const handleProgramPress = (program: Program | null) => {
+    if (program === null) {
+      setSelectedProgramId(undefined);
+    } else {
+      setSelectedProgramId(program.id);
+      setSelectedCategoryId(undefined); // Limpar categoria quando selecionar programa
+    }
+  };
+
+  const handleCategorySelect = (category: CommunityCategory | null) => {
+    if (category === null) {
+      setSelectedCategoryId(undefined);
+    } else {
+      setSelectedCategoryId(category.categoryId);
+      setSelectedProgramId(undefined); // Limpar programa quando selecionar categoria
+    }
   };
 
   const handleModeSelect = (mode: CommunityMode) => {
@@ -424,7 +445,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
         
         {selectedMode === 'Social' ? (
           <SocialList
-            programs={mockPrograms}
+            programs={programs}
             liveBanner={mockLiveBanner}
             onLivePress={handleLivePress}
             posts={posts}
@@ -449,10 +470,15 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
             plans={SUGGESTED_PLANS}
             onPlanPress={handlePlanPress}
             onPlanLike={handlePlanLike}
+            selectedProgramId={selectedProgramId}
+            onProgramPress={handleProgramPress}
+            categories={categories}
+            onCategorySelect={handleCategorySelect}
+            selectedCategoryId={selectedCategoryId}
           />
         ) : (
           <ProgramsList
-            programs={mockPrograms}
+            programs={programs}
             programDetails={
               selectedProgramId === '1' ? mockProgramDetails : undefined
             }

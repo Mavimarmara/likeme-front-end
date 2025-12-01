@@ -1,5 +1,6 @@
-import type { CommunityPost, CommunityFile, CommunityUser, CommunityComment } from '@/types/community';
+import type { CommunityPost, CommunityFile, CommunityUser, CommunityComment, Community } from '@/types/community';
 import type { Post, Comment, Poll } from '@/types';
+import type { Program } from '@/types/program';
 import { logger } from '@/utils/logger';
 
 const mapCommunityCommentToComment = (
@@ -258,5 +259,30 @@ export const mapCommunityPostToPost = (
   };
   
   return post;
+};
+
+export const mapCommunityToProgram = (
+  community: Community,
+  files?: CommunityFile[]
+): Program => {
+  // Buscar URL da imagem do avatar se existir
+  let imageUrl: string | undefined;
+  if (community.avatarFileId && files) {
+    const file = files.find(f => f.fileId === community.avatarFileId);
+    imageUrl = file?.fileUrl;
+  }
+
+  // Calcular duração baseado na data de criação (opcional)
+  // Por enquanto, vamos usar um valor padrão ou deixar vazio
+  const duration = 'Ativo'; // Valor padrão, pode ser ajustado conforme necessário
+
+  return {
+    id: community.communityId,
+    name: community.displayName,
+    description: community.description || '',
+    duration,
+    participantsCount: community.membersCount || 0,
+    image: imageUrl,
+  };
 };
 

@@ -6,14 +6,30 @@ import type { Program } from '@/types/program';
 type Props = {
   programs: Program[];
   selectedProgramId?: string;
-  onSelect: (program: Program) => void;
+  onSelect: (program: Program | null) => void;
+  onMarkerPress?: () => void;
+  showMarker?: boolean;
 };
+
+const MARKER_ID = '__MARKER__';
 
 const ProgramSelector: React.FC<Props> = ({
   programs,
   selectedProgramId,
   onSelect,
+  onMarkerPress,
+  showMarker = false,
 }) => {
+  const handleMarkerPress = () => {
+    if (onMarkerPress) {
+      onMarkerPress();
+    }
+  };
+
+  const handleProgramPress = (program: Program) => {
+    onSelect(program);
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -21,6 +37,29 @@ const ProgramSelector: React.FC<Props> = ({
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
+        {showMarker && (
+          <TouchableOpacity
+            style={[
+              styles.button,
+              selectedProgramId === MARKER_ID
+                ? styles.buttonSelected
+                : styles.buttonUnselected,
+            ]}
+            onPress={handleMarkerPress}
+            activeOpacity={0.7}
+          >
+            <Text
+              style={[
+                styles.buttonText,
+                selectedProgramId === MARKER_ID
+                  ? styles.buttonTextSelected
+                  : styles.buttonTextUnselected,
+              ]}
+            >
+              Marker
+            </Text>
+          </TouchableOpacity>
+        )}
         {programs.map((program) => {
           const isSelected = program.id === selectedProgramId;
           return (
@@ -30,7 +69,7 @@ const ProgramSelector: React.FC<Props> = ({
                 styles.button,
                 isSelected ? styles.buttonSelected : styles.buttonUnselected,
               ]}
-              onPress={() => onSelect(program)}
+              onPress={() => handleProgramPress(program)}
               activeOpacity={0.7}
             >
               <Text

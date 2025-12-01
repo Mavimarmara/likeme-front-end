@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, ScrollView } from 'react-native';
 import {
   LiveBanner,
@@ -12,10 +12,12 @@ import {
   Product,
   Plan,
   ProgramSelector,
+  CategoryModal,
 } from '@/components/ui';
 import type { Post, Event } from '@/types';
 import type { Program } from '@/types/program';
 import type { FilterType } from '@/components/ui/modals/FilterModal';
+import type { CommunityCategory } from '@/types/community';
 import { styles } from './styles';
 
 type Props = {
@@ -46,7 +48,10 @@ type Props = {
   onPlanLike?: (plan: Plan) => void;
   programs?: Program[];
   selectedProgramId?: string;
-  onProgramPress?: (program: Program) => void;
+  onProgramPress?: (program: Program | null) => void;
+  categories?: CommunityCategory[];
+  onCategorySelect?: (category: CommunityCategory | null) => void;
+  selectedCategoryId?: string;
 };
 
 const SocialList: React.FC<Props> = ({
@@ -78,18 +83,58 @@ const SocialList: React.FC<Props> = ({
   programs,
   selectedProgramId,
   onProgramPress,
+  categories = [],
+  onCategorySelect,
+  selectedCategoryId,
 }) => {
+  const [isCategoryModalVisible, setIsCategoryModalVisible] = useState(false);
+
+  const handleMarkerPress = () => {
+    // Quando clicar no Marker, definir o selectedProgramId como MARKER_ID
+    // e abrir o modal de categorias
+    onProgramPress?.(null); // Limpar seleção de programa
+    setIsCategoryModalVisible(true);
+  };
+
+  const handleCategorySelect = (category: CommunityCategory) => {
+    onCategorySelect?.(category);
+    setIsCategoryModalVisible(false);
+  };
+
+  const handleCategoryModalClose = () => {
+    setIsCategoryModalVisible(false);
+  };
+
+  const MARKER_ID = '__MARKER__';
+  // Marker está selecionado se uma categoria foi selecionada
+  const isMarkerSelected = !!selectedCategoryId;
+
   return (
     <View style={styles.container}>
       {programs && programs.length > 0 && (
         <View style={styles.programsContainer}>
           <ProgramSelector
             programs={programs}
-            selectedProgramId={selectedProgramId}
-            onSelect={onProgramPress}
+            selectedProgramId={isMarkerSelected ? MARKER_ID : selectedProgramId}
+            onSelect={(program) => {
+              if (program === null) {
+                onProgramPress?.(null);
+              } else {
+                onProgramPress?.(program);
+              }
+            }}
+            onMarkerPress={handleMarkerPress}
+            showMarker={true}
           />
         </View>
       )}
+      <CategoryModal
+        visible={isCategoryModalVisible}
+        onClose={handleCategoryModalClose}
+        categories={categories}
+        onSelectCategory={handleCategorySelect}
+        selectedCategoryId={selectedCategoryId}
+      />
       {liveBanner && onLivePress && (
         <View style={styles.liveBannerContainer}>
           <LiveBanner live={liveBanner} onPress={onLivePress} />

@@ -90,7 +90,9 @@ export interface CommunityUserRelation {
 export interface CommunityCategory {
   categoryId: string;
   name: string;
+  metadata?: Record<string, unknown>;
   avatarFileId?: string;
+  isDeleted?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -154,8 +156,14 @@ export interface ListCommunitiesParams {
 export interface ListCommunitiesApiResponse {
   success?: boolean;
   status?: string;
+  message?: string;
   data?: {
     communities?: Community[];
+    categories?: CommunityCategory[];
+    paging?: {
+      next?: string | null;
+      previous?: string | null;
+    };
     pagination?: {
       page: number;
       limit: number;
@@ -169,6 +177,5 @@ export interface ListCommunitiesApiResponse {
     total: number;
     totalPages: number;
   };
-  message?: string;
 }
 
