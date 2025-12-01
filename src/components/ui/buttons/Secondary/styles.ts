@@ -14,6 +14,11 @@ export const styles = StyleSheet.create({
     paddingVertical: 9,
     paddingHorizontal: 16,
   },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   label: {
     color: 'rgba(0, 17, 55, 1)',
     fontFamily: 'DM Sans',
@@ -22,6 +27,12 @@ export const styles = StyleSheet.create({
     letterSpacing: 0,
     lineHeight: 20,
     textAlign: 'center',
+  },
+  iconLeft: {
+    marginRight: 8,
+  },
+  iconRight: {
+    marginLeft: 8,
   },
   buttonDisabled: {
     opacity: 0.6,

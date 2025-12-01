@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { SecondaryButton } from '@/components/ui';
 import { styles } from './styles';
 import type { Program } from '@/types/program';
 
@@ -38,27 +39,13 @@ const ProgramSelector: React.FC<Props> = ({
         contentContainerStyle={styles.scrollContent}
       >
         {showMarker && (
-          <TouchableOpacity
-            style={[
-              styles.button,
-              selectedProgramId === MARKER_ID
-                ? styles.buttonSelected
-                : styles.buttonUnselected,
-            ]}
+          <SecondaryButton
+            label="Marker"
             onPress={handleMarkerPress}
-            activeOpacity={0.7}
-          >
-            <Text
-              style={[
-                styles.buttonText,
-                selectedProgramId === MARKER_ID
-                  ? styles.buttonTextSelected
-                  : styles.buttonTextUnselected,
-              ]}
-            >
-              Marker
-            </Text>
-          </TouchableOpacity>
+            icon="expand-more"
+            iconPosition="right"
+            style={styles.markerButton}
+          />
         )}
         {programs.map((program) => {
           const isSelected = program.id === selectedProgramId;

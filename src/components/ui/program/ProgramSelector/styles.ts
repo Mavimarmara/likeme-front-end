@@ -61,5 +61,8 @@ export const styles = StyleSheet.create({
   buttonTextUnselected: {
     color: '#001137',
   },
+  markerButton: {
+    alignSelf: 'flex-start',
+  },
 });
 
