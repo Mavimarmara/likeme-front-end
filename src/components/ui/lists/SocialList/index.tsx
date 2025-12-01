@@ -98,7 +98,7 @@ const SocialList: React.FC<Props> = ({
 
   const handleCategorySelect = (category: CommunityCategory) => {
     onCategorySelect?.(category);
-    setIsCategoryModalVisible(false);
+    // Não fechar o modal automaticamente - usuário deve clicar em Save
   };
 
   const handleCategoryModalClose = () => {
