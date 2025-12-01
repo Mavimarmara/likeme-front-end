@@ -40,7 +40,11 @@ const ProgramsList: React.FC<Props> = ({
           <ProgramSelector
             programs={programs}
             selectedProgramId={selectedProgramId}
-            onSelect={onProgramPress}
+            onSelect={(program) => {
+              if (program) {
+                onProgramPress(program);
+              }
+            }}
           />
         </View>
       )}

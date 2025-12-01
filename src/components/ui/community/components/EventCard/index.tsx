@@ -57,28 +57,28 @@ const EventCard: React.FC<Props> = ({ event, onPress, onSave }) => {
 
   const topSection = (
     <View style={styles.topSectionContent}>
-      {renderAvatars()}
-      
-      <TouchableOpacity
-        style={styles.saveButton}
-        onPress={() => onSave?.(event)}
-        activeOpacity={0.7}
-      >
-        <Icon name="bookmark-border" size={18} color="#001137" />
-        <Text style={styles.saveButtonText}>Save</Text>
-      </TouchableOpacity>
-    </View>
+          {renderAvatars()}
+          
+          <TouchableOpacity
+            style={styles.saveButton}
+            onPress={() => onSave?.(event)}
+            activeOpacity={0.7}
+          >
+            <Icon name="bookmark-border" size={18} color="#001137" />
+            <Text style={styles.saveButtonText}>Save</Text>
+          </TouchableOpacity>
+        </View>
   );
 
   const footerSection = {
     component: (
       <>
-        <Text style={styles.title} numberOfLines={2}>
-          {event.title}
-        </Text>
-        <View style={styles.dateBadge}>
-          <Text style={styles.dateText}>{formatDateTime()}</Text>
-        </View>
+          <Text style={styles.title} numberOfLines={2}>
+            {event.title}
+          </Text>
+          <View style={styles.dateBadge}>
+            <Text style={styles.dateText}>{formatDateTime()}</Text>
+          </View>
       </>
     ),
   };
@@ -89,7 +89,7 @@ const EventCard: React.FC<Props> = ({ event, onPress, onSave }) => {
       topSection={topSection}
       footerSection={footerSection}
       onPress={() => onPress?.(event)}
-      style={[styles.cardContainer, { blurIntensity: 30, blurTint: 'dark' }]}
+      style={styles.cardContainer}
     />
   );
 };
