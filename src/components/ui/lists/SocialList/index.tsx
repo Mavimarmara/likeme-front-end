@@ -125,6 +125,7 @@ const SocialList: React.FC<Props> = ({
             }}
             onMarkerPress={handleMarkerPress}
             showMarker={true}
+            showAll={true}
           />
         </View>
       )}
