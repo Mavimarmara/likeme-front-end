@@ -22,7 +22,7 @@ const AuthenticatedScreen: React.FC<Props> = ({ navigation }) => {
         } else if (!objectivesSelectedAt) {
           navigation.replace('PersonalObjectives' as never, { userName: 'Usuário' } as never);
         } else {
-          navigation.replace('Community' as never);
+          navigation.replace('Home' as never);
         }
       } catch (error) {
         console.error('Error checking onboarding status:', error);
