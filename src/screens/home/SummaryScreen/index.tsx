@@ -6,12 +6,15 @@ import {
   RecommendedCommunitiesSection,
   OtherCommunitiesSection,
   PopularProvidersSection,
+  YourCommunitiesSection,
   type RecommendedCommunity,
   type OtherCommunity,
   type Provider,
+  type YourCommunity,
 } from '@/components/ui/community';
 import { ProductsCarousel, type Product } from '@/components/ui/carousel';
 import type { Event } from '@/types/event';
+import type { Post } from '@/types';
 import { styles } from './styles';
 
 type Props = {
@@ -110,6 +113,40 @@ const RECOMMENDED_COMMUNITIES: RecommendedCommunity[] = [
     image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800',
   },
 ];
+
+const YOUR_COMMUNITY: YourCommunity = {
+  id: '1',
+  title: 'Where the Mind Comes to Rest',
+  description: 'A community for those seeking balance between body, mind, and night. Here, we explore rituals and science.',
+  membersCount: 20,
+  newPostsCount: 1,
+  posts: [
+    {
+      id: '1',
+      userId: '1',
+      content: 'As a sleep specialist, I\'m constantly emphasizing the vital role of sleep in our...',
+      title: 'The Alarming Link Between Chronic Insomnia and Brain...',
+      userName: 'Peter Parker',
+      userAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100',
+      commentsCount: 20,
+      likes: 0,
+      comments: [],
+      createdAt: new Date(),
+    },
+    {
+      id: '2',
+      userId: '2',
+      content: 'Whats is your favorite part of your night routine?',
+      title: 'Whats is your favorite part of your night routine?',
+      userName: 'Jane Doe',
+      userAvatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100',
+      commentsCount: 15,
+      likes: 0,
+      comments: [],
+      createdAt: new Date(),
+    },
+  ],
+};
 
 const POPULAR_PROVIDERS: Provider[] = [
   {
@@ -259,9 +296,26 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
     // Adicionar navegação para detalhes do provider se necessário
   };
 
+  const handleYourCommunityPress = (community: YourCommunity) => {
+    console.log('Comunidade pressionada:', community.id);
+    // Adicionar navegação para detalhes da comunidade se necessário
+  };
+
+  const handleYourCommunityPostPress = (post: Post) => {
+    console.log('Post da comunidade pressionado:', post.id);
+    // Adicionar navegação para detalhes do post se necessário
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        <View style={styles.yourCommunitiesContainer}>
+          <YourCommunitiesSection
+            community={YOUR_COMMUNITY}
+            onCommunityPress={handleYourCommunityPress}
+            onPostPress={handleYourCommunityPostPress}
+          />
+        </View>
         <View style={styles.eventsContainer}>
           <NextEventsSection
             events={mockEvents}

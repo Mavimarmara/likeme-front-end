@@ -8,6 +8,9 @@ export const styles = StyleSheet.create({
   content: {
     flex: 1,
   },
+  yourCommunitiesContainer: {
+    paddingTop: SPACING.MD,
+  },
   eventsContainer: {
     padding: SPACING.MD,
   },
