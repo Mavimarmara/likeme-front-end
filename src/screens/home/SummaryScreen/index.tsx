@@ -5,8 +5,10 @@ import {
   NextEventsSection,
   RecommendedCommunitiesSection,
   OtherCommunitiesSection,
+  PopularProvidersSection,
   type RecommendedCommunity,
   type OtherCommunity,
+  type Provider,
 } from '@/components/ui/community';
 import { ProductsCarousel, type Product } from '@/components/ui/carousel';
 import type { Event } from '@/types/event';
@@ -106,6 +108,34 @@ const RECOMMENDED_COMMUNITIES: RecommendedCommunity[] = [
     title: 'The Dreamy Nights Community',
     badge: 'To improve sleep',
     image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800',
+  },
+];
+
+const POPULAR_PROVIDERS: Provider[] = [
+  {
+    id: '1',
+    name: 'Dr. Peter Valasquez',
+    avatar: 'https://www.figma.com/api/mcp/asset/dd9ac2c0-fc98-4b47-ba4a-56e643324cd5',
+  },
+  {
+    id: '2',
+    name: 'Dr. Jane Cruz',
+    avatar: 'https://www.figma.com/api/mcp/asset/9017a127-1ef5-4885-aa01-e2194957dba5',
+  },
+  {
+    id: '3',
+    name: 'Dr. Adriana Pereira',
+    avatar: 'https://www.figma.com/api/mcp/asset/9b700b53-ebcb-4899-ac38-0bb12b5ef8d3',
+  },
+  {
+    id: '4',
+    name: 'Dr. John Peter',
+    avatar: 'https://www.figma.com/api/mcp/asset/4541fe6b-cf8d-48fc-95a5-112f4a3b5bf6',
+  },
+  {
+    id: '5',
+    name: 'Dr. John Simons',
+    avatar: 'https://www.figma.com/api/mcp/asset/f2552740-e3d3-4909-bfff-7406d8f927fb',
   },
 ];
 
@@ -224,6 +254,11 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
     // Adicionar lógica de busca
   };
 
+  const handleProviderPress = (provider: Provider) => {
+    console.log('Provider pressionado:', provider.id);
+    // Adicionar navegação para detalhes do provider se necessário
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
@@ -232,6 +267,12 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
             events={mockEvents}
             onEventPress={handleEventPress}
             onEventSave={handleEventSave}
+          />
+        </View>
+        <View style={styles.providersContainer}>
+          <PopularProvidersSection
+            providers={POPULAR_PROVIDERS}
+            onProviderPress={handleProviderPress}
           />
         </View>
         <View style={styles.productsContainer}>

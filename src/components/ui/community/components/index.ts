@@ -6,4 +6,5 @@ export { default as ProviderChatCard, type ProviderChat } from './ProviderChatCa
 export { default as CommentReactions } from './CommentReactions';
 export { default as RecommendedCommunitiesSection, type RecommendedCommunity } from './RecommendedCommunitiesSection';
 export { default as OtherCommunitiesSection, type OtherCommunity } from './OtherCommunitiesSection';
+export { default as PopularProvidersSection, type Provider } from './PopularProvidersSection';
 

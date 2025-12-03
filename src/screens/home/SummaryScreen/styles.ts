@@ -11,6 +11,9 @@ export const styles = StyleSheet.create({
   eventsContainer: {
     padding: SPACING.MD,
   },
+  providersContainer: {
+    paddingTop: SPACING.LG,
+  },
   communitiesContainer: {
     paddingTop: SPACING.LG,
   },
