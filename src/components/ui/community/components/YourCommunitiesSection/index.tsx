@@ -63,7 +63,6 @@ const YourCommunitiesSection: React.FC<Props> = ({
                 <Text style={styles.avatarText}>+{community.membersCount}</Text>
               </View>
             </View>
-            <Text style={styles.membersText}>members</Text>
           </View>
           
           {community.newPostsCount > 0 && (
