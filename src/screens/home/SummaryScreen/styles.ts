@@ -4,9 +4,12 @@ import { SPACING } from '@/constants';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
+    position: 'relative',
   },
   content: {
     flex: 1,
+    zIndex: 1,
+    paddingBottom: SPACING.XL,
   },
   yourCommunitiesContainer: {
     paddingTop: SPACING.MD,

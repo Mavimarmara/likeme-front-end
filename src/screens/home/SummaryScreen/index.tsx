@@ -1,6 +1,10 @@
 import React, { useMemo } from 'react';
-import { View, SafeAreaView, ScrollView } from 'react-native';
+import { View, Image, StyleSheet, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { FloatingMenu } from '@/components/ui/menu';
+import { Header } from '@/components/ui';
+import { BackgroundWithGradient } from '@/assets';
+import { useLogout } from '@/hooks';
 import { 
   NextEventsSection,
   RecommendedCommunitiesSection,
@@ -221,6 +225,8 @@ const OTHER_COMMUNITIES: OtherCommunity[] = [
 
 const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   const rootNavigation = navigation.getParent() ?? navigation;
+  const { logout } = useLogout({ navigation });
+  const handleLogout = logout;
 
   const menuItems = useMemo(
     () => [
@@ -308,50 +314,62 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <View style={styles.yourCommunitiesContainer}>
-          <YourCommunitiesSection
-            community={YOUR_COMMUNITY}
-            onCommunityPress={handleYourCommunityPress}
-            onPostPress={handleYourCommunityPostPress}
-          />
-        </View>
-        <View style={styles.eventsContainer}>
-          <NextEventsSection
-            events={mockEvents}
-            onEventPress={handleEventPress}
-            onEventSave={handleEventSave}
-          />
-        </View>
-        <View style={styles.providersContainer}>
-          <PopularProvidersSection
-            providers={POPULAR_PROVIDERS}
-            onProviderPress={handleProviderPress}
-          />
-        </View>
-        <View style={styles.productsContainer}>
-          <ProductsCarousel
-            title="Products recommended for your sleep journey by Dr. Peter Valasquez"
-            subtitle="Discover our options selected just for you"
-            products={RECOMMENDED_PRODUCTS}
-            onProductPress={handleProductPress}
-            onProductLike={handleProductLike}
-          />
-        </View>
-        <View style={styles.communitiesContainer}>
-          <RecommendedCommunitiesSection
-            communities={RECOMMENDED_COMMUNITIES}
-            onCommunityPress={handleRecommendedCommunityPress}
-          />
-        </View>
-        <View style={styles.otherCommunitiesContainer}>
-          <OtherCommunitiesSection
-            communities={OTHER_COMMUNITIES}
-            onCommunityPress={handleOtherCommunityPress}
-            onSearchChange={handleSearchChange}
-          />
-        </View>
-      </ScrollView>
+      <Image
+        source={BackgroundWithGradient}
+        style={StyleSheet.absoluteFill}
+        resizeMode="cover"
+      />
+      <Header 
+        showBackButton={false} 
+        showLogoutButton={true}
+        onLogoutPress={handleLogout}
+      />
+      <View style={styles.content}>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View style={styles.yourCommunitiesContainer}>
+            <YourCommunitiesSection
+              community={YOUR_COMMUNITY}
+              onCommunityPress={handleYourCommunityPress}
+              onPostPress={handleYourCommunityPostPress}
+            />
+          </View>
+          <View style={styles.eventsContainer}>
+            <NextEventsSection
+              events={mockEvents}
+              onEventPress={handleEventPress}
+              onEventSave={handleEventSave}
+            />
+          </View>
+          <View style={styles.providersContainer}>
+            <PopularProvidersSection
+              providers={POPULAR_PROVIDERS}
+              onProviderPress={handleProviderPress}
+            />
+          </View>
+          <View style={styles.productsContainer}>
+            <ProductsCarousel
+              title="Products recommended for your sleep journey by Dr. Peter Valasquez"
+              subtitle="Discover our options selected just for you"
+              products={RECOMMENDED_PRODUCTS}
+              onProductPress={handleProductPress}
+              onProductLike={handleProductLike}
+            />
+          </View>
+          <View style={styles.communitiesContainer}>
+            <RecommendedCommunitiesSection
+              communities={RECOMMENDED_COMMUNITIES}
+              onCommunityPress={handleRecommendedCommunityPress}
+            />
+          </View>
+          <View style={styles.otherCommunitiesContainer}>
+            <OtherCommunitiesSection
+              communities={OTHER_COMMUNITIES}
+              onCommunityPress={handleOtherCommunityPress}
+              onSearchChange={handleSearchChange}
+            />
+          </View>
+        </ScrollView>
+      </View>
       <FloatingMenu items={menuItems} selectedId="home" />
     </SafeAreaView>
   );
