@@ -234,12 +234,6 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
             onEventSave={handleEventSave}
           />
         </View>
-        <View style={styles.communitiesContainer}>
-          <RecommendedCommunitiesSection
-            communities={RECOMMENDED_COMMUNITIES}
-            onCommunityPress={handleRecommendedCommunityPress}
-          />
-        </View>
         <View style={styles.productsContainer}>
           <ProductsCarousel
             title="Products recommended for your sleep journey by Dr. Peter Valasquez"
@@ -247,6 +241,12 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
             products={RECOMMENDED_PRODUCTS}
             onProductPress={handleProductPress}
             onProductLike={handleProductLike}
+          />
+        </View>
+        <View style={styles.communitiesContainer}>
+          <RecommendedCommunitiesSection
+            communities={RECOMMENDED_COMMUNITIES}
+            onCommunityPress={handleRecommendedCommunityPress}
           />
         </View>
         <View style={styles.otherCommunitiesContainer}>
