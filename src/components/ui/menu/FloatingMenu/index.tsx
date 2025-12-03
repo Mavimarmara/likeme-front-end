@@ -30,21 +30,20 @@ const FloatingMenu: React.FC<Props> = ({ items, selectedId }) => {
   return (
     <View style={styles.container}>
       <View style={styles.menuWrapper}>
-        <TouchableOpacity 
-          style={[styles.selectedPill, isHomeSelected && styles.selectedPillWithLabel]}
-          onPress={handleHomePress}
-          activeOpacity={0.8}
-          accessibilityRole="button"
-          accessibilityLabel="Ir para Home"
-        >
-          <View style={styles.selectedIconWrapper}>
-            <Image source={MenuButtonBackground} style={styles.selectedIcon} resizeMode="contain" />
-          </View>
-          {isHomeSelected && (
-            <Text style={styles.selectedPillLabel}>Home</Text>
-          )}
-        </TouchableOpacity>
-
+          <TouchableOpacity 
+            style={[styles.selectedPill, isHomeSelected && styles.selectedPillWithLabel]}
+            onPress={handleHomePress}
+            activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Ir para Home"
+          >
+            <View style={styles.selectedIconWrapper}>
+              <Image source={MenuButtonBackground} style={styles.selectedIcon} resizeMode="contain" />
+            </View>
+            {isHomeSelected && (
+              <Text style={styles.selectedPillLabel}>Home</Text>
+            )}
+          </TouchableOpacity>
         <View style={styles.actionsPill}>
           {items.map((item) => {
             const isSelected = item.id === selectedId;
