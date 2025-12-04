@@ -20,15 +20,6 @@ type CommunityMode = 'Social' | 'Programs';
 
 const TOGGLE_OPTIONS: readonly [CommunityMode, CommunityMode] = ['Social', 'Programs'] as const;
 
-const mockLiveBanner: LiveBannerData = {
-  id: '1',
-  title: 'What are the main causes of daily stress? With Dr. John Peter',
-  host: 'Dr. John Peter',
-  status: 'Live Now',
-  startTime: '08:15 pm',
-  endTime: '10:00 pm',
-  thumbnail: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400',
-};
 
 const mockProgramDetails: ProgramDetail = {
   id: '1',
@@ -306,87 +297,70 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const [providerChat, setProviderChat] = useState<ProviderChat | undefined>(undefined);
+  const [liveBanner, setLiveBanner] = useState<LiveBannerData | undefined>(undefined);
 
   useEffect(() => {
-    const loadProviderChat = async () => {
+    const loadChannels = async () => {
       try {
-        const firstCommunity = rawCommunities.length > 0 ? rawCommunities[0] : null;
-        if (!firstCommunity) {
-          setProviderChat(undefined);
-          return;
-        }
+        const [liveAndBroadcastChannelsResponse, communityChannelsResponse] = await Promise.all([
+          communityService.getChannels({ types: ['live', 'broadcast'] }),
+          communityService.getChannels({ types: 'community' }),
+        ]);
 
-        const userFeedResponse = await communityService.getUserFeed({
-          page: 1,
-          limit: 50,
-        });
-
-        const isSuccess = userFeedResponse.success === true || 
-                         userFeedResponse.status === 'ok' || 
-                         userFeedResponse.data?.status === 'ok';
-        
-        let feedData: CommunityFeedData | undefined;
-        if (userFeedResponse.data?.data) {
-          feedData = userFeedResponse.data.data;
-        } else if (userFeedResponse.data && 'posts' in userFeedResponse.data) {
-          feedData = userFeedResponse.data as CommunityFeedData;
-        }
-
-        if (!isSuccess || !feedData) {
-          setProviderChat(undefined);
-          return;
-        }
-
-        const communityUsers = feedData.communityUsers || [];
-        const users = feedData.users || [];
-        const files = feedData.files || [];
-
-        const ownerRelation = communityUsers.find((relation) => {
-          if (relation.communityId !== firstCommunity.communityId) {
-            return false;
+        if (liveAndBroadcastChannelsResponse.success && liveAndBroadcastChannelsResponse.data?.channels) {
+          const liveAndBroadcastChannels = liveAndBroadcastChannelsResponse.data.channels;
+          if (liveAndBroadcastChannels.length > 0) {
+            const firstChannel = liveAndBroadcastChannels[0];
+            const metadata = firstChannel.metadata || {};
+            const thumbnail = (metadata.thumbnailUrl as string) || 
+              (firstChannel.avatarFileId ? undefined : 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400');
+            
+            setLiveBanner({
+              id: firstChannel.channelId,
+              title: (metadata.title as string) || firstChannel.displayName || 'Live Session',
+              host: (metadata.host as string) || 'Host',
+              status: 'Live Now' as const,
+              startTime: (metadata.startTime as string) || '08:00 pm',
+              endTime: (metadata.endTime as string) || '10:00 pm',
+              thumbnail,
+            });
+          } else {
+            setLiveBanner(undefined);
           }
-          const roles = relation.roles || [];
-          return roles.includes('community-moderator') || 
-                 roles.includes('community-admin') || 
-                 roles.includes('owner') ||
-                 relation.communityMembership === 'owner';
-        });
-
-        const ownerUserId = ownerRelation?.userId;
-        if (!ownerUserId) {
-          setProviderChat(undefined);
-          return;
+        } else {
+          setLiveBanner(undefined);
         }
 
-        const ownerUser = users.find((u) => u.userId === ownerUserId);
-        if (!ownerUser || !ownerUser.displayName) {
+        if (communityChannelsResponse.success && communityChannelsResponse.data?.channels) {
+          const communityChannels = communityChannelsResponse.data.channels;
+          if (communityChannels.length > 0) {
+            const firstCommunityChannel = communityChannels[0];
+            const metadata = firstCommunityChannel.metadata || {};
+            const avatarUrl = (metadata.avatarUrl as string) || undefined;
+            
+            setProviderChat({
+              id: firstCommunityChannel.channelId,
+              providerName: firstCommunityChannel.displayName || (metadata.displayName as string) || 'Provider',
+              providerAvatar: avatarUrl,
+              lastMessage: (metadata.lastMessage as string) || 'Hello! How can I help you today?',
+              timestamp: (metadata.timestamp as string) || 'Now',
+              unreadCount: (metadata.unreadCount as number) || 0,
+            });
+          } else {
+            setProviderChat(undefined);
+          }
+        } else {
           setProviderChat(undefined);
-          return;
         }
-
-        const avatarUrl = ownerUser.avatarFileId
-          ? files.find((f) => f.fileId === ownerUser.avatarFileId)?.fileUrl ||
-            `https://api.amity.co/api/v3/files/${ownerUser.avatarFileId}/download`
-          : undefined;
-
-        setProviderChat({
-          id: ownerUser.userId,
-          providerName: ownerUser.displayName,
-          providerAvatar: avatarUrl,
-          lastMessage: 'Hello! How can I help you today?',
-          timestamp: 'Now',
-          unreadCount: 0,
-        });
       } catch (error) {
-        console.error('Error loading provider chat:', error);
+        console.error('Error loading channels:', error);
+        setLiveBanner(undefined);
         setProviderChat(undefined);
       }
     };
 
-    if (rawCommunities.length > 0) {
-      loadProviderChat();
-    }
-  }, [rawCommunities]);
+    loadChannels();
+  }, []);
 
   const rootNavigation = navigation.getParent()?.getParent?.() ?? navigation.getParent();
 
@@ -516,7 +490,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
         {selectedMode === 'Social' ? (
           <SocialList
             programs={programs}
-            liveBanner={mockLiveBanner}
+            liveBanner={liveBanner}
             onLivePress={handleLivePress}
             posts={posts}
             loading={loading}

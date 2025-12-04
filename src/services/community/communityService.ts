@@ -5,6 +5,8 @@ import type {
   UserFeedParams,
   ListCommunitiesParams,
   ListCommunitiesApiResponse,
+  ChannelsApiResponse,
+  GetChannelsParams,
 } from '@/types/community';
 
 class CommunityService {
@@ -12,6 +14,7 @@ class CommunityService {
   private readonly pollDetailEndpoint = '/api/v3/polls';
   private readonly commentReactionEndpoint = '/api/communities/comments';
   private readonly communitiesEndpoint = '/api/communities';
+  private readonly channelsEndpoint = '/api/communities/channels';
 
   async getUserFeed(params: UserFeedParams = {}): Promise<UserFeedApiResponse> {
     try {
@@ -227,6 +230,39 @@ console.log('userFeedResponse', JSON.stringify(userFeedResponse));
       return communitiesResponse;
     } catch (error) {
       logger.error('Error fetching communities list:', error);
+      throw error;
+    }
+  }
+
+  async getChannels(params: GetChannelsParams = {}): Promise<ChannelsApiResponse> {
+    try {
+      const queryParams: Record<string, string> = {};
+      
+      if (params.types) {
+        if (Array.isArray(params.types)) {
+          queryParams.types = params.types.join(',');
+        } else {
+          queryParams.types = params.types;
+        }
+      }
+
+      const channelsResponse = await apiClient.get<ChannelsApiResponse>(
+        this.channelsEndpoint,
+        queryParams,
+        true,
+        false
+      );
+
+      logger.debug('Channels response:', {
+        types: params.types,
+        success: channelsResponse.success,
+        hasData: !!channelsResponse.data,
+        channelsCount: channelsResponse.data?.channels?.length || 0,
+      });
+
+      return channelsResponse;
+    } catch (error) {
+      logger.error('Error fetching channels:', error);
       throw error;
     }
   }

@@ -282,30 +282,32 @@ export const mapCommunityToProgram = (
 
 export const mapCommunityToRecommendedCommunity = (
   community: Community,
-  category?: CommunityCategory
+  category?: CommunityCategory,
+  files?: CommunityFile[]
 ): { id: string; title: string; badge: string; image: string } => {
   const badge = category?.name || 'Community';
   
-  const image = community.avatarFileId 
-    ? `https://api.amity.co/api/v3/files/${community.avatarFileId}/download` 
+  const image = community.avatarFileId && files
+    ? files.find((f) => f.fileId === community.avatarFileId)?.fileUrl
     : 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800';
 
   return {
     id: community.communityId,
     title: community.displayName,
     badge,
-    image,
+    image: image || 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
   };
 };
 
 export const mapCommunityToOtherCommunity = (
   community: Community,
-  category?: CommunityCategory
+  category?: CommunityCategory,
+  files?: CommunityFile[]
 ): { id: string; title: string; badge: string; image: string; rating: number; price: string } => {
   const badge = category?.name || 'Community';
   
-  const image = community.avatarFileId 
-    ? `https://api.amity.co/api/v3/files/${community.avatarFileId}/download` 
+  const image = community.avatarFileId && files
+    ? files.find((f) => f.fileId === community.avatarFileId)?.fileUrl
     : 'https://images.unsplash.com/photo-1494390248081-4e521a5940db?w=400';
 
   const rating = 5;
@@ -315,7 +317,7 @@ export const mapCommunityToOtherCommunity = (
     id: community.communityId,
     title: community.displayName,
     badge,
-    image,
+    image: image || 'https://images.unsplash.com/photo-1494390248081-4e521a5940db?w=400',
     rating,
     price,
   };

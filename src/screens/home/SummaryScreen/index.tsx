@@ -255,8 +255,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
             }
 
             const avatarUrl = user.avatarFileId
-              ? files.find((f) => f.fileId === user.avatarFileId)?.fileUrl ||
-                `https://api.amity.co/api/v3/files/${user.avatarFileId}/download`
+              ? files.find((f) => f.fileId === user.avatarFileId)?.fileUrl
               : undefined;
 
             return {

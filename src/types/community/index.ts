@@ -200,3 +200,30 @@ export interface ProviderApiResponse {
   message?: string;
 }
 
+export interface Channel {
+  channelId: string;
+  displayName?: string;
+  channelType: 'conversation' | 'broadcast' | 'live' | 'community';
+  avatarFileId?: string;
+  metadata?: Record<string, unknown>;
+  createdAt?: string;
+  updatedAt?: string;
+  [key: string]: unknown;
+}
+
+export interface ChannelsApiResponse {
+  success?: boolean;
+  status?: string;
+  data?: {
+    channels?: Channel[];
+    hasNextPage?: boolean;
+    loading?: boolean;
+    error?: any;
+  };
+  message?: string;
+}
+
+export interface GetChannelsParams {
+  types?: string | string[];
+}
+
