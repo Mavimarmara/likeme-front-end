@@ -13,6 +13,8 @@ import type { CommunityStackParamList } from '@/types/navigation';
 import { useUserFeed, useLogout, useCommunities } from '@/hooks';
 import { mapFiltersToFeedParams } from '@/utils/community/filterMapper';
 import { mapCommunityToProgram } from '@/utils/community/mappers';
+import { communityService } from '@/services';
+import type { CommunityFeedData } from '@/types/community';
 
 type CommunityMode = 'Social' | 'Programs';
 
@@ -303,6 +305,89 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     console.log('Curtir plano:', plan.id);
   };
 
+  const [providerChat, setProviderChat] = useState<ProviderChat | undefined>(undefined);
+
+  useEffect(() => {
+    const loadProviderChat = async () => {
+      try {
+        const firstCommunity = rawCommunities.length > 0 ? rawCommunities[0] : null;
+        if (!firstCommunity) {
+          setProviderChat(undefined);
+          return;
+        }
+
+        const userFeedResponse = await communityService.getUserFeed({
+          page: 1,
+          limit: 50,
+        });
+
+        const isSuccess = userFeedResponse.success === true || 
+                         userFeedResponse.status === 'ok' || 
+                         userFeedResponse.data?.status === 'ok';
+        
+        let feedData: CommunityFeedData | undefined;
+        if (userFeedResponse.data?.data) {
+          feedData = userFeedResponse.data.data;
+        } else if (userFeedResponse.data && 'posts' in userFeedResponse.data) {
+          feedData = userFeedResponse.data as CommunityFeedData;
+        }
+
+        if (!isSuccess || !feedData) {
+          setProviderChat(undefined);
+          return;
+        }
+
+        const communityUsers = feedData.communityUsers || [];
+        const users = feedData.users || [];
+        const files = feedData.files || [];
+
+        const ownerRelation = communityUsers.find((relation) => {
+          if (relation.communityId !== firstCommunity.communityId) {
+            return false;
+          }
+          const roles = relation.roles || [];
+          return roles.includes('community-moderator') || 
+                 roles.includes('community-admin') || 
+                 roles.includes('owner') ||
+                 relation.communityMembership === 'owner';
+        });
+
+        const ownerUserId = ownerRelation?.userId;
+        if (!ownerUserId) {
+          setProviderChat(undefined);
+          return;
+        }
+
+        const ownerUser = users.find((u) => u.userId === ownerUserId);
+        if (!ownerUser || !ownerUser.displayName) {
+          setProviderChat(undefined);
+          return;
+        }
+
+        const avatarUrl = ownerUser.avatarFileId
+          ? files.find((f) => f.fileId === ownerUser.avatarFileId)?.fileUrl ||
+            `https://api.amity.co/api/v3/files/${ownerUser.avatarFileId}/download`
+          : undefined;
+
+        setProviderChat({
+          id: ownerUser.userId,
+          providerName: ownerUser.displayName,
+          providerAvatar: avatarUrl,
+          lastMessage: 'Hello! How can I help you today?',
+          timestamp: 'Now',
+          unreadCount: 0,
+        });
+      } catch (error) {
+        console.error('Error loading provider chat:', error);
+        setProviderChat(undefined);
+      }
+    };
+
+    if (rawCommunities.length > 0) {
+      loadProviderChat();
+    }
+  }, [rawCommunities]);
+
   const rootNavigation = navigation.getParent()?.getParent?.() ?? navigation.getParent();
 
   const menuItems = useMemo(
@@ -373,15 +458,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleEventSave = (event: Event) => {
     console.log('Salvar evento:', event.id);
-  };
-
-  const mockProviderChat: ProviderChat = {
-    id: '1',
-    providerName: 'Ethan Parker',
-    providerAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200',
-    lastMessage: 'Hello, Carol!\nWhat do you think about updating y...',
-    timestamp: '10:14',
-    unreadCount: 1,
   };
 
   const handleProviderChatPress = (chat: ProviderChat) => {
@@ -456,7 +532,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
             events={mockEvents}
             onEventPress={handleEventPress}
             onEventSave={handleEventSave}
-            providerChat={mockProviderChat}
+            providerChat={providerChat}
             onProviderChatPress={handleProviderChatPress}
             products={SUGGESTED_PRODUCTS}
             onProductPress={handleProductPress}
