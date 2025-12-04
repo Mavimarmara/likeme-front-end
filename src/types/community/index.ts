@@ -179,3 +179,24 @@ export interface ListCommunitiesApiResponse {
   };
 }
 
+export interface ProviderData {
+  userId: string;
+  displayName: string;
+  profileHandle?: string;
+  description?: string;
+  avatarCustomUrl?: string;
+  avatarFileId?: string;
+  isBrand?: boolean;
+  isDeleted?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  files?: CommunityFile[];
+}
+
+export interface ProviderApiResponse {
+  success?: boolean;
+  status?: string;
+  data?: ProviderData;
+  message?: string;
+}
+

@@ -107,33 +107,6 @@ const RECOMMENDED_PRODUCTS: Product[] = [
 ];
 
 
-const POPULAR_PROVIDERS: Provider[] = [
-  {
-    id: '1',
-    name: 'Dr. Peter Valasquez',
-    avatar: 'https://www.figma.com/api/mcp/asset/dd9ac2c0-fc98-4b47-ba4a-56e643324cd5',
-  },
-  {
-    id: '2',
-    name: 'Dr. Jane Cruz',
-    avatar: 'https://www.figma.com/api/mcp/asset/9017a127-1ef5-4885-aa01-e2194957dba5',
-  },
-  {
-    id: '3',
-    name: 'Dr. Adriana Pereira',
-    avatar: 'https://www.figma.com/api/mcp/asset/9b700b53-ebcb-4899-ac38-0bb12b5ef8d3',
-  },
-  {
-    id: '4',
-    name: 'Dr. John Peter',
-    avatar: 'https://www.figma.com/api/mcp/asset/4541fe6b-cf8d-48fc-95a5-112f4a3b5bf6',
-  },
-  {
-    id: '5',
-    name: 'Dr. John Simons',
-    avatar: 'https://www.figma.com/api/mcp/asset/f2552740-e3d3-4909-bfff-7406d8f927fb',
-  },
-];
 
 const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   const rootNavigation = navigation.getParent() ?? navigation;
@@ -157,6 +130,8 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
 
   const [communityPosts, setCommunityPosts] = useState<Post[]>([]);
   const [loadingCommunityPosts, setLoadingCommunityPosts] = useState(false);
+  const [popularProviders, setPopularProviders] = useState<Provider[]>([]);
+  const [loadingProviders, setLoadingProviders] = useState(false);
 
   useEffect(() => {
     if (!firstCommunity) {
@@ -220,6 +195,91 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
 
     loadCommunityPosts();
   }, [firstCommunity?.communityId]);
+
+  useEffect(() => {
+    const loadProviders = async () => {
+      try {
+        setLoadingProviders(true);
+        
+        const userFeedResponse = await communityService.getUserFeed({
+          page: 1,
+          limit: 50,
+        });
+
+        const isSuccess = userFeedResponse.success === true || 
+                         userFeedResponse.status === 'ok' || 
+                         userFeedResponse.data?.status === 'ok';
+        
+        let feedData: CommunityFeedData | undefined;
+        if (userFeedResponse.data?.data) {
+          feedData = userFeedResponse.data.data;
+        } else if (userFeedResponse.data && 'posts' in userFeedResponse.data) {
+          feedData = userFeedResponse.data as CommunityFeedData;
+        }
+
+        if (!isSuccess || !feedData) {
+          setPopularProviders([]);
+          return;
+        }
+
+        const communityUsers = feedData.communityUsers || [];
+        const users = feedData.users || [];
+        const files = feedData.files || [];
+        
+        const ownerUserIds = new Set<string>();
+        communityUsers.forEach((relation) => {
+          const roles = relation.roles || [];
+          if (roles.includes('community-moderator') || 
+              roles.includes('community-admin') || 
+              roles.includes('owner') ||
+              relation.communityMembership === 'owner') {
+            ownerUserIds.add(relation.userId);
+          }
+        });
+
+        if (ownerUserIds.size === 0) {
+          const uniqueUserIds = new Set<string>();
+          communityUsers.forEach((relation) => {
+            if (relation.userId) {
+              uniqueUserIds.add(relation.userId);
+            }
+          });
+          uniqueUserIds.forEach((userId) => ownerUserIds.add(userId));
+        }
+
+        const providers: Provider[] = Array.from(ownerUserIds)
+          .map((userId) => {
+            const user = users.find((u) => u.userId === userId);
+            if (!user || !user.displayName) {
+              return null;
+            }
+
+            const avatarUrl = user.avatarFileId
+              ? files.find((f) => f.fileId === user.avatarFileId)?.fileUrl ||
+                `https://api.amity.co/api/v3/files/${user.avatarFileId}/download`
+              : undefined;
+
+            return {
+              id: user.userId,
+              name: user.displayName,
+              avatar: avatarUrl,
+            } as Provider;
+          })
+          .filter((p): p is Provider => p !== null);
+
+        setPopularProviders(providers);
+      } catch (error) {
+        console.error('Error loading providers:', error);
+        setPopularProviders([]);
+      } finally {
+        setLoadingProviders(false);
+      }
+    };
+
+    if (rawCommunities.length > 0) {
+      loadProviders();
+    }
+  }, [rawCommunities.length]);
 
   const yourCommunity = useMemo((): YourCommunity | null => {
     if (!firstCommunity) {
@@ -376,12 +436,14 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
               onEventSave={handleEventSave}
             />
           </View>
-          <View style={styles.providersContainer}>
-            <PopularProvidersSection
-              providers={POPULAR_PROVIDERS}
-              onProviderPress={handleProviderPress}
-            />
-          </View>
+          {popularProviders.length > 0 && (
+            <View style={styles.providersContainer}>
+              <PopularProvidersSection
+                providers={popularProviders}
+                onProviderPress={handleProviderPress}
+              />
+            </View>
+          )}
           <View style={styles.productsContainer}>
             <ProductsCarousel
               title="Products recommended for your sleep journey by Dr. Peter Valasquez"
