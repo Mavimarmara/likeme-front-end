@@ -1,4 +1,4 @@
-import type { CommunityPost, CommunityFile, CommunityUser, CommunityComment, Community } from '@/types/community';
+import type { CommunityPost, CommunityFile, CommunityUser, CommunityComment, Community, CommunityCategory } from '@/types/community';
 import type { Post, Comment, Poll } from '@/types';
 import type { Program } from '@/types/program';
 import { logger } from '@/utils/logger';
@@ -283,6 +283,55 @@ export const mapCommunityToProgram = (
     duration,
     participantsCount: community.membersCount || 0,
     image: imageUrl,
+  };
+};
+
+export const mapCommunityToRecommendedCommunity = (
+  community: Community,
+  category?: CommunityCategory
+): { id: string; title: string; badge: string; image: string } => {
+  // Usar categoria como badge, ou um valor padrão
+  const badge = category?.name || 'Community';
+  
+  // Por enquanto, usar uma imagem placeholder se não houver avatarFileId
+  // TODO: Implementar busca de URL do arquivo quando disponível
+  const image = community.avatarFileId 
+    ? `https://api.amity.co/api/v3/files/${community.avatarFileId}/download` 
+    : 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800';
+
+  return {
+    id: community.communityId,
+    title: community.displayName,
+    badge,
+    image,
+  };
+};
+
+export const mapCommunityToOtherCommunity = (
+  community: Community,
+  category?: CommunityCategory
+): { id: string; title: string; badge: string; image: string; rating: number; price: string } => {
+  // Usar categoria como badge, ou um valor padrão
+  const badge = category?.name || 'Community';
+  
+  // Por enquanto, usar uma imagem placeholder se não houver avatarFileId
+  // TODO: Implementar busca de URL do arquivo quando disponível
+  const image = community.avatarFileId 
+    ? `https://api.amity.co/api/v3/files/${community.avatarFileId}/download` 
+    : 'https://images.unsplash.com/photo-1494390248081-4e521a5940db?w=400';
+
+  // Valores padrão para rating e price
+  // TODO: Obter valores reais da API quando disponíveis
+  const rating = 5;
+  const price = '$0.00';
+
+  return {
+    id: community.communityId,
+    title: community.displayName,
+    badge,
+    image,
+    rating,
+    price,
   };
 };
 

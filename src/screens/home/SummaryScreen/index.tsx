@@ -2,9 +2,10 @@ import React, { useMemo } from 'react';
 import { View, Image, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FloatingMenu } from '@/components/ui/menu';
-import { Header } from '@/components/ui';
+import { Header } from '@/components/ui/layout';
 import { BackgroundWithGradient } from '@/assets';
-import { useLogout } from '@/hooks';
+import { useLogout, useCommunities } from '@/hooks';
+import { mapCommunityToRecommendedCommunity, mapCommunityToOtherCommunity } from '@/utils/community/mappers';
 import { 
   NextEventsSection,
   RecommendedCommunitiesSection,
@@ -103,20 +104,7 @@ const RECOMMENDED_PRODUCTS: Product[] = [
   },
 ];
 
-const RECOMMENDED_COMMUNITIES: RecommendedCommunity[] = [
-  {
-    id: '1',
-    title: 'Sports to make you smile every day',
-    badge: 'To reduce stress',
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
-  },
-  {
-    id: '2',
-    title: 'The Dreamy Nights Community',
-    badge: 'To improve sleep',
-    image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800',
-  },
-];
+// Removido - agora usando dados reais da API
 
 const YOUR_COMMUNITY: YourCommunity = {
   id: '1',
@@ -180,53 +168,47 @@ const POPULAR_PROVIDERS: Provider[] = [
   },
 ];
 
-const OTHER_COMMUNITIES: OtherCommunity[] = [
-  {
-    id: '1',
-    title: 'Where balance begins\nin your gut',
-    badge: 'Nutrition',
-    image: 'https://images.unsplash.com/photo-1494390248081-4e521a5940db?w=400',
-    rating: 5,
-    price: '$65.54',
-  },
-  {
-    id: '2',
-    title: 'Steady heart,\nsteady mind',
-    badge: 'Keep mooving',
-    image: 'https://images.unsplash.com/photo-1505693314120-0d443867891c?w=400',
-    rating: 5,
-    price: '$56.99',
-  },
-  {
-    id: '3',
-    title: 'Know your rhythm,\nown your flow',
-    badge: 'Oral Health',
-    image: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400',
-    rating: 5,
-    price: '$20.00',
-  },
-  {
-    id: '4',
-    title: 'Mornings made\nfor clarity',
-    badge: 'To reduce stress',
-    image: 'https://images.unsplash.com/photo-1505576391880-b3f9d713dc5a?w=400',
-    rating: 5,
-    price: '$36.50',
-  },
-  {
-    id: '5',
-    title: 'Hormones in harmony',
-    badge: 'To reduce stress',
-    image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400',
-    rating: 5,
-    price: '$100.00',
-  },
-];
+// Removido - agora usando dados reais da API
 
 const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   const rootNavigation = navigation.getParent() ?? navigation;
   const { logout } = useLogout({ navigation });
   const handleLogout = logout;
+
+  // Buscar comunidades da API
+  const {
+    communities: rawCommunities,
+    categories,
+    loading: communitiesLoading,
+  } = useCommunities({
+    enabled: true,
+    pageSize: 20,
+    params: {
+      sortBy: 'createdAt',
+      includeDeleted: false,
+    },
+  });
+
+  // Mapear comunidades para RecommendedCommunity (primeiras 2)
+  const recommendedCommunities = useMemo(() => {
+    return rawCommunities
+      .slice(0, 2)
+      .map((community) => {
+        // Usar a primeira categoria disponível ou undefined
+        const category = categories.length > 0 ? categories[0] : undefined;
+        return mapCommunityToRecommendedCommunity(community, category);
+      });
+  }, [rawCommunities, categories]);
+
+  // Mapear comunidades para OtherCommunity (restantes)
+  const otherCommunities = useMemo(() => {
+    return rawCommunities
+      .map((community) => {
+        // Usar a primeira categoria disponível ou undefined
+        const category = categories.length > 0 ? categories[0] : undefined;
+        return mapCommunityToOtherCommunity(community, category);
+      });
+  }, [rawCommunities, categories]);
 
   const menuItems = useMemo(
     () => [
@@ -367,13 +349,13 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
           </View>
           <View style={styles.communitiesContainer}>
             <RecommendedCommunitiesSection
-              communities={RECOMMENDED_COMMUNITIES}
+              communities={recommendedCommunities}
               onCommunityPress={handleRecommendedCommunityPress}
             />
           </View>
           <View style={styles.otherCommunitiesContainer}>
             <OtherCommunitiesSection
-              communities={OTHER_COMMUNITIES}
+              communities={otherCommunities}
               onCommunityPress={handleOtherCommunityPress}
               onSearchChange={handleSearchChange}
               onSearchPress={handleSearchPress}

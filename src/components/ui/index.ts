@@ -9,6 +9,7 @@ export * from './inputs';
 
 // Layout
 export * from './layout';
+export { default as Header } from './layout/Header';
 
 // Lists
 export * from './lists';
