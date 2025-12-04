@@ -9,7 +9,7 @@ export const styles = StyleSheet.create({
   content: {
     flex: 1,
     zIndex: 1,
-    paddingBottom: SPACING.XL,
+    paddingBottom: SPACING.XXL,
   },
   yourCommunitiesContainer: {
     paddingTop: SPACING.MD,

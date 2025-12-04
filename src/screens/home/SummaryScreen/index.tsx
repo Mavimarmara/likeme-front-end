@@ -104,8 +104,6 @@ const RECOMMENDED_PRODUCTS: Product[] = [
   },
 ];
 
-// Removido - agora usando dados reais da API
-
 const YOUR_COMMUNITY: YourCommunity = {
   id: '1',
   title: 'Where the Mind Comes to Rest',
@@ -168,14 +166,11 @@ const POPULAR_PROVIDERS: Provider[] = [
   },
 ];
 
-// Removido - agora usando dados reais da API
-
 const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   const rootNavigation = navigation.getParent() ?? navigation;
   const { logout } = useLogout({ navigation });
   const handleLogout = logout;
 
-  // Buscar comunidades da API
   const {
     communities: rawCommunities,
     categories,
@@ -189,22 +184,18 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
     },
   });
 
-  // Mapear comunidades para RecommendedCommunity (primeiras 2)
   const recommendedCommunities = useMemo(() => {
     return rawCommunities
       .slice(0, 2)
       .map((community) => {
-        // Usar a primeira categoria disponível ou undefined
         const category = categories.length > 0 ? categories[0] : undefined;
         return mapCommunityToRecommendedCommunity(community, category);
       });
   }, [rawCommunities, categories]);
 
-  // Mapear comunidades para OtherCommunity (restantes)
   const otherCommunities = useMemo(() => {
     return rawCommunities
       .map((community) => {
-        // Usar a primeira categoria disponível ou undefined
         const category = categories.length > 0 ? categories[0] : undefined;
         return mapCommunityToOtherCommunity(community, category);
       });
@@ -246,62 +237,52 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleEventPress = (event: Event) => {
     console.log('Evento pressionado:', event.id);
-    // Adicionar navegação para detalhes do evento se necessário
   };
 
   const handleEventSave = (event: Event) => {
     console.log('Salvar evento:', event.id);
-    // Adicionar lógica para salvar evento
   };
 
   const handleProductPress = (product: Product) => {
     console.log('Ver produto:', product.id);
-    // Adicionar navegação para detalhes do produto se necessário
   };
 
   const handleProductLike = (product: Product) => {
     console.log('Curtir produto:', product.id);
-    // Adicionar lógica para curtir produto
   };
 
   const handleRecommendedCommunityPress = (community: RecommendedCommunity) => {
     console.log('Comunidade recomendada pressionada:', community.id);
-    // Adicionar navegação para detalhes da comunidade se necessário
+    rootNavigation.navigate('Community' as never);
   };
 
   const handleOtherCommunityPress = (community: OtherCommunity) => {
     console.log('Outra comunidade pressionada:', community.id);
-    // Adicionar navegação para detalhes da comunidade se necessário
+    rootNavigation.navigate('Community' as never);
   };
 
   const handleSearchChange = (text: string) => {
     console.log('Buscar comunidades:', text);
-    // Adicionar lógica de busca
   };
 
   const handleSearchPress = () => {
     console.log('Pesquisar comunidades');
-    // Adicionar lógica de pesquisa
   };
 
   const handleFilterPress = () => {
     console.log('Abrir filtros de comunidades');
-    // Adicionar lógica para abrir filtros
   };
 
   const handleProviderPress = (provider: Provider) => {
     console.log('Provider pressionado:', provider.id);
-    // Adicionar navegação para detalhes do provider se necessário
   };
 
   const handleYourCommunityPress = (community: YourCommunity) => {
     console.log('Comunidade pressionada:', community.id);
-    // Adicionar navegação para detalhes da comunidade se necessário
   };
 
   const handleYourCommunityPostPress = (post: Post) => {
     console.log('Post da comunidade pressionado:', post.id);
-    // Adicionar navegação para detalhes do post se necessário
   };
 
   return (

@@ -28,8 +28,6 @@ const mockLiveBanner: LiveBannerData = {
   thumbnail: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400',
 };
 
-// mockPrograms removido - agora usando dados reais da API via useCommunities
-
 const mockProgramDetails: ProgramDetail = {
   id: '1',
   name: 'The best sleep for an offline life',
@@ -242,7 +240,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
 
   const { logout } = useLogout({ navigation });
 
-  // Buscar comunidades da API
   const {
     communities: rawCommunities,
     categories,
@@ -261,12 +258,10 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     },
   });
 
-  // Mapear comunidades para o formato Program
   const programs = useMemo(() => {
     return rawCommunities.map((community) => mapCommunityToProgram(community));
   }, [rawCommunities]);
 
-  // Inicializa o primeiro programa quando muda para Programs
   useEffect(() => {
     if (selectedMode === 'Programs' && !selectedProgramId && programs.length > 0) {
       setSelectedProgramId(programs[0].id);
@@ -351,7 +346,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
       setSelectedProgramId(undefined);
     } else {
       setSelectedProgramId(program.id);
-      setSelectedCategoryId(undefined); // Limpar categoria quando selecionar programa
+      setSelectedCategoryId(undefined);
     }
   };
 
@@ -360,7 +355,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
       setSelectedCategoryId(undefined);
     } else {
       setSelectedCategoryId(category.categoryId);
-      setSelectedProgramId(undefined); // Limpar programa quando selecionar categoria
+      setSelectedProgramId(undefined);
     }
   };
 
@@ -417,7 +412,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   const handleFilterSave = (filters: FilterType) => {
     setSelectedFilters(filters);
     console.log('Filtros salvos:', filters);
-    // TODO: Aplicar filtros na busca de posts
   };
 
   const handleLogout = logout;

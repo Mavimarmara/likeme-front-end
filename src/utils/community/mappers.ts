@@ -80,7 +80,6 @@ const mapCommunityPostToPoll = (
     return undefined;
   }
 
-  // Ordenar opções por sequenceNumber (igual ao backend faz)
   const sortedPollOptions = [...communityPost.pollOptions].sort((a, b) => {
     const seqA = a.sequenceNumber ?? 0;
     const seqB = b.sequenceNumber ?? 0;
@@ -117,10 +116,8 @@ const mapCommunityPostToPoll = (
 
   const endedAt = communityPost.data?.endedAt || communityPost.data?.endDate;
   
-  // Buscar pollId no post principal ou nas opções (onde geralmente está)
   let pollId = communityPost.data?.pollId;
   
-  // Se não encontrou no post principal, tentar buscar na primeira opção
   if (!pollId && sortedPollOptions.length > 0) {
     pollId = sortedPollOptions[0].data?.pollId;
   }
@@ -134,7 +131,7 @@ const mapCommunityPostToPoll = (
   
   return {
     id: communityPost.postId || communityPost._id || '',
-    pollId: pollId || undefined, // ID real da enquete (data.pollId)
+    pollId: pollId || undefined,
     question,
     options: pollOptionsWithPercentage,
     totalVotes,
@@ -265,16 +262,13 @@ export const mapCommunityToProgram = (
   community: Community,
   files?: CommunityFile[]
 ): Program => {
-  // Buscar URL da imagem do avatar se existir
   let imageUrl: string | undefined;
   if (community.avatarFileId && files) {
     const file = files.find(f => f.fileId === community.avatarFileId);
     imageUrl = file?.fileUrl;
   }
 
-  // Calcular duração baseado na data de criação (opcional)
-  // Por enquanto, vamos usar um valor padrão ou deixar vazio
-  const duration = 'Ativo'; // Valor padrão, pode ser ajustado conforme necessário
+  const duration = 'Ativo';
 
   return {
     id: community.communityId,
@@ -290,11 +284,8 @@ export const mapCommunityToRecommendedCommunity = (
   community: Community,
   category?: CommunityCategory
 ): { id: string; title: string; badge: string; image: string } => {
-  // Usar categoria como badge, ou um valor padrão
   const badge = category?.name || 'Community';
   
-  // Por enquanto, usar uma imagem placeholder se não houver avatarFileId
-  // TODO: Implementar busca de URL do arquivo quando disponível
   const image = community.avatarFileId 
     ? `https://api.amity.co/api/v3/files/${community.avatarFileId}/download` 
     : 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800';
@@ -311,17 +302,12 @@ export const mapCommunityToOtherCommunity = (
   community: Community,
   category?: CommunityCategory
 ): { id: string; title: string; badge: string; image: string; rating: number; price: string } => {
-  // Usar categoria como badge, ou um valor padrão
   const badge = category?.name || 'Community';
   
-  // Por enquanto, usar uma imagem placeholder se não houver avatarFileId
-  // TODO: Implementar busca de URL do arquivo quando disponível
   const image = community.avatarFileId 
     ? `https://api.amity.co/api/v3/files/${community.avatarFileId}/download` 
     : 'https://images.unsplash.com/photo-1494390248081-4e521a5940db?w=400';
 
-  // Valores padrão para rating e price
-  // TODO: Obter valores reais da API quando disponíveis
   const rating = 5;
   const price = '$0.00';
 
