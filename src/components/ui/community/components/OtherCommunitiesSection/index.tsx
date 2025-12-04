@@ -4,12 +4,13 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { BackgroundIconButton } from '@/assets';
 import { SearchBar } from '@/components/ui';
 import { styles } from './styles';
-import type { Community } from '@/types/community';
 
 type Props = {
   communities: OtherCommunity[];
   onCommunityPress?: (community: OtherCommunity) => void;
   onSearchChange?: (text: string) => void;
+  onSearchPress?: () => void;
+  onFilterPress?: () => void;
   searchQuery?: string;
 };
 
@@ -26,6 +27,8 @@ const OtherCommunitiesSection: React.FC<Props> = ({
   communities,
   onCommunityPress,
   onSearchChange,
+  onSearchPress,
+  onFilterPress,
   searchQuery = '',
 }) => {
   const [searchText, setSearchText] = useState(searchQuery);
@@ -42,28 +45,14 @@ const OtherCommunitiesSection: React.FC<Props> = ({
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Other communities</Text>
-      <View style={styles.searchContainer}>
-        <View style={styles.searchBarWrapper}>
-          <SearchBar
-            placeholder="Search"
-            value={searchText}
-            onChangeText={handleSearchChange}
-            showFilterButton={false}
-          />
-        </View>
-        <TouchableOpacity
-          style={styles.filterButton}
-          activeOpacity={0.8}
-        >
-          <ImageBackground
-            source={BackgroundIconButton}
-            style={styles.filterButtonBackground}
-            imageStyle={styles.filterButtonImage}
-          >
-            <Icon name="notifications-none" size={24} color="#001137" />
-          </ImageBackground>
-        </TouchableOpacity>
-      </View>
+      <SearchBar
+        placeholder="Search"
+        value={searchText}
+        onChangeText={handleSearchChange}
+        onSearchPress={onSearchPress}
+        onFilterPress={onFilterPress}
+        showFilterButton={true}
+      />
       <ScrollView
         style={styles.communitiesList}
         showsVerticalScrollIndicator={false}

@@ -5,7 +5,6 @@ export const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: SPACING.MD,
     paddingBottom: SPACING.MD,
     gap: 2,
   },

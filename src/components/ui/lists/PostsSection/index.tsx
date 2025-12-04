@@ -81,15 +81,16 @@ const PostsSection: React.FC<Props> = ({
       <View style={styles.header}>
         <Text style={styles.title}>Posts</Text>
       </View>
-
-      <SearchBar
-        placeholder="Search"
-        value={searchQuery}
-        onChangeText={onSearchChange}
-        onSearchPress={onSearchPress}
-        onFilterPress={handleFilterPress}
-        showFilterButton={true}
-      />
+      <View style={styles.searchBarContainer}>
+        <SearchBar
+          placeholder="Search"
+          value={searchQuery}
+          onChangeText={onSearchChange}
+          onSearchPress={onSearchPress}
+          onFilterPress={handleFilterPress}
+          showFilterButton={true}
+        />
+      </View>
     </>
   );
 

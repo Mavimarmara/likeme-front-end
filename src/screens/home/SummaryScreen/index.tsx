@@ -297,6 +297,16 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
     // Adicionar lógica de busca
   };
 
+  const handleSearchPress = () => {
+    console.log('Pesquisar comunidades');
+    // Adicionar lógica de pesquisa
+  };
+
+  const handleFilterPress = () => {
+    console.log('Abrir filtros de comunidades');
+    // Adicionar lógica para abrir filtros
+  };
+
   const handleProviderPress = (provider: Provider) => {
     console.log('Provider pressionado:', provider.id);
     // Adicionar navegação para detalhes do provider se necessário
@@ -366,6 +376,8 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
               communities={OTHER_COMMUNITIES}
               onCommunityPress={handleOtherCommunityPress}
               onSearchChange={handleSearchChange}
+              onSearchPress={handleSearchPress}
+              onFilterPress={handleFilterPress}
             />
           </View>
         </ScrollView>

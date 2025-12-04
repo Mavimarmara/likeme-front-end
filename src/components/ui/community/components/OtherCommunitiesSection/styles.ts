@@ -14,32 +14,6 @@ export const styles = StyleSheet.create({
     color: '#000000',
     lineHeight: 14,
   },
-  searchContainer: {
-    flexDirection: 'row',
-    gap: 2,
-    alignItems: 'center',
-  },
-  searchBarWrapper: {
-    flex: 1,
-  },
-  filterButton: {
-    width: 40,
-    height: 36,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  filterButtonBackground: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  filterButtonImage: {
-    borderRadius: BORDER_RADIUS.MD,
-  },
   communitiesList: {
     flex: 1,
   },
