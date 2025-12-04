@@ -1,11 +1,13 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { View, Image, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FloatingMenu } from '@/components/ui/menu';
 import { Header } from '@/components/ui/layout';
 import { BackgroundWithGradient } from '@/assets';
 import { useLogout, useCommunities } from '@/hooks';
-import { mapCommunityToRecommendedCommunity, mapCommunityToOtherCommunity } from '@/utils/community/mappers';
+import { mapCommunityToRecommendedCommunity, mapCommunityToOtherCommunity, mapCommunityPostToPost } from '@/utils/community/mappers';
+import { communityService } from '@/services';
+import type { CommunityFeedData } from '@/types/community';
 import { 
   NextEventsSection,
   RecommendedCommunitiesSection,
@@ -104,39 +106,6 @@ const RECOMMENDED_PRODUCTS: Product[] = [
   },
 ];
 
-const YOUR_COMMUNITY: YourCommunity = {
-  id: '1',
-  title: 'Where the Mind Comes to Rest',
-  description: 'A community for those seeking balance between body, mind, and night. Here, we explore rituals and science.',
-  membersCount: 20,
-  newPostsCount: 1,
-  posts: [
-    {
-      id: '1',
-      userId: '1',
-      content: 'As a sleep specialist, I\'m constantly emphasizing the vital role of sleep in our...',
-      title: 'The Alarming Link Between Chronic Insomnia and Brain...',
-      userName: 'Peter Parker',
-      userAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100',
-      commentsCount: 20,
-      likes: 0,
-      comments: [],
-      createdAt: new Date(),
-    },
-    {
-      id: '2',
-      userId: '2',
-      content: 'Whats is your favorite part of your night routine?',
-      title: 'Whats is your favorite part of your night routine?',
-      userName: 'Jane Doe',
-      userAvatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100',
-      commentsCount: 15,
-      likes: 0,
-      comments: [],
-      createdAt: new Date(),
-    },
-  ],
-};
 
 const POPULAR_PROVIDERS: Provider[] = [
   {
@@ -183,6 +152,98 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
       includeDeleted: false,
     },
   });
+
+  const firstCommunity = rawCommunities.length > 0 ? rawCommunities[0] : null;
+
+  const [communityPosts, setCommunityPosts] = useState<Post[]>([]);
+  const [loadingCommunityPosts, setLoadingCommunityPosts] = useState(false);
+
+  useEffect(() => {
+    if (!firstCommunity) {
+      setCommunityPosts([]);
+      return;
+    }
+
+    const loadCommunityPosts = async () => {
+      try {
+        setLoadingCommunityPosts(true);
+        const userFeedResponse = await communityService.getUserFeed({
+          page: 1,
+          limit: 20,
+        });
+
+        const isSuccess = userFeedResponse.success === true || 
+                         userFeedResponse.status === 'ok' || 
+                         userFeedResponse.data?.status === 'ok';
+        
+        let feedData: CommunityFeedData | undefined;
+        if (userFeedResponse.data?.data) {
+          feedData = userFeedResponse.data.data;
+        } else if (userFeedResponse.data && 'posts' in userFeedResponse.data) {
+          feedData = userFeedResponse.data as CommunityFeedData;
+        }
+
+        if (!isSuccess || !feedData) {
+          setCommunityPosts([]);
+          return;
+        }
+
+        const filteredCommunityPosts = (feedData.posts || []).filter((communityPost) => {
+          return communityPost.targetId === firstCommunity.communityId && 
+                 communityPost.targetType === 'community';
+        });
+
+        const mappedPostsPromises = filteredCommunityPosts.map((communityPost) =>
+          mapCommunityPostToPost(
+            communityPost, 
+            feedData.files, 
+            feedData.users, 
+            feedData.comments
+          )
+        );
+        
+        const mappedPostsResults = await Promise.all(mappedPostsPromises);
+        const mappedPosts: Post[] = mappedPostsResults.filter((post): post is Post => post !== null);
+
+        const sortedPosts = [...mappedPosts].sort((a, b) => {
+          return b.createdAt.getTime() - a.createdAt.getTime();
+        });
+
+        setCommunityPosts(sortedPosts);
+      } catch (error) {
+        console.error('Error loading community posts:', error);
+        setCommunityPosts([]);
+      } finally {
+        setLoadingCommunityPosts(false);
+      }
+    };
+
+    loadCommunityPosts();
+  }, [firstCommunity?.communityId]);
+
+  const yourCommunity = useMemo((): YourCommunity | null => {
+    if (!firstCommunity) {
+      return null;
+    }
+
+    const recentPosts = communityPosts.slice(0, 5);
+
+    const newPostsCount = communityPosts.filter((post) => {
+      const postDate = post.createdAt;
+      const oneDayAgo = new Date();
+      oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+      return postDate > oneDayAgo;
+    }).length;
+
+    return {
+      id: firstCommunity.communityId,
+      title: firstCommunity.displayName,
+      description: firstCommunity.description || '',
+      membersCount: firstCommunity.membersCount || 0,
+      newPostsCount,
+      posts: recentPosts,
+    };
+  }, [firstCommunity, communityPosts]);
 
   const recommendedCommunities = useMemo(() => {
     return rawCommunities
@@ -282,7 +343,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleYourCommunityPostPress = (post: Post) => {
-    console.log('Post da comunidade pressionado:', post.id);
+    rootNavigation.navigate('Community' as never);
   };
 
   return (
@@ -299,13 +360,15 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
       />
       <View style={styles.content}>
         <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={styles.yourCommunitiesContainer}>
-            <YourCommunitiesSection
-              community={YOUR_COMMUNITY}
-              onCommunityPress={handleYourCommunityPress}
-              onPostPress={handleYourCommunityPostPress}
-            />
-          </View>
+          {yourCommunity && (
+            <View style={styles.yourCommunitiesContainer}>
+              <YourCommunitiesSection
+                community={yourCommunity}
+                onCommunityPress={handleYourCommunityPress}
+                onPostPress={handleYourCommunityPostPress}
+              />
+            </View>
+          )}
           <View style={styles.eventsContainer}>
             <NextEventsSection
               events={mockEvents}
