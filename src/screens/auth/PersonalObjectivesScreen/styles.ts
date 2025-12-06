@@ -56,7 +56,7 @@ export const styles = StyleSheet.create({
     backgroundColor: '#f4f3ec',
     paddingHorizontal: SPACING.MD,
     paddingTop: SPACING.MD,
-    paddingBottom: SPACING.LG,
+    paddingBottom: SPACING.XL,
   },
   buttonGroup: {
     position: 'relative',
