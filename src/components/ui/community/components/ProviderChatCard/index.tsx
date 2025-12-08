@@ -18,6 +18,11 @@ type Props = {
 };
 
 const ProviderChatCard: React.FC<Props> = ({ chat, onPress }) => {
+  // Garante que lastMessage seja sempre uma string válida
+  const lastMessage = typeof chat.lastMessage === 'string' && chat.lastMessage.trim() !== ''
+    ? chat.lastMessage
+    : '';
+
   return (
     <View style={styles.container}>
       <Text style={styles.sectionTitle}>Chat with your provider</Text>
@@ -48,15 +53,19 @@ const ProviderChatCard: React.FC<Props> = ({ chat, onPress }) => {
             
             <View style={styles.messageRow}>
               <View style={styles.messageContainer}>
-                <Text style={styles.messagePreview} numberOfLines={2}>
-                  {chat.lastMessage}
-                </Text>
+                {lastMessage ? (
+                  <Text style={styles.messagePreview} numberOfLines={2}>
+                    {lastMessage}
+                  </Text>
+                ) : null}
               </View>
-              {chat.unreadCount && chat.unreadCount > 0 && (
+              {chat.unreadCount && chat.unreadCount > 0 ? (
                 <View style={styles.notificationBadge}>
-                  <Text style={styles.notificationText}>{chat.unreadCount}</Text>
+                  <Text style={styles.notificationText}>
+                    {String(chat.unreadCount)}
+                  </Text>
                 </View>
-              )}
+              ) : null}
             </View>
           </View>
         </View>

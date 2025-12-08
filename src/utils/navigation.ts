@@ -1,7 +1,7 @@
 import { CommonActions } from '@react-navigation/routers';
 
 export interface ErrorNavigationParams {
-  errorMessage?: string;
+  errorMessage?: string | Error | unknown;
   onRetry?: () => void;
 }
 
@@ -13,9 +13,21 @@ export interface ErrorNavigationParams {
  */
 export const navigateToError = (
   navigation: any,
-  errorMessage?: string,
+  errorMessage?: string | Error | unknown,
   onRetry?: () => void
 ) => {
+  // Garante que errorMessage seja sempre uma string válida
+  let message = 'Algo deu errado';
+  if (errorMessage) {
+    if (typeof errorMessage === 'string') {
+      message = errorMessage;
+    } else if (errorMessage instanceof Error) {
+      message = errorMessage.message || 'Erro desconhecido';
+    } else {
+      message = String(errorMessage);
+    }
+  }
+  
   navigation.dispatch(
     CommonActions.reset({
       index: 0,
@@ -23,7 +35,7 @@ export const navigateToError = (
         {
           name: 'Error',
           params: {
-            errorMessage: errorMessage || 'Algo deu errado',
+            errorMessage: message,
             onRetry,
           },
         },
@@ -37,11 +49,23 @@ export const navigateToError = (
  */
 export const showError = (
   navigation: any,
-  errorMessage?: string,
+  errorMessage?: string | Error | unknown,
   onRetry?: () => void
 ) => {
+  // Garante que errorMessage seja sempre uma string válida
+  let message = 'Algo deu errado';
+  if (errorMessage) {
+    if (typeof errorMessage === 'string') {
+      message = errorMessage;
+    } else if (errorMessage instanceof Error) {
+      message = errorMessage.message || 'Erro desconhecido';
+    } else {
+      message = String(errorMessage);
+    }
+  }
+  
   navigation.navigate('Error' as never, {
-    errorMessage: errorMessage || 'Algo deu errado',
+    errorMessage: message,
     onRetry,
   } as never);
 };

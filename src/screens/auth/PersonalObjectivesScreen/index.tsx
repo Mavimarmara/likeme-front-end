@@ -67,13 +67,13 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
   const handleNext = async () => {
     const now = new Date().toISOString();
     await storageService.setObjectivesSelectedAt(now);
-    navigation.navigate('Main' as never, { screen: 'Community' } as never);
+    navigation.navigate('Home' as never);
   };
 
   const handleSkip = async () => {
     const now = new Date().toISOString();
     await storageService.setObjectivesSelectedAt(now);
-    navigation.navigate('Main' as never, { screen: 'Community' } as never);
+    navigation.navigate('Home' as never);
   };
 
   return (

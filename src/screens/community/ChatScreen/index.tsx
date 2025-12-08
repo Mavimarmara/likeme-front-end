@@ -239,7 +239,11 @@ const ChatScreen: React.FC<Props> = () => {
                       ]}
                       numberOfLines={2}
                     >
-                      {conversation.lastMessage}
+                      {typeof conversation.lastMessage === 'string' 
+                        ? conversation.lastMessage 
+                        : conversation.lastMessage instanceof Error 
+                          ? conversation.lastMessage.message || ''
+                          : String(conversation.lastMessage || '')}
                     </Text>
                   </View>
                   {conversation.unreadCount && conversation.unreadCount > 0 && (

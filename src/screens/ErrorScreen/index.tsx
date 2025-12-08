@@ -7,7 +7,18 @@ import { styles } from './styles';
 type Props = { navigation: any; route: any };
 
 const ErrorScreen: React.FC<Props> = ({ navigation, route }) => {
-  const errorMessage = route.params?.errorMessage || 'Algo deu errado';
+  // Garante que errorMessage seja sempre uma string válida
+  const rawErrorMessage = route.params?.errorMessage;
+  let errorMessage = 'Algo deu errado';
+  if (rawErrorMessage) {
+    if (typeof rawErrorMessage === 'string') {
+      errorMessage = rawErrorMessage;
+    } else if (rawErrorMessage instanceof Error) {
+      errorMessage = rawErrorMessage.message || 'Erro desconhecido';
+    } else {
+      errorMessage = String(rawErrorMessage);
+    }
+  }
   const onRetry = route.params?.onRetry;
 
   const handleGoBack = () => {
