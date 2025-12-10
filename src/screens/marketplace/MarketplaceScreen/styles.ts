@@ -1,348 +1,385 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 import { BORDER_RADIUS, COLORS, SPACING } from '@/constants';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.BACKGROUND,
+    position: 'relative',
   },
-  scrollContent: {
-    paddingHorizontal: SPACING.LG,
+  content: {
+    flex: 1,
+    zIndex: 1,
     paddingBottom: SPACING.XXL,
-    paddingTop: SPACING.LG,
-    gap: SPACING.XL,
   },
-  heroCard: {
-    backgroundColor: '#001137',
-    borderRadius: 36,
-    padding: SPACING.XL,
-    gap: SPACING.MD,
-  },
-  heroBadge: {
-    alignSelf: 'flex-start',
-    backgroundColor: 'rgba(255, 255, 255, 0.18)',
-    borderRadius: 999,
+  customHeader: {
+    paddingTop: SPACING.MD,
     paddingHorizontal: SPACING.MD,
-    paddingVertical: SPACING.XS,
+    paddingBottom: SPACING.SM,
   },
-  heroBadgeText: {
-    color: COLORS.WHITE,
-    fontWeight: '600',
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
-    fontSize: 12,
+  searchContainer: {
+    marginBottom: SPACING.MD,
   },
-  heroTitle: {
-    color: COLORS.WHITE,
-    fontSize: 28,
-    fontWeight: '700',
-    lineHeight: 32,
-  },
-  heroSubtitle: {
-    color: 'rgba(255,255,255,0.8)',
-    fontSize: 15,
-    lineHeight: 22,
-  },
-  heroStatsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  categoriesList: {
+    paddingVertical: SPACING.SM,
     gap: SPACING.SM,
   },
-  heroStatCard: {
-    flex: 1,
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    borderRadius: BORDER_RADIUS.LG,
-    padding: SPACING.MD,
-  },
-  heroStatValue: {
-    color: COLORS.WHITE,
-    fontSize: 20,
-    fontWeight: '700',
-  },
-  heroStatLabel: {
-    color: 'rgba(255,255,255,0.7)',
-    fontSize: 12,
-    marginTop: 4,
-  },
-  searchWrapper: {
-    marginTop: -SPACING.MD,
-  },
-  filtersHint: {
+  categoryPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: SPACING.SM,
-    backgroundColor: '#FBF7E5',
-    borderRadius: BORDER_RADIUS.LG,
-    padding: SPACING.MD,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    paddingHorizontal: SPACING.LG,
+    paddingVertical: SPACING.SM,
+    backgroundColor: '#FFFFFF',
+    marginRight: SPACING.SM,
   },
-  filtersHintText: {
-    flex: 1,
-    fontSize: 13,
-    color: '#001137',
+  categoryPillSelected: {
+    backgroundColor: '#2196F3',
+    borderColor: '#2196F3',
+  },
+  categoryText: {
+    fontSize: 14,
+    color: '#000000',
+    fontWeight: '500',
+    marginRight: 4,
+  },
+  categoryTextSelected: {
+    color: '#FFFFFF',
+  },
+  scrollContent: {
+    paddingBottom: SPACING.XXL,
+  },
+  section: {
+    paddingHorizontal: SPACING.MD,
+    marginBottom: SPACING.XL,
   },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: SPACING.LG,
+    marginBottom: SPACING.MD,
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#001137',
+    color: '#000000',
+    marginBottom: SPACING.MD,
   },
-  sectionAction: {
+  // Week highlights styles
+  weekHighlightCard: {
+    width: SCREEN_WIDTH - SPACING.MD * 2,
+    height: 280,
+    borderRadius: 20,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  weekHighlightImage: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#2E7D32',
+  },
+  weekHighlightBadge: {
+    position: 'absolute',
+    top: 16,
+    left: 16,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    borderRadius: 8,
+    paddingHorizontal: SPACING.MD,
+    paddingVertical: SPACING.XS,
+  },
+  weekHighlightBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  weekHighlightContent: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: SPACING.LG,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+  },
+  weekHighlightTitle: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: SPACING.XS,
+  },
+  weekHighlightPrice: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  weekHighlightCartButton: {
+    position: 'absolute',
+    bottom: SPACING.LG,
+    right: SPACING.LG,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pagination: {
+    position: 'absolute',
+    bottom: SPACING.MD,
+    left: SPACING.LG,
+    flexDirection: 'row',
+    gap: SPACING.XS,
+  },
+  paginationDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+  },
+  paginationDotActive: {
+    backgroundColor: '#2196F3',
+  },
+  // Curated by providers styles
+  horizontalScroll: {
+    paddingVertical: SPACING.SM,
+    gap: SPACING.MD,
+  },
+  curatedCard: {
+    width: SCREEN_WIDTH - SPACING.MD * 3,
+    height: 200,
+    borderRadius: 16,
+    overflow: 'hidden',
+    position: 'relative',
+    marginRight: SPACING.MD,
+  },
+  curatedImage: {
+    width: '100%',
+    height: '100%',
+  },
+  curatedTag: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 999,
+    paddingHorizontal: SPACING.SM,
+    paddingVertical: 4,
+    gap: 4,
+  },
+  curatedTagText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#2196F3',
+  },
+  curatedContent: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: SPACING.MD,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  curatedTitle: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: SPACING.SM,
+  },
+  curatedProvider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.SM,
+  },
+  providerAvatar: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+  },
+  providerName: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  curatedArrowButton: {
+    position: 'absolute',
+    bottom: SPACING.MD,
+    right: SPACING.MD,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  // New for you styles
+  newForYouCard: {
+    width: 180,
+    marginRight: SPACING.MD,
+  },
+  newForYouImage: {
+    width: '100%',
+    height: 180,
+    borderRadius: 16,
+    marginBottom: SPACING.SM,
+  },
+  newForYouBadge: {
+    position: 'absolute',
+    top: 8,
+    left: 8,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    borderRadius: 8,
+    paddingHorizontal: SPACING.SM,
+    paddingVertical: 4,
+  },
+  newForYouBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  newForYouFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: SPACING.SM,
+  },
+  newForYouPrice: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#000000',
+  },
+  newForYouLikes: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
   },
-  sectionActionText: {
-    color: '#001137',
-    fontSize: 13,
+  newForYouLikesText: {
+    fontSize: 12,
+    color: '#666666',
+  },
+  newForYouContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  newForYouTitle: {
+    flex: 1,
+    fontSize: 14,
     fontWeight: '600',
-  },
-  categoriesList: {
-    gap: SPACING.SM,
-    paddingVertical: SPACING.SM,
-  },
-  categoryPill: {
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: '#dcd7c8',
-    paddingHorizontal: SPACING.LG,
-    paddingVertical: SPACING.SM,
-    backgroundColor: COLORS.WHITE,
+    color: '#000000',
     marginRight: SPACING.SM,
   },
-  categoryPillSelected: {
-    backgroundColor: '#001137',
-    borderColor: '#001137',
+  newForYouArrowButton: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#F5F5F5',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  categoryText: {
-    fontSize: 14,
-    color: '#001137',
-    fontWeight: '500',
-  },
-  categoryTextSelected: {
-    color: COLORS.WHITE,
-  },
-  featuredCard: {
-    flexDirection: 'row',
-    backgroundColor: '#FFF3D9',
-    borderRadius: 32,
-    padding: SPACING.LG,
-    gap: SPACING.LG,
-  },
-  featuredContent: {
-    flex: 1,
+  // All products styles
+  orderFiltersList: {
+    paddingVertical: SPACING.SM,
+    marginBottom: SPACING.MD,
     gap: SPACING.SM,
   },
-  featuredEyebrow: {
-    fontSize: 12,
-    color: '#B26A00',
-    textTransform: 'uppercase',
-    fontWeight: '700',
-    letterSpacing: 1.2,
-  },
-  featuredTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#3b2c0f',
-    lineHeight: 26,
-  },
-  featuredDescription: {
-    fontSize: 14,
-    color: '#6e5a2a',
-    lineHeight: 20,
-  },
-  featuredHighlights: {
-    gap: SPACING.SM,
-  },
-  featuredHighlightItem: {
+  orderFilterPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: SPACING.SM,
-  },
-  featuredHighlightText: {
-    fontSize: 13,
-    color: '#3b2c0f',
-  },
-  featuredButton: {
-    marginTop: SPACING.SM,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.XS,
-    backgroundColor: COLORS.WHITE,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
     paddingHorizontal: SPACING.LG,
     paddingVertical: SPACING.SM,
-    borderRadius: BORDER_RADIUS.LG,
+    backgroundColor: '#FFFFFF',
+    marginRight: SPACING.SM,
   },
-  featuredButtonText: {
+  orderFilterPillSelected: {
+    backgroundColor: '#2196F3',
+    borderColor: '#2196F3',
+  },
+  orderFilterText: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#001137',
+    color: '#000000',
+    fontWeight: '500',
+    marginRight: 4,
   },
-  featuredImageWrapper: {
-    width: 120,
-    height: 160,
-    borderRadius: 28,
-    overflow: 'hidden',
-    backgroundColor: COLORS.WHITE,
+  orderFilterTextSelected: {
+    color: '#FFFFFF',
   },
-  featuredImage: {
-    width: '100%',
-    height: '100%',
+  productsList: {
+    gap: SPACING.MD,
   },
-  productGrid: {
+  productRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    rowGap: SPACING.LG,
-  },
-  productCard: {
-    width: '48%',
-    backgroundColor: COLORS.WHITE,
-    borderRadius: 24,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     padding: SPACING.MD,
-    gap: SPACING.SM,
     shadowColor: '#000',
     shadowOpacity: 0.05,
     shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 2 },
     elevation: 2,
   },
-  productImageHolder: {
-    borderRadius: 20,
-    overflow: 'hidden',
-    height: 120,
-    marginBottom: SPACING.SM,
+  productRowImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 12,
+    marginRight: SPACING.MD,
   },
-  productImage: {
-    width: '100%',
-    height: '100%',
+  productRowContent: {
+    flex: 1,
+    justifyContent: 'space-between',
   },
-  productBadge: {
-    position: 'absolute',
-    top: 10,
-    left: 10,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+  productRowCategory: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#F5F5F5',
+    borderRadius: 999,
     paddingHorizontal: SPACING.SM,
     paddingVertical: 4,
-    borderRadius: 999,
+    marginBottom: SPACING.XS,
   },
-  productBadgeText: {
-    color: COLORS.WHITE,
+  productRowCategoryText: {
     fontSize: 12,
     fontWeight: '600',
+    color: '#666666',
   },
-  productTitle: {
+  productRowTitle: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#001137',
+    color: '#000000',
+    marginBottom: SPACING.XS,
   },
-  productPrice: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#3b2c0f',
-  },
-  productRatingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  productRatingText: {
-    fontSize: 12,
-    color: '#6f6c66',
-  },
-  bundleList: {
-    gap: SPACING.MD,
-    paddingVertical: SPACING.SM,
-  },
-  bundleCard: {
-    width: 260,
-    backgroundColor: '#E8F1ED',
-    borderRadius: 28,
-    padding: SPACING.LG,
-    marginRight: SPACING.MD,
-    gap: SPACING.SM,
-  },
-  bundleBadge: {
-    alignSelf: 'flex-start',
-    backgroundColor: 'rgba(0,17,55,0.08)',
-    paddingHorizontal: SPACING.MD,
-    paddingVertical: 4,
-    borderRadius: 999,
-  },
-  bundleBadgeText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#001137',
-  },
-  bundleTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#001137',
-  },
-  bundleDescription: {
-    fontSize: 14,
-    color: '#4f4a43',
-    lineHeight: 20,
-  },
-  bundleFooter: {
+  productRowFooter: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: SPACING.SM,
   },
-  bundlePrice: {
+  productRowPrice: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#001137',
+    color: '#000000',
   },
-  bundleButton: {
+  productRowRating: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: COLORS.WHITE,
-    paddingHorizontal: SPACING.MD,
-    paddingVertical: SPACING.XS,
-    borderRadius: BORDER_RADIUS.LG,
   },
-  bundleButtonText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#001137',
-  },
-  newsletterCard: {
-    backgroundColor: '#001137',
-    borderRadius: 32,
-    padding: SPACING.XL,
-    gap: SPACING.SM,
-  },
-  newsletterTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: COLORS.WHITE,
-    lineHeight: 28,
-  },
-  newsletterSubtitle: {
+  productRowRatingText: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
-    lineHeight: 20,
+    fontWeight: '600',
+    color: '#666666',
   },
-  newsletterButton: {
-    marginTop: SPACING.SM,
-    flexDirection: 'row',
+  productRowAddButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#F5F5F5',
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: SPACING.SM,
-    backgroundColor: COLORS.WHITE,
-    paddingHorizontal: SPACING.LG,
-    paddingVertical: SPACING.SM,
-    borderRadius: BORDER_RADIUS.LG,
-  },
-  newsletterButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#001137',
+    marginLeft: SPACING.MD,
   },
 });
