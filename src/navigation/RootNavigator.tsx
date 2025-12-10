@@ -7,7 +7,7 @@ import ErrorScreen from '@/screens/ErrorScreen';
 import AppLoadingScreen from '@/screens/LoadingScreen';
 import { CommunityStackNavigator } from '@/navigation';
 import { ActivitiesScreen } from '@/screens/wellness';
-import { MarketplaceScreen } from '@/screens/marketplace';
+import { MarketplaceScreen, ProductDetailsScreen } from '@/screens/marketplace';
 import { ProfileScreen } from '@/screens/profile';
 import { HomeScreen, SummaryScreen } from '@/screens/home';
 
@@ -97,6 +97,11 @@ const RootNavigator: React.FC = () => {
           name="Marketplace"
           component={MarketplaceScreen}
           options={{ title: 'Marketplace' }}
+        />
+        <Stack.Screen
+          name="ProductDetails"
+          component={ProductDetailsScreen}
+          options={{ title: 'Detalhes do Produto' }}
         />
         <Stack.Screen
           name="Profile"

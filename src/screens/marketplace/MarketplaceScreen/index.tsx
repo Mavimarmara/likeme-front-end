@@ -132,6 +132,23 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   const { logout } = useLogout({ navigation });
   const handleLogout = logout;
 
+  const handleProductPress = (product: {
+    id: string;
+    title: string;
+    price: string;
+    image: string;
+    category?: string;
+    tags?: string[];
+    description?: string;
+    provider?: { name: string; avatar: string };
+    rating?: number;
+  }) => {
+    navigation.navigate('ProductDetails', {
+      productId: product.id,
+      product,
+    });
+  };
+
   const menuItems = useMemo(
     () => [
       {
@@ -214,10 +231,21 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
 
   const renderWeekHighlights = () => {
     const highlight = WEEK_HIGHLIGHTS[0];
+    const product = {
+      id: highlight.id,
+      title: highlight.title,
+      price: highlight.price,
+      image: highlight.image,
+      tags: ['Programs', 'Stress'],
+    };
     return (
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Week highlights</Text>
-        <View style={styles.weekHighlightCard}>
+        <TouchableOpacity
+          style={styles.weekHighlightCard}
+          onPress={() => handleProductPress(product)}
+          activeOpacity={0.9}
+        >
           <Image source={{ uri: highlight.image }} style={styles.weekHighlightImage} />
           <View style={styles.weekHighlightBadge}>
             <Text style={styles.weekHighlightBadgeText}>{highlight.discount}</Text>
@@ -234,7 +262,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
             <View style={styles.paginationDot} />
             <View style={styles.paginationDot} />
           </View>
-        </View>
+        </TouchableOpacity>
       </View>
     );
   };
@@ -247,27 +275,42 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.horizontalScroll}
       >
-        {CURATED_BY_PROVIDERS.map((item) => (
-          <TouchableOpacity key={item.id} style={styles.curatedCard} activeOpacity={0.8}>
-            <Image source={{ uri: item.image }} style={styles.curatedImage} />
-            {item.tag && (
-              <View style={styles.curatedTag}>
-                {item.tag.icon && <Icon name={item.tag.icon} size={12} color="#2196F3" />}
-                <Text style={styles.curatedTagText}>{item.tag.label}</Text>
+        {CURATED_BY_PROVIDERS.map((item) => {
+          const product = {
+            id: item.id,
+            title: item.title,
+            price: '$29.90',
+            image: item.image,
+            provider: item.provider,
+            tags: item.tag ? [item.tag.label] : [],
+          };
+          return (
+            <TouchableOpacity
+              key={item.id}
+              style={styles.curatedCard}
+              onPress={() => handleProductPress(product)}
+              activeOpacity={0.8}
+            >
+              <Image source={{ uri: item.image }} style={styles.curatedImage} />
+              {item.tag && (
+                <View style={styles.curatedTag}>
+                  {item.tag.icon && <Icon name={item.tag.icon} size={12} color="#2196F3" />}
+                  <Text style={styles.curatedTagText}>{item.tag.label}</Text>
+                </View>
+              )}
+              <View style={styles.curatedContent}>
+                <Text style={styles.curatedTitle}>{item.title}</Text>
+                <View style={styles.curatedProvider}>
+                  <Image source={{ uri: item.provider.avatar }} style={styles.providerAvatar} />
+                  <Text style={styles.providerName}>{item.provider.name}</Text>
+                </View>
               </View>
-            )}
-            <View style={styles.curatedContent}>
-              <Text style={styles.curatedTitle}>{item.title}</Text>
-              <View style={styles.curatedProvider}>
-                <Image source={{ uri: item.provider.avatar }} style={styles.providerAvatar} />
-                <Text style={styles.providerName}>{item.provider.name}</Text>
-              </View>
-            </View>
-            <TouchableOpacity style={styles.curatedArrowButton} activeOpacity={0.7}>
-              <Icon name="arrow-forward" size={20} color="#000" />
+              <TouchableOpacity style={styles.curatedArrowButton} activeOpacity={0.7}>
+                <Icon name="arrow-forward" size={20} color="#000" />
+              </TouchableOpacity>
             </TouchableOpacity>
-          </TouchableOpacity>
-        ))}
+          );
+        })}
       </ScrollView>
     </View>
   );
@@ -280,27 +323,41 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.horizontalScroll}
       >
-        {NEW_FOR_YOU.map((item) => (
-          <TouchableOpacity key={item.id} style={styles.newForYouCard} activeOpacity={0.8}>
-            <Image source={{ uri: item.image }} style={styles.newForYouImage} />
-            <View style={styles.newForYouBadge}>
-              <Text style={styles.newForYouBadgeText}>{item.badge}</Text>
-            </View>
-            <View style={styles.newForYouFooter}>
-              <Text style={styles.newForYouPrice}>{item.price}</Text>
-              <View style={styles.newForYouLikes}>
-                <Icon name="favorite" size={16} color="#F44336" />
-                <Text style={styles.newForYouLikesText}>{item.likes}</Text>
+        {NEW_FOR_YOU.map((item) => {
+          const product = {
+            id: item.id,
+            title: item.title,
+            price: item.price,
+            image: item.image,
+            tags: [item.badge],
+          };
+          return (
+            <TouchableOpacity
+              key={item.id}
+              style={styles.newForYouCard}
+              onPress={() => handleProductPress(product)}
+              activeOpacity={0.8}
+            >
+              <Image source={{ uri: item.image }} style={styles.newForYouImage} />
+              <View style={styles.newForYouBadge}>
+                <Text style={styles.newForYouBadgeText}>{item.badge}</Text>
               </View>
-            </View>
-            <View style={styles.newForYouContent}>
-              <Text style={styles.newForYouTitle}>{item.title}</Text>
-              <TouchableOpacity style={styles.newForYouArrowButton} activeOpacity={0.7}>
-                <Icon name="arrow-forward" size={20} color="#000" />
-              </TouchableOpacity>
-            </View>
-          </TouchableOpacity>
-        ))}
+              <View style={styles.newForYouFooter}>
+                <Text style={styles.newForYouPrice}>{item.price}</Text>
+                <View style={styles.newForYouLikes}>
+                  <Icon name="favorite" size={16} color="#F44336" />
+                  <Text style={styles.newForYouLikesText}>{item.likes}</Text>
+                </View>
+              </View>
+              <View style={styles.newForYouContent}>
+                <Text style={styles.newForYouTitle}>{item.title}</Text>
+                <TouchableOpacity style={styles.newForYouArrowButton} activeOpacity={0.7}>
+                  <Icon name="arrow-forward" size={20} color="#000" />
+                </TouchableOpacity>
+              </View>
+            </TouchableOpacity>
+          );
+        })}
       </ScrollView>
     </View>
   );
@@ -343,27 +400,42 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
         })}
       </ScrollView>
       <View style={styles.productsList}>
-        {ALL_PRODUCTS.map((product) => (
-          <TouchableOpacity key={product.id} style={styles.productRow} activeOpacity={0.8}>
-            <Image source={{ uri: product.image }} style={styles.productRowImage} />
-            <View style={styles.productRowContent}>
-              <View style={styles.productRowCategory}>
-                <Text style={styles.productRowCategoryText}>{product.category}</Text>
-              </View>
-              <Text style={styles.productRowTitle}>{product.title}</Text>
-              <View style={styles.productRowFooter}>
-                <Text style={styles.productRowPrice}>{product.price}</Text>
-                <View style={styles.productRowRating}>
-                  <Icon name="star" size={16} color="#FFB800" />
-                  <Text style={styles.productRowRatingText}>{product.rating}</Text>
+        {ALL_PRODUCTS.map((product) => {
+          const productData = {
+            id: product.id,
+            title: product.title,
+            price: product.price,
+            image: product.image,
+            category: product.category,
+            rating: product.rating,
+          };
+          return (
+            <TouchableOpacity
+              key={product.id}
+              style={styles.productRow}
+              onPress={() => handleProductPress(productData)}
+              activeOpacity={0.8}
+            >
+              <Image source={{ uri: product.image }} style={styles.productRowImage} />
+              <View style={styles.productRowContent}>
+                <View style={styles.productRowCategory}>
+                  <Text style={styles.productRowCategoryText}>{product.category}</Text>
+                </View>
+                <Text style={styles.productRowTitle}>{product.title}</Text>
+                <View style={styles.productRowFooter}>
+                  <Text style={styles.productRowPrice}>{product.price}</Text>
+                  <View style={styles.productRowRating}>
+                    <Icon name="star" size={16} color="#FFB800" />
+                    <Text style={styles.productRowRatingText}>{product.rating}</Text>
+                  </View>
                 </View>
               </View>
-            </View>
-            <TouchableOpacity style={styles.productRowAddButton} activeOpacity={0.7}>
-              <Icon name="add" size={24} color="#000" />
+              <TouchableOpacity style={styles.productRowAddButton} activeOpacity={0.7}>
+                <Icon name="add" size={24} color="#000" />
+              </TouchableOpacity>
             </TouchableOpacity>
-          </TouchableOpacity>
-        ))}
+          );
+        })}
       </View>
     </View>
   );
