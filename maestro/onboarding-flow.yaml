@@ -1,0 +1,44 @@
+appId: com.likeme.app
+---
+# Teste E2E: Fluxo de Onboarding Completo
+# Simula um usuário novo passando pelo processo de onboarding
+
+- launchApp:
+    clearState: true
+- assertVisible: "Welcome!"
+- assertVisible: "How can I call you?"
+
+# Preencher nome na tela Welcome
+- tapOn: 
+    id: "input-Your name"
+- inputText: "João Silva"
+- tapOn: "Next"
+
+# Aguardar carregamento e verificar tela de registro
+- assertVisible: "Let's start,"
+- assertVisible: "Next"
+- assertVisible: "Skip information"
+
+# Preencher informações básicas (se houver campos)
+- tapOn: "Next"
+
+# Verificar tela de objetivos pessoais
+- assertVisible: "João Silva,"
+- assertVisible: "What are the main things we can help you with?"
+
+# Aguardar carregamento dos objetivos
+- waitForAnimationToEnd
+- assertVisible: "Next"
+- assertVisible: "Skip information"
+
+# Selecionar alguns objetivos
+- tapOn: 
+    text: ".*"  # Seleciona o primeiro objetivo disponível
+- tapOn: 
+    text: ".*"  # Seleciona outro objetivo
+
+# Continuar para próxima tela
+- tapOn: "Next"
+
+# Verificar se chegou na Home
+- assertVisible: "Home"

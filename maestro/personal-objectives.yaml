@@ -1,0 +1,55 @@
+appId: com.likeme.app
+---
+# Teste E2E: Tela de Objetivos Pessoais
+# Testa especificamente a funcionalidade de seleção de objetivos
+
+- launchApp:
+    clearState: true
+
+# Navegar até a tela de objetivos (assumindo que já passou pelo onboarding)
+# Se necessário, podemos adicionar navegação manual aqui
+
+# Verificar elementos principais da tela
+- assertVisible: "What are the main things we can help you with?"
+- assertVisible: "Next"
+- assertVisible: "Skip information"
+
+# Aguardar carregamento dos objetivos
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+
+# Teste 1: Selecionar um objetivo
+- tapOn: 
+    text: ".*"  # Clica no primeiro objetivo disponível
+- waitForAnimationToEnd
+
+# Teste 2: Desselecionar o objetivo (clicar novamente)
+- tapOn: 
+    text: ".*"  # Clica novamente para desselecionar
+- waitForAnimationToEnd
+
+# Teste 3: Selecionar múltiplos objetivos
+- scroll
+- tapOn: 
+    text: ".*"
+- scroll
+- tapOn: 
+    text: ".*"
+- waitForAnimationToEnd
+
+# Teste 4: Usar botão Skip
+- tapOn: "Skip information"
+- assertVisible: "Home"
+
+# Reiniciar app para testar botão Next
+- launchApp
+
+# Navegar até objetivos novamente (se necessário)
+- assertVisible: "What are the main things we can help you with?"
+- waitForAnimationToEnd
+
+# Selecionar objetivos e usar Next
+- tapOn: 
+    text: ".*"
+- tapOn: "Next"
+- assertVisible: "Home"

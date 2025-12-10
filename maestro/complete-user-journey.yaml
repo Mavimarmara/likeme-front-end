@@ -1,0 +1,56 @@
+appId: com.likeme.app
+---
+# Teste E2E: Jornada Completa do Usuário
+# Simula um usuário completo passando por todas as telas principais
+
+- launchApp:
+    clearState: true
+
+# === FASE 1: ONBOARDING ===
+- assertVisible: "Welcome!"
+- tapOn: 
+    id: "input-Your name"
+- inputText: "Ana Costa"
+- tapOn: "Next"
+
+# Tela de Registro
+- assertVisible: "Let's start,"
+- tapOn: "Next"
+
+# Tela de Objetivos Pessoais
+- assertVisible: "Ana Costa,"
+- assertVisible: "What are the main things we can help you with?"
+- waitForAnimationToEnd
+
+# Selecionar objetivos
+- scroll
+- tapOn: 
+    text: ".*"
+- scroll
+- tapOn: 
+    text: ".*"
+- scroll
+- tapOn: 
+    text: ".*"
+
+# Continuar
+- tapOn: "Next"
+
+# === FASE 2: HOME ===
+- assertVisible: "Home"
+
+# Navegar para outras seções (se disponíveis)
+# - tapOn: "Community"
+# - assertVisible: "Community"
+# - tapOn: "Back"
+
+# - tapOn: "Activities"
+# - assertVisible: "Activities"
+# - tapOn: "Back"
+
+# - tapOn: "Profile"
+# - assertVisible: "Profile"
+# - tapOn: "Back"
+
+# Verificar que voltou para Home
+- assertVisible: "Home"

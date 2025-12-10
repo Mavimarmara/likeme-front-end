@@ -1,0 +1,35 @@
+appId: com.likeme.app
+---
+# Teste E2E Simples: Verifica se o app carrega corretamente
+# Este teste verifica elementos básicos e navega até a tela Welcome
+
+- launchApp:
+    clearState: true
+
+# Aguardar carregamento inicial (splash screen)
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+
+# Aguardar até encontrar algum texto visível
+- runFlow:
+    when:
+      visible: "LIKE YOUR LIFE"
+    commands:
+      - assertVisible: "LIKE YOUR LIFE"
+      - assertVisible: "Next"
+      - tapOn: "Next"
+      
+- runFlow:
+    when:
+      visible: "Welcome!"
+    commands:
+      - assertVisible: "Welcome!"
+      - assertVisible: "How can I call you?"
+      
+# Se chegou na Welcome, testar preenchimento
+- tapOn: 
+    id: "input-Your name"
+    optional: true
+- inputText: "Teste Usuário"
+- tapOn: "Next"

@@ -2,99 +2,76 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import WelcomeScreen from './index';
 
-// Evita problemas com SVGs/ícones no Header
-jest.mock('@/components/ui', () => {
-  const real = jest.requireActual('@/components/ui');
+jest.mock('react-native-safe-area-context', () => {
+  const ReactNative = require('react-native');
   return {
-    ...real,
+    SafeAreaView: ReactNative.View,
+  };
+});
+
+jest.mock('@/assets', () => ({
+  GradientSplash3: 'GradientSplash3',
+}));
+
+jest.mock('@/components/ui', () => {
+  const React = require('react');
+  const { View, Text, TouchableOpacity } = require('react-native');
+  const RNTextInput = require('react-native').TextInput;
+  return {
     Header: () => null,
+    Title: ({ title, subtitle }: { title: string; subtitle?: string }) => (
+      <View>
+        <Text>{title}</Text>
+        {subtitle && <Text>{subtitle}</Text>}
+      </View>
+    ),
+    TextInput: React.forwardRef(({ placeholder, onChangeText, value, onSubmitEditing }: any, ref: any) => (
+      <RNTextInput
+        ref={ref}
+        placeholder={placeholder}
+        onChangeText={onChangeText}
+        value={value}
+        onSubmitEditing={onSubmitEditing}
+        testID={`input-${placeholder}`}
+      />
+    )),
   };
 });
 
 describe('WelcomeScreen', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('renders correctly', () => {
+    const mockNavigation = {
+      navigate: jest.fn(),
+      goBack: jest.fn(),
+    };
+
+    const { getByText, getByPlaceholderText } = render(
+      <WelcomeScreen navigation={mockNavigation} />
+    );
+    
+    expect(getByText('Welcome!')).toBeTruthy();
+    expect(getByText('How can I call you?')).toBeTruthy();
+    expect(getByPlaceholderText('Your name')).toBeTruthy();
+  });
+
   it('navega para Intro ao pressionar Enter em qualquer teclado', () => {
-    const navigate = jest.fn();
+    const mockNavigation = {
+      navigate: jest.fn(),
+      goBack: jest.fn(),
+    };
 
     const { getByPlaceholderText } = render(
-      <WelcomeScreen navigation={{ navigate, goBack: jest.fn() }} />
+      <WelcomeScreen navigation={mockNavigation} />
     );
 
     const input = getByPlaceholderText('Your name');
     fireEvent.changeText(input, 'John');
     fireEvent(input, 'submitEditing');
 
-    expect(navigate).toHaveBeenCalledWith('Intro', { userName: 'John' });
-  });
-});
-
-import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
-import WelcomeScreen from './index';
-
-// Mock navigation
-const mockNavigation = {
-  navigate: jest.fn(),
-  goBack: jest.fn(),
-};
-
-jest.mock('@react-navigation/native', () => ({
-  useNavigation: () => mockNavigation,
-}));
-
-describe('WelcomeScreen', () => {
-  it('renders correctly', () => {
-    const { getByText } = render(<WelcomeScreen />);
-    
-    expect(getByText('Wellcome!')).toBeTruthy();
-    expect(getByText('How can I call you?')).toBeTruthy();
-    expect(getByText('LIKE:ME')).toBeTruthy();
-  });
-
-  it('displays name input field', () => {
-    const { getByPlaceholderText } = render(<WelcomeScreen />);
-    
-    expect(getByPlaceholderText('Your name')).toBeTruthy();
-  });
-
-  it('enables continue button when name is entered', () => {
-    const { getByPlaceholderText, getByText } = render(<WelcomeScreen />);
-    
-    const nameInput = getByPlaceholderText('Your name');
-    const continueButton = getByText('Continue');
-    
-    // Initially disabled
-    expect(continueButton.props.style).toContainEqual(expect.objectContaining({
-      backgroundColor: '#CCCCCC'
-    }));
-    
-    // After entering name
-    fireEvent.changeText(nameInput, 'João');
-    
-    // Button should be enabled (green background)
-    expect(continueButton.props.style).toContainEqual(expect.objectContaining({
-      backgroundColor: '#4CAF50'
-    }));
-  });
-
-  it('navigates to Register screen when continue is pressed', () => {
-    const { getByPlaceholderText, getByText } = render(<WelcomeScreen />);
-    
-    const nameInput = getByPlaceholderText('Your name');
-    const continueButton = getByText('Continue');
-    
-    fireEvent.changeText(nameInput, 'João');
-    fireEvent.press(continueButton);
-    
-    expect(mockNavigation.navigate).toHaveBeenCalledWith('Register');
-  });
-
-  it('shows alert when trying to continue without name', () => {
-    const { getByText } = render(<WelcomeScreen />);
-    
-    const continueButton = getByText('Continue');
-    fireEvent.press(continueButton);
-    
-    // Should show alert (this would need additional mocking for Alert)
-    // expect(Alert.alert).toHaveBeenCalled();
+    expect(mockNavigation.navigate).toHaveBeenCalledWith('Intro', { userName: 'John' });
   });
 });

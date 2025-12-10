@@ -9,8 +9,16 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "test": "jest",
+    "test:e2e": "~/.maestro/bin/maestro test maestro/",
+    "test:e2e:welcome": "~/.maestro/bin/maestro test maestro/welcome-screen.yaml",
+    "test:e2e:objectives": "~/.maestro/bin/maestro test maestro/personal-objectives.yaml",
+    "test:e2e:onboarding": "~/.maestro/bin/maestro test maestro/onboarding-flow.yaml",
+    "test:e2e:journey": "~/.maestro/bin/maestro test maestro/complete-user-journey.yaml",
+    "test:e2e:expo-go": "./maestro/run-expo-go-tests.sh",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "build:android": "eas build --platform android",
+    "build:android:local": "eas build --local --platform android --profile staging",
+    "build:android:gradle": "npx expo prebuild --platform android && cd android && ./gradlew assembleRelease && cd ..",
     "build:ios": "eas build --platform ios",
     "build:all": "eas build --platform all",
     "submit:android": "eas submit --platform android",
@@ -68,7 +76,15 @@
     "typescript": "~5.9.2"
   },
   "jest": {
-    "preset": "react-native"
+    "preset": "react-native",
+    "transformIgnorePatterns": [
+      "node_modules/(?!(react-native|@react-native|react-native-vector-icons|expo|@expo|expo-auth-session|@react-navigation)/)"
+    ],
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/src/$1",
+      "^@/assets/(.*)$": "<rootDir>/assets/$1"
+    },
+    "setupFilesAfterEnv": ["<rootDir>/jest.setup.js"]
   },
   "overrides": {
     "react-native-appwrite": {

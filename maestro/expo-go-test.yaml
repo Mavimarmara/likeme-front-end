@@ -1,0 +1,42 @@
+# Teste E2E para Expo Go
+# IMPORTANTE: Antes de executar este teste, você precisa:
+# 1. Iniciar o servidor Expo: npx expo start
+# 2. Obter a URL do Expo (formato exp://192.168.x.x:8081)
+# 3. Substituir a URL abaixo pela URL do seu servidor Expo
+
+---
+# Abrir o app no Expo Go usando a URL do Expo
+- openLink: "exp://192.168.1.100:8081"
+  # ⚠️ SUBSTITUA pela URL que aparece quando você roda: npx expo start
+  # A URL geralmente aparece assim: exp://192.168.x.x:8081
+
+# Aguardar o app carregar
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+
+# Verificar se o app carregou (tela Loading ou Unauthenticated)
+- assertVisible: 
+    text: ".*"
+    optional: true
+
+# Aguardar navegação para Unauthenticated
+- runFlow:
+    when:
+      visible: "LIKE YOUR LIFE"
+    commands:
+      - assertVisible: "LIKE YOUR LIFE"
+      - assertVisible: "Next"
+      - tapOn: "Next"
+
+# Verificar tela Welcome
+- assertVisible: "Welcome!"
+- assertVisible: "How can I call you?"
+
+# Testar preenchimento do nome
+- tapOn: 
+    id: "input-Your name"
+- inputText: "Teste Expo Go"
+- tapOn: "Next"
+
+# Verificar navegação
+- assertVisible: "Let's start,"

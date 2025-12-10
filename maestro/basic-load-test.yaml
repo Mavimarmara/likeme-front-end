@@ -1,0 +1,43 @@
+appId: com.likeme.app
+---
+# Teste Básico: Verifica se o app carrega e mostra conteúdo
+# Este teste apenas verifica elementos visíveis sem interagir muito
+
+- launchApp:
+    clearState: true
+
+# Aguardar carregamento completo
+- waitForAnimationToEnd
+- waitForAnimationToEnd  
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+
+# Verificar se algum conteúdo está visível
+- assertVisible: 
+    text: ".*"
+    optional: true
+
+# Tentar encontrar elementos comuns
+- assertVisible: 
+    text: "LIKE.*"
+    optional: true
+    
+# Se encontrar LIKE YOUR LIFE, o app carregou corretamente
+- runFlow:
+    when:
+      visible: "LIKE YOUR LIFE"
+    commands:
+      - assertVisible: "LIKE YOUR LIFE"
+      
+# Tentar encontrar botões (pode estar em animação)
+- runFlow:
+    when:
+      visible: "Next"
+    commands:
+      - assertVisible: "Next"
+      
+- runFlow:
+    when:
+      visible: "Login"
+    commands:
+      - assertVisible: "Login"

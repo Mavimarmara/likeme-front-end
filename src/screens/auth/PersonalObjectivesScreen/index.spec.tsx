@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
+import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import PersonalObjectivesScreen from './index';
 
 jest.mock('react-native-safe-area-context', () => {
@@ -10,7 +10,7 @@ jest.mock('react-native-safe-area-context', () => {
 });
 
 jest.mock('@/assets', () => ({
-  GradientSplash3: 'GradientSplash3',
+  GradientSplash6: 'GradientSplash6',
 }));
 
 jest.mock('@/components/ui', () => {
@@ -35,15 +35,45 @@ jest.mock('@/components/ui', () => {
       </TouchableOpacity>
     ),
     ButtonGroup: ({ children }: { children: React.ReactNode }) => <View>{children}</View>,
+    Loading: ({ message }: { message: string }) => <Text>{message}</Text>,
   };
 });
+
+const mockPersonalObjectivesService = {
+  getPersonalObjectives: jest.fn(),
+};
+
+const mockStorageService = {
+  setObjectivesSelectedAt: jest.fn(),
+};
+
+jest.mock('@/services', () => ({
+  personalObjectivesService: mockPersonalObjectivesService,
+  storageService: mockStorageService,
+}));
+
+jest.mock('@/utils', () => ({
+  showError: jest.fn(),
+}));
 
 describe('PersonalObjectivesScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockPersonalObjectivesService.getPersonalObjectives.mockResolvedValue({
+      data: {
+        objectives: [
+          { id: '1', name: 'Get to know me better' },
+          { id: '2', name: 'Improve my habits' },
+        ],
+        pagination: {
+          totalPages: 1,
+        },
+      },
+    });
+    mockStorageService.setObjectivesSelectedAt.mockResolvedValue(undefined);
   });
 
-  it('renders correctly', () => {
+  it('renders correctly', async () => {
     const mockNavigation = {
       navigate: jest.fn(),
       goBack: jest.fn(),
@@ -58,13 +88,15 @@ describe('PersonalObjectivesScreen', () => {
       <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute} />
     );
 
-    expect(getByText('John,')).toBeTruthy();
-    expect(getByText('What are the main things we can help you with?')).toBeTruthy();
-    expect(getByText('Next')).toBeTruthy();
-    expect(getByText('Skip information')).toBeTruthy();
+    await waitFor(() => {
+      expect(getByText('John,')).toBeTruthy();
+      expect(getByText('What are the main things we can help you with?')).toBeTruthy();
+      expect(getByText('Next')).toBeTruthy();
+      expect(getByText('Skip information')).toBeTruthy();
+    });
   });
 
-  it('navigates to SelfAwarenessIntro when Next button is pressed', () => {
+  it('navigates to Home when Next button is pressed', async () => {
     const mockNavigation = {
       navigate: jest.fn(),
       goBack: jest.fn(),
@@ -78,14 +110,21 @@ describe('PersonalObjectivesScreen', () => {
     const { getByText } = render(
       <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute} />
     );
+
+    await waitFor(() => {
+      expect(getByText('Next')).toBeTruthy();
+    });
 
     const nextButton = getByText('Next');
     fireEvent.press(nextButton);
 
-    expect(mockNavigation.navigate).toHaveBeenCalledWith('SelfAwarenessIntro');
+    await waitFor(() => {
+      expect(mockStorageService.setObjectivesSelectedAt).toHaveBeenCalled();
+      expect(mockNavigation.navigate).toHaveBeenCalledWith('Home');
+    });
   });
 
-  it('navigates to SelfAwarenessIntro when Skip information button is pressed', () => {
+  it('navigates to Home when Skip information button is pressed', async () => {
     const mockNavigation = {
       navigate: jest.fn(),
       goBack: jest.fn(),
@@ -99,14 +138,21 @@ describe('PersonalObjectivesScreen', () => {
     const { getByText } = render(
       <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute} />
     );
+
+    await waitFor(() => {
+      expect(getByText('Skip information')).toBeTruthy();
+    });
 
     const skipButton = getByText('Skip information');
     fireEvent.press(skipButton);
 
-    expect(mockNavigation.navigate).toHaveBeenCalledWith('SelfAwarenessIntro');
+    await waitFor(() => {
+      expect(mockStorageService.setObjectivesSelectedAt).toHaveBeenCalled();
+      expect(mockNavigation.navigate).toHaveBeenCalledWith('Home');
+    });
   });
 
-  it('renders all objectives as chips', () => {
+  it('renders objectives as chips after loading', async () => {
     const mockNavigation = {
       navigate: jest.fn(),
       goBack: jest.fn(),
@@ -121,17 +167,37 @@ describe('PersonalObjectivesScreen', () => {
       <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute} />
     );
 
-    expect(getByText('Get to know me better')).toBeTruthy();
-    expect(getByText('Improve my habits')).toBeTruthy();
-    expect(getByText('Find wellbeing programs')).toBeTruthy();
-    expect(getByText('Improve my sleep')).toBeTruthy();
-    expect(getByText('Gain insights on my wellbeing')).toBeTruthy();
-    expect(getByText('Eat better')).toBeTruthy();
-    expect(getByText('Buy health products')).toBeTruthy();
-    expect(getByText('Find a community')).toBeTruthy();
-    expect(getByText('Track my treatment/program')).toBeTruthy();
-    expect(getByText('Move more')).toBeTruthy();
-    expect(getByText('Track my mood')).toBeTruthy();
+    await waitFor(() => {
+      expect(getByText('Get to know me better')).toBeTruthy();
+      expect(getByText('Improve my habits')).toBeTruthy();
+    });
+  });
+
+  it('toggles objective selection when chip is pressed', async () => {
+    const mockNavigation = {
+      navigate: jest.fn(),
+      goBack: jest.fn(),
+    };
+    const mockRoute = {
+      params: {
+        userName: 'John',
+      },
+    };
+
+    const { getByTestId } = render(
+      <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute} />
+    );
+
+    await waitFor(() => {
+      expect(getByTestId('chip-Get to know me better')).toBeTruthy();
+    });
+
+    const chip = getByTestId('chip-Get to know me better');
+    fireEvent.press(chip);
+    fireEvent.press(chip); // Toggle again
+
+    // Should not throw errors
+    expect(chip).toBeTruthy();
   });
 });
 

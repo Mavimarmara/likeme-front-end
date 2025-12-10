@@ -6,6 +6,7 @@ jest.mock('react-native-safe-area-context', () => {
   const ReactNative = require('react-native');
   return {
     SafeAreaView: ReactNative.View,
+    useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
   };
 });
 
@@ -15,7 +16,7 @@ jest.mock('@/assets', () => ({
 
 jest.mock('@/components/ui', () => {
   const React = require('react');
-  const { View, Text, TouchableOpacity, TextInput as RNTextInput } = require('react-native');
+  const { View, Text, TouchableOpacity, TextInput: RNTextInput } = require('react-native');
   return {
     Header: () => null,
     Title: ({ title }: { title: string }) => <Text>{title}</Text>,

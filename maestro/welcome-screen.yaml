@@ -1,0 +1,53 @@
+appId: com.likeme.app
+---
+# Teste E2E: Tela de Boas-vindas (Welcome Screen)
+# Testa a interação do usuário na primeira tela
+
+- launchApp:
+    clearState: true
+
+# Aguardar tela de loading passar (pode levar alguns segundos)
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+
+# Aguardar navegação para Unauthenticated e clicar em Next
+# O botão pode ter texto "Next" ou pode estar em outra localização
+- tapOn: 
+    text: ".*Next.*"
+    optional: true
+- tapOn: 
+    text: "Next"
+    optional: true
+# Se não encontrar Next, tentar encontrar qualquer botão visível
+- tapOn: 
+    text: ".*"
+    index: 0
+    optional: true
+
+# Verificar elementos da tela Welcome
+- assertVisible: "Welcome!"
+- assertVisible: "How can I call you?"
+- assertVisible: 
+    id: "input-Your name"
+
+# Teste 1: Tentar continuar sem nome (deve mostrar alerta)
+- tapOn: "Next"
+- assertVisible: "Nome obrigatório"  # Verifica se o alerta aparece
+
+# Teste 2: Preencher nome e continuar
+- tapOn: 
+    id: "input-Your name"
+- inputText: "Maria"
+- tapOn: "Next"
+
+# Verificar navegação para próxima tela
+- assertVisible: "Let's start,"
+
+# Teste 3: Usar Enter no teclado
+- launchApp
+- tapOn: 
+    id: "input-Your name"
+- inputText: "Pedro"
+- pressKey: Enter
+- assertVisible: "Let's start,"
