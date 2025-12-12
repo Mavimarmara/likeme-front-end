@@ -382,4 +382,44 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: SPACING.MD,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: SPACING.XL,
+  },
+  loadingText: {
+    marginTop: SPACING.MD,
+    fontSize: 16,
+    color: '#666666',
+  },
+  emptyContainer: {
+    padding: SPACING.XL,
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#666666',
+  },
+  outOfStockText: {
+    fontSize: 12,
+    color: '#F44336',
+    fontWeight: '600',
+  },
+  loadMoreButton: {
+    padding: SPACING.MD,
+    alignItems: 'center',
+    backgroundColor: '#F5F5F5',
+    borderRadius: 8,
+    marginTop: SPACING.MD,
+  },
+  loadMoreText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#2196F3',
+  },
+  loadingMoreContainer: {
+    padding: SPACING.MD,
+    alignItems: 'center',
+  },
 });

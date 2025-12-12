@@ -1,42 +1,58 @@
-import Constants from 'expo-constants';
-
 // Helper para obter variável de ambiente com múltiplas estratégias de fallback
+// IMPORTANTE: Durante a inicialização do módulo, usa apenas process.env para evitar
+// erros de "property is not configurable" quando o runtime ainda não está pronto
 const getEnvVar = (key: string, defaultValue?: string): string => {
   // Estratégia 1: process.env (substituído pelo Metro bundler durante o build)
-  if (process.env[key]) {
+  // Esta é a estratégia PRINCIPAL e mais segura - funciona durante a inicialização
+  if (typeof process !== 'undefined' && process.env && process.env[key]) {
     return process.env[key] as string;
   }
   
-  // Estratégia 2: Constants.expoConfig.extra.env (para desenvolvimento e builds)
-  const expoConfigExtra = Constants.expoConfig?.extra?.env;
-  if (expoConfigExtra && expoConfigExtra[key]) {
-    return expoConfigExtra[key] as string;
-  }
-  
-  // Estratégia 3: Constants.manifest.extra.env (para builds nativos antigos)
-  const manifestExtra = (Constants as any).manifest?.extra?.env;
-  if (manifestExtra && manifestExtra[key]) {
-    return manifestExtra[key] as string;
-  }
-  
-  // Estratégia 4: Constants.manifest2?.extra?.env (para builds nativos mais recentes)
-  const manifest2Extra = (Constants as any).manifest2?.extra?.env;
-  if (manifest2Extra && manifest2Extra[key]) {
-    return manifest2Extra[key] as string;
-  }
-  
-  // Estratégia 5: Acesso direto ao extra (sem .env)
-  const directExtra = Constants.expoConfig?.extra as any;
-  if (directExtra && directExtra[key]) {
-    return directExtra[key] as string;
-  }
+  // Estratégias adicionais (Constants) só serão usadas depois da inicialização
+  // através de uma função helper que pode ser chamada quando necessário
+  // Por enquanto, retorna o default para evitar acessar Constants durante init
   
   // Log de debug quando não encontra (apenas para variáveis críticas sem default)
   if (!defaultValue || defaultValue.includes('your-')) {
-    console.warn(`[ENV] ⚠️ Variável ${key} não encontrada. Usando default: ${defaultValue || 'vazio'}`);
+    // Usa console.warn apenas se console estiver disponível
+    if (typeof console !== 'undefined' && console.warn) {
+      console.warn(`[ENV] ⚠️ Variável ${key} não encontrada em process.env. Usando default: ${defaultValue || 'vazio'}`);
+    }
   }
   
   return defaultValue || '';
+};
+
+// Função helper para acessar Constants depois da inicialização (quando necessário)
+// Esta função pode ser usada em runtime quando o Constants já estiver disponível
+export const getEnvVarFromConstants = (key: string): string | undefined => {
+  try {
+    const Constants = require('expo-constants').default;
+    
+    // Estratégia 2: Constants.expoConfig.extra.env (para desenvolvimento e builds)
+    if (Constants?.expoConfig?.extra?.env?.[key]) {
+      return Constants.expoConfig.extra.env[key];
+    }
+    
+    // Estratégia 3: Constants.manifest.extra.env (para builds nativos antigos)
+    if ((Constants as any)?.manifest?.extra?.env?.[key]) {
+      return (Constants as any).manifest.extra.env[key];
+    }
+    
+    // Estratégia 4: Constants.manifest2?.extra?.env (para builds nativos mais recentes)
+    if ((Constants as any)?.manifest2?.extra?.env?.[key]) {
+      return (Constants as any).manifest2.extra.env[key];
+    }
+    
+    // Estratégia 5: Acesso direto ao extra (sem .env)
+    if (Constants?.expoConfig?.extra?.[key]) {
+      return Constants.expoConfig.extra[key];
+    }
+  } catch (error) {
+    // Silenciosamente ignora erros
+  }
+  
+  return undefined;
 };
 
 export const AUTH0_CONFIG = {

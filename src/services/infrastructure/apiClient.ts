@@ -225,6 +225,31 @@ class ApiClient {
     }
   }
 
+  async patch<T>(endpoint: string, data?: any, includeAuth = true): Promise<T> {
+    try {
+      const execute = async () => {
+        const url = `${this.baseUrl}${endpoint}`;
+        const headers = await this.getHeaders(includeAuth);
+        this.logAuthHeader('PATCH', url, headers);
+        return fetch(url, {
+          method: 'PATCH',
+          headers,
+          body: data ? JSON.stringify(data) : undefined,
+        });
+      };
+
+      const response = await this.requestWithRefresh(execute, includeAuth);
+
+      return this.handleResponse<T>(response);
+    } catch (error) {
+      logger.error('API PATCH error:', error);
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Falha na comunicação com o servidor');
+    }
+  }
+
   async delete<T>(endpoint: string, data?: any, includeAuth = true): Promise<T> {
     try {
       const execute = async () => {

@@ -1,5 +1,4 @@
 import * as AuthSession from 'expo-auth-session';
-import Constants from 'expo-constants';
 import * as Crypto from 'expo-crypto';
 import { Alert } from 'react-native';
 import { AUTH0_CONFIG, AUTH_CONFIG, getApiUrl } from '@/config';
@@ -217,21 +216,27 @@ class AuthService {
       return AUTH_CONFIG.projectNameForProxy;
     }
 
-    const expoConfig = Constants.expoConfig;
-    if (!expoConfig) {
-      return undefined;
-    }
+    // Lazy import do Constants para evitar problemas durante a inicialização
+    try {
+      const Constants = require('expo-constants').default;
+      const expoConfig = Constants?.expoConfig;
+      if (!expoConfig) {
+        return undefined;
+      }
 
-    if (expoConfig.originalFullName) {
-      return expoConfig.originalFullName;
-    }
+      if (expoConfig.originalFullName) {
+        return expoConfig.originalFullName;
+      }
 
-    if (expoConfig.owner && expoConfig.slug) {
-      return `@${expoConfig.owner}/${expoConfig.slug}`;
-    }
+      if (expoConfig.owner && expoConfig.slug) {
+        return `@${expoConfig.owner}/${expoConfig.slug}`;
+      }
 
-    if (expoConfig.slug) {
-      return expoConfig.slug;
+      if (expoConfig.slug) {
+        return expoConfig.slug;
+      }
+    } catch (error) {
+      // Silenciosamente ignora erros se Constants não estiver disponível
     }
 
     return undefined;

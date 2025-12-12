@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image, StyleSheet, Dimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, Image, StyleSheet, Dimensions, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -7,6 +7,8 @@ import { Header } from '@/components/ui/layout';
 import { BackgroundWithGradient, LogoMini } from '@/assets';
 import { ProductsCarousel, type Product } from '@/components/ui/carousel';
 import { useLogout } from '@/hooks';
+import { productService } from '@/services';
+import type { Product as ApiProduct } from '@/types/product';
 import type { RootStackParamList } from '@/types/navigation';
 import { styles } from './styles';
 
@@ -33,25 +35,6 @@ const USER_REVIEWS = [
     comment: "I'd recommend it to everyone!",
     date: '19 Jan 2023',
     rating: 4,
-  },
-] as const;
-
-const RECOMMENDED_PLANS: Product[] = [
-  {
-    id: '1',
-    title: 'Strategies to relax in your day to day',
-    price: 30.99,
-    tag: 'Curated for you',
-    image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400',
-    likes: 10,
-  },
-  {
-    id: '2',
-    title: 'How to evolve to a deep sleep',
-    price: 5.99,
-    tag: 'Market based',
-    image: 'https://images.unsplash.com/photo-1494390248081-4e521a5940db?w=400',
-    likes: 10,
   },
 ] as const;
 
@@ -82,22 +65,65 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   const [activeTab, setActiveTab] = useState<'info' | 'preview'>('info');
   const [activeInfoTab, setActiveInfoTab] = useState<'about' | 'objectives' | 'communities'>('about');
   const [isFavorite, setIsFavorite] = useState(false);
+  const [product, setProduct] = useState<ApiProduct | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [relatedProducts, setRelatedProducts] = useState<ApiProduct[]>([]);
+  
   const { logout } = useLogout({ navigation });
   const handleLogout = logout;
 
-  const product = route.params?.product || {
-    id: route.params?.productId || '1',
-    title: 'Mental Health in the Workplace',
-    price: '$29.90',
-    image: 'https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=800',
-    category: 'Programs',
-    tags: ['Programs', 'Stress'],
-    description: 'This protocol establishes guidelines to promote a healthy work environment, prevent mental illness, and provide adequate support to those who need it.',
-    provider: {
-      name: 'Dr. Peter Velasquez',
-      avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=100',
-    },
-    rating: 5,
+  const productId = route.params?.productId;
+
+  useEffect(() => {
+    if (productId) {
+      loadProduct();
+      loadRelatedProducts();
+    } else if (route.params?.product) {
+      // Use provided product data as fallback
+      const fallbackProduct = route.params.product;
+      setProduct({
+        id: fallbackProduct.id,
+        name: fallbackProduct.title,
+        description: fallbackProduct.description,
+        price: parseFloat(fallbackProduct.price.replace('$', '').replace(',', '')),
+        image: fallbackProduct.image,
+        category: fallbackProduct.category,
+        quantity: 0,
+        status: 'active',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+      setLoading(false);
+    }
+  }, [productId]);
+
+  const loadProduct = async () => {
+    try {
+      setLoading(true);
+      const response = await productService.getProductById(productId);
+      if (response.success && response.data) {
+        setProduct(response.data);
+      }
+    } catch (error) {
+      console.error('Error loading product:', error);
+      Alert.alert('Error', 'Failed to load product details');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadRelatedProducts = async () => {
+    try {
+      const response = await productService.listProducts({
+        limit: 5,
+        category: route.params?.product?.category,
+      });
+      if (response.success && response.data) {
+        setRelatedProducts(response.data.products.filter(p => p.id !== productId));
+      }
+    } catch (error) {
+      console.error('Error loading related products:', error);
+    }
   };
 
   const handleBackPress = () => {
@@ -109,22 +135,31 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   };
 
   const handleAddToCart = () => {
+    if (!product) return;
+    
+    if (product.status === 'out_of_stock' || product.quantity === 0) {
+      Alert.alert('Out of Stock', 'This product is currently out of stock');
+      return;
+    }
+
     console.log('Add to cart:', product.id);
+    Alert.alert('Success', 'Product added to cart');
   };
 
   const handleSeeProvider = () => {
-    console.log('See provider:', product.provider?.name);
+    console.log('See provider');
   };
 
-  const handleProductPress = (recommendedProduct: Product) => {
+  const handleProductPress = (recommendedProduct: ApiProduct) => {
     navigation.navigate('ProductDetails', {
       productId: recommendedProduct.id,
       product: {
         id: recommendedProduct.id,
-        title: recommendedProduct.title,
-        price: `R$${recommendedProduct.price.toFixed(2)}`,
-        image: recommendedProduct.image,
-        category: recommendedProduct.tag,
+        title: recommendedProduct.name,
+        price: `$${Number(recommendedProduct.price).toFixed(2)}`,
+        image: recommendedProduct.image || 'https://via.placeholder.com/400',
+        category: recommendedProduct.category,
+        description: recommendedProduct.description,
       },
     });
   };
@@ -132,6 +167,47 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   const handleProductLike = (recommendedProduct: Product) => {
     console.log('Like product:', recommendedProduct.id);
   };
+
+  const formatPrice = (price: number) => {
+    return `$${Number(price).toFixed(2)}`;
+  };
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Image
+          source={BackgroundWithGradient}
+          style={StyleSheet.absoluteFill}
+          resizeMode="cover"
+        />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#2196F3" />
+          <Text style={styles.loadingText}>Loading product...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (!product) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Image
+          source={BackgroundWithGradient}
+          style={StyleSheet.absoluteFill}
+          resizeMode="cover"
+        />
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Product not found</Text>
+          <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
+            <Text>Go Back</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  const productTags = product.category ? [product.category] : [];
+  const isOutOfStock = product.status === 'out_of_stock' || product.quantity === 0;
 
   const renderCustomHeader = () => (
     <View style={styles.customHeader}>
@@ -149,22 +225,32 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
 
   const renderHeroSection = () => (
     <View style={styles.heroSection}>
-      <Image source={{ uri: product.image }} style={styles.heroImage} />
+      <Image 
+        source={{ uri: product.image || 'https://via.placeholder.com/800' }} 
+        style={styles.heroImage} 
+      />
       <View style={styles.heroProductCard}>
         <View style={styles.heroCardTags}>
-          {product.tags?.map((tag, index) => (
+          {productTags.map((tag, index) => (
             <View key={index} style={styles.heroCardTag}>
               <Text style={styles.heroCardTagText}>{tag}</Text>
             </View>
           ))}
         </View>
-        <Text style={styles.heroCardTitle}>{product.title}</Text>
+        <Text style={styles.heroCardTitle}>{product.name}</Text>
         <View style={styles.heroCardPriceRow}>
-          <Text style={styles.heroCardPrice}>{product.price}</Text>
-          <TouchableOpacity style={styles.heroCardCartButton} onPress={handleAddToCart} activeOpacity={0.7}>
-            <Icon name="shopping-cart" size={20} color="#001137" />
-          </TouchableOpacity>
+          <Text style={styles.heroCardPrice}>{formatPrice(product.price)}</Text>
+          {!isOutOfStock && (
+            <TouchableOpacity style={styles.heroCardCartButton} onPress={handleAddToCart} activeOpacity={0.7}>
+              <Icon name="shopping-cart" size={20} color="#001137" />
+            </TouchableOpacity>
+          )}
         </View>
+        {isOutOfStock && (
+          <View style={styles.outOfStockBadge}>
+            <Text style={styles.outOfStockText}>Out of Stock</Text>
+          </View>
+        )}
       </View>
     </View>
   );
@@ -216,37 +302,23 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
 
   const renderAboutContent = () => (
     <View style={styles.aboutContent}>
-      <Text style={styles.aboutItem}>• Promote an organizational culture that values mental health.</Text>
-      <Text style={styles.aboutItem}>• Prevent situations of stress, harassment, and work overload.</Text>
-      <Text style={styles.aboutItem}>• Encourage work-life balance.</Text>
-      <Text style={styles.aboutItem}>• Ensure psychological support and appropriate guidance for employees.</Text>
-    </View>
-  );
-
-  const renderVideoSection = () => (
-    <View style={styles.videoSection}>
-      <View style={styles.videoContainer}>
-        <Image
-          source={{ uri: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800' }}
-          style={styles.videoThumbnail}
-        />
-        <TouchableOpacity style={styles.playButton} activeOpacity={0.7}>
-          <Icon name="play-arrow" size={40} color="#FFFFFF" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.downloadButton} activeOpacity={0.7}>
-          <Text style={styles.downloadButtonText}>Download</Text>
-          <Icon name="download" size={16} color="#001137" />
-        </TouchableOpacity>
-        <View style={styles.videoOverlay}>
-          <Text style={styles.videoTitle}>RELAXING MOMENT</Text>
-          <Text style={styles.videoDuration}>3 minutes video</Text>
-        </View>
-      </View>
-      <View style={styles.videoPagination}>
-        <View style={[styles.videoDot, styles.videoDotActive]} />
-        <View style={styles.videoDot} />
-        <View style={styles.videoDot} />
-      </View>
+      {product.description ? (
+        <Text style={styles.productDescription}>{product.description}</Text>
+      ) : (
+        <>
+          <Text style={styles.aboutItem}>• Product information will be displayed here</Text>
+          <Text style={styles.aboutItem}>• Additional details about the product</Text>
+        </>
+      )}
+      {product.sku && (
+        <Text style={styles.productSku}>SKU: {product.sku}</Text>
+      )}
+      {product.brand && (
+        <Text style={styles.productBrand}>Brand: {product.brand}</Text>
+      )}
+      {product.weight && (
+        <Text style={styles.productWeight}>Weight: {product.weight} kg</Text>
+      )}
     </View>
   );
 
@@ -280,6 +352,15 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     </View>
   );
 
+  const recommendedProductsCarousel: Product[] = relatedProducts.map(p => ({
+    id: p.id,
+    title: p.name,
+    price: Number(p.price),
+    tag: p.category || 'Product',
+    image: p.image || 'https://via.placeholder.com/400',
+    likes: 0,
+  }));
+
   return (
     <SafeAreaView style={styles.container}>
       <Image
@@ -295,37 +376,52 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
         {renderHeroSection()}
         <View style={styles.content}>
           {renderTabs()}
-          <Text style={styles.productTitle}>{product.title}</Text>
-          <Text style={styles.productDescription}>{product.description}</Text>
+          <Text style={styles.productTitle}>{product.name}</Text>
+          <Text style={styles.productDescription}>{product.description || 'No description available'}</Text>
           
-          <TouchableOpacity style={styles.addToCartButton} onPress={handleAddToCart} activeOpacity={0.8}>
-            <Image source={{ uri: product.provider?.avatar }} style={styles.providerAvatarSmall} />
-            <Text style={styles.addToCartText}>Add to cart</Text>
-            <Icon name="shopping-cart" size={20} color="#FFFFFF" />
-            <View style={styles.ratingBadge}>
-              <Text style={styles.ratingBadgeText}>5</Text>
-              <Icon name="star" size={12} color="#FFB800" />
-            </View>
+          <TouchableOpacity 
+            style={[
+              styles.addToCartButton, 
+              isOutOfStock && styles.addToCartButtonDisabled
+            ]} 
+            onPress={handleAddToCart} 
+            activeOpacity={0.8}
+            disabled={isOutOfStock}
+          >
+            <Text style={styles.addToCartText}>
+              {isOutOfStock ? 'Out of Stock' : 'Add to cart'}
+            </Text>
+            {!isOutOfStock && (
+              <>
+                <Icon name="shopping-cart" size={20} color="#FFFFFF" />
+                <View style={styles.ratingBadge}>
+                  <Text style={styles.ratingBadgeText}>5</Text>
+                  <Icon name="star" size={12} color="#FFB800" />
+                </View>
+              </>
+            )}
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.providerButton} onPress={handleSeeProvider} activeOpacity={0.8}>
-            <Text style={styles.providerButtonText}>See provider profile {'>'}</Text>
-          </TouchableOpacity>
-
-          {renderVideoSection()}
           {renderInfoTabs()}
           {activeInfoTab === 'about' && renderAboutContent()}
           {renderUserFeedback()}
 
-          <View style={styles.recommendedSection}>
-            <ProductsCarousel
-              title="Plans for you based on the evolution of your markers"
-              subtitle="Discover our options selected just for you"
-              products={RECOMMENDED_PLANS}
-              onProductPress={handleProductPress}
-              onProductLike={handleProductLike}
-            />
-          </View>
+          {recommendedProductsCarousel.length > 0 && (
+            <View style={styles.recommendedSection}>
+              <ProductsCarousel
+                title="Related products"
+                subtitle="Discover similar products"
+                products={recommendedProductsCarousel}
+                onProductPress={(p) => {
+                  const relatedProduct = relatedProducts.find(rp => rp.id === p.id);
+                  if (relatedProduct) {
+                    handleProductPress(relatedProduct);
+                  }
+                }}
+                onProductLike={handleProductLike}
+              />
+            </View>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -381,4 +381,46 @@ export const styles = StyleSheet.create({
   recommendedSection: {
     marginTop: SPACING.LG,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: SPACING.XL,
+  },
+  loadingText: {
+    marginTop: SPACING.MD,
+    fontSize: 16,
+    color: '#666666',
+  },
+  outOfStockBadge: {
+    marginTop: SPACING.SM,
+    backgroundColor: '#FFEBEE',
+    borderRadius: BORDER_RADIUS.SM,
+    padding: SPACING.SM,
+    alignItems: 'center',
+  },
+  outOfStockText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#F44336',
+  },
+  addToCartButtonDisabled: {
+    backgroundColor: '#CCCCCC',
+    opacity: 0.6,
+  },
+  productSku: {
+    fontSize: 14,
+    color: '#666666',
+    marginTop: SPACING.SM,
+  },
+  productBrand: {
+    fontSize: 14,
+    color: '#666666',
+    marginTop: SPACING.XS,
+  },
+  productWeight: {
+    fontSize: 14,
+    color: '#666666',
+    marginTop: SPACING.XS,
+  },
 });
