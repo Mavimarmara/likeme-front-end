@@ -134,7 +134,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     setIsFavorite(!isFavorite);
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!product) return;
     
     if (product.status === 'out_of_stock' || product.quantity === 0) {
@@ -142,8 +142,36 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       return;
     }
 
-    console.log('Add to cart:', product.id);
-    Alert.alert('Success', 'Product added to cart');
+    try {
+      // Adiciona o produto ao carrinho
+      // Garante que o preço seja um número válido, preservando a precisão
+      const productPrice = typeof product.price === 'number' 
+        ? product.price 
+        : parseFloat(String(product.price).replace(/[^0-9.-]/g, '')) || 0;
+      
+      const cartItem = {
+        id: product.id,
+        image: product.image || 'https://via.placeholder.com/108x140',
+        title: product.name,
+        subtitle: product.description,
+        price: productPrice,
+        quantity: 1,
+        rating: 5, // Default rating
+        tags: product.category ? [product.category] : [],
+        category: product.category || 'Product',
+        subCategory: product.category || 'Product',
+      };
+      
+      // Importa o storageService dinamicamente para evitar dependência circular
+      const storageService = require('@/services/auth/storageService').default;
+      await storageService.addToCart(cartItem);
+      
+      // Navega para o carrinho após adicionar o produto
+      navigation.navigate('Cart');
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      Alert.alert('Error', 'Failed to add product to cart');
+    }
   };
 
   const handleSeeProvider = () => {
@@ -168,8 +196,13 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     console.log('Like product:', recommendedProduct.id);
   };
 
-  const formatPrice = (price: number) => {
-    return `$${Number(price).toFixed(2)}`;
+  const formatPrice = (price: number | undefined | null) => {
+    if (price === undefined || price === null || isNaN(Number(price))) {
+      return '$0.00';
+    }
+    // Garante que o preço seja formatado com 2 casas decimais
+    const numPrice = typeof price === 'number' ? price : parseFloat(String(price)) || 0;
+    return `$${numPrice.toFixed(2)}`;
   };
 
   if (loading) {

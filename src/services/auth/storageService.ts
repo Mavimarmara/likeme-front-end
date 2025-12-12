@@ -6,6 +6,7 @@ const TOKEN_KEY = '@likeme:auth_token';
 const USER_KEY = '@likeme:user';
 const REGISTER_COMPLETED_AT_KEY = '@likeme:register_completed_at';
 const OBJECTIVES_SELECTED_AT_KEY = '@likeme:objectives_selected_at';
+const CART_ITEMS_KEY = '@likeme:cart_items';
 
 class StorageService {
   async setToken(token: string): Promise<void> {
@@ -105,12 +106,71 @@ class StorageService {
     }
   }
 
+  async getCartItems(): Promise<any[]> {
+    try {
+      const cartItemsString = await AsyncStorage.getItem(CART_ITEMS_KEY);
+      if (cartItemsString) {
+        return JSON.parse(cartItemsString);
+      }
+      return [];
+    } catch (error) {
+      logger.error('Error getting cart items:', error);
+      return [];
+    }
+  }
+
+  async setCartItems(items: any[]): Promise<void> {
+    try {
+      await AsyncStorage.setItem(CART_ITEMS_KEY, JSON.stringify(items));
+    } catch (error) {
+      logger.error('Error saving cart items:', error);
+    }
+  }
+
+  async addToCart(item: any): Promise<void> {
+    try {
+      const cartItems = await this.getCartItems();
+      const existingItemIndex = cartItems.findIndex(cartItem => cartItem.id === item.id);
+      
+      if (existingItemIndex >= 0) {
+        // Se o item já existe, aumenta a quantidade
+        cartItems[existingItemIndex].quantity = (cartItems[existingItemIndex].quantity || 1) + 1;
+      } else {
+        // Adiciona novo item
+        cartItems.push({ ...item, quantity: 1 });
+      }
+      
+      await this.setCartItems(cartItems);
+    } catch (error) {
+      logger.error('Error adding to cart:', error);
+    }
+  }
+
+  async removeCartItem(itemId: string): Promise<void> {
+    try {
+      const cartItems = await this.getCartItems();
+      const filteredItems = cartItems.filter(item => item.id !== itemId);
+      await this.setCartItems(filteredItems);
+    } catch (error) {
+      logger.error('Error removing cart item:', error);
+    }
+  }
+
+  async clearCart(): Promise<void> {
+    try {
+      await AsyncStorage.removeItem(CART_ITEMS_KEY);
+    } catch (error) {
+      logger.error('Error clearing cart:', error);
+    }
+  }
+
   async clearAll(): Promise<void> {
     try {
       await this.removeToken();
       await this.removeUser();
       await AsyncStorage.removeItem(REGISTER_COMPLETED_AT_KEY);
       await AsyncStorage.removeItem(OBJECTIVES_SELECTED_AT_KEY);
+      await this.clearCart();
     } catch (error) {
       logger.error('Error clearing storage:', error);
     }

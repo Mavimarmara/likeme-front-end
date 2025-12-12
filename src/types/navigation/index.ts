@@ -25,6 +25,7 @@ export type RootStackParamList = {
   Profile: undefined;
   Home: undefined;
   Summary: undefined;
+  Cart: undefined;
 };
 
 import type { Post } from '@/types';

@@ -97,8 +97,13 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     });
   };
 
-  const formatPrice = (price: number) => {
-    return `$${Number(price).toFixed(2)}`;
+  const formatPrice = (price: number | undefined | null) => {
+    if (price === undefined || price === null || isNaN(Number(price))) {
+      return '$0.00';
+    }
+    // Garante que o preço seja formatado com 2 casas decimais
+    const numPrice = typeof price === 'number' ? price : parseFloat(String(price)) || 0;
+    return `$${numPrice.toFixed(2)}`;
   };
 
   const menuItems = useMemo(
@@ -209,7 +214,11 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
           <View style={styles.weekHighlightContent}>
             <Text style={styles.weekHighlightTitle}>{highlight.name}</Text>
             <Text style={styles.weekHighlightPrice}>{formatPrice(highlight.price)}</Text>
-            <TouchableOpacity style={styles.weekHighlightCartButton} activeOpacity={0.7}>
+            <TouchableOpacity 
+              style={styles.weekHighlightCartButton} 
+              onPress={() => navigation.navigate('Cart')}
+              activeOpacity={0.7}
+            >
               <Icon name="shopping-cart" size={20} color="#000" />
             </TouchableOpacity>
           </View>
