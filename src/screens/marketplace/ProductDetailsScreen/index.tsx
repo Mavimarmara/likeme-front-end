@@ -6,7 +6,6 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header } from '@/components/ui/layout';
 import { BackgroundWithGradient, LogoMini } from '@/assets';
 import { ProductsCarousel, type Product } from '@/components/ui/carousel';
-import { useLogout } from '@/hooks';
 import { productService } from '@/services';
 import type { Product as ApiProduct } from '@/types/product';
 import type { RootStackParamList } from '@/types/navigation';
@@ -69,8 +68,6 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   const [loading, setLoading] = useState(true);
   const [relatedProducts, setRelatedProducts] = useState<ApiProduct[]>([]);
   
-  const { logout } = useLogout({ navigation });
-  const handleLogout = logout;
 
   const productId = route.params?.productId;
 

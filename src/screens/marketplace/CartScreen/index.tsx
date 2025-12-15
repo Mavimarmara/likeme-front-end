@@ -124,8 +124,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
   };
 
   const handleBuy = () => {
-    // Lógica para finalizar compra
-    console.log('Finalizar compra');
+    navigation.navigate('Checkout');
   };
 
   const calculateSubtotal = () => {

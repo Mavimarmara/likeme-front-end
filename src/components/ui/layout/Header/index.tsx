@@ -9,6 +9,8 @@ interface HeaderProps {
   showBackButton?: boolean;
   onLogoutPress?: () => void;
   showLogoutButton?: boolean;
+  onCartPress?: () => void;
+  showCartButton?: boolean;
 }
 
 const Header: React.FC<HeaderProps> = ({ 
@@ -16,6 +18,8 @@ const Header: React.FC<HeaderProps> = ({
   showBackButton = true,
   onLogoutPress,
   showLogoutButton = false,
+  onCartPress,
+  showCartButton = false,
 }) => {
   return (
     <View style={styles.header}>
@@ -35,6 +39,21 @@ const Header: React.FC<HeaderProps> = ({
         </TouchableOpacity>
       )}
       <LogoMini width={87} height={16} />
+      {showCartButton && onCartPress && (
+        <TouchableOpacity 
+          style={styles.cartButton}
+          onPress={onCartPress}
+          activeOpacity={0.7}
+        >
+          <ImageBackground
+            source={BackgroundIconButton}
+            style={styles.cartButtonBackground}
+            imageStyle={styles.cartButtonImage}
+          >
+            <Icon name="shopping-cart" size={18} color="#0F1B33" />
+          </ImageBackground>
+        </TouchableOpacity>
+      )}
       {showLogoutButton && onLogoutPress && (
         <TouchableOpacity 
           style={styles.logoutButton}

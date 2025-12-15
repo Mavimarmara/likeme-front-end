@@ -7,7 +7,6 @@ import { SearchBar } from '@/components/ui/inputs';
 import { FloatingMenu } from '@/components/ui/menu';
 import { Header } from '@/components/ui/layout';
 import { BackgroundWithGradient } from '@/assets';
-import { useLogout } from '@/hooks';
 import { productService } from '@/services';
 import type { Product as ApiProduct } from '@/types/product';
 import type { RootStackParamList } from '@/types/navigation';
@@ -42,8 +41,9 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   const [hasMore, setHasMore] = useState(true);
 
   const rootNavigation = navigation.getParent() ?? navigation;
-  const { logout } = useLogout({ navigation });
-  const handleLogout = logout;
+  const handleCartPress = () => {
+    navigation.navigate('Cart');
+  };
 
   useEffect(() => {
     loadProducts();
@@ -348,8 +348,8 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       />
       <Header 
         showBackButton={false} 
-        showLogoutButton={true}
-        onLogoutPress={handleLogout}
+        showCartButton={true}
+        onCartPress={handleCartPress}
       />
       <View style={styles.content}>
         {renderCustomHeader()}

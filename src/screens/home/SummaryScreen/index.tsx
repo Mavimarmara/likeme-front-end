@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { FloatingMenu } from '@/components/ui/menu';
 import { Header } from '@/components/ui/layout';
 import { BackgroundWithGradient } from '@/assets';
-import { useLogout, useCommunities } from '@/hooks';
+import { useCommunities } from '@/hooks';
 import { mapCommunityToRecommendedCommunity, mapCommunityToOtherCommunity, mapCommunityPostToPost } from '@/utils/community/mappers';
 import { communityService } from '@/services';
 import type { CommunityFeedData } from '@/types/community';
@@ -110,8 +110,9 @@ const RECOMMENDED_PRODUCTS: Product[] = [
 
 const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   const rootNavigation = navigation.getParent() ?? navigation;
-  const { logout } = useLogout({ navigation });
-  const handleLogout = logout;
+  const handleCartPress = () => {
+    rootNavigation.navigate('Cart' as never);
+  };
 
   const {
     communities: rawCommunities,
@@ -414,8 +415,8 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
       />
       <Header 
         showBackButton={false} 
-        showLogoutButton={true}
-        onLogoutPress={handleLogout}
+        showCartButton={true}
+        onCartPress={handleCartPress}
       />
       <View style={styles.content}>
         <ScrollView showsVerticalScrollIndicator={false}>

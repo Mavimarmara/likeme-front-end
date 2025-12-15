@@ -10,7 +10,7 @@ import type { CommunityCategory } from '@/types/community';
 import { BackgroundWithGradient } from '@/assets';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
-import { useUserFeed, useLogout, useCommunities } from '@/hooks';
+import { useUserFeed, useCommunities } from '@/hooks';
 import { mapFiltersToFeedParams } from '@/utils/community/filterMapper';
 import { mapCommunityToProgram } from '@/utils/community/mappers';
 import { communityService } from '@/services';
@@ -231,7 +231,9 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilters, setSelectedFilters] = useState<FilterType>({});
 
-  const { logout } = useLogout({ navigation });
+  const handleCartPress = () => {
+    rootNavigation?.navigate('Cart' as never);
+  };
 
   const {
     communities: rawCommunities,
@@ -362,7 +364,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     loadChannels();
   }, []);
 
-  const rootNavigation = navigation.getParent()?.getParent?.() ?? navigation.getParent();
 
   const menuItems = useMemo(
     () => [
@@ -464,8 +465,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     console.log('Filtros salvos:', filters);
   };
 
-  const handleLogout = logout;
-
   return (
     <SafeAreaView style={styles.container}>
       <Image
@@ -475,8 +474,8 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
       />
       <Header 
         showBackButton={false} 
-        showLogoutButton={true}
-        onLogoutPress={handleLogout}
+        showCartButton={true}
+        onCartPress={handleCartPress}
       />
       <View style={styles.content}>
         <View style={styles.toggleContainer}>
