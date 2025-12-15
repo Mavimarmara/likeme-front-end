@@ -188,75 +188,83 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
 
   const renderCartItem = (item: CartItem) => (
     <View key={item.id} style={styles.cartItemCard}>
+      {/* Imagem posicionada à esquerda */}
       <Image source={{ uri: item.image }} style={styles.itemImage} />
-      <View style={styles.itemContent}>
-        <View style={styles.itemHeader}>
-          <View style={styles.itemInfo}>
-            <Text style={styles.itemTitle} numberOfLines={2} ellipsizeMode="tail">
-              {item.title}
-            </Text>
-            {item.subtitle && (
-              <Text style={styles.itemSubtitle} numberOfLines={1} ellipsizeMode="tail">
-                {item.subtitle}
+      
+      {/* Tags e botão delete - PRIMEIRO (acima do título) */}
+      <View style={styles.itemTagsRow}>
+        <View style={styles.tagsContainer}>
+          {item.tags.map((tag, index) => (
+            <View 
+              key={index} 
+              style={styles.tagBadge}
+            >
+              <Text style={[
+                styles.tagText,
+                index === 0 && styles.tagTextOrange,
+                index === 1 && styles.tagTextGreen
+              ]}>
+                {tag}
               </Text>
-            )}
-            {item.date && (
-              <Text style={styles.itemDate}>Date: {item.date}</Text>
-            )}
-          </View>
-          {item.rating !== undefined && item.rating !== null && (
-            <View style={styles.ratingContainer}>
-              <Text style={styles.ratingText}>{formatRating(item.rating)}</Text>
-              <Icon name="star" size={18} color="#001137" />
             </View>
+          ))}
+        </View>
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => handleRemoveItem(item.id)}
+          activeOpacity={0.7}
+        >
+          <Icon name="delete" size={24} color="#001137" />
+        </TouchableOpacity>
+      </View>
+      
+      {/* Conteúdo principal - título, subtitle/date e rating */}
+      <View style={styles.itemHeaderContainer}>
+        <View style={styles.itemInfo}>
+          <Text style={styles.itemTitle} numberOfLines={2} ellipsizeMode="tail">
+            {item.title}
+          </Text>
+          {item.subtitle && (
+            <Text style={styles.itemSubtitle} numberOfLines={1} ellipsizeMode="tail">
+              {item.subtitle}
+            </Text>
+          )}
+          {!item.subtitle && item.date && (
+            <Text style={styles.itemDate}>Date: {item.date}</Text>
+          )}
+          {item.subtitle && item.date && (
+            <Text style={styles.itemDate}>Date: {item.date}</Text>
           )}
         </View>
-        <View style={styles.itemTagsRow}>
-          <View style={styles.tagsContainer}>
-            {item.tags.map((tag, index) => (
-              <View 
-                key={index} 
-                style={styles.tagBadge}
-              >
-                <Text style={[
-                  styles.tagText,
-                  index === 0 && styles.tagTextOrange,
-                  index === 1 && styles.tagTextGreen
-                ]}>
-                  {tag}
-                </Text>
-              </View>
-            ))}
+        {item.rating !== undefined && item.rating !== null && (
+          <View style={styles.ratingContainer}>
+            <Text style={styles.ratingText}>{formatRating(item.rating)}</Text>
+            <Icon name="star" size={18} color="#001137" />
           </View>
+        )}
+      </View>
+      
+      {/* Preço e controles de quantidade */}
+      <View style={styles.itemFooter}>
+        <Text style={styles.itemPrice}>{formatPrice(item.price)}</Text>
+        <View style={styles.quantityControls}>
           <TouchableOpacity
-            style={styles.deleteButton}
-            onPress={() => handleRemoveItem(item.id)}
+            style={styles.quantityButton}
+            onPress={() => handleDecreaseQuantity(item.id)}
             activeOpacity={0.7}
           >
-            <Icon name="delete" size={24} color="#001137" />
+            <Icon name="remove-circle-outline" size={24} color="#001137" />
           </TouchableOpacity>
-        </View>
-        <View style={styles.itemFooter}>
-          <Text style={styles.itemPrice}>{formatPrice(item.price)}</Text>
-          <View style={styles.quantityControls}>
-            <TouchableOpacity
-              style={styles.quantityButton}
-              onPress={() => handleDecreaseQuantity(item.id)}
-              activeOpacity={0.7}
-            >
-              <Icon name="remove-circle-outline" size={24} color="#001137" />
-            </TouchableOpacity>
-            <Text style={styles.quantityText}>
-              {String(item.quantity).padStart(2, '0')}
-            </Text>
-            <TouchableOpacity
-              style={styles.quantityButton}
-              onPress={() => handleIncreaseQuantity(item.id)}
-              activeOpacity={0.7}
-            >
-              <Icon name="add-circle-outline" size={24} color="#001137" />
-            </TouchableOpacity>
-          </View>
+          <Text style={styles.quantityText}>
+            {String(item.quantity).padStart(2, '0')}
+          </Text>
+          <TouchableOpacity
+            style={styles.quantityButton}
+            onPress={() => handleIncreaseQuantity(item.id)}
+            activeOpacity={0.7}
+          >
+            <Icon name="add-circle-outline" size={24} color="#001137" />
+          </TouchableOpacity>
         </View>
       </View>
     </View>

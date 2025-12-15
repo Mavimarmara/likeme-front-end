@@ -2,6 +2,9 @@ import { StyleSheet, Dimensions } from 'react-native';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES } from '@/constants';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const CART_ITEM_WIDTH = 363;
+const CART_ITEM_HEIGHT = 140;
+const CART_IMAGE_WIDTH = 108;
 
 export const styles = StyleSheet.create({
   container: {
@@ -92,63 +95,72 @@ export const styles = StyleSheet.create({
   cartItemCard: {
     backgroundColor: '#fbf7e5',
     borderRadius: 22,
-    height: 140,
-    flexDirection: 'row',
+    height: CART_ITEM_HEIGHT,
+    width: CART_ITEM_WIDTH,
+    position: 'relative',
     overflow: 'hidden',
   },
   itemImage: {
-    width: 108,
-    height: 140,
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: CART_IMAGE_WIDTH,
+    height: CART_ITEM_HEIGHT,
     borderRadius: 22,
     backgroundColor: '#e0e0e0',
   },
-  itemContent: {
-    flex: 1,
-    paddingLeft: 11,
-    paddingTop: SPACING.MD + 7,
-    paddingRight: SPACING.MD,
-    paddingBottom: SPACING.MD,
-    justifyContent: 'space-between',
-  },
-  itemHeader: {
+  itemTagsRow: {
+    position: 'absolute',
+    left: 119,
+    top: 15, // Tags ficam no topo (acima do título)
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
+    width: 224,
+  },
+  itemHeaderContainer: {
+    position: 'absolute',
+    left: 119,
+    top: 47, // Título fica abaixo das tags (15px top + 24px altura tags + 8px gap = ~47px)
+    flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: SPACING.MD + 7,
-    marginBottom: SPACING.SM,
+    gap: 23,
+    width: 224,
   },
   itemInfo: {
-    flex: 1,
-    minWidth: 0, // Permite que o flex shrink funcione
+    width: 151,
+    flexShrink: 1,
   },
   itemTitle: {
     fontSize: FONT_SIZES.SM,
     fontFamily: 'DM Sans',
     fontWeight: '400',
     color: '#001137',
-    marginBottom: 4,
+    minHeight: 20,
     letterSpacing: 0.2,
-    flexShrink: 1, // Permite que o texto encolha
+    marginBottom: 0,
   },
   itemSubtitle: {
     fontSize: FONT_SIZES.SM,
     fontFamily: 'DM Sans',
     fontWeight: '400',
     color: '#001137',
-    marginBottom: 4,
+    minHeight: 20,
     letterSpacing: 0.2,
-    flexShrink: 1, // Permite que o texto encolha
+    marginBottom: 0,
   },
   itemDate: {
     fontSize: 12,
     fontFamily: 'DM Sans',
     fontWeight: '500',
     color: '#001137',
+    height: 20,
   },
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
+    flexShrink: 0,
   },
   ratingText: {
     fontSize: FONT_SIZES.SM,
@@ -157,18 +169,11 @@ export const styles = StyleSheet.create({
     color: '#001137',
     letterSpacing: 0.2,
   },
-  itemTagsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: SPACING.SM + 7,
-  },
   tagsContainer: {
     flexDirection: 'row',
     gap: SPACING.SM,
-    flex: 1,
-    flexShrink: 1, // Permite que as tags encolham
-    minWidth: 0, // Permite que o flex shrink funcione
+    flexShrink: 1,
+    minWidth: 0,
   },
   tagBadge: {
     borderRadius: 12,
@@ -204,13 +209,16 @@ export const styles = StyleSheet.create({
     height: 24,
     justifyContent: 'center',
     alignItems: 'center',
-    flexShrink: 0, // Não permite que o botão encolha
-    marginLeft: SPACING.XS, // Espaço mínimo entre tags e botão
+    flexShrink: 0,
   },
   itemFooter: {
+    position: 'absolute',
+    left: 119,
+    top: 95, // Baseado no design: 47 (header top) + 48px (gap)
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    width: 224,
   },
   itemPrice: {
     fontSize: FONT_SIZES.SM,
