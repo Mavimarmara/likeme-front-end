@@ -121,7 +121,6 @@ const AddressForm: React.FC<AddressFormProps> = ({
 
       {isEditing && (
         <View style={styles.editAddressContainer}>
-          <View style={styles.editAddressScrollView}>
             <TextInput
               label="Full name"
               placeholder="Full name"
@@ -184,7 +183,6 @@ const AddressForm: React.FC<AddressFormProps> = ({
                 />
               </View>
             </View>
-          </View>
           <View style={styles.editAddressActions}>
             <TouchableOpacity
               style={styles.cancelButton}

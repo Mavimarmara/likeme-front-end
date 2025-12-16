@@ -163,6 +163,7 @@ export const styles = StyleSheet.create({
   },
   cardForm: {
     marginBottom: SPACING.LG,
+    rowGap: SPACING.MD,
   },
   cardRow: {
     flexDirection: 'row',
@@ -304,9 +305,7 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.04,
     shadowRadius: 16,
     elevation: 4,
-  },
-  editAddressScrollView: {
-    maxHeight: 400,
+    rowGap: SPACING.MD,
   },
   editAddressActions: {
     flexDirection: 'row',
