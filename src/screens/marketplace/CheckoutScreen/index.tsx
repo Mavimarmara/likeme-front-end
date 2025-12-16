@@ -5,17 +5,14 @@ import {
   ScrollView,
   SafeAreaView,
   TouchableOpacity,
-  Dimensions,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useFocusEffect } from '@react-navigation/native';
 import { Header } from '@/components/ui/layout';
-import TextInput from '@/components/ui/inputs/TextInput';
 import { storageService } from '@/services';
 import { styles } from './styles';
-import { COLORS, SPACING, FONT_SIZES } from '@/constants';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+import AddressForm from './AddressForm';
+import PaymentForm from './PaymentForm';
+import CartItemList from './CartItemList';
+import OrderSummary from './OrderSummary';
 
 interface CartItem {
   id: string;
@@ -27,14 +24,38 @@ interface CartItem {
 }
 
 type PaymentMethod = 'credit_card' | 'pix';
+type CheckoutStep = 'address' | 'payment' | 'order';
 
 type Props = {
   navigation: any;
   route?: any;
 };
 
+interface AddressData {
+  fullName: string;
+  addressLine1: string;
+  addressLine2: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  phone: string;
+}
+
 const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
+  const [currentStep, setCurrentStep] = useState<CheckoutStep>('address');
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [sameBillingAddress, setSameBillingAddress] = useState(false);
+  const [addressData, setAddressData] = useState<AddressData>({
+    fullName: 'Ana Paula do Amaral',
+    addressLine1: 'Rua Marselha, 1029 - Apto 94',
+    addressLine2: '',
+    neighborhood: 'Jaguaré',
+    city: 'São Paulo',
+    state: 'SP',
+    zipCode: '05332-000',
+    phone: '+55 11 97979-2016',
+  });
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('credit_card');
   const [cardholderName, setCardholderName] = useState('');
   const [cardNumber, setCardNumber] = useState('');
@@ -46,11 +67,9 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
   const [shipping, setShipping] = useState(0);
   const [total, setTotal] = useState(0);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      loadCartItems();
-    }, [])
-  );
+  useEffect(() => {
+    loadCartItems();
+  }, []);
 
   useEffect(() => {
     calculateTotals();
@@ -82,6 +101,13 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
     return `$${Number(price).toFixed(2)}`;
   };
 
+  const formatRating = (rating: number): string => {
+    if (rating === undefined || rating === null || isNaN(rating)) {
+      return '0.000';
+    }
+    return Number(rating).toFixed(3);
+  };
+
   const formatCardNumber = (text: string): string => {
     const cleaned = text.replace(/\s/g, '');
     const formatted = cleaned.match(/.{1,4}/g)?.join(' ') || cleaned;
@@ -96,19 +122,19 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
     return cleaned;
   };
 
-  const handleCardNumberChange = (text: string) => {
-    setCardNumber(formatCardNumber(text));
+  const handleContinue = () => {
+    if (currentStep === 'address') {
+      setCurrentStep('payment');
+    } else if (currentStep === 'payment') {
+      setCurrentStep('order');
+    } else {
+      // Finalizar compra
+      navigation.goBack();
+    }
   };
 
-  const handleExpiryDateChange = (text: string) => {
-    setExpiryDate(formatExpiryDate(text));
-  };
-
-  const handleCompletePurchase = () => {
-    // Lógica para finalizar compra
-    console.log('Finalizar compra');
-    // Navegar para tela de confirmação ou voltar
-    navigation.goBack();
+  const handleSaveAddress = (address: AddressData) => {
+    setAddressData(address);
   };
 
   const handleApplyCoupon = () => {
@@ -128,147 +154,108 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
         {/* Stepper - Address, Payment, Order */}
         <View style={styles.stepperContainer}>
           <View style={styles.stepperItem}>
-            <Text style={styles.stepperLabel}>Adress</Text>
-            <View style={[styles.stepperLine, styles.stepperLineActive]} />
+            <Text style={[
+              currentStep === 'address' ? styles.stepperLabelActive : styles.stepperLabelInactive
+            ]}>
+              Adress
+            </Text>
+            <View style={[
+              styles.stepperLine,
+              currentStep === 'address' ? styles.stepperLineActive : styles.stepperLineInactive
+            ]} />
           </View>
           <View style={styles.stepperItem}>
-            <Text style={[styles.stepperLabel, styles.stepperLabelActive]}>Payment</Text>
-            <View style={[styles.stepperLine, styles.stepperLineActive]} />
+            <Text style={[
+              currentStep === 'payment' ? styles.stepperLabelActive : styles.stepperLabelInactive
+            ]}>
+              Payment
+            </Text>
+            <View style={[
+              styles.stepperLine,
+              currentStep === 'payment' ? styles.stepperLineActive : styles.stepperLineInactive
+            ]} />
           </View>
           <View style={styles.stepperItem}>
-            <Text style={styles.stepperLabelInactive}>Order</Text>
-            <View style={[styles.stepperLine, styles.stepperLineInactive]} />
+            <Text style={[
+              currentStep === 'order' ? styles.stepperLabelActive : styles.stepperLabelInactive
+            ]}>
+              Order
+            </Text>
+            <View style={[
+              styles.stepperLine,
+              currentStep === 'order' ? styles.stepperLineActive : styles.stepperLineInactive
+            ]} />
           </View>
         </View>
 
-        {/* Payment Method Selection */}
-        <View style={styles.paymentMethodSection}>
-          <Text style={styles.sectionTitle}>Payment method</Text>
-          <View style={styles.paymentMethodOptions}>
-            <TouchableOpacity
-              style={styles.paymentMethodOption}
-              onPress={() => setPaymentMethod('credit_card')}
-              activeOpacity={0.7}
-            >
-              <View style={[styles.radioButton, paymentMethod === 'credit_card' && styles.radioButtonSelected]}>
-                {paymentMethod === 'credit_card' && <View style={styles.radioButtonInner} />}
-              </View>
-              <Text style={styles.paymentMethodLabel}>Credit card</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.paymentMethodOption}
-              onPress={() => setPaymentMethod('pix')}
-              activeOpacity={0.7}
-            >
-              <View style={[styles.radioButton, paymentMethod === 'pix' && styles.radioButtonSelected]}>
-                {paymentMethod === 'pix' && <View style={styles.radioButtonInner} />}
-              </View>
-              <Text style={styles.paymentMethodLabel}>Pix</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        {currentStep === 'address' && (
+          <>
+            {/* Address Form */}
+            <AddressForm
+              sameBillingAddress={sameBillingAddress}
+              onSameBillingAddressChange={setSameBillingAddress}
+              addressData={addressData}
+              onSaveAddress={handleSaveAddress}
+            />
 
-        {/* Credit Card Form */}
-        {paymentMethod === 'credit_card' && (
-          <View style={styles.cardForm}>
-            <TextInput
-              label="Cardholder's name"
-              placeholder="Complete name"
-              value={cardholderName}
-              onChangeText={setCardholderName}
+            {/* Your Deliveries Section */}
+            <Text style={styles.deliveriesTitle}>Your deliveries</Text>
+            <CartItemList
+              items={cartItems}
+              formatPrice={formatPrice}
+              formatRating={formatRating}
             />
-            <TextInput
-              label="Card number"
-              placeholder="1234 5678 9101 1121"
-              value={cardNumber}
-              onChangeText={handleCardNumberChange}
-              keyboardType="numeric"
-              maxLength={19}
+
+            {/* Order Summary */}
+            <OrderSummary
+              subtotal={subtotal}
+              shipping={shipping}
+              formatPrice={formatPrice}
             />
-            <View style={styles.cardRow}>
-              <View style={styles.cardFieldHalf}>
-                <TextInput
-                  label="Expiration date"
-                  placeholder="mm/yy"
-                  value={expiryDate}
-                  onChangeText={handleExpiryDateChange}
-                  keyboardType="numeric"
-                  maxLength={5}
-                />
-              </View>
-              <View style={styles.cardFieldHalf}>
-                <TextInput
-                  label="CVV"
-                  placeholder="123"
-                  value={cvv}
-                  onChangeText={setCvv}
-                  keyboardType="numeric"
-                  maxLength={3}
-                  secureTextEntry
-                />
-              </View>
-            </View>
-            <TouchableOpacity
-              style={styles.checkboxContainer}
-              onPress={() => setSaveCardDetails(!saveCardDetails)}
-              activeOpacity={0.7}
-            >
-              <View style={[styles.checkbox, saveCardDetails && styles.checkboxChecked]}>
-                {saveCardDetails && <Icon name="check" size={14} color="#0154f8" />}
-              </View>
-              <Text style={styles.checkboxLabel}>Save card datails</Text>
-            </TouchableOpacity>
-          </View>
+          </>
         )}
 
-        {/* Discount Coupon */}
-        <View style={styles.couponSection}>
-          <Text style={styles.sectionTitle}>Discount coupon</Text>
-          <View style={styles.couponRow}>
-            <TextInput
-              placeholder="PRIMEIRACOMPRA"
-              value={couponCode}
-              onChangeText={setCouponCode}
-              containerStyle={styles.couponInput}
-              style={styles.couponInputField}
+        {currentStep === 'payment' && (
+          <>
+            {/* Payment Form */}
+            <PaymentForm
+              paymentMethod={paymentMethod}
+              cardholderName={cardholderName}
+              cardNumber={cardNumber}
+              expiryDate={expiryDate}
+              cvv={cvv}
+              saveCardDetails={saveCardDetails}
+              couponCode={couponCode}
+              onPaymentMethodChange={setPaymentMethod}
+              onCardholderNameChange={setCardholderName}
+              onCardNumberChange={setCardNumber}
+              onExpiryDateChange={setExpiryDate}
+              onCvvChange={setCvv}
+              onSaveCardDetailsChange={setSaveCardDetails}
+              onCouponCodeChange={setCouponCode}
+              onApplyCoupon={handleApplyCoupon}
+              formatCardNumber={formatCardNumber}
+              formatExpiryDate={formatExpiryDate}
             />
-            <TouchableOpacity
-              style={styles.applyButton}
-              onPress={handleApplyCoupon}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.applyButtonText}>Apply</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
 
-        {/* Order Summary */}
-        <View style={styles.orderSummary}>
-          <View style={styles.separator} />
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Subtotal</Text>
-            <Text style={styles.summaryValue}>{formatPrice(subtotal)}</Text>
-          </View>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Shipping</Text>
-            <Text style={styles.summaryValue}>{formatPrice(shipping)}</Text>
-          </View>
-          <View style={styles.separator} />
-          <View style={styles.summaryRow}>
-            <Text style={[styles.summaryLabel, styles.summaryTotalLabel]}>Total</Text>
-            <Text style={[styles.summaryValue, styles.summaryTotalValue]}>{formatPrice(total)}</Text>
-          </View>
-        </View>
+            {/* Order Summary */}
+            <OrderSummary
+              subtotal={subtotal}
+              shipping={shipping}
+              formatPrice={formatPrice}
+            />
+          </>
+        )}
       </ScrollView>
 
-      {/* Complete Purchase Button */}
+      {/* Continue Button */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.completeButton}
-          onPress={handleCompletePurchase}
+          onPress={handleContinue}
           activeOpacity={0.7}
         >
-          <Text style={styles.completeButtonText}>Complete purchase</Text>
+          <Text style={styles.completeButtonText}>Continue</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

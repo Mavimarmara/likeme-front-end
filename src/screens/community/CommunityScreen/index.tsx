@@ -225,6 +225,7 @@ type Props = { navigation: NavigationProp };
 import type { FilterType } from '@/components/ui/modals/FilterModal';
 
 const CommunityScreen: React.FC<Props> = ({ navigation }) => {
+  const rootNavigation = navigation.getParent()?.getParent?.() ?? navigation.getParent();
   const [selectedMode, setSelectedMode] = useState<CommunityMode>('Social');
   const [selectedProgramId, setSelectedProgramId] = useState<string | undefined>();
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>();
