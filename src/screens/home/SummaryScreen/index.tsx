@@ -1,9 +1,8 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { View, Image, StyleSheet, ScrollView } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FloatingMenu } from '@/components/ui/menu';
-import { Header } from '@/components/ui/layout';
-import { BackgroundWithGradient } from '@/assets';
+import { Header, Background } from '@/components/ui/layout';
 import { useCommunities } from '@/hooks';
 import { mapCommunityToRecommendedCommunity, mapCommunityToOtherCommunity, mapCommunityPostToPost } from '@/utils/community/mappers';
 import { communityService } from '@/services';
@@ -408,11 +407,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Image
-        source={BackgroundWithGradient}
-        style={StyleSheet.absoluteFill}
-        resizeMode="cover"
-      />
+      <Background />
       <Header 
         showBackButton={false} 
         showCartButton={true}

@@ -11,7 +11,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import { LogoMini, BackgroundWithGradient } from '@/assets';
+import { LogoMini } from '@/assets';
+import { Background } from '@/components/ui/layout';
 import { BackgroundIconButton } from '@/assets';
 import { ImageBackground } from 'react-native';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES } from '@/constants';
@@ -320,11 +321,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <Image
-        source={BackgroundWithGradient}
-        style={StyleSheet.absoluteFill}
-        resizeMode="cover"
-      />
+      <Background />
       {renderHeader()}
       <ScrollView
         style={styles.scrollView}

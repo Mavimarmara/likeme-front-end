@@ -5,8 +5,7 @@ import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SearchBar } from '@/components/ui/inputs';
 import { FloatingMenu } from '@/components/ui/menu';
-import { Header } from '@/components/ui/layout';
-import { BackgroundWithGradient } from '@/assets';
+import { Header, Background } from '@/components/ui/layout';
 import { productService } from '@/services';
 import type { Product as ApiProduct } from '@/types/product';
 import type { RootStackParamList } from '@/types/navigation';
@@ -341,11 +340,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
 
   return (
     <SafeAreaView style={styles.container}>
-      <Image
-        source={BackgroundWithGradient}
-        style={StyleSheet.absoluteFill}
-        resizeMode="cover"
-      />
+      <Background />
       <Header 
         showBackButton={false} 
         showCartButton={true}

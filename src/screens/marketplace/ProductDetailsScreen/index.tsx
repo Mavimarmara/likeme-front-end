@@ -3,8 +3,8 @@ import { View, Text, ScrollView, TouchableOpacity, Image, StyleSheet, Dimensions
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Header } from '@/components/ui/layout';
-import { BackgroundWithGradient, LogoMini } from '@/assets';
+import { Header, Background } from '@/components/ui/layout';
+import { LogoMini } from '@/assets';
 import { ProductsCarousel, type Product } from '@/components/ui/carousel';
 import { productService } from '@/services';
 import type { Product as ApiProduct } from '@/types/product';
@@ -205,11 +205,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
-        <Image
-          source={BackgroundWithGradient}
-          style={StyleSheet.absoluteFill}
-          resizeMode="cover"
-        />
+        <Background />
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#2196F3" />
           <Text style={styles.loadingText}>Loading product...</Text>
@@ -221,11 +217,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   if (!product) {
     return (
       <SafeAreaView style={styles.container}>
-        <Image
-          source={BackgroundWithGradient}
-          style={StyleSheet.absoluteFill}
-          resizeMode="cover"
-        />
+        <Background />
         <View style={styles.loadingContainer}>
           <Text style={styles.loadingText}>Product not found</Text>
           <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
@@ -393,11 +385,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
 
   return (
     <SafeAreaView style={styles.container}>
-      <Image
-        source={BackgroundWithGradient}
-        style={StyleSheet.absoluteFill}
-        resizeMode="cover"
-      />
+      <Background />
       {renderCustomHeader()}
       <ScrollView
         contentContainerStyle={styles.scrollContent}

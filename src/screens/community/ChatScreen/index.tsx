@@ -6,7 +6,8 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SearchBar } from '@/components/ui';
-import { BackgroundIconButton, LogoMini, BackgroundWithGradient } from '@/assets';
+import { Background } from '@/components/ui/layout';
+import { BackgroundIconButton, LogoMini } from '@/assets';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '@/constants';
 import type { CommunityStackParamList } from '@/types/navigation';
 import type { ProviderChat } from '@/components/ui/community';
@@ -114,11 +115,7 @@ const ChatScreen: React.FC<Props> = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <Image
-        source={BackgroundWithGradient}
-        style={StyleSheet.absoluteFill}
-        resizeMode="cover"
-      />
+      <Background />
       {/* Header */}
       <View style={styles.headerContainer}>
         <View style={styles.header}>
