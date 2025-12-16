@@ -22,8 +22,6 @@ interface PaymentFormProps {
   onSaveCardDetailsChange: (value: boolean) => void;
   onCouponCodeChange: (text: string) => void;
   onApplyCoupon: () => void;
-  formatCardNumber: (text: string) => string;
-  formatExpiryDate: (text: string) => string;
 }
 
 const PaymentForm: React.FC<PaymentFormProps> = ({
@@ -42,16 +40,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   onSaveCardDetailsChange,
   onCouponCodeChange,
   onApplyCoupon,
-  formatCardNumber,
-  formatExpiryDate,
 }) => {
-  const handleCardNumberChange = (text: string) => {
-    onCardNumberChange(formatCardNumber(text));
-  };
-
-  const handleExpiryDateChange = (text: string) => {
-    onExpiryDateChange(formatExpiryDate(text));
-  };
 
   return (
     <>
@@ -86,39 +75,36 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
       {paymentMethod === 'credit_card' && (
         <View style={styles.cardForm}>
           <TextInput
+            type="text"
             label="Cardholder's name"
             placeholder="Complete name"
             value={cardholderName}
             onChangeText={onCardholderNameChange}
           />
           <TextInput
+            type="cardNumber"
             label="Card number"
             placeholder="1234 5678 9101 1121"
             value={cardNumber}
-            onChangeText={handleCardNumberChange}
-            keyboardType="numeric"
-            maxLength={19}
+            onChangeText={onCardNumberChange}
           />
           <View style={styles.cardRow}>
             <View style={styles.cardFieldHalf}>
               <TextInput
+                type="expiryDate"
                 label="Expiration date"
                 placeholder="mm/yy"
                 value={expiryDate}
-                onChangeText={handleExpiryDateChange}
-                keyboardType="numeric"
-                maxLength={5}
+                onChangeText={onExpiryDateChange}
               />
             </View>
             <View style={styles.cardFieldHalf}>
               <TextInput
+                type="cvv"
                 label="CVV"
                 placeholder="123"
                 value={cvv}
                 onChangeText={onCvvChange}
-                keyboardType="numeric"
-                maxLength={3}
-                secureTextEntry
               />
             </View>
           </View>

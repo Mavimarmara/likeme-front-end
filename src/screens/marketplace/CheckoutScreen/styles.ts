@@ -6,10 +6,11 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f4f3ec',
+    position: 'relative',
   },
   scrollView: {
     flex: 1,
+    zIndex: 1,
   },
   scrollContent: {
     paddingHorizontal: SPACING.MD,
@@ -271,6 +272,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: SPACING.MD,
     paddingBottom: SPACING.MD,
     paddingTop: SPACING.SM,
+    zIndex: 1,
   },
   completeButton: {
     backgroundColor: 'rgba(240, 238, 225, 0.16)',

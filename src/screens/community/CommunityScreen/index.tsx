@@ -1,13 +1,13 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
-import { View, Image, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { Toggle, SocialList, ProgramsList, LiveBannerData, Header, ProductsCarousel, Product, PlansCarousel, Plan, ProviderChat } from '@/components/ui';
+import { Background } from '@/components/ui/layout';
 import { FloatingMenu } from '@/components/ui/menu';
 import type { Post, Event } from '@/types';
 import type { Program, ProgramDetail } from '@/types/program';
 import type { CommunityCategory } from '@/types/community';
-import { BackgroundWithGradient } from '@/assets';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
 import { useUserFeed, useCommunities } from '@/hooks';
@@ -468,11 +468,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Image
-        source={BackgroundWithGradient}
-        style={StyleSheet.absoluteFill}
-        resizeMode="cover"
-      />
+      <Background />
       <Header 
         showBackButton={false} 
         showCartButton={true}

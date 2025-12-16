@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import TextInput from '@/components/ui/inputs/TextInput';
-import { SubmitButton } from '@/components/ui/modals/shared/SubmitButton';
 import { styles } from './styles';
 
 interface AddressData {
@@ -122,28 +121,30 @@ const AddressForm: React.FC<AddressFormProps> = ({
 
       {isEditing && (
         <View style={styles.editAddressContainer}>
-          <View
-            style={styles.editAddressScrollView}
-          >
+          <View style={styles.editAddressScrollView}>
             <TextInput
+              type="text"
               label="Full name"
               placeholder="Full name"
               value={editData.fullName}
               onChangeText={(text) => setEditData({ ...editData, fullName: text })}
             />
             <TextInput
+              type="text"
               label="Address line 1"
               placeholder="Street name and number"
               value={editData.addressLine1}
               onChangeText={(text) => setEditData({ ...editData, addressLine1: text })}
             />
             <TextInput
+              type="text"
               label="Address line 2"
               placeholder="Apartment, suite, etc. (optional)"
               value={editData.addressLine2}
               onChangeText={(text) => setEditData({ ...editData, addressLine2: text })}
             />
             <TextInput
+              type="text"
               label="Neighborhood"
               placeholder="Neighborhood"
               value={editData.neighborhood}
@@ -152,6 +153,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
             <View style={styles.addressRow}>
               <View style={styles.addressFieldHalf}>
                 <TextInput
+                  type="text"
                   label="City"
                   placeholder="City"
                   value={editData.city}
@@ -160,6 +162,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
               </View>
               <View style={styles.addressFieldHalf}>
                 <TextInput
+                  type="text"
                   label="State"
                   placeholder="State"
                   value={editData.state}
@@ -170,20 +173,20 @@ const AddressForm: React.FC<AddressFormProps> = ({
             <View style={styles.addressRow}>
               <View style={styles.addressFieldHalf}>
                 <TextInput
+                  type="zipCode"
                   label="ZIP code"
                   placeholder="00000-000"
                   value={editData.zipCode}
                   onChangeText={(text) => setEditData({ ...editData, zipCode: text })}
-                  keyboardType="numeric"
                 />
               </View>
               <View style={styles.addressFieldHalf}>
                 <TextInput
+                  type="phone"
                   label="Phone"
                   placeholder="+55 11 97979-2016"
                   value={editData.phone}
                   onChangeText={(text) => setEditData({ ...editData, phone: text })}
-                  keyboardType="phone-pad"
                 />
               </View>
             </View>

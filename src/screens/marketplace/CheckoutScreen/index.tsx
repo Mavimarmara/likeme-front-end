@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Header } from '@/components/ui/layout';
+import { Background } from '@/components/ui/layout';
 import { storageService } from '@/services';
 import { styles } from './styles';
 import AddressForm from './AddressForm';
@@ -108,19 +109,6 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
     return Number(rating).toFixed(3);
   };
 
-  const formatCardNumber = (text: string): string => {
-    const cleaned = text.replace(/\s/g, '');
-    const formatted = cleaned.match(/.{1,4}/g)?.join(' ') || cleaned;
-    return formatted.slice(0, 19); // Max 16 digits + 3 spaces
-  };
-
-  const formatExpiryDate = (text: string): string => {
-    const cleaned = text.replace(/\D/g, '');
-    if (cleaned.length >= 2) {
-      return `${cleaned.slice(0, 2)}/${cleaned.slice(2, 4)}`;
-    }
-    return cleaned;
-  };
 
   const handleContinue = () => {
     if (currentStep === 'address') {
@@ -144,6 +132,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Background />
       <Header onBackPress={() => navigation.goBack()} />
       
       <ScrollView
@@ -234,8 +223,6 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
               onSaveCardDetailsChange={setSaveCardDetails}
               onCouponCodeChange={setCouponCode}
               onApplyCoupon={handleApplyCoupon}
-              formatCardNumber={formatCardNumber}
-              formatExpiryDate={formatExpiryDate}
             />
 
             {/* Order Summary */}
