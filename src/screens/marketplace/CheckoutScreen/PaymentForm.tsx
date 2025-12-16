@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import TextInput from '@/components/ui/inputs/TextInput';
+import { useFormattedInput } from '@/hooks';
 import { styles } from './styles';
 
 type PaymentMethod = 'credit_card' | 'pix';
@@ -41,6 +42,15 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   onCouponCodeChange,
   onApplyCoupon,
 }) => {
+  const handleCardNumberChange = useFormattedInput({
+    type: 'cardNumber',
+    onChangeText: onCardNumberChange,
+  });
+
+  const handleExpiryDateChange = useFormattedInput({
+    type: 'expiryDate',
+    onChangeText: onExpiryDateChange,
+  });
 
   return (
     <>
@@ -75,36 +85,36 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
       {paymentMethod === 'credit_card' && (
         <View style={styles.cardForm}>
           <TextInput
-            type="text"
             label="Cardholder's name"
             placeholder="Complete name"
             value={cardholderName}
             onChangeText={onCardholderNameChange}
           />
           <TextInput
-            type="cardNumber"
             label="Card number"
             placeholder="1234 5678 9101 1121"
             value={cardNumber}
-            onChangeText={onCardNumberChange}
+            onChangeText={handleCardNumberChange}
+            keyboardType="numeric"
           />
           <View style={styles.cardRow}>
             <View style={styles.cardFieldHalf}>
               <TextInput
-                type="expiryDate"
                 label="Expiration date"
                 placeholder="mm/yy"
                 value={expiryDate}
-                onChangeText={onExpiryDateChange}
+                onChangeText={handleExpiryDateChange}
+                keyboardType="numeric"
               />
             </View>
             <View style={styles.cardFieldHalf}>
               <TextInput
-                type="cvv"
                 label="CVV"
                 placeholder="123"
                 value={cvv}
                 onChangeText={onCvvChange}
+                keyboardType="numeric"
+                secureTextEntry
               />
             </View>
           </View>

@@ -1,5 +1,7 @@
 import { StyleSheet } from 'react-native';
 
+export const PLACEHOLDER_TEXT_COLOR = 'rgba(110, 106, 106, 1)';
+
 export const styles = StyleSheet.create({
   container: {
     alignItems: 'flex-start',
@@ -66,7 +68,7 @@ export const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     gap: 4,
-    height: 20,
+    minHeight: 20,
     justifyContent: 'flex-start',
     position: 'relative',
     width: '100%',
@@ -92,4 +94,3 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
 });
-

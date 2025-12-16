@@ -124,4 +124,5 @@ export const storageUtils = {
 };
 
 export * from './logger';
+export * from './formatters';
 export * from './navigation';
