@@ -308,13 +308,9 @@ export const styles = StyleSheet.create({
     rowGap: SPACING.MD,
   },
   editAddressActions: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: SPACING.SM,
+    justifyContent: 'center',
     marginTop: SPACING.MD,
     paddingTop: SPACING.MD,
-    borderTopWidth: 1,
-    borderTopColor: '#e1dfcf',
   },
   cancelButton: {
     paddingHorizontal: SPACING.MD,

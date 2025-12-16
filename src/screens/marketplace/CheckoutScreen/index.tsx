@@ -14,6 +14,7 @@ import AddressForm from './AddressForm';
 import PaymentForm from './PaymentForm';
 import CartItemList from './CartItemList';
 import OrderSummary from './OrderSummary';
+import { AddressData } from './EditableAddressCard';
 
 interface CartItem {
   id: string;
@@ -32,16 +33,6 @@ type Props = {
   route?: any;
 };
 
-interface AddressData {
-  fullName: string;
-  addressLine1: string;
-  addressLine2: string;
-  neighborhood: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  phone: string;
-}
 
 const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
   const [currentStep, setCurrentStep] = useState<CheckoutStep>('address');
