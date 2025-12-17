@@ -87,53 +87,40 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   const handleAdPress = (ad: Ad) => {
     console.log('handleAdPress called with ad:', {
       id: ad.id,
-      category: ad.category,
       productId: ad.productId,
       hasProduct: !!ad.product,
       productCategory: ad.product?.category,
     });
 
-    // Se for amazon product (verifica tanto no ad quanto no product), sempre navegar para AffiliateProduct
-    const isAmazonProduct = ad.category === 'amazon product' || ad.product?.category === 'amazon product';
+    // Se for amazon product, verificar apenas em ad.product
+    const isAmazonProduct = ad.product?.category === 'amazon product';
     
     if (isAmazonProduct) {
       console.log('Amazon product detected, navigating to AffiliateProduct');
-      if (ad.productId) {
-        if (ad.product) {
-          navigation.navigate('AffiliateProduct', {
-            productId: ad.productId,
-            adId: ad.id,
-            product: {
-              id: ad.product.id,
-              title: ad.title || ad.product.name,
-              price: `$${Number(ad.product.price).toFixed(2)}`,
-              image: ad.image || ad.product.image || 'https://via.placeholder.com/400',
-              category: ad.product.category,
-              description: ad.description || ad.product.description,
-            },
-          });
-        } else {
-          // Se tem productId mas não tem product carregado, ainda navegar
-          navigation.navigate('AffiliateProduct', {
-            productId: ad.productId,
-            adId: ad.id,
-          });
-        }
-      } else {
-        // Mesmo sem productId, navegar usando os dados do anúncio
-        console.log('Amazon product ad has no productId, navigating with ad data only');
+      if (ad.product) {
+        // Usa productId do produto ou ad.id como fallback
+        const productId = ad.productId || ad.product.id;
         navigation.navigate('AffiliateProduct', {
-          productId: ad.id, // Usa o ad.id como productId temporário
+          productId: productId,
           adId: ad.id,
           product: {
-            id: ad.id,
-            title: ad.title || 'Product',
-            price: '$0.00',
-            image: ad.image || 'https://via.placeholder.com/400',
-            category: ad.category,
-            description: ad.description,
+            id: ad.product.id,
+            title: ad.product.name,
+            price: `$${Number(ad.product.price).toFixed(2)}`,
+            image: ad.product.image || 'https://via.placeholder.com/400',
+            category: ad.product.category,
+            description: ad.product.description,
           },
         });
+      } else if (ad.productId) {
+        // Se tem productId mas não tem product carregado, ainda navegar
+        navigation.navigate('AffiliateProduct', {
+          productId: ad.productId,
+          adId: ad.id,
+        });
+      } else {
+        // Sem productId e sem product, não é possível navegar
+        console.warn('Amazon product ad has no productId and no product data, cannot navigate');
       }
       return;
     }
@@ -154,9 +141,9 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
           id: ad.product.id,
           title: ad.product.name,
           price: `$${Number(ad.product.price).toFixed(2)}`,
-          image: ad.image || ad.product.image || 'https://via.placeholder.com/400',
+          image: ad.product.image || 'https://via.placeholder.com/400',
           category: ad.product.category,
-          description: ad.description || ad.product.description,
+          description: ad.product.description,
           tags: ad.product.category ? [ad.product.category] : [],
         },
       });
@@ -182,9 +169,9 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       
       const cartItem = {
         id: product.id,
-        image: ad.image || product.image || 'https://via.placeholder.com/200',
-        title: ad.title || product.name,
-        subtitle: ad.description || product.description,
+        image: product.image || 'https://via.placeholder.com/200',
+        title: product.name,
+        subtitle: product.description,
         price: price,
         quantity: 1,
         rating: 5,
@@ -300,8 +287,8 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     if (!highlight) return null;
 
     const productPrice = highlight.product?.price || 0;
-    const displayTitle = highlight.title || highlight.product?.name || 'Product';
-    const displayImage = highlight.image || highlight.product?.image || 'https://via.placeholder.com/400';
+    const displayTitle = highlight.product?.name || 'Product';
+    const displayImage = highlight.product?.image || 'https://via.placeholder.com/400';
 
     return (
       <View style={styles.section}>
@@ -413,9 +400,9 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
           ) : (
             displayAds.map((ad) => {
               const product = ad.product;
-              const displayTitle = ad.title || product?.name || 'Product';
-              const displayImage = ad.image || product?.image || 'https://via.placeholder.com/200';
-              const displayCategory = ad.category || product?.category;
+              const displayTitle = product?.name || 'Product';
+              const displayImage = product?.image || 'https://via.placeholder.com/200';
+              const displayCategory = product?.category;
               const productPrice = product?.price;
 
               return (
