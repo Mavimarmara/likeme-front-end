@@ -7,6 +7,7 @@ export * from './personalObjectives';
 export * from './event';
 export * from './program';
 export * from './product';
+export * from './ad';
 
 export interface User {
   id: string;

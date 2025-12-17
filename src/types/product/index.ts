@@ -1,5 +1,38 @@
 import type { ApiResponse } from '@/types/infrastructure';
 
+export interface Advertiser {
+  id: string;
+  userId: string;
+  name: string;
+  description?: string;
+  logo?: string;
+  contactEmail?: string;
+  contactPhone?: string;
+  website?: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Ad {
+  id: string;
+  advertiserId?: string;
+  productId?: string;
+  title: string;
+  description?: string;
+  image?: string;
+  startDate?: string;
+  endDate?: string;
+  status: 'active' | 'inactive' | 'expired';
+  targetAudience?: string;
+  budget?: number;
+  externalUrl?: string;
+  category?: 'amazon product' | 'physical product' | 'program';
+  createdAt: string;
+  updatedAt: string;
+  advertiser?: Advertiser;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -16,6 +49,7 @@ export interface Product {
   dimensions?: string;
   createdAt: string;
   updatedAt: string;
+  ads?: Ad[];
 }
 
 export interface ListProductsParams {

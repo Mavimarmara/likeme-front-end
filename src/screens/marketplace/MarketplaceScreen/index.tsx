@@ -6,8 +6,8 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SearchBar } from '@/components/ui/inputs';
 import { FloatingMenu } from '@/components/ui/menu';
 import { Header, Background } from '@/components/ui/layout';
-import { productService, storageService } from '@/services';
-import type { Product as ApiProduct } from '@/types/product';
+import { adService, storageService } from '@/services';
+import type { Ad } from '@/types/ad';
 import type { RootStackParamList } from '@/types/navigation';
 import { styles } from './styles';
 
@@ -34,7 +34,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedOrder, setSelectedOrder] = useState<string>('best-rated');
-  const [products, setProducts] = useState<ApiProduct[]>([]);
+  const [ads, setAds] = useState<Ad[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -45,70 +45,91 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   };
 
   useEffect(() => {
-    loadProducts();
-  }, [searchQuery, selectedCategory, page]);
+    loadAds();
+  }, [selectedCategory, page]);
 
-  const loadProducts = async () => {
+  const loadAds = async () => {
     try {
       setLoading(true);
       const params: any = {
         page,
         limit: 20,
+        status: 'active',
+        activeOnly: true,
       };
 
-      if (searchQuery) {
-        params.search = searchQuery;
-      }
-
+      // Mapear categoria da UI para categoria do anúncio
       if (selectedCategory !== 'all') {
-        params.category = selectedCategory;
+        if (selectedCategory === 'products') {
+          params.category = 'physical product';
+        } else if (selectedCategory === 'programs') {
+          params.category = 'program';
+        }
       }
 
-      const response = await productService.listProducts(params);
+      const response = await adService.listAds(params);
       
       if (response.success && response.data) {
         if (page === 1) {
-          setProducts(response.data.products);
+          setAds(response.data.ads);
         } else {
-          setProducts(prev => [...prev, ...response.data.products]);
+          setAds(prev => [...prev, ...response.data.ads]);
         }
         setHasMore(response.data.pagination.page < response.data.pagination.totalPages);
       }
     } catch (error) {
-      console.error('Error loading products:', error);
+      console.error('Error loading ads:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleProductPress = (product: ApiProduct) => {
-    navigation.navigate('ProductDetails', {
-      productId: product.id,
-      product: {
-        id: product.id,
-        title: product.name,
-        price: `$${Number(product.price).toFixed(2)}`,
-        image: product.image || 'https://via.placeholder.com/400',
-        category: product.category,
-        description: product.description,
-        tags: product.category ? [product.category] : [],
-      },
-    });
+  const handleAdPress = (ad: Ad) => {
+    // Se tem externalUrl, abrir link externo
+    if (ad.externalUrl) {
+      // Em React Native, você precisaria usar Linking para abrir URLs externas
+      console.log('Open external URL:', ad.externalUrl);
+      // Linking.openURL(ad.externalUrl);
+      return;
+    }
+
+    // Se tem produto relacionado, navegar para detalhes do produto
+    if (ad.productId && ad.product) {
+      navigation.navigate('ProductDetails', {
+        productId: ad.productId,
+        product: {
+          id: ad.product.id,
+          title: ad.product.name,
+          price: `$${Number(ad.product.price).toFixed(2)}`,
+          image: ad.image || ad.product.image || 'https://via.placeholder.com/400',
+          category: ad.product.category,
+          description: ad.description || ad.product.description,
+          tags: ad.product.category ? [ad.product.category] : [],
+        },
+      });
+    }
   };
 
-  const handleAddToCart = async (product: ApiProduct, event?: any) => {
+  const handleAddToCart = async (ad: Ad, event?: any) => {
     if (event) {
       event.stopPropagation();
     }
     
+    // Só pode adicionar ao carrinho se tiver produto relacionado
+    if (!ad.product) {
+      console.warn('Ad has no related product to add to cart');
+      return;
+    }
+
     try {
+      const product = ad.product;
       const price = Number(String(product.price).replace(/[^0-9.-]+/g, "")) || 0;
       
       const cartItem = {
         id: product.id,
-        image: product.image || 'https://via.placeholder.com/200',
-        title: product.name,
-        subtitle: product.description,
+        image: ad.image || product.image || 'https://via.placeholder.com/200',
+        title: ad.title || product.name,
+        subtitle: ad.description || product.description,
         price: price,
         quantity: 1,
         rating: 5,
@@ -176,7 +197,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
           onChangeText={setSearchQuery}
           onSearchPress={() => {
             setPage(1);
-            loadProducts();
+            loadAds();
           }}
           showFilterButton={true}
         />
@@ -220,34 +241,51 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   );
 
   const renderWeekHighlights = () => {
-    const highlight = products[0];
+    const highlight = ads[0];
     if (!highlight) return null;
+
+    const productPrice = highlight.product?.price || 0;
+    const displayTitle = highlight.title || highlight.product?.name || 'Product';
+    const displayImage = highlight.image || highlight.product?.image || 'https://via.placeholder.com/400';
 
     return (
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Week highlights</Text>
         <TouchableOpacity
           style={styles.weekHighlightCard}
-          onPress={() => handleProductPress(highlight)}
+          onPress={() => handleAdPress(highlight)}
           activeOpacity={0.9}
         >
           <Image 
-            source={{ uri: highlight.image || 'https://via.placeholder.com/400' }} 
+            source={{ uri: displayImage }} 
             style={styles.weekHighlightImage} 
           />
           <View style={styles.weekHighlightBadge}>
             <Text style={styles.weekHighlightBadgeText}>Featured</Text>
           </View>
           <View style={styles.weekHighlightContent}>
-            <Text style={styles.weekHighlightTitle}>{highlight.name}</Text>
-            <Text style={styles.weekHighlightPrice}>{formatPrice(highlight.price)}</Text>
-            <TouchableOpacity 
-              style={styles.weekHighlightCartButton} 
-              onPress={() => navigation.navigate('Cart')}
-              activeOpacity={0.7}
-            >
-              <Icon name="shopping-cart" size={20} color="#000" />
-            </TouchableOpacity>
+            <Text style={styles.weekHighlightTitle}>{displayTitle}</Text>
+            {highlight.product && (
+              <Text style={styles.weekHighlightPrice}>{formatPrice(productPrice)}</Text>
+            )}
+            {highlight.product && (
+              <TouchableOpacity 
+                style={styles.weekHighlightCartButton} 
+                onPress={() => handleAddToCart(highlight)}
+                activeOpacity={0.7}
+              >
+                <Icon name="shopping-cart" size={20} color="#000" />
+              </TouchableOpacity>
+            )}
+            {highlight.externalUrl && (
+              <TouchableOpacity 
+                style={styles.weekHighlightCartButton} 
+                onPress={() => handleAdPress(highlight)}
+                activeOpacity={0.7}
+              >
+                <Icon name="open-in-new" size={20} color="#000" />
+              </TouchableOpacity>
+            )}
           </View>
           <View style={styles.pagination}>
             <View style={[styles.paginationDot, styles.paginationDotActive]} />
@@ -257,17 +295,17 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     );
   };
 
-  const renderAllProducts = () => {
+  const renderAllAds = () => {
     if (loading && page === 1) {
       return (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#2196F3" />
-          <Text style={styles.loadingText}>Loading products...</Text>
+          <Text style={styles.loadingText}>Loading ads...</Text>
         </View>
       );
     }
 
-    const displayProducts = page === 1 ? products.slice(1) : products;
+    const displayAds = page === 1 ? ads.slice(1) : ads;
 
     return (
       <View style={styles.section}>
@@ -307,44 +345,66 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
           })}
         </ScrollView>
         <View style={styles.productsList}>
-          {displayProducts.length === 0 ? (
+          {displayAds.length === 0 ? (
             <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>No products found</Text>
+              <Text style={styles.emptyText}>No ads found</Text>
             </View>
           ) : (
-            displayProducts.map((product) => {
+            displayAds.map((ad) => {
+              const product = ad.product;
+              const displayTitle = ad.title || product?.name || 'Product';
+              const displayImage = ad.image || product?.image || 'https://via.placeholder.com/200';
+              const displayCategory = ad.category || product?.category;
+              const productPrice = product?.price;
+
               return (
                 <TouchableOpacity
-                  key={product.id}
+                  key={ad.id}
                   style={styles.productRow}
-                  onPress={() => handleProductPress(product)}
+                  onPress={() => handleAdPress(ad)}
                   activeOpacity={0.8}
                 >
                   <Image 
-                    source={{ uri: product.image || 'https://via.placeholder.com/200' }} 
+                    source={{ uri: displayImage }} 
                     style={styles.productRowImage} 
                   />
                   <View style={styles.productRowContent}>
-                    {product.category && (
+                    {displayCategory && (
                       <View style={styles.productRowCategory}>
-                        <Text style={styles.productRowCategoryText}>{product.category}</Text>
+                        <Text style={styles.productRowCategoryText}>{displayCategory}</Text>
                       </View>
                     )}
-                    <Text style={styles.productRowTitle}>{product.name}</Text>
+                    <Text style={styles.productRowTitle}>{displayTitle}</Text>
                     <View style={styles.productRowFooter}>
-                      <Text style={styles.productRowPrice}>{formatPrice(product.price)}</Text>
-                      {product.status === 'out_of_stock' && (
+                      {productPrice !== undefined && (
+                        <Text style={styles.productRowPrice}>{formatPrice(productPrice)}</Text>
+                      )}
+                      {product && product.status === 'out_of_stock' && (
                         <Text style={styles.outOfStockText}>Out of stock</Text>
+                      )}
+                      {ad.externalUrl && (
+                        <Text style={styles.externalLinkText}>External link</Text>
                       )}
                     </View>
                   </View>
-                  <TouchableOpacity 
-                    style={styles.productRowAddButton} 
-                    activeOpacity={0.7}
-                    onPress={(e) => handleAddToCart(product, e)}
-                  >
-                    <Icon name="add" size={24} color="#000" />
-                  </TouchableOpacity>
+                  {product && (
+                    <TouchableOpacity 
+                      style={styles.productRowAddButton} 
+                      activeOpacity={0.7}
+                      onPress={(e) => handleAddToCart(ad, e)}
+                    >
+                      <Icon name="add" size={24} color="#000" />
+                    </TouchableOpacity>
+                  )}
+                  {ad.externalUrl && !product && (
+                    <TouchableOpacity 
+                      style={styles.productRowAddButton} 
+                      activeOpacity={0.7}
+                      onPress={(e) => handleAdPress(ad)}
+                    >
+                      <Icon name="open-in-new" size={24} color="#000" />
+                    </TouchableOpacity>
+                  )}
                 </TouchableOpacity>
               );
             })
@@ -385,7 +445,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
           showsVerticalScrollIndicator={false}
         >
           {renderWeekHighlights()}
-          {renderAllProducts()}
+          {renderAllAds()}
         </ScrollView>
       </View>
       <FloatingMenu items={menuItems} selectedId="marketplace" />

@@ -406,6 +406,11 @@ export const styles = StyleSheet.create({
     color: '#F44336',
     fontWeight: '600',
   },
+  externalLinkText: {
+    fontSize: 12,
+    color: '#2196F3',
+    fontWeight: '600',
+  },
   loadMoreButton: {
     padding: SPACING.MD,
     alignItems: 'center',
