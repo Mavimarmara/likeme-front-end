@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SearchBar } from '@/components/ui/inputs';
 import { FloatingMenu } from '@/components/ui/menu';
 import { Header, Background } from '@/components/ui/layout';
-import { productService } from '@/services';
+import { productService, storageService } from '@/services';
 import type { Product as ApiProduct } from '@/types/product';
 import type { RootStackParamList } from '@/types/navigation';
 import { styles } from './styles';
@@ -94,6 +94,34 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
         tags: product.category ? [product.category] : [],
       },
     });
+  };
+
+  const handleAddToCart = async (product: ApiProduct, event?: any) => {
+    if (event) {
+      event.stopPropagation();
+    }
+    
+    try {
+      const price = Number(String(product.price).replace(/[^0-9.-]+/g, "")) || 0;
+      
+      const cartItem = {
+        id: product.id,
+        image: product.image || 'https://via.placeholder.com/200',
+        title: product.name,
+        subtitle: product.description,
+        price: price,
+        quantity: 1,
+        rating: 5,
+        tags: product.category ? [product.category] : [],
+        category: 'Product' as const,
+        subCategory: product.category || 'Product',
+      };
+
+      await storageService.addToCart(cartItem);
+      navigation.navigate('Cart');
+    } catch (error) {
+      console.error('Error adding product to cart:', error);
+    }
   };
 
   const formatPrice = (price: number | undefined | null) => {
@@ -310,7 +338,11 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
                       )}
                     </View>
                   </View>
-                  <TouchableOpacity style={styles.productRowAddButton} activeOpacity={0.7}>
+                  <TouchableOpacity 
+                    style={styles.productRowAddButton} 
+                    activeOpacity={0.7}
+                    onPress={(e) => handleAddToCart(product, e)}
+                  >
                     <Icon name="add" size={24} color="#000" />
                   </TouchableOpacity>
                 </TouchableOpacity>
