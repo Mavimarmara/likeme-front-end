@@ -7,7 +7,7 @@ import ErrorScreen from '@/screens/ErrorScreen';
 import AppLoadingScreen from '@/screens/LoadingScreen';
 import { CommunityStackNavigator } from '@/navigation';
 import { ActivitiesScreen } from '@/screens/wellness';
-import { MarketplaceScreen, ProductDetailsScreen, CartScreen, CheckoutScreen } from '@/screens/marketplace';
+import { MarketplaceScreen, ProductDetailsScreen, AffiliateProductScreen, CartScreen, CheckoutScreen } from '@/screens/marketplace';
 import { ProfileScreen } from '@/screens/profile';
 import { HomeScreen, SummaryScreen } from '@/screens/home';
 
@@ -102,6 +102,11 @@ const RootNavigator: React.FC = () => {
           name="ProductDetails"
           component={ProductDetailsScreen}
           options={{ title: 'Detalhes do Produto' }}
+        />
+        <Stack.Screen
+          name="AffiliateProduct"
+          component={AffiliateProductScreen}
+          options={{ title: 'Produto Afiliado' }}
         />
         <Stack.Screen
           name="Cart"

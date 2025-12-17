@@ -85,6 +85,59 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   };
 
   const handleAdPress = (ad: Ad) => {
+    console.log('handleAdPress called with ad:', {
+      id: ad.id,
+      category: ad.category,
+      productId: ad.productId,
+      hasProduct: !!ad.product,
+      productCategory: ad.product?.category,
+    });
+
+    // Se for amazon product (verifica tanto no ad quanto no product), sempre navegar para AffiliateProduct
+    const isAmazonProduct = ad.category === 'amazon product' || ad.product?.category === 'amazon product';
+    
+    if (isAmazonProduct) {
+      console.log('Amazon product detected, navigating to AffiliateProduct');
+      if (ad.productId) {
+        if (ad.product) {
+          navigation.navigate('AffiliateProduct', {
+            productId: ad.productId,
+            adId: ad.id,
+            product: {
+              id: ad.product.id,
+              title: ad.title || ad.product.name,
+              price: `$${Number(ad.product.price).toFixed(2)}`,
+              image: ad.image || ad.product.image || 'https://via.placeholder.com/400',
+              category: ad.product.category,
+              description: ad.description || ad.product.description,
+            },
+          });
+        } else {
+          // Se tem productId mas não tem product carregado, ainda navegar
+          navigation.navigate('AffiliateProduct', {
+            productId: ad.productId,
+            adId: ad.id,
+          });
+        }
+      } else {
+        // Mesmo sem productId, navegar usando os dados do anúncio
+        console.log('Amazon product ad has no productId, navigating with ad data only');
+        navigation.navigate('AffiliateProduct', {
+          productId: ad.id, // Usa o ad.id como productId temporário
+          adId: ad.id,
+          product: {
+            id: ad.id,
+            title: ad.title || 'Product',
+            price: '$0.00',
+            image: ad.image || 'https://via.placeholder.com/400',
+            category: ad.category,
+            description: ad.description,
+          },
+        });
+      }
+      return;
+    }
+
     // Se tem externalUrl, abrir link externo
     if (ad.externalUrl) {
       // Em React Native, você precisaria usar Linking para abrir URLs externas
@@ -93,7 +146,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       return;
     }
 
-    // Se tem produto relacionado, navegar para detalhes do produto
+    // Se tem produto relacionado, navegar para ProductDetails normal
     if (ad.productId && ad.product) {
       navigation.navigate('ProductDetails', {
         productId: ad.productId,
@@ -107,6 +160,8 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
           tags: ad.product.category ? [ad.product.category] : [],
         },
       });
+    } else {
+      console.warn('Ad has no productId or product, cannot navigate');
     }
   };
 
@@ -271,7 +326,10 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
             {highlight.product && (
               <TouchableOpacity 
                 style={styles.weekHighlightCartButton} 
-                onPress={() => handleAddToCart(highlight)}
+                onPress={(e) => {
+                  e.stopPropagation();
+                  handleAddToCart(highlight);
+                }}
                 activeOpacity={0.7}
               >
                 <Icon name="shopping-cart" size={20} color="#000" />
@@ -280,7 +338,10 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
             {highlight.externalUrl && (
               <TouchableOpacity 
                 style={styles.weekHighlightCartButton} 
-                onPress={() => handleAdPress(highlight)}
+                onPress={(e) => {
+                  e.stopPropagation();
+                  handleAdPress(highlight);
+                }}
                 activeOpacity={0.7}
               >
                 <Icon name="open-in-new" size={20} color="#000" />
@@ -391,7 +452,10 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
                     <TouchableOpacity 
                       style={styles.productRowAddButton} 
                       activeOpacity={0.7}
-                      onPress={(e) => handleAddToCart(ad, e)}
+                      onPress={(e) => {
+                        e.stopPropagation();
+                        handleAddToCart(ad, e);
+                      }}
                     >
                       <Icon name="add" size={24} color="#000" />
                     </TouchableOpacity>
@@ -400,7 +464,10 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
                     <TouchableOpacity 
                       style={styles.productRowAddButton} 
                       activeOpacity={0.7}
-                      onPress={(e) => handleAdPress(ad)}
+                      onPress={(e) => {
+                        e.stopPropagation();
+                        handleAdPress(ad);
+                      }}
                     >
                       <Icon name="open-in-new" size={24} color="#000" />
                     </TouchableOpacity>

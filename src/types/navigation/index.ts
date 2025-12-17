@@ -22,6 +22,18 @@ export type RootStackParamList = {
       rating?: number;
     };
   };
+  AffiliateProduct: {
+    productId: string;
+    adId?: string;
+    product?: {
+      id: string;
+      title: string;
+      price: string;
+      image: string;
+      category?: string;
+      description?: string;
+    };
+  };
   Profile: undefined;
   Home: undefined;
   Summary: undefined;

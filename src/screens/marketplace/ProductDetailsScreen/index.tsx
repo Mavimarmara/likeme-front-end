@@ -6,8 +6,9 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header, Background } from '@/components/ui/layout';
 import { LogoMini } from '@/assets';
 import { ProductsCarousel, type Product } from '@/components/ui/carousel';
-import { productService } from '@/services';
+import { productService, adService } from '@/services';
 import type { Product as ApiProduct } from '@/types/product';
+import type { Ad } from '@/types/ad';
 import type { RootStackParamList } from '@/types/navigation';
 import { styles } from './styles';
 
@@ -67,6 +68,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   const [product, setProduct] = useState<ApiProduct | null>(null);
   const [loading, setLoading] = useState(true);
   const [relatedProducts, setRelatedProducts] = useState<ApiProduct[]>([]);
+  const [ad, setAd] = useState<Ad | null>(null);
   
 
   const productId = route.params?.productId;
@@ -99,7 +101,37 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       setLoading(true);
       const response = await productService.getProductById(productId);
       if (response.success && response.data) {
-        setProduct(response.data);
+        const productData = response.data;
+        
+        // Verificar se é produto Amazon e redirecionar
+        if (productData.category === 'amazon product') {
+          // Buscar ad relacionado
+          const adsResponse = await adService.listAds({
+            productId: productId,
+            activeOnly: true,
+            limit: 1,
+          });
+          
+          const adId = adsResponse.success && adsResponse.data && adsResponse.data.ads.length > 0
+            ? adsResponse.data.ads[0].id
+            : undefined;
+          
+          navigation.replace('AffiliateProduct', {
+            productId: productId,
+            adId: adId,
+            product: {
+              id: productData.id,
+              title: productData.name,
+              price: `$${Number(productData.price).toFixed(2)}`,
+              image: productData.image || 'https://via.placeholder.com/400',
+              category: productData.category,
+              description: productData.description,
+            },
+          });
+          return;
+        }
+        
+        setProduct(productData);
       }
     } catch (error) {
       console.error('Error loading product:', error);
@@ -120,6 +152,28 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       }
     } catch (error) {
       console.error('Error loading related products:', error);
+    }
+  };
+
+  const loadAd = async () => {
+    try {
+      const response = await adService.listAds({
+        productId: productId,
+        activeOnly: true,
+        limit: 1,
+      });
+      if (response.success && response.data && response.data.ads.length > 0) {
+        const adData = response.data.ads[0];
+        // Buscar detalhes completos do ad para incluir advertiser e product
+        const adDetailResponse = await adService.getAdById(adData.id);
+        if (adDetailResponse.success && adDetailResponse.data) {
+          setAd(adDetailResponse.data);
+        } else {
+          setAd(adData);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading ad:', error);
     }
   };
 
@@ -228,6 +282,12 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     );
   }
 
+  // Prioriza dados do ad quando disponível, senão usa dados do produto
+  const displayTitle = ad?.title || product.name;
+  const displayDescription = ad?.description || product.description;
+  const displayImage = ad?.image || product.image;
+  const displayPrice = product.price; // Preço sempre vem do produto
+  
   const productTags = product.category ? [product.category] : [];
   const isOutOfStock = product.status === 'out_of_stock' || product.quantity === 0;
 
@@ -248,7 +308,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   const renderHeroSection = () => (
     <View style={styles.heroSection}>
       <Image 
-        source={{ uri: product.image || 'https://via.placeholder.com/800' }} 
+        source={{ uri: displayImage || 'https://via.placeholder.com/800' }} 
         style={styles.heroImage} 
       />
       <View style={styles.heroProductCard}>
@@ -259,7 +319,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
             </View>
           ))}
         </View>
-        <Text style={styles.heroCardTitle}>{product.name}</Text>
+        <Text style={styles.heroCardTitle}>{displayTitle}</Text>
         <View style={styles.heroCardPriceRow}>
           <Text style={styles.heroCardPrice}>{formatPrice(product.price)}</Text>
           {!isOutOfStock && (
@@ -394,8 +454,8 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
         {renderHeroSection()}
         <View style={styles.content}>
           {renderTabs()}
-          <Text style={styles.productTitle}>{product.name}</Text>
-          <Text style={styles.productDescription}>{product.description || 'No description available'}</Text>
+          <Text style={styles.productTitle}>{displayTitle}</Text>
+          <Text style={styles.productDescription}>{displayDescription || 'No description available'}</Text>
           
           <TouchableOpacity 
             style={[
