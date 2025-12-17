@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import TextInput from '@/components/ui/inputs/TextInput';
 import { useFormattedInput } from '@/hooks';
-import { styles } from './styles';
+import { styles } from '../styles';
 
 type PaymentMethod = 'credit_card' | 'pix';
 

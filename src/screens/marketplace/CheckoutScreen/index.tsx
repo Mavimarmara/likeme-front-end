@@ -10,11 +10,9 @@ import { Header } from '@/components/ui/layout';
 import { Background } from '@/components/ui/layout';
 import { storageService } from '@/services';
 import { styles } from './styles';
-import AddressForm from './AddressForm';
-import PaymentForm from './PaymentForm';
-import CartItemList from './CartItemList';
-import OrderSummary from './OrderSummary';
-import { AddressData } from './EditableAddressCard';
+import AddressForm, { AddressData } from './address';
+import PaymentForm from './payment';
+import { CartItemList, OrderSummary } from './order';
 
 interface CartItem {
   id: string;

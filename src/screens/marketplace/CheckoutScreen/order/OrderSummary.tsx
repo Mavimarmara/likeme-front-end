@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { styles as cartStyles } from '../CartScreen/styles';
+import { styles as cartStyles } from '../../CartScreen/styles';
 
 interface OrderSummaryProps {
   subtotal: number;

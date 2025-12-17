@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { styles as cartStyles } from '../CartScreen/styles';
+import { styles as cartStyles } from '../../CartScreen/styles';
 
 interface CartItem {
   id: string;
