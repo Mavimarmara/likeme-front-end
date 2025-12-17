@@ -162,6 +162,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
         style={styles.backButton} 
         onPress={handleBackPress}
         activeOpacity={0.7}
+        testID="back-button"
       >
         <ImageBackground
           source={BackgroundIconButton}
@@ -213,6 +214,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
           style={styles.deleteButton}
           onPress={() => handleRemoveItem(item.id)}
           activeOpacity={0.7}
+          testID={`delete-item-${item.id}`}
         >
           <Icon name="delete" size={24} color="#001137" />
         </TouchableOpacity>
@@ -252,6 +254,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
             style={styles.quantityButton}
             onPress={() => handleDecreaseQuantity(item.id)}
             activeOpacity={0.7}
+            testID={`decrease-quantity-${item.id}`}
           >
             <Icon name="remove-circle-outline" size={24} color="#001137" />
           </TouchableOpacity>
@@ -262,6 +265,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
             style={styles.quantityButton}
             onPress={() => handleIncreaseQuantity(item.id)}
             activeOpacity={0.7}
+            testID={`increase-quantity-${item.id}`}
           >
             <Icon name="add-circle-outline" size={24} color="#001137" />
           </TouchableOpacity>
