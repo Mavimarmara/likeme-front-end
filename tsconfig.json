@@ -19,6 +19,7 @@
       "@/components/*": ["src/components/*"],
       "@/screens/*": ["src/screens/*"],
       "@/navigation/*": ["src/navigation/*"],
+      "@/services": ["src/services/index"],
       "@/services/*": ["src/services/*"],
       "@/constants/*": ["src/constants/*"],
       "@/types/*": ["src/types/*"]
@@ -30,10 +31,6 @@
     "types/**/*.d.ts"
   ],
   "exclude": [
-    "node_modules",
-    "**/*.spec.ts",
-    "**/*.spec.tsx",
-    "**/*.test.ts",
-    "**/*.test.tsx"
+    "node_modules"
   ]
 }
