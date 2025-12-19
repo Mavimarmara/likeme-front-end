@@ -9,6 +9,7 @@ import {
 import { Header } from '@/components/ui/layout';
 import { Background } from '@/components/ui/layout';
 import { storageService } from '@/services';
+import { formatPrice } from '@/utils/formatters';
 import { styles } from './styles';
 import AddressForm, { AddressData } from './address';
 import PaymentForm from './payment';
@@ -84,12 +85,6 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
     setTotal(sub + shipping);
   };
 
-  const formatPrice = (price: number): string => {
-    if (price === undefined || price === null || isNaN(price)) {
-      return '$0.00';
-    }
-    return `$${Number(price).toFixed(2)}`;
-  };
 
   const formatRating = (rating: number): string => {
     if (rating === undefined || rating === null || isNaN(rating)) {

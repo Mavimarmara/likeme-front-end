@@ -140,14 +140,6 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
     return calculateSubtotal() + shipping;
   };
 
-  const formatPrice = (price: number | undefined | null) => {
-    if (price === undefined || price === null || isNaN(Number(price))) {
-      return '$0.00';
-    }
-    // Garante que o preço seja formatado com 2 casas decimais
-    const numPrice = typeof price === 'number' ? price : parseFloat(String(price)) || 0;
-    return `$${numPrice.toFixed(2)}`;
-  };
 
   const formatRating = (rating: number | undefined | null) => {
     if (rating === undefined || rating === null || isNaN(Number(rating))) {

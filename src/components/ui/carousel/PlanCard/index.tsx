@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { BlurView } from 'expo-blur';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { formatPrice } from '@/utils/formatters';
 import { styles } from './styles';
 
 export interface Plan {
@@ -22,16 +23,6 @@ type Props = {
 };
 
 const PlanCard: React.FC<Props> = ({ plan, onPress, onLike }) => {
-  const formatPrice = (price: number | null | undefined, currency: 'BRL' | 'USD' = 'BRL') => {
-    if (price === null || price === undefined || isNaN(Number(price))) {
-      return currency === 'BRL' ? 'R$0.00' : '$0.00';
-    }
-    const numPrice = Number(price);
-    if (currency === 'BRL') {
-      return `R$${numPrice.toFixed(2)}`;
-    }
-    return `$${numPrice.toFixed(2)}`;
-  };
 
   const getTagColor = () => {
     switch (plan.tagColor) {
@@ -60,7 +51,7 @@ const PlanCard: React.FC<Props> = ({ plan, onPress, onLike }) => {
           </View>
           <View style={styles.bottomInfo}>
             <Text style={styles.price}>
-              {formatPrice(plan.price, plan.currency)}
+              {formatPrice(plan.price, plan.currency || 'BRL')}
             </Text>
             <TouchableOpacity
               style={styles.likeButton}

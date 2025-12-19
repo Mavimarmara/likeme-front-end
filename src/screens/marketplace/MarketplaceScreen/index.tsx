@@ -6,7 +6,12 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SearchBar } from '@/components/ui/inputs';
 import { FloatingMenu } from '@/components/ui/menu';
 import { Header, Background } from '@/components/ui/layout';
-import { adService, storageService } from '@/services';
+import { storageService } from '@/services';
+import { formatPrice } from '@/utils/formatters';
+import { handleAdNavigation } from '@/utils/navigation/productNavigation';
+import { mapProductToCartItem } from '@/utils/mappers/cartMapper';
+import { WeekHighlightCard } from '@/components/marketplace';
+import { useMarketplaceAds } from '@/hooks/marketplace';
 import type { Ad } from '@/types/ad';
 import type { RootStackParamList } from '@/types/navigation';
 import { styles } from './styles';
@@ -32,152 +37,35 @@ type MarketplaceScreenProps = {
 };
 
 const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => {
-
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedOrder, setSelectedOrder] = useState<string>('best-rated');
-  const [ads, setAds] = useState<Ad[]>([]);
-  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
 
   const rootNavigation = navigation.getParent() ?? navigation;
+  
+  const { ads, loading, hasMore, loadAds } = useMarketplaceAds({
+    selectedCategory,
+    page,
+  });
+
   const handleCartPress = () => {
     navigation.navigate('Cart');
   };
 
-  const loadAds = useCallback(async () => {
-    try {
-      setLoading(true);
-      const params: any = {
-        page,
-        limit: 20,
-        // Temporariamente removendo activeOnly para testar se há ads no banco
-        // activeOnly: true,
-      };
-
-      // Mapear categoria da UI para categoria do anúncio
-      if (selectedCategory !== 'all') {
-        if (selectedCategory === 'products') {
-          params.category = 'physical product';
-        } else if (selectedCategory === 'programs') {
-          params.category = 'program';
-        }
-      }
-
-      const response = await adService.listAds(params);
-      
-      if (response.success && response.data) {
-        const adsArray = response.data.ads || [];
-        
-        if (page === 1) {
-          setAds(adsArray);
-        } else {
-          setAds(prev => [...prev, ...adsArray]);
-        }
-        
-        const pagination = response.data.pagination;
-        if (pagination) {
-          setHasMore(pagination.page < pagination.totalPages);
-        } else {
-          setHasMore(adsArray.length >= (params.limit || 20));
-        }
-      } else {
-        if (page === 1) {
-          setAds([]);
-        }
-        setHasMore(false);
-      }
-    } catch (error) {
-      if (page === 1) {
-        setAds([]);
-      }
-      setHasMore(false);
-    } finally {
-      setLoading(false);
-    }
-  }, [selectedCategory, page]);
-
-  // Carregar ads quando a tela recebe foco ou quando category/page mudam
   useEffect(() => {
-    // Listener para quando a tela recebe foco (para atualizar quando voltar de outra tela)
     const unsubscribe = navigation.addListener('focus', () => {
       setPage(1);
       loadAds();
     });
 
-    // Chama loadAds na primeira renderização e quando category/page mudam
     loadAds();
 
     return unsubscribe;
   }, [navigation, selectedCategory, page, loadAds]);
 
   const handleAdPress = (ad: Ad) => {
-    // Se for amazon product, verificar apenas em ad.product
-    const isAmazonProduct = ad.product?.category === 'amazon product';
-    
-    if (isAmazonProduct) {
-      if (ad.product) {
-        // Usa productId do produto ou ad.id como fallback
-        const productId = ad.productId || ad.product.id;
-        navigation.navigate('AffiliateProduct', {
-          productId: productId,
-          adId: ad.id,
-          product: {
-            id: ad.product.id,
-            title: ad.product.name,
-            price: ad.product.price ? `$${Number(ad.product.price).toFixed(2)}` : '$0.00',
-            image: ad.product.image || 'https://via.placeholder.com/400',
-            category: ad.product.category,
-            description: ad.product.description,
-          },
-        });
-      } else if (ad.productId) {
-        // Se tem productId mas não tem product carregado, ainda navegar
-        navigation.navigate('AffiliateProduct', {
-          productId: ad.productId,
-          adId: ad.id,
-        });
-      }
-      return;
-    }
-
-    // Se tem externalUrl no product, redirecionar para página de afiliados
-    if (ad.product?.externalUrl) {
-      // Navegar para AffiliateProduct com os dados do product
-      if (ad.product) {
-        navigation.navigate('AffiliateProduct', {
-          productId: ad.productId || ad.product.id,
-          adId: ad.id,
-          product: {
-            id: ad.product.id,
-            title: ad.product.name,
-            price: ad.product.price ? `$${Number(ad.product.price).toFixed(2)}` : '$0.00',
-            image: ad.product.image || 'https://via.placeholder.com/400',
-            category: ad.product.category,
-            description: ad.product.description,
-            externalUrl: ad.product.externalUrl,
-          },
-        });
-      }
-      return;
-    }
-
-    // Se tem produto relacionado, navegar para ProductDetails normal
-    if (ad.productId && ad.product) {
-      navigation.navigate('ProductDetails', {
-        productId: ad.productId,
-        product: {
-          id: ad.product.id,
-          title: ad.product.name,
-          price: `$${Number(ad.product.price).toFixed(2)}`,
-          image: ad.product.image || 'https://via.placeholder.com/400',
-          category: ad.product.category,
-          description: ad.product.description,
-          tags: ad.product.category ? [ad.product.category] : [],
-        },
-      });
-    }
+    handleAdNavigation(ad, navigation);
   };
 
   const handleAddToCart = async (ad: Ad, event?: any) => {
@@ -185,28 +73,12 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       event.stopPropagation();
     }
     
-    // Só pode adicionar ao carrinho se tiver produto relacionado
     if (!ad.product) {
       return;
     }
 
     try {
-      const product = ad.product;
-      const price = Number(String(product.price).replace(/[^0-9.-]+/g, "")) || 0;
-      
-      const cartItem = {
-        id: product.id,
-        image: product.image || 'https://via.placeholder.com/200',
-        title: product.name,
-        subtitle: product.description,
-        price: price,
-        quantity: 1,
-        rating: 5,
-        tags: product.category ? [product.category] : [],
-        category: 'Product' as const,
-        subCategory: product.category || 'Product',
-      };
-
+      const cartItem = mapProductToCartItem(ad.product);
       await storageService.addToCart(cartItem);
       navigation.navigate('Cart');
     } catch (error) {
@@ -214,14 +86,6 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     }
   };
 
-  const formatPrice = (price: number | undefined | null) => {
-    if (price === undefined || price === null || isNaN(Number(price))) {
-      return '$0.00';
-    }
-    // Garante que o preço seja formatado com 2 casas decimais
-    const numPrice = typeof price === 'number' ? price : parseFloat(String(price)) || 0;
-    return `$${numPrice.toFixed(2)}`;
-  };
 
   const menuItems = useMemo(
     () => [
@@ -311,51 +175,19 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
 
   const renderWeekHighlights = () => {
     const highlight = ads[0];
-    if (!highlight) {
+    if (!highlight?.product) {
       return null;
     }
-
-    const productPrice = highlight.product?.price || 0;
-    const displayTitle = highlight.product?.name || 'Product';
-    const displayImage = highlight.product?.image || 'https://via.placeholder.com/400';
 
     return (
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Week highlights</Text>
-        <TouchableOpacity
-          style={styles.weekHighlightCard}
+        <WeekHighlightCard
+          title={highlight.product.name || 'Product'}
+          image={highlight.product.image || 'https://via.placeholder.com/400'}
+          price={highlight.product.price}
           onPress={() => handleAdPress(highlight)}
-          activeOpacity={0.9}
-        >
-          <Image 
-            source={{ uri: displayImage }} 
-            style={styles.weekHighlightImage} 
-          />
-          <View style={styles.weekHighlightBadge}>
-            <Text style={styles.weekHighlightBadgeText}>Featured</Text>
-          </View>
-          <View style={styles.weekHighlightContent}>
-            <Text style={styles.weekHighlightTitle}>{displayTitle}</Text>
-            {highlight.product && (
-              <Text style={styles.weekHighlightPrice}>{formatPrice(productPrice)}</Text>
-            )}
-            {highlight.product && !highlight.product.externalUrl && (
-              <TouchableOpacity 
-                style={styles.weekHighlightCartButton} 
-                onPress={(e) => {
-                  e.stopPropagation();
-                  handleAddToCart(highlight);
-                }}
-                activeOpacity={0.7}
-              >
-                <Icon name="shopping-cart" size={20} color="#000" />
-              </TouchableOpacity>
-            )}
-          </View>
-          <View style={styles.pagination}>
-            <View style={[styles.paginationDot, styles.paginationDotActive]} />
-          </View>
-        </TouchableOpacity>
+        />
       </View>
     );
   };

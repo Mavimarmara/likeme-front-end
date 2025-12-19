@@ -2,6 +2,7 @@ import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import ProductDetailsScreen from './index';
 import { productService, adService } from '@/services';
+import { useProductDetails } from '@/hooks/marketplace';
 
 jest.mock('react-native-safe-area-context', () => {
   const ReactNative = require('react-native');
@@ -35,6 +36,23 @@ jest.mock('@/components/ui/carousel', () => {
     ),
   };
 });
+
+jest.mock('@/components/marketplace', () => {
+  const React = require('react');
+  const { View, Text } = require('react-native');
+  return {
+    ProductHeroSection: () => <View testID="product-hero-section" />,
+    ProductInfoTabs: () => <View testID="product-info-tabs" />,
+  };
+});
+
+jest.mock('@/hooks/marketplace', () => ({
+  useProductDetails: jest.fn(),
+}));
+
+jest.mock('@/utils/formatters', () => ({
+  formatPrice: jest.fn((price) => `$${price?.toFixed(2) || '0.00'}`),
+}));
 
 jest.mock('@/services', () => ({
   productService: {
@@ -81,37 +99,25 @@ describe('ProductDetailsScreen', () => {
     navigate: jest.fn(),
     goBack: jest.fn(),
     replace: jest.fn(),
+    getParent: jest.fn(() => ({
+      navigate: jest.fn(),
+    })),
   };
+
+  const mockUseProductDetails = useProductDetails as jest.MockedFunction<typeof useProductDetails>;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (productService.getProductById as jest.Mock).mockResolvedValue({
-      success: true,
-      data: mockProduct,
-    });
-    (productService.listProducts as jest.Mock).mockResolvedValue({
-      success: true,
-      data: {
-        products: [],
-        pagination: {
-          page: 1,
-          limit: 5,
-          total: 0,
-          totalPages: 1,
-        },
-      },
-    });
-    (adService.listAds as jest.Mock).mockResolvedValue({
-      success: true,
-      data: {
-        ads: [],
-        pagination: {
-          page: 1,
-          limit: 1,
-          total: 0,
-          totalPages: 1,
-        },
-      },
+    
+    mockUseProductDetails.mockReturnValue({
+      product: mockProduct,
+      ad: null,
+      relatedProducts: [],
+      loading: false,
+      isFavorite: false,
+      setIsFavorite: jest.fn(),
+      handleAddToCart: jest.fn(),
+      loadAd: jest.fn(),
     });
   });
 
@@ -133,21 +139,15 @@ describe('ProductDetailsScreen', () => {
   });
 
   it('redirects to AffiliateProduct when product is amazon product', async () => {
-    (productService.getProductById as jest.Mock).mockResolvedValue({
-      success: true,
-      data: mockAmazonProduct,
-    });
-    (adService.listAds as jest.Mock).mockResolvedValue({
-      success: true,
-      data: {
-        ads: [{ id: 'ad-1', productId: 'product-2' }],
-        pagination: {
-          page: 1,
-          limit: 1,
-          total: 1,
-          totalPages: 1,
-        },
-      },
+    mockUseProductDetails.mockReturnValue({
+      product: null,
+      ad: null,
+      relatedProducts: [],
+      loading: false,
+      isFavorite: false,
+      setIsFavorite: jest.fn(),
+      handleAddToCart: jest.fn(),
+      loadAd: jest.fn(),
     });
 
     const mockRoute = {
@@ -204,6 +204,17 @@ describe('ProductDetailsScreen', () => {
   });
 
   it('loads related products on mount', async () => {
+    mockUseProductDetails.mockReturnValue({
+      product: mockProduct,
+      ad: null,
+      relatedProducts: [mockProduct],
+      loading: false,
+      isFavorite: false,
+      setIsFavorite: jest.fn(),
+      handleAddToCart: jest.fn(),
+      loadAd: jest.fn(),
+    });
+
     const mockRoute = {
       params: {
         productId: 'product-1',
@@ -215,7 +226,7 @@ describe('ProductDetailsScreen', () => {
     );
 
     await waitFor(() => {
-      expect(productService.listProducts).toHaveBeenCalled();
+      expect(mockUseProductDetails).toHaveBeenCalled();
     });
   });
 
@@ -231,7 +242,11 @@ describe('ProductDetailsScreen', () => {
     );
 
     await waitFor(() => {
-      expect(productService.getProductById).toHaveBeenCalledWith('product-1');
+      expect(mockUseProductDetails).toHaveBeenCalledWith(
+        expect.objectContaining({
+          productId: 'product-1',
+        })
+      );
     });
   });
 });

@@ -1,5 +1,7 @@
 import { CommonActions } from '@react-navigation/routers';
 
+export * from './navigation/productNavigation';
+
 export interface ErrorNavigationParams {
   errorMessage?: string | Error | unknown;
   onRetry?: () => void;

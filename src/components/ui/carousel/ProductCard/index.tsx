@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { BlurView } from 'expo-blur';
+import { formatPrice } from '@/utils/formatters';
 import { styles } from './styles';
 
 export interface Product {
@@ -20,12 +21,6 @@ type Props = {
 };
 
 const ProductCard: React.FC<Props> = ({ product, onPress, onLike }) => {
-  const formatPrice = (price: number | null | undefined) => {
-    if (price === null || price === undefined || isNaN(Number(price))) {
-      return '$0.00';
-    }
-    return `$${Number(price).toFixed(2)}`;
-  };
 
   return (
     <View style={styles.container}>
