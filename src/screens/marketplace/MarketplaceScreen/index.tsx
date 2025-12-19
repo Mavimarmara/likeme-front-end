@@ -1,10 +1,10 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image, Dimensions, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image, Dimensions, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SearchBar } from '@/components/ui/inputs';
-import { FloatingMenu } from '@/components/ui/menu';
+import { FloatingMenu, FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
 import { Header, Background } from '@/components/ui/layout';
 import { storageService } from '@/services';
 import { formatPrice } from '@/utils/formatters';
@@ -19,18 +19,16 @@ import { logger } from '@/utils/logger';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const CATEGORIES = [
-  { id: 'marker', label: 'Marker', hasDropdown: true },
+const CATEGORY_OPTIONS: ButtonCarouselOption<string>[] = [
   { id: 'all', label: 'All' },
   { id: 'products', label: 'Products' },
   { id: 'specialists', label: 'Specialists' },
-] as const;
+];
 
-const ORDER_FILTERS = [
-  { id: 'order', label: 'Order by', hasDropdown: true },
+const ORDER_OPTIONS: ButtonCarouselOption<string>[] = [
   { id: 'best-rated', label: 'Best rated' },
   { id: 'above-100', label: 'Above $100' },
-] as const;
+];
 
 type MarketplaceScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'Marketplace'>;
@@ -121,6 +119,15 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     [rootNavigation]
   );
 
+  const handleCategorySelect = (categoryId: string) => {
+    setSelectedCategory(categoryId);
+    setPage(1);
+  };
+
+  const handleOrderSelect = (orderId: string) => {
+    setSelectedOrder(orderId);
+  };
+
   const renderCustomHeader = () => (
     <View style={styles.customHeader}>
       <View style={styles.searchContainer}>
@@ -135,41 +142,18 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
           showFilterButton={true}
         />
       </View>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.categoriesList}
-      >
-        {CATEGORIES.map((category) => {
-          const isSelected = category.id === selectedCategory;
-          return (
-            <TouchableOpacity
-              key={category.id}
-              style={[
-                styles.categoryPill,
-                isSelected && styles.categoryPillSelected,
-              ]}
-              onPress={() => {
-                setSelectedCategory(category.id);
-                setPage(1);
-              }}
-              activeOpacity={0.7}
-            >
-              <Text
-                style={[
-                  styles.categoryText,
-                  isSelected && styles.categoryTextSelected,
-                ]}
-              >
-                {category.label}
-              </Text>
-              {(category.id === 'marker') && (
-                <Icon name="arrow-drop-down" size={20} color={isSelected ? '#fff' : '#000'} />
-              )}
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
+      <View style={styles.filterMenuContainer}>
+        <FilterMenu
+          filterButtonLabel="Marker"
+          onFilterButtonPress={() => {
+            // TODO: Implementar modal de marker se necessário
+            console.log('Marker button pressed');
+          }}
+          carouselOptions={CATEGORY_OPTIONS}
+          selectedCarouselId={selectedCategory}
+          onCarouselSelect={handleCategorySelect}
+        />
+      </View>
     </View>
   );
 
@@ -211,38 +195,18 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>All products</Text>
         </View>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.orderFiltersList}
-        >
-          {ORDER_FILTERS.map((filter) => {
-            const isSelected = filter.id === selectedOrder;
-            return (
-              <TouchableOpacity
-                key={filter.id}
-                style={[
-                  styles.orderFilterPill,
-                  isSelected && styles.orderFilterPillSelected,
-                ]}
-                onPress={() => setSelectedOrder(filter.id)}
-                activeOpacity={0.7}
-              >
-                <Text
-                  style={[
-                    styles.orderFilterText,
-                    isSelected && styles.orderFilterTextSelected,
-                  ]}
-                >
-                  {filter.label}
-                </Text>
-                {(filter.id === 'order') && (
-                  <Icon name="arrow-drop-down" size={20} color={isSelected ? '#fff' : '#000'} />
-                )}
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
+        <View style={styles.orderFilterMenuContainer}>
+          <FilterMenu
+            filterButtonLabel="Order by"
+            onFilterButtonPress={() => {
+              // TODO: Implementar modal de order se necessário
+              console.log('Order by button pressed');
+            }}
+            carouselOptions={ORDER_OPTIONS}
+            selectedCarouselId={selectedOrder}
+            onCarouselSelect={handleOrderSelect}
+          />
+        </View>
         <View style={styles.productsList}>
           {displayAds.length === 0 ? (
             <View style={styles.emptyContainer}>

@@ -21,33 +21,8 @@ export const styles = StyleSheet.create({
   searchContainer: {
     marginBottom: SPACING.MD,
   },
-  categoriesList: {
-    paddingVertical: SPACING.SM,
-    gap: SPACING.SM,
-  },
-  categoryPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    paddingHorizontal: SPACING.LG,
-    paddingVertical: SPACING.SM,
-    backgroundColor: '#FFFFFF',
-    marginRight: SPACING.SM,
-  },
-  categoryPillSelected: {
-    backgroundColor: '#2196F3',
-    borderColor: '#2196F3',
-  },
-  categoryText: {
-    fontSize: 14,
-    color: '#000000',
-    fontWeight: '500',
-    marginRight: 4,
-  },
-  categoryTextSelected: {
-    color: '#FFFFFF',
+  filterMenuContainer: {
+    marginBottom: SPACING.SM,
   },
   scrollContent: {
     paddingBottom: SPACING.XXL,
@@ -281,34 +256,8 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   // All products styles
-  orderFiltersList: {
-    paddingVertical: SPACING.SM,
+  orderFilterMenuContainer: {
     marginBottom: SPACING.MD,
-    gap: SPACING.SM,
-  },
-  orderFilterPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    paddingHorizontal: SPACING.LG,
-    paddingVertical: SPACING.SM,
-    backgroundColor: '#FFFFFF',
-    marginRight: SPACING.SM,
-  },
-  orderFilterPillSelected: {
-    backgroundColor: '#2196F3',
-    borderColor: '#2196F3',
-  },
-  orderFilterText: {
-    fontSize: 14,
-    color: '#000000',
-    fontWeight: '500',
-    marginRight: 4,
-  },
-  orderFilterTextSelected: {
-    color: '#FFFFFF',
   },
   productsList: {
     gap: SPACING.MD,
