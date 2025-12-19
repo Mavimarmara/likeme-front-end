@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { FloatingMenu, FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
 import { Header, Background } from '@/components/ui/layout';
 import { Toggle, PrimaryButton } from '@/components/ui';
+import { CreateActivityModal } from '@/components/ui/modals';
 import { BackgroundIconButton } from '@/assets';
 import { ProductsCarousel, PlansCarousel, type Product, type Plan } from '@/components/sections/product';
 import type { RootStackParamList } from '@/types/navigation';
@@ -37,6 +38,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
   const [activeTab, setActiveTab] = useState<TabType>('actives');
   const [selectedFilter, setSelectedFilter] = useState<FilterType>('all');
   const [showFestivalBanner, setShowFestivalBanner] = useState(true);
+  const [isCreateActivityModalVisible, setIsCreateActivityModalVisible] = useState(false);
 
   // Mock data - será substituído por dados reais do backend
   const activities: ActivityItem[] = [
@@ -181,7 +183,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
       <View style={styles.createButtonContainer}>
         <PrimaryButton
           label="Create activities +"
-          onPress={() => console.log('Create activity')}
+          onPress={() => setIsCreateActivityModalVisible(true)}
           style={styles.createButton}
         />
       </View>
@@ -442,6 +444,14 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
         </ScrollView>
       </View>
       <FloatingMenu items={menuItems} selectedId="activities" />
+      <CreateActivityModal
+        visible={isCreateActivityModalVisible}
+        onClose={() => setIsCreateActivityModalVisible(false)}
+        onSave={(data) => {
+          console.log('Activity created:', data);
+          // TODO: Implement save logic
+        }}
+      />
     </SafeAreaView>
   );
 };
