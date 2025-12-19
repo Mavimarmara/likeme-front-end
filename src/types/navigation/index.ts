@@ -32,6 +32,7 @@ export type RootStackParamList = {
       image: string;
       category?: string;
       description?: string;
+      externalUrl?: string;
     };
   };
   Profile: undefined;
@@ -39,6 +40,21 @@ export type RootStackParamList = {
   Summary: undefined;
   Cart: undefined;
   Checkout: undefined;
+  CommunityPreview: {
+    productId: string;
+    productName?: string;
+  };
+  ProviderProfile: {
+    providerId: string;
+    provider?: {
+      name: string;
+      avatar?: string;
+      title?: string;
+      description?: string;
+      rating?: number;
+      specialties?: string[];
+    };
+  };
 };
 
 import type { Post } from '@/types';

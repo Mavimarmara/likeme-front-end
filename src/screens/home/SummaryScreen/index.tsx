@@ -5,7 +5,8 @@ import { FloatingMenu } from '@/components/ui/menu';
 import { Header, Background } from '@/components/ui/layout';
 import { useCommunities } from '@/hooks';
 import { mapCommunityToRecommendedCommunity, mapCommunityToOtherCommunity, mapCommunityPostToPost } from '@/utils/community/mappers';
-import { communityService } from '@/services';
+import { communityService, productService } from '@/services';
+import type { Channel } from '@/types/community';
 import type { CommunityFeedData } from '@/types/community';
 import { 
   NextEventsSection,
@@ -28,82 +29,30 @@ type Props = {
   route: any;
 };
 
-const mockEvents: Event[] = [
-  {
-    id: '1',
-    title: 'Home Mobility Challenge',
-    date: '04 June',
-    time: '08:30 am',
-    thumbnail: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400',
-    participants: [
-      { id: '1', name: 'A', color: 'Green' },
-      { id: '2', name: 'B', color: 'Blue' },
-      { id: '3', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100' },
-    ],
-    participantsCount: 8,
-  },
-  {
-    id: '2',
-    title: 'Trail Run - United State',
-    date: '05 June',
-    time: '06:30 am',
-    thumbnail: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400',
-    participants: [
-      { id: '1', name: 'A', color: 'Green' },
-      { id: '2', name: 'B', color: 'Pink' },
-      { id: '3', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100' },
-    ],
-    participantsCount: 25,
-  },
-  {
-    id: '3',
-    title: 'Yoga Session - Morning Flow',
-    date: '06 June',
-    time: '07:00 am',
-    thumbnail: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400',
-    participants: [
-      { id: '1', name: 'A', color: 'Blue' },
-      { id: '2', name: 'B', color: 'Light Pink' },
-      { id: '3', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100' },
-    ],
-    participantsCount: 15,
-  },
-];
+// Helper function to map channels to events
+const mapChannelsToEvents = (channels: Channel[]): Event[] => {
+  return channels.map((channel) => {
+    const metadata = channel.metadata || {};
+    const date = metadata.date as string || new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+    const time = metadata.time as string || metadata.startTime as string || '08:00 am';
+    const thumbnail = (metadata.thumbnailUrl as string) || 
+      (channel.avatarFileId ? undefined : 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400') ||
+      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400';
+    const participants = (metadata.participants as Event['participants']) || [];
+    const participantsCount = (metadata.participantsCount as number) || participants.length || 0;
 
-const RECOMMENDED_PRODUCTS: Product[] = [
-  {
-    id: '1',
-    title: 'Omega 3. Sleep suplement',
-    price: 99.5,
-    tag: 'Sleep better',
-    image: 'https://images.unsplash.com/photo-1494390248081-4e521a5940db?w=800',
-    likes: 10,
-  },
-  {
-    id: '2',
-    title: 'Smart lamp',
-    price: 352,
-    tag: 'On sale',
-    image: 'https://images.unsplash.com/photo-1505693314120-0d443867891c?w=800',
-    likes: 10,
-  },
-  {
-    id: '3',
-    title: 'Weigh Blanket',
-    price: 55.2,
-    tag: 'Sleep better',
-    image: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=800',
-    likes: 10,
-  },
-  {
-    id: '4',
-    title: 'Herbal tea kit',
-    price: 64,
-    tag: 'New',
-    image: 'https://images.unsplash.com/photo-1505576391880-b3f9d713dc5a?w=800',
-    likes: 8,
-  },
-];
+    return {
+      id: channel.channelId,
+      title: (metadata.title as string) || channel.displayName || 'Event',
+      date,
+      time,
+      thumbnail,
+      participants,
+      participantsCount,
+    };
+  });
+};
+
 
 
 
@@ -132,6 +81,9 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   const [loadingCommunityPosts, setLoadingCommunityPosts] = useState(false);
   const [popularProviders, setPopularProviders] = useState<Provider[]>([]);
   const [loadingProviders, setLoadingProviders] = useState(false);
+  const [recommendedProducts, setRecommendedProducts] = useState<Product[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [events, setEvents] = useState<Event[]>([]);
 
   useEffect(() => {
     if (!firstCommunity) {
@@ -195,6 +147,54 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
 
     loadCommunityPosts();
   }, [firstCommunity?.communityId]);
+
+  useEffect(() => {
+    const loadRecommendedProducts = async () => {
+      try {
+        setLoadingProducts(true);
+        const response = await productService.listProducts({
+          limit: 4,
+          status: 'active',
+        });
+        if (response.success && response.data) {
+          const products: Product[] = response.data.products.map(p => ({
+            id: p.id,
+            title: p.name,
+            price: p.price || 0,
+            tag: p.category || 'Product',
+            image: p.image || 'https://via.placeholder.com/400',
+            likes: 0,
+          }));
+          setRecommendedProducts(products);
+        }
+      } catch (error) {
+        // Error handling
+      } finally {
+        setLoadingProducts(false);
+      }
+    };
+
+    loadRecommendedProducts();
+  }, []);
+
+  useEffect(() => {
+    const loadEvents = async () => {
+      try {
+        const response = await communityService.getChannels({ types: ['live', 'broadcast'] });
+        if (response.success && response.data?.channels) {
+          const mappedEvents = mapChannelsToEvents(response.data.channels);
+          setEvents(mappedEvents);
+        } else {
+          setEvents([]);
+        }
+      } catch (error) {
+        // Error handling
+        setEvents([]);
+      }
+    };
+
+    loadEvents();
+  }, []);
 
   useEffect(() => {
     const loadProviders = async () => {
@@ -424,13 +424,15 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
               />
             </View>
           )}
-          <View style={styles.eventsContainer}>
-            <NextEventsSection
-              events={mockEvents}
-              onEventPress={handleEventPress}
-              onEventSave={handleEventSave}
-            />
-          </View>
+          {events.length > 0 && (
+            <View style={styles.eventsContainer}>
+              <NextEventsSection
+                events={events}
+                onEventPress={handleEventPress}
+                onEventSave={handleEventSave}
+              />
+            </View>
+          )}
           {popularProviders.length > 0 && (
             <View style={styles.providersContainer}>
               <PopularProvidersSection
@@ -439,15 +441,17 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
               />
             </View>
           )}
-          <View style={styles.productsContainer}>
-            <ProductsCarousel
-              title="Products recommended for your sleep journey by Dr. Peter Valasquez"
-              subtitle="Discover our options selected just for you"
-              products={RECOMMENDED_PRODUCTS}
-              onProductPress={handleProductPress}
-              onProductLike={handleProductLike}
-            />
-          </View>
+          {recommendedProducts.length > 0 && (
+            <View style={styles.productsContainer}>
+              <ProductsCarousel
+                title="Products recommended for your sleep journey by Dr. Peter Valasquez"
+                subtitle="Discover our options selected just for you"
+                products={recommendedProducts}
+                onProductPress={handleProductPress}
+                onProductLike={handleProductLike}
+              />
+            </View>
+          )}
           <View style={styles.communitiesContainer}>
             <RecommendedCommunitiesSection
               communities={recommendedCommunities}

@@ -26,6 +26,7 @@ type AffiliateProductScreenProps = {
         image: string;
         category?: string;
         description?: string;
+        externalUrl?: string;
       };
     };
   };
@@ -73,22 +74,86 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
     try {
       setLoading(true);
 
+      // Se tem product nos params, usar como fallback inicial
+      if (route.params?.product) {
+        const fallbackProduct = route.params.product;
+        const productData: ApiProduct = {
+          id: fallbackProduct.id,
+          name: fallbackProduct.title,
+          description: fallbackProduct.description || '',
+          price: parseFloat(fallbackProduct.price.replace('$', '').replace(',', '')) || 0,
+          image: fallbackProduct.image,
+          category: fallbackProduct.category,
+          quantity: 0,
+          status: 'active',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          ...(fallbackProduct.externalUrl && { externalUrl: fallbackProduct.externalUrl }),
+        };
+        setProduct(productData);
+      }
+
       // Primeiro, tentar carregar o ad (prioridade)
       if (adId) {
-        const adResponse = await adService.getAdById(adId);
-        if (adResponse.success && adResponse.data) {
-          setAd(adResponse.data);
-          // Se o ad tem productId, tentar carregar o produto
-          if (adResponse.data.productId) {
-            try {
-              const productResponse = await productService.getProductById(adResponse.data.productId);
-              if (productResponse.success && productResponse.data) {
-                setProduct(productResponse.data);
+        try {
+          const adResponse = await adService.getAdById(adId);
+          if (adResponse.success && adResponse.data) {
+            setAd(adResponse.data);
+            // Se o ad tem productId, tentar carregar o produto
+            if (adResponse.data.productId) {
+              try {
+                const productResponse = await productService.getProductById(adResponse.data.productId);
+                if (productResponse.success && productResponse.data) {
+                  const loadedProduct = productResponse.data;
+                  // Preservar externalUrl dos params se o produto carregado não tiver
+                  if (route.params?.product?.externalUrl && !loadedProduct.externalUrl) {
+                    setProduct({
+                      ...loadedProduct,
+                      externalUrl: route.params.product.externalUrl,
+                    });
+                  } else {
+                    setProduct(loadedProduct);
+                  }
+                } else if (route.params?.product) {
+                  // Se não conseguiu carregar do backend, manter o product dos params
+                  const fallbackProduct = route.params.product;
+                  setProduct({
+                    id: fallbackProduct.id,
+                    name: fallbackProduct.title,
+                    description: fallbackProduct.description || '',
+                    price: parseFloat(fallbackProduct.price.replace('$', '').replace(',', '')) || 0,
+                    image: fallbackProduct.image,
+                    category: fallbackProduct.category,
+                    quantity: 0,
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    ...(fallbackProduct.externalUrl && { externalUrl: fallbackProduct.externalUrl }),
+                  });
+                }
+              } catch (error) {
+                // Se falhar, manter o product dos params que já foi definido
               }
-            } catch (error) {
-              console.warn('Could not load product for ad:', error);
             }
+          } else if (route.params?.product) {
+            // Se não conseguiu carregar ad, manter o product dos params
+            const fallbackProduct = route.params.product;
+            setProduct({
+              id: fallbackProduct.id,
+              name: fallbackProduct.title,
+              description: fallbackProduct.description || '',
+              price: parseFloat(fallbackProduct.price.replace('$', '').replace(',', '')) || 0,
+              image: fallbackProduct.image,
+              category: fallbackProduct.category,
+              quantity: 0,
+              status: 'active',
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+              ...(fallbackProduct.externalUrl && { externalUrl: fallbackProduct.externalUrl }),
+            });
           }
+        } catch (error) {
+          // Se falhar ao carregar ad, manter o product dos params que já foi definido
         }
       } else if (productId && productId !== route.params?.product?.id) {
         // Se não tem adId mas tem productId válido, buscar ad relacionado
@@ -102,7 +167,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
             setAd(adsResponse.data.ads[0]);
           }
         } catch (error) {
-          console.warn('Could not load ad for product:', error);
+          // Se falhar, manter o product dos params
         }
       }
 
@@ -111,15 +176,56 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
         try {
           const productResponse = await productService.getProductById(productId);
           if (productResponse.success && productResponse.data) {
-            setProduct(productResponse.data);
+            const loadedProduct = productResponse.data;
+            // Preservar externalUrl dos params se o produto carregado não tiver
+            if (route.params?.product?.externalUrl && !loadedProduct.externalUrl) {
+              setProduct({
+                ...loadedProduct,
+                externalUrl: route.params.product.externalUrl,
+              });
+            } else {
+              setProduct(loadedProduct);
+            }
+          } else if (route.params?.product && !product) {
+            // Se não conseguiu carregar e ainda não tem product, usar dos params
+            const fallbackProduct = route.params.product;
+            setProduct({
+              id: fallbackProduct.id,
+              name: fallbackProduct.title,
+              description: fallbackProduct.description || '',
+              price: parseFloat(fallbackProduct.price.replace('$', '').replace(',', '')) || 0,
+              image: fallbackProduct.image,
+              category: fallbackProduct.category,
+              quantity: 0,
+              status: 'active',
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+              ...(fallbackProduct.externalUrl && { externalUrl: fallbackProduct.externalUrl }),
+            });
           }
         } catch (error) {
-          console.warn('Could not load product:', error);
+          // Se falhar e ainda não tem product, usar dos params
+          if (route.params?.product && !product) {
+            const fallbackProduct = route.params.product;
+            setProduct({
+              id: fallbackProduct.id,
+              name: fallbackProduct.title,
+              description: fallbackProduct.description || '',
+              price: parseFloat(fallbackProduct.price.replace('$', '').replace(',', '')) || 0,
+              image: fallbackProduct.image,
+              category: fallbackProduct.category,
+              quantity: 0,
+              status: 'active',
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+              ...(fallbackProduct.externalUrl && { externalUrl: fallbackProduct.externalUrl }),
+            });
+          }
         }
       }
 
       // Carregar outras opções relacionadas
-      const category = route.params?.product?.category || ad?.category || product?.category;
+      const category = route.params?.product?.category || ad?.product?.category || product?.category;
       if (category) {
         try {
           const relatedResponse = await productService.listProducts({
@@ -146,16 +252,33 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
   };
 
   const handleBuyOnAmazon = () => {
-    const externalUrl = ad?.product?.externalUrl || product?.externalUrl;
+    // Prioridade: product dos params > ad.product > product carregado
+    const externalUrl = route.params?.product?.externalUrl || 
+                       ad?.product?.externalUrl || 
+                       product?.externalUrl;
     if (externalUrl) {
       Linking.openURL(externalUrl);
     }
   };
 
-  const displayTitle = product?.name || ad?.product?.name || 'Product';
-  const displayDescription = product?.description || ad?.product?.description || '';
-  const displayImage = product?.image || ad?.product?.image || 'https://via.placeholder.com/400';
-  const productCategory = product?.category || ad?.product?.category || 'Product';
+  // Usar dados dos params como fallback se não foram carregados
+  const paramsProduct = route.params?.product;
+  const displayTitle = product?.name || 
+                      ad?.product?.name || 
+                      paramsProduct?.title || 
+                      'Product';
+  const displayDescription = product?.description || 
+                            ad?.product?.description || 
+                            paramsProduct?.description || 
+                            '';
+  const displayImage = product?.image || 
+                      ad?.product?.image || 
+                      paramsProduct?.image || 
+                      'https://via.placeholder.com/400';
+  const productCategory = product?.category || 
+                          ad?.product?.category || 
+                          paramsProduct?.category || 
+                          'Product';
 
   const tabs = [
     { id: 'goal' as TabType, label: 'Goal' },

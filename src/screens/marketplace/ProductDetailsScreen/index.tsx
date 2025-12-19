@@ -122,7 +122,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
             product: {
               id: productData.id,
               title: productData.name,
-              price: `$${Number(productData.price).toFixed(2)}`,
+              price: productData.price ? `$${Number(productData.price).toFixed(2)}` : '$0.00',
               image: productData.image || 'https://via.placeholder.com/400',
               category: productData.category,
               description: productData.description,
@@ -226,7 +226,27 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   };
 
   const handleSeeProvider = () => {
-    console.log('See provider');
+    const provider = route.params?.product?.provider;
+    if (provider) {
+      navigation.navigate('ProviderProfile', {
+        providerId: productId,
+        provider: {
+          name: provider.name,
+          avatar: provider.avatar,
+          title: 'Therapist & Wellness Coach',
+          description: 'Specialized in mental health and wellness coaching with over 10 years of experience.',
+          rating: route.params?.product?.rating || 4.8,
+          specialties: ['Mental Health', 'Wellness Coaching', 'Therapy'],
+        },
+      });
+    }
+  };
+
+  const handleCommunityPreview = () => {
+    navigation.navigate('CommunityPreview', {
+      productId: productId,
+      productName: displayTitle,
+    });
   };
 
   const handleProductPress = (recommendedProduct: ApiProduct) => {
@@ -235,7 +255,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       product: {
         id: recommendedProduct.id,
         title: recommendedProduct.name,
-        price: `$${Number(recommendedProduct.price).toFixed(2)}`,
+              price: recommendedProduct.price ? `$${Number(recommendedProduct.price).toFixed(2)}` : '$0.00',
         image: recommendedProduct.image || 'https://via.placeholder.com/400',
         category: recommendedProduct.category,
         description: recommendedProduct.description,
@@ -348,7 +368,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       </TouchableOpacity>
       <TouchableOpacity
         style={[styles.tab, activeTab === 'preview' && styles.tabActive]}
-        onPress={() => setActiveTab('preview')}
+        onPress={handleCommunityPreview}
         activeOpacity={0.7}
       >
         <Text style={[styles.tabText, activeTab === 'preview' && styles.tabTextActive]}>Community preview</Text>
@@ -400,6 +420,15 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       )}
       {product.weight && (
         <Text style={styles.productWeight}>Weight: {product.weight} kg</Text>
+      )}
+      {route.params?.product?.provider && (
+        <TouchableOpacity
+          style={styles.providerButton}
+          onPress={handleSeeProvider}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.providerButtonText}>See provider profile</Text>
+        </TouchableOpacity>
       )}
     </View>
   );

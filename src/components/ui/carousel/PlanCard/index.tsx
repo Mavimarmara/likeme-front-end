@@ -7,7 +7,7 @@ import { styles } from './styles';
 export interface Plan {
   id: string;
   title: string;
-  price: number;
+  price: number | null | undefined;
   tag: string;
   tagColor?: 'orange' | 'green' | 'default';
   image: string;
@@ -22,11 +22,15 @@ type Props = {
 };
 
 const PlanCard: React.FC<Props> = ({ plan, onPress, onLike }) => {
-  const formatPrice = (price: number, currency: 'BRL' | 'USD' = 'BRL') => {
-    if (currency === 'BRL') {
-      return `R$${price.toFixed(2)}`;
+  const formatPrice = (price: number | null | undefined, currency: 'BRL' | 'USD' = 'BRL') => {
+    if (price === null || price === undefined || isNaN(Number(price))) {
+      return currency === 'BRL' ? 'R$0.00' : '$0.00';
     }
-    return `$${price.toFixed(2)}`;
+    const numPrice = Number(price);
+    if (currency === 'BRL') {
+      return `R$${numPrice.toFixed(2)}`;
+    }
+    return `$${numPrice.toFixed(2)}`;
   };
 
   const getTagColor = () => {

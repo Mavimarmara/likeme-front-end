@@ -126,7 +126,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
           product: {
             id: ad.product.id,
             title: ad.product.name,
-            price: `$${Number(ad.product.price).toFixed(2)}`,
+            price: ad.product.price ? `$${Number(ad.product.price).toFixed(2)}` : '$0.00',
             image: ad.product.image || 'https://via.placeholder.com/400',
             category: ad.product.category,
             description: ad.product.description,

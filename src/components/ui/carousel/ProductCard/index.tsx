@@ -7,7 +7,7 @@ import { styles } from './styles';
 export interface Product {
   id: string;
   title: string;
-  price: number;
+  price: number | null | undefined;
   tag: string;
   image: string;
   likes: number;
@@ -20,7 +20,12 @@ type Props = {
 };
 
 const ProductCard: React.FC<Props> = ({ product, onPress, onLike }) => {
-  const formatPrice = (price: number) => `$${price.toFixed(2)}`;
+  const formatPrice = (price: number | null | undefined) => {
+    if (price === null || price === undefined || isNaN(Number(price))) {
+      return '$0.00';
+    }
+    return `$${Number(price).toFixed(2)}`;
+  };
 
   return (
     <View style={styles.container}>

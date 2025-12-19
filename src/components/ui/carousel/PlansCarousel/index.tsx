@@ -25,10 +25,12 @@ const PlansCarousel: React.FC<Props> = ({
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.subtitle}>{subtitle}</Text>
-      </View>
+      {(title || subtitle) && (
+        <View style={styles.header}>
+          {title && <Text style={styles.title}>{title}</Text>}
+          {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+        </View>
+      )}
       
       <View style={styles.carouselContainer}>
         <Carousel
