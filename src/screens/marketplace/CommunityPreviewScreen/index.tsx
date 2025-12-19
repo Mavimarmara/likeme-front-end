@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header, Background } from '@/components/ui/layout';
-import { PostCard } from '@/components/ui/community';
+import { PostCard } from '@/components/sections/community';
 import type { Post } from '@/types';
 import type { RootStackParamList } from '@/types/navigation';
 import { styles } from './styles';

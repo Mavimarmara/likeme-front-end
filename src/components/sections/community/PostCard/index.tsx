@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Badge, CommentCard } from '@/components/ui';
-import { PollCard } from '@/components/ui/community';
+import { PollCard } from '@/components/sections/community';
 import { styles } from './styles';
 import { COLORS } from '@/constants';
 import type { Post } from '@/types';

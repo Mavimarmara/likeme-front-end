@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { FloatingMenu } from '@/components/ui/menu';
 import { Header, Background } from '@/components/ui/layout';
 import { BackgroundIconButton } from '@/assets';
-import { ProductsCarousel, PlansCarousel, type Product, type Plan } from '@/components/ui/carousel';
+import { ProductsCarousel, PlansCarousel, type Product, type Plan } from '@/components/sections/product';
 import type { RootStackParamList } from '@/types/navigation';
 import { styles } from './styles';
 

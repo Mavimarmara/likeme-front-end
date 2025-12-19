@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView } from 'react-native';
-import { ProgramSelector, ModuleAccordion } from '@/components/ui';
+import { ProgramSelector, ModuleAccordion } from '@/components/sections/program';
 import { styles } from './styles';
 import type { Program, ProgramDetail } from '@/types/program';
 

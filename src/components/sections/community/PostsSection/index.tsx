@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import { SearchBar } from '@/components/ui';
 import FilterModal, { type FilterType } from '@/components/ui/modals/FilterModal';
-import { PostCard } from '@/components/ui/community';
+import { PostCard } from '@/components/sections/community';
 import type { Post } from '@/types';
 import { logger } from '@/utils/logger';
 import { styles } from './styles';

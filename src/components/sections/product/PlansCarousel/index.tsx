@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import Carousel from '../Carousel/index';
+import Carousel from '../Carousel';
 import PlanCard, { Plan } from '../PlanCard';
 import { styles } from './styles';
 

@@ -10,7 +10,7 @@ import { Background } from '@/components/ui/layout';
 import { BackgroundIconButton, LogoMini } from '@/assets';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '@/constants';
 import type { CommunityStackParamList } from '@/types/navigation';
-import type { ProviderChat } from '@/components/ui/community';
+import type { ProviderChat } from '@/components/sections/community';
 import { styles } from './styles';
 
 type ChatScreenNavigationProp = StackNavigationProp<CommunityStackParamList, 'ChatScreen'>;

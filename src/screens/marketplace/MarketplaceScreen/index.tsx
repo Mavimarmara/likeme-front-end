@@ -10,7 +10,7 @@ import { storageService } from '@/services';
 import { formatPrice } from '@/utils/formatters';
 import { handleAdNavigation } from '@/utils/navigation/productNavigation';
 import { mapProductToCartItem } from '@/utils/mappers/cartMapper';
-import { WeekHighlightCard } from '@/components/marketplace';
+import { WeekHighlightCard } from '@/components/sections/marketplace';
 import { useMarketplaceAds } from '@/hooks/marketplace';
 import type { Ad } from '@/types/ad';
 import type { RootStackParamList } from '@/types/navigation';

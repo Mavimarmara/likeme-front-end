@@ -1,6 +1,6 @@
 import { formatPrice } from '@/utils/formatters';
 import type { Product as ApiProduct } from '@/types/product';
-import type { Product } from '@/components/ui/carousel';
+import type { Product } from '@/components/sections/product';
 
 export const mapApiProductToCarouselProduct = (
   apiProduct: ApiProduct

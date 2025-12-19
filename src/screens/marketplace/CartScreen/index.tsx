@@ -18,6 +18,7 @@ import { ImageBackground } from 'react-native';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES } from '@/constants';
 import type { RootStackParamList } from '@/types/navigation';
 import storageService from '@/services/auth/storageService';
+import { formatPrice } from '@/utils/formatters';
 import { styles } from './styles';
 
 interface CartItem {

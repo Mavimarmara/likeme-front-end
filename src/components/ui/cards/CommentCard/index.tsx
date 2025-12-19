@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Image, ImageSourcePropType } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { CommentReactions } from '@/components/ui/community';
+import { CommentReactions } from '@/components/sections/community';
 import { styles } from './styles';
 import communityService from '@/services/community/communityService';
 import { logger } from '@/utils/logger';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
-import { EventCard } from '@/components/ui/community';
+import { EventCard } from '@/components/sections/community';
 import type { Event } from '@/types/event';
 import { styles } from './styles';
 

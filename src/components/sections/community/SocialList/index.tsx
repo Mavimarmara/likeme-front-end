@@ -7,13 +7,15 @@ import {
   ProviderChat,
   NextEventsSection,
   ProviderChatCard,
+  ProgramSelector,
+} from '@/components/sections/community';
+import {
   ProductsCarousel,
   PlansCarousel,
   Product,
   Plan,
-  ProgramSelector,
-  CategoryModal,
-} from '@/components/ui';
+} from '@/components/sections/product';
+import { CategoryModal } from '@/components/ui/modals';
 import type { Post, Event } from '@/types';
 import type { Program } from '@/types/program';
 import type { FilterType } from '@/components/ui/modals/FilterModal';

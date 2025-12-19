@@ -19,8 +19,8 @@ import {
   type OtherCommunity,
   type Provider,
   type YourCommunity,
-} from '@/components/ui/community';
-import { ProductsCarousel, type Product } from '@/components/ui/carousel';
+} from '@/components/sections/community';
+import { ProductsCarousel, type Product } from '@/components/sections/product';
 import type { Event } from '@/types/event';
 import type { Post } from '@/types';
 import { styles } from './styles';

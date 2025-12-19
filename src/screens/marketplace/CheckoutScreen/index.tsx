@@ -13,7 +13,7 @@ import { formatPrice } from '@/utils/formatters';
 import { styles } from './styles';
 import AddressForm, { AddressData } from './address';
 import PaymentForm from './payment';
-import { CartItemList, OrderSummary } from './order';
+import { CartItemList, OrderSummary, OrderScreen } from './order';
 
 interface CartItem {
   id: string;
@@ -57,10 +57,18 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
   const [subtotal, setSubtotal] = useState(0);
   const [shipping, setShipping] = useState(0);
   const [total, setTotal] = useState(0);
+  const [orderId, setOrderId] = useState('');
 
   useEffect(() => {
     loadCartItems();
+    generateOrderId();
   }, []);
+
+  const generateOrderId = () => {
+    const randomId = Math.random().toString(36).substring(2, 10).toUpperCase() + 
+                     Math.random().toString(36).substring(2, 6).toUpperCase();
+    setOrderId(randomId);
+  };
 
   useEffect(() => {
     calculateTotals();
@@ -99,10 +107,21 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
       setCurrentStep('payment');
     } else if (currentStep === 'payment') {
       setCurrentStep('order');
-    } else {
-      // Finalizar compra
-      navigation.goBack();
     }
+  };
+
+  const handleHomePress = () => {
+    navigation.navigate('Home');
+  };
+
+  const handleViewProgram = (itemId: string) => {
+    // Navigate to program details
+    console.log('View program:', itemId);
+  };
+
+  const handleAddToCalendar = (itemId: string) => {
+    // Add to calendar logic
+    console.log('Add to calendar:', itemId);
   };
 
   const handleSaveAddress = (address: AddressData) => {
@@ -217,18 +236,45 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
             />
           </>
         )}
+
+        {currentStep === 'order' && (
+          <OrderScreen
+            orderId={orderId}
+            subtotal={subtotal}
+            shipping={shipping}
+            addressData={addressData}
+            cartItems={cartItems}
+            onViewProgram={handleViewProgram}
+            onAddToCalendar={handleAddToCalendar}
+            onHomePress={handleHomePress}
+          />
+        )}
       </ScrollView>
 
-      {/* Continue Button */}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.completeButton}
-          onPress={handleContinue}
-          activeOpacity={0.7}
-        >
-          <Text style={styles.completeButtonText}>Continue</Text>
-        </TouchableOpacity>
-      </View>
+      {/* Continue/Home Button */}
+      {currentStep !== 'order' && (
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.completeButton}
+            onPress={handleContinue}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.completeButtonText}>Continue</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {currentStep === 'order' && (
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.completeButton}
+            onPress={handleHomePress}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.completeButtonText}>Home</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </SafeAreaView>
   );
 };
