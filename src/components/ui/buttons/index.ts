@@ -4,4 +4,5 @@ export { default as SecondaryButton } from './Secondary';
 export { default as Toggle } from './Toggle';
 export { default as ButtonGroup } from './ButtonGroup';
 export { default as LogoutButton } from './LogoutButton';
+export { default as FilterButton } from './FilterButton';
 

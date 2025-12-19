@@ -1,5 +1,6 @@
 export * from './buttons';
 export * from './cards';
+export * from './carousel';
 export * from './inputs';
 export * from './layout';
 export { default as Header } from './layout/Header';

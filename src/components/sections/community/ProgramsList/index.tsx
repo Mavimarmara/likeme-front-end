@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text, ScrollView } from 'react-native';
-import { ProgramSelector, ModuleAccordion } from '@/components/sections/program';
+import { ModuleAccordion } from '@/components/sections/program';
+import { FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
 import { styles } from './styles';
 import type { Program, ProgramDetail } from '@/types/program';
 
@@ -31,20 +32,30 @@ const ProgramsList: React.FC<Props> = ({
     setExpandedModules(newExpanded);
   };
 
+  const filterOptions: ButtonCarouselOption<string>[] = useMemo(() => {
+    return programs.map((program) => ({
+      id: program.id,
+      label: program.name,
+    }));
+  }, [programs]);
+
+  const handleSelect = (optionId: string) => {
+    const program = programs.find((p) => p.id === optionId);
+    if (program) {
+      onProgramPress(program);
+    }
+  };
+
   const selectedProgram = programs.find((p) => p.id === selectedProgramId);
 
   return (
     <View style={styles.container}>
       {programs.length > 0 && (
         <View style={styles.selectorContainer}>
-          <ProgramSelector
-            programs={programs}
-            selectedProgramId={selectedProgramId}
-            onSelect={(program) => {
-              if (program) {
-                onProgramPress(program);
-              }
-            }}
+          <FilterMenu
+            carouselOptions={filterOptions}
+            selectedCarouselId={selectedProgramId}
+            onCarouselSelect={handleSelect}
           />
         </View>
       )}

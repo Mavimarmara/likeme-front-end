@@ -11,31 +11,6 @@ export const styles = StyleSheet.create({
     paddingHorizontal: SPACING.MD,
   },
   tabsContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#F5F5F5',
-    borderRadius: BORDER_RADIUS.LG,
-    padding: SPACING.XS,
-    marginVertical: SPACING.MD,
-    gap: SPACING.XS,
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: SPACING.MD,
-    borderRadius: BORDER_RADIUS.MD,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  tabActive: {
-    backgroundColor: '#2196F3',
-  },
-  tabText: {
-    fontSize: FONT_SIZES.MD,
-    fontWeight: '500',
-    color: COLORS.TEXT_LIGHT,
-  },
-  tabTextActive: {
-    color: '#FFFFFF',
-    fontWeight: '600',
   },
   filtersContainer: {
     flexDirection: 'row',
@@ -53,34 +28,6 @@ export const styles = StyleSheet.create({
   createButtonText: {
     color: '#FFFFFF',
     fontSize: FONT_SIZES.SM,
-    fontWeight: '600',
-  },
-  filtersScroll: {
-    flexDirection: 'row',
-    gap: SPACING.SM,
-  },
-  filterPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.MD,
-    paddingVertical: SPACING.SM,
-    borderRadius: BORDER_RADIUS.FULL,
-    backgroundColor: '#F5F5F5',
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    gap: SPACING.XS,
-  },
-  filterPillSelected: {
-    backgroundColor: '#2196F3',
-    borderColor: '#2196F3',
-  },
-  filterText: {
-    fontSize: FONT_SIZES.SM,
-    color: COLORS.TEXT,
-    fontWeight: '500',
-  },
-  filterTextSelected: {
-    color: '#FFFFFF',
     fontWeight: '600',
   },
   festivalBanner: {

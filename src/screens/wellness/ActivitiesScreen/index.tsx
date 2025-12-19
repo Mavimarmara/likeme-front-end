@@ -3,8 +3,9 @@ import { View, Text, ScrollView, TouchableOpacity, Image, ImageBackground, Dimen
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { FloatingMenu } from '@/components/ui/menu';
+import { FloatingMenu, FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
 import { Header, Background } from '@/components/ui/layout';
+import { Toggle } from '@/components/ui';
 import { BackgroundIconButton } from '@/assets';
 import { ProductsCarousel, PlansCarousel, type Product, type Plan } from '@/components/sections/product';
 import type { RootStackParamList } from '@/types/navigation';
@@ -153,26 +154,19 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
 
   const renderTabs = () => (
     <View style={styles.tabsContainer}>
-      <TouchableOpacity
-        style={[styles.tab, activeTab === 'actives' && styles.tabActive]}
-        onPress={() => setActiveTab('actives')}
-        activeOpacity={0.7}
-      >
-        <Text style={[styles.tabText, activeTab === 'actives' && styles.tabTextActive]}>
-          Actives
-        </Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={[styles.tab, activeTab === 'history' && styles.tabActive]}
-        onPress={() => setActiveTab('history')}
-        activeOpacity={0.7}
-      >
-        <Text style={[styles.tabText, activeTab === 'history' && styles.tabTextActive]}>
-          History
-        </Text>
-      </TouchableOpacity>
+      <Toggle
+        options={['Actives', 'History'] as const}
+        selected={activeTab === 'actives' ? 'Actives' : 'History'}
+        onSelect={(option) => setActiveTab(option === 'Actives' ? 'actives' : 'history')}
+      />
     </View>
   );
+
+  const filterCarouselOptions: ButtonCarouselOption<FilterType>[] = [
+    { id: 'all', label: 'All' },
+    { id: 'activities', label: 'Activities' },
+    { id: 'appointments', label: 'Appointments' },
+  ];
 
   const renderFilters = () => (
     <View style={styles.filtersContainer}>
@@ -183,43 +177,14 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
       >
         <Text style={styles.createButtonText}>Create activities +</Text>
       </TouchableOpacity>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.filtersScroll}
-      >
-        <TouchableOpacity style={styles.filterPill} activeOpacity={0.7}>
-          <Text style={styles.filterText}>Day</Text>
-          <Icon name="arrow-drop-down" size={16} color="#001137" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.filterPill, selectedFilter === 'all' && styles.filterPillSelected]}
-          onPress={() => setSelectedFilter('all')}
-          activeOpacity={0.7}
-        >
-          <Text style={[styles.filterText, selectedFilter === 'all' && styles.filterTextSelected]}>
-            All
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.filterPill, selectedFilter === 'activities' && styles.filterPillSelected]}
-          onPress={() => setSelectedFilter('activities')}
-          activeOpacity={0.7}
-        >
-          <Text style={[styles.filterText, selectedFilter === 'activities' && styles.filterTextSelected]}>
-            Activities
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.filterPill, selectedFilter === 'appointments' && styles.filterPillSelected]}
-          onPress={() => setSelectedFilter('appointments')}
-          activeOpacity={0.7}
-        >
-          <Text style={[styles.filterText, selectedFilter === 'appointments' && styles.filterTextSelected]}>
-            Appointments
-          </Text>
-        </TouchableOpacity>
-      </ScrollView>
+      <FilterMenu
+        filterButtonLabel="Day"
+        onFilterButtonPress={() => console.log('Filter button pressed')}
+        filterButtonIcon="arrow-drop-down"
+        carouselOptions={filterCarouselOptions}
+        selectedCarouselId={selectedFilter}
+        onCarouselSelect={(optionId) => setSelectedFilter(optionId)}
+      />
     </View>
   );
 

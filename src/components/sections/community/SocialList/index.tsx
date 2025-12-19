@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, ScrollView } from 'react-native';
 import {
   LiveBanner,
@@ -7,7 +7,6 @@ import {
   ProviderChat,
   NextEventsSection,
   ProviderChatCard,
-  ProgramSelector,
 } from '@/components/sections/community';
 import {
   ProductsCarousel,
@@ -15,6 +14,7 @@ import {
   Product,
   Plan,
 } from '@/components/sections/product';
+import { FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
 import { CategoryModal } from '@/components/ui/modals';
 import type { Post, Event } from '@/types';
 import type { Program } from '@/types/program';
@@ -107,27 +107,39 @@ const SocialList: React.FC<Props> = ({
     setIsCategoryModalVisible(false);
   };
 
-  const MARKER_ID = '__MARKER__';
-  // Marker está selecionado se uma categoria foi selecionada
-  const isMarkerSelected = !!selectedCategoryId;
+  const filterOptions: ButtonCarouselOption<string>[] = useMemo(() => {
+    const options = programs?.map((program) => ({
+      id: program.id,
+      label: program.name,
+    })) || [];
+    
+    return [{ id: '__ALL__', label: 'All' }, ...options];
+  }, [programs]);
+
+  const handleSelect = (optionId: string) => {
+    if (optionId === '__ALL__') {
+      onProgramPress?.(null);
+      return;
+    }
+    const program = programs?.find((p) => p.id === optionId);
+    if (program) {
+      onProgramPress?.(program);
+    }
+  };
+
+  const isAllSelected = !selectedProgramId || selectedProgramId === '__ALL__';
+  const selectedId = isAllSelected ? '__ALL__' : selectedProgramId;
 
   return (
     <View style={styles.container}>
       {programs && programs.length > 0 && (
         <View style={styles.programsContainer}>
-          <ProgramSelector
-            programs={programs}
-            selectedProgramId={isMarkerSelected ? MARKER_ID : selectedProgramId}
-            onSelect={(program) => {
-              if (program === null) {
-                onProgramPress?.(null);
-              } else {
-                onProgramPress?.(program);
-              }
-            }}
-            onMarkerPress={handleMarkerPress}
-            showMarker={true}
-            showAll={true}
+          <FilterMenu
+            filterButtonLabel="Marker"
+            onFilterButtonPress={handleMarkerPress}
+            carouselOptions={filterOptions}
+            selectedCarouselId={selectedId}
+            onCarouselSelect={handleSelect}
           />
         </View>
       )}
