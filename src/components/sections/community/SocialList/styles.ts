@@ -6,6 +6,9 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   programsContainer: {
+    marginBottom: SPACING.MD,
+    gap: SPACING.SM,
+    paddingLeft: SPACING.MD,
   },
   liveBannerContainer: {
     paddingTop: SPACING.MD,

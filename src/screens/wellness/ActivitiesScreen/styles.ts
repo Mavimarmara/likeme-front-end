@@ -13,22 +13,14 @@ export const styles = StyleSheet.create({
   tabsContainer: {
   },
   filtersContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
     marginBottom: SPACING.MD,
     gap: SPACING.SM,
   },
-  createButton: {
-    backgroundColor: '#2196F3',
-    paddingHorizontal: SPACING.MD,
-    paddingVertical: SPACING.SM,
-    borderRadius: BORDER_RADIUS.MD,
-    marginRight: SPACING.SM,
+  createButtonContainer: {
+    alignSelf: 'flex-start',
   },
-  createButtonText: {
-    color: '#FFFFFF',
-    fontSize: FONT_SIZES.SM,
-    fontWeight: '600',
+  createButton: {
+    alignSelf: 'flex-start',
   },
   festivalBanner: {
     backgroundColor: '#FFF9C4',

@@ -5,7 +5,7 @@ import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { FloatingMenu, FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
 import { Header, Background } from '@/components/ui/layout';
-import { Toggle } from '@/components/ui';
+import { Toggle, PrimaryButton } from '@/components/ui';
 import { BackgroundIconButton } from '@/assets';
 import { ProductsCarousel, PlansCarousel, type Product, type Plan } from '@/components/sections/product';
 import type { RootStackParamList } from '@/types/navigation';
@@ -170,13 +170,6 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
 
   const renderFilters = () => (
     <View style={styles.filtersContainer}>
-      <TouchableOpacity
-        style={styles.createButton}
-        activeOpacity={0.7}
-        onPress={() => console.log('Create activity')}
-      >
-        <Text style={styles.createButtonText}>Create activities +</Text>
-      </TouchableOpacity>
       <FilterMenu
         filterButtonLabel="Day"
         onFilterButtonPress={() => console.log('Filter button pressed')}
@@ -185,6 +178,13 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
         selectedCarouselId={selectedFilter}
         onCarouselSelect={(optionId) => setSelectedFilter(optionId)}
       />
+      <View style={styles.createButtonContainer}>
+        <PrimaryButton
+          label="Create activities +"
+          onPress={() => console.log('Create activity')}
+          style={styles.createButton}
+        />
+      </View>
     </View>
   );
 
