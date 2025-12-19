@@ -45,6 +45,9 @@ class AdService {
         queryParams.activeOnly = String(params.activeOnly);
       }
 
+      console.error('[AdService] Request URL:', `${this.adsEndpoint}?${new URLSearchParams(queryParams).toString()}`);
+      console.error('[AdService] Query params:', JSON.stringify(queryParams, null, 2));
+      
       const response = await apiClient.get<ListAdsApiResponse>(
         this.adsEndpoint,
         queryParams,
@@ -52,6 +55,13 @@ class AdService {
         false
       );
 
+      console.error('[AdService] Response received:', {
+        success: response.success,
+        hasData: !!response.data,
+        adsCount: response.data?.ads?.length || 0,
+        pagination: response.data?.pagination,
+      });
+      
       logger.debug('Ads list response:', {
         page: params.page,
         limit: params.limit,

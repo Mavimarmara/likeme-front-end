@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Image, Dimensions, StyleSheet, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -10,6 +10,7 @@ import { adService, storageService } from '@/services';
 import type { Ad } from '@/types/ad';
 import type { RootStackParamList } from '@/types/navigation';
 import { styles } from './styles';
+import { logger } from '@/utils/logger';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -31,6 +32,7 @@ type MarketplaceScreenProps = {
 };
 
 const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => {
+
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedOrder, setSelectedOrder] = useState<string>('best-rated');
@@ -44,18 +46,14 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     navigation.navigate('Cart');
   };
 
-  useEffect(() => {
-    loadAds();
-  }, [selectedCategory, page]);
-
-  const loadAds = async () => {
+  const loadAds = useCallback(async () => {
     try {
       setLoading(true);
       const params: any = {
         page,
         limit: 20,
-        status: 'active',
-        activeOnly: true,
+        // Temporariamente removendo activeOnly para testar se há ads no banco
+        // activeOnly: true,
       };
 
       // Mapear categoria da UI para categoria do anúncio
@@ -67,22 +65,83 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
         }
       }
 
+      console.error('[MarketplaceScreen] Loading ads with params:', JSON.stringify(params, null, 2));
       const response = await adService.listAds(params);
+      console.error('[MarketplaceScreen] Ads response:', JSON.stringify({
+        success: response.success,
+        hasData: !!response.data,
+        adsCount: response.data?.ads?.length || 0,
+        pagination: response.data?.pagination,
+        firstAd: response.data?.ads?.[0] || null,
+      }, null, 2));
+      
+      // Log detalhado da resposta completa
+      console.error('[MarketplaceScreen] Full response:', JSON.stringify(response, null, 2));
       
       if (response.success && response.data) {
+        const adsArray = response.data.ads || [];
+        console.error('[MarketplaceScreen] Setting ads:', adsArray.length);
+        
         if (page === 1) {
-          setAds(response.data.ads);
+          setAds(adsArray);
         } else {
-          setAds(prev => [...prev, ...response.data.ads]);
+          setAds(prev => [...prev, ...adsArray]);
         }
-        setHasMore(response.data.pagination.page < response.data.pagination.totalPages);
+        
+        const pagination = response.data.pagination;
+        if (pagination) {
+          setHasMore(pagination.page < pagination.totalPages);
+        } else {
+          setHasMore(adsArray.length >= (params.limit || 20));
+        }
+      } else {
+        console.warn('[MarketplaceScreen] Response not successful or missing data:', response);
+        if (page === 1) {
+          setAds([]);
+        }
+        setHasMore(false);
       }
     } catch (error) {
-      console.error('Error loading ads:', error);
+      console.error('[MarketplaceScreen] Error loading ads:', error);
+      console.error('[MarketplaceScreen] Error details:', {
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
+      if (page === 1) {
+        setAds([]);
+      }
+      setHasMore(false);
     } finally {
+      console.log('[MarketplaceScreen] loadAds finished, setting loading to false');
       setLoading(false);
     }
-  };
+  }, [selectedCategory, page]);
+
+  // Carregar ads quando a tela recebe foco ou quando category/page mudam
+  useEffect(() => {
+    console.error('[MarketplaceScreen] useEffect triggered', { selectedCategory, page });
+    console.error('[MarketplaceScreen] loadAds function exists:', typeof loadAds === 'function');
+    
+    // Listener para quando a tela recebe foco (para atualizar quando voltar de outra tela)
+    const unsubscribe = navigation.addListener('focus', () => {
+      console.error('[MarketplaceScreen] Screen focused, reloading ads');
+      setPage(1);
+      // Recarrega quando a tela recebe foco
+      if (typeof loadAds === 'function') {
+        loadAds();
+      }
+    });
+
+    // Chama loadAds na primeira renderização e quando category/page mudam
+    console.error('[MarketplaceScreen] Calling loadAds from useEffect');
+    if (typeof loadAds === 'function') {
+      loadAds();
+    } else {
+      console.error('[MarketplaceScreen] ERROR: loadAds is not a function!');
+    }
+
+    return unsubscribe;
+  }, [navigation, selectedCategory, page, loadAds]);
 
   const handleAdPress = (ad: Ad) => {
     console.log('handleAdPress called with ad:', {
@@ -272,7 +331,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
               >
                 {category.label}
               </Text>
-              {category.hasDropdown && (
+              {(category.id === 'marker') && (
                 <Icon name="arrow-drop-down" size={20} color={isSelected ? '#fff' : '#000'} />
               )}
             </TouchableOpacity>
@@ -284,11 +343,14 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
 
   const renderWeekHighlights = () => {
     const highlight = ads[0];
-    if (!highlight) return null;
+    if (!highlight) {
+      console.log('[MarketplaceScreen] No highlight ad available');
+      return null;
+    }
 
     const productPrice = highlight.product?.price || 0;
-    const displayTitle = highlight.product?.name || 'Product';
-    const displayImage = highlight.product?.image || 'https://via.placeholder.com/400';
+    const displayTitle = highlight.product?.name || highlight.title || 'Product';
+    const displayImage = highlight.product?.image || highlight.image || 'https://via.placeholder.com/400';
 
     return (
       <View style={styles.section}>
@@ -353,7 +415,9 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       );
     }
 
-    const displayAds = page === 1 ? ads.slice(1) : ads;
+    // Se é página 1 e há ads, remove o primeiro (usado no highlight)
+    // Caso contrário, mostra todos os ads
+    const displayAds = page === 1 && ads.length > 0 ? ads.slice(1) : ads;
 
     return (
       <View style={styles.section}>
@@ -385,7 +449,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
                 >
                   {filter.label}
                 </Text>
-                {filter.hasDropdown && (
+                {(filter.id === 'order') && (
                   <Icon name="arrow-drop-down" size={20} color={isSelected ? '#fff' : '#000'} />
                 )}
               </TouchableOpacity>
@@ -400,9 +464,9 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
           ) : (
             displayAds.map((ad) => {
               const product = ad.product;
-              const displayTitle = product?.name || 'Product';
-              const displayImage = product?.image || 'https://via.placeholder.com/200';
-              const displayCategory = product?.category;
+              const displayTitle = product?.name || ad.title || 'Product';
+              const displayImage = product?.image || ad.image || 'https://via.placeholder.com/200';
+              const displayCategory = product?.category || ad.category;
               const productPrice = product?.price;
 
               return (
