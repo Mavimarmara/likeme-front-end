@@ -65,22 +65,10 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
         }
       }
 
-      console.error('[MarketplaceScreen] Loading ads with params:', JSON.stringify(params, null, 2));
       const response = await adService.listAds(params);
-      console.error('[MarketplaceScreen] Ads response:', JSON.stringify({
-        success: response.success,
-        hasData: !!response.data,
-        adsCount: response.data?.ads?.length || 0,
-        pagination: response.data?.pagination,
-        firstAd: response.data?.ads?.[0] || null,
-      }, null, 2));
-      
-      // Log detalhado da resposta completa
-      console.error('[MarketplaceScreen] Full response:', JSON.stringify(response, null, 2));
       
       if (response.success && response.data) {
         const adsArray = response.data.ads || [];
-        console.error('[MarketplaceScreen] Setting ads:', adsArray.length);
         
         if (page === 1) {
           setAds(adsArray);
@@ -95,67 +83,40 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
           setHasMore(adsArray.length >= (params.limit || 20));
         }
       } else {
-        console.warn('[MarketplaceScreen] Response not successful or missing data:', response);
         if (page === 1) {
           setAds([]);
         }
         setHasMore(false);
       }
     } catch (error) {
-      console.error('[MarketplaceScreen] Error loading ads:', error);
-      console.error('[MarketplaceScreen] Error details:', {
-        message: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined,
-      });
       if (page === 1) {
         setAds([]);
       }
       setHasMore(false);
     } finally {
-      console.log('[MarketplaceScreen] loadAds finished, setting loading to false');
       setLoading(false);
     }
   }, [selectedCategory, page]);
 
   // Carregar ads quando a tela recebe foco ou quando category/page mudam
   useEffect(() => {
-    console.error('[MarketplaceScreen] useEffect triggered', { selectedCategory, page });
-    console.error('[MarketplaceScreen] loadAds function exists:', typeof loadAds === 'function');
-    
     // Listener para quando a tela recebe foco (para atualizar quando voltar de outra tela)
     const unsubscribe = navigation.addListener('focus', () => {
-      console.error('[MarketplaceScreen] Screen focused, reloading ads');
       setPage(1);
-      // Recarrega quando a tela recebe foco
-      if (typeof loadAds === 'function') {
-        loadAds();
-      }
+      loadAds();
     });
 
     // Chama loadAds na primeira renderização e quando category/page mudam
-    console.error('[MarketplaceScreen] Calling loadAds from useEffect');
-    if (typeof loadAds === 'function') {
-      loadAds();
-    } else {
-      console.error('[MarketplaceScreen] ERROR: loadAds is not a function!');
-    }
+    loadAds();
 
     return unsubscribe;
   }, [navigation, selectedCategory, page, loadAds]);
 
   const handleAdPress = (ad: Ad) => {
-    console.log('handleAdPress called with ad:', {
-      id: ad.id,
-      productId: ad.productId,
-      hasProduct: !!ad.product,
-      productCategory: ad.product?.category,
-    });
-
     // Se for amazon product, verificar apenas em ad.product
     const isAmazonProduct = ad.product?.category === 'amazon product';
     
     if (isAmazonProduct) {
-      console.log('Amazon product detected, navigating to AffiliateProduct');
       if (ad.product) {
         // Usa productId do produto ou ad.id como fallback
         const productId = ad.productId || ad.product.id;
@@ -177,18 +138,28 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
           productId: ad.productId,
           adId: ad.id,
         });
-      } else {
-        // Sem productId e sem product, não é possível navegar
-        console.warn('Amazon product ad has no productId and no product data, cannot navigate');
       }
       return;
     }
 
-    // Se tem externalUrl, abrir link externo
-    if (ad.externalUrl) {
-      // Em React Native, você precisaria usar Linking para abrir URLs externas
-      console.log('Open external URL:', ad.externalUrl);
-      // Linking.openURL(ad.externalUrl);
+    // Se tem externalUrl no product, redirecionar para página de afiliados
+    if (ad.product?.externalUrl) {
+      // Navegar para AffiliateProduct com os dados do product
+      if (ad.product) {
+        navigation.navigate('AffiliateProduct', {
+          productId: ad.productId || ad.product.id,
+          adId: ad.id,
+          product: {
+            id: ad.product.id,
+            title: ad.product.name,
+            price: ad.product.price ? `$${Number(ad.product.price).toFixed(2)}` : '$0.00',
+            image: ad.product.image || 'https://via.placeholder.com/400',
+            category: ad.product.category,
+            description: ad.product.description,
+            externalUrl: ad.product.externalUrl,
+          },
+        });
+      }
       return;
     }
 
@@ -206,8 +177,6 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
           tags: ad.product.category ? [ad.product.category] : [],
         },
       });
-    } else {
-      console.warn('Ad has no productId or product, cannot navigate');
     }
   };
 
@@ -218,7 +187,6 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     
     // Só pode adicionar ao carrinho se tiver produto relacionado
     if (!ad.product) {
-      console.warn('Ad has no related product to add to cart');
       return;
     }
 
@@ -242,7 +210,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       await storageService.addToCart(cartItem);
       navigation.navigate('Cart');
     } catch (error) {
-      console.error('Error adding product to cart:', error);
+      // Error handling
     }
   };
 
@@ -344,13 +312,12 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   const renderWeekHighlights = () => {
     const highlight = ads[0];
     if (!highlight) {
-      console.log('[MarketplaceScreen] No highlight ad available');
       return null;
     }
 
     const productPrice = highlight.product?.price || 0;
-    const displayTitle = highlight.product?.name || highlight.title || 'Product';
-    const displayImage = highlight.product?.image || highlight.image || 'https://via.placeholder.com/400';
+    const displayTitle = highlight.product?.name || 'Product';
+    const displayImage = highlight.product?.image || 'https://via.placeholder.com/400';
 
     return (
       <View style={styles.section}>
@@ -372,7 +339,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
             {highlight.product && (
               <Text style={styles.weekHighlightPrice}>{formatPrice(productPrice)}</Text>
             )}
-            {highlight.product && (
+            {highlight.product && !highlight.product.externalUrl && (
               <TouchableOpacity 
                 style={styles.weekHighlightCartButton} 
                 onPress={(e) => {
@@ -382,18 +349,6 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
                 activeOpacity={0.7}
               >
                 <Icon name="shopping-cart" size={20} color="#000" />
-              </TouchableOpacity>
-            )}
-            {highlight.externalUrl && (
-              <TouchableOpacity 
-                style={styles.weekHighlightCartButton} 
-                onPress={(e) => {
-                  e.stopPropagation();
-                  handleAdPress(highlight);
-                }}
-                activeOpacity={0.7}
-              >
-                <Icon name="open-in-new" size={20} color="#000" />
               </TouchableOpacity>
             )}
           </View>
@@ -464,9 +419,9 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
           ) : (
             displayAds.map((ad) => {
               const product = ad.product;
-              const displayTitle = product?.name || ad.title || 'Product';
-              const displayImage = product?.image || ad.image || 'https://via.placeholder.com/200';
-              const displayCategory = product?.category || ad.category;
+              const displayTitle = product?.name || 'Product';
+              const displayImage = product?.image || 'https://via.placeholder.com/200';
+              const displayCategory = product?.category;
               const productPrice = product?.price;
 
               return (
@@ -494,12 +449,9 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
                       {product && product.status === 'out_of_stock' && (
                         <Text style={styles.outOfStockText}>Out of stock</Text>
                       )}
-                      {ad.externalUrl && (
-                        <Text style={styles.externalLinkText}>External link</Text>
-                      )}
                     </View>
                   </View>
-                  {product && (
+                  {product && !product.externalUrl && (
                     <TouchableOpacity 
                       style={styles.productRowAddButton} 
                       activeOpacity={0.7}
@@ -509,18 +461,6 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
                       }}
                     >
                       <Icon name="add" size={24} color="#000" />
-                    </TouchableOpacity>
-                  )}
-                  {ad.externalUrl && !product && (
-                    <TouchableOpacity 
-                      style={styles.productRowAddButton} 
-                      activeOpacity={0.7}
-                      onPress={(e) => {
-                        e.stopPropagation();
-                        handleAdPress(ad);
-                      }}
-                    >
-                      <Icon name="open-in-new" size={24} color="#000" />
                     </TouchableOpacity>
                   )}
                 </TouchableOpacity>

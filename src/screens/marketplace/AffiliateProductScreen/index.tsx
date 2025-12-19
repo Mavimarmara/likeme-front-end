@@ -146,15 +146,16 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
   };
 
   const handleBuyOnAmazon = () => {
-    if (ad?.externalUrl) {
-      Linking.openURL(ad.externalUrl);
+    const externalUrl = ad?.product?.externalUrl || product?.externalUrl;
+    if (externalUrl) {
+      Linking.openURL(externalUrl);
     }
   };
 
-  const displayTitle = ad?.title || product?.name || 'Product';
-  const displayDescription = ad?.description || product?.description || '';
-  const displayImage = ad?.image || product?.image || 'https://via.placeholder.com/400';
-  const productCategory = product?.category || ad?.category || 'Product';
+  const displayTitle = product?.name || ad?.product?.name || 'Product';
+  const displayDescription = product?.description || ad?.product?.description || '';
+  const displayImage = product?.image || ad?.product?.image || 'https://via.placeholder.com/400';
+  const productCategory = product?.category || ad?.product?.category || 'Product';
 
   const tabs = [
     { id: 'goal' as TabType, label: 'Goal' },

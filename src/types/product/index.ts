@@ -18,19 +18,14 @@ export interface Ad {
   id: string;
   advertiserId?: string;
   productId?: string;
-  title: string;
-  description?: string;
-  image?: string;
   startDate?: string;
   endDate?: string;
   status: 'active' | 'inactive' | 'expired';
   targetAudience?: string;
-  budget?: number;
-  externalUrl?: string;
-  category?: 'amazon product' | 'physical product' | 'program';
   createdAt: string;
   updatedAt: string;
   advertiser?: Advertiser;
+  product?: Product; // Product contains: name, description, image, externalUrl, category
 }
 
 export interface Product {
@@ -38,15 +33,16 @@ export interface Product {
   name: string;
   description?: string;
   sku?: string;
-  price: number;
+  price?: number; // Optional when externalUrl is provided
   cost?: number;
-  quantity: number;
+  quantity?: number; // Optional when externalUrl is provided
   image?: string;
-  category?: string;
+  category?: 'amazon product' | 'physical product' | 'program' | string;
   brand?: string;
   status: 'active' | 'inactive' | 'out_of_stock';
   weight?: number;
   dimensions?: string;
+  externalUrl?: string; // External URL for the product (e.g., Amazon product link)
   createdAt: string;
   updatedAt: string;
   ads?: Ad[];
@@ -76,15 +72,16 @@ export interface CreateProductData {
   name: string;
   description?: string;
   sku?: string;
-  price: number;
+  price?: number; // Optional when externalUrl is provided
   cost?: number;
-  quantity?: number;
+  quantity?: number; // Optional when externalUrl is provided
   image?: string;
-  category?: string;
+  category?: 'amazon product' | 'physical product' | 'program' | string;
   brand?: string;
   status?: 'active' | 'inactive' | 'out_of_stock';
   weight?: number;
   dimensions?: string;
+  externalUrl?: string; // External URL for the product (e.g., Amazon product link)
 }
 
 export interface UpdateProductData extends Partial<CreateProductData> {}

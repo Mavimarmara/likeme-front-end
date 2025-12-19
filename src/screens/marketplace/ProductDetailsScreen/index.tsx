@@ -282,10 +282,10 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     );
   }
 
-  // Prioriza dados do ad quando disponível, senão usa dados do produto
-  const displayTitle = ad?.title || product.name;
-  const displayDescription = ad?.description || product.description;
-  const displayImage = ad?.image || product.image;
+  // Prioriza dados do product do ad quando disponível, senão usa dados do produto
+  const displayTitle = ad?.product?.name || product.name;
+  const displayDescription = ad?.product?.description || product.description;
+  const displayImage = ad?.product?.image || product.image;
   const displayPrice = product.price; // Preço sempre vem do produto
   
   const productTags = product.category ? [product.category] : [];

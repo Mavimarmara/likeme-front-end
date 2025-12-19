@@ -19,20 +19,14 @@ export interface Ad {
   id: string;
   advertiserId?: string;
   productId?: string;
-  title: string;
-  description?: string;
-  image?: string;
   startDate?: string;
   endDate?: string;
   status: 'active' | 'inactive' | 'expired';
   targetAudience?: string;
-  budget?: number;
-  externalUrl?: string;
-  category?: 'amazon product' | 'physical product' | 'program';
   createdAt: string;
   updatedAt: string;
   advertiser?: Advertiser;
-  product?: Product;
+  product?: Product; // Product contains: name, description, image, externalUrl, category
 }
 
 export interface ListAdsParams {
@@ -60,16 +54,20 @@ export interface GetAdApiResponse extends ApiResponse<Ad> {}
 export interface CreateAdData {
   advertiserId?: string;
   productId?: string;
-  title: string;
-  description?: string;
-  image?: string;
+  product?: {
+    name?: string;
+    description?: string;
+    image?: string;
+    price?: number;
+    quantity?: number;
+    category?: 'amazon product' | 'physical product' | 'program';
+    externalUrl?: string;
+    status?: 'active' | 'inactive' | 'out_of_stock';
+  };
   startDate?: string;
   endDate?: string;
   status?: 'active' | 'inactive' | 'expired';
   targetAudience?: string;
-  budget?: number;
-  externalUrl?: string;
-  category?: 'amazon product' | 'physical product' | 'program';
 }
 
 export interface UpdateAdData extends Partial<CreateAdData> {}
