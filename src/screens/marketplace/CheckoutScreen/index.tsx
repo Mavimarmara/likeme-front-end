@@ -11,13 +11,13 @@ import {
 import { Header } from '@/components/ui/layout';
 import { Background } from '@/components/ui/layout';
 import { storageService, orderService, paymentService } from '@/services';
-import { formatPrice } from '@/utils/formatters';
+import { formatPrice, formatAddress, formatBillingAddress } from '@/utils/formatters';
 import { logger } from '@/utils/logger';
 import { styles } from './styles';
 import AddressForm, { AddressData } from './address';
 import PaymentForm from './payment';
 import { CartItemList, OrderSummary, OrderScreen } from './order';
-import type { CreateOrderData } from '@/types/order';
+import type { CreateOrderData, BillingAddress, CardData } from '@/types/order';
 
 interface CartItem {
   id: string;
@@ -122,6 +122,15 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
       if (paymentMethod === 'credit_card') {
         if (!cardholderName || !cardNumber || !expiryDate || !cvv) {
           Alert.alert('Erro', 'Por favor, preencha todos os dados do cartão');
+          setIsProcessing(false);
+          return;
+        }
+        
+        // Validar formato da data de expiração (deve ter 4 dígitos)
+        const formattedExpiry = expiryDate.replace(/\D/g, '');
+        if (formattedExpiry.length !== 4) {
+          Alert.alert('Erro', 'Data de expiração inválida. Use o formato MM/YY');
+          setIsProcessing(false);
           return;
         }
       }
@@ -153,16 +162,34 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
         total: item.price * item.quantity,
       })), null, 2));
 
+      // Preparar billingAddress sempre como objeto estruturado (backend sempre exige)
+      const billingAddressObj = formatBillingAddress(addressData);
+      
+      // Preparar cardData quando for cartão de crédito (backend sempre exige quando paymentMethod é credit_card)
+      const cardDataObj = formatCardData();
+
+      // Construir orderData - backend sempre exige billingAddress como objeto
       const orderData: CreateOrderData = {
         items: orderItems,
         status: 'pending',
         shippingCost: shipping,
         tax: 0, // Pode ser calculado se necessário
         shippingAddress: formatAddress(addressData),
-        billingAddress: sameBillingAddress ? formatAddress(addressData) : formatAddress(addressData),
+        billingAddress: billingAddressObj, // Sempre como objeto estruturado
         paymentMethod: paymentMethod,
         // paymentStatus será sempre 'pending' no backend ao criar a order
       };
+
+      // Incluir cardData quando for cartão de crédito (backend sempre exige quando paymentMethod é credit_card)
+      // A validação acima já garante que os dados estão preenchidos e válidos
+      if (paymentMethod === 'credit_card') {
+        if (!cardDataObj) {
+          Alert.alert('Erro', 'Dados do cartão inválidos');
+          setIsProcessing(false);
+          return;
+        }
+        orderData.cardData = cardDataObj;
+      }
 
       console.log('📋 Dados do pedido que serão enviados:', JSON.stringify(orderData, null, 2));
       logger.debug('Dados do pedido completos:', orderData);
@@ -196,22 +223,25 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
     }
   };
 
-  const formatAddress = (address: AddressData): string => {
-    const parts = [
-      address.addressLine1,
-      address.addressLine2,
-      address.neighborhood,
-      address.city,
-      address.state,
-      address.zipCode,
-    ].filter(Boolean);
-    return parts.join(', ');
-  };
+  // Funções de formatação movidas para utils/formatters/addressFormatter.ts
 
-  const extractStreetNumber = (addressLine: string): string => {
-    // Tenta extrair número da rua (ex: "Rua Marselha, 1029" -> "1029")
-    const match = addressLine.match(/(\d+)/);
-    return match ? match[1] : '';
+  const formatCardData = (): CardData | undefined => {
+    if (paymentMethod !== 'credit_card') {
+      return undefined;
+    }
+
+    // Formatar data de expiração de MM/YY para MMYY
+    const formattedExpiry = expiryDate.replace(/\D/g, ''); // Remove caracteres não numéricos
+    if (formattedExpiry.length !== 4) {
+      return undefined;
+    }
+
+    return {
+      cardNumber: cardNumber.replace(/\s/g, ''), // Remove espaços
+      cardHolderName: cardholderName,
+      cardExpirationDate: formattedExpiry,
+      cardCvv: cvv,
+    };
   };
 
   const handleHomePress = () => {

@@ -40,13 +40,32 @@ export interface CreateOrderItem {
   discount?: number;
 }
 
+export interface BillingAddress {
+  country?: string;
+  state: string;
+  city: string;
+  neighborhood?: string;
+  street: string;
+  streetNumber: string;
+  zipcode: string;
+  complement?: string;
+}
+
+export interface CardData {
+  cardNumber: string;
+  cardHolderName: string;
+  cardExpirationDate: string; // MMYY format
+  cardCvv: string;
+}
+
 export interface CreateOrderData {
   items: CreateOrderItem[];
   status?: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
   shippingCost?: number;
   tax?: number;
   shippingAddress?: string;
-  billingAddress?: string;
+  billingAddress: BillingAddress; // Backend sempre exige como objeto estruturado
+  cardData?: CardData; // Obrigatório quando paymentMethod é 'credit_card'
   notes?: string;
   paymentMethod?: string;
   // paymentStatus sempre será 'pending' ao criar - definido no backend
