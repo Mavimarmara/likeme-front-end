@@ -457,12 +457,6 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
         <View style={styles.cardContent}>
           <View style={styles.cardHeader}>
             <Badge label="Order" color="orange" />
-            <TouchableOpacity 
-              activeOpacity={0.7}
-              onPress={(e) => handleMenuPress(`order-${order.id}`, e)}
-            >
-              <Icon name="more-vert" size={20} color="#001137" />
-            </TouchableOpacity>
           </View>
 
           <View>
