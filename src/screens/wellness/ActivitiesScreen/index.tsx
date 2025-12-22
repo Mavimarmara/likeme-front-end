@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Image, ImageBackground, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -9,6 +9,9 @@ import { Toggle, PrimaryButton } from '@/components/ui';
 import { CreateActivityModal } from '@/components/ui/modals';
 import { BackgroundIconButton } from '@/assets';
 import { ProductsCarousel, PlansCarousel, type Product, type Plan } from '@/components/sections/product';
+import { orderService } from '@/services';
+import { formatPrice } from '@/utils/formatters';
+import type { Order } from '@/types/order';
 import type { RootStackParamList } from '@/types/navigation';
 import { styles } from './styles';
 
@@ -39,6 +42,8 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
   const [selectedFilter, setSelectedFilter] = useState<FilterType>('all');
   const [showFestivalBanner, setShowFestivalBanner] = useState(true);
   const [isCreateActivityModalVisible, setIsCreateActivityModalVisible] = useState(false);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [isLoadingOrders, setIsLoadingOrders] = useState(false);
 
   // Mock data - será substituído por dados reais do backend
   const activities: ActivityItem[] = [
@@ -88,6 +93,29 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
 
   const historyActivities = activities.filter(a => a.completed);
   const activeActivities = activities.filter(a => !a.completed);
+
+  useEffect(() => {
+    if (activeTab === 'history') {
+      loadOrders();
+    }
+  }, [activeTab]);
+
+  const loadOrders = async () => {
+    try {
+      setIsLoadingOrders(true);
+      const response = await orderService.listOrders({
+        page: 1,
+        limit: 50,
+      });
+      if (response.success && response.data?.orders) {
+        setOrders(response.data.orders);
+      }
+    } catch (error) {
+      console.error('Error loading orders:', error);
+    } finally {
+      setIsLoadingOrders(false);
+    }
+  };
 
   const filteredActivities = useMemo(() => {
     const source = activeTab === 'history' ? historyActivities : activeActivities;
@@ -209,6 +237,63 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
               Spring Festival kicks off in 2 hours—don't miss it!
             </Text>
             <Text style={styles.bannerSubtext}>Today – Thu 08:30 pm</Text>
+          </View>
+        </View>
+      </View>
+    );
+  };
+
+  const renderOrderCard = (order: Order) => {
+    const orderDate = new Date(order.createdAt).toLocaleDateString('en-US', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+
+    const itemsCount = order.items?.length || 0;
+    const itemsText = itemsCount === 1 ? 'item' : 'items';
+
+    return (
+      <View key={`order-${order.id}`} style={styles.activityCard}>
+        <View style={styles.cardHeader}>
+          <View style={styles.typeBadge}>
+            <Text style={styles.typeBadgeText}>Order</Text>
+          </View>
+          <TouchableOpacity activeOpacity={0.7}>
+            <Icon name="more-vert" size={20} color="#001137" />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.cardContent}>
+          <View style={styles.cardTitleRow}>
+            <Text style={styles.cardTitle}>Order #{order.id.slice(0, 8).toUpperCase()}</Text>
+          </View>
+
+          <Text style={styles.cardDescription}>
+            {itemsCount} {itemsText} • {formatPrice(order.total)}
+          </Text>
+
+          {order.createdAt && (
+            <View style={styles.dateTimeContainer}>
+              <Icon name="event" size={16} color="#001137" />
+              <Text style={styles.dateTimeText}>{orderDate}</Text>
+            </View>
+          )}
+
+          <View style={styles.cardActions}>
+            <View style={[styles.actionButton, styles.doneButton]}>
+              <Icon name="check" size={16} color="#001137" />
+              <Text style={styles.doneButtonText}>
+                {order.paymentStatus === 'paid' ? 'Paid ✓' : order.status}
+              </Text>
+            </View>
+
+            <TouchableOpacity
+              onPress={() => console.log('View order:', order.id)}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.viewLink}>View</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
@@ -428,19 +513,30 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {filteredActivities.length === 0 ? (
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>
-                {activeTab === 'history' ? 'No history found' : 'No activities found'}
-              </Text>
-            </View>
+          {activeTab === 'history' ? (
+            <>
+              {filteredActivities.map(renderActivityCard)}
+              {orders.map(renderOrderCard)}
+              {filteredActivities.length === 0 && orders.length === 0 && !isLoadingOrders && (
+                <View style={styles.emptyContainer}>
+                  <Text style={styles.emptyText}>No history found</Text>
+                </View>
+              )}
+            </>
           ) : (
-            filteredActivities.map(renderActivityCard)
+            <>
+              {filteredActivities.length === 0 ? (
+                <View style={styles.emptyContainer}>
+                  <Text style={styles.emptyText}>No activities found</Text>
+                </View>
+              ) : (
+                filteredActivities.map(renderActivityCard)
+              )}
+              {renderRecommendations()}
+              {renderPlansCarousel()}
+              {renderProductsCarousel()}
+            </>
           )}
-
-          {renderRecommendations()}
-          {renderPlansCarousel()}
-          {renderProductsCarousel()}
         </ScrollView>
       </View>
       <FloatingMenu items={menuItems} selectedId="activities" />

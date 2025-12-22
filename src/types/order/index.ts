@@ -49,7 +49,7 @@ export interface CreateOrderData {
   billingAddress?: string;
   notes?: string;
   paymentMethod?: string;
-  paymentStatus?: 'pending' | 'paid' | 'failed' | 'refunded';
+  // paymentStatus sempre será 'pending' ao criar - definido no backend
   trackingNumber?: string;
 }
 

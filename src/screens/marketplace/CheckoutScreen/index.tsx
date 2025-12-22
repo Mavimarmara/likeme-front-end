@@ -161,7 +161,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
         shippingAddress: formatAddress(addressData),
         billingAddress: sameBillingAddress ? formatAddress(addressData) : formatAddress(addressData),
         paymentMethod: paymentMethod,
-        paymentStatus: 'pending',
+        // paymentStatus será sempre 'pending' no backend ao criar a order
       };
 
       console.log('📋 Dados do pedido que serão enviados:', JSON.stringify(orderData, null, 2));
@@ -177,46 +177,8 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
       const createdOrder = orderResponse.data;
       setOrderId(createdOrder.id);
 
-      // Processar pagamento se for cartão de crédito
-      if (paymentMethod === 'credit_card') {
-        // Converter data de expiração de MM/YY para MMYY
-        const expiryFormatted = expiryDate.replace(/\//g, '');
-
-        const paymentData = {
-          orderId: createdOrder.id,
-          cardData: {
-            cardNumber: cardNumber.replace(/\s/g, ''),
-            cardHolderName: cardholderName,
-            cardExpirationDate: expiryFormatted,
-            cardCvv: cvv,
-          },
-          billingAddress: {
-            state: addressData.state,
-            city: addressData.city,
-            neighborhood: addressData.neighborhood,
-            street: addressData.addressLine1,
-            streetNumber: extractStreetNumber(addressData.addressLine1),
-            zipcode: addressData.zipCode.replace(/\D/g, ''),
-            complement: addressData.addressLine2 || undefined,
-          },
-        };
-
-        const paymentResponse = await paymentService.processPayment(paymentData);
-
-        if (!paymentResponse.success) {
-          throw new Error('Falha ao processar pagamento');
-        }
-
-        // Atualizar status do pedido se necessário
-        if (paymentResponse.data?.transaction?.status === 'approved') {
-          await orderService.updateOrder(createdOrder.id, {
-            paymentStatus: 'paid',
-          });
-        }
-      } else if (paymentMethod === 'pix') {
-        // Para PIX, o pagamento pode ser processado depois
-        // Por enquanto, apenas criamos o pedido
-      }
+      // Order criada com paymentStatus 'pending' por padrão
+      // O pagamento será processado separadamente depois, se necessário
 
       // Limpar carrinho após sucesso
       await storageService.clearCart();
