@@ -115,6 +115,7 @@ export const styles = StyleSheet.create({
     gap: 16,
   },
   tabsContainer: {
+    marginTop: SPACING.MD,
     flexDirection: 'row',
     gap: 4,
     marginBottom: 16,

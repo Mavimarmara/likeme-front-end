@@ -290,6 +290,34 @@ export const styles = StyleSheet.create({
     color: '#666666',
     marginBottom: SPACING.LG,
   },
+  tabContent: {
+    paddingHorizontal: SPACING.SM,
+  },
+  descriptionContainer: {
+    gap: 8,
+  },
+  descriptionItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  bulletPoint: {
+    width: 5,
+    height: 5,
+    borderRadius: 2.5,
+    backgroundColor: '#6e6a6a',
+    marginTop: 8.5,
+    flexShrink: 0,
+  },
+  descriptionText: {
+    flex: 1,
+    fontSize: 14,
+    fontFamily: 'DM Sans',
+    fontWeight: '400',
+    color: '#6e6a6a',
+    letterSpacing: 0.2,
+    lineHeight: 22,
+  },
   floatingButtonContainer: {
     position: 'absolute',
     bottom: 0,

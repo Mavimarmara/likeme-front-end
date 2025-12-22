@@ -69,6 +69,7 @@ const USER_REVIEWS = [
 const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation, route }) => {
   const [activeTab, setActiveTab] = useState<'info' | 'preview'>('info');
   const [activeInfoTab, setActiveInfoTab] = useState<'about' | 'objectives' | 'communities'>('about');
+  const [activeProductTab, setActiveProductTab] = useState<'goal' | 'description' | 'composition' | 'review'>('goal');
   
   const {
     product,
@@ -112,6 +113,18 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     { id: 'objectives', label: 'Objectives' },
     { id: 'communities', label: 'Communities' },
   ], []);
+
+  const productTabOptions: ButtonCarouselOption<'goal' | 'description' | 'composition' | 'review'>[] = useMemo(() => [
+    { id: 'goal', label: 'Goal' },
+    { id: 'description', label: 'Description' },
+    { id: 'composition', label: 'Composition' },
+    { id: 'review', label: 'Review' },
+  ], []);
+
+  // Categoria do produto para badges
+  const productCategory = displayData?.tags?.[0] || product?.category || route.params?.product?.category || 'Product';
+  
+  const isProductType = productCategory == 'Product';
 
   const handleBackPress = () => {
     navigation.goBack();
@@ -210,9 +223,6 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     return images;
   }, [backgroundImage]);
 
-  // Categoria do produto para badges
-  const productCategory = displayData?.tags?.[0] || product?.category || route.params?.product?.category || 'Product';
-
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
@@ -305,47 +315,61 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
           </View>
         )}
         <View style={styles.content}>
-          <View style={styles.tabsContainer}>
-            <Toggle
-              options={['Program info', 'Community preview'] as const}
-              selected={activeTab === 'info' ? 'Program info' : 'Community preview'}
-              onSelect={(option) => {
-                if (option === 'Program info') {
-                  setActiveTab('info');
-                } else {
-                  setActiveTab('preview');
-                }
-              }}
-            />
-          </View>
-          {activeTab === 'info' && (
+          {isProductType ? (
             <>
-              <Text style={styles.productDescription}>
-                {displayData.description || 'No description available'}
-              </Text>
-              {renderInfoSection()}
-              {renderUserFeedback()}
-              {renderPlansCarousel()}
-              {renderRecommendedProducts()}
+              <View style={styles.tabsContainer}>
+                <ButtonCarousel
+                  options={productTabOptions}
+                  selectedId={activeProductTab}
+                  onSelect={setActiveProductTab}
+                />
+              </View>
+              {renderProductTabContent()}
             </>
-          )}
-          
-          {activeTab === 'preview' && (
-            <View style={styles.communityPreviewContainer}>
-              {loadingPosts ? (
-                <View style={styles.loadingContainer}>
-                  <ActivityIndicator size="large" color="#001137" />
-                </View>
-              ) : !communityPosts || communityPosts.length === 0 ? (
-                <View style={styles.emptyContainer}>
-                  <Text style={styles.emptyText}>No community posts found</Text>
-                </View>
-              ) : (
-                communityPosts.map((post) => (
-                  <PostCard key={post.id} post={post} />
-                ))
+          ) : (
+            <>
+              <View style={styles.tabsContainer}>
+                <Toggle
+                  options={['Program info', 'Community preview'] as const}
+                  selected={activeTab === 'info' ? 'Program info' : 'Community preview'}
+                  onSelect={(option) => {
+                    if (option === 'Program info') {
+                      setActiveTab('info');
+                    } else {
+                      setActiveTab('preview');
+                    }
+                  }}
+                />
+              </View>
+              {activeTab === 'info' && (
+                <>
+                  <Text style={styles.productDescription}>
+                    {displayData.description || 'No description available'}
+                  </Text>
+                  {renderInfoSection()}
+                  {renderUserFeedback()}
+                  {renderPlansCarousel()}
+                </>
               )}
-            </View>
+              
+              {activeTab === 'preview' && (
+                <View style={styles.communityPreviewContainer}>
+                  {loadingPosts ? (
+                    <View style={styles.loadingContainer}>
+                      <ActivityIndicator size="large" color="#001137" />
+                    </View>
+                  ) : !communityPosts || communityPosts.length === 0 ? (
+                    <View style={styles.emptyContainer}>
+                      <Text style={styles.emptyText}>No community posts found</Text>
+                    </View>
+                  ) : (
+                    communityPosts.map((post) => (
+                      <PostCard key={post.id} post={post} />
+                    ))
+                  )}
+                </View>
+              )}
+            </>
           )}
         </View>
       </ScrollView>
@@ -543,22 +567,49 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     );
   }
 
-  function renderRecommendedProducts() {
-    if (recommendedProducts.length === 0) {
-      return null;
-    }
+  function renderProductTabContent() {
+    const description = displayData?.description || product?.description || '';
+    const descriptionLines = description
+      ? description.split('\n').filter(line => line.trim().length > 0)
+      : [];
 
-    return (
-      <View style={styles.recommendedSection}>
-        <ProductsCarousel
-          title="Related products"
-          subtitle="Discover similar products"
-          products={recommendedProducts}
-          onProductPress={handleProductPress}
-          onProductLike={handleProductLike}
-        />
-      </View>
-    );
+    const renderDescriptionWithBullets = () => {
+      if (descriptionLines.length === 0) {
+        return (
+          <Text style={styles.productDescription}>No description available.</Text>
+        );
+      }
+
+      return (
+        <View style={styles.descriptionContainer}>
+          {descriptionLines.map((line, index) => (
+            <View key={index} style={styles.descriptionItem}>
+              <View style={styles.bulletPoint} />
+              <Text style={styles.descriptionText}>{line.trim()}</Text>
+            </View>
+          ))}
+        </View>
+      );
+    };
+
+    switch (activeProductTab) {
+      case 'goal':
+      case 'description':
+      case 'composition':
+        return (
+          <View style={styles.tabContent}>
+            {renderDescriptionWithBullets()}
+          </View>
+        );
+      case 'review':
+        return (
+          <>
+            {renderUserFeedback()}
+          </>
+        );
+      default:
+        return null;
+    }
   }
 };
 
