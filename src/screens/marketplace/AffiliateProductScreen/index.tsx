@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Image, Linking, Dimensions, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -346,6 +346,22 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
                       product?.image || 
                       paramsProduct?.image || 
                       'https://via.placeholder.com/400';
+  
+  // Array de imagens do produto
+  // Por enquanto, produtos têm apenas uma imagem, mas o código está preparado para múltiplas
+  const productImages = useMemo(() => {
+    const images: string[] = [];
+    // Adicionar imagem principal se existir e não for placeholder
+    if (displayImage && displayImage !== 'https://via.placeholder.com/400') {
+      images.push(displayImage);
+    }
+    // Se no futuro houver um campo images[] no produto, adicionar aqui:
+    // if (product?.images && Array.isArray(product.images)) {
+    //   images.push(...product.images.filter(img => img && img !== 'https://via.placeholder.com/400'));
+    // }
+    return images;
+  }, [displayImage]);
+  
   const productCategory = ad?.product?.category || 
                           product?.category || 
                           paramsProduct?.category || 
@@ -458,12 +474,20 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
           </ImageBackground>
         </View>
 
-        {/* Pagination Dots */}
-        <View style={styles.paginationContainer}>
-          <View style={[styles.paginationDot, styles.paginationDotActive]} />
-          <View style={styles.paginationDot} />
-          <View style={styles.paginationDot} />
-        </View>
+        {/* Pagination Dots - Mostrar apenas se houver mais de uma imagem */}
+        {productImages.length > 1 && (
+          <View style={styles.paginationContainer}>
+            {productImages.map((_, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.paginationDot,
+                  index === 0 && styles.paginationDotActive
+                ]}
+              />
+            ))}
+          </View>
+        )}
 
         {/* Content Section */}
         <View style={styles.contentSection}>
