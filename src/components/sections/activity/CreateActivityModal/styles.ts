@@ -81,4 +81,40 @@ export const styles = StyleSheet.create({
     backgroundColor: '#E0E0E0',
     marginVertical: SPACING.XS,
   },
+  dateTimeFieldContainer: {
+    position: 'relative',
+    flex: 1,
+  },
+  pickerContainer: {
+    position: 'absolute',
+    top: '100%',
+    left: 0,
+    right: 0,
+    zIndex: 1000,
+    marginTop: SPACING.XS,
+  },
+  pickerOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pickerContent: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 20,
+    width: '90%',
+    maxWidth: 400,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  picker: {
+    width: '100%',
+  },
 });

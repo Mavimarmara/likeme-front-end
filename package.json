@@ -27,6 +27,7 @@
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",
     "@react-native-async-storage/async-storage": "^2.2.0",
+    "@react-native-community/datetimepicker": "^8.5.1",
     "@react-navigation/bottom-tabs": "^6.5.11",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/stack": "^6.3.20",
@@ -84,7 +85,9 @@
       "^@/(.*)$": "<rootDir>/src/$1",
       "^@/assets/(.*)$": "<rootDir>/assets/$1"
     },
-    "setupFilesAfterEnv": ["<rootDir>/jest.setup.js"]
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest.setup.js"
+    ]
   },
   "overrides": {
     "react-native-appwrite": {
