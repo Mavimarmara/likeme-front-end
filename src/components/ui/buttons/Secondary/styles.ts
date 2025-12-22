@@ -14,6 +14,18 @@ export const styles = StyleSheet.create({
     paddingVertical: 9,
     paddingHorizontal: 16,
   },
+  buttonDark: {
+    backgroundColor: '#FDFBEE',
+    borderColor: '#FDFBEE',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
   buttonContent: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -27,6 +39,9 @@ export const styles = StyleSheet.create({
     letterSpacing: 0,
     lineHeight: 20,
     textAlign: 'center',
+  },
+  labelDark: {
+    color: '#6E6A6A',
   },
   iconLeft: {
     marginRight: 8,

@@ -13,6 +13,7 @@ type Props = {
   iconSize?: number;
   iconColor?: string;
   iconPosition?: 'left' | 'right';
+  variant?: 'default' | 'dark';
 };
 
 const SecondaryButton: React.FC<Props> = ({ 
@@ -23,10 +24,20 @@ const SecondaryButton: React.FC<Props> = ({
   disabled = false,
   icon,
   iconSize = 16,
-  iconColor = '#001137',
+  iconColor,
   iconPosition = 'right',
+  variant = 'default',
 }) => {
   const isDisabled = loading || disabled;
+
+  const getIconColor = () => {
+    if (iconColor) return iconColor;
+    return variant === 'dark' ? '#6E6A6A' : '#001137';
+  };
+
+  const getTextColor = () => {
+    return variant === 'dark' ? '#6E6A6A' : '#001137';
+  };
 
   const renderIcon = () => {
     if (!icon) return null;
@@ -35,7 +46,7 @@ const SecondaryButton: React.FC<Props> = ({
       <Icon 
         name={icon} 
         size={iconSize} 
-        color={iconColor} 
+        color={getIconColor()} 
         style={iconPosition === 'left' ? styles.iconLeft : styles.iconRight}
       />
     );
@@ -43,17 +54,22 @@ const SecondaryButton: React.FC<Props> = ({
 
   return (
     <TouchableOpacity 
-      style={[styles.button, style, isDisabled && styles.buttonDisabled]} 
+      style={[
+        styles.button, 
+        variant === 'dark' && styles.buttonDark,
+        style, 
+        isDisabled && styles.buttonDisabled
+      ]} 
       onPress={onPress}
       disabled={isDisabled}
       activeOpacity={0.7}
     >
       {loading ? (
-        <ActivityIndicator size="small" color="#001137" />
+        <ActivityIndicator size="small" color={getTextColor()} />
       ) : (
         <View style={styles.buttonContent}>
           {iconPosition === 'left' && renderIcon()}
-          <Text style={styles.label}>{label}</Text>
+          <Text style={[styles.label, variant === 'dark' && styles.labelDark]}>{label}</Text>
           {iconPosition === 'right' && renderIcon()}
         </View>
       )}

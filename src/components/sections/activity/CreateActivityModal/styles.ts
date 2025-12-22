@@ -6,12 +6,13 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: SPACING.MD,
+    marginVertical: SPACING.XS,
     gap: SPACING.SM,
   },
   content: {
     width: '100%',
-    gap: SPACING.MD,
+    gap: SPACING.XS,
+    padding: SPACING.MD,
   },
   inputContainer: {
     marginBottom: SPACING.XS,
@@ -25,13 +26,13 @@ export const styles = StyleSheet.create({
   },
   typeSelector: {
     flexDirection: 'row',
-    flex: 1,
     justifyContent: 'flex-start',
     gap: SPACING.SM,
     marginBottom: SPACING.XS,
+    alignSelf: 'flex-start',
   },
   typeButtonBase: {
-    flex: 1,
+    flexShrink: 0,
   },
   typeButtonSelected: {
     borderColor: '#0154f8',
@@ -46,33 +47,19 @@ export const styles = StyleSheet.create({
     gap: SPACING.SM,
     marginBottom: SPACING.XS,
   },
-  locationPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: SPACING.SM,
-    paddingHorizontal: SPACING.MD,
-    borderRadius: BORDER_RADIUS.MD,
-    backgroundColor: '#F5F5F5',
-    gap: SPACING.XS,
-    marginBottom: SPACING.XS,
-  },
-  locationText: {
-    fontSize: 14,
-    color: '#001137',
-    fontWeight: '500',
-    flex: 1,
+  locationButton: {
+    backgroundColor: '#F6DEA9B8',
+    borderColor: '#F6DEA9B8',
   },
   reminderContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: 'column',
     paddingVertical: SPACING.SM,
+    gap: SPACING.SM,
   },
   reminderContent: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.SM,
-    flex: 1,
   },
   reminderText: {
     fontSize: 14,
@@ -88,5 +75,10 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     color: '#001137',
     fontWeight: '500',
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#E0E0E0',
+    marginVertical: SPACING.XS,
   },
 });
