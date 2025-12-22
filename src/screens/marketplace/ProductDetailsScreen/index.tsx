@@ -435,14 +435,14 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
 
   function renderInfoSection() {
     return (
-      <>
+      <View style={styles.tabsContainer}>
         <ButtonCarousel
           options={infoTabOptions}
           selectedId={activeInfoTab}
           onSelect={setActiveInfoTab}
         />
         {renderAboutContent()}
-      </>
+      </View>
     );
   }
 
@@ -508,9 +508,6 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
             </View>
           ))}
         </View>
-        <TouchableOpacity style={styles.seeAllButton} activeOpacity={0.7}>
-          <Text style={styles.seeAllText}>See all {'>'}</Text>
-        </TouchableOpacity>
       </View>
     );
   }

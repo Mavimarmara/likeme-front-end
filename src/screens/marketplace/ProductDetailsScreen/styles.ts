@@ -272,11 +272,11 @@ export const styles = StyleSheet.create({
   },
   content: {
     backgroundColor: '#F4F3EC',
-    paddingHorizontal: SPACING.MD,
     paddingTop: SPACING.LG,
   },
   tabsContainer: {
     marginBottom: SPACING.LG,
+    paddingHorizontal: SPACING.MD,
   },
   productTitle: {
     fontSize: 22,
@@ -289,6 +289,7 @@ export const styles = StyleSheet.create({
     lineHeight: 22,
     color: '#666666',
     marginBottom: SPACING.LG,
+    paddingHorizontal: SPACING.LG,
   },
   tabContent: {
     paddingHorizontal: SPACING.SM,
@@ -501,7 +502,6 @@ export const styles = StyleSheet.create({
     backgroundColor: '#DBE7DB',
     borderRadius: 20,
     padding: SPACING.LG,
-    marginTop: SPACING.XL,
   },
   feedbackHeader: {
     flexDirection: 'row',
@@ -582,10 +582,8 @@ export const styles = StyleSheet.create({
     color: '#001137',
   },
   recommendedSection: {
-    marginTop: SPACING.LG,
   },
   plansSection: {
-    marginTop: SPACING.XL,
   },
   loadingContainer: {
     flex: 1,
