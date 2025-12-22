@@ -471,7 +471,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
           {renderTabContent()}
 
           {/* Other Options */}
-          {otherOptions.length > 0 && (
+          {/*otherOptions.length > 0 && (
             <View style={styles.otherOptionsSection}>
               <Text style={styles.sectionTitle}>Other options</Text>
               <ScrollView
@@ -492,7 +492,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
                 ))}
               </ScrollView>
             </View>
-          )}
+          )*/}
 
           {/* Buy on Amazon Button */}
           <View style={styles.buySection}>

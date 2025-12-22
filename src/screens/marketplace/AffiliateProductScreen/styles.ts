@@ -1,3 +1,4 @@
+import { SPACING } from '@/constants';
 import { StyleSheet, Dimensions } from 'react-native';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -97,8 +98,8 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     gap: 5,
-    marginTop: -25,
-    marginBottom: 20,
+    marginTop: SPACING.MD,
+    marginBottom: SPACING.LG,
   },
   paginationDot: {
     width: 10,
@@ -145,12 +146,7 @@ export const styles = StyleSheet.create({
     color: '#fbf7e5',
   },
   tabContent: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 64,
-    borderTopLeftRadius: 64,
-    borderTopRightRadius: 64,
-    paddingHorizontal: 32,
-    paddingVertical: 20,
+    paddingHorizontal: SPACING.SM,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.04,
@@ -219,6 +215,7 @@ export const styles = StyleSheet.create({
   buySection: {
     gap: 10,
     alignItems: 'center',
+    paddingTop: SPACING.MD,
   },
   buyButton: {
     flexDirection: 'row',
