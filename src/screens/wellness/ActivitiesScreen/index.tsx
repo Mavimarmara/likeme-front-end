@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image, ImageBackground, Dimensions, Modal, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image, ImageBackground, Dimensions, Modal, Alert, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -33,7 +33,9 @@ interface ActivityItem {
   providerName?: string;
   providerAvatar?: string;
   completed?: boolean;
+  declined?: boolean;
   isFavorite?: boolean;
+  meetUrl?: string;
 }
 
 const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
@@ -76,6 +78,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
       providerName: 'Avery Parker',
       providerAvatar: 'A',
       completed: false,
+      meetUrl: 'https://meet.google.com/abc-defg-hij',
     },
     {
       id: '4',
@@ -101,12 +104,13 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
   const historyActivities = activities.filter(a => a.completed);
   const activeActivities = activities.filter(a => !a.completed);
 
-  const loadActivities = async () => {
+  const loadActivities = async (includeDeletedActivities = false) => {
     try {
       setIsLoadingActivities(true);
       const response = await activityService.listActivities({
         page: 1,
         limit: 100,
+        includeDeleted: includeDeletedActivities,
       });
       if (response.success && response.data?.activities) {
         // Converter UserActivity para ActivityItem
@@ -122,16 +126,33 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
             }
           }
 
+          const description = activity.description || activity.location || '';
+          const isCompleted = activity.deletedAt !== null && description.startsWith('[COMPLETED]');
+          const isDeclined = activity.deletedAt !== null && !isCompleted;
+          
+          // Verificar se location contém uma URL válida (link do meet)
+          const isUrl = (str: string | null | undefined): boolean => {
+            if (!str) return false;
+            return str.startsWith('http://') || str.startsWith('https://') || str.startsWith('www.') || str.startsWith('meet.google');
+          };
+          
+          const meetUrl = activity.location && isUrl(activity.location) ? activity.location : undefined;
+          const providerName = activity.location?.includes('Meet') && !isUrl(activity.location) 
+            ? activity.location.replace('Meet with ', '') 
+            : undefined;
+          
           return {
             id: activity.id,
             type: activity.type === 'task' ? 'personal' : activity.type === 'event' ? 'appointment' : 'program',
             title: activity.name,
-            description: activity.description || activity.location || '',
+            description: description.replace(/^\[COMPLETED\]/, ''), // Remover marcador da descrição exibida
             dateTime,
-            providerName: activity.location?.includes('Meet') ? activity.location.replace('Meet with ', '') : undefined,
-            providerAvatar: activity.location?.includes('Meet') ? activity.location.charAt(activity.location.length - 1) : undefined,
+            providerName,
+            providerAvatar: providerName ? providerName.charAt(0) : undefined,
             completed: activity.deletedAt !== null,
+            declined: isDeclined,
             isFavorite: false,
+            meetUrl,
           };
         });
         setActivities(convertedActivities);
@@ -146,8 +167,10 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
   };
 
   useEffect(() => {
-    loadActivities();
-  }, []);
+    // Incluir atividades deletadas (skipadas) quando estiver na aba de histórico
+    const includeDeleted = activeTab === 'history';
+    loadActivities(includeDeleted);
+  }, [activeTab]);
 
   useEffect(() => {
     if (activeTab === 'history') {
@@ -252,9 +275,29 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
     [rootNavigation]
   );
 
-  const handleMarkAsDone = (activityId: string) => {
-    // Implementar lógica de marcar como concluído
-    console.log('Mark as done:', activityId);
+  const handleMarkAsDone = async (activityId: string) => {
+    try {
+      const activity = activities.find(a => a.id === activityId);
+      if (!activity) return;
+
+      // Atualizar a descrição para incluir marcador de completada antes de deletar
+      const updatedDescription = activity.description.startsWith('[COMPLETED]') 
+        ? activity.description 
+        : `[COMPLETED]${activity.description}`;
+      
+      // Atualizar a atividade com a descrição marcada antes de deletar
+      await activityService.updateActivity(activityId, {
+        description: updatedDescription,
+      });
+      
+      // Marcar atividade como concluída (deletada) para que apareça no histórico como completada
+      await activityService.deleteActivity(activityId);
+      // Recarregar atividades para atualizar a lista
+      await loadActivities(activeTab === 'history');
+    } catch (error) {
+      console.error('Error marking activity as done:', error);
+      Alert.alert('Error', 'Failed to mark activity as done');
+    }
   };
 
   const handleViewActivity = (activity: ActivityItem) => {
@@ -289,7 +332,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
           onPress: async () => {
             try {
               await activityService.deleteActivity(activityId);
-              await loadActivities();
+              await loadActivities(activeTab === 'history');
               setMenuVisibleForId(null);
             } catch (error) {
               console.error('Error deleting activity:', error);
@@ -344,14 +387,30 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
     return '8:00 am';
   };
 
-  const handleSkipAppointment = (activityId: string) => {
-    // Implementar lógica de pular appointment
-    console.log('Skip appointment:', activityId);
+  const handleSkipAppointment = async (activityId: string) => {
+    try {
+      // Marcar atividade como declinada (deletada) para que apareça no histórico como declinada
+      await activityService.deleteActivity(activityId);
+      // Atualizar localmente para marcar como declinada
+      setActivities(prev => prev.map(a => 
+        a.id === activityId ? { ...a, completed: true, declined: true } : a
+      ));
+      // Recarregar atividades para atualizar a lista
+      await loadActivities(activeTab === 'history');
+    } catch (error) {
+      console.error('Error skipping activity:', error);
+      Alert.alert('Error', 'Failed to skip activity');
+    }
   };
 
-  const handleOpenMeet = (activityId: string) => {
-    // Abrir meet/appointment
-    console.log('Open meet:', activityId);
+  const handleOpenMeet = (activity: ActivityItem) => {
+    if (activity.meetUrl) {
+      // Abrir link do meet em um navegador ou app apropriado
+      Linking.openURL(activity.meetUrl).catch((err: Error) => {
+        console.error('Error opening meet URL:', err);
+        Alert.alert('Error', 'Failed to open meet link');
+      });
+    }
   };
 
   const renderTabs = () => (
@@ -535,17 +594,19 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
             </View>
 
             <View style={styles.cardActions}>
-              <TouchableOpacity
-                style={[styles.actionButton, styles.openButton]}
-                onPress={() => handleOpenMeet(activity.id)}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.openButtonText}>Open meet {'>'}</Text>
-              </TouchableOpacity>
+              {activity.meetUrl && (
+                <TouchableOpacity
+                  style={[styles.actionButton, styles.openButton]}
+                  onPress={() => handleOpenMeet(activity)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.openButtonText}>Open meet {'>'}</Text>
+                </TouchableOpacity>
+              )}
 
               {activeTab === 'actives' && (
                 <TouchableOpacity
-                  onPress={() => handleViewActivity(activity)}
+                  onPress={() => handleSkipAppointment(activity.id)}
                   activeOpacity={0.7}
                 >
                   <Text style={styles.viewLink}>Skip</Text>
@@ -585,7 +646,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
             {activeTab === 'history' ? (
               <View style={[styles.actionButton]}>
                 <Image
-                  source={activity.completed ? DoneIcon : CloseIcon}
+                  source={activity.declined ? CloseIcon : DoneIcon}
                   style={styles.statusIcon}
                   resizeMode="cover"
                 />
@@ -786,7 +847,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
               console.log('Activity created:', data);
             }
             // Refresh activities list after save
-            await loadActivities();
+            await loadActivities(activeTab === 'history');
           } catch (error) {
             console.error('Error saving activity:', error);
             // TODO: Show error message to user

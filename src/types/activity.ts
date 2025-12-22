@@ -26,6 +26,7 @@ export interface ListActivitiesParams {
   endDate?: string;
   page?: number;
   limit?: number;
+  includeDeleted?: boolean;
 }
 
 export interface ListActivitiesApiResponse extends ApiResponse<{

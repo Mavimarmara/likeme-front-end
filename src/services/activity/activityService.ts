@@ -37,6 +37,10 @@ class ActivityService {
         queryParams.endDate = params.endDate;
       }
 
+      if (params.includeDeleted !== undefined) {
+        queryParams.includeDeleted = String(params.includeDeleted);
+      }
+
       const response = await apiClient.get<ListActivitiesApiResponse>(
         this.activitiesEndpoint,
         queryParams,
