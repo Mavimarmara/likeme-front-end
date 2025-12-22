@@ -14,6 +14,7 @@ type ModalBaseProps = {
   showTitle?: boolean;
   children: React.ReactNode;
   footer?: React.ReactNode;
+  header?: React.ReactNode;
 };
 
 export const ModalBase: React.FC<ModalBaseProps> = ({
@@ -23,6 +24,7 @@ export const ModalBase: React.FC<ModalBaseProps> = ({
   showTitle = true,
   children,
   footer,
+  header,
 }) => {
   return (
     <Modal
@@ -33,20 +35,24 @@ export const ModalBase: React.FC<ModalBaseProps> = ({
     >
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
-          <View style={styles.header}>
-            {showTitle && title ? (
-              <Text style={styles.title}>{title}</Text>
-            ) : (
-              <View style={styles.headerSpacer} />
-            )}
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={onClose}
-              activeOpacity={0.7}
-            >
-              <Icon name="close" size={24} color={COLORS.TEXT_DARK} />
-            </TouchableOpacity>
-          </View>
+          {header ? (
+            header
+          ) : (
+            <View style={styles.header}>
+              {showTitle && title ? (
+                <Text style={styles.title}>{title}</Text>
+              ) : (
+                <View style={styles.headerSpacer} />
+              )}
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={onClose}
+                activeOpacity={0.7}
+              >
+                <Icon name="close" size={24} color={COLORS.TEXT_DARK} />
+              </TouchableOpacity>
+            </View>
+          )}
 
           <View style={styles.content}>{children}</View>
 

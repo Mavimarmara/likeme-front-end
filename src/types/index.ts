@@ -8,6 +8,7 @@ export * from './event';
 export * from './program';
 export * from './product';
 export * from './ad';
+export * from './activity';
 
 export interface User {
   id: string;

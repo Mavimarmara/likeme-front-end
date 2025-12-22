@@ -37,7 +37,7 @@ export const styles = StyleSheet.create({
     elevation: 8,
     display: 'flex',
     flexDirection: 'column',
-    gap: 10,
+    alignSelf: 'center',
   },
   header: {
     flexDirection: 'row',
@@ -61,8 +61,6 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   content: {
-    flexGrow: 1,
-    flexShrink: 1,
     width: '100%',
   },
 });

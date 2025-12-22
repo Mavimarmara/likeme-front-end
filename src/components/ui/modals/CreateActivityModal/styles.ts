@@ -6,15 +6,12 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: SPACING.LG,
+    marginBottom: SPACING.MD,
     gap: SPACING.SM,
   },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
+  content: {
+    width: '100%',
     gap: SPACING.MD,
-    paddingBottom: SPACING.SM,
   },
   inputContainer: {
     marginBottom: SPACING.XS,

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Switch, TextInput as RNTextInput } from 'react-native';
+import { View, Text, TouchableOpacity, Switch, TextInput as RNTextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ModalBase } from '../shared';
 import { SecondaryButton, PrimaryButton } from '@/components/ui/buttons';
@@ -62,23 +62,20 @@ const CreateActivityModal: React.FC<Props> = ({
       visible={visible}
       onClose={onClose}
       showTitle={false}
+      header={
+        <View style={styles.header}>
+          <SecondaryButton
+            label="Cancel"
+            onPress={handleCancel}
+          />
+          <PrimaryButton
+            label="Save ↑"
+            onPress={handleSave}
+          />
+        </View>
+      }
     >
-      <View style={styles.header}>
-        <SecondaryButton
-          label="Cancel"
-          onPress={handleCancel}
-        />
-        <PrimaryButton
-          label="Save ↑"
-          onPress={handleSave}
-        />
-      </View>
-
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
+      <View style={styles.content}>
         <View style={styles.inputContainer}>
           <RNTextInput
             value={name}
@@ -185,7 +182,7 @@ const CreateActivityModal: React.FC<Props> = ({
             />
           </View>
         </View>
-      </ScrollView>
+      </View>
     </ModalBase>
   );
 };
