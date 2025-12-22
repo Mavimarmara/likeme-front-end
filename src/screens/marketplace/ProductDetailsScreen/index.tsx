@@ -6,8 +6,9 @@ import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header } from '@/components/ui/layout';
 import { Toggle } from '@/components/ui';
+import { SecondaryButton } from '@/components/ui/buttons';
 import { LogoMini } from '@/assets';
-import { ProductsCarousel, type Product } from '@/components/sections/product';
+import { ProductsCarousel, PlansCarousel, type Product, type Plan } from '@/components/sections/product';
 import { PostCard } from '@/components/sections/community';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
 import { useProductDetails } from '@/hooks/marketplace';
@@ -133,6 +134,25 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     });
   };
 
+  const handleSeeProviderProfile = () => {
+    const provider = route.params?.product?.provider || product?.provider;
+    
+    // Dados mockados quando não há provider disponível
+    const mockProvider = {
+      name: provider?.name || 'Dr. Avery Parker',
+      avatar: provider?.avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200',
+      title: 'Therapist & Wellness Coach',
+      description: 'Specialized in mental health and wellness coaching with over 10 years of experience.',
+      rating: route.params?.product?.rating || product?.rating || 4.8,
+      specialties: ['Mental Health', 'Wellness Coaching', 'Therapy'],
+    };
+
+    navigation.navigate('ProviderProfile', {
+      providerId: route.params?.productId || product?.id || 'mock-provider-id',
+      provider: mockProvider,
+    });
+  };
+
   // Carregar posts quando a aba preview estiver ativa
   const {
     posts: communityPosts,
@@ -161,6 +181,15 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
 
   const handleProductLike = (recommendedProduct: Product) => {
     console.log('Like product:', recommendedProduct.id);
+  };
+
+  const handlePlanPress = (plan: Plan) => {
+    console.log('Plan pressed:', plan.id);
+    // TODO: Navegar para detalhes do plano quando necessário
+  };
+
+  const handlePlanLike = (plan: Plan) => {
+    console.log('Like plan:', plan.id);
   };
 
   // Obter imagem do produto para o background e hero section
@@ -296,6 +325,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
               </Text>
               {renderInfoSection()}
               {renderUserFeedback()}
+              {renderPlansCarousel()}
               {renderRecommendedProducts()}
             </>
           )}
@@ -354,22 +384,27 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
 
 
   function renderAddToCartButton() {
-    if (displayData.isOutOfStock) {
-      return null;
-    }
-
     return (
       <View style={styles.floatingButtonContainer}>
-        <TouchableOpacity 
-          style={styles.floatingAddToCartButton}
-          onPress={handleAddToCart} 
-          activeOpacity={0.8}
-        >
-          <Text style={styles.floatingAddToCartText}>Add to cart</Text>
-          <View style={styles.floatingCartIconContainer}>
-            <Icon name="shopping-cart" size={20} color="#FFFFFF" />
-          </View>
-        </TouchableOpacity>
+        {!displayData.isOutOfStock && (
+          <TouchableOpacity 
+            style={styles.floatingAddToCartButton}
+            onPress={handleAddToCart} 
+            activeOpacity={0.8}
+          >
+            <Text style={styles.floatingAddToCartText}>Add to cart</Text>
+            <View style={styles.floatingCartIconContainer}>
+              <Icon name="shopping-cart" size={20} color="#FFFFFF" />
+            </View>
+          </TouchableOpacity>
+        )}
+        <View style={styles.providerButtonContainer}>
+          <SecondaryButton
+            label="See provider profile"
+            onPress={handleSeeProviderProfile}
+            style={styles.providerProfileButton}
+          />
+        </View>
       </View>
     );
   }
@@ -452,6 +487,58 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
         <TouchableOpacity style={styles.seeAllButton} activeOpacity={0.7}>
           <Text style={styles.seeAllText}>See all {'>'}</Text>
         </TouchableOpacity>
+      </View>
+    );
+  }
+
+  function renderPlansCarousel() {
+    // Mock plans data - substituir por dados reais quando disponível
+    const plans: Plan[] = [
+      {
+        id: '1',
+        title: 'Sleep Well Program',
+        price: 99.99,
+        tag: 'Wellness',
+        tagColor: 'green',
+        image: 'https://via.placeholder.com/300',
+        likes: 42,
+        currency: 'USD',
+      },
+      {
+        id: '2',
+        title: 'Mindfulness Journey',
+        price: 79.99,
+        tag: 'Mental Health',
+        tagColor: 'orange',
+        image: 'https://via.placeholder.com/300',
+        likes: 38,
+        currency: 'USD',
+      },
+      {
+        id: '3',
+        title: 'Fitness Challenge',
+        price: 59.99,
+        tag: 'Fitness',
+        tagColor: 'default',
+        image: 'https://via.placeholder.com/300',
+        likes: 55,
+        currency: 'USD',
+      },
+    ];
+
+    if (plans.length === 0) {
+      return null;
+    }
+
+    return (
+      <View style={styles.plansSection}>
+        <PlansCarousel
+          title="Recommended Plans"
+          subtitle="Discover programs tailored for you"
+          plans={plans}
+          onPlanPress={handlePlanPress}
+          onPlanLike={handlePlanLike}
+        />
       </View>
     );
   }

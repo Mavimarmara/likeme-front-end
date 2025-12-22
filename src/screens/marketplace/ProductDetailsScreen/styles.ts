@@ -333,6 +333,13 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: SPACING.SM,
   },
+  providerButtonContainer: {
+    marginTop: SPACING.MD,
+    width: '100%',
+  },
+  providerProfileButton: {
+    width: '100%',
+  },
   providerAvatarSmall: {
     width: 32,
     height: 32,
@@ -539,6 +546,9 @@ export const styles = StyleSheet.create({
   recommendedSection: {
     marginTop: SPACING.LG,
   },
+  plansSection: {
+    marginTop: SPACING.XL,
+  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -594,5 +604,8 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666666',
     textAlign: 'center',
+  },
+  plansSection: {
+    marginTop: SPACING.XL,
   },
 });
