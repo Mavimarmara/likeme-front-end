@@ -203,9 +203,6 @@ export const styles = StyleSheet.create({
   },
   actionButton: {
     flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.MD,
-    paddingVertical: SPACING.SM,
     borderRadius: BORDER_RADIUS.MD,
     gap: SPACING.XS,
   },
@@ -351,5 +348,9 @@ export const styles = StyleSheet.create({
   },
   carouselWrapper: {
     marginTop: SPACING.SM,
+  },
+  statusIcon: {
+    width: 40,
+    height: 36,
   },
 });

@@ -22,3 +22,5 @@ export const Presentation3 = require('../../assets/Presentation3.png');
 export const BackgroundIconButton = require('../../assets/BackgroundIconButton.png');
 export const BackgroundWithGradient = require('../../assets/BackgroundWithGradient.png');
 export const MenuButtonBackground = require('../../assets/Menu.png');
+export const DoneIcon = require('../../assets/Done.png');
+export const CloseIcon = require('../../assets/Close.png'); 

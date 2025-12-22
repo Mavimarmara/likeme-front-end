@@ -7,7 +7,7 @@ import { FloatingMenu, FilterMenu, type ButtonCarouselOption } from '@/component
 import { Header, Background } from '@/components/ui/layout';
 import { Toggle, PrimaryButton, Badge } from '@/components/ui';
 import { CreateActivityModal } from '@/components/sections/activity';
-import { BackgroundIconButton } from '@/assets';
+import { BackgroundIconButton, DoneIcon, CloseIcon } from '@/assets';
 import { ProductsCarousel, PlansCarousel, type Product, type Plan } from '@/components/sections/product';
 import { orderService } from '@/services';
 import { formatPrice } from '@/utils/formatters';
@@ -336,12 +336,14 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
               <Text style={styles.doneButtonText}>{getStatusText()}</Text>
             </View>
 
-            <TouchableOpacity
-              onPress={() => console.log('View order:', order.id)}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.viewLink}>View</Text>
-            </TouchableOpacity>
+            {activeTab === 'actives' && (
+              <TouchableOpacity
+                onPress={() => console.log('View order:', order.id)}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.viewLink}>View</Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       </View>
@@ -395,12 +397,14 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
                 <Text style={styles.openButtonText}>Open meet {'>'}</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={() => handleViewActivity(activity)}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.viewLink}>Skip</Text>
-              </TouchableOpacity>
+              {activeTab === 'actives' && (
+                <TouchableOpacity
+                  onPress={() => handleViewActivity(activity)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.viewLink}>Skip</Text>
+                </TouchableOpacity>
+              )}
             </View>
           </View>
         </View>
@@ -429,10 +433,13 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
           </View>
 
           <View style={styles.cardActions}>
-            {activity.completed ? (
-              <View style={[styles.actionButton, styles.doneButton]}>
-                <Icon name="check" size={16} color="#001137" />
-                <Text style={styles.doneButtonText}>Done ✓</Text>
+            {activeTab === 'history' ? (
+              <View style={[styles.actionButton]}>
+                <Image
+                  source={activity.completed ? DoneIcon : CloseIcon}
+                  style={styles.statusIcon}
+                  resizeMode="cover"
+                />
               </View>
             ) : (
               <TouchableOpacity
@@ -444,37 +451,16 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
               </TouchableOpacity>
             )}
 
-            <TouchableOpacity
-              onPress={() => handleViewActivity(activity)}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.viewLink}>View</Text>
-            </TouchableOpacity>
+            {activeTab === 'actives' && (
+              <TouchableOpacity
+                onPress={() => handleViewActivity(activity)}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.viewLink}>View</Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
-      </View>
-    );
-  };
-
-  const renderRecommendations = () => {
-    if (activeTab === 'history') return null;
-
-    return (
-      <View style={styles.recommendationsCard}>
-        <Text style={styles.recommendationsTitle}>
-          Let's do a new mental state anamnesis?
-        </Text>
-        <Text style={styles.recommendationsSubtitle}>Recommended after 30 days</Text>
-        <Text style={styles.recommendationsDescription}>
-          Just tap below to start a chat with our specialist team and get the support you need.
-        </Text>
-        <TouchableOpacity
-          style={styles.anamnesisButton}
-          activeOpacity={0.7}
-          onPress={() => console.log('Start anamnesis')}
-        >
-          <Text style={styles.anamnesisButtonText}>Start Anamnesis</Text>
-        </TouchableOpacity>
       </View>
     );
   };
@@ -583,7 +569,6 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
               ) : (
                 filteredActivities.map(renderActivityCard)
               )}
-              {renderRecommendations()}
               {activeTab === 'actives' && plans.length > 0 && (
                 <View>
                   <PlansCarousel
