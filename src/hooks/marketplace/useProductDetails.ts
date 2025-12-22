@@ -91,7 +91,7 @@ export const useProductDetails = ({
           id: productData.id,
           title: productData.name,
           price: formatPrice(productData.price),
-          image: productData.image || 'https://via.placeholder.com/400',
+          image: productData.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
           category: productData.category,
           description: productData.description,
         },

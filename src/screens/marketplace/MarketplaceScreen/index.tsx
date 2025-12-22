@@ -168,7 +168,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
         <Text style={styles.sectionTitle}>Week highlights</Text>
         <WeekHighlightCard
           title={highlight.product.name || 'Product'}
-          image={highlight.product.image || 'https://via.placeholder.com/400'}
+          image={highlight.product.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400'}
           price={highlight.product.price}
           onPress={() => handleAdPress(highlight)}
         />
@@ -216,7 +216,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
             displayAds.map((ad) => {
               const product = ad.product;
               const displayTitle = product?.name || 'Product';
-              const displayImage = product?.image || 'https://via.placeholder.com/200';
+              const displayImage = product?.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
               const displayCategory = product?.category;
               const productPrice = product?.price;
 

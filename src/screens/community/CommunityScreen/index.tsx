@@ -313,7 +313,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
             title: p.name,
             price: p.price || 0,
             tag: p.category || 'Product',
-            image: p.image || 'https://via.placeholder.com/400',
+            image: p.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
             likes: 0,
           }));
           setSuggestedProducts(products);

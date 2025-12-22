@@ -7,6 +7,7 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
     position: 'relative',
+    backgroundColor: '#F4F3EC',
   },
   backgroundImage: {
     flex: 1,
@@ -24,11 +25,15 @@ export const styles = StyleSheet.create({
     width: SCREEN_WIDTH,
     height: SCREEN_HEIGHT * 0.6,
     position: 'relative',
-    marginTop: -50,
   },
   heroImage: {
     width: '100%',
     height: '100%',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
   heroImageStyle: {
     borderBottomLeftRadius: 40,
@@ -161,79 +166,66 @@ export const styles = StyleSheet.create({
   },
   productsSection: {
     marginBottom: SPACING.XL,
+    gap: SPACING.MD,
   },
-  productCard: {
+  productRow: {
     flexDirection: 'row',
-    backgroundColor: '#F9F7F4',
+    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     padding: SPACING.MD,
-    marginBottom: SPACING.MD,
-    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
   },
-  productImage: {
+  productRowImage: {
     width: 80,
     height: 80,
     borderRadius: 12,
     marginRight: SPACING.MD,
   },
-  productImageStyle: {
-    borderRadius: 12,
-  },
-  productInfo: {
+  productRowContent: {
     flex: 1,
-  },
-  productBadge: {
-    backgroundColor: '#001137',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-    alignSelf: 'flex-start',
-    marginBottom: 4,
-  },
-  productBadgeText: {
-    fontSize: 10,
-    fontFamily: 'DM Sans',
-    fontWeight: '500',
-    color: '#FFFFFF',
-  },
-  productName: {
-    fontSize: 14,
-    fontFamily: 'DM Sans',
-    fontWeight: '600',
-    color: '#001137',
-    marginBottom: 4,
-  },
-  productFooter: {
-    flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
   },
-  productPrice: {
-    fontSize: 14,
-    fontFamily: 'DM Sans',
-    fontWeight: '700',
-    color: '#001137',
+  productRowCategory: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#F5F5F5',
+    borderRadius: 999,
+    paddingHorizontal: SPACING.SM,
+    paddingVertical: 4,
+    marginBottom: SPACING.XS,
   },
-  productRating: {
+  productRowCategoryText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#666666',
+  },
+  productRowTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#000000',
+    marginBottom: SPACING.XS,
+  },
+  productRowFooter: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    justifyContent: 'space-between',
   },
-  productRatingText: {
-    fontSize: 12,
-    fontFamily: 'DM Sans',
-    fontWeight: '600',
-    color: '#001137',
+  productRowPrice: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#000000',
   },
-  addProductButton: {
+  productRowAddButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F5F5F5',
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
+    marginLeft: SPACING.MD,
   },
   talkButtonContainer: {
     marginBottom: SPACING.XL,

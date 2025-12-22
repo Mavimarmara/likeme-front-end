@@ -24,7 +24,7 @@ export const ProductHeroSection: React.FC<ProductHeroSectionProps> = ({
   return (
     <View style={styles.heroSection}>
       <Image 
-        source={{ uri: image || 'https://via.placeholder.com/800' }} 
+        source={{ uri: image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=800' }} 
         style={styles.heroImage} 
       />
       <View style={styles.heroProductCard}>

@@ -20,7 +20,7 @@ export const mapProductToCartItem = (product: ApiProduct): CartItem => {
 
   return {
     id: product.id,
-    image: product.image || 'https://via.placeholder.com/200',
+    image: product.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
     title: product.name,
     subtitle: product.description || '',
     price,

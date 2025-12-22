@@ -1,16 +1,19 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ImageBackground, Dimensions, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ImageBackground, Image, Dimensions, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import { CommonActions } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header } from '@/components/ui/layout';
 import { Toggle } from '@/components/ui';
 import { SecondaryButton } from '@/components/ui/buttons';
-import { PlansCarousel, ProductsCarousel, type Plan, type Product } from '@/components/sections/product';
-import { PostCard } from '@/components/sections/community';
+import { ProductsCarousel, type Product } from '@/components/sections/product';
+import { PostCard, NextEventsSection, type ProviderChat } from '@/components/sections/community';
 import { useUserFeed } from '@/hooks/community/useUserFeed';
+import { formatPrice } from '@/utils/formatters';
 import type { Post } from '@/types';
+import type { Event } from '@/types/event';
 import type { RootStackParamList } from '@/types/navigation';
 import { styles } from './styles';
 
@@ -62,6 +65,10 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
   const { providerId, provider } = route.params;
   const [activeTab, setActiveTab] = useState<'about' | 'communities'>('about');
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isAboutExpanded, setIsAboutExpanded] = useState(true);
+  const [isAcademicExpanded, setIsAcademicExpanded] = useState(true);
+
+  const rootNavigation = navigation.getParent() ?? navigation;
 
   const providerData = provider || {
     name: 'Marcela Ferraz',
@@ -103,15 +110,33 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
   };
 
   const handleTalkToProvider = () => {
-    console.log('Talk to provider:', providerId);
+    const chat: ProviderChat = {
+      id: providerId,
+      providerName: providerData.name,
+      providerAvatar: providerData.avatar,
+      lastMessage: '',
+      timestamp: 'Now',
+      unreadCount: 0,
+    };
+    
+    // Navegar para ChatScreen dentro do Community stack usando CommonActions
+    rootNavigation.dispatch(
+      CommonActions.navigate({
+        name: 'Community',
+        params: {
+          screen: 'ChatScreen',
+          params: { chat },
+        },
+      })
+    );
   };
 
-  const handlePlanPress = (plan: Plan) => {
-    console.log('Plan pressed:', plan.id);
+  const handleEventPress = (event: Event) => {
+    console.log('Event pressed:', event.id);
   };
 
-  const handlePlanLike = (plan: Plan) => {
-    console.log('Like plan:', plan.id);
+  const handleEventSave = (event: Event) => {
+    console.log('Save event:', event.id);
   };
 
   const handleProductPress = (product: Product) => {
@@ -122,27 +147,25 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
     console.log('Like product:', product.id);
   };
 
-  // Mock plans data
-  const providerPlans: Plan[] = useMemo(() => [
+  // Mock events data
+  const providerEvents: Event[] = useMemo(() => [
     {
       id: '1',
       title: 'Home Mobility Challenge',
-      price: null,
-      tag: 'Fitness',
-      tagColor: 'default',
-      image: 'https://via.placeholder.com/300',
-      likes: 42,
-      currency: 'USD',
+      date: '2024-01-15',
+      time: '10:00',
+      thumbnail: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400',
+      participants: [],
+      participantsCount: 42,
     },
     {
       id: '2',
       title: 'Trail Run - United State',
-      price: null,
-      tag: 'Fitness',
-      tagColor: 'default',
-      image: 'https://via.placeholder.com/300',
-      likes: 38,
-      currency: 'USD',
+      date: '2024-01-20',
+      time: '08:00',
+      thumbnail: 'https://images.unsplash.com/photo-1571008887538-b36bb32f4571?w=400',
+      participants: [],
+      participantsCount: 38,
     },
   ], []);
 
@@ -153,7 +176,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
       title: 'Omega 3 Supplement',
       price: 150.99,
       tag: 'Medicine',
-      image: 'https://via.placeholder.com/200',
+      image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
       likes: 0,
     },
     {
@@ -161,18 +184,13 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
       title: 'Melatonin Chocolate',
       price: 10.50,
       tag: 'Nutrition',
-      image: 'https://via.placeholder.com/200',
+      image: 'https://images.unsplash.com/photo-1606312619070-d48d4e5b6916?w=400',
       likes: 0,
     },
   ], []);
 
   return (
     <SafeAreaView style={styles.container}>
-      <ImageBackground
-        source={{ uri: backgroundImage }}
-        style={styles.backgroundImage}
-        imageStyle={styles.backgroundImageStyle}
-      >
         <Header showBackButton={true} onBackPress={handleBackPress} />
         <ScrollView
           contentContainerStyle={styles.scrollContent}
@@ -237,33 +255,50 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
             {activeTab === 'about' && (
               <>
                 <View style={styles.aboutSection}>
-                  <View style={styles.sectionHeader}>
+                  <TouchableOpacity 
+                    style={styles.sectionHeader}
+                    onPress={() => setIsAboutExpanded(!isAboutExpanded)}
+                    activeOpacity={0.7}
+                  >
                     <Text style={styles.sectionTitle}>About {providerData.name}</Text>
-                    <Icon name="keyboard-arrow-up" size={24} color="#001137" />
-                  </View>
-                  <Text style={styles.descriptionText}>{providerData.description}</Text>
+                    <Icon 
+                      name={isAboutExpanded ? "keyboard-arrow-up" : "keyboard-arrow-down"} 
+                      size={24} 
+                      color="#001137" 
+                    />
+                  </TouchableOpacity>
+                  {isAboutExpanded && (
+                    <Text style={styles.descriptionText}>{providerData.description}</Text>
+                  )}
                 </View>
 
                 <View style={styles.aboutSection}>
-                  <View style={styles.sectionHeader}>
+                  <TouchableOpacity 
+                    style={styles.sectionHeader}
+                    onPress={() => setIsAcademicExpanded(!isAcademicExpanded)}
+                    activeOpacity={0.7}
+                  >
                     <Text style={styles.sectionTitle}>Academic background</Text>
-                    <Icon name="keyboard-arrow-up" size={24} color="#001137" />
-                  </View>
-                  <Text style={styles.descriptionText}>
-                    I am trained in Yoga with specializations in meditation, mindful breathing, and restorative practices.
-                    I've been teaching and supporting students for over 10 years working with people in different stages of their journey.
-                  </Text>
+                    <Icon 
+                      name={isAcademicExpanded ? "keyboard-arrow-up" : "keyboard-arrow-down"} 
+                      size={24} 
+                      color="#001137" 
+                    />
+                  </TouchableOpacity>
+                  {isAcademicExpanded && (
+                    <Text style={styles.descriptionText}>
+                      I am trained in Yoga with specializations in meditation, mindful breathing, and restorative practices.
+                      I've been teaching and supporting students for over 10 years working with people in different stages of their journey.
+                    </Text>
+                  )}
                 </View>
 
-                {providerPlans.length > 0 && (
+                {providerEvents.length > 0 && (
                   <View style={styles.programsSection}>
-                    <Text style={styles.sectionTitle}>My programs</Text>
-                    <PlansCarousel
-                      title=""
-                      subtitle=""
-                      plans={providerPlans}
-                      onPlanPress={handlePlanPress}
-                      onPlanLike={handlePlanLike}
+                    <NextEventsSection
+                      events={providerEvents}
+                      onEventPress={handleEventPress}
+                      onEventSave={handleEventSave}
                     />
                   </View>
                 )}
@@ -272,29 +307,38 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
                   <View style={styles.productsSection}>
                     <Text style={styles.sectionTitle}>Products I recommend</Text>
                     {recommendedProducts.map((product) => (
-                      <View key={product.id} style={styles.productCard}>
-                        <ImageBackground
-                          source={{ uri: product.image }}
-                          style={styles.productImage}
-                          imageStyle={styles.productImageStyle}
+                      <TouchableOpacity
+                        key={product.id}
+                        style={styles.productRow}
+                        onPress={() => handleProductPress(product)}
+                        activeOpacity={0.8}
+                      >
+                        <Image 
+                          source={{ uri: product.image }} 
+                          style={styles.productRowImage} 
                         />
-                        <View style={styles.productInfo}>
-                          <View style={styles.productBadge}>
-                            <Text style={styles.productBadgeText}>{product.tag}</Text>
-                          </View>
-                          <Text style={styles.productName}>{product.title}</Text>
-                          <View style={styles.productFooter}>
-                            <Text style={styles.productPrice}>${product.price.toFixed(2)}</Text>
-                            <View style={styles.productRating}>
-                              <Text style={styles.productRatingText}>5</Text>
-                              <Icon name="star" size={14} color="#FFB800" />
+                        <View style={styles.productRowContent}>
+                          {product.tag && (
+                            <View style={styles.productRowCategory}>
+                              <Text style={styles.productRowCategoryText}>{product.tag}</Text>
                             </View>
+                          )}
+                          <Text style={styles.productRowTitle}>{product.title}</Text>
+                          <View style={styles.productRowFooter}>
+                            <Text style={styles.productRowPrice}>{formatPrice(product.price)}</Text>
                           </View>
                         </View>
-                        <TouchableOpacity style={styles.addProductButton} activeOpacity={0.7}>
-                          <Icon name="add" size={24} color="#001137" />
+                        <TouchableOpacity 
+                          style={styles.productRowAddButton} 
+                          activeOpacity={0.7}
+                          onPress={(e) => {
+                            e.stopPropagation();
+                            handleProductPress(product);
+                          }}
+                        >
+                          <Icon name="add" size={24} color="#000" />
                         </TouchableOpacity>
-                      </View>
+                      </TouchableOpacity>
                     ))}
                   </View>
                 )}
@@ -332,7 +376,6 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
             )}
           </View>
         </ScrollView>
-      </ImageBackground>
     </SafeAreaView>
   );
 

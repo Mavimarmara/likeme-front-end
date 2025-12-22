@@ -345,19 +345,19 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
   const displayImage = ad?.product?.image || 
                       product?.image || 
                       paramsProduct?.image || 
-                      'https://via.placeholder.com/400';
+                      'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
   
   // Array de imagens do produto
   // Por enquanto, produtos têm apenas uma imagem, mas o código está preparado para múltiplas
   const productImages = useMemo(() => {
     const images: string[] = [];
     // Adicionar imagem principal se existir e não for placeholder
-    if (displayImage && displayImage !== 'https://via.placeholder.com/400') {
+    if (displayImage && displayImage !== 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400') {
       images.push(displayImage);
     }
     // Se no futuro houver um campo images[] no produto, adicionar aqui:
     // if (product?.images && Array.isArray(product.images)) {
-    //   images.push(...product.images.filter(img => img && img !== 'https://via.placeholder.com/400'));
+    //   images.push(...product.images.filter(img => img && img !== 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400'));
     // }
     return images;
   }, [displayImage]);
@@ -506,7 +506,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
                 {otherOptions.map((option) => (
                   <View key={option.id} style={styles.optionItem}>
                     <Image
-                      source={{ uri: option.image || 'https://via.placeholder.com/69x64' }}
+                      source={{ uri: option.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=100' }}
                       style={styles.optionImage}
                     />
                     <Text style={styles.optionLabel}>

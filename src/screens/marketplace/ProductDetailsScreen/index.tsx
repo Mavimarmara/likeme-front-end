@@ -211,13 +211,13 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     if (ad?.product?.image) return ad.product.image;
     if (product?.image) return product.image;
     if (route.params?.product?.image) return route.params.product.image;
-    return 'https://via.placeholder.com/400';
+    return 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
   }, [displayData, ad, product, route.params?.product]);
 
   // Array de imagens do produto (por enquanto apenas uma)
   const productImages = useMemo(() => {
     const images: string[] = [];
-    if (backgroundImage && backgroundImage !== 'https://via.placeholder.com/400') {
+    if (backgroundImage && backgroundImage !== 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400') {
       images.push(backgroundImage);
     }
     return images;
@@ -521,7 +521,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
         price: 99.99,
         tag: 'Wellness',
         tagColor: 'green',
-        image: 'https://via.placeholder.com/300',
+        image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400',
         likes: 42,
         currency: 'USD',
       },
@@ -531,7 +531,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
         price: 79.99,
         tag: 'Mental Health',
         tagColor: 'orange',
-        image: 'https://via.placeholder.com/300',
+        image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400',
         likes: 38,
         currency: 'USD',
       },
@@ -541,7 +541,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
         price: 59.99,
         tag: 'Fitness',
         tagColor: 'default',
-        image: 'https://via.placeholder.com/300',
+        image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400',
         likes: 55,
         currency: 'USD',
       },
