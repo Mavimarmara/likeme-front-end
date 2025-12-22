@@ -28,25 +28,12 @@ export const styles = StyleSheet.create({
     gap: SPACING.SM,
     marginBottom: SPACING.XS,
   },
-  typeButton: {
+  typeButtonBase: {
     flex: 1,
-    paddingVertical: SPACING.SM,
-    paddingHorizontal: SPACING.MD,
-    borderRadius: BORDER_RADIUS.FULL,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   typeButtonSelected: {
     borderColor: '#0154f8',
-    backgroundColor: '#FFFFFF',
-  },
-  typeButtonText: {
-    fontSize: 14,
-    color: '#001137',
-    fontWeight: '500',
+    backgroundColor: 'rgba(1, 84, 248, 0.1)',
   },
   typeButtonTextSelected: {
     color: '#0154f8',
@@ -57,20 +44,10 @@ export const styles = StyleSheet.create({
     gap: SPACING.SM,
     marginBottom: SPACING.XS,
   },
-  dateTimePill: {
+  dateTimeButton: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: SPACING.SM,
-    paddingHorizontal: SPACING.MD,
-    borderRadius: BORDER_RADIUS.FULL,
     backgroundColor: '#F5F5F5',
-    gap: SPACING.XS,
-  },
-  dateTimeText: {
-    fontSize: 14,
-    color: '#001137',
-    fontWeight: '500',
+    borderRadius: BORDER_RADIUS.FULL,
   },
   locationPill: {
     flexDirection: 'row',

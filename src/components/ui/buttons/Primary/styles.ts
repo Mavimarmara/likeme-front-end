@@ -44,6 +44,18 @@ export const styles = StyleSheet.create({
   buttonDisabled: {
     opacity: 0.6,
   },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+  },
+  iconLeft: {
+    marginRight: 0,
+  },
+  iconRight: {
+    marginLeft: 0,
+  },
 });
 
 

@@ -4,18 +4,18 @@ export type ActivityType = 'task' | 'event';
 
 export interface UserActivity {
   id: string;
+  userId: string;
   name: string;
   type: ActivityType;
-  startDate?: string;
-  startTime?: string;
-  endDate?: string;
-  endTime?: string;
-  location?: string;
+  startDate: string;
+  startTime?: string | null;
+  endDate?: string | null;
+  endTime?: string | null;
+  location?: string | null;
   reminderEnabled: boolean;
-  reminderMinutes?: number;
-  completed?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
+  reminderOffset?: string | null;
+  createdAt: string;
+  updatedAt: string;
   deletedAt?: string | null;
 }
 
@@ -29,9 +29,12 @@ export interface ListActivitiesParams {
 
 export interface ListActivitiesApiResponse extends ApiResponse<{
   activities: UserActivity[];
-  total: number;
-  page: number;
-  limit: number;
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 }> {}
 
 export interface GetActivityApiResponse extends ApiResponse<UserActivity> {}
@@ -39,13 +42,23 @@ export interface GetActivityApiResponse extends ApiResponse<UserActivity> {}
 export interface CreateActivityData {
   name: string;
   type: ActivityType;
-  startDate?: string;
-  startTime?: string;
-  endDate?: string;
-  endTime?: string;
-  location?: string;
-  reminderEnabled: boolean;
-  reminderMinutes?: number;
+  startDate: string; // Required - ISO date string
+  startTime?: string | null;
+  endDate?: string | null; // ISO date string
+  endTime?: string | null;
+  location?: string | null;
+  reminderEnabled?: boolean;
+  reminderOffset?: string | null; // e.g., "5 min before", "10 min after"
 }
 
-export interface UpdateActivityData extends Partial<CreateActivityData> {}
+export interface UpdateActivityData {
+  name?: string;
+  type?: ActivityType;
+  startDate?: string; // ISO date string
+  startTime?: string | null;
+  endDate?: string | null; // ISO date string
+  endTime?: string | null;
+  location?: string | null;
+  reminderEnabled?: boolean;
+  reminderOffset?: string | null; // e.g., "5 min before", "10 min after"
+}

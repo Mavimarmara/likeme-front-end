@@ -9,6 +9,7 @@ export * from './program';
 export * from './product';
 export * from './ad';
 export * from './activity';
+export * from './order';
 
 export interface User {
   id: string;

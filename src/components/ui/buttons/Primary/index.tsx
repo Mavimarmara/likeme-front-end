@@ -1,5 +1,6 @@
 import React from 'react';
-import { Text, TouchableOpacity, GestureResponderEvent, ViewStyle, ActivityIndicator, TextStyle } from 'react-native';
+import { Text, TouchableOpacity, GestureResponderEvent, ViewStyle, ActivityIndicator, TextStyle, View } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { styles } from './styles';
 
 type Variant = 'dark' | 'light';
@@ -12,6 +13,10 @@ type Props = {
   loading?: boolean;
   disabled?: boolean;
   variant?: Variant;
+  icon?: string;
+  iconSize?: number;
+  iconColor?: string;
+  iconPosition?: 'left' | 'right';
 };
 
 const PrimaryButton: React.FC<Props> = ({ 
@@ -22,12 +27,30 @@ const PrimaryButton: React.FC<Props> = ({
   loading = false, 
   disabled = false,
   variant = 'dark',
+  icon,
+  iconSize = 16,
+  iconColor,
+  iconPosition = 'right',
 }) => {
   const isDisabled = loading || disabled;
   const buttonStyle = variant === 'light' ? styles.buttonLight : styles.button;
   const defaultLabelStyle = variant === 'light' ? styles.labelLight : styles.label;
   const labelStyle = customLabelStyle ? [defaultLabelStyle, customLabelStyle] : defaultLabelStyle;
   const indicatorColor = variant === 'light' ? '#001137' : '#FFFFFF';
+  const finalIconColor = iconColor || (variant === 'light' ? '#001137' : '#FFFFFF');
+
+  const renderIcon = () => {
+    if (!icon) return null;
+    
+    return (
+      <Icon 
+        name={icon} 
+        size={iconSize} 
+        color={finalIconColor} 
+        style={iconPosition === 'left' ? styles.iconLeft : styles.iconRight}
+      />
+    );
+  };
 
   return (
     <TouchableOpacity 
@@ -39,7 +62,11 @@ const PrimaryButton: React.FC<Props> = ({
       {loading ? (
         <ActivityIndicator size="small" color={indicatorColor} />
       ) : (
-        <Text style={labelStyle}>{label}</Text>
+        <View style={styles.buttonContent}>
+          {iconPosition === 'left' && renderIcon()}
+          <Text style={labelStyle}>{label}</Text>
+          {iconPosition === 'right' && renderIcon()}
+        </View>
       )}
     </TouchableOpacity>
   );

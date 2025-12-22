@@ -298,6 +298,9 @@ export const styles = StyleSheet.create({
     color: '#001137',
     textAlign: 'center',
   },
+  completeButtonDisabled: {
+    opacity: 0.5,
+  },
   editAddressContainer: {
     marginBottom: SPACING.LG,
     shadowColor: '#000',

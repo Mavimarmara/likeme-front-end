@@ -5,15 +5,19 @@ import {
   ScrollView,
   SafeAreaView,
   TouchableOpacity,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { Header } from '@/components/ui/layout';
 import { Background } from '@/components/ui/layout';
-import { storageService } from '@/services';
+import { storageService, orderService, paymentService } from '@/services';
 import { formatPrice } from '@/utils/formatters';
+import { logger } from '@/utils/logger';
 import { styles } from './styles';
 import AddressForm, { AddressData } from './address';
 import PaymentForm from './payment';
 import { CartItemList, OrderSummary, OrderScreen } from './order';
+import type { CreateOrderData } from '@/types/order';
 
 interface CartItem {
   id: string;
@@ -58,17 +62,12 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
   const [shipping, setShipping] = useState(0);
   const [total, setTotal] = useState(0);
   const [orderId, setOrderId] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     loadCartItems();
-    generateOrderId();
   }, []);
 
-  const generateOrderId = () => {
-    const randomId = Math.random().toString(36).substring(2, 10).toUpperCase() + 
-                     Math.random().toString(36).substring(2, 6).toUpperCase();
-    setOrderId(randomId);
-  };
 
   useEffect(() => {
     calculateTotals();
@@ -102,12 +101,155 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
   };
 
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (currentStep === 'address') {
       setCurrentStep('payment');
     } else if (currentStep === 'payment') {
-      setCurrentStep('order');
+      await handleCompleteOrder();
     }
+  };
+
+  const handleCompleteOrder = async () => {
+    try {
+      setIsProcessing(true);
+
+      // Validar dados necessários
+      if (cartItems.length === 0) {
+        Alert.alert('Erro', 'Seu carrinho está vazio');
+        return;
+      }
+
+      if (paymentMethod === 'credit_card') {
+        if (!cardholderName || !cardNumber || !expiryDate || !cvv) {
+          Alert.alert('Erro', 'Por favor, preencha todos os dados do cartão');
+          return;
+        }
+      }
+
+      // Preparar dados do pedido
+      const orderItems = cartItems.map((item) => ({
+        productId: item.id,
+        quantity: item.quantity,
+        discount: 0, // Pode ser calculado com base em cupons
+      }));
+
+      // Log dos produtos que serão enviados
+      logger.debug('Produtos do carrinho que serão enviados para o backend:', {
+        totalItems: cartItems.length,
+        items: cartItems.map((item) => ({
+          id: item.id,
+          title: item.title,
+          price: item.price,
+          quantity: item.quantity,
+          total: item.price * item.quantity,
+        })),
+      });
+
+      console.log('📦 Produtos do pedido:', JSON.stringify(cartItems.map((item) => ({
+        productId: item.id,
+        title: item.title,
+        quantity: item.quantity,
+        price: item.price,
+        total: item.price * item.quantity,
+      })), null, 2));
+
+      const orderData: CreateOrderData = {
+        items: orderItems,
+        status: 'pending',
+        shippingCost: shipping,
+        tax: 0, // Pode ser calculado se necessário
+        shippingAddress: formatAddress(addressData),
+        billingAddress: sameBillingAddress ? formatAddress(addressData) : formatAddress(addressData),
+        paymentMethod: paymentMethod,
+        paymentStatus: 'pending',
+      };
+
+      console.log('📋 Dados do pedido que serão enviados:', JSON.stringify(orderData, null, 2));
+      logger.debug('Dados do pedido completos:', orderData);
+
+      // Criar o pedido
+      const orderResponse = await orderService.createOrder(orderData);
+      
+      if (!orderResponse.success || !orderResponse.data) {
+        throw new Error('Falha ao criar pedido');
+      }
+
+      const createdOrder = orderResponse.data;
+      setOrderId(createdOrder.id);
+
+      // Processar pagamento se for cartão de crédito
+      if (paymentMethod === 'credit_card') {
+        // Converter data de expiração de MM/YY para MMYY
+        const expiryFormatted = expiryDate.replace(/\//g, '');
+
+        const paymentData = {
+          orderId: createdOrder.id,
+          cardData: {
+            cardNumber: cardNumber.replace(/\s/g, ''),
+            cardHolderName: cardholderName,
+            cardExpirationDate: expiryFormatted,
+            cardCvv: cvv,
+          },
+          billingAddress: {
+            state: addressData.state,
+            city: addressData.city,
+            neighborhood: addressData.neighborhood,
+            street: addressData.addressLine1,
+            streetNumber: extractStreetNumber(addressData.addressLine1),
+            zipcode: addressData.zipCode.replace(/\D/g, ''),
+            complement: addressData.addressLine2 || undefined,
+          },
+        };
+
+        const paymentResponse = await paymentService.processPayment(paymentData);
+
+        if (!paymentResponse.success) {
+          throw new Error('Falha ao processar pagamento');
+        }
+
+        // Atualizar status do pedido se necessário
+        if (paymentResponse.data?.transaction?.status === 'approved') {
+          await orderService.updateOrder(createdOrder.id, {
+            paymentStatus: 'paid',
+          });
+        }
+      } else if (paymentMethod === 'pix') {
+        // Para PIX, o pagamento pode ser processado depois
+        // Por enquanto, apenas criamos o pedido
+      }
+
+      // Limpar carrinho após sucesso
+      await storageService.clearCart();
+
+      // Navegar para a tela de Order
+      setCurrentStep('order');
+    } catch (error) {
+      console.error('Error completing order:', error);
+      Alert.alert(
+        'Erro',
+        error instanceof Error ? error.message : 'Erro ao processar pedido. Tente novamente.'
+      );
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const formatAddress = (address: AddressData): string => {
+    const parts = [
+      address.addressLine1,
+      address.addressLine2,
+      address.neighborhood,
+      address.city,
+      address.state,
+      address.zipCode,
+    ].filter(Boolean);
+    return parts.join(', ');
+  };
+
+  const extractStreetNumber = (addressLine: string): string => {
+    // Tenta extrair número da rua (ex: "Rua Marselha, 1029" -> "1029")
+    const match = addressLine.match(/(\d+)/);
+    return match ? match[1] : '';
   };
 
   const handleHomePress = () => {
@@ -255,11 +397,16 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
       {currentStep !== 'order' && (
         <View style={styles.buttonContainer}>
           <TouchableOpacity
-            style={styles.completeButton}
+            style={[styles.completeButton, isProcessing && styles.completeButtonDisabled]}
             onPress={handleContinue}
             activeOpacity={0.7}
+            disabled={isProcessing}
           >
-            <Text style={styles.completeButtonText}>Continue</Text>
+            {isProcessing ? (
+              <ActivityIndicator color="#FFFFFF" />
+            ) : (
+              <Text style={styles.completeButtonText}>Continue</Text>
+            )}
           </TouchableOpacity>
         </View>
       )}

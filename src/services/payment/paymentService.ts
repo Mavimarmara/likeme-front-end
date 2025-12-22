@@ -1,4 +1,5 @@
 import apiClient from '../infrastructure/apiClient';
+import { logger } from '@/utils/logger';
 import type { ApiResponse } from '@/types/infrastructure';
 
 export interface ProcessPaymentRequest {
@@ -50,19 +51,53 @@ class PaymentService {
    * Process payment for an order
    */
   async processPayment(data: ProcessPaymentRequest): Promise<ApiResponse<ProcessPaymentResponse>> {
-    return apiClient.post<ApiResponse<ProcessPaymentResponse>>(
-      '/api/payment/process',
-      data
-    );
+    try {
+      const response = await apiClient.post<ApiResponse<ProcessPaymentResponse>>(
+        '/api/payment/process',
+        data,
+        true
+      );
+
+      logger.debug('Payment processed:', {
+        orderId: data.orderId,
+        transactionId: response.data?.transaction?.id,
+        success: response.success,
+      });
+
+      return response;
+    } catch (error) {
+      logger.error('Error processing payment:', error);
+      throw error;
+    }
   }
 
   /**
    * Get payment transaction status
    */
   async getTransactionStatus(transactionId: string): Promise<ApiResponse<TransactionStatusResponse>> {
-    return apiClient.get<ApiResponse<TransactionStatusResponse>>(
-      `/api/payment/status/${transactionId}`
-    );
+    try {
+      if (!transactionId || transactionId.trim() === '') {
+        throw new Error('Transaction ID is required');
+      }
+
+      const response = await apiClient.get<ApiResponse<TransactionStatusResponse>>(
+        `/api/payment/status/${transactionId.trim()}`,
+        undefined,
+        true,
+        false
+      );
+
+      logger.debug('Transaction status retrieved:', {
+        transactionId,
+        status: response.data?.status,
+        success: response.success,
+      });
+
+      return response;
+    } catch (error) {
+      logger.error('Error fetching transaction status:', error);
+      throw error;
+    }
   }
 
   /**
@@ -72,10 +107,28 @@ class PaymentService {
     transactionId: string,
     data?: CapturePaymentRequest
   ): Promise<ApiResponse<{ id: string; status: string }>> {
-    return apiClient.post<ApiResponse<{ id: string; status: string }>>(
-      `/api/payment/capture/${transactionId}`,
-      data
-    );
+    try {
+      if (!transactionId || transactionId.trim() === '') {
+        throw new Error('Transaction ID is required');
+      }
+
+      const response = await apiClient.post<ApiResponse<{ id: string; status: string }>>(
+        `/api/payment/capture/${transactionId.trim()}`,
+        data,
+        true
+      );
+
+      logger.debug('Transaction captured:', {
+        transactionId,
+        status: response.data?.status,
+        success: response.success,
+      });
+
+      return response;
+    } catch (error) {
+      logger.error('Error capturing transaction:', error);
+      throw error;
+    }
   }
 
   /**
@@ -85,10 +138,28 @@ class PaymentService {
     transactionId: string,
     data?: RefundPaymentRequest
   ): Promise<ApiResponse<{ id: string; status: string }>> {
-    return apiClient.post<ApiResponse<{ id: string; status: string }>>(
-      `/api/payment/refund/${transactionId}`,
-      data
-    );
+    try {
+      if (!transactionId || transactionId.trim() === '') {
+        throw new Error('Transaction ID is required');
+      }
+
+      const response = await apiClient.post<ApiResponse<{ id: string; status: string }>>(
+        `/api/payment/refund/${transactionId.trim()}`,
+        data,
+        true
+      );
+
+      logger.debug('Transaction refunded:', {
+        transactionId,
+        status: response.data?.status,
+        success: response.success,
+      });
+
+      return response;
+    } catch (error) {
+      logger.error('Error refunding transaction:', error);
+      throw error;
+    }
   }
 }
 

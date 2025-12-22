@@ -50,6 +50,7 @@ class ActivityService {
         type: params.type,
         success: response.success,
         activitiesCount: response.data?.activities?.length || 0,
+        total: response.data?.pagination?.total || 0,
       });
 
       return response;

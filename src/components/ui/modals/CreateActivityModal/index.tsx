@@ -69,8 +69,10 @@ const CreateActivityModal: React.FC<Props> = ({
             onPress={handleCancel}
           />
           <PrimaryButton
-            label="Save ↑"
+            label="Save"
             onPress={handleSave}
+            icon="arrow-upward"
+            iconPosition="right"
           />
         </View>
       }
@@ -87,72 +89,64 @@ const CreateActivityModal: React.FC<Props> = ({
         </View>
 
         <View style={styles.typeSelector}>
-          <TouchableOpacity
-            style={[styles.typeButton, type === 'task' && styles.typeButtonSelected]}
+          <SecondaryButton
+            label="Task"
             onPress={() => setType('task')}
-            activeOpacity={0.7}
-          >
-            <Text style={[styles.typeButtonText, type === 'task' && styles.typeButtonTextSelected]}>
-              Task
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.typeButton, type === 'event' && styles.typeButtonSelected]}
+            style={[styles.typeButtonBase, type === 'task' && styles.typeButtonSelected]}
+          />
+          <SecondaryButton
+            label="Event"
             onPress={() => setType('event')}
-            activeOpacity={0.7}
-          >
-            <Text style={[styles.typeButtonText, type === 'event' && styles.typeButtonTextSelected]}>
-              Event
-            </Text>
-          </TouchableOpacity>
+            style={[styles.typeButtonBase, type === 'event' && styles.typeButtonSelected]}
+          />
         </View>
 
         <View style={styles.dateTimeRow}>
-          <TouchableOpacity
-            style={styles.dateTimePill}
+          <PrimaryButton
+            label={startDate}
             onPress={() => {
               // TODO: Implement date picker
               console.log('Start date pressed');
             }}
-            activeOpacity={0.7}
-          >
-            <Icon name="calendar-today" size={16} color="#001137" />
-            <Text style={styles.dateTimeText}>{startDate}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.dateTimePill}
+            variant="light"
+            icon="calendar-today"
+            iconPosition="left"
+            iconSize={16}
+            style={styles.dateTimeButton}
+          />
+          <PrimaryButton
+            label={`Starts – ${startTime}`}
             onPress={() => {
               // TODO: Implement time picker
               console.log('Start time pressed');
             }}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.dateTimeText}>Starts – {startTime}</Text>
-          </TouchableOpacity>
+            variant="light"
+            style={styles.dateTimeButton}
+          />
         </View>
 
         <View style={styles.dateTimeRow}>
-          <TouchableOpacity
-            style={styles.dateTimePill}
+          <PrimaryButton
+            label={endDate}
             onPress={() => {
               // TODO: Implement date picker
               console.log('End date pressed');
             }}
-            activeOpacity={0.7}
-          >
-            <Icon name="calendar-today" size={16} color="#001137" />
-            <Text style={styles.dateTimeText}>{endDate}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.dateTimePill}
+            variant="light"
+            icon="calendar-today"
+            iconPosition="left"
+            iconSize={16}
+            style={styles.dateTimeButton}
+          />
+          <PrimaryButton
+            label={`Ends – ${endTime}`}
             onPress={() => {
               // TODO: Implement time picker
               console.log('End time pressed');
             }}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.dateTimeText}>Ends – {endTime}</Text>
-          </TouchableOpacity>
+            variant="light"
+            style={styles.dateTimeButton}
+          />
         </View>
 
         <TouchableOpacity
