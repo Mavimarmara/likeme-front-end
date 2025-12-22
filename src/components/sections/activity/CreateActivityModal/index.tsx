@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Switch, TextInput as RNTextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { ModalBase } from '../shared';
+import { ModalBase } from '@/components/ui/modals/shared';
 import { SecondaryButton, PrimaryButton } from '@/components/ui/buttons';
 import { styles } from './styles';
 

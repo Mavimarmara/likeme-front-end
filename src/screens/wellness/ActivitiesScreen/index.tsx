@@ -5,8 +5,8 @@ import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { FloatingMenu, FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
 import { Header, Background } from '@/components/ui/layout';
-import { Toggle, PrimaryButton } from '@/components/ui';
-import { CreateActivityModal } from '@/components/ui/modals';
+import { Toggle, PrimaryButton, Badge } from '@/components/ui';
+import { CreateActivityModal } from '@/components/sections/activity';
 import { BackgroundIconButton } from '@/assets';
 import { ProductsCarousel, PlansCarousel, type Product, type Plan } from '@/components/sections/product';
 import { orderService } from '@/services';
@@ -22,7 +22,7 @@ type ActivitiesScreenProps = {
 };
 
 type TabType = 'actives' | 'history';
-type FilterType = 'all' | 'activities' | 'appointments';
+type FilterType = 'all' | 'activities' | 'appointments' | 'orders';
 
 interface ActivityItem {
   id: string;
@@ -44,6 +44,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
   const [isCreateActivityModalVisible, setIsCreateActivityModalVisible] = useState(false);
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoadingOrders, setIsLoadingOrders] = useState(false);
+  const [daySortOrder, setDaySortOrder] = useState<'asc' | 'desc'>('desc');
 
   // Mock data - será substituído por dados reais do backend
   const activities: ActivityItem[] = [
@@ -118,15 +119,44 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
   };
 
   const filteredActivities = useMemo(() => {
-    const source = activeTab === 'history' ? historyActivities : activeActivities;
+    let source = activeTab === 'history' ? historyActivities : activeActivities;
+    
+    // Apply filter
     if (selectedFilter === 'all') {
-      return source;
+      // Keep all
+    } else if (selectedFilter === 'activities') {
+      source = source.filter(a => a.type === 'program' || a.type === 'personal');
+    } else {
+      source = source.filter(a => a.type === 'appointment');
     }
-    if (selectedFilter === 'activities') {
-      return source.filter(a => a.type === 'program' || a.type === 'personal');
-    }
-    return source.filter(a => a.type === 'appointment');
-  }, [activeTab, selectedFilter]);
+
+    // Sort by date
+    const sorted = [...source].sort((a, b) => {
+      // Try to parse dates from dateTime or use createdAt
+      let dateA = 0;
+      let dateB = 0;
+      
+      if (a.dateTime) {
+        // Try to parse dateTime string (e.g., "13 Nov. at 8:15 pm")
+        const parsedA = new Date(a.dateTime);
+        dateA = isNaN(parsedA.getTime()) ? 0 : parsedA.getTime();
+      }
+      
+      if (b.dateTime) {
+        const parsedB = new Date(b.dateTime);
+        dateB = isNaN(parsedB.getTime()) ? 0 : parsedB.getTime();
+      }
+      
+      // If dates are equal or both 0, maintain original order
+      if (dateA === dateB) {
+        return 0;
+      }
+      
+      return daySortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+    });
+
+    return sorted;
+  }, [activeTab, selectedFilter, daySortOrder, historyActivities, activeActivities]);
 
   const menuItems = useMemo(
     () => [
@@ -196,25 +226,32 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
     { id: 'all', label: 'All' },
     { id: 'activities', label: 'Activities' },
     { id: 'appointments', label: 'Appointments' },
+    { id: 'orders', label: 'Orders' },
   ];
+
+  const handleDaySortToggle = () => {
+    setDaySortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
+  };
 
   const renderFilters = () => (
     <View style={styles.filtersContainer}>
       <FilterMenu
         filterButtonLabel="Day"
-        onFilterButtonPress={() => console.log('Filter button pressed')}
-        filterButtonIcon="arrow-drop-down"
+        onFilterButtonPress={handleDaySortToggle}
+        filterButtonIcon={daySortOrder === 'asc' ? 'arrow-drop-up' : 'arrow-drop-down'}
         carouselOptions={filterCarouselOptions}
         selectedCarouselId={selectedFilter}
         onCarouselSelect={(optionId) => setSelectedFilter(optionId)}
       />
-      <View style={styles.createButtonContainer}>
-        <PrimaryButton
-          label="Create activities +"
-          onPress={() => setIsCreateActivityModalVisible(true)}
-          style={styles.createButton}
-        />
-      </View>
+      {activeTab === 'actives' && (
+        <View style={styles.createButtonContainer}>
+          <PrimaryButton
+            label="Create activities +"
+            onPress={() => setIsCreateActivityModalVisible(true)}
+            style={styles.createButton}
+          />
+        </View>
+      )}
     </View>
   );
 
@@ -231,7 +268,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
           <Icon name="close" size={16} color="#001137" />
         </TouchableOpacity>
         <View style={styles.bannerContent}>
-          <Icon name="notifications" size={20} color="#001137" />
+          <Icon name="notifications" size={20} color="#001137" style={styles.bannerIcon} />
           <View style={styles.bannerTextContainer}>
             <Text style={styles.bannerText}>
               Spring Festival kicks off in 2 hours—don't miss it!
@@ -243,49 +280,60 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
     );
   };
 
+  const sortedOrders = useMemo(() => {
+    return [...orders].sort((a, b) => {
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return daySortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+    });
+  }, [orders, daySortOrder]);
+
   const renderOrderCard = (order: Order) => {
     const orderDate = new Date(order.createdAt).toLocaleDateString('en-US', {
       day: 'numeric',
       month: 'short',
-      year: 'numeric',
     });
 
     const itemsCount = order.items?.length || 0;
     const itemsText = itemsCount === 1 ? 'item' : 'items';
 
+    const getStatusText = () => {
+      if (order.paymentStatus === 'paid') {
+        return 'Paid ✓';
+      }
+      if (order.paymentStatus === 'pending') {
+        return 'Pending';
+      }
+      return order.status.charAt(0).toUpperCase() + order.status.slice(1);
+    };
+
     return (
       <View key={`order-${order.id}`} style={styles.activityCard}>
-        <View style={styles.cardHeader}>
-          <View style={styles.typeBadge}>
-            <Text style={styles.typeBadgeText}>Order</Text>
-          </View>
-          <TouchableOpacity activeOpacity={0.7}>
-            <Icon name="more-vert" size={20} color="#001137" />
-          </TouchableOpacity>
-        </View>
-
         <View style={styles.cardContent}>
-          <View style={styles.cardTitleRow}>
-            <Text style={styles.cardTitle}>Order #{order.id.slice(0, 8).toUpperCase()}</Text>
+          <View style={styles.cardHeader}>
+            <Badge label="Order" color="orange" />
+            <TouchableOpacity activeOpacity={0.7}>
+              <Icon name="more-vert" size={20} color="#001137" />
+            </TouchableOpacity>
           </View>
 
-          <Text style={styles.cardDescription}>
-            {itemsCount} {itemsText} • {formatPrice(order.total)}
-          </Text>
-
-          {order.createdAt && (
-            <View style={styles.dateTimeContainer}>
-              <Icon name="event" size={16} color="#001137" />
-              <Text style={styles.dateTimeText}>{orderDate}</Text>
-            </View>
-          )}
+          <View>
+            <Text style={styles.cardTitle}>Order #{order.id.slice(0, 8).toUpperCase()}</Text>
+            <Text style={styles.cardDescription}>
+              {itemsCount} {itemsText} • {formatPrice(order.total)}
+            </Text>
+            {order.createdAt && (
+              <View style={styles.dateTimeContainer}>
+                <Icon name="event" size={16} color="#001137" />
+                <Text style={styles.dateTimeText}>{orderDate}</Text>
+              </View>
+            )}
+          </View>
 
           <View style={styles.cardActions}>
             <View style={[styles.actionButton, styles.doneButton]}>
               <Icon name="check" size={16} color="#001137" />
-              <Text style={styles.doneButtonText}>
-                {order.paymentStatus === 'paid' ? 'Paid ✓' : order.status}
-              </Text>
+              <Text style={styles.doneButtonText}>{getStatusText()}</Text>
             </View>
 
             <TouchableOpacity
@@ -307,49 +355,38 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
       personal: 'Personal',
     };
 
-    return (
-      <View key={activity.id} style={styles.activityCard}>
-        <View style={styles.cardHeader}>
-          <View style={styles.typeBadge}>
-            <Text style={styles.typeBadgeText}>{typeLabels[activity.type]}</Text>
-          </View>
-          <TouchableOpacity activeOpacity={0.7}>
-            <Icon name="more-vert" size={20} color="#001137" />
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.cardContent}>
-          <View style={styles.cardTitleRow}>
-            {activity.isFavorite && (
-              <Icon name="star" size={20} color="#001137" style={styles.starIcon} />
-            )}
-            {activity.type === 'appointment' && activity.dateTime && (
-              <View style={styles.dateTimeContainer}>
-                <Icon name="event" size={16} color="#001137" />
-                <Text style={styles.dateTimeText}>{activity.dateTime}</Text>
-              </View>
-            )}
-            <Text style={styles.cardTitle}>{activity.title}</Text>
-          </View>
-
-          <Text style={styles.cardDescription}>{activity.description}</Text>
-
-          {activity.type === 'appointment' && activity.providerName && (
-            <View style={styles.providerContainer}>
-              <Text style={styles.providerText}>Therapy Session with</Text>
-              <View style={styles.providerAvatar}>
-                <Text style={styles.providerAvatarText}>{activity.providerAvatar}</Text>
-              </View>
+    // For appointments, show date/time in title row
+    if (activity.type === 'appointment') {
+      return (
+        <View key={activity.id} style={styles.activityCard}>
+          <View style={styles.cardContent}>
+            <View style={styles.cardHeader}>
+              <Badge label={typeLabels[activity.type]} color="orange" />
+              <TouchableOpacity activeOpacity={0.7}>
+                <Icon name="more-vert" size={20} color="#001137" />
+              </TouchableOpacity>
             </View>
-          )}
 
-          <View style={styles.cardActions}>
-            {activity.completed ? (
-              <View style={[styles.actionButton, styles.doneButton]}>
-                <Icon name="check" size={16} color="#001137" />
-                <Text style={styles.doneButtonText}>Done ✓</Text>
-              </View>
-            ) : activity.type === 'appointment' ? (
+            <View>
+              {activity.dateTime && (
+                <View style={styles.appointmentDateTimeRow}>
+                  <Icon name="event" size={16} color="#001137" />
+                  <Text style={styles.appointmentDateTimeText}>{activity.dateTime}</Text>
+                </View>
+              )}
+
+              {activity.providerName && (
+                <View style={styles.providerContainer}>
+                  <Text style={styles.providerText}>Therapy Session with</Text>
+                  <View style={styles.providerAvatar}>
+                    <Text style={styles.providerAvatarText}>{activity.providerAvatar || 'A'}</Text>
+                  </View>
+                  <Text style={styles.providerName}>{activity.providerName}</Text>
+                </View>
+              )}
+            </View>
+
+            <View style={styles.cardActions}>
               <TouchableOpacity
                 style={[styles.actionButton, styles.openButton]}
                 onPress={() => handleOpenMeet(activity.id)}
@@ -357,6 +394,46 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
               >
                 <Text style={styles.openButtonText}>Open meet {'>'}</Text>
               </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => handleViewActivity(activity)}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.viewLink}>Skip</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      );
+    }
+
+    // For regular activities (programs/personal)
+    return (
+      <View key={activity.id} style={styles.activityCard}>
+        <View style={styles.cardContent}>
+          <View style={styles.cardHeader}>
+            <Badge label={typeLabels[activity.type]} color="orange" />
+            <TouchableOpacity activeOpacity={0.7}>
+              <Icon name="more-vert" size={20} color="#001137" />
+            </TouchableOpacity>
+          </View>
+
+          <View>
+            <View style={styles.cardTitleRow}>
+              {activity.isFavorite && (
+                <Icon name="star" size={20} color="#001137" style={styles.starIcon} />
+              )}
+            </View>
+            <Text style={styles.cardTitle}>{activity.title}</Text>
+            <Text style={styles.cardDescription}>{activity.description}</Text>
+          </View>
+
+          <View style={styles.cardActions}>
+            {activity.completed ? (
+              <View style={[styles.actionButton, styles.doneButton]}>
+                <Icon name="check" size={16} color="#001137" />
+                <Text style={styles.doneButtonText}>Done ✓</Text>
+              </View>
             ) : (
               <TouchableOpacity
                 style={[styles.actionButton, styles.markButton]}
@@ -371,9 +448,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
               onPress={() => handleViewActivity(activity)}
               activeOpacity={0.7}
             >
-              <Text style={styles.viewLink}>
-                {activity.type === 'appointment' ? 'Skip' : 'View'}
-              </Text>
+              <Text style={styles.viewLink}>View</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -404,95 +479,49 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
     );
   };
 
-  const renderPlansCarousel = () => {
-    if (activeTab === 'history') return null;
+  // Mock plans data - será substituído por dados reais
+  const plans: Plan[] = [
+    {
+      id: '1',
+      title: 'Strategies to relax in your day to day',
+      price: 130.99,
+      currency: 'BRL',
+      tag: 'Curated for you',
+      tagColor: 'green',
+      image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800',
+      likes: 10,
+    },
+    {
+      id: '2',
+      title: 'How to evolve to a deep sleep',
+      price: 55.99,
+      currency: 'BRL',
+      tag: 'Market-based',
+      tagColor: 'green',
+      image: 'https://images.unsplash.com/photo-1494390248081-4e521a5940db?w=800',
+      likes: 10,
+    },
+  ];
 
-    // Mock plans data - será substituído por dados reais
-    const plans: Plan[] = [
-      {
-        id: '1',
-        title: 'Strategies to relax in your day to day',
-        price: 130.99,
-        currency: 'BRL',
-        tag: 'Curated for you',
-        tagColor: 'green',
-        image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800',
-        likes: 10,
-      },
-      {
-        id: '2',
-        title: 'How to evolve to a deep sleep',
-        price: 55.99,
-        currency: 'BRL',
-        tag: 'Market-based',
-        tagColor: 'green',
-        image: 'https://images.unsplash.com/photo-1494390248081-4e521a5940db?w=800',
-        likes: 10,
-      },
-    ];
-
-    return (
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>
-          Plans for you based on the evolution of your markers
-        </Text>
-        <Text style={styles.sectionSubtitle}>
-          Discover our options selected just for you
-        </Text>
-        <View style={styles.carouselWrapper}>
-          <PlansCarousel
-            title=""
-            subtitle=""
-            plans={plans}
-            onPlanPress={(plan) => console.log('Plan pressed:', plan.id)}
-            onPlanLike={(plan) => console.log('Plan liked:', plan.id)}
-          />
-        </View>
-      </View>
-    );
-  };
-
-  const renderProductsCarousel = () => {
-    if (activeTab === 'history') return null;
-
-    // Mock products data - será substituído por dados reais
-    const products: Product[] = [
-      {
-        id: '1',
-        title: 'Tongue scrapper',
-        price: 80.00,
-        tag: 'Curated for you',
-        image: 'https://images.unsplash.com/photo-1505576391880-b3f9d713dc5a?w=800',
-        likes: 10,
-      },
-      {
-        id: '2',
-        title: 'Omega 3 supplement',
-        price: 60.00,
-        tag: 'For your program',
-        image: 'https://images.unsplash.com/photo-1494390248081-4e521a5940db?w=800',
-        likes: 10,
-      },
-    ];
-
-    return (
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Products curated for you</Text>
-        <Text style={styles.sectionSubtitle}>
-          Discover our options selected just for you
-        </Text>
-        <View style={styles.carouselWrapper}>
-          <ProductsCarousel
-            title=""
-            subtitle=""
-            products={products}
-            onProductPress={(product) => console.log('Product pressed:', product.id)}
-            onProductLike={(product) => console.log('Product liked:', product.id)}
-          />
-        </View>
-      </View>
-    );
-  };
+  // Mock products data - será substituído por dados reais
+  const products: Product[] = [
+    {
+      id: '1',
+      title: 'Tongue scrapper',
+      price: 80.00,
+      tag: 'Curated for you',
+      image: 'https://images.unsplash.com/photo-1505576391880-b3f9d713dc5a?w=800',
+      likes: 10,
+    },
+    {
+      id: '2',
+      title: 'Omega 3 supplement',
+      price: 60.00,
+      tag: 'For your program',
+      image: 'https://images.unsplash.com/photo-1494390248081-4e521a5940db?w=800',
+      likes: 10,
+    },
+  ];
 
   return (
     <SafeAreaView style={styles.container}>
@@ -515,11 +544,33 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
         >
           {activeTab === 'history' ? (
             <>
-              {filteredActivities.map(renderActivityCard)}
-              {orders.map(renderOrderCard)}
-              {filteredActivities.length === 0 && orders.length === 0 && !isLoadingOrders && (
+              {selectedFilter === 'all' && (
+                <>
+                  {filteredActivities.map(renderActivityCard)}
+                  {sortedOrders.map(renderOrderCard)}
+                </>
+              )}
+              {selectedFilter === 'activities' && filteredActivities.map(renderActivityCard)}
+              {selectedFilter === 'appointments' && filteredActivities.map(renderActivityCard)}
+              {selectedFilter === 'orders' && sortedOrders.map(renderOrderCard)}
+              {selectedFilter === 'all' && filteredActivities.length === 0 && sortedOrders.length === 0 && !isLoadingOrders && (
                 <View style={styles.emptyContainer}>
                   <Text style={styles.emptyText}>No history found</Text>
+                </View>
+              )}
+              {selectedFilter === 'activities' && filteredActivities.length === 0 && (
+                <View style={styles.emptyContainer}>
+                  <Text style={styles.emptyText}>No activities found</Text>
+                </View>
+              )}
+              {selectedFilter === 'appointments' && filteredActivities.length === 0 && (
+                <View style={styles.emptyContainer}>
+                  <Text style={styles.emptyText}>No appointments found</Text>
+                </View>
+              )}
+              {selectedFilter === 'orders' && sortedOrders.length === 0 && !isLoadingOrders && (
+                <View style={styles.emptyContainer}>
+                  <Text style={styles.emptyText}>No orders found</Text>
                 </View>
               )}
             </>
@@ -533,8 +584,28 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
                 filteredActivities.map(renderActivityCard)
               )}
               {renderRecommendations()}
-              {renderPlansCarousel()}
-              {renderProductsCarousel()}
+              {activeTab === 'actives' && plans.length > 0 && (
+                <View>
+                  <PlansCarousel
+                    title="Plans for you based on the evolution of your markers"
+                    subtitle="Discover our options selected just for you"
+                    plans={plans}
+                    onPlanPress={(plan) => console.log('Plan pressed:', plan.id)}
+                    onPlanLike={(plan) => console.log('Plan liked:', plan.id)}
+                  />
+                </View>
+              )}
+              {activeTab === 'actives' && products.length > 0 && (
+                <View>
+                  <ProductsCarousel
+                    title="Products recommended for your sleep journey by Dr. Peter Valasquez"
+                    subtitle="Discover our options selected just for you"
+                    products={products}
+                    onProductPress={(product) => console.log('Product pressed:', product.id)}
+                    onProductLike={(product) => console.log('Product liked:', product.id)}
+                  />
+                </View>
+              )}
             </>
           )}
         </ScrollView>
