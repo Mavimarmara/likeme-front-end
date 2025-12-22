@@ -1,126 +1,346 @@
-import { StyleSheet } from 'react-native';
-import { COLORS, FONT_SIZES, SPACING, BORDER_RADIUS } from '@/constants';
+import { StyleSheet, Dimensions } from 'react-native';
+import { BORDER_RADIUS, COLORS, SPACING } from '@/constants';
+
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.BACKGROUND,
+    position: 'relative',
+  },
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  backgroundImageStyle: {
+    resizeMode: 'cover',
+    opacity: 0.1,
   },
   scrollContent: {
-    paddingHorizontal: SPACING.MD,
-    paddingBottom: SPACING.XL,
+    paddingBottom: 100,
   },
-  profileHeader: {
-    alignItems: 'center',
-    paddingVertical: SPACING.XL,
+  heroSection: {
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT * 0.6,
+    position: 'relative',
+    marginTop: -50,
   },
-  avatarContainer: {
-    marginBottom: SPACING.MD,
+  heroImage: {
+    width: '100%',
+    height: '100%',
   },
-  avatar: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    borderWidth: 4,
-    borderColor: '#FFFFFF',
+  heroImageStyle: {
+    borderBottomLeftRadius: 40,
+    borderBottomRightRadius: 40,
   },
-  avatarPlaceholder: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: '#E0E0E0',
+  heroOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    paddingHorizontal: 32,
+    paddingBottom: 30,
+    borderBottomLeftRadius: 40,
+    borderBottomRightRadius: 40,
+  },
+  heroGradient: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 327,
+    borderBottomLeftRadius: 40,
+    borderBottomRightRadius: 40,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+  },
+  heroContent: {
+    zIndex: 1,
+  },
+  badgesContainer: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 10,
+  },
+  badge: {
+    backgroundColor: 'rgba(0, 17, 55, 0.64)',
+    paddingHorizontal: 14,
+    paddingVertical: 0,
+    borderRadius: 16,
+    minHeight: 24,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 4,
-    borderColor: '#FFFFFF',
   },
-  avatarText: {
-    fontSize: FONT_SIZES.XXL,
-    fontWeight: 'bold',
-    color: COLORS.TEXT,
-  },
-  providerName: {
-    fontSize: FONT_SIZES.XL,
-    fontWeight: 'bold',
-    color: COLORS.TEXT,
-    marginBottom: SPACING.XS,
-  },
-  providerTitle: {
-    fontSize: FONT_SIZES.MD,
-    color: COLORS.TEXT_LIGHT,
-    marginBottom: SPACING.SM,
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.XS,
-  },
-  ratingText: {
-    fontSize: FONT_SIZES.LG,
-    fontWeight: '600',
-    color: COLORS.TEXT,
-  },
-  section: {
-    marginBottom: SPACING.LG,
-  },
-  sectionTitle: {
-    fontSize: FONT_SIZES.LG,
-    fontWeight: 'bold',
-    color: COLORS.TEXT,
-    marginBottom: SPACING.MD,
-  },
-  descriptionText: {
-    fontSize: FONT_SIZES.MD,
-    color: COLORS.TEXT,
-    lineHeight: 24,
-  },
-  specialtiesContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: SPACING.SM,
-  },
-  specialtyBadge: {
-    backgroundColor: '#FFF9C4',
-    paddingHorizontal: SPACING.MD,
-    paddingVertical: SPACING.SM,
-    borderRadius: BORDER_RADIUS.FULL,
-  },
-  specialtyText: {
-    fontSize: FONT_SIZES.SM,
-    color: COLORS.TEXT,
+  badgeText: {
+    fontSize: 12,
+    fontFamily: 'DM Sans',
     fontWeight: '500',
+    color: '#f6dea9',
+    letterSpacing: 0.2,
   },
-  actionsContainer: {
-    gap: SPACING.MD,
-    marginTop: SPACING.LG,
+  heroTitle: {
+    fontSize: 16,
+    fontFamily: 'DM Sans',
+    fontWeight: '500',
+    color: '#FFFFFF',
+    marginTop: 10,
   },
-  primaryButton: {
-    backgroundColor: '#2196F3',
-    paddingVertical: SPACING.MD,
-    paddingHorizontal: SPACING.LG,
-    borderRadius: BORDER_RADIUS.MD,
+  heroName: {
+    fontSize: 24,
+    fontFamily: 'DM Sans',
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginTop: 8,
+  },
+  heroFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  heroStats: {
+    flexDirection: 'row',
+    gap: 16,
     alignItems: 'center',
   },
-  primaryButtonText: {
-    fontSize: FONT_SIZES.MD,
+  statItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  statText: {
+    fontSize: 14,
+    fontFamily: 'DM Sans',
+    fontWeight: '500',
+    color: '#FFFFFF',
+  },
+  followButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  followButtonText: {
+    fontSize: 14,
+    fontFamily: 'DM Sans',
     fontWeight: '600',
     color: '#FFFFFF',
   },
-  secondaryButton: {
+  content: {
+    paddingHorizontal: SPACING.MD,
+    paddingTop: SPACING.LG,
+  },
+  tabsContainer: {
+    marginBottom: SPACING.LG,
+  },
+  aboutSection: {
+    marginBottom: SPACING.XL,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SPACING.MD,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontFamily: 'DM Sans',
+    fontWeight: '700',
+    color: '#001137',
+  },
+  descriptionText: {
+    fontSize: 14,
+    fontFamily: 'DM Sans',
+    fontWeight: '400',
+    color: '#001137',
+    lineHeight: 22,
+  },
+  programsSection: {
+    marginBottom: SPACING.XL,
+  },
+  productsSection: {
+    marginBottom: SPACING.XL,
+  },
+  productCard: {
+    flexDirection: 'row',
+    backgroundColor: '#F9F7F4',
+    borderRadius: 16,
+    padding: SPACING.MD,
+    marginBottom: SPACING.MD,
+    alignItems: 'center',
+  },
+  productImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 12,
+    marginRight: SPACING.MD,
+  },
+  productImageStyle: {
+    borderRadius: 12,
+  },
+  productInfo: {
+    flex: 1,
+  },
+  productBadge: {
+    backgroundColor: '#001137',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    alignSelf: 'flex-start',
+    marginBottom: 4,
+  },
+  productBadgeText: {
+    fontSize: 10,
+    fontFamily: 'DM Sans',
+    fontWeight: '500',
+    color: '#FFFFFF',
+  },
+  productName: {
+    fontSize: 14,
+    fontFamily: 'DM Sans',
+    fontWeight: '600',
+    color: '#001137',
+    marginBottom: 4,
+  },
+  productFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  productPrice: {
+    fontSize: 14,
+    fontFamily: 'DM Sans',
+    fontWeight: '700',
+    color: '#001137',
+  },
+  productRating: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    gap: 4,
+  },
+  productRatingText: {
+    fontSize: 12,
+    fontFamily: 'DM Sans',
+    fontWeight: '600',
+    color: '#001137',
+  },
+  addProductButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: '#E0E0E0',
-    paddingVertical: SPACING.MD,
-    paddingHorizontal: SPACING.LG,
-    borderRadius: BORDER_RADIUS.MD,
-    gap: SPACING.SM,
   },
-  secondaryButtonText: {
-    fontSize: FONT_SIZES.MD,
+  talkButtonContainer: {
+    marginBottom: SPACING.XL,
+  },
+  talkButton: {
+    width: '100%',
+  },
+  feedbackSection: {
+    backgroundColor: '#DBE7DB',
+    borderRadius: 20,
+    padding: SPACING.LG,
+    marginTop: SPACING.XL,
+  },
+  feedbackHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SPACING.MD,
+  },
+  feedbackTitle: {
+    fontSize: 18,
+    fontFamily: 'DM Sans',
+    fontWeight: '700',
+    color: '#001137',
+  },
+  feedbackRating: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  feedbackRatingText: {
+    fontSize: 16,
+    fontFamily: 'DM Sans',
     fontWeight: '600',
-    color: COLORS.TEXT,
+    color: '#001137',
+  },
+  reviewsList: {
+    gap: SPACING.MD,
+    marginBottom: SPACING.MD,
+  },
+  reviewCard: {
+    backgroundColor: '#F9F7F4',
+    borderRadius: 12,
+    padding: SPACING.MD,
+  },
+  reviewUserName: {
+    fontSize: 14,
+    fontFamily: 'DM Sans',
+    fontWeight: '700',
+    color: '#001137',
+    marginBottom: 4,
+  },
+  reviewComment: {
+    fontSize: 14,
+    fontFamily: 'DM Sans',
+    fontWeight: '400',
+    color: '#001137',
+    marginBottom: 8,
+  },
+  reviewFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  reviewDate: {
+    fontSize: 12,
+    fontFamily: 'DM Sans',
+    fontWeight: '400',
+    color: '#666666',
+  },
+  reviewRating: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  reviewRatingText: {
+    fontSize: 12,
+    fontFamily: 'DM Sans',
+    fontWeight: '600',
+    color: '#001137',
+  },
+  seeAllButton: {
+    alignItems: 'center',
+    paddingVertical: SPACING.MD,
+  },
+  seeAllText: {
+    fontSize: 14,
+    fontFamily: 'DM Sans',
+    fontWeight: '600',
+    color: '#001137',
+  },
+  communityPreviewContainer: {
+    marginTop: SPACING.MD,
+  },
+  loadingContainer: {
+    padding: SPACING.XL,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyContainer: {
+    padding: SPACING.XL,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#666666',
+    textAlign: 'center',
   },
 });
