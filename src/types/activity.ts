@@ -12,6 +12,7 @@ export interface UserActivity {
   endDate?: string | null;
   endTime?: string | null;
   location?: string | null;
+  description?: string | null;
   reminderEnabled: boolean;
   reminderOffset?: string | null;
   createdAt: string;
@@ -47,6 +48,7 @@ export interface CreateActivityData {
   endDate?: string | null; // ISO date string
   endTime?: string | null;
   location?: string | null;
+  description?: string | null;
   reminderEnabled?: boolean;
   reminderOffset?: string | null; // e.g., "5 min before", "10 min after"
 }
@@ -59,6 +61,7 @@ export interface UpdateActivityData {
   endDate?: string | null; // ISO date string
   endTime?: string | null;
   location?: string | null;
+  description?: string | null;
   reminderEnabled?: boolean;
   reminderOffset?: string | null; // e.g., "5 min before", "10 min after"
 }

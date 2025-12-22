@@ -126,7 +126,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
             id: activity.id,
             type: activity.type === 'task' ? 'personal' : activity.type === 'event' ? 'appointment' : 'program',
             title: activity.name,
-            description: activity.location || '',
+            description: activity.description || activity.location || '',
             dateTime,
             providerName: activity.location?.includes('Meet') ? activity.location.replace('Meet with ', '') : undefined,
             providerAvatar: activity.location?.includes('Meet') ? activity.location.charAt(activity.location.length - 1) : undefined,
@@ -261,10 +261,11 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
     // Abrir modal de edição
     setEditingActivityData({
       name: activity.title,
-      type: activity.type,
+      type: activity.type === 'personal' ? 'task' : activity.type === 'appointment' ? 'event' : 'event',
       startDate: activity.dateTime ? extractDateFromDateTime(activity.dateTime) : undefined,
       startTime: activity.dateTime ? extractTimeFromDateTime(activity.dateTime) : undefined,
-      location: activity.providerName ? `Meet with ${activity.providerName}` : '',
+      location: activity.providerName ? `Meet with ${activity.providerName}` : activity.description || '',
+      description: activity.description,
       reminderEnabled: false,
       reminderMinutes: 5,
     });
@@ -763,6 +764,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
                 endDate: data.endDate,
                 endTime: data.endTime,
                 location: data.location,
+                description: data.description,
                 reminderEnabled: data.reminderEnabled,
                 reminderOffset: data.reminderMinutes ? `${data.reminderMinutes}` : null,
               });
@@ -777,6 +779,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
                 endDate: data.endDate,
                 endTime: data.endTime,
                 location: data.location,
+                description: data.description,
                 reminderEnabled: data.reminderEnabled,
                 reminderOffset: data.reminderMinutes ? `${data.reminderMinutes}` : null,
               });
