@@ -16,11 +16,15 @@ type Props<T = string> = {
 };
 
 const ButtonCarousel = <T extends string | number = string>({
-  options,
+  options = [],
   selectedId,
   onSelect,
   style,
 }: Props<T>) => {
+  if (!options || options.length === 0) {
+    return null;
+  }
+
   return (
     <ScrollView
       horizontal
