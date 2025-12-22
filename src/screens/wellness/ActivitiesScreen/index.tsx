@@ -358,7 +358,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
     // For appointments, show date/time in title row
     if (activity.type === 'appointment') {
       return (
-        <View key={activity.id} style={styles.activityCard}>
+        <View key={activity.id} style={[styles.activityCard, styles.appointmentCard]}>
           <View style={styles.cardContent}>
             <View style={styles.cardHeader}>
               <Badge label={typeLabels[activity.type]} color="orange" />
@@ -423,8 +423,8 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
               {activity.isFavorite && (
                 <Icon name="star" size={20} color="#001137" style={styles.starIcon} />
               )}
+              <Text style={styles.cardTitle}>{activity.title}</Text>
             </View>
-            <Text style={styles.cardTitle}>{activity.title}</Text>
             <Text style={styles.cardDescription}>{activity.description}</Text>
           </View>
 

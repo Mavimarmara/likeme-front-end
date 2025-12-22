@@ -88,11 +88,13 @@ export const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 4,
   },
+  appointmentCard: {
+    backgroundColor: '#FFFFFF',
+  },
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: SPACING.LG,
   },
   badgeContainer: {
     width: 110,
@@ -127,6 +129,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     gap: SPACING.XS,
     flexWrap: 'wrap',
+    marginBottom: SPACING.XS,
   },
   starIcon: {
     marginRight: SPACING.XS,
@@ -197,7 +200,6 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
-    marginTop: SPACING.SM,
   },
   actionButton: {
     flexDirection: 'row',
