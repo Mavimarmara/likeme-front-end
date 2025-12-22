@@ -25,6 +25,8 @@ export const styles = StyleSheet.create({
   },
   typeSelector: {
     flexDirection: 'row',
+    flex: 1,
+    justifyContent: 'flex-start',
     gap: SPACING.SM,
     marginBottom: SPACING.XS,
   },
@@ -44,17 +46,12 @@ export const styles = StyleSheet.create({
     gap: SPACING.SM,
     marginBottom: SPACING.XS,
   },
-  dateTimeButton: {
-    flex: 1,
-    backgroundColor: '#F5F5F5',
-    borderRadius: BORDER_RADIUS.FULL,
-  },
   locationPill: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: SPACING.SM,
     paddingHorizontal: SPACING.MD,
-    borderRadius: BORDER_RADIUS.FULL,
+    borderRadius: BORDER_RADIUS.MD,
     backgroundColor: '#F5F5F5',
     gap: SPACING.XS,
     marginBottom: SPACING.XS,

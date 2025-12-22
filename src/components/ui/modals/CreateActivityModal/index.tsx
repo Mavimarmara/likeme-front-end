@@ -112,7 +112,6 @@ const CreateActivityModal: React.FC<Props> = ({
             icon="calendar-today"
             iconPosition="left"
             iconSize={16}
-            style={styles.dateTimeButton}
           />
           <PrimaryButton
             label={`Starts – ${startTime}`}
@@ -121,7 +120,6 @@ const CreateActivityModal: React.FC<Props> = ({
               console.log('Start time pressed');
             }}
             variant="light"
-            style={styles.dateTimeButton}
           />
         </View>
 
@@ -136,7 +134,6 @@ const CreateActivityModal: React.FC<Props> = ({
             icon="calendar-today"
             iconPosition="left"
             iconSize={16}
-            style={styles.dateTimeButton}
           />
           <PrimaryButton
             label={`Ends – ${endTime}`}
@@ -145,7 +142,6 @@ const CreateActivityModal: React.FC<Props> = ({
               console.log('End time pressed');
             }}
             variant="light"
-            style={styles.dateTimeButton}
           />
         </View>
 
