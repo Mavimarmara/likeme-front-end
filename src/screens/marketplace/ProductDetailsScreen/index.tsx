@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, ImageBackground, Dimensions } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, ImageBackground, Dimensions, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -408,9 +408,17 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
 
 
   function renderAddToCartButton() {
+    const provider = route.params?.product?.provider || product?.provider;
+    const providerAvatar = provider?.avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200';
+
     return (
       <View style={styles.floatingButtonContainer}>
         {!displayData.isOutOfStock && (
+          <View style={styles.floatingButtonRow}>
+              <Image 
+              source={{ uri: providerAvatar }} 
+              style={styles.providerAvatarInButton}
+            />
           <TouchableOpacity 
             style={styles.floatingAddToCartButton}
             onPress={handleAddToCart} 
@@ -421,6 +429,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
               <Icon name="shopping-cart" size={20} color="#FFFFFF" />
             </View>
           </TouchableOpacity>
+          </View>
         )}
         <View style={styles.providerButtonContainer}>
           <SecondaryButton
@@ -469,15 +478,6 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
         )}
         {product.weight && (
           <Text style={styles.productWeight}>Weight: {product.weight} kg</Text>
-        )}
-        {route.params?.product?.provider && (
-          <TouchableOpacity
-            style={styles.providerButton}
-            onPress={handleSeeProvider}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.providerButtonText}>See provider profile</Text>
-          </TouchableOpacity>
         )}
       </View>
     );

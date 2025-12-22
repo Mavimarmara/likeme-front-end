@@ -330,7 +330,21 @@ export const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     zIndex: 1000,
   },
+  floatingButtonRow: {
+    flexDirection: 'row',
+    gap: SPACING.SM,
+    width: '100%',
+    alignItems: 'center',
+  },
+  providerAvatarOutside: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+  },
   floatingAddToCartButton: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -345,6 +359,13 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 8,
+  },
+  providerAvatarInButton: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
   },
   floatingAddToCartText: {
     flex: 1,
@@ -365,6 +386,7 @@ export const styles = StyleSheet.create({
   providerButtonContainer: {
     marginTop: SPACING.MD,
     width: '100%',
+    backgroundColor: '#FFFFFF',
   },
   providerProfileButton: {
     width: '100%',
@@ -375,7 +397,7 @@ export const styles = StyleSheet.create({
     borderRadius: 16,
   },
   providerButton: {
-    backgroundColor: '#E0E0E0',
+    backgroundColor: '#001137',
     borderRadius: BORDER_RADIUS.LG,
     padding: SPACING.MD,
     marginBottom: SPACING.LG,
