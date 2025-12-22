@@ -8,6 +8,15 @@ export const styles = StyleSheet.create({
     flex: 1,
     position: 'relative',
   },
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  backgroundImageStyle: {
+    resizeMode: 'cover',
+    opacity: 0.1,
+  },
   customHeader: {
     flexDirection: 'row',
     alignItems: 'center',

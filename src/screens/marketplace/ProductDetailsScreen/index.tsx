@@ -1,9 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Header, Background } from '@/components/ui/layout';
+import { Header } from '@/components/ui/layout';
 import { LogoMini } from '@/assets';
 import { ProductsCarousel, type Product } from '@/components/sections/product';
 import { ProductHeroSection, ProductInfoTabs } from '@/components/sections/marketplace';
@@ -142,14 +142,28 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     console.log('Like product:', recommendedProduct.id);
   };
 
+  // Obter imagem do produto para o background
+  const backgroundImage = useMemo(() => {
+    if (displayData?.image) return displayData.image;
+    if (ad?.product?.image) return ad.product.image;
+    if (product?.image) return product.image;
+    if (route.params?.product?.image) return route.params.product.image;
+    return 'https://via.placeholder.com/400';
+  }, [displayData, ad, product, route.params?.product]);
+
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
-        <Background />
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#2196F3" />
-          <Text style={styles.loadingText}>Loading product...</Text>
-        </View>
+        <ImageBackground
+          source={{ uri: backgroundImage }}
+          style={styles.backgroundImage}
+          imageStyle={styles.backgroundImageStyle}
+        >
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#2196F3" />
+            <Text style={styles.loadingText}>Loading product...</Text>
+          </View>
+        </ImageBackground>
       </SafeAreaView>
     );
   }
@@ -157,21 +171,30 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   if (!product || !displayData) {
     return (
       <SafeAreaView style={styles.container}>
-        <Background />
-        <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Product not found</Text>
-          <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
-            <Text>Go Back</Text>
-          </TouchableOpacity>
-        </View>
+        <ImageBackground
+          source={{ uri: backgroundImage }}
+          style={styles.backgroundImage}
+          imageStyle={styles.backgroundImageStyle}
+        >
+          <View style={styles.loadingContainer}>
+            <Text style={styles.loadingText}>Product not found</Text>
+            <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
+              <Text>Go Back</Text>
+            </TouchableOpacity>
+          </View>
+        </ImageBackground>
       </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView style={styles.container}>
-      <Background />
-      {renderCustomHeader()}
+      <ImageBackground
+        source={{ uri: backgroundImage }}
+        style={styles.backgroundImage}
+        imageStyle={styles.backgroundImageStyle}
+      >
+        {renderCustomHeader()}
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -197,6 +220,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
           {renderRecommendedProducts()}
         </View>
       </ScrollView>
+      </ImageBackground>
     </SafeAreaView>
   );
 

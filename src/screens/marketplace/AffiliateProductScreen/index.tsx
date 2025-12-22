@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Header, Background } from '@/components/ui/layout';
+import { Header } from '@/components/ui/layout';
 import { adService, productService } from '@/services';
 import type { Ad } from '@/types/ad';
 import type { Product as ApiProduct } from '@/types/product';
@@ -98,11 +98,29 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
         try {
           const adResponse = await adService.getAdById(adId);
           if (adResponse.success && adResponse.data) {
-            setAd(adResponse.data);
-            // Se o ad tem productId, tentar carregar o produto
-            if (adResponse.data.productId) {
+            const loadedAd = adResponse.data;
+            setAd(loadedAd);
+            
+            // Se o ad tem product diretamente (produtos afiliados), usar esse produto
+            if (loadedAd.product) {
+              const adProduct = loadedAd.product;
+              setProduct({
+                id: adProduct.id || productId || adId,
+                name: adProduct.name || '',
+                description: adProduct.description || '',
+                price: adProduct.price ? Number(adProduct.price) : 0,
+                image: adProduct.image || '',
+                category: adProduct.category || '',
+                externalUrl: adProduct.externalUrl || route.params?.product?.externalUrl,
+                quantity: adProduct.quantity || 0,
+                status: adProduct.status || 'active',
+                createdAt: adProduct.createdAt || new Date().toISOString(),
+                updatedAt: adProduct.updatedAt || new Date().toISOString(),
+              });
+            } else if (loadedAd.productId) {
+              // Se o ad tem productId, tentar carregar o produto do backend
               try {
-                const productResponse = await productService.getProductById(adResponse.data.productId);
+                const productResponse = await productService.getProductById(loadedAd.productId);
                 if (productResponse.success && productResponse.data) {
                   const loadedProduct = productResponse.data;
                   // Preservar externalUrl dos params se o produto carregado não tiver
@@ -115,7 +133,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
                     setProduct(loadedProduct);
                   }
                 } else if (route.params?.product) {
-                  // Se não conseguiu carregar do backend, manter o product dos params
+                  // Se não conseguiu carregar do backend, usar o product dos params
                   const fallbackProduct = route.params.product;
                   setProduct({
                     id: fallbackProduct.id,
@@ -132,11 +150,44 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
                   });
                 }
               } catch (error) {
-                // Se falhar, manter o product dos params que já foi definido
+                console.error('Error loading product by productId:', error);
+                // Se falhar, usar o product dos params se disponível
+                if (route.params?.product && !product) {
+                  const fallbackProduct = route.params.product;
+                  setProduct({
+                    id: fallbackProduct.id,
+                    name: fallbackProduct.title,
+                    description: fallbackProduct.description || '',
+                    price: parseFloat(fallbackProduct.price.replace('$', '').replace(',', '')) || 0,
+                    image: fallbackProduct.image,
+                    category: fallbackProduct.category,
+                    quantity: 0,
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    ...(fallbackProduct.externalUrl && { externalUrl: fallbackProduct.externalUrl }),
+                  });
+                }
               }
+            } else if (route.params?.product) {
+              // Se o ad não tem product nem productId, usar o product dos params
+              const fallbackProduct = route.params.product;
+              setProduct({
+                id: fallbackProduct.id,
+                name: fallbackProduct.title,
+                description: fallbackProduct.description || '',
+                price: parseFloat(fallbackProduct.price.replace('$', '').replace(',', '')) || 0,
+                image: fallbackProduct.image,
+                category: fallbackProduct.category,
+                quantity: 0,
+                status: 'active',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                ...(fallbackProduct.externalUrl && { externalUrl: fallbackProduct.externalUrl }),
+              });
             }
           } else if (route.params?.product) {
-            // Se não conseguiu carregar ad, manter o product dos params
+            // Se não conseguiu carregar ad, usar o product dos params
             const fallbackProduct = route.params.product;
             setProduct({
               id: fallbackProduct.id,
@@ -153,7 +204,24 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
             });
           }
         } catch (error) {
-          // Se falhar ao carregar ad, manter o product dos params que já foi definido
+          console.error('Error loading ad:', error);
+          // Se falhar ao carregar ad, usar o product dos params se disponível
+          if (route.params?.product && !product) {
+            const fallbackProduct = route.params.product;
+            setProduct({
+              id: fallbackProduct.id,
+              name: fallbackProduct.title,
+              description: fallbackProduct.description || '',
+              price: parseFloat(fallbackProduct.price.replace('$', '').replace(',', '')) || 0,
+              image: fallbackProduct.image,
+              category: fallbackProduct.category,
+              quantity: 0,
+              status: 'active',
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+              ...(fallbackProduct.externalUrl && { externalUrl: fallbackProduct.externalUrl }),
+            });
+          }
         }
       } else if (productId && productId !== route.params?.product?.id) {
         // Se não tem adId mas tem productId válido, buscar ad relacionado
@@ -225,7 +293,10 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
       }
 
       // Carregar outras opções relacionadas
-      const category = route.params?.product?.category || ad?.product?.category || product?.category;
+      // Prioridade: ad.product > product carregado > params.product
+      const category = ad?.product?.category || 
+                      product?.category || 
+                      route.params?.product?.category;
       if (category) {
         try {
           const relatedResponse = await productService.listProducts({
@@ -233,7 +304,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
             category: category,
           });
           if (relatedResponse.success && relatedResponse.data) {
-            const currentProductId = product?.id || productId;
+            const currentProductId = ad?.product?.id || product?.id || productId || adId;
             setOtherOptions(relatedResponse.data.products.filter(p => p.id !== currentProductId));
           }
         } catch (error) {
@@ -252,31 +323,31 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
   };
 
   const handleBuyOnAmazon = () => {
-    // Prioridade: product dos params > ad.product > product carregado
-    const externalUrl = route.params?.product?.externalUrl || 
-                       ad?.product?.externalUrl || 
-                       product?.externalUrl;
+    // Prioridade: ad.product > product carregado > product dos params
+    const externalUrl = ad?.product?.externalUrl || 
+                       product?.externalUrl || 
+                       route.params?.product?.externalUrl;
     if (externalUrl) {
       Linking.openURL(externalUrl);
     }
   };
 
-  // Usar dados dos params como fallback se não foram carregados
+  // Prioridade: ad.product > product carregado > params.product
   const paramsProduct = route.params?.product;
-  const displayTitle = product?.name || 
-                      ad?.product?.name || 
+  const displayTitle = ad?.product?.name || 
+                      product?.name || 
                       paramsProduct?.title || 
                       'Product';
-  const displayDescription = product?.description || 
-                            ad?.product?.description || 
+  const displayDescription = ad?.product?.description || 
+                            product?.description || 
                             paramsProduct?.description || 
                             '';
-  const displayImage = product?.image || 
-                      ad?.product?.image || 
+  const displayImage = ad?.product?.image || 
+                      product?.image || 
                       paramsProduct?.image || 
                       'https://via.placeholder.com/400';
-  const productCategory = product?.category || 
-                          ad?.product?.category || 
+  const productCategory = ad?.product?.category || 
+                          product?.category || 
                           paramsProduct?.category || 
                           'Product';
 
@@ -304,17 +375,41 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
   );
 
   const renderTabContent = () => {
+    // Dividir a descrição em linhas para criar bullet points
+    const descriptionLines = displayDescription
+      ? displayDescription.split('\n').filter(line => line.trim().length > 0)
+      : [];
+
+    const renderDescriptionWithBullets = () => {
+      if (descriptionLines.length === 0) {
+        return (
+          <Text style={styles.descriptionText}>No description available.</Text>
+        );
+      }
+
+      return (
+        <View style={styles.descriptionContainer}>
+          {descriptionLines.map((line, index) => (
+            <View key={index} style={styles.descriptionItem}>
+              <View style={styles.bulletPoint} />
+              <Text style={styles.descriptionText}>{line.trim()}</Text>
+            </View>
+          ))}
+        </View>
+      );
+    };
+
     if (activeTab === 'goal') {
       return (
         <View style={styles.tabContent}>
-          <Text style={styles.descriptionText}>{displayDescription}</Text>
+          {renderDescriptionWithBullets()}
         </View>
       );
     }
-    // Para description e composition, podemos mostrar a mesma descrição por enquanto
+    // Para description e composition, mostrar a mesma descrição por enquanto
     return (
       <View style={styles.tabContent}>
-        <Text style={styles.descriptionText}>{displayDescription}</Text>
+        {renderDescriptionWithBullets()}
       </View>
     );
   };
@@ -322,7 +417,6 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
-        <Background />
         <View style={styles.loadingContainer}>
           <Text style={styles.loadingText}>Loading product...</Text>
         </View>
@@ -332,7 +426,6 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
 
   return (
     <SafeAreaView style={styles.container}>
-      <Background />
       <Header showBackButton={true} onBackPress={handleBackPress} />
       
       <ScrollView

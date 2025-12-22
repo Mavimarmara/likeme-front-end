@@ -5,7 +5,15 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f4f3ec',
+  },
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  backgroundImageStyle: {
+    resizeMode: 'cover',
+    opacity: 0.1,
   },
   loadingContainer: {
     flex: 1,
@@ -149,14 +157,30 @@ export const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 4,
   },
+  descriptionContainer: {
+    gap: 8,
+  },
+  descriptionItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  bulletPoint: {
+    width: 5,
+    height: 5,
+    borderRadius: 2.5,
+    backgroundColor: '#6e6a6a',
+    marginTop: 8.5,
+    flexShrink: 0,
+  },
   descriptionText: {
+    flex: 1,
     fontSize: 14,
     fontFamily: 'DM Sans',
     fontWeight: '400',
     color: '#6e6a6a',
     letterSpacing: 0.2,
     lineHeight: 22,
-    marginLeft: 21,
   },
   otherOptionsSection: {
     gap: 16,

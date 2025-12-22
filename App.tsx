@@ -1,6 +1,10 @@
 import React, { useEffect } from 'react';
+import { LogBox } from 'react-native';
 import { RootNavigator } from './src/navigation';
 import { AUTH0_CONFIG } from './src/config/environment';
+
+// Desabilitar todos os logs que aparecem na tela
+LogBox.ignoreAllLogs(true);
 
 const App: React.FC = () => {
   useEffect(() => {
