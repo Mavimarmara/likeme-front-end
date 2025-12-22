@@ -20,25 +20,92 @@ type Props = {
     endDate?: string;
     endTime?: string;
     location?: string;
+    description?: string;
     reminderEnabled: boolean;
     reminderMinutes?: number;
-  }) => void;
+  }, activityId?: string) => void;
+  activityId?: string;
+  initialData?: {
+    name: string;
+    type: ActivityType;
+    startDate?: string;
+    startTime?: string;
+    endDate?: string;
+    endTime?: string;
+    location?: string;
+    description?: string;
+    reminderEnabled: boolean;
+    reminderMinutes?: number;
+  };
 };
 
 const CreateActivityModal: React.FC<Props> = ({
   visible,
   onClose,
   onSave,
+  activityId,
+  initialData,
 }) => {
-  const [name, setName] = useState('');
-  const [type, setType] = useState<ActivityType>('event');
-  const [startDateValue, setStartDateValue] = useState(new Date());
-  const [startTimeValue, setStartTimeValue] = useState(new Date());
-  const [endDateValue, setEndDateValue] = useState(new Date());
-  const [endTimeValue, setEndTimeValue] = useState(new Date());
-  const [location, setLocation] = useState('Vibre Saúde, Pinheiros, 142');
-  const [reminderEnabled, setReminderEnabled] = useState(false);
-  const [reminderMinutes, setReminderMinutes] = useState(5);
+  const [name, setName] = useState(initialData?.name || '');
+  const [type, setType] = useState<ActivityType>(initialData?.type || 'event');
+  const [startDateValue, setStartDateValue] = useState(
+    initialData?.startDate ? new Date(initialData.startDate) : new Date()
+  );
+  const [startTimeValue, setStartTimeValue] = useState(
+    initialData?.startTime ? parseTimeToDate(initialData.startTime) : new Date()
+  );
+  const [endDateValue, setEndDateValue] = useState(
+    initialData?.endDate ? new Date(initialData.endDate) : new Date()
+  );
+  const [endTimeValue, setEndTimeValue] = useState(
+    initialData?.endTime ? parseTimeToDate(initialData.endTime) : new Date()
+  );
+  const [location, setLocation] = useState(initialData?.location || '');
+  const [description, setDescription] = useState(initialData?.description || '');
+  const [reminderEnabled, setReminderEnabled] = useState(initialData?.reminderEnabled || false);
+  const [reminderMinutes, setReminderMinutes] = useState(initialData?.reminderMinutes || 5);
+
+  // Helper function to parse time string to Date
+  function parseTimeToDate(timeString: string): Date {
+    const date = new Date();
+    const [time, period] = timeString.split(' ');
+    const [hours, minutes] = time.split(':');
+    let hour = parseInt(hours, 10);
+    if (period === 'pm' && hour !== 12) hour += 12;
+    if (period === 'am' && hour === 12) hour = 0;
+    date.setHours(hour, parseInt(minutes, 10), 0, 0);
+    return date;
+  }
+
+  // Reset form when modal closes or initialData changes
+  React.useEffect(() => {
+    if (visible) {
+      if (initialData) {
+        setName(initialData.name || '');
+        setType(initialData.type || 'event');
+        setStartDateValue(initialData.startDate ? new Date(initialData.startDate) : new Date());
+        setStartTimeValue(initialData.startTime ? parseTimeToDate(initialData.startTime) : new Date());
+        setEndDateValue(initialData.endDate ? new Date(initialData.endDate) : new Date());
+        setEndTimeValue(initialData.endTime ? parseTimeToDate(initialData.endTime) : new Date());
+        setLocation(initialData.location || '');
+        setDescription(initialData.description || '');
+        setReminderEnabled(initialData.reminderEnabled || false);
+        setReminderMinutes(initialData.reminderMinutes || 5);
+      } else {
+        // Reset to defaults for new activity
+        setName('');
+        setType('event');
+        setStartDateValue(new Date());
+        setStartTimeValue(new Date());
+        setEndDateValue(new Date());
+        setEndTimeValue(new Date());
+        setLocation('');
+        setDescription('');
+        setReminderEnabled(false);
+        setReminderMinutes(5);
+      }
+    }
+  }, [visible, initialData]);
   
   // Picker visibility states
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
@@ -76,9 +143,10 @@ const CreateActivityModal: React.FC<Props> = ({
       endDate: endDateValue.toISOString().split('T')[0],
       endTime: formatTime(endTimeValue),
       location,
+      description: type === 'task' ? description : undefined,
       reminderEnabled,
       reminderMinutes: reminderEnabled ? reminderMinutes : undefined,
-    });
+    }, activityId);
     onClose();
   };
 
@@ -186,6 +254,23 @@ const CreateActivityModal: React.FC<Props> = ({
           />
         </View>
         <View style={styles.divider} />
+
+        {type === 'task' && (
+          <>
+            <View style={styles.inputContainer}>
+              <RNTextInput
+                value={description}
+                onChangeText={setDescription}
+                placeholder="Description"
+                placeholderTextColor="#999"
+                style={styles.descriptionInput}
+                multiline
+                numberOfLines={3}
+              />
+            </View>
+            <View style={styles.divider} />
+          </>
+        )}
 
         <View style={styles.dateTimeRow}>
           <View style={styles.dateTimeFieldContainer}>
@@ -367,15 +452,19 @@ const CreateActivityModal: React.FC<Props> = ({
           </View>
         </View>
 
-        <SecondaryButton
-          label={`Location - ${location}`}
-          onPress={() => {
-            // TODO: Implement location picker
-            console.log('Location pressed');
-          }}
-          variant="dark"
-          style={styles.locationButton}
-        />
+        <View style={styles.locationContainer}>
+          <Icon name="place" size={16} color="#6E6A6A" style={styles.locationIcon} />
+          <RNTextInput
+            value={location}
+            onChangeText={setLocation}
+            placeholder="Address or Meet URL"
+            placeholderTextColor="#999"
+            style={styles.locationInput}
+            multiline={false}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+        </View>
         <View style={styles.divider} />
 
         <View style={styles.reminderContainer}>

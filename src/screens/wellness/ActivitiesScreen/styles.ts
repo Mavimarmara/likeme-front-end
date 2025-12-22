@@ -353,4 +353,38 @@ export const styles = StyleSheet.create({
     width: 40,
     height: 36,
   },
+  menuOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+  },
+  menuContainer: {
+    position: 'absolute',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    paddingVertical: SPACING.XS,
+    minWidth: 120,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.MD,
+    paddingVertical: SPACING.SM,
+    gap: SPACING.SM,
+  },
+  menuItemText: {
+    fontSize: FONT_SIZES.SM,
+    color: COLORS.TEXT,
+    fontWeight: '500',
+  },
+  menuItemTextDanger: {
+    color: '#F44336',
+  },
 });

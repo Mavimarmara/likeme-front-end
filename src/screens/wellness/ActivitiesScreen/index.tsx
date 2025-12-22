@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image, ImageBackground, Dimensions } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image, ImageBackground, Dimensions, Modal, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -9,7 +9,7 @@ import { Toggle, PrimaryButton, Badge } from '@/components/ui';
 import { CreateActivityModal } from '@/components/sections/activity';
 import { BackgroundIconButton, DoneIcon, CloseIcon } from '@/assets';
 import { ProductsCarousel, PlansCarousel, type Product, type Plan } from '@/components/sections/product';
-import { orderService } from '@/services';
+import { orderService, activityService } from '@/services';
 import { formatPrice } from '@/utils/formatters';
 import type { Order } from '@/types/order';
 import type { RootStackParamList } from '@/types/navigation';
@@ -42,12 +42,15 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
   const [selectedFilter, setSelectedFilter] = useState<FilterType>('all');
   const [showFestivalBanner, setShowFestivalBanner] = useState(true);
   const [isCreateActivityModalVisible, setIsCreateActivityModalVisible] = useState(false);
+  const [editingActivityId, setEditingActivityId] = useState<string | null>(null);
+  const [editingActivityData, setEditingActivityData] = useState<any>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoadingOrders, setIsLoadingOrders] = useState(false);
   const [daySortOrder, setDaySortOrder] = useState<'asc' | 'desc'>('desc');
-
-  // Mock data - será substituído por dados reais do backend
-  const activities: ActivityItem[] = [
+  const [menuVisibleForId, setMenuVisibleForId] = useState<string | null>(null);
+  const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null);
+  // Mock data inicial - será substituído por dados reais do backend
+  const mockActivities: ActivityItem[] = [
     {
       id: '1',
       type: 'program',
@@ -92,14 +95,71 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
     },
   ];
 
+  const [activities, setActivities] = useState<ActivityItem[]>(mockActivities);
+  const [isLoadingActivities, setIsLoadingActivities] = useState(false);
+
   const historyActivities = activities.filter(a => a.completed);
   const activeActivities = activities.filter(a => !a.completed);
+
+  const loadActivities = async () => {
+    try {
+      setIsLoadingActivities(true);
+      const response = await activityService.listActivities({
+        page: 1,
+        limit: 100,
+      });
+      if (response.success && response.data?.activities) {
+        // Converter UserActivity para ActivityItem
+        const convertedActivities: ActivityItem[] = response.data.activities.map((activity) => {
+          let dateTime: string | undefined;
+          if (activity.startDate) {
+            const date = new Date(activity.startDate);
+            const formattedDate = formatDate(date);
+            if (activity.startTime) {
+              dateTime = `${formattedDate} at ${activity.startTime}`;
+            } else {
+              dateTime = formattedDate;
+            }
+          }
+
+          return {
+            id: activity.id,
+            type: activity.type === 'task' ? 'personal' : activity.type === 'event' ? 'appointment' : 'program',
+            title: activity.name,
+            description: activity.location || '',
+            dateTime,
+            providerName: activity.location?.includes('Meet') ? activity.location.replace('Meet with ', '') : undefined,
+            providerAvatar: activity.location?.includes('Meet') ? activity.location.charAt(activity.location.length - 1) : undefined,
+            completed: activity.deletedAt !== null,
+            isFavorite: false,
+          };
+        });
+        setActivities(convertedActivities);
+      }
+    } catch (error) {
+      console.error('Error loading activities:', error);
+      // Em caso de erro, usar mock data
+      setActivities(mockActivities);
+    } finally {
+      setIsLoadingActivities(false);
+    }
+  };
+
+  useEffect(() => {
+    loadActivities();
+  }, []);
 
   useEffect(() => {
     if (activeTab === 'history') {
       loadOrders();
     }
   }, [activeTab]);
+
+  const formatDate = (date: Date): string => {
+    const day = date.getDate();
+    const month = date.toLocaleDateString('en-US', { month: 'short' });
+    return `${day} ${month}.`;
+  };
 
   const loadOrders = async () => {
     try {
@@ -198,8 +258,89 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
   };
 
   const handleViewActivity = (activity: ActivityItem) => {
-    // Navegar para detalhes da atividade
-    console.log('View activity:', activity.id);
+    // Abrir modal de edição
+    setEditingActivityData({
+      name: activity.title,
+      type: activity.type,
+      startDate: activity.dateTime ? extractDateFromDateTime(activity.dateTime) : undefined,
+      startTime: activity.dateTime ? extractTimeFromDateTime(activity.dateTime) : undefined,
+      location: activity.providerName ? `Meet with ${activity.providerName}` : '',
+      reminderEnabled: false,
+      reminderMinutes: 5,
+    });
+    setEditingActivityId(activity.id);
+    setIsCreateActivityModalVisible(true);
+    setMenuVisibleForId(null);
+  };
+
+  const handleDeleteActivity = async (activityId: string) => {
+    Alert.alert(
+      'Delete Activity',
+      'Are you sure you want to delete this activity?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await activityService.deleteActivity(activityId);
+              await loadActivities();
+              setMenuVisibleForId(null);
+            } catch (error) {
+              console.error('Error deleting activity:', error);
+              Alert.alert('Error', 'Failed to delete activity');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleMenuPress = (activityId: string, event: any) => {
+    event.persist();
+    const { pageX, pageY } = event.nativeEvent;
+    // Ajustar posição para aparecer abaixo e à direita do botão
+    setMenuPosition({ x: pageX - 100, y: pageY + 10 });
+    setMenuVisibleForId(activityId);
+  };
+
+  const extractDateFromDateTime = (dateTime: string): string => {
+    // Parse dateTime like "13 Nov. at 8:15 pm"
+    try {
+      const parts = dateTime.split(' at ');
+      if (parts.length > 0) {
+        const datePart = parts[0]; // "13 Nov."
+        const [day, month] = datePart.split(' ');
+        const monthMap: Record<string, string> = {
+          'Jan.': '01', 'Feb.': '02', 'Mar.': '03', 'Apr.': '04',
+          'May.': '05', 'Jun.': '06', 'Jul.': '07', 'Aug.': '08',
+          'Sep.': '09', 'Oct.': '10', 'Nov.': '11', 'Dec.': '12',
+        };
+        const currentYear = new Date().getFullYear();
+        const monthNum = monthMap[month] || '01';
+        return `${currentYear}-${monthNum}-${day.padStart(2, '0')}`;
+      }
+    } catch (e) {
+      console.error('Error parsing date:', e);
+    }
+    return new Date().toISOString().split('T')[0];
+  };
+
+  const extractTimeFromDateTime = (dateTime: string): string => {
+    // Parse dateTime like "13 Nov. at 8:15 pm"
+    try {
+      const parts = dateTime.split(' at ');
+      if (parts.length > 1) {
+        return parts[1]; // "8:15 pm"
+      }
+    } catch (e) {
+      console.error('Error parsing time:', e);
+    }
+    return '8:00 am';
   };
 
   const handleSkipAppointment = (activityId: string) => {
@@ -245,11 +386,15 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
       />
       {activeTab === 'actives' && (
         <View style={styles.createButtonContainer}>
-          <PrimaryButton
-            label="Create activities +"
-            onPress={() => setIsCreateActivityModalVisible(true)}
-            style={styles.createButton}
-          />
+        <PrimaryButton
+          label="Create activities +"
+          onPress={() => {
+            setEditingActivityId(null);
+            setEditingActivityData(null);
+            setIsCreateActivityModalVisible(true);
+          }}
+          style={styles.createButton}
+        />
         </View>
       )}
     </View>
@@ -312,7 +457,10 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
         <View style={styles.cardContent}>
           <View style={styles.cardHeader}>
             <Badge label="Order" color="orange" />
-            <TouchableOpacity activeOpacity={0.7}>
+            <TouchableOpacity 
+              activeOpacity={0.7}
+              onPress={(e) => handleMenuPress(`order-${order.id}`, e)}
+            >
               <Icon name="more-vert" size={20} color="#001137" />
             </TouchableOpacity>
           </View>
@@ -364,7 +512,10 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
           <View style={styles.cardContent}>
             <View style={styles.cardHeader}>
               <Badge label={typeLabels[activity.type]} color="orange" />
-              <TouchableOpacity activeOpacity={0.7}>
+              <TouchableOpacity 
+                activeOpacity={0.7}
+                onPress={(e) => handleMenuPress(activity.id, e)}
+              >
                 <Icon name="more-vert" size={20} color="#001137" />
               </TouchableOpacity>
             </View>
@@ -417,7 +568,10 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
         <View style={styles.cardContent}>
           <View style={styles.cardHeader}>
             <Badge label={typeLabels[activity.type]} color="orange" />
-            <TouchableOpacity activeOpacity={0.7}>
+            <TouchableOpacity 
+              activeOpacity={0.7}
+              onPress={(e) => handleMenuPress(activity.id, e)}
+            >
               <Icon name="more-vert" size={20} color="#001137" />
             </TouchableOpacity>
           </View>
@@ -598,12 +752,98 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
       <FloatingMenu items={menuItems} selectedId="activities" />
       <CreateActivityModal
         visible={isCreateActivityModalVisible}
-        onClose={() => setIsCreateActivityModalVisible(false)}
-        onSave={(data) => {
-          console.log('Activity created:', data);
-          // TODO: Implement save logic
+        onClose={() => {
+          setIsCreateActivityModalVisible(false);
+          setEditingActivityId(null);
+          setEditingActivityData(null);
         }}
+        onSave={async (data, activityId) => {
+          try {
+            if (activityId) {
+              // Update existing activity
+              await activityService.updateActivity(activityId, {
+                name: data.name,
+                type: data.type,
+                startDate: data.startDate,
+                startTime: data.startTime,
+                endDate: data.endDate,
+                endTime: data.endTime,
+                location: data.location,
+                reminderEnabled: data.reminderEnabled,
+                reminderOffset: data.reminderMinutes ? `${data.reminderMinutes}` : null,
+              });
+              console.log('Activity updated:', activityId);
+            } else {
+              // Create new activity
+              await activityService.createActivity({
+                name: data.name,
+                type: data.type,
+                startDate: data.startDate,
+                startTime: data.startTime,
+                endDate: data.endDate,
+                endTime: data.endTime,
+                location: data.location,
+                reminderEnabled: data.reminderEnabled,
+                reminderOffset: data.reminderMinutes ? `${data.reminderMinutes}` : null,
+              });
+              console.log('Activity created:', data);
+            }
+            // Refresh activities list after save
+            await loadActivities();
+          } catch (error) {
+            console.error('Error saving activity:', error);
+            // TODO: Show error message to user
+          }
+        }}
+        activityId={editingActivityId || undefined}
+        initialData={editingActivityData}
       />
+      
+      {/* Action Menu Modal */}
+      <Modal
+        visible={menuVisibleForId !== null}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setMenuVisibleForId(null)}
+      >
+        <TouchableOpacity
+          style={styles.menuOverlay}
+          activeOpacity={1}
+          onPress={() => setMenuVisibleForId(null)}
+        >
+          {menuPosition && (
+            <View style={[styles.menuContainer, { top: menuPosition.y, left: menuPosition.x }]}>
+              {menuVisibleForId && !menuVisibleForId.startsWith('order-') && (
+                <>
+                  <TouchableOpacity
+                    style={styles.menuItem}
+                    onPress={() => {
+                      const activity = activities.find(a => a.id === menuVisibleForId);
+                      if (activity) {
+                        handleViewActivity(activity);
+                      }
+                    }}
+                  >
+                    <Icon name="edit" size={20} color="#001137" />
+                    <Text style={styles.menuItemText}>Edit</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.menuItem}
+                    onPress={() => {
+                      if (menuVisibleForId) {
+                        handleDeleteActivity(menuVisibleForId);
+                      }
+                    }}
+                  >
+                    <Icon name="delete" size={20} color="#F44336" />
+                    <Text style={[styles.menuItemText, styles.menuItemTextDanger]}>Delete</Text>
+                  </TouchableOpacity>
+                </>
+              )}
+            </View>
+          )}
+        </TouchableOpacity>
+      </Modal>
     </SafeAreaView>
   );
 };

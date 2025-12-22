@@ -24,6 +24,15 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     color: '#001137',
   },
+  descriptionInput: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+    paddingBottom: SPACING.XS,
+    fontSize: 16,
+    color: '#001137',
+    minHeight: 60,
+    textAlignVertical: 'top',
+  },
   typeSelector: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
@@ -47,9 +56,26 @@ export const styles = StyleSheet.create({
     gap: SPACING.SM,
     marginBottom: SPACING.XS,
   },
-  locationButton: {
+  locationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#F6DEA9B8',
+    borderRadius: 18,
+    borderWidth: 1,
     borderColor: '#F6DEA9B8',
+    paddingHorizontal: SPACING.MD,
+    paddingVertical: 9,
+    gap: SPACING.XS,
+  },
+  locationIcon: {
+    marginRight: SPACING.XS,
+  },
+  locationInput: {
+    flex: 1,
+    fontSize: 14,
+    color: '#6E6A6A',
+    fontWeight: '500',
+    padding: 0,
   },
   reminderContainer: {
     flexDirection: 'column',
