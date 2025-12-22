@@ -382,7 +382,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
           selectedId={activeInfoTab}
           onSelect={setActiveInfoTab}
         />
-        {activeInfoTab === 'about' && renderAboutContent()}
+        {renderAboutContent()}
       </>
     );
   }

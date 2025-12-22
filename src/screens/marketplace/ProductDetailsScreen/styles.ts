@@ -453,7 +453,8 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
   },
   aboutContent: {
-    marginBottom: SPACING.XL,
+    paddingHorizontal: SPACING.MD,
+    paddingVertical: SPACING.MD,
   },
   aboutItem: {
     fontSize: 15,
