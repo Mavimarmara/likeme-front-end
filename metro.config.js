@@ -1,3 +1,7 @@
+// Carrega variáveis de ambiente do .env antes de processar o código
+// Isso garante que process.env.EXPO_PUBLIC_* esteja disponível durante o build do Metro
+require('dotenv').config();
+
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
 

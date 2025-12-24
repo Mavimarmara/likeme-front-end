@@ -1,6 +1,4 @@
 // Helper para obter variável de ambiente com múltiplas estratégias de fallback
-// IMPORTANTE: Durante a inicialização do módulo, usa apenas process.env para evitar
-// erros de "property is not configurable" quando o runtime ainda não está pronto
 const getEnvVar = (key: string, defaultValue?: string): string => {
   // Estratégia 1: process.env (substituído pelo Metro bundler durante o build)
   // Esta é a estratégia PRINCIPAL e mais segura - funciona durante a inicialização
@@ -8,15 +6,26 @@ const getEnvVar = (key: string, defaultValue?: string): string => {
     return process.env[key] as string;
   }
   
-  // Estratégias adicionais (Constants) só serão usadas depois da inicialização
-  // através de uma função helper que pode ser chamada quando necessário
-  // Por enquanto, retorna o default para evitar acessar Constants durante init
+  // Estratégia 2: Tenta Constants.expoConfig.extra.env (disponível em runtime)
+  // Isso funciona quando as variáveis são injetadas pelo app.config.js
+  try {
+    const Constants = require('expo-constants').default;
+    if (Constants?.expoConfig?.extra?.env?.[key]) {
+      return Constants.expoConfig.extra.env[key];
+    }
+    // Fallback para acesso direto ao extra
+    if (Constants?.expoConfig?.extra?.[key]) {
+      return Constants.expoConfig.extra[key];
+    }
+  } catch (error) {
+    // Silenciosamente ignora erros se Constants não estiver disponível
+  }
   
   // Log de debug quando não encontra (apenas para variáveis críticas sem default)
   if (!defaultValue || defaultValue.includes('your-')) {
     // Usa console.warn apenas se console estiver disponível
     if (typeof console !== 'undefined' && console.warn) {
-      console.warn(`[ENV] ⚠️ Variável ${key} não encontrada em process.env. Usando default: ${defaultValue || 'vazio'}`);
+      console.warn(`[ENV] ⚠️ Variável ${key} não encontrada. Usando default: ${defaultValue || 'vazio'}`);
     }
   }
   
