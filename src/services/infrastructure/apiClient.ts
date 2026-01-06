@@ -50,8 +50,10 @@ class ApiClient {
       }
 
       const errorData = await response.json().catch(() => ({}));
+      // Extrair mensagem de erro do backend (pode estar em errorData.message ou errorData.error)
+      const errorMessage = errorData.message || errorData.error || `HTTP error! status: ${response.status}`;
       const error: ApiError = {
-        message: errorData.message || `HTTP error! status: ${response.status}`,
+        message: errorMessage,
         status: response.status,
       };
       throw error;

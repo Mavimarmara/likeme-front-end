@@ -219,12 +219,11 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
 
       // Navegar para a tela de Order
       setCurrentStep('order');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error completing order:', error);
-      Alert.alert(
-        'Erro',
-        error instanceof Error ? error.message : 'Erro ao processar pedido. Tente novamente.'
-      );
+      // Extrair mensagem de erro (pode estar em error.message ou error.error)
+      const errorMessage = error?.message || error?.error || 'Erro ao processar pedido. Tente novamente.';
+      Alert.alert('Erro', errorMessage);
     } finally {
       setIsProcessing(false);
     }
