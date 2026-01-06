@@ -418,17 +418,32 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
       <Toggle
         options={['Actives', 'History'] as const}
         selected={activeTab === 'actives' ? 'Actives' : 'History'}
-        onSelect={(option) => setActiveTab(option === 'Actives' ? 'actives' : 'history')}
+        onSelect={(option) => {
+          const newTab = option === 'Actives' ? 'actives' : 'history';
+          setActiveTab(newTab);
+          // Resetar filtro para 'all' se estiver em 'orders' e mudar para 'actives'
+          if (newTab === 'actives' && selectedFilter === 'orders') {
+            setSelectedFilter('all');
+          }
+        }}
       />
     </View>
   );
 
-  const filterCarouselOptions: ButtonCarouselOption<FilterType>[] = [
-    { id: 'all', label: 'All' },
-    { id: 'activities', label: 'Activities' },
-    { id: 'appointments', label: 'Appointments' },
-    { id: 'orders', label: 'Orders' },
-  ];
+  const filterCarouselOptions: ButtonCarouselOption<FilterType>[] = useMemo(() => {
+    const baseOptions: ButtonCarouselOption<FilterType>[] = [
+      { id: 'all', label: 'All' },
+      { id: 'activities', label: 'Activities' },
+      { id: 'appointments', label: 'Appointments' },
+    ];
+    
+    // Orders só aparece quando estiver na aba History
+    if (activeTab === 'history') {
+      baseOptions.push({ id: 'orders', label: 'Orders' });
+    }
+    
+    return baseOptions;
+  }, [activeTab]);
 
   const handleDaySortToggle = () => {
     setDaySortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
