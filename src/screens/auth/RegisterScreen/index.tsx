@@ -56,7 +56,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
       // Dividir fullName em firstName e lastName
       const nameParts = fullName.trim().split(/\s+/);
       const firstName = nameParts[0] || '';
-      const lastName = nameParts.slice(1).join(' ') || firstName;
+      const lastName = nameParts.slice(1).join(' ') || '';
 
       // Preparar dados para a API
       const personData: PersonData = {

@@ -12,6 +12,7 @@ import { Header } from '@/components/ui/layout';
 import { Background } from '@/components/ui/layout';
 import { storageService, orderService, paymentService } from '@/services';
 import { formatPrice, formatAddress, formatBillingAddress } from '@/utils/formatters';
+import { useFormattedInput } from '@/hooks';
 import { logger } from '@/utils/logger';
 import { styles } from './styles';
 import AddressForm, { AddressData } from './address';
@@ -56,6 +57,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
   const [cardNumber, setCardNumber] = useState('');
   const [expiryDate, setExpiryDate] = useState('');
   const [cvv, setCvv] = useState('');
+  const [cpf, setCpf] = useState('');
   const [saveCardDetails, setSaveCardDetails] = useState(false);
   const [couponCode, setCouponCode] = useState('');
   const [subtotal, setSubtotal] = useState(0);
@@ -63,6 +65,11 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
   const [total, setTotal] = useState(0);
   const [orderId, setOrderId] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+
+  const handleCpfChange = useFormattedInput({
+    type: 'cpf',
+    onChangeText: setCpf,
+  });
 
   useEffect(() => {
     loadCartItems();
@@ -236,11 +243,15 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
       return undefined;
     }
 
+    // Formatar CPF (remover caracteres não numéricos)
+    const formattedCpf = cpf.replace(/\D/g, '');
+
     return {
       cardNumber: cardNumber.replace(/\s/g, ''), // Remove espaços
       cardHolderName: cardholderName,
       cardExpirationDate: formattedExpiry,
       cardCvv: cvv,
+      cpf: formattedCpf.length === 11 ? formattedCpf : undefined,
     };
   };
 
@@ -350,6 +361,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
               cardNumber={cardNumber}
               expiryDate={expiryDate}
               cvv={cvv}
+              cpf={cpf}
               saveCardDetails={saveCardDetails}
               couponCode={couponCode}
               onPaymentMethodChange={setPaymentMethod}
@@ -357,6 +369,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
               onCardNumberChange={setCardNumber}
               onExpiryDateChange={setExpiryDate}
               onCvvChange={setCvv}
+              onCpfChange={handleCpfChange}
               onSaveCardDetailsChange={setSaveCardDetails}
               onCouponCodeChange={setCouponCode}
               onApplyCoupon={handleApplyCoupon}

@@ -18,7 +18,9 @@ import { ImageBackground } from 'react-native';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES } from '@/constants';
 import type { RootStackParamList } from '@/types/navigation';
 import storageService from '@/services/auth/storageService';
+import productService from '@/services/product/productService';
 import { formatPrice } from '@/utils/formatters';
+import { Alert } from 'react-native';
 import { styles } from './styles';
 
 interface CartItem {
@@ -60,14 +62,62 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
     try {
       setLoading(true);
       const items = await storageService.getCartItems();
-      // Garante que price e quantity são números
-      const normalizedItems = items.map((item: any) => ({
-        ...item,
-        price: Number(item.price) || 0,
-        quantity: Number(item.quantity) || 1,
-        rating: Number(item.rating) || 0,
-      }));
-      setCartItems(normalizedItems as CartItem[]);
+      
+      // Validar produtos: verificar se ainda existem e têm saldo
+      const validatedItems: CartItem[] = [];
+      const removedItems: string[] = [];
+      
+      for (const item of items) {
+        try {
+          const productResponse = await productService.getProductById(item.id);
+          
+          if (!productResponse.success || !productResponse.data) {
+            // Produto não existe mais
+            removedItems.push(item.title || item.id);
+            continue;
+          }
+          
+          const product = productResponse.data;
+          const availableQuantity = product.quantity ?? 0;
+          const requestedQuantity = Number(item.quantity) || 1;
+          
+          if (availableQuantity < requestedQuantity) {
+            // Produto não tem saldo suficiente
+            if (availableQuantity === 0) {
+              removedItems.push(item.title || item.id);
+              continue;
+            }
+            // Ajustar quantidade para o saldo disponível
+            item.quantity = availableQuantity;
+          }
+          
+          // Garante que price e quantity são números
+          validatedItems.push({
+            ...item,
+            price: Number(product.price) || Number(item.price) || 0,
+            quantity: Number(item.quantity) || 1,
+            rating: Number(item.rating) || 0,
+          } as CartItem);
+        } catch (error) {
+          // Erro ao buscar produto - remover do carrinho
+          console.error(`Error validating product ${item.id}:`, error);
+          removedItems.push(item.title || item.id);
+        }
+      }
+      
+      // Atualizar carrinho com itens validados
+      if (validatedItems.length !== items.length || removedItems.length > 0) {
+        await storageService.setCartItems(validatedItems);
+        
+        if (removedItems.length > 0) {
+          Alert.alert(
+            'Carrinho atualizado',
+            `Os seguintes produtos foram removidos do carrinho por não estarem mais disponíveis:\n\n${removedItems.join('\n')}`
+          );
+        }
+      }
+      
+      setCartItems(validatedItems);
     } catch (error) {
       console.error('Error loading cart items:', error);
     } finally {

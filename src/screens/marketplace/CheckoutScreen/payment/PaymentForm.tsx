@@ -13,6 +13,7 @@ interface PaymentFormProps {
   cardNumber: string;
   expiryDate: string;
   cvv: string;
+  cpf: string;
   saveCardDetails: boolean;
   couponCode: string;
   onPaymentMethodChange: (method: PaymentMethod) => void;
@@ -20,6 +21,7 @@ interface PaymentFormProps {
   onCardNumberChange: (text: string) => void;
   onExpiryDateChange: (text: string) => void;
   onCvvChange: (text: string) => void;
+  onCpfChange: (text: string) => void;
   onSaveCardDetailsChange: (value: boolean) => void;
   onCouponCodeChange: (text: string) => void;
   onApplyCoupon: () => void;
@@ -31,6 +33,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   cardNumber,
   expiryDate,
   cvv,
+  cpf,
   saveCardDetails,
   couponCode,
   onPaymentMethodChange,
@@ -38,6 +41,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   onCardNumberChange,
   onExpiryDateChange,
   onCvvChange,
+  onCpfChange,
   onSaveCardDetailsChange,
   onCouponCodeChange,
   onApplyCoupon,
@@ -118,6 +122,13 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
               />
             </View>
           </View>
+          <TextInput
+            label="CPF"
+            placeholder="000.000.000-00"
+            value={cpf}
+            onChangeText={onCpfChange}
+            keyboardType="numeric"
+          />
           <TouchableOpacity
             style={styles.checkboxContainer}
             onPress={() => onSaveCardDetailsChange(!saveCardDetails)}

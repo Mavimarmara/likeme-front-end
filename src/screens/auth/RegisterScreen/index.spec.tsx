@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
+import { Alert } from 'react-native';
 import RegisterScreen from './index';
 
 jest.mock('react-native-safe-area-context', () => {
@@ -141,7 +142,7 @@ describe('RegisterScreen', () => {
     });
   });
 
-  it('navigates to PersonalObjectives with fallback userName when neither fullName nor route params are provided', () => {
+  it('shows alert when Next button is pressed without fullName', () => {
     const mockNavigation = {
       navigate: jest.fn(),
       goBack: jest.fn(),
@@ -150,15 +151,54 @@ describe('RegisterScreen', () => {
       params: {},
     };
 
-    const { getByText } = render(
+    const alertSpy = jest.spyOn(Alert, 'alert');
+
+    const { getByText, getByTestId } = render(
       <RegisterScreen navigation={mockNavigation} route={mockRoute} />
     );
+
+    const fullNameInput = getByTestId('input-Full Name');
+    fireEvent.changeText(fullNameInput, '');
 
     const nextButton = getByText('Next');
     fireEvent.press(nextButton);
 
-    expect(mockNavigation.navigate).toHaveBeenCalledWith('PersonalObjectives', {
-      userName: 'Usuário',
-    });
+    expect(alertSpy).toHaveBeenCalledWith(
+      'Campo obrigatório',
+      'Por favor, preencha o nome completo.'
+    );
+    expect(mockNavigation.navigate).not.toHaveBeenCalled();
+
+    alertSpy.mockRestore();
+  });
+
+  it('shows alert when Next button is pressed with only whitespace in fullName', () => {
+    const mockNavigation = {
+      navigate: jest.fn(),
+      goBack: jest.fn(),
+    };
+    const mockRoute = {
+      params: {},
+    };
+
+    const alertSpy = jest.spyOn(Alert, 'alert');
+
+    const { getByText, getByTestId } = render(
+      <RegisterScreen navigation={mockNavigation} route={mockRoute} />
+    );
+
+    const fullNameInput = getByTestId('input-Full Name');
+    fireEvent.changeText(fullNameInput, '   ');
+
+    const nextButton = getByText('Next');
+    fireEvent.press(nextButton);
+
+    expect(alertSpy).toHaveBeenCalledWith(
+      'Campo obrigatório',
+      'Por favor, preencha o nome completo.'
+    );
+    expect(mockNavigation.navigate).not.toHaveBeenCalled();
+
+    alertSpy.mockRestore();
   });
 });
