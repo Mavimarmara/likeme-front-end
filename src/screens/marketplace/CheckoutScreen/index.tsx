@@ -58,6 +58,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
   const [expiryDate, setExpiryDate] = useState('');
   const [cvv, setCvv] = useState('');
   const [cpf, setCpf] = useState('');
+  const [phone, setPhone] = useState('');
   const [saveCardDetails, setSaveCardDetails] = useState(false);
   const [couponCode, setCouponCode] = useState('');
   const [subtotal, setSubtotal] = useState(0);
@@ -69,6 +70,11 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
   const handleCpfChange = useFormattedInput({
     type: 'cpf',
     onChangeText: setCpf,
+  });
+
+  const handlePhoneChange = useFormattedInput({
+    type: 'phone',
+    onChangeText: setPhone,
   });
 
   useEffect(() => {
@@ -244,6 +250,9 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
 
     // Formatar CPF (remover caracteres não numéricos)
     const formattedCpf = cpf.replace(/\D/g, '');
+    
+    // Formatar telefone (remover caracteres não numéricos)
+    const formattedPhone = phone.replace(/\D/g, '');
 
     return {
       cardNumber: cardNumber.replace(/\s/g, ''), // Remove espaços
@@ -251,6 +260,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
       cardExpirationDate: formattedExpiry,
       cardCvv: cvv,
       cpf: formattedCpf.length === 11 ? formattedCpf : undefined,
+      phone: formattedPhone.length >= 10 ? formattedPhone : undefined,
     };
   };
 
@@ -361,6 +371,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
               expiryDate={expiryDate}
               cvv={cvv}
               cpf={cpf}
+              phone={phone}
               saveCardDetails={saveCardDetails}
               couponCode={couponCode}
               onPaymentMethodChange={setPaymentMethod}
@@ -369,6 +380,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
               onExpiryDateChange={setExpiryDate}
               onCvvChange={setCvv}
               onCpfChange={handleCpfChange}
+              onPhoneChange={handlePhoneChange}
               onSaveCardDetailsChange={setSaveCardDetails}
               onCouponCodeChange={setCouponCode}
               onApplyCoupon={handleApplyCoupon}

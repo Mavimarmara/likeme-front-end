@@ -57,6 +57,7 @@ export interface CardData {
   cardExpirationDate: string; // MMYY format
   cardCvv: string;
   cpf?: string; // CPF do cliente (opcional, backend busca automaticamente se não fornecido)
+  phone?: string; // Telefone do cliente (opcional, backend busca automaticamente se não fornecido)
 }
 
 export interface CreateOrderData {

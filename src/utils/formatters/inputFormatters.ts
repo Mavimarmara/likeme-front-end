@@ -27,3 +27,15 @@ export const formatExpiryDate = (text: string): string => {
   }
   return cleaned;
 };
+
+export const formatPhone = (text: string): string => {
+  const numbers = text.replace(/\D/g, '');
+  
+  if (numbers.length <= 2) {
+    return numbers.length > 0 ? `(${numbers}` : numbers;
+  } else if (numbers.length <= 7) {
+    return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
+  } else {
+    return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7, 11)}`;
+  }
+};
