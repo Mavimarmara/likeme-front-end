@@ -79,7 +79,7 @@
   "jest": {
     "preset": "react-native",
     "transformIgnorePatterns": [
-      "node_modules/(?!(react-native|@react-native|react-native-vector-icons|expo|@expo|expo-auth-session|@react-navigation)/)"
+      "node_modules/(?!(react-native|@react-native|react-native-vector-icons|expo|@expo|expo-auth-session|@react-navigation|@react-native-community)/)"
     ],
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/src/$1",
