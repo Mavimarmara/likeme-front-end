@@ -34,3 +34,10 @@ jest.mock('react-native-safe-area-context', () => {
     useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
   };
 });
+
+// Mock para @react-native-community/datetimepicker
+jest.mock('@react-native-community/datetimepicker', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  return jest.fn((props) => React.createElement(View, { testID: 'DateTimePicker', ...props }));
+});
