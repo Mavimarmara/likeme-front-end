@@ -2,7 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import { UnauthenticatedScreen, AuthenticatedScreen, LoadingScreen, WelcomeScreen, IntroScreen, AppPresentationScreen, RegisterScreen, AnamneseScreen, PersonalObjectivesScreen, SelfAwarenessIntroScreen } from '@/screens/auth';
+import { UnauthenticatedScreen, AuthenticatedScreen, LoadingScreen, WelcomeScreen, IntroScreen, AppPresentationScreen, RegisterScreen, AnamneseScreen, AnamneseCorpoScreen, PersonalObjectivesScreen, SelfAwarenessIntroScreen } from '@/screens/auth';
 import ErrorScreen from '@/screens/ErrorScreen';
 import AppLoadingScreen from '@/screens/LoadingScreen';
 import { CommunityStackNavigator } from '@/navigation';
@@ -62,6 +62,11 @@ const RootNavigator: React.FC = () => {
                  name="Anamnese"
                  component={AnamneseScreen}
                  options={{ title: 'Anamnese' }}
+               />
+               <Stack.Screen
+                 name="AnamneseCorpo"
+                 component={AnamneseCorpoScreen}
+                 options={{ title: 'Anamnese Corpo' }}
                />
                <Stack.Screen
                  name="PersonalObjectives"
