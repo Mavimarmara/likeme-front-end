@@ -11,6 +11,9 @@ export const styles = StyleSheet.create({
     zIndex: 1,
     paddingBottom: SPACING.XXL,
   },
+  anamnesisPromptContainer: {
+    paddingTop: SPACING.MD,
+  },
   yourCommunitiesContainer: {
     paddingTop: SPACING.MD,
   },

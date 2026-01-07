@@ -7,6 +7,7 @@ import { useCommunities } from '@/hooks';
 import { mapCommunityToRecommendedCommunity, mapCommunityToOtherCommunity, mapCommunityPostToPost } from '@/utils/community/mappers';
 import { mapChannelsToEvents } from '@/utils/mappers/eventMapper';
 import { communityService, productService } from '@/services';
+import { storageService } from '@/services';
 import type { Channel } from '@/types/community';
 import type { CommunityFeedData } from '@/types/community';
 import { 
@@ -21,6 +22,7 @@ import {
   type YourCommunity,
 } from '@/components/sections/community';
 import { ProductsCarousel, type Product } from '@/components/sections/product';
+import { AnamnesisPromptCard } from '@/components/sections/wellness';
 import type { Event } from '@/types/event';
 import type { Post } from '@/types';
 import { styles } from './styles';
@@ -36,9 +38,32 @@ type Props = {
 
 const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   const rootNavigation = navigation.getParent() ?? navigation;
+  const [hasCompletedAnamnesis, setHasCompletedAnamnesis] = useState<boolean>(false);
+  const [isCheckingAnamnesis, setIsCheckingAnamnesis] = useState<boolean>(true);
+
   const handleCartPress = () => {
     rootNavigation.navigate('Cart' as never);
   };
+
+  const handleStartAnamnesis = () => {
+    rootNavigation.navigate('AnamneseBody' as never);
+  };
+
+  useEffect(() => {
+    const checkAnamnesisStatus = async () => {
+      try {
+        const anamnesisCompletedAt = await storageService.getAnamnesisCompletedAt();
+        setHasCompletedAnamnesis(!!anamnesisCompletedAt);
+      } catch (error) {
+        console.error('Error checking anamnesis status:', error);
+        setHasCompletedAnamnesis(false);
+      } finally {
+        setIsCheckingAnamnesis(false);
+      }
+    };
+
+    checkAnamnesisStatus();
+  }, []);
 
   const {
     communities: rawCommunities,
@@ -393,6 +418,11 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
       />
       <View style={styles.content}>
         <ScrollView showsVerticalScrollIndicator={false}>
+          {!isCheckingAnamnesis && !hasCompletedAnamnesis && (
+            <View style={styles.anamnesisPromptContainer}>
+              <AnamnesisPromptCard onStartPress={handleStartAnamnesis} />
+            </View>
+          )}
           {yourCommunity && (
             <View style={styles.yourCommunitiesContainer}>
               <YourCommunitiesSection

@@ -6,6 +6,6 @@ export { default as IntroScreen } from './IntroScreen';
 export { default as AppPresentationScreen } from './AppPresentationScreen';
 export { default as RegisterScreen } from './RegisterScreen';
 export { default as AnamneseScreen } from './AnamneseScreen';
-export { default as AnamneseCorpoScreen } from './AnamneseCorpoScreen';
+export { default as AnamneseBodyScreen } from './AnamneseBodyScreen';
 export { default as PersonalObjectivesScreen } from './PersonalObjectivesScreen';
 export { default as SelfAwarenessIntroScreen } from './SelfAwarenessIntroScreen';

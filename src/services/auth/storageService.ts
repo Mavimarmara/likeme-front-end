@@ -6,6 +6,7 @@ const TOKEN_KEY = '@likeme:auth_token';
 const USER_KEY = '@likeme:user';
 const REGISTER_COMPLETED_AT_KEY = '@likeme:register_completed_at';
 const OBJECTIVES_SELECTED_AT_KEY = '@likeme:objectives_selected_at';
+const ANAMNESIS_COMPLETED_AT_KEY = '@likeme:anamnesis_completed_at';
 const CART_ITEMS_KEY = '@likeme:cart_items';
 
 class StorageService {
@@ -106,6 +107,27 @@ class StorageService {
     }
   }
 
+  async setAnamnesisCompletedAt(date: string | null): Promise<void> {
+    try {
+      if (date) {
+        await AsyncStorage.setItem(ANAMNESIS_COMPLETED_AT_KEY, date);
+      } else {
+        await AsyncStorage.removeItem(ANAMNESIS_COMPLETED_AT_KEY);
+      }
+    } catch (error) {
+      logger.error('Error saving anamnesis completed at:', error);
+    }
+  }
+
+  async getAnamnesisCompletedAt(): Promise<string | null> {
+    try {
+      return await AsyncStorage.getItem(ANAMNESIS_COMPLETED_AT_KEY);
+    } catch (error) {
+      logger.error('Error getting anamnesis completed at:', error);
+      return null;
+    }
+  }
+
   async getCartItems(): Promise<any[]> {
     try {
       const cartItemsString = await AsyncStorage.getItem(CART_ITEMS_KEY);
@@ -170,6 +192,7 @@ class StorageService {
       await this.removeUser();
       await AsyncStorage.removeItem(REGISTER_COMPLETED_AT_KEY);
       await AsyncStorage.removeItem(OBJECTIVES_SELECTED_AT_KEY);
+      await AsyncStorage.removeItem(ANAMNESIS_COMPLETED_AT_KEY);
       await this.clearCart();
     } catch (error) {
       logger.error('Error clearing storage:', error);

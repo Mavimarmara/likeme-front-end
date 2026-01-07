@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '@/components/ui';
 import { PrimaryButton } from '@/components/ui/buttons';
 import { SymptomSlider, SymptomLevel } from '@/components/ui/inputs';
+import { storageService } from '@/services';
 import { styles } from './styles';
 
 type Props = { navigation: any };
@@ -67,7 +68,7 @@ const QUESTIONS: Question[] = [
   },
 ];
 
-const AnamneseCorpoScreen: React.FC<Props> = ({ navigation }) => {
+const AnamneseBodyScreen: React.FC<Props> = ({ navigation }) => {
   const [answers, setAnswers] = useState<Record<number, SymptomLevel>>({});
 
   const handleAnswerChange = (questionId: number, value: SymptomLevel) => {
@@ -77,10 +78,21 @@ const AnamneseCorpoScreen: React.FC<Props> = ({ navigation }) => {
     }));
   };
 
-  const handleFinish = () => {
-    // TODO: Salvar respostas e navegar para próxima tela
-    console.log('Respostas:', answers);
-    navigation.goBack();
+  const handleFinish = async () => {
+    try {
+      // Salvar data de conclusão da anamnese
+      await storageService.setAnamnesisCompletedAt(new Date().toISOString());
+      
+      // TODO: Salvar respostas no backend
+      console.log('Respostas:', answers);
+      
+      // Navegar de volta para a home
+      navigation.goBack();
+    } catch (error) {
+      console.error('Error saving anamnesis:', error);
+      // Ainda navega de volta mesmo em caso de erro
+      navigation.goBack();
+    }
   };
 
   return (
@@ -132,5 +144,5 @@ const AnamneseCorpoScreen: React.FC<Props> = ({ navigation }) => {
   );
 };
 
-export default AnamneseCorpoScreen;
+export default AnamneseBodyScreen;
 
