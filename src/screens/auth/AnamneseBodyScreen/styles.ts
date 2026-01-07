@@ -104,4 +104,17 @@ export const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 4,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+  },
+  loadingText: {
+    marginTop: 16,
+    fontFamily: 'DM Sans',
+    fontSize: 16,
+    fontWeight: '400',
+    color: 'rgba(0, 17, 55, 1)',
+  },
 });

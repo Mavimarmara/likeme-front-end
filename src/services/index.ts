@@ -13,3 +13,5 @@ export { default as adService } from './ad/adService';
 export { default as orderService } from './order/orderService';
 export { default as paymentService } from './payment/paymentService';
 export { default as activityService } from './activity/activityService';
+export { default as anamneseService } from './anamnese/anamneseService';
+export { default as userService } from './user/userService';
