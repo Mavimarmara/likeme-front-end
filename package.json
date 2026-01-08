@@ -45,7 +45,7 @@
     "clean:all": "rm -rf node_modules/.cache .expo dist android/build ios/build android/app/build ios/Pods ios/Podfile.lock",
     "clean:android": "cd android && ./gradlew clean && cd ..",
     "clean:ios": "cd ios && rm -rf Pods Podfile.lock build && pod install && cd ..",
-    "postinstall": "cd ios && pod install && cd .."
+    "postinstall": "if [ \"$SKIP_IOS_POD_INSTALL\" != \"true\" ]; then cd ios && pod install && cd ..; fi"
   },
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",
