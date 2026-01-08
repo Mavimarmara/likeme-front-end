@@ -47,7 +47,6 @@ const FilterButton: React.FC<Props> = ({
         onPress={handlePress}
         icon={icon}
         iconPosition={iconPosition}
-        size='small'
       />
       {hasModal && (
         <ModalBase

@@ -415,7 +415,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
             label="Continue"
             onPress={handleContinue}
             style={styles.completeButton}
-            size="medium"
+            size="large"
             loading={isProcessing}
             disabled={isProcessing}
           />
@@ -428,7 +428,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
             label="Home"
             onPress={handleHomePress}
             style={styles.completeButton}
-            size="medium"
+            size="large"
           />
         </View>
       )}

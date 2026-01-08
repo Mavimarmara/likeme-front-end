@@ -469,7 +469,6 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
             setIsCreateActivityModalVisible(true);
           }}
           style={styles.createButton}
-          size='small'
         />
         </View>
       )}

@@ -394,7 +394,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
               label="Buy"
               onPress={handleBuy}
               style={styles.buyButton}
-              size="medium"
+              size="large"
             />
           </>
         ) : (

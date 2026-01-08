@@ -42,7 +42,6 @@ const ButtonCarousel = <T extends string | number = string>({
             variant="light"
             style={isSelected ? styles.buttonSelected : styles.buttonUnselected}
             labelStyle={isSelected ? styles.buttonSelectedText : undefined}
-            size='small'
           />
         );
       })}
