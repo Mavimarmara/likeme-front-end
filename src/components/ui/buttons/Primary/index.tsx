@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { styles } from './styles';
 
 type Variant = 'dark' | 'light';
+type Size = 'small' | 'medium';
 
 type Props = {
   label: string;
@@ -13,6 +14,7 @@ type Props = {
   loading?: boolean;
   disabled?: boolean;
   variant?: Variant;
+  size?: Size;
   icon?: string;
   iconSize?: number;
   iconColor?: string;
@@ -27,13 +29,16 @@ const PrimaryButton: React.FC<Props> = ({
   loading = false, 
   disabled = false,
   variant = 'dark',
+  size = 'medium',
   icon,
   iconSize = 16,
   iconColor,
   iconPosition = 'right',
 }) => {
   const isDisabled = loading || disabled;
-  const buttonStyle = variant === 'light' ? styles.buttonLight : styles.button;
+  const baseButtonStyle = variant === 'light' ? styles.buttonLight : styles.button;
+  const sizeStyle = size === 'small' ? styles.buttonSmall : styles.buttonMedium;
+  const buttonStyle = [baseButtonStyle, sizeStyle];
   const defaultLabelStyle = variant === 'light' ? styles.labelLight : styles.label;
   const labelStyle = customLabelStyle ? [defaultLabelStyle, customLabelStyle] : defaultLabelStyle;
   const indicatorColor = variant === 'light' ? '#001137' : '#FFFFFF';

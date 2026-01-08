@@ -23,6 +23,12 @@ export const styles = StyleSheet.create({
     paddingVertical: 9,
     paddingHorizontal: 16,
   },
+  buttonSmall: {
+    minHeight: 36,
+  },
+  buttonMedium: {
+    minHeight: 48,
+  },
   label: {
     color: 'rgba(255, 255, 255, 1)',
     fontFamily: 'DM Sans',

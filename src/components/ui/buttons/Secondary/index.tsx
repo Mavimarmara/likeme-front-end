@@ -3,12 +3,15 @@ import { Text, TouchableOpacity, GestureResponderEvent, ViewStyle, ActivityIndic
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { styles } from './styles';
 
+type Size = 'small' | 'medium';
+
 type Props = {
   label: string;
   onPress: (event: GestureResponderEvent) => void;
   style?: ViewStyle | ViewStyle[];
   loading?: boolean;
   disabled?: boolean;
+  size?: Size;
   icon?: string;
   iconSize?: number;
   iconColor?: string;
@@ -22,6 +25,7 @@ const SecondaryButton: React.FC<Props> = ({
   style, 
   loading = false, 
   disabled = false,
+  size = 'small',
   icon,
   iconSize = 16,
   iconColor,
@@ -37,6 +41,10 @@ const SecondaryButton: React.FC<Props> = ({
 
   const getTextColor = () => {
     return variant === 'dark' ? '#6E6A6A' : '#001137';
+  };
+
+  const getSizeStyle = () => {
+    return size === 'small' ? styles.buttonSmall : styles.buttonMedium;
   };
 
   const renderIcon = () => {
@@ -57,6 +65,7 @@ const SecondaryButton: React.FC<Props> = ({
       style={[
         styles.button, 
         variant === 'dark' && styles.buttonDark,
+        getSizeStyle(),
         style, 
         isDisabled && styles.buttonDisabled
       ]} 
