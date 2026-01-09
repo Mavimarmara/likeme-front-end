@@ -52,54 +52,8 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
   const [daySortOrder, setDaySortOrder] = useState<'asc' | 'desc'>('desc');
   const [menuVisibleForId, setMenuVisibleForId] = useState<string | null>(null);
   const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null);
-  // Mock data inicial - será substituído por dados reais do backend
-  const mockActivities: ActivityItem[] = [
-    {
-      id: '1',
-      type: 'program',
-      title: 'Breathing exercises',
-      description: 'Every evening, write down three moments of the day that triggered a strong emotion',
-      completed: false,
-      isFavorite: true,
-    },
-    {
-      id: '2',
-      type: 'program',
-      title: 'Mindful meditation',
-      description: 'Cultivate inner peace and balance to boost positivity',
-      completed: false,
-      isFavorite: false,
-    },
-    {
-      id: '3',
-      type: 'appointment',
-      title: 'Therapy Session',
-      description: 'Therapy Session with',
-      dateTime: '13 Nov. at 8:15 pm',
-      providerName: 'Avery Parker',
-      providerAvatar: 'A',
-      completed: false,
-      meetUrl: 'https://meet.google.com/abc-defg-hij',
-    },
-    {
-      id: '4',
-      type: 'program',
-      title: 'Yoga practice',
-      description: 'Engage in a 15-minute session to enhance flexibility and calmness',
-      completed: true,
-      isFavorite: true,
-    },
-    {
-      id: '5',
-      type: 'personal',
-      title: 'Guided meditation',
-      description: 'Start a journal and record daily affirmations for self-encouragement',
-      completed: true,
-      isFavorite: true,
-    },
-  ];
 
-  const [activities, setActivities] = useState<ActivityItem[]>(mockActivities);
+  const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [rawActivities, setRawActivities] = useState<any[]>([]); // Armazenar dados originais do backend
   const [isLoadingActivities, setIsLoadingActivities] = useState(false);
 
@@ -178,8 +132,8 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
       }
     } catch (error) {
       console.error('Error loading activities:', error);
-      // Em caso de erro, usar mock data
-      setActivities(mockActivities);
+      // Em caso de erro, manter array vazio
+      setActivities([]);
     } finally {
       setIsLoadingActivities(false);
     }
