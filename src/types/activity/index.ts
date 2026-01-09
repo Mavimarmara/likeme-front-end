@@ -1,4 +1,4 @@
-import type { ApiResponse } from './infrastructure';
+import type { ApiResponse } from '@/types/infrastructure';
 
 export type ActivityType = 'task' | 'event';
 

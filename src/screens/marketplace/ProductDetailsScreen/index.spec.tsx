@@ -2,7 +2,7 @@ import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import ProductDetailsScreen from './index';
 import { productService, adService } from '@/services';
-import { useProductDetails } from '@/hooks/marketplace';
+import { useProductDetails } from '@/hooks';
 
 jest.mock('react-native-safe-area-context', () => {
   const ReactNative = require('react-native');

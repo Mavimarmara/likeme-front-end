@@ -9,7 +9,7 @@ import { Header, Background } from '@/components/ui/layout';
 import { storageService } from '@/services';
 import { formatPrice, handleAdNavigation, mapProductToCartItem } from '@/utils';
 import { WeekHighlightCard } from '@/components/sections/marketplace';
-import { useMarketplaceAds } from '@/hooks/marketplace';
+import { useMarketplaceAds } from '@/hooks';
 import type { Ad } from '@/types/ad';
 import type { RootStackParamList } from '@/types/navigation';
 import { styles } from './styles';
