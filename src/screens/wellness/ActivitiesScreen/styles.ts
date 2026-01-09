@@ -8,13 +8,14 @@ export const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: SPACING.MD,
   },
   tabsContainer: {
+    paddingHorizontal: SPACING.MD,
   },
   filtersContainer: {
     marginBottom: SPACING.MD,
     gap: SPACING.SM,
+    paddingHorizontal: SPACING.MD,
   },
   createButtonContainer: {
     alignSelf: 'flex-start',
@@ -28,6 +29,7 @@ export const styles = StyleSheet.create({
     padding: SPACING.MD,
     marginBottom: SPACING.MD,
     position: 'relative',
+    marginHorizontal: SPACING.MD,
   },
   bannerCloseButton: {
     position: 'absolute',
@@ -65,6 +67,7 @@ export const styles = StyleSheet.create({
     color: COLORS.TEXT_LIGHT,
     marginBottom: SPACING.SM,
     marginTop: SPACING.XS,
+    paddingHorizontal: SPACING.MD,
   },
   scrollContent: {
     paddingBottom: SPACING.XL,
@@ -79,6 +82,7 @@ export const styles = StyleSheet.create({
     paddingBottom: SPACING.LG,
     paddingHorizontal: SPACING.MD,
     marginBottom: SPACING.MD,
+    marginHorizontal: SPACING.MD,
     shadowColor: COLORS.BLACK,
     shadowOffset: {
       width: 0,

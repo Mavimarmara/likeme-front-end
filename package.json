@@ -7,7 +7,7 @@
     "start": "expo start",
     "start:clear": "expo start --clear",
     "start:reset": "expo start --clear --reset-cache",
-    "start:tunnel": "expo start --tunnel",
+    "start:tunnel": "npx expo start --reset-cache --clear --tunnel",
     "start:dev": "expo start --dev-client",
     "android": "expo run:android",
     "android:clear": "expo start --clear --android",
@@ -39,13 +39,14 @@
     "submit:android": "eas submit --platform android",
     "submit:ios": "eas submit --platform ios",
     "run:apk": "./run-apk.sh",
-    "run:emulator": "./start-emulator.sh",
+    "run:emulator:android": "./start-emulator.sh",
     "install:apk": "./install-and-run-apk.sh",
     "clean": "rm -rf node_modules/.cache .expo dist android/build ios/build",
     "clean:all": "rm -rf node_modules/.cache .expo dist android/build ios/build android/app/build ios/Pods ios/Podfile.lock",
     "clean:android": "cd android && ./gradlew clean && cd ..",
     "clean:ios": "cd ios && rm -rf Pods Podfile.lock build && pod install && cd ..",
-    "postinstall": "if [ \"$SKIP_IOS_POD_INSTALL\" != \"true\" ]; then cd ios && pod install && cd ..; fi"
+    "postinstall": "if [ \"$SKIP_IOS_POD_INSTALL\" != \"true\" ]; then cd ios && pod install && cd ..; fi",
+    "run:emulator:ios": "open -a Simulator"
   },
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",

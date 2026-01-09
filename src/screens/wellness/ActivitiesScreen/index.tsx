@@ -830,9 +830,10 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
         }}
         onSave={async (data, activityId) => {
           try {
+            let response;
             if (activityId) {
               // Update existing activity
-              await activityService.updateActivity(activityId, {
+              response = await activityService.updateActivity(activityId, {
                 name: data.name,
                 type: data.type,
                 startDate: data.startDate,
@@ -847,7 +848,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
               console.log('Activity updated:', activityId);
             } else {
               // Create new activity
-              await activityService.createActivity({
+              response = await activityService.createActivity({
                 name: data.name,
                 type: data.type,
                 startDate: data.startDate,
@@ -859,13 +860,23 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
                 reminderEnabled: data.reminderEnabled,
                 reminderOffset: data.reminderMinutes ? `${data.reminderMinutes}` : null,
               });
-              console.log('Activity created:', data);
+              console.log('Activity created:', response.data?.id);
             }
-            // Refresh activities list after save
-            await loadActivities(activeTab === 'history');
-          } catch (error) {
+            
+            // Verificar se a operação foi bem-sucedida antes de recarregar
+            if (response && response.success && response.data) {
+              // Refresh activities list after save
+              await loadActivities(activeTab === 'history');
+            } else {
+              throw new Error(response?.message || 'Failed to save activity');
+            }
+          } catch (error: any) {
             console.error('Error saving activity:', error);
-            // TODO: Show error message to user
+            Alert.alert(
+              'Erro',
+              error?.message || 'Não foi possível salvar a atividade. Por favor, tente novamente.',
+              [{ text: 'OK' }]
+            );
           }
         }}
         activityId={editingActivityId || undefined}
