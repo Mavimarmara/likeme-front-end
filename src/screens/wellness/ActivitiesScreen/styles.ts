@@ -23,44 +23,8 @@ export const styles = StyleSheet.create({
   createButton: {
     alignSelf: 'flex-start',
   },
-  festivalBanner: {
-    backgroundColor: '#FFF9C4',
-    borderRadius: BORDER_RADIUS.LG,
-    padding: SPACING.MD,
-    marginBottom: SPACING.MD,
-    position: 'relative',
+  eventReminderContainer: {
     marginHorizontal: SPACING.MD,
-  },
-  bannerCloseButton: {
-    position: 'absolute',
-    top: SPACING.SM,
-    right: SPACING.SM,
-    zIndex: 1,
-    padding: SPACING.XS,
-  },
-  bannerContent: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: SPACING.SM,
-    paddingRight: SPACING.LG,
-  },
-  bannerIcon: {
-    marginTop: 2,
-  },
-  bannerTextContainer: {
-    flex: 1,
-  },
-  bannerText: {
-    fontSize: FONT_SIZES.SM,
-    color: COLORS.TEXT,
-    fontWeight: '400',
-    marginBottom: SPACING.XS,
-    lineHeight: 20,
-  },
-  bannerSubtext: {
-    fontSize: FONT_SIZES.SM,
-    color: COLORS.TEXT,
-    fontWeight: '400',
   },
   sectionLabel: {
     fontSize: FONT_SIZES.XS,
