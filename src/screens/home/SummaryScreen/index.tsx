@@ -3,9 +3,9 @@ import { View, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FloatingMenu } from '@/components/ui/menu';
 import { Header, Background } from '@/components/ui/layout';
-import { useCommunities } from '@/hooks';
+import { useCommunities, useSuggestedProducts } from '@/hooks';
 import { mapCommunityToRecommendedCommunity, mapCommunityToOtherCommunity, mapCommunityPostToPost, mapChannelsToEvents, sortByDateObject } from '@/utils';
-import { communityService, productService } from '@/services';
+import { communityService } from '@/services';
 import { storageService } from '@/services';
 import type { Channel } from '@/types/community';
 import type { CommunityFeedData } from '@/types/community';
@@ -83,9 +83,13 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   const [loadingCommunityPosts, setLoadingCommunityPosts] = useState(false);
   const [popularProviders, setPopularProviders] = useState<Provider[]>([]);
   const [loadingProviders, setLoadingProviders] = useState(false);
-  const [recommendedProducts, setRecommendedProducts] = useState<Product[]>([]);
-  const [loadingProducts, setLoadingProducts] = useState(false);
   const [events, setEvents] = useState<Event[]>([]);
+
+  const { products: recommendedProducts } = useSuggestedProducts({
+    limit: 4,
+    status: 'active',
+    enabled: true,
+  });
 
   useEffect(() => {
     if (!firstCommunity) {
@@ -147,35 +151,6 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
 
     loadCommunityPosts();
   }, [firstCommunity?.communityId]);
-
-  useEffect(() => {
-    const loadRecommendedProducts = async () => {
-      try {
-        setLoadingProducts(true);
-        const response = await productService.listProducts({
-          limit: 4,
-          status: 'active',
-        });
-        if (response.success && response.data) {
-          const products: Product[] = response.data.products.map(p => ({
-            id: p.id,
-            title: p.name,
-            price: p.price || 0,
-            tag: p.category || 'Product',
-            image: p.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
-            likes: 0,
-          }));
-          setRecommendedProducts(products);
-        }
-      } catch (error) {
-        // Error handling
-      } finally {
-        setLoadingProducts(false);
-      }
-    };
-
-    loadRecommendedProducts();
-  }, []);
 
   useEffect(() => {
     const loadEvents = async () => {
@@ -364,7 +339,9 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleProductPress = (product: Product) => {
-    console.log('Ver produto:', product.id);
+    rootNavigation.navigate('ProductDetails', {
+      productId: product.id,
+    } as never);
   };
 
   const handleProductLike = (product: Product) => {

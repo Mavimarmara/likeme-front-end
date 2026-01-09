@@ -12,7 +12,7 @@ import { ProductsCarousel, PlansCarousel, type Product, type Plan } from '@/comp
 import { EventReminder } from '@/components/ui/cards';
 import { orderService, activityService } from '@/services';
 import { formatPrice, getDateFromDatetime, getTimeFromDatetime, sortByDateTime, sortByDateField } from '@/utils';
-import { useActivities } from '@/hooks';
+import { useActivities, useSuggestedProducts } from '@/hooks';
 import type { Order } from '@/types/order';
 import type { RootStackParamList } from '@/types/navigation';
 import { styles } from './styles';
@@ -70,6 +70,12 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
       loadOrders();
     }
   }, [activeTab]);
+
+  const { products: suggestedProducts } = useSuggestedProducts({
+    limit: 4,
+    status: 'active',
+    enabled: true,
+  });
 
 
   // Função para encontrar a próxima atividade que acontece hoje usando dados originais
@@ -715,25 +721,6 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
     },
   ];
 
-  // Mock products data - será substituído por dados reais
-  const products: Product[] = [
-    {
-      id: '1',
-      title: 'Tongue scrapper',
-      price: 80.00,
-      tag: 'Curated for you',
-      image: 'https://images.unsplash.com/photo-1505576391880-b3f9d713dc5a?w=800',
-      likes: 10,
-    },
-    {
-      id: '2',
-      title: 'Omega 3 supplement',
-      price: 60.00,
-      tag: 'For your program',
-      image: 'https://images.unsplash.com/photo-1494390248081-4e521a5940db?w=800',
-      likes: 10,
-    },
-  ];
 
   return (
     <SafeAreaView style={styles.container}>
@@ -806,13 +793,17 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
                   />
                 </View>
               )}
-              {activeTab === 'actives' && products.length > 0 && (
+              {activeTab === 'actives' && suggestedProducts.length > 0 && (
                 <View>
                   <ProductsCarousel
                     title="Products recommended for your sleep journey by Dr. Peter Valasquez"
                     subtitle="Discover our options selected just for you"
-                    products={products}
-                    onProductPress={(product) => console.log('Product pressed:', product.id)}
+                    products={suggestedProducts}
+                    onProductPress={(product) => {
+                      rootNavigation.navigate('ProductDetails', {
+                        productId: product.id,
+                      } as never);
+                    }}
                     onProductLike={(product) => console.log('Product liked:', product.id)}
                   />
                 </View>

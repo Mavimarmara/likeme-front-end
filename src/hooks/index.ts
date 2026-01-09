@@ -12,6 +12,7 @@ export { useActivities } from './wellness/useActivities';
 // Marketplace hooks
 export { useProductDetails } from './marketplace/useProductDetails';
 export { useMarketplaceAds } from './marketplace/useMarketplaceAds';
+export { useSuggestedProducts } from './marketplace/useSuggestedProducts';
 
 // Formatted input hook
 export { useFormattedInput } from './useFormattedInput';

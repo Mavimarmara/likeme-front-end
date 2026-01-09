@@ -12,9 +12,9 @@ import type { Program, ProgramDetail } from '@/types/program';
 import type { CommunityCategory, Channel, CommunityFeedData } from '@/types/community';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
-import { useUserFeed, useCommunities } from '@/hooks';
+import { useUserFeed, useCommunities, useSuggestedProducts } from '@/hooks';
 import { mapFiltersToFeedParams, mapCommunityToProgram, mapChannelsToEvents } from '@/utils';
-import { communityService, productService } from '@/services';
+import { communityService } from '@/services';
 
 type CommunityMode = 'Social' | 'Programs';
 
@@ -226,8 +226,13 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
 
   const [providerChat, setProviderChat] = useState<ProviderChat | undefined>(undefined);
   const [liveBanner, setLiveBanner] = useState<LiveBannerData | undefined>(undefined);
-  const [suggestedProducts, setSuggestedProducts] = useState<Product[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
+
+  const { products: suggestedProducts } = useSuggestedProducts({
+    limit: 4,
+    status: 'active',
+    enabled: true,
+  });
 
   useEffect(() => {
     const loadChannels = async () => {
@@ -296,32 +301,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     };
 
     loadChannels();
-  }, []);
-
-  useEffect(() => {
-    const loadSuggestedProducts = async () => {
-      try {
-        const response = await productService.listProducts({
-          limit: 4,
-          status: 'active',
-        });
-        if (response.success && response.data) {
-          const products: Product[] = response.data.products.map(p => ({
-            id: p.id,
-            title: p.name,
-            price: p.price || 0,
-            tag: p.category || 'Product',
-            image: p.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
-            likes: 0,
-          }));
-          setSuggestedProducts(products);
-        }
-      } catch (error) {
-        // Error handling
-      }
-    };
-
-    loadSuggestedProducts();
   }, []);
 
 
