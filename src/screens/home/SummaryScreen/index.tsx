@@ -6,6 +6,7 @@ import { Header, Background } from '@/components/ui/layout';
 import { useCommunities } from '@/hooks';
 import { mapCommunityToRecommendedCommunity, mapCommunityToOtherCommunity, mapCommunityPostToPost } from '@/utils/community/mappers';
 import { mapChannelsToEvents } from '@/utils/mappers/eventMapper';
+import { sortByDateObject } from '@/utils/sorters/dateTimeSorter';
 import { communityService, productService } from '@/services';
 import { storageService } from '@/services';
 import type { Channel } from '@/types/community';
@@ -135,9 +136,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
         const mappedPostsResults = await Promise.all(mappedPostsPromises);
         const mappedPosts: Post[] = mappedPostsResults.filter((post): post is Post => post !== null);
 
-        const sortedPosts = [...mappedPosts].sort((a, b) => {
-          return b.createdAt.getTime() - a.createdAt.getTime();
-        });
+        const sortedPosts = sortByDateObject(mappedPosts, 'createdAt', 'desc');
 
         setCommunityPosts(sortedPosts);
       } catch (error) {

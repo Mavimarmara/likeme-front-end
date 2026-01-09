@@ -12,6 +12,7 @@ import { ProductsCarousel, PlansCarousel, type Product, type Plan } from '@/comp
 import { EventReminder } from '@/components/ui/cards';
 import { orderService, activityService } from '@/services';
 import { formatPrice } from '@/utils/formatters';
+import { sortByDateTime, sortByDateField } from '@/utils/sorters/dateTimeSorter';
 import type { Order } from '@/types/order';
 import type { RootStackParamList } from '@/types/navigation';
 import { styles } from './styles';
@@ -395,29 +396,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
     }
 
     // Sort by date
-    const sorted = [...source].sort((a, b) => {
-      // Try to parse dates from dateTime or use createdAt
-      let dateA = 0;
-      let dateB = 0;
-      
-      if (a.dateTime) {
-        // Try to parse dateTime string (e.g., "13 Nov. at 8:15 pm")
-        const parsedA = new Date(a.dateTime);
-        dateA = isNaN(parsedA.getTime()) ? 0 : parsedA.getTime();
-      }
-      
-      if (b.dateTime) {
-        const parsedB = new Date(b.dateTime);
-        dateB = isNaN(parsedB.getTime()) ? 0 : parsedB.getTime();
-      }
-      
-      // If dates are equal or both 0, maintain original order
-      if (dateA === dateB) {
-        return 0;
-      }
-      
-      return daySortOrder === 'asc' ? dateA - dateB : dateB - dateA;
-    });
+    const sorted = sortByDateTime(source, daySortOrder, (item) => item.dateTime);
 
     return sorted;
   }, [activeTab, selectedFilter, daySortOrder, historyActivities, activeActivities]);
@@ -680,11 +659,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
   };
 
   const sortedOrders = useMemo(() => {
-    return [...orders].sort((a, b) => {
-      const dateA = new Date(a.createdAt).getTime();
-      const dateB = new Date(b.createdAt).getTime();
-      return daySortOrder === 'asc' ? dateA - dateB : dateB - dateA;
-    });
+    return sortByDateField(orders, 'createdAt', daySortOrder);
   }, [orders, daySortOrder]);
 
   const renderOrderCard = (order: Order) => {
