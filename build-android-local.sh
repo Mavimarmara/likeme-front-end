@@ -37,4 +37,8 @@ java -version
 echo ""
 echo "🚀 Iniciando build local do Android..."
 echo "📦 As variáveis EXPO_PUBLIC_* serão injetadas pelo app.config.js durante o build"
+
+# Desabilitar postinstall do iOS durante o build Android
+export SKIP_IOS_POD_INSTALL=true
+
 eas build --local --platform android --profile staging

@@ -4,12 +4,11 @@ import {
   Text,
   ScrollView,
   SafeAreaView,
-  TouchableOpacity,
   Alert,
-  ActivityIndicator,
 } from 'react-native';
 import { Header } from '@/components/ui/layout';
 import { Background } from '@/components/ui/layout';
+import { SecondaryButton } from '@/components/ui/buttons';
 import { storageService, orderService, paymentService } from '@/services';
 import { formatPrice, formatAddress, formatBillingAddress } from '@/utils/formatters';
 import { useFormattedInput } from '@/hooks';
@@ -412,30 +411,25 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
       {/* Continue/Home Button */}
       {currentStep !== 'order' && (
         <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[styles.completeButton, isProcessing && styles.completeButtonDisabled]}
+          <SecondaryButton
+            label="Continue"
             onPress={handleContinue}
-            activeOpacity={0.7}
+            style={styles.completeButton}
+            size="large"
+            loading={isProcessing}
             disabled={isProcessing}
-          >
-            {isProcessing ? (
-              <ActivityIndicator color="#FFFFFF" />
-            ) : (
-              <Text style={styles.completeButtonText}>Continue</Text>
-            )}
-          </TouchableOpacity>
+          />
         </View>
       )}
 
       {currentStep === 'order' && (
         <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.completeButton}
+          <SecondaryButton
+            label="Home"
             onPress={handleHomePress}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.completeButtonText}>Home</Text>
-          </TouchableOpacity>
+            style={styles.completeButton}
+            size="large"
+          />
         </View>
       )}
     </SafeAreaView>

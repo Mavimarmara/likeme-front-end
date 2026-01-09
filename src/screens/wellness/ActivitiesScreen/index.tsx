@@ -9,6 +9,7 @@ import { Toggle, PrimaryButton, Badge } from '@/components/ui';
 import { CreateActivityModal } from '@/components/sections/activity';
 import { BackgroundIconButton, DoneIcon, CloseIcon } from '@/assets';
 import { ProductsCarousel, PlansCarousel, type Product, type Plan } from '@/components/sections/product';
+import { EventReminder } from '@/components/ui/cards';
 import { orderService, activityService } from '@/services';
 import { formatPrice } from '@/utils/formatters';
 import type { Order } from '@/types/order';
@@ -51,54 +52,9 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
   const [daySortOrder, setDaySortOrder] = useState<'asc' | 'desc'>('desc');
   const [menuVisibleForId, setMenuVisibleForId] = useState<string | null>(null);
   const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null);
-  // Mock data inicial - será substituído por dados reais do backend
-  const mockActivities: ActivityItem[] = [
-    {
-      id: '1',
-      type: 'program',
-      title: 'Breathing exercises',
-      description: 'Every evening, write down three moments of the day that triggered a strong emotion',
-      completed: false,
-      isFavorite: true,
-    },
-    {
-      id: '2',
-      type: 'program',
-      title: 'Mindful meditation',
-      description: 'Cultivate inner peace and balance to boost positivity',
-      completed: false,
-      isFavorite: false,
-    },
-    {
-      id: '3',
-      type: 'appointment',
-      title: 'Therapy Session',
-      description: 'Therapy Session with',
-      dateTime: '13 Nov. at 8:15 pm',
-      providerName: 'Avery Parker',
-      providerAvatar: 'A',
-      completed: false,
-      meetUrl: 'https://meet.google.com/abc-defg-hij',
-    },
-    {
-      id: '4',
-      type: 'program',
-      title: 'Yoga practice',
-      description: 'Engage in a 15-minute session to enhance flexibility and calmness',
-      completed: true,
-      isFavorite: true,
-    },
-    {
-      id: '5',
-      type: 'personal',
-      title: 'Guided meditation',
-      description: 'Start a journal and record daily affirmations for self-encouragement',
-      completed: true,
-      isFavorite: true,
-    },
-  ];
 
-  const [activities, setActivities] = useState<ActivityItem[]>(mockActivities);
+  const [activities, setActivities] = useState<ActivityItem[]>([]);
+  const [rawActivities, setRawActivities] = useState<any[]>([]); // Armazenar dados originais do backend
   const [isLoadingActivities, setIsLoadingActivities] = useState(false);
 
   const historyActivities = activities.filter(a => a.completed);
@@ -113,11 +69,28 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
         includeDeleted: includeDeletedActivities,
       });
       if (response.success && response.data?.activities) {
+        // Armazenar dados originais
+        setRawActivities(response.data.activities);
+        
         // Converter UserActivity para ActivityItem
         const convertedActivities: ActivityItem[] = response.data.activities.map((activity) => {
           let dateTime: string | undefined;
           if (activity.startDate) {
-            const date = new Date(activity.startDate);
+            // Parsear a data como local (não UTC) para evitar problemas de timezone
+            // O backend retorna como ISO string (UTC), precisamos extrair apenas a data
+            const dateStr = activity.startDate;
+            let date: Date;
+            
+            // Extrair apenas a parte da data (YYYY-MM-DD) da string ISO
+            const dateOnly = dateStr.split('T')[0];
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateOnly)) {
+              // Formato YYYY-MM-DD - criar como data local para preservar o dia correto
+              const [year, month, day] = dateOnly.split('-').map(Number);
+              date = new Date(year, month - 1, day);
+            } else {
+              // Outro formato - usar new Date normalmente
+              date = new Date(activity.startDate);
+            }
             const formattedDate = formatDate(date);
             if (activity.startTime) {
               dateTime = `${formattedDate} at ${activity.startTime}`;
@@ -159,8 +132,8 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
       }
     } catch (error) {
       console.error('Error loading activities:', error);
-      // Em caso de erro, usar mock data
-      setActivities(mockActivities);
+      // Em caso de erro, manter array vazio
+      setActivities([]);
     } finally {
       setIsLoadingActivities(false);
     }
@@ -182,6 +155,214 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
     const day = date.getDate();
     const month = date.toLocaleDateString('en-US', { month: 'short' });
     return `${day} ${month}.`;
+  };
+
+  // Função para parsear time string (ex: "8:15 pm") para Date
+  const parseTimeString = (timeString: string, baseDate: Date): Date => {
+    const date = new Date(baseDate);
+    const time = timeString.toLowerCase().trim();
+    const [timePart, period] = time.split(' ');
+    const [hours, minutes] = timePart.split(':');
+    let hour = parseInt(hours, 10);
+    const min = parseInt(minutes || '0', 10);
+
+    if (period === 'pm' && hour !== 12) {
+      hour += 12;
+    } else if (period === 'am' && hour === 12) {
+      hour = 0;
+    }
+
+    date.setHours(hour, min, 0, 0);
+    return date;
+  };
+
+  // Função para verificar se é hoje
+  const isToday = (date: Date): boolean => {
+    const today = new Date();
+    return (
+      date.getDate() === today.getDate() &&
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear()
+    );
+  };
+
+  // Função para encontrar a próxima atividade que acontece hoje usando dados originais
+  const getUpcomingActivity = useMemo(() => {
+    if (activeTab === 'history' || rawActivities.length === 0) return null;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    // Filtrar atividades que não estão deletadas, têm startDate e acontecem hoje
+    const todayActivities = rawActivities
+      .filter((activity) => {
+        if (activity.deletedAt || !activity.startDate) return false;
+
+        try {
+          // Verificar se a data é hoje - parsear como data local
+          // O backend retorna como ISO string (ex: "2024-01-09T00:00:00.000Z")
+          // Precisamos extrair apenas a parte da data (YYYY-MM-DD)
+          let startDate: Date;
+          if (typeof activity.startDate === 'string') {
+            // Extrair apenas a parte da data da string ISO
+            const dateOnly = activity.startDate.split('T')[0];
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateOnly)) {
+              // Formato YYYY-MM-DD - criar como data local para preservar o dia correto
+              const [year, month, day] = dateOnly.split('-').map(Number);
+              startDate = new Date(year, month - 1, day);
+            } else {
+              startDate = new Date(activity.startDate);
+            }
+          } else {
+            startDate = new Date(activity.startDate);
+          }
+          startDate.setHours(0, 0, 0, 0);
+          
+          // Verificar se é hoje
+          const isTodayDate = startDate.getTime() === today.getTime();
+          
+          // Retornar true se for hoje (mostrar todas as atividades de hoje)
+          return isTodayDate;
+        } catch (error) {
+          console.error('Error parsing activity date/time:', error);
+          return false;
+        }
+      })
+      .sort((a, b) => {
+        try {
+          // Parsear datas corretamente (extrair da string ISO)
+          let dateA: Date;
+          let dateB: Date;
+          
+          if (typeof a.startDate === 'string') {
+            const dateOnlyA = a.startDate.split('T')[0];
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateOnlyA)) {
+              const [year, month, day] = dateOnlyA.split('-').map(Number);
+              dateA = new Date(year, month - 1, day);
+            } else {
+              dateA = new Date(a.startDate);
+            }
+          } else {
+            dateA = new Date(a.startDate);
+          }
+          
+          if (typeof b.startDate === 'string') {
+            const dateOnlyB = b.startDate.split('T')[0];
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateOnlyB)) {
+              const [year, month, day] = dateOnlyB.split('-').map(Number);
+              dateB = new Date(year, month - 1, day);
+            } else {
+              dateB = new Date(b.startDate);
+            }
+          } else {
+            dateB = new Date(b.startDate);
+          }
+          
+          // Se ambas têm startTime, ordenar por hora
+          if (a.startTime && b.startTime) {
+            const timeA = parseTimeString(a.startTime, dateA);
+            const timeB = parseTimeString(b.startTime, dateB);
+            return timeA.getTime() - timeB.getTime();
+          }
+          
+          // Se só uma tem startTime, priorizar a que tem
+          if (a.startTime && !b.startTime) return -1;
+          if (!a.startTime && b.startTime) return 1;
+          
+          // Se nenhuma tem, manter ordem original
+          return 0;
+        } catch {
+          return 0;
+        }
+      });
+
+    return todayActivities.length > 0 ? todayActivities[0] : null;
+  }, [rawActivities, activeTab]);
+
+  // Função para calcular tempo restante e formatar mensagem
+  const getReminderMessage = (activity: any): string => {
+    if (!activity || !activity.startDate) {
+      return activity?.name || 'Event is coming up soon!';
+    }
+
+    try {
+      const now = new Date();
+      
+      // Se não tiver startTime, apenas mostrar que é hoje
+      if (!activity.startTime) {
+        return `${activity.name} is scheduled for today—don't miss it!`;
+      }
+
+      // Parsear como data local para evitar problemas de timezone
+      // O backend retorna como ISO string, extrair apenas a parte da data
+      let startDate: Date;
+      if (typeof activity.startDate === 'string') {
+        const dateOnly = activity.startDate.split('T')[0];
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dateOnly)) {
+          // Formato YYYY-MM-DD - criar como data local
+          const [year, month, day] = dateOnly.split('-').map(Number);
+          startDate = new Date(year, month - 1, day);
+        } else {
+          startDate = new Date(activity.startDate);
+        }
+      } else {
+        startDate = new Date(activity.startDate);
+      }
+      const activityDateTime = parseTimeString(activity.startTime, startDate);
+      const diffMs = activityDateTime.getTime() - now.getTime();
+      const diffMinutes = Math.floor(diffMs / (1000 * 60));
+      const diffHours = Math.floor(diffMinutes / 60);
+
+      if (diffHours > 0) {
+        return `${activity.name} kicks off in ${diffHours} hour${diffHours > 1 ? 's' : ''}—don't miss it!`;
+      } else if (diffMinutes > 0) {
+        return `${activity.name} starts in ${diffMinutes} minute${diffMinutes > 1 ? 's' : ''}—don't miss it!`;
+      } else if (diffMinutes > -60) {
+        // Se passou há menos de 1 hora, ainda mostrar
+        return `${activity.name} is happening now—don't miss it!`;
+      } else {
+        return `${activity.name} is scheduled for today—don't miss it!`;
+      }
+    } catch (error) {
+      console.error('Error calculating reminder message:', error);
+      return `${activity.name} is scheduled for today—don't miss it!`;
+    }
+  };
+
+  // Função para extrair data e hora
+  const getReminderDateAndTime = (activity: any): { date: string; time: string } => {
+    if (!activity || !activity.startDate) {
+      return { date: 'Today', time: '' };
+    }
+
+    try {
+      // Parsear como data local para evitar problemas de timezone
+      // O backend retorna como ISO string, extrair apenas a parte da data
+      let startDate: Date;
+      if (typeof activity.startDate === 'string') {
+        const dateOnly = activity.startDate.split('T')[0];
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dateOnly)) {
+          // Formato YYYY-MM-DD - criar como data local
+          const [year, month, day] = dateOnly.split('-').map(Number);
+          startDate = new Date(year, month - 1, day);
+        } else {
+          startDate = new Date(activity.startDate);
+        }
+      } else {
+        startDate = new Date(activity.startDate);
+      }
+      const isTodayDate = isToday(startDate);
+      
+      return {
+        date: isTodayDate ? 'Today' : formatDate(startDate),
+        time: activity.startTime || '',
+      };
+    } catch (error) {
+      console.error('Error parsing date and time:', error);
+      return { date: 'Today', time: '' };
+    }
   };
 
   const loadOrders = async () => {
@@ -475,27 +656,25 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
     </View>
   );
 
-  const renderFestivalBanner = () => {
-    if (!showFestivalBanner || activeTab === 'history') return null;
+  const renderEventReminder = () => {
+    if (activeTab === 'history') return null;
+
+    const upcomingActivity = getUpcomingActivity;
+    
+    if (!upcomingActivity) return null;
+
+    const { date, time } = getReminderDateAndTime(upcomingActivity);
+    const message = getReminderMessage(upcomingActivity);
 
     return (
-      <View style={styles.festivalBanner}>
-        <TouchableOpacity
-          style={styles.bannerCloseButton}
-          onPress={() => setShowFestivalBanner(false)}
-          activeOpacity={0.7}
-        >
-          <Icon name="close" size={16} color="#001137" />
-        </TouchableOpacity>
-        <View style={styles.bannerContent}>
-          <Icon name="notifications" size={20} color="#001137" style={styles.bannerIcon} />
-          <View style={styles.bannerTextContainer}>
-            <Text style={styles.bannerText}>
-              Spring Festival kicks off in 2 hours—don't miss it!
-            </Text>
-            <Text style={styles.bannerSubtext}>Today – Thu 08:30 pm</Text>
-          </View>
-        </View>
+      <View style={styles.eventReminderContainer}>
+        <EventReminder
+          message={message}
+          date={date}
+          time={time}
+          onClose={() => setShowFestivalBanner(false)}
+          visible={showFestivalBanner}
+        />
       </View>
     );
   };
@@ -741,7 +920,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
       <View style={styles.content}>
         {renderTabs()}
         {renderFilters()}
-        {renderFestivalBanner()}
+        {renderEventReminder()}
 
         {activeTab === 'actives' && (
           <Text style={styles.sectionLabel}>
@@ -830,9 +1009,10 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
         }}
         onSave={async (data, activityId) => {
           try {
+            let response;
             if (activityId) {
               // Update existing activity
-              await activityService.updateActivity(activityId, {
+              response = await activityService.updateActivity(activityId, {
                 name: data.name,
                 type: data.type,
                 startDate: data.startDate,
@@ -847,7 +1027,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
               console.log('Activity updated:', activityId);
             } else {
               // Create new activity
-              await activityService.createActivity({
+              response = await activityService.createActivity({
                 name: data.name,
                 type: data.type,
                 startDate: data.startDate,
@@ -859,13 +1039,23 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
                 reminderEnabled: data.reminderEnabled,
                 reminderOffset: data.reminderMinutes ? `${data.reminderMinutes}` : null,
               });
-              console.log('Activity created:', data);
+              console.log('Activity created:', response.data?.id);
             }
-            // Refresh activities list after save
-            await loadActivities(activeTab === 'history');
-          } catch (error) {
+            
+            // Verificar se a operação foi bem-sucedida antes de recarregar
+            if (response && response.success && response.data) {
+              // Refresh activities list after save
+              await loadActivities(activeTab === 'history');
+            } else {
+              throw new Error(response?.message || 'Failed to save activity');
+            }
+          } catch (error: any) {
             console.error('Error saving activity:', error);
-            // TODO: Show error message to user
+            Alert.alert(
+              'Erro',
+              error?.message || 'Não foi possível salvar a atividade. Por favor, tente novamente.',
+              [{ text: 'OK' }]
+            );
           }
         }}
         activityId={editingActivityId || undefined}

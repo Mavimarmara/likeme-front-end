@@ -21,6 +21,7 @@ import storageService from '@/services/auth/storageService';
 import productService from '@/services/product/productService';
 import { formatPrice } from '@/utils/formatters';
 import { Alert } from 'react-native';
+import { SecondaryButton } from '@/components/ui/buttons';
 import { styles } from './styles';
 
 interface CartItem {
@@ -389,13 +390,12 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
             </View>
             {renderShippingSection()}
             {renderOrderSummary()}
-            <TouchableOpacity
-              style={styles.buyButton}
+            <SecondaryButton
+              label="Buy"
               onPress={handleBuy}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.buyButtonText}>Buy</Text>
-            </TouchableOpacity>
+              style={styles.buyButton}
+              size="large"
+            />
           </>
         ) : (
           <View style={styles.emptyCartContainer}>
