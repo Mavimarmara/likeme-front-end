@@ -12,6 +12,7 @@ import { ProductsCarousel, PlansCarousel, type Product, type Plan } from '@/comp
 import { EventReminder } from '@/components/ui/cards';
 import { orderService, activityService } from '@/services';
 import { formatPrice, getDateFromDatetime, getTimeFromDatetime, sortByDateTime, sortByDateField } from '@/utils';
+import { useActivities } from '@/hooks';
 import type { Order } from '@/types/order';
 import type { RootStackParamList } from '@/types/navigation';
 import { styles } from './styles';
@@ -25,19 +26,7 @@ type ActivitiesScreenProps = {
 type TabType = 'actives' | 'history';
 type FilterType = 'all' | 'activities' | 'appointments' | 'orders';
 
-interface ActivityItem {
-  id: string;
-  type: 'program' | 'appointment' | 'personal';
-  title: string;
-  description: string;
-  dateTime?: string;
-  providerName?: string;
-  providerAvatar?: string;
-  completed?: boolean;
-  declined?: boolean;
-  isFavorite?: boolean;
-  meetUrl?: string;
-}
+import type { ActivityItem } from '@/types/activity/hooks';
 
 const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
   const rootNavigation = navigation.getParent() ?? navigation;
@@ -53,103 +42,28 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
   const [menuVisibleForId, setMenuVisibleForId] = useState<string | null>(null);
   const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null);
 
-  const [activities, setActivities] = useState<ActivityItem[]>([]);
-  const [rawActivities, setRawActivities] = useState<any[]>([]); // Armazenar dados originais do backend
-  const [isLoadingActivities, setIsLoadingActivities] = useState(false);
-
-  const historyActivities = activities.filter(a => a.completed);
-  const activeActivities = activities.filter(a => !a.completed);
-
-  const loadActivities = async (includeDeletedActivities = false) => {
-    try {
-      setIsLoadingActivities(true);
-      const response = await activityService.listActivities({
-        page: 1,
-        limit: 100,
-        includeDeleted: includeDeletedActivities,
-      });
-      // TypeScript workaround: response pode ter estrutura variável
-      const responseTyped = response as any;
-      const isSuccess = responseTyped.success === true;
-      const responseData = responseTyped.data;
-      const activitiesList = responseData?.activities || [];
-      
-      if (isSuccess && activitiesList.length > 0) {
-        // Armazenar dados originais
-        setRawActivities(activitiesList);
-        
-        // Converter UserActivity para ActivityItem
-        const convertedActivities: ActivityItem[] = activitiesList.map((activity) => {
-          let dateTime: string | undefined;
-          if (activity.startDate) {
-            // Parsear a data como local (não UTC) para evitar problemas de timezone
-            // O backend retorna como ISO string (UTC), precisamos extrair apenas a data
-            const dateStr = activity.startDate;
-            let date: Date;
-            
-            // Extrair apenas a parte da data (YYYY-MM-DD) da string ISO
-            const dateOnly = dateStr.split('T')[0];
-            if (/^\d{4}-\d{2}-\d{2}$/.test(dateOnly)) {
-              // Formato YYYY-MM-DD - criar como data local para preservar o dia correto
-              const [year, month, day] = dateOnly.split('-').map(Number);
-              date = new Date(year, month - 1, day);
-            } else {
-              // Outro formato - usar new Date normalmente
-              date = new Date(activity.startDate);
-            }
-            const formattedDate = formatDate(date);
-            if (activity.startTime) {
-              dateTime = `${formattedDate} at ${activity.startTime}`;
-            } else {
-              dateTime = formattedDate;
-            }
-          }
-
-          const description = activity.description || activity.location || '';
-          const isCompleted = activity.deletedAt !== null && description.startsWith('[COMPLETED]');
-          const isDeclined = activity.deletedAt !== null && !isCompleted;
-          
-          // Verificar se location contém uma URL válida (link do meet)
-          const isUrl = (str: string | null | undefined): boolean => {
-            if (!str) return false;
-            return str.startsWith('http://') || str.startsWith('https://') || str.startsWith('www.') || str.startsWith('meet.google');
-          };
-          
-          const meetUrl = activity.location && isUrl(activity.location) ? activity.location : undefined;
-          const providerName = activity.location?.includes('Meet') && !isUrl(activity.location) 
-            ? activity.location.replace('Meet with ', '') 
-            : undefined;
-          
-          return {
-            id: activity.id,
-            type: activity.type === 'task' ? 'personal' : activity.type === 'event' ? 'appointment' : 'program',
-            title: activity.name,
-            description: description.replace(/^\[COMPLETED\]/, ''), // Remover marcador da descrição exibida
-            dateTime,
-            providerName,
-            providerAvatar: providerName ? providerName.charAt(0) : undefined,
-            completed: activity.deletedAt !== null,
-            declined: isDeclined,
-            isFavorite: false,
-            meetUrl,
-          };
-        });
-        setActivities(convertedActivities);
-      }
-    } catch (error) {
-      console.error('Error loading activities:', error);
-      // Em caso de erro, manter array vazio
-      setActivities([]);
-    } finally {
-      setIsLoadingActivities(false);
-    }
-  };
+  // Usar o hook useActivities
+  const {
+    activities,
+    rawActivities,
+    loading: isLoadingActivities,
+    historyActivities,
+    activeActivities,
+    loadActivities,
+    formatDate,
+    parseTimeString,
+    isToday,
+  } = useActivities({
+    enabled: true,
+    includeDeleted: false, // Padrão, será sobrescrito no loadActivities
+    autoLoad: false, // Vamos controlar manualmente quando carregar
+  });
 
   useEffect(() => {
     // Incluir atividades deletadas (skipadas) quando estiver na aba de histórico
     const includeDeleted = activeTab === 'history';
     loadActivities(includeDeleted);
-  }, [activeTab]);
+  }, [activeTab, loadActivities]);
 
   useEffect(() => {
     if (activeTab === 'history') {
@@ -157,40 +71,6 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
     }
   }, [activeTab]);
 
-  const formatDate = (date: Date): string => {
-    const day = date.getDate();
-    const month = date.toLocaleDateString('en-US', { month: 'short' });
-    return `${day} ${month}.`;
-  };
-
-  // Função para parsear time string (ex: "8:15 pm") para Date
-  const parseTimeString = (timeString: string, baseDate: Date): Date => {
-    const date = new Date(baseDate);
-    const time = timeString.toLowerCase().trim();
-    const [timePart, period] = time.split(' ');
-    const [hours, minutes] = timePart.split(':');
-    let hour = parseInt(hours, 10);
-    const min = parseInt(minutes || '0', 10);
-
-    if (period === 'pm' && hour !== 12) {
-      hour += 12;
-    } else if (period === 'am' && hour === 12) {
-      hour = 0;
-    }
-
-    date.setHours(hour, min, 0, 0);
-    return date;
-  };
-
-  // Função para verificar se é hoje
-  const isToday = (date: Date): boolean => {
-    const today = new Date();
-    return (
-      date.getDate() === today.getDate() &&
-      date.getMonth() === today.getMonth() &&
-      date.getFullYear() === today.getFullYear()
-    );
-  };
 
   // Função para encontrar a próxima atividade que acontece hoje usando dados originais
   const getUpcomingActivity = useMemo(() => {
@@ -522,10 +402,6 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
     try {
       // Marcar atividade como declinada (deletada) para que apareça no histórico como declinada
       await activityService.deleteActivity(activityId);
-      // Atualizar localmente para marcar como declinada
-      setActivities(prev => prev.map(a => 
-        a.id === activityId ? { ...a, completed: true, declined: true } : a
-      ));
       // Recarregar atividades para atualizar a lista
       await loadActivities(activeTab === 'history');
     } catch (error) {
