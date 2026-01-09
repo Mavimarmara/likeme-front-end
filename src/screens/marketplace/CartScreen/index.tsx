@@ -19,7 +19,7 @@ import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES } from '@/constants';
 import type { RootStackParamList } from '@/types/navigation';
 import storageService from '@/services/auth/storageService';
 import productService from '@/services/product/productService';
-import { formatPrice } from '@/utils/formatters';
+import { formatPrice } from '@/utils';
 import { Alert } from 'react-native';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { styles } from './styles';

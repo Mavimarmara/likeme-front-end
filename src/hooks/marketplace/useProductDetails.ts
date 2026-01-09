@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Alert } from 'react-native';
 import { productService, adService, storageService } from '@/services';
-import { mapProductToCartItem } from '@/utils/mappers/cartMapper';
-import { formatPrice } from '@/utils/formatters';
+import { mapProductToCartItem, formatPrice } from '@/utils';
 import type { Product as ApiProduct } from '@/types/product';
 import type { Ad } from '@/types/ad';
 

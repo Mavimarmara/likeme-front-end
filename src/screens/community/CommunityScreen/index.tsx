@@ -13,9 +13,7 @@ import type { CommunityCategory, Channel, CommunityFeedData } from '@/types/comm
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
 import { useUserFeed, useCommunities } from '@/hooks';
-import { mapFiltersToFeedParams } from '@/utils/community/filterMapper';
-import { mapCommunityToProgram } from '@/utils/community/mappers';
-import { mapChannelsToEvents } from '@/utils/mappers/eventMapper';
+import { mapFiltersToFeedParams, mapCommunityToProgram, mapChannelsToEvents } from '@/utils';
 import { communityService, productService } from '@/services';
 
 type CommunityMode = 'Social' | 'Programs';

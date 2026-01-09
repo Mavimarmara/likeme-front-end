@@ -12,8 +12,7 @@ import { ProductsCarousel, PlansCarousel, type Product, type Plan } from '@/comp
 import { PostCard } from '@/components/sections/community';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
 import { useProductDetails } from '@/hooks/marketplace';
-import { formatPrice } from '@/utils/formatters';
-import { mapApiProductToCarouselProduct, mapApiProductToNavigationParams } from '@/utils/mappers/productMapper';
+import { formatPrice, mapApiProductToCarouselProduct, mapApiProductToNavigationParams } from '@/utils';
 import { useUserFeed } from '@/hooks/community/useUserFeed';
 import type { Post } from '@/types';
 import type { RootStackParamList } from '@/types/navigation';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
-import { formatPrice } from '@/utils/formatters';
+import { formatPrice } from '@/utils';
 import { styles } from './styles';
 
 interface WeekHighlightCardProps {

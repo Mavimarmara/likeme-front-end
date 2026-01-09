@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { BlurView } from 'expo-blur';
-import { formatPrice } from '@/utils/formatters';
+import { formatPrice } from '@/utils';
 import { styles } from './styles';
 
 export interface Product {

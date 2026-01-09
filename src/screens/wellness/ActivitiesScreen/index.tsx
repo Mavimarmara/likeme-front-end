@@ -11,8 +11,7 @@ import { BackgroundIconButton, DoneIcon, CloseIcon } from '@/assets';
 import { ProductsCarousel, PlansCarousel, type Product, type Plan } from '@/components/sections/product';
 import { EventReminder } from '@/components/ui/cards';
 import { orderService, activityService } from '@/services';
-import { formatPrice } from '@/utils/formatters';
-import { sortByDateTime, sortByDateField } from '@/utils/sorters/dateTimeSorter';
+import { formatPrice, getDateFromDatetime, getTimeFromDatetime, sortByDateTime, sortByDateField } from '@/utils';
 import type { Order } from '@/types/order';
 import type { RootStackParamList } from '@/types/navigation';
 import { styles } from './styles';
@@ -69,12 +68,18 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
         limit: 100,
         includeDeleted: includeDeletedActivities,
       });
-      if (response.success && response.data?.activities) {
+      // TypeScript workaround: response pode ter estrutura variável
+      const responseTyped = response as any;
+      const isSuccess = responseTyped.success === true;
+      const responseData = responseTyped.data;
+      const activitiesList = responseData?.activities || [];
+      
+      if (isSuccess && activitiesList.length > 0) {
         // Armazenar dados originais
-        setRawActivities(response.data.activities);
+        setRawActivities(activitiesList);
         
         // Converter UserActivity para ActivityItem
-        const convertedActivities: ActivityItem[] = response.data.activities.map((activity) => {
+        const convertedActivities: ActivityItem[] = activitiesList.map((activity) => {
           let dateTime: string | undefined;
           if (activity.startDate) {
             // Parsear a data como local (não UTC) para evitar problemas de timezone
@@ -465,8 +470,8 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
     setEditingActivityData({
       name: activity.title,
       type: activity.type === 'personal' ? 'task' : activity.type === 'appointment' ? 'event' : 'event',
-      startDate: activity.dateTime ? extractDateFromDateTime(activity.dateTime) : undefined,
-      startTime: activity.dateTime ? extractTimeFromDateTime(activity.dateTime) : undefined,
+      startDate: activity.dateTime ? getDateFromDatetime(activity.dateTime) : undefined,
+      startTime: activity.dateTime ? getTimeFromDatetime(activity.dateTime) : undefined,
       location: activity.providerName ? `Meet with ${activity.providerName}` : activity.description || '',
       description: activity.description,
       reminderEnabled: false,
@@ -512,40 +517,6 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
     setMenuVisibleForId(activityId);
   };
 
-  const extractDateFromDateTime = (dateTime: string): string => {
-    // Parse dateTime like "13 Nov. at 8:15 pm"
-    try {
-      const parts = dateTime.split(' at ');
-      if (parts.length > 0) {
-        const datePart = parts[0]; // "13 Nov."
-        const [day, month] = datePart.split(' ');
-        const monthMap: Record<string, string> = {
-          'Jan.': '01', 'Feb.': '02', 'Mar.': '03', 'Apr.': '04',
-          'May.': '05', 'Jun.': '06', 'Jul.': '07', 'Aug.': '08',
-          'Sep.': '09', 'Oct.': '10', 'Nov.': '11', 'Dec.': '12',
-        };
-        const currentYear = new Date().getFullYear();
-        const monthNum = monthMap[month] || '01';
-        return `${currentYear}-${monthNum}-${day.padStart(2, '0')}`;
-      }
-    } catch (e) {
-      console.error('Error parsing date:', e);
-    }
-    return new Date().toISOString().split('T')[0];
-  };
-
-  const extractTimeFromDateTime = (dateTime: string): string => {
-    // Parse dateTime like "13 Nov. at 8:15 pm"
-    try {
-      const parts = dateTime.split(' at ');
-      if (parts.length > 1) {
-        return parts[1]; // "8:15 pm"
-      }
-    } catch (e) {
-      console.error('Error parsing time:', e);
-    }
-    return '8:00 am';
-  };
 
   const handleSkipAppointment = async (activityId: string) => {
     try {

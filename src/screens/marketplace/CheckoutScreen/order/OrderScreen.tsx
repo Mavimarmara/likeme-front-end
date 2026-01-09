@@ -7,7 +7,7 @@ import {
   Image,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { formatPrice } from '@/utils/formatters';
+import { formatPrice } from '@/utils';
 import { styles } from '../styles';
 import type { AddressData } from '../address';
 

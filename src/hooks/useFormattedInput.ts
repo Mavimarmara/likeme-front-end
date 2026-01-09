@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { formatCardNumber, formatExpiryDate, formatCpf, formatPhone } from '@/utils/formatters';
+import { formatCardNumber, formatExpiryDate, formatCpf, formatPhone } from '@/utils';
 
 export type FormattedInputType = 'cardNumber' | 'expiryDate' | 'cpf' | 'phone';
 

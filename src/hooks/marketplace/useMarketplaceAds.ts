@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { adService } from '@/services';
-import { mapUICategoryToApiCategory } from '@/utils/mappers';
+import { mapUICategoryToApiCategory } from '@/utils';
 import type { Ad } from '@/types/ad';
 
 interface UseMarketplaceAdsParams {

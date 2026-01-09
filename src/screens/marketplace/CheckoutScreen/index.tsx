@@ -10,7 +10,7 @@ import { Header } from '@/components/ui/layout';
 import { Background } from '@/components/ui/layout';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { storageService, orderService, paymentService } from '@/services';
-import { formatPrice, formatAddress, formatBillingAddress } from '@/utils/formatters';
+import { formatPrice, formatAddress, formatBillingAddress } from '@/utils';
 import { useFormattedInput } from '@/hooks';
 import { logger } from '@/utils/logger';
 import { styles } from './styles';

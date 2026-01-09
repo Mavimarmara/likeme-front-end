@@ -11,7 +11,7 @@ import { SecondaryButton } from '@/components/ui/buttons';
 import { ProductsCarousel, type Product } from '@/components/sections/product';
 import { PostCard, NextEventsSection, type ProviderChat } from '@/components/sections/community';
 import { useUserFeed } from '@/hooks/community/useUserFeed';
-import { formatPrice } from '@/utils/formatters';
+import { formatPrice } from '@/utils';
 import type { Post } from '@/types';
 import type { Event } from '@/types/event';
 import type { RootStackParamList } from '@/types/navigation';

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { communityService } from '@/services';
 import type { Post } from '@/types';
 import type { CommunityFeedData, UserFeedParams } from '@/types/community';
-import { mapCommunityPostToPost } from '@/utils/community/mappers';
+import { mapCommunityPostToPost } from '@/utils';
 import { PAGINATION } from '@/constants';
 import { logger } from '@/utils/logger';
 

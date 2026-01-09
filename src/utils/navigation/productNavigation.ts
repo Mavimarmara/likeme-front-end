@@ -1,5 +1,5 @@
 import type { Ad } from '@/types/ad';
-import { formatPrice } from '@/utils/formatters';
+import { formatPrice } from '@/utils';
 
 interface Navigation {
   navigate: (screen: string, params?: any) => void;

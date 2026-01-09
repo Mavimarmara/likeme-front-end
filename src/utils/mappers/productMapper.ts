@@ -1,4 +1,4 @@
-import { formatPrice } from '@/utils/formatters';
+import { formatPrice } from '@/utils';
 import type { Product as ApiProduct } from '@/types/product';
 import type { Product } from '@/components/sections/product';
 
