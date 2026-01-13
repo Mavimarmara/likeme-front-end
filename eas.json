@@ -43,11 +43,21 @@
   },
   "submit": {
     "staging": {
+      "ios": {
+        "appleId": "6757706434",
+        "ascAppId": "6757706434",
+        "appleTeamId": "VS752K4DT8"
+      },
       "android": {
         "track": "internal"
       }
     },
     "production": {
+      "ios": {
+        "appleId": "6757706434",
+        "ascAppId": "6757706434",
+        "appleTeamId": "VS752K4DT8"
+      },
       "android": {
         "track": "production"
       }

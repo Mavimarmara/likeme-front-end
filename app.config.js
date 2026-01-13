@@ -187,7 +187,7 @@ module.exports = {
       versionCode: 1,
     },
     ios: {
-      bundleIdentifier: 'com.likeme.app',
+      bundleIdentifier: 'app.likeme.com',
       buildNumber: '1',
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
