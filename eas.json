@@ -17,14 +17,15 @@
     "staging": {
       "distribution": "store",
       "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_BACKEND_URL": "https://likeme-back-end-git-staging-pixel-pulse-labs.vercel.app",
+        "EXPO_USE_HERMES": "true"
+      },
       "ios": {
         "buildConfiguration": "Release"
       },
       "android": {
-        "buildType": "apk",
-        "env": {
-          "EXPO_USE_HERMES": "true"
-        }
+        "buildType": "apk"
       }
     },
     "production": {
