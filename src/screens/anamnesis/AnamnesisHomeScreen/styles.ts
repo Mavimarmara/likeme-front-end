@@ -1,0 +1,120 @@
+import { StyleSheet, Dimensions } from 'react-native';
+import { SPACING, COLORS } from '@/constants';
+
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+
+export const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.BACKGROUND,
+  },
+  backgroundTop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: '100%',
+    height: '100%',
+    zIndex: 0,
+  },
+  backgroundBottom: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    width: '100%',
+    height: '100%',
+    zIndex: 0,
+  },
+  scrollView: {
+    flex: 1,
+    zIndex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: SPACING.MD,
+    paddingBottom: SPACING.XL,
+    paddingTop: SPACING.SM,
+  },
+  screenTitle: {
+    fontFamily: 'DM Sans',
+    fontSize: 20,
+    fontWeight: '700',
+    color: COLORS.BLACK,
+    lineHeight: 20,
+    marginTop: SPACING.MD,
+    marginBottom: SPACING.MD,
+    paddingLeft: 0,
+  },
+  card: {
+    backgroundColor: '#fbf7e5', // secondary-pure
+    borderRadius: 28,
+    borderTopLeftRadius: 24,
+    borderBottomRightRadius: 32,
+    borderBottomLeftRadius: 12,
+    paddingHorizontal: SPACING.LG,
+    paddingVertical: SPACING.XL,
+    marginBottom: SPACING.LG,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.04,
+    shadowRadius: 16,
+    elevation: 8,
+    alignItems: 'center',
+  },
+  cardTitle: {
+    fontFamily: 'Bricolage Grotesque',
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#001137',
+    lineHeight: 24,
+    textTransform: 'uppercase',
+    marginBottom: SPACING.LG,
+    width: '100%',
+    textAlign: 'left',
+  },
+  cardSubtitle: {
+    fontFamily: 'DM Sans',
+    fontSize: 20,
+    fontWeight: '400',
+    color: '#001137',
+    lineHeight: 20,
+    marginBottom: SPACING.SM,
+    width: '100%',
+    textAlign: 'left',
+  },
+  cardDescription: {
+    fontFamily: 'DM Sans',
+    fontSize: 14,
+    fontWeight: '400',
+    color: '#001137',
+    lineHeight: 20,
+    letterSpacing: 0.2,
+    marginBottom: SPACING.LG,
+    width: '100%',
+    textAlign: 'left',
+  },
+  cardContent: {
+    width: '100%',
+    gap: SPACING.XL,
+    alignItems: 'stretch',
+  },
+  habitsContainer: {
+    width: '100%',
+    gap: 0,
+  },
+  habitSection: {
+    width: '100%',
+    gap: SPACING.XL,
+    alignItems: 'stretch',
+  },
+  habitDivider: {
+    width: '100%',
+    height: 1,
+    backgroundColor: '#D9D9D9',
+    marginVertical: 0,
+  },
+});

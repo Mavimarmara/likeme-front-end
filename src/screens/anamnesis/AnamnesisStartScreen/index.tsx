@@ -14,7 +14,7 @@ const IMAGE_DECORATIVE = 'https://www.figma.com/api/mcp/asset/a21f05fe-cd0c-48af
 
 const AnamnesisStartScreen: React.FC<Props> = ({ navigation }) => {
   const handleStartAnamnesis = () => {
-    navigation.navigate('AnamnesisBody' as never);
+    navigation.navigate('AnamnesisHome' as never);
   };
 
   const handleSkip = () => {
