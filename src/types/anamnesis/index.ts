@@ -1,7 +1,7 @@
 import type { ApiResponse } from '@/types/infrastructure';
 
 /**
- * Tipo de pergunta da anamnese
+ * Tipo de pergunta da anamnesis
  */
 export type QuestionType = 'single_choice' | 'multiple_choice' | 'text' | 'number';
 
@@ -16,9 +16,9 @@ export interface AnswerOption {
 }
 
 /**
- * Pergunta da anamnese
+ * Pergunta da anamnesis
  */
-export interface AnamneseQuestion {
+export interface AnamnesisQuestion {
   id: string;
   key: string;
   type: QuestionType;
@@ -53,17 +53,17 @@ export interface UserAnswer {
 /**
  * Resposta da API para lista de perguntas
  */
-export interface GetAnamneseQuestionsResponse extends ApiResponse<AnamneseQuestion[]> {}
+export interface GetAnamnesisQuestionsResponse extends ApiResponse<AnamnesisQuestion[]> {}
 
 /**
  * Resposta da API para uma pergunta específica
  */
-export interface GetAnamneseQuestionResponse extends ApiResponse<AnamneseQuestion> {}
+export interface GetAnamnesisQuestionResponse extends ApiResponse<AnamnesisQuestion> {}
 
 /**
- * Resposta da API para anamnese completa
+ * Resposta da API para anamnesis completa
  */
-export interface GetCompleteAnamneseResponse extends ApiResponse<any[]> {}
+export interface GetCompleteAnamnesisResponse extends ApiResponse<any[]> {}
 
 /**
  * Resposta da API para criar/atualizar resposta
@@ -83,22 +83,22 @@ export interface GetUserAnswerResponse extends ApiResponse<UserAnswer> {}
 /**
  * Parâmetros para buscar perguntas
  */
-export interface GetAnamneseQuestionsParams {
+export interface GetAnamnesisQuestionsParams {
   locale: string;
 }
 
 /**
  * Parâmetros para buscar uma pergunta específica
  */
-export interface GetAnamneseQuestionParams {
+export interface GetAnamnesisQuestionParams {
   key: string;
   locale: string;
 }
 
 /**
- * Parâmetros para buscar anamnese completa
+ * Parâmetros para buscar anamnesis completa
  */
-export interface GetCompleteAnamneseParams {
+export interface GetCompleteAnamnesisParams {
   locale: string;
 }
 

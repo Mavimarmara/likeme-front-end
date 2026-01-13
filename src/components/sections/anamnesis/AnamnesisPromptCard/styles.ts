@@ -48,18 +48,10 @@ export const styles = StyleSheet.create({
     textAlign: 'left',
   },
   button: {
-    backgroundColor: 'rgba(0, 17, 55, 1)',
+    width: '100%',
     borderRadius: 24,
     borderBottomLeftRadius: 22,
     borderBottomRightRadius: 22,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 4,
-    minHeight: 48,
-    width: '100%',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -68,13 +60,6 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 8,
     elevation: 4,
-  },
-  buttonText: {
-    fontFamily: 'DM Sans',
-    fontSize: 14,
-    fontWeight: '500',
-    color: 'rgba(255, 255, 255, 1)',
-    textAlign: 'center',
   },
 });
 

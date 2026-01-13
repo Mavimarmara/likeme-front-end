@@ -1,0 +1,90 @@
+import React from 'react';
+import { View, Text, Image } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Header } from '@/components/ui';
+import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
+import { BackgroundWithGradient2, BackgroundWithGradient3 } from '@/assets';
+import { SPACING, COLORS, FONT_SIZES } from '@/constants';
+import { styles } from './styles';
+
+type Props = { navigation: any };
+
+// URL da imagem decorativa do Figma (válida por 7 dias)
+const IMAGE_DECORATIVE = 'https://www.figma.com/api/mcp/asset/a21f05fe-cd0c-48af-8604-1984f766c8c9';
+
+const AnamnesisStartScreen: React.FC<Props> = ({ navigation }) => {
+  const handleStartAnamnesis = () => {
+    navigation.navigate('AnamnesisBody' as never);
+  };
+
+  const handleSkip = () => {
+    navigation.goBack();
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      {/* Background superior */}
+      <Image
+        source={BackgroundWithGradient3}
+        style={styles.backgroundTop}
+        resizeMode="cover"
+      />
+      
+      {/* Background inferior */}
+      <Image
+        source={BackgroundWithGradient2}
+        style={styles.backgroundBottom}
+        resizeMode="cover"
+      />
+      
+      <Header 
+        showBackButton={true}
+        onBackPress={() => navigation.goBack()}
+      />
+      
+      <View style={styles.content}>
+
+        {/* Imagem decorativa rotacionada 270 graus e centralizada */}
+        <View style={styles.decorativeImageContainer}>
+          <View style={styles.decorativeImageWrapper}>
+            <Image
+              source={{ uri: IMAGE_DECORATIVE }}
+              style={styles.decorativeImage}
+              resizeMode="contain"
+            />
+          </View>
+        </View>
+
+        {/* Conteúdo principal */}
+        <View style={styles.mainContent}>
+          <View style={styles.textContainer}>
+            <Text style={styles.title}>
+              Sua jornada rumo ao autoconhecimento começa aqui!
+            </Text>
+            <Text style={styles.description}>
+              Faça uma pausa de alguns minutos e deixe que o Like Me o guie em direção ao seu próprio equilíbrio.
+            </Text>
+          </View>
+
+          {/* Botões */}
+          <View style={styles.buttonsContainer}>
+            <PrimaryButton
+              label="Começar sua anaminese"
+              onPress={handleStartAnamnesis}
+              size="large"
+              style={styles.primaryButton}
+            />
+            <SecondaryButton
+              label="Pular"
+              onPress={handleSkip}
+              size="large"
+              style={styles.secondaryButton}
+            />
+          </View>
+        </View>
+      </View>
+    </SafeAreaView>
+  );
+};
+
+export default AnamnesisStartScreen;

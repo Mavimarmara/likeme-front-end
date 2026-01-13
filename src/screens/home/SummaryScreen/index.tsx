@@ -21,7 +21,7 @@ import {
   type YourCommunity,
 } from '@/components/sections/community';
 import { ProductsCarousel, type Product } from '@/components/sections/product';
-import { AnamnesisPromptCard } from '@/components/sections/wellness';
+import { AnamnesisPromptCard } from '@/components/sections/anamnesis';
 import type { Event } from '@/types/event';
 import type { Post } from '@/types';
 import { styles } from './styles';
@@ -45,7 +45,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleStartAnamnesis = () => {
-    rootNavigation.navigate('AnamneseBody' as never);
+    rootNavigation.navigate('Anamnesis' as never);
   };
 
   useEffect(() => {

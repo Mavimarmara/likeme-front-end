@@ -1,7 +1,7 @@
 export type RootStackParamList = {
   Unauthenticated: undefined;
   Register: undefined;
-  Anamnese: undefined;
+  Anamnesis: undefined;
   Community: undefined;
   Activities: undefined;
   Marketplace: undefined;

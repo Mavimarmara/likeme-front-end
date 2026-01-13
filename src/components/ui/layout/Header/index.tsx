@@ -11,6 +11,8 @@ interface HeaderProps {
   showLogoutButton?: boolean;
   onCartPress?: () => void;
   showCartButton?: boolean;
+  onBellPress?: () => void;
+  showBellButton?: boolean;
 }
 
 const Header: React.FC<HeaderProps> = ({ 
@@ -20,6 +22,8 @@ const Header: React.FC<HeaderProps> = ({
   showLogoutButton = false,
   onCartPress,
   showCartButton = false,
+  onBellPress,
+  showBellButton = false,
 }) => {
   return (
     <View style={styles.header}>
@@ -39,6 +43,21 @@ const Header: React.FC<HeaderProps> = ({
         </TouchableOpacity>
       )}
       <LogoMini width={87} height={16} />
+      {showBellButton && (
+        <TouchableOpacity 
+          style={styles.bellButton}
+          onPress={onBellPress}
+          activeOpacity={0.7}
+        >
+          <ImageBackground
+            source={BackgroundIconButton}
+            style={styles.bellButtonBackground}
+            imageStyle={styles.bellButtonImage}
+          >
+            <Icon name="notifications" size={18} color="#0F1B33" />
+          </ImageBackground>
+        </TouchableOpacity>
+      )}
       {showCartButton && onCartPress && (
         <TouchableOpacity 
           style={styles.cartButton}

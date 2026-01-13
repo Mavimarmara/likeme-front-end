@@ -2,11 +2,12 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import { UnauthenticatedScreen, AuthenticatedScreen, LoadingScreen, WelcomeScreen, IntroScreen, AppPresentationScreen, RegisterScreen, AnamneseScreen, AnamneseBodyScreen, PersonalObjectivesScreen, SelfAwarenessIntroScreen } from '@/screens/auth';
+import { UnauthenticatedScreen, AuthenticatedScreen, LoadingScreen, WelcomeScreen, IntroScreen, AppPresentationScreen, RegisterScreen, PersonalObjectivesScreen, SelfAwarenessIntroScreen } from '@/screens/auth';
+import { AnamnesisStartScreen, AnamnesisBodyScreen } from '@/screens/anamnesis';
 import ErrorScreen from '@/screens/ErrorScreen';
 import AppLoadingScreen from '@/screens/LoadingScreen';
 import { CommunityStackNavigator } from '@/navigation';
-import { ActivitiesScreen } from '@/screens/wellness';
+import { ActivitiesScreen } from '@/screens/activities';
 import { MarketplaceScreen, ProductDetailsScreen, AffiliateProductScreen, CartScreen, CheckoutScreen, CommunityPreviewScreen, ProviderProfileScreen } from '@/screens/marketplace';
 import { ProfileScreen } from '@/screens/profile';
 import { HomeScreen, SummaryScreen } from '@/screens/home';
@@ -59,14 +60,14 @@ const RootNavigator: React.FC = () => {
                  options={{ title: 'Cadastro' }}
                />
                <Stack.Screen
-                 name="Anamnese"
-                 component={AnamneseScreen}
-                 options={{ title: 'Anamnese' }}
+                 name="Anamnesis"
+                 component={AnamnesisStartScreen}
+                 options={{ title: 'Anamnesis' }}
                />
                <Stack.Screen
-                 name="AnamneseBody"
-                 component={AnamneseBodyScreen}
-                 options={{ title: 'Anamnese Body' }}
+                 name="AnamnesisBody"
+                 component={AnamnesisBodyScreen}
+                 options={{ title: 'Anamnesis Body' }}
                />
                <Stack.Screen
                  name="PersonalObjectives"

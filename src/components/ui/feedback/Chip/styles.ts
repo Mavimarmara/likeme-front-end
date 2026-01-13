@@ -1,9 +1,10 @@
+import { COLORS } from '@/constants';
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
   chip: {
     alignItems: 'center',
-    backgroundColor: '#f4f3ec',
+    backgroundColor: COLORS.BACKGROUND,
     borderColor: 'rgba(0, 17, 55, 1)',
     borderWidth: 1,
     borderRadius: 20,

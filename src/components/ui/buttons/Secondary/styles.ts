@@ -4,7 +4,7 @@ export const styles = StyleSheet.create({
   button: {
     alignItems: 'center',
     alignSelf: 'stretch',
-    backgroundColor: 'rgba(239, 237, 225, 0.16)',
+    backgroundColor: 'rgba(240, 238, 225, 0.16)',
     borderWidth: 1,
     borderColor: 'rgba(0, 17, 55, 1)',
     borderRadius: 18,

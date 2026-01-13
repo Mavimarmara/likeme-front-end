@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { Alert } from 'react-native';
-import ActivitiesScreen from './index';
+import ActivitiesScreen from './ActivitiesScreen';
 import { activityService, orderService } from '@/services';
 
 // Mock Alert

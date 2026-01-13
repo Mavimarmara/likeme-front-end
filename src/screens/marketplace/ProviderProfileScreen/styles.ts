@@ -7,7 +7,7 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
     position: 'relative',
-    backgroundColor: '#F4F3EC',
+    backgroundColor: COLORS.BACKGROUND,
   },
   backgroundImage: {
     flex: 1,

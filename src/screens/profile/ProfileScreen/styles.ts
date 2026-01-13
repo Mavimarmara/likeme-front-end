@@ -1,10 +1,10 @@
 import { StyleSheet } from 'react-native';
-import { SPACING } from '@/constants';
+import { COLORS, SPACING } from '@/constants';
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f4f3ec',
+    backgroundColor: COLORS.BACKGROUND,
   },
   scrollView: {
     flex: 1,

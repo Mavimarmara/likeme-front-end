@@ -4,8 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '@/components/ui';
 import { PrimaryButton } from '@/components/ui/buttons';
 import { SymptomSlider, SymptomLevel } from '@/components/ui/inputs';
-import { storageService, anamneseService, userService } from '@/services';
-import type { AnamneseQuestion } from '@/types/anamnese';
+import { storageService, anamnesisService, userService } from '@/services';
+import type { AnamnesisQuestion } from '@/types/anamnesis';
 import { styles } from './styles';
 
 type Props = { navigation: any };
@@ -28,8 +28,8 @@ const VALUE_TO_SYMPTOM_LEVEL: Record<number, SymptomLevel> = {
   4: 'plena',
 };
 
-const AnamneseBodyScreen: React.FC<Props> = ({ navigation }) => {
-  const [questions, setQuestions] = useState<AnamneseQuestion[]>([]);
+const AnamnesisBodyScreen: React.FC<Props> = ({ navigation }) => {
+  const [questions, setQuestions] = useState<AnamnesisQuestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [answers, setAnswers] = useState<Record<string, SymptomLevel>>({});
@@ -62,14 +62,14 @@ const AnamneseBodyScreen: React.FC<Props> = ({ navigation }) => {
       
       // Buscar perguntas do backend
       const locale = 'pt-BR'; // TODO: Obter do sistema/i18n
-      const questionsResponse = await anamneseService.getQuestions({ locale });
+      const questionsResponse = await anamnesisService.getQuestions({ locale });
       
       if (questionsResponse.success && questionsResponse.data) {
         setQuestions(questionsResponse.data);
         
         // Carregar respostas existentes após carregar as perguntas
         try {
-          const answersResponse = await anamneseService.getUserAnswers({ userId: currentUserId, locale });
+          const answersResponse = await anamnesisService.getUserAnswers({ userId: currentUserId, locale });
           if (answersResponse.success && answersResponse.data && answersResponse.data.length > 0) {
             const existingAnswers: Record<string, SymptomLevel> = {};
             
@@ -135,7 +135,7 @@ const AnamneseBodyScreen: React.FC<Props> = ({ navigation }) => {
         }
       }
     } catch (error) {
-      console.error('Error loading anamnese data:', error);
+      console.error('Error loading anamnesis data:', error);
       Alert.alert('Erro', 'Não foi possível carregar as perguntas. Tente novamente.');
     } finally {
       setLoading(false);
@@ -177,7 +177,7 @@ const AnamneseBodyScreen: React.FC<Props> = ({ navigation }) => {
       }
 
       // Salvar resposta no backend imediatamente
-      await anamneseService.createOrUpdateAnswer({
+      await anamnesisService.createOrUpdateAnswer({
         userId,
         questionConceptId,
         answerOptionId,
@@ -232,10 +232,10 @@ const AnamneseBodyScreen: React.FC<Props> = ({ navigation }) => {
         return;
       }
       
-      // Salvar data de conclusão da anamnese
+      // Salvar data de conclusão da anamnesis
       await storageService.setAnamnesisCompletedAt(new Date().toISOString());
       
-      Alert.alert('Sucesso', 'Anamnese finalizada com sucesso!', [
+      Alert.alert('Sucesso', 'Anamnesis finalizada com sucesso!', [
         {
           text: 'OK',
           onPress: () => navigation.goBack(),
@@ -243,7 +243,7 @@ const AnamneseBodyScreen: React.FC<Props> = ({ navigation }) => {
       ]);
     } catch (error) {
       console.error('Error finalizing anamnesis:', error);
-      Alert.alert('Erro', 'Não foi possível finalizar a anamnese. Tente novamente.');
+      Alert.alert('Erro', 'Não foi possível finalizar a anamnesis. Tente novamente.');
     } finally {
       setSaving(false);
     }
@@ -315,5 +315,5 @@ const AnamneseBodyScreen: React.FC<Props> = ({ navigation }) => {
   );
 };
 
-export default AnamneseBodyScreen;
+export default AnamnesisBodyScreen;
 

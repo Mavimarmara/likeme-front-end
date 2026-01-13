@@ -9,7 +9,7 @@ const CART_IMAGE_WIDTH = 108;
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f4f3ec',
+    backgroundColor: COLORS.BACKGROUND,
   },
   headerContainer: {
     flexDirection: 'row',

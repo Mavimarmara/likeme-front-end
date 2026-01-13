@@ -1,5 +1,6 @@
 export * from './auth';
-export * from './wellness';
+export * from './anamnesis';
+export * from './activities';
 export * from './marketplace';
 export * from './community';
 export * from './profile';

@@ -6,8 +6,8 @@ export { useLogout } from './auth/useLogout';
 export { useUserFeed } from './community/useUserFeed';
 export { useCommunities } from './community/useCommunities';
 
-// Wellness hooks
-export { useActivities } from './wellness/useActivities';
+// Activities hooks
+export { useActivities } from './activities/useActivities';
 
 // Marketplace hooks
 export { useProductDetails } from './marketplace/useProductDetails';

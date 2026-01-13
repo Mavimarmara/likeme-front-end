@@ -1,3 +1,4 @@
+import { COLORS } from '@/constants';
 import { StyleSheet, Dimensions, ImageStyle } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
@@ -8,10 +9,10 @@ export const GRADIENT_STRIP_HEIGHT = 866;
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f4f3ec',
+    backgroundColor: COLORS.BACKGROUND,
   },
   splashContainer: {
-    backgroundColor: '#f4f3ec',
+    backgroundColor: COLORS.BACKGROUND,
     height: height,
     minWidth: 393,
     position: 'relative',

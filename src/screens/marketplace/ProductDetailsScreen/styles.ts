@@ -271,7 +271,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   content: {
-    backgroundColor: '#F4F3EC',
+    backgroundColor: COLORS.BACKGROUND,
     paddingTop: SPACING.LG,
   },
   tabsContainer: {

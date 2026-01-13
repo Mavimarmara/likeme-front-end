@@ -1,42 +1,42 @@
 import apiClient from '../infrastructure/apiClient';
 import { logger } from '@/utils/logger';
 import type {
-  AnamneseQuestion,
+  AnamnesisQuestion,
   CreateUserAnswerData,
   UserAnswer,
-  GetAnamneseQuestionsResponse,
-  GetAnamneseQuestionResponse,
-  GetCompleteAnamneseResponse,
+  GetAnamnesisQuestionsResponse,
+  GetAnamnesisQuestionResponse,
+  GetCompleteAnamnesisResponse,
   CreateUserAnswerResponse,
   GetUserAnswersResponse,
   GetUserAnswerResponse,
-  GetAnamneseQuestionsParams,
-  GetAnamneseQuestionParams,
-  GetCompleteAnamneseParams,
+  GetAnamnesisQuestionsParams,
+  GetAnamnesisQuestionParams,
+  GetCompleteAnamnesisParams,
   GetUserAnswersParams,
   GetUserAnswerParams,
-} from '@/types/anamnese';
+} from '@/types/anamnesis';
 
-class AnamneseService {
-  private readonly anamneseEndpoint = '/api/anamnese';
+class AnamnesisService {
+  private readonly anamnesisEndpoint = '/api/anamnesis';
 
   /**
-   * Busca todas as perguntas da anamnese com traduções
+   * Busca todas as perguntas da anamnesis com traduções
    */
-  async getQuestions(params: GetAnamneseQuestionsParams): Promise<GetAnamneseQuestionsResponse> {
+  async getQuestions(params: GetAnamnesisQuestionsParams): Promise<GetAnamnesisQuestionsResponse> {
     try {
       if (!params.locale) {
         throw new Error('Locale is required');
       }
 
-      const response = await apiClient.get<GetAnamneseQuestionsResponse>(
-        `${this.anamneseEndpoint}/questions`,
+      const response = await apiClient.get<GetAnamnesisQuestionsResponse>(
+        `${this.anamnesisEndpoint}/questions`,
         { locale: params.locale },
         true,
         false
       );
 
-      logger.debug('Anamnese questions response:', {
+      logger.debug('Anamnesis questions response:', {
         locale: params.locale,
         success: response.success,
         questionsCount: response.data?.length || 0,
@@ -44,7 +44,7 @@ class AnamneseService {
 
       return response;
     } catch (error) {
-      logger.error('Error fetching anamnese questions:', error);
+      logger.error('Error fetching anamnesis questions:', error);
       throw error;
     }
   }
@@ -52,20 +52,20 @@ class AnamneseService {
   /**
    * Busca uma pergunta específica por key
    */
-  async getQuestionByKey(params: GetAnamneseQuestionParams): Promise<GetAnamneseQuestionResponse> {
+  async getQuestionByKey(params: GetAnamnesisQuestionParams): Promise<GetAnamnesisQuestionResponse> {
     try {
       if (!params.key || !params.locale) {
         throw new Error('Key and locale are required');
       }
 
-      const response = await apiClient.get<GetAnamneseQuestionResponse>(
-        `${this.anamneseEndpoint}/questions/${params.key}`,
+      const response = await apiClient.get<GetAnamnesisQuestionResponse>(
+        `${this.anamnesisEndpoint}/questions/${params.key}`,
         { locale: params.locale },
         true,
         false
       );
 
-      logger.debug('Anamnese question response:', {
+      logger.debug('Anamnesis question response:', {
         key: params.key,
         locale: params.locale,
         success: response.success,
@@ -73,28 +73,28 @@ class AnamneseService {
 
       return response;
     } catch (error) {
-      logger.error('Error fetching anamnese question:', error);
+      logger.error('Error fetching anamnesis question:', error);
       throw error;
     }
   }
 
   /**
-   * Busca anamnese completa com todas as perguntas, textos e opções traduzidas
+   * Busca anamnesis completa com todas as perguntas, textos e opções traduzidas
    */
-  async getCompleteAnamnese(params: GetCompleteAnamneseParams): Promise<GetCompleteAnamneseResponse> {
+  async getCompleteAnamnesis(params: GetCompleteAnamnesisParams): Promise<GetCompleteAnamnesisResponse> {
     try {
       if (!params.locale) {
         throw new Error('Locale is required');
       }
 
-      const response = await apiClient.get<GetCompleteAnamneseResponse>(
-        `${this.anamneseEndpoint}/complete`,
+      const response = await apiClient.get<GetCompleteAnamnesisResponse>(
+        `${this.anamnesisEndpoint}/complete`,
         { locale: params.locale },
         true,
         false
       );
 
-      logger.debug('Complete anamnese response:', {
+      logger.debug('Complete anamnesis response:', {
         locale: params.locale,
         success: response.success,
         questionsCount: response.data?.length || 0,
@@ -102,7 +102,7 @@ class AnamneseService {
 
       return response;
     } catch (error) {
-      logger.error('Error fetching complete anamnese:', error);
+      logger.error('Error fetching complete anamnesis:', error);
       throw error;
     }
   }
@@ -117,7 +117,7 @@ class AnamneseService {
       }
 
       const response = await apiClient.post<CreateUserAnswerResponse>(
-        `${this.anamneseEndpoint}/answers`,
+        `${this.anamnesisEndpoint}/answers`,
         data,
         true
       );
@@ -150,7 +150,7 @@ class AnamneseService {
       }
 
       const response = await apiClient.get<GetUserAnswersResponse>(
-        `${this.anamneseEndpoint}/answers/user/${params.userId}`,
+        `${this.anamnesisEndpoint}/answers/user/${params.userId}`,
         queryParams,
         true,
         false
@@ -180,7 +180,7 @@ class AnamneseService {
       }
 
       const response = await apiClient.get<GetUserAnswerResponse>(
-        `${this.anamneseEndpoint}/answers/user/${params.userId}/question/${params.questionConceptId}`,
+        `${this.anamnesisEndpoint}/answers/user/${params.userId}/question/${params.questionConceptId}`,
         undefined,
         true,
         false
@@ -200,5 +200,5 @@ class AnamneseService {
   }
 }
 
-export default new AnamneseService();
+export default new AnamnesisService();
 
