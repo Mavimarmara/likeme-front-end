@@ -15,8 +15,7 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleContinueMind = () => {
-    // TODO: Navegar para tela de mente
-    console.log('Navigate to mind screen');
+    navigation.navigate('AnamnesisMind' as never);
   };
 
   const handleUpdateMovement = () => {

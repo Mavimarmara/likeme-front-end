@@ -18,6 +18,8 @@ export { useSuggestedProducts } from './marketplace/useSuggestedProducts';
 export { useFormattedInput } from './useFormattedInput';
 export type { FormattedInputType } from './useFormattedInput';
 
+export { useAnamnesisQuestionnaire } from './anamnesis/useAnamnesisQuestionnaire';
+
 // Types
 export type { ActivityItem, UseActivitiesOptions, UseActivitiesReturn } from '@/types/activity/hooks';
 

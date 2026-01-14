@@ -20,18 +20,23 @@ import type {
 class AnamnesisService {
   private readonly anamnesisEndpoint = '/api/anamnesis';
 
-  /**
-   * Busca todas as perguntas da anamnesis com traduções
-   */
   async getQuestions(params: GetAnamnesisQuestionsParams): Promise<GetAnamnesisQuestionsResponse> {
     try {
       if (!params.locale) {
         throw new Error('Locale is required');
       }
 
+      const queryParams: Record<string, string> = {
+        locale: params.locale,
+      };
+
+      if (params.keyPrefix) {
+        queryParams.keyPrefix = params.keyPrefix;
+      }
+
       const response = await apiClient.get<GetAnamnesisQuestionsResponse>(
         `${this.anamnesisEndpoint}/questions`,
-        { locale: params.locale },
+        queryParams,
         true,
         false
       );
@@ -49,9 +54,6 @@ class AnamnesisService {
     }
   }
 
-  /**
-   * Busca uma pergunta específica por key
-   */
   async getQuestionByKey(params: GetAnamnesisQuestionParams): Promise<GetAnamnesisQuestionResponse> {
     try {
       if (!params.key || !params.locale) {
@@ -78,9 +80,6 @@ class AnamnesisService {
     }
   }
 
-  /**
-   * Busca anamnesis completa com todas as perguntas, textos e opções traduzidas
-   */
   async getCompleteAnamnesis(params: GetCompleteAnamnesisParams): Promise<GetCompleteAnamnesisResponse> {
     try {
       if (!params.locale) {
@@ -107,9 +106,6 @@ class AnamnesisService {
     }
   }
 
-  /**
-   * Cria ou atualiza uma resposta do usuário
-   */
   async createOrUpdateAnswer(data: CreateUserAnswerData): Promise<CreateUserAnswerResponse> {
     try {
       if (!data.userId || !data.questionConceptId) {
@@ -135,9 +131,6 @@ class AnamnesisService {
     }
   }
 
-  /**
-   * Busca todas as respostas de um usuário
-   */
   async getUserAnswers(params: GetUserAnswersParams): Promise<GetUserAnswersResponse> {
     try {
       if (!params.userId) {
@@ -170,9 +163,6 @@ class AnamnesisService {
     }
   }
 
-  /**
-   * Busca uma resposta específica do usuário para uma pergunta
-   */
   async getUserAnswer(params: GetUserAnswerParams): Promise<GetUserAnswerResponse> {
     try {
       if (!params.userId || !params.questionConceptId) {

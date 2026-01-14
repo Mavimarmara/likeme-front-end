@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import { UnauthenticatedScreen, AuthenticatedScreen, LoadingScreen, WelcomeScreen, IntroScreen, AppPresentationScreen, RegisterScreen, PersonalObjectivesScreen, SelfAwarenessIntroScreen } from '@/screens/auth';
-import { AnamnesisStartScreen, AnamnesisBodyScreen, AnamnesisHomeScreen } from '@/screens/anamnesis';
+import { AnamnesisStartScreen, AnamnesisBodyScreen, AnamnesisHomeScreen, AnamnesisMindScreen } from '@/screens/anamnesis';
 import ErrorScreen from '@/screens/ErrorScreen';
 import AppLoadingScreen from '@/screens/LoadingScreen';
 import { CommunityStackNavigator } from '@/navigation';
@@ -73,6 +73,11 @@ const RootNavigator: React.FC = () => {
                  name="AnamnesisBody"
                  component={AnamnesisBodyScreen}
                  options={{ title: 'Anamnesis Body' }}
+               />
+               <Stack.Screen
+                 name="AnamnesisMind"
+                 component={AnamnesisMindScreen}
+                 options={{ title: 'Anamnesis Mind' }}
                />
                <Stack.Screen
                  name="PersonalObjectives"

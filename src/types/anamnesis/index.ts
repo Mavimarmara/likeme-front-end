@@ -1,9 +1,25 @@
 import type { ApiResponse } from '@/types/infrastructure';
 
 /**
- * Tipo de pergunta da anamnesis
+ * Domínio da pergunta (área da anamnese)
  */
-export type QuestionType = 'single_choice' | 'multiple_choice' | 'text' | 'number';
+export type AnamnesisDomain =
+  | 'body'
+  | 'mind'
+  | 'habits'
+  | 'movement'
+  | 'sleep'
+  | 'nutrition'
+  | 'stress'
+  | 'spirituality'
+  | 'unknown';
+
+/**
+ * Tipo de resposta da pergunta
+ */
+export type AnamnesisAnswerType = 'single_choice' | 'multiple_choice' | 'text' | 'number';
+
+export type QuestionType = AnamnesisAnswerType;
 
 /**
  * Opção de resposta para uma pergunta
@@ -21,7 +37,8 @@ export interface AnswerOption {
 export interface AnamnesisQuestion {
   id: string;
   key: string;
-  type: QuestionType;
+  domain: AnamnesisDomain;
+  answerType: AnamnesisAnswerType;
   text: string | null;
   answerOptions: AnswerOption[];
 }
@@ -85,6 +102,7 @@ export interface GetUserAnswerResponse extends ApiResponse<UserAnswer> {}
  */
 export interface GetAnamnesisQuestionsParams {
   locale: string;
+  keyPrefix?: string;
 }
 
 /**
@@ -117,4 +135,10 @@ export interface GetUserAnswerParams {
   userId: string;
   questionConceptId: string;
 }
+
+export type {
+  BuildAnswerResult,
+  UseAnamnesisQuestionnaireParams,
+  UseAnamnesisQuestionnaireReturn,
+} from './hooks';
 

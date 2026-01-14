@@ -3,15 +3,14 @@ import { View, Text, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '@/components/ui';
 import { PrimaryButton } from '@/components/ui/buttons';
-import { SymptomSlider } from '@/components/ui/inputs';
+import { NumberScale } from '@/components/ui/inputs';
 import { useAnamnesisQuestionnaire } from '@/hooks';
-import type { BodySymptomLevel } from '@/hooks/anamnesis/anamnesisAnswerMappers';
-import { buildBodyAnswer, parseBodyAnswer } from '@/hooks/anamnesis/anamnesisAnswerMappers';
+import { buildMindAnswer, parseMindAnswer } from '@/hooks/anamnesis/anamnesisAnswerMappers';
 import { styles } from './styles';
 
 type Props = { navigation: any };
 
-const AnamnesisBodyScreen: React.FC<Props> = ({ navigation }) => {
+const AnamnesisMindScreen: React.FC<Props> = ({ navigation }) => {
   const {
     questions,
     answers,
@@ -21,11 +20,11 @@ const AnamnesisBodyScreen: React.FC<Props> = ({ navigation }) => {
     unansweredCount,
     setAnswer,
     complete,
-  } = useAnamnesisQuestionnaire<BodySymptomLevel>({
+  } = useAnamnesisQuestionnaire<number>({
     locale: 'pt-BR',
-    keyPrefix: 'body_',
-    parseAnswer: parseBodyAnswer,
-    buildAnswer: buildBodyAnswer,
+    keyPrefix: 'mind_',
+    parseAnswer: parseMindAnswer,
+    buildAnswer: buildMindAnswer,
   });
 
   useEffect(() => {
@@ -89,10 +88,10 @@ const AnamnesisBodyScreen: React.FC<Props> = ({ navigation }) => {
       >
         <View style={styles.content}>
           <View style={styles.headerSection}>
-            <Text style={styles.title}>CORPO</Text>
-            <Text style={styles.subtitle}>Bem-estar físico</Text>
+            <Text style={styles.title}>MENTE</Text>
+            <Text style={styles.subtitle}>Bem-estar emocional</Text>
             <Text style={styles.introText}>
-              pensando na última semana, como você percebeu o seu corpo nas seguintes áreas:
+              Pensando na última semana, com que intensidade você percebeu esses sentimentos no seu dia a dia?
             </Text>
           </View>
 
@@ -105,12 +104,9 @@ const AnamnesisBodyScreen: React.FC<Props> = ({ navigation }) => {
                     <Text style={styles.questionTitle}>
                       {question.text || question.key}
                     </Text>
-                    {question.text && question.text !== question.key && (
-                      <Text style={styles.questionDescription}>{question.key}</Text>
-                    )}
                   </View>
                 </View>
-                <SymptomSlider
+                <NumberScale
                   selectedValue={answers[question.id]}
                   onValueChange={(value) => setAnswer(question.id, value)}
                 />
@@ -132,5 +128,5 @@ const AnamnesisBodyScreen: React.FC<Props> = ({ navigation }) => {
   );
 };
 
-export default AnamnesisBodyScreen;
+export default AnamnesisMindScreen;
 
