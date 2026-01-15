@@ -19,28 +19,38 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleUpdateMovement = () => {
-    // TODO: Navegar para atualizar movimento
-    console.log('Update movement');
+    navigation.navigate('AnamnesisHabits' as never, {
+      title: 'Movimento',
+      keyPrefix: 'habits_movimento',
+    } as never);
   };
 
   const handleStartSpirituality = () => {
-    // TODO: Navegar para iniciar espiritualidade
-    console.log('Start spirituality');
+    navigation.navigate('AnamnesisHabits' as never, {
+      title: 'Espiritualidade',
+      keyPrefix: 'habits_espiritualidade',
+    } as never);
   };
 
   const handleContinueSleep = () => {
-    // TODO: Navegar para continuar sono
-    console.log('Continue sleep');
+    navigation.navigate('AnamnesisHabits' as never, {
+      title: 'Sono',
+      keyPrefix: 'habits_sono',
+    } as never);
   };
 
   const handleContinueNutrition = () => {
-    // TODO: Navegar para continuar alimentação
-    console.log('Continue nutrition');
+    navigation.navigate('AnamnesisHabits' as never, {
+      title: 'Alimentação',
+      keyPrefix: 'habits_alimentacao',
+    } as never);
   };
 
   const handleContinueStress = () => {
-    // TODO: Navegar para continuar estresse
-    console.log('Continue stress');
+    navigation.navigate('AnamnesisHabits' as never, {
+      title: 'Estresse',
+      keyPrefix: 'habits_estresse',
+    } as never);
   };
 
   return (

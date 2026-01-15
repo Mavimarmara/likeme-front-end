@@ -1,3 +1,5 @@
+import '@react-navigation/native';
+
 declare module '@react-navigation/native' {
   export interface NavigationProp<ParamList, RouteName extends keyof ParamList = keyof ParamList> {
     navigate<RouteName extends keyof ParamList>(

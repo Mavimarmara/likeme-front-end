@@ -90,4 +90,16 @@ export function buildBodyAnswer(value: BodySymptomLevel, question: AnamnesisQues
   };
 }
 
+export function parseSingleChoiceAnswerKey(answer: UserAnswer): string | undefined {
+  return answer.answerOptionKey ?? undefined;
+}
+
+export function buildSingleChoiceAnswerKey(value: string, question: AnamnesisQuestion) {
+  const option = question.answerOptions.find((o) => o.key === value);
+  return {
+    answerOptionId: option?.id ?? null,
+    answerText: null,
+  };
+}
+
 
