@@ -225,16 +225,10 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
-        <ImageBackground
-          source={{ uri: backgroundImage }}
-          style={styles.backgroundImage}
-          imageStyle={styles.backgroundImageStyle}
-        >
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#2196F3" />
             <Text style={styles.loadingText}>Loading product...</Text>
           </View>
-        </ImageBackground>
       </SafeAreaView>
     );
   }
@@ -260,11 +254,11 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
 
   return (
     <SafeAreaView style={styles.container}>
-      <ImageBackground
+      <Image
         source={{ uri: backgroundImage }}
         style={styles.backgroundImage}
-        imageStyle={styles.backgroundImageStyle}
-      >
+        resizeMode="cover"
+      />
         <Header showBackButton={true} onBackPress={handleBackPress} />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
@@ -296,7 +290,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                 )}
               </View>
             </View>
-          </ImageBackground>
+            </ImageBackground>
         </View>
 
         {/* Pagination Dots - Mostrar apenas se houver mais de uma imagem */}
@@ -372,7 +366,6 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
           )}
         </View>
       </ScrollView>
-      </ImageBackground>
       {renderAddToCartButton()}
     </SafeAreaView>
   );
