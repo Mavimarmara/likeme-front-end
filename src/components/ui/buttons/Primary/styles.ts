@@ -5,7 +5,6 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'stretch',
     backgroundColor: 'rgba(0, 17, 55, 1)',
-    borderRadius: 18,
     display: 'flex',
     gap: 2,
     justifyContent: 'center',
@@ -16,18 +15,19 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'stretch',
     backgroundColor: '#FDFBEE',
-    borderRadius: 18,
     display: 'flex',
     gap: 2,
     justifyContent: 'center',
     paddingVertical: 9,
     paddingHorizontal: 16,
   },
-  buttonSmall: {
-    minHeight: 36,
-  },
   buttonMedium: {
+    minHeight: 36,
+    borderRadius: 18,
+  },
+  buttonLarge: {
     minHeight: 48,
+    borderRadius: 24,
   },
   label: {
     color: 'rgba(255, 255, 255, 1)',

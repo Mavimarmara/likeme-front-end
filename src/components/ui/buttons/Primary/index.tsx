@@ -37,7 +37,7 @@ const PrimaryButton: React.FC<Props> = ({
 }) => {
   const isDisabled = loading || disabled;
   const baseButtonStyle = variant === 'light' ? styles.buttonLight : styles.button;
-  const sizeStyle = size === 'medium' ? styles.buttonSmall : styles.buttonMedium;
+  const sizeStyle = size === 'medium' ? styles.buttonMedium : styles.buttonLarge;
   const buttonStyle = [baseButtonStyle, sizeStyle];
   const defaultLabelStyle = variant === 'light' ? styles.labelLight : styles.label;
   const labelStyle = customLabelStyle ? [defaultLabelStyle, customLabelStyle] : defaultLabelStyle;

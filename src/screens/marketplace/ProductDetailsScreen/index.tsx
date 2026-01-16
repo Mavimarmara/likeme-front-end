@@ -236,18 +236,13 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   if (!product || !displayData) {
     return (
       <SafeAreaView style={styles.container}>
-        <ImageBackground
-          source={{ uri: backgroundImage }}
-          style={styles.backgroundImage}
-          imageStyle={styles.backgroundImageStyle}
-        >
+
           <View style={styles.loadingContainer}>
             <Text style={styles.loadingText}>Product not found</Text>
             <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
               <Text>Go Back</Text>
             </TouchableOpacity>
           </View>
-        </ImageBackground>
       </SafeAreaView>
     );
   }
@@ -428,6 +423,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
             label="See provider profile"
             onPress={handleSeeProviderProfile}
             style={styles.providerProfileButton}
+            size='large'
           />
         </View>
       </View>

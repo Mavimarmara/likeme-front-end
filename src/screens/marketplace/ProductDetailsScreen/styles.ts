@@ -392,6 +392,7 @@ export const styles = StyleSheet.create({
     marginTop: SPACING.MD,
     width: '100%',
     backgroundColor: '#FFFFFF',
+    borderRadius: 18,
   },
   providerProfileButton: {
     width: '100%',
