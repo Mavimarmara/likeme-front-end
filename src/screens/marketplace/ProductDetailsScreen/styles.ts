@@ -21,6 +21,16 @@ export const styles = StyleSheet.create({
     borderBottomRightRadius: 40,
     flex: 1,
   },
+  productImage: {
+    width: '100%',
+    height: 300,
+    borderRadius: 40,
+  },
+  productImageContainer: {
+    position: 'relative',
+    width: '100%',
+    paddingVertical: SPACING.MD,
+  },
   backgroundImageStyle: {
     resizeMode: 'cover',
     opacity: 0.1,
@@ -194,6 +204,14 @@ export const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: '700',
     color: '#000000',
+    marginBottom: SPACING.MD,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontFamily: 'DM Sans',
+    fontWeight: '700',
+    color: '#001137',
+    paddingHorizontal: SPACING.LG,
     marginBottom: SPACING.MD,
   },
   productDescription: {
@@ -561,11 +579,6 @@ export const styles = StyleSheet.create({
   communityPreviewContainer: {
     marginTop: SPACING.MD,
   },
-  loadingContainer: {
-    padding: SPACING.XL,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   emptyContainer: {
     padding: SPACING.XL,
     alignItems: 'center',
@@ -575,8 +588,5 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666666',
     textAlign: 'center',
-  },
-  plansSection: {
-    marginTop: SPACING.XL,
   },
 });

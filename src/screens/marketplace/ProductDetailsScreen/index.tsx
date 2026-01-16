@@ -329,9 +329,17 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
               </View>
               {activeTab === 'info' && (
                 <>
+                  <Text style={styles.sectionTitle}>{displayData.title}</Text>
                   <Text style={styles.productDescription}>
                     {displayData.description || 'No description available'}
                   </Text>
+                  <View style={styles.productImageContainer}>
+                    <Image
+                      source={{ uri: backgroundImage }}
+                      style={styles.productImage}
+                      resizeMode="contain"
+                    />
+                  </View>
                   {renderInfoSection()}
                   {renderUserFeedback()}
                   {renderPlansCarousel()}
@@ -444,26 +452,8 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   function renderAboutContent() {
     return (
       <View style={styles.aboutContent}>
-        {product.description ? (
-          <Text style={styles.productDescription}>{product.description}</Text>
-        ) : (
-          <>
-            <Text style={styles.aboutItem}>
-              • Product information will be displayed here
-            </Text>
-            <Text style={styles.aboutItem}>
-              • Additional details about the product
-            </Text>
-          </>
-        )}
-        {product.sku && (
-          <Text style={styles.productSku}>SKU: {product.sku}</Text>
-        )}
-        {product.brand && (
-          <Text style={styles.productBrand}>Brand: {product.brand}</Text>
-        )}
-        {product.weight && (
-          <Text style={styles.productWeight}>Weight: {product.weight} kg</Text>
+        {product.technicalSpecifications && (
+          <Text style={styles.productDescription}>{product.technicalSpecifications}</Text>
         )}
       </View>
     );
