@@ -32,6 +32,9 @@ export interface Product {
   id: string;
   name: string;
   description?: string;
+  variation?: string; // Product variation (size, color, flavor, volume, etc)
+  targetAudience?: string; // Who is this product for
+  technicalSpecifications?: string; // Technical specs and composition
   sku?: string;
   price?: number; // Optional when externalUrl is provided
   cost?: number;
@@ -71,6 +74,9 @@ export interface GetProductApiResponse extends ApiResponse<Product> {}
 export interface CreateProductData {
   name: string;
   description?: string;
+  variation?: string;
+  targetAudience?: string;
+  technicalSpecifications?: string;
   sku?: string;
   price?: number; // Optional when externalUrl is provided
   cost?: number;
