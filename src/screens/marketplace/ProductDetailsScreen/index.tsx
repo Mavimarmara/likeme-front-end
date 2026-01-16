@@ -249,11 +249,6 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
 
   return (
     <SafeAreaView style={styles.container}>
-      <Image
-        source={{ uri: backgroundImage }}
-        style={styles.backgroundImage}
-        resizeMode="cover"
-      />
         <Header showBackButton={true} onBackPress={handleBackPress} />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
@@ -261,7 +256,11 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       >
         {/* Hero Section with Image */}
         <View style={styles.heroSection}>
-          <ImageBackground source={{ uri: backgroundImage }} style={styles.heroImage} imageStyle={styles.heroImageStyle}>
+          <Image
+            source={{ uri: backgroundImage }}
+            style={styles.backgroundImage}
+            resizeMode="cover"
+          />
             <View style={styles.heroOverlay}>
               <LinearGradient
                 colors={['rgba(48, 48, 48, 0)', 'rgba(41, 41, 41, 1)']}
@@ -285,7 +284,6 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                 )}
               </View>
             </View>
-            </ImageBackground>
         </View>
 
         {/* Pagination Dots - Mostrar apenas se houver mais de uma imagem */}

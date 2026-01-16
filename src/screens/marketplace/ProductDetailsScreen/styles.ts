@@ -17,6 +17,9 @@ export const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     zIndex: 0,
+    borderBottomLeftRadius: 40,
+    borderBottomRightRadius: 40,
+    flex: 1,
   },
   backgroundImageStyle: {
     resizeMode: 'cover',
@@ -27,14 +30,6 @@ export const styles = StyleSheet.create({
     height: SCREEN_HEIGHT * 0.6,
     position: 'relative',
     marginTop: -50,
-  },
-  heroImage: {
-    width: '100%',
-    height: '100%',
-  },
-  heroImageStyle: {
-    borderBottomLeftRadius: 40,
-    borderBottomRightRadius: 40,
   },
   heroOverlay: {
     flex: 1,
@@ -145,94 +140,6 @@ export const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 100, // Espaço para o botão flutuante
-  },
-  heroSection: {
-    width: SCREEN_WIDTH,
-    height: SCREEN_HEIGHT * 0.6,
-    position: 'relative',
-    marginTop: -50,
-  },
-  heroImage: {
-    width: '100%',
-    height: '100%',
-  },
-  heroImageStyle: {
-    borderBottomLeftRadius: 40,
-    borderBottomRightRadius: 40,
-  },
-  heroOverlay: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    paddingHorizontal: 32,
-    paddingBottom: 30,
-    borderBottomLeftRadius: 40,
-    borderBottomRightRadius: 40,
-  },
-  heroGradient: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 327,
-    borderBottomLeftRadius: 40,
-    borderBottomRightRadius: 40,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-  },
-  heroContent: {
-    zIndex: 1,
-  },
-  badgesContainer: {
-    flexDirection: 'row',
-    gap: 10,
-    marginBottom: 10,
-  },
-  badge: {
-    backgroundColor: 'rgba(0, 17, 55, 0.64)',
-    paddingHorizontal: 14,
-    paddingVertical: 0,
-    borderRadius: 16,
-    minHeight: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  badgeText: {
-    fontSize: 12,
-    fontFamily: 'DM Sans',
-    fontWeight: '500',
-    color: '#f6dea9',
-    letterSpacing: 0.2,
-  },
-  heroTitle: {
-    fontSize: 20,
-    fontFamily: 'DM Sans',
-    fontWeight: '500',
-    color: '#FFFFFF',
-    marginTop: 10,
-  },
-  heroPrice: {
-    fontSize: 18,
-    fontFamily: 'DM Sans',
-    fontWeight: '700',
-    color: '#FFFFFF',
-    marginTop: 8,
-  },
-  paginationContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 5,
-    marginTop: SPACING.MD,
-    marginBottom: SPACING.LG,
-  },
-  paginationDot: {
-    width: 10,
-    height: 9,
-    borderRadius: 4.5,
-    backgroundColor: '#b2b2b2',
-  },
-  paginationDotActive: {
-    backgroundColor: '#0154f8',
   },
   heroCardTags: {
     flexDirection: 'row',
