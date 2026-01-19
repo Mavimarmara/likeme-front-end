@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, PanResponder, Animated } from 'react-native';
+import { View, Text, StyleSheet, PanResponder } from 'react-native';
 
 interface NumberScaleProps {
   selectedValue?: number;
@@ -16,11 +16,14 @@ const NumberScale: React.FC<NumberScaleProps> = ({
 }) => {
   const numbers = Array.from({ length: max - min + 1 }, (_, i) => min + i);
   const [sliderWidth, setSliderWidth] = useState(0);
+  const [tempValue, setTempValue] = useState<number | undefined>(selectedValue);
 
-  // Calcular posição do thumb baseado no valor selecionado
+  // Calcular posição baseado no valor (usa temp durante arraste, selectedValue depois)
+  const getCurrentValue = () => tempValue ?? selectedValue ?? min;
+  
   const getThumbPosition = () => {
-    if (selectedValue === undefined) return 0;
-    const percentage = (selectedValue - min) / (max - min);
+    const value = getCurrentValue();
+    const percentage = (value - min) / (max - min);
     return percentage * sliderWidth;
   };
 
@@ -29,19 +32,28 @@ const NumberScale: React.FC<NumberScaleProps> = ({
     onStartShouldSetPanResponder: () => true,
     onMoveShouldSetPanResponder: () => true,
     onPanResponderGrant: (evt) => {
-      updateValueFromPosition(evt.nativeEvent.locationX);
+      // Ao tocar, atualiza apenas visual
+      updateTempValueFromPosition(evt.nativeEvent.locationX);
     },
     onPanResponderMove: (evt) => {
-      updateValueFromPosition(evt.nativeEvent.locationX);
+      // Durante arraste, atualiza apenas visual
+      updateTempValueFromPosition(evt.nativeEvent.locationX);
+    },
+    onPanResponderRelease: () => {
+      // Ao soltar, salva o valor final
+      if (tempValue !== undefined && tempValue !== selectedValue) {
+        onValueChange(tempValue);
+      }
+      setTempValue(undefined);
     },
   });
 
-  const updateValueFromPosition = (x: number) => {
+  const updateTempValueFromPosition = (x: number) => {
     if (sliderWidth === 0) return;
     
     const percentage = Math.max(0, Math.min(1, x / sliderWidth));
     const value = Math.round(percentage * (max - min)) + min;
-    onValueChange(value);
+    setTempValue(value);
   };
 
   return (
@@ -67,7 +79,8 @@ const NumberScale: React.FC<NumberScaleProps> = ({
       {/* Números abaixo do slider */}
       <View style={styles.scaleRow}>
         {numbers.map((number) => {
-          const isSelected = selectedValue === number;
+          const currentValue = getCurrentValue();
+          const isSelected = currentValue === number;
           const isEdgeValue = number === min || number === max;
 
           return (
