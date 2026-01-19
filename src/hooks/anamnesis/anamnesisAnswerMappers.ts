@@ -5,14 +5,27 @@ export type BodySymptomLevel = 'grave' | 'moderado' | 'leve' | 'sem' | 'plena';
 const clampInt = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
 export function parseMindAnswer(answer: UserAnswer): number | undefined {
+  // Tentar extrair de answerText
   const fromText = answer.answerText ? parseInt(answer.answerText, 10) : NaN;
   if (!Number.isNaN(fromText)) {
     return clampInt(fromText, 0, 10);
   }
 
-  const fromKey = answer.answerOptionKey ? parseInt(answer.answerOptionKey, 10) : NaN;
-  if (!Number.isNaN(fromKey)) {
-    return clampInt(fromKey, 0, 10);
+  // Tentar extrair de answerOptionKey (formato: "score_5" ou "5")
+  if (answer.answerOptionKey) {
+    const scoreMatch = answer.answerOptionKey.match(/^score_(\d+)$/);
+    if (scoreMatch) {
+      const value = parseInt(scoreMatch[1], 10);
+      if (!Number.isNaN(value)) {
+        return clampInt(value, 0, 10);
+      }
+    }
+    
+    // Fallback: tentar parse direto do key
+    const fromKey = parseInt(answer.answerOptionKey, 10);
+    if (!Number.isNaN(fromKey)) {
+      return clampInt(fromKey, 0, 10);
+    }
   }
 
   return undefined;
@@ -20,10 +33,11 @@ export function parseMindAnswer(answer: UserAnswer): number | undefined {
 
 export function buildMindAnswer(value: number, question: AnamnesisQuestion) {
   const clamped = clampInt(value, 0, 10);
-  const option = question.answerOptions.find((o) => o.key === String(clamped));
+  const optionKey = `score_${clamped}`;
+  const option = question.answerOptions.find((o) => o.key === optionKey);
   
   if (!option) {
-    throw new Error(`Opção "${clamped}" não encontrada para a pergunta "${question.key}"`);
+    throw new Error(`Opção "${optionKey}" não encontrada para a pergunta "${question.key}"`);
   }
   
   return {
