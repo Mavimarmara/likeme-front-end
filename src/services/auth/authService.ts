@@ -272,6 +272,20 @@ class AuthService {
     try {
       const url = getApiUrl('/api/auth/login');
       console.log('Validating token with backend:', url);
+      console.log('Token length:', authResult.idToken.length);
+      console.log('Token parts:', authResult.idToken.split('.').length);
+      
+      // Decode token header to check for kid
+      try {
+        const tokenParts = authResult.idToken.split('.');
+        if (tokenParts.length >= 2) {
+          const header = JSON.parse(atob(tokenParts[0]));
+          console.log('Token header:', JSON.stringify(header));
+          console.log('Token has kid?', !!header.kid);
+        }
+      } catch (decodeError) {
+        console.error('Error decoding token:', decodeError);
+      }
       
       const response = await fetch(url, {
         method: 'POST',
