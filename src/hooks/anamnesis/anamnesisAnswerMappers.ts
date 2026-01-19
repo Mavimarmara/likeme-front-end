@@ -21,9 +21,14 @@ export function parseMindAnswer(answer: UserAnswer): number | undefined {
 export function buildMindAnswer(value: number, question: AnamnesisQuestion) {
   const clamped = clampInt(value, 0, 10);
   const option = question.answerOptions.find((o) => o.key === String(clamped));
+  
+  if (!option) {
+    throw new Error(`Opção "${clamped}" não encontrada para a pergunta "${question.key}"`);
+  }
+  
   return {
-    answerOptionId: option?.id ?? null,
-    answerText: String(clamped),
+    answerOptionId: option.id,
+    answerText: null,
   };
 }
 
@@ -44,9 +49,9 @@ const BODY_LEVEL_TO_VALUE: Record<BodySymptomLevel, number> = {
 };
 
 const BODY_LEVEL_TO_OPTION_KEY: Record<BodySymptomLevel, string> = {
-  grave: 'grave',
-  moderado: 'moderado',
-  leve: 'leve',
+  grave: 'graves_sintomas',
+  moderado: 'moderados_sintomas',
+  leve: 'leves_sintomas',
   sem: 'sem_sintomas',
   plena: 'plena_saude',
 };
@@ -56,8 +61,11 @@ export function parseBodyAnswer(answer: UserAnswer): BodySymptomLevel | undefine
   if (key) {
     const mapped: Record<string, BodySymptomLevel> = {
       grave: 'grave',
+      graves_sintomas: 'grave',
       moderado: 'moderado',
+      moderados_sintomas: 'moderado',
       leve: 'leve',
+      leves_sintomas: 'leve',
       sem: 'sem',
       sem_sintomas: 'sem',
       plena: 'plena',
@@ -84,8 +92,13 @@ export function parseBodyAnswer(answer: UserAnswer): BodySymptomLevel | undefine
 export function buildBodyAnswer(value: BodySymptomLevel, question: AnamnesisQuestion) {
   const optionKey = BODY_LEVEL_TO_OPTION_KEY[value];
   const option = question.answerOptions.find((o) => o.key === optionKey);
+  
+  if (!option) {
+    throw new Error(`Opção "${optionKey}" não encontrada para a pergunta "${question.key}"`);
+  }
+  
   return {
-    answerOptionId: option?.id ?? null,
+    answerOptionId: option.id,
     answerText: String(BODY_LEVEL_TO_VALUE[value]),
   };
 }
@@ -96,8 +109,13 @@ export function parseSingleChoiceAnswerKey(answer: UserAnswer): string | undefin
 
 export function buildSingleChoiceAnswerKey(value: string, question: AnamnesisQuestion) {
   const option = question.answerOptions.find((o) => o.key === value);
+  
+  if (!option) {
+    throw new Error(`Opção "${value}" não encontrada para a pergunta "${question.key}"`);
+  }
+  
   return {
-    answerOptionId: option?.id ?? null,
+    answerOptionId: option.id,
     answerText: null,
   };
 }

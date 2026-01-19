@@ -88,11 +88,29 @@ export function useAnamnesisQuestionnaire<T>(
 
       const question = questionsById.get(questionConceptId);
       if (!question) {
+        console.error('Pergunta não encontrada no questionsById:', {
+          questionConceptId,
+          availableQuestions: Array.from(questionsById.keys()),
+        });
         return;
       }
 
       try {
+        console.log('Salvando resposta:', {
+          questionId: question.id,
+          questionKey: question.key,
+          value,
+          answerOptionsCount: question.answerOptions.length,
+          answerOptions: question.answerOptions.map(o => ({ key: o.key, id: o.id })),
+        });
+        
         const built = params.buildAnswer(value, question);
+        
+        console.log('Resposta construída:', {
+          answerOptionId: built.answerOptionId,
+          answerText: built.answerText,
+        });
+        
         await anamnesisService.createOrUpdateAnswer({
           userId,
           questionConceptId,
@@ -101,6 +119,7 @@ export function useAnamnesisQuestionnaire<T>(
         });
       } catch (e) {
         const message = e instanceof Error ? e.message : 'Erro ao salvar resposta';
+        console.error('Erro ao salvar resposta:', e);
         setError(message);
       }
     },
