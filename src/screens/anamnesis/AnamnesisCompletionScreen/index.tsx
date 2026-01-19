@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Header } from '@/components/ui';
+import { BackgroundWithGradient4, BackgroundWithGradient5 } from '@/assets';
 import { styles } from './styles';
 
-type Props = {
-  navigation: any;
-};
+type Props = { navigation: any };
+
+// URL da imagem decorativa do Figma (válida por 7 dias)
+const IMAGE_DECORATIVE = 'https://www.figma.com/api/mcp/asset/e6ee3d5c-e9d8-4bf5-bf75-48f53768bafe';
 
 const AnamnesisCompletionScreen: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
@@ -20,29 +21,51 @@ const AnamnesisCompletionScreen: React.FC<Props> = ({ navigation }) => {
   }, [navigation]);
 
   return (
-    <View style={styles.container}>
-      <LinearGradient
-        colors={['#FF92D8', '#F4F3EC', '#5AB4FF']}
-        locations={[0, 0.5, 1]}
-        style={styles.gradient}
+    <SafeAreaView style={styles.container}>
+      {/* Background superior */}
+      <Image
+        source={BackgroundWithGradient4}
+        style={styles.backgroundTop}
+        resizeMode="cover"
       />
       
-      <SafeAreaView style={styles.safeArea} edges={['top']}>
-        <Header 
-          onBackPress={() => navigation.navigate('Home')}
-          showRating={true}
-          onRatingPress={() => {
-            // TODO: Implementar lógica de rating/avaliação
-          }}
-        />
-      </SafeAreaView>
-
+      {/* Background inferior */}
+      <Image
+        source={BackgroundWithGradient5}
+        style={styles.backgroundBottom}
+        resizeMode="cover"
+      />
+      
+      <Header 
+        showBackButton={true}
+        onBackPress={() => navigation.navigate('Home')}
+        showRating={true}
+        onRatingPress={() => {
+          // TODO: Implementar lógica de rating/avaliação
+        }}
+      />
+      
       <View style={styles.content}>
-        <Text style={styles.title}>GREAT JOB !</Text>
+        {/* Imagem decorativa rotacionada 270 graus e centralizada */}
+        <View style={styles.decorativeImageContainer}>
+          <View style={styles.decorativeImageWrapper}>
+            <Image
+              source={{ uri: IMAGE_DECORATIVE }}
+              style={styles.decorativeImage}
+              resizeMode="contain"
+            />
+          </View>
+        </View>
+
+        {/* Conteúdo principal */}
+        <View style={styles.mainContent}>
+          <View style={styles.textContainer}>
+            <Text style={styles.title}>GREAT JOB !</Text>
+          </View>
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
 export default AnamnesisCompletionScreen;
-
