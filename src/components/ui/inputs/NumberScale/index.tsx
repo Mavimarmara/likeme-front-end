@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import Slider from '@react-native-community/slider';
 
 interface NumberScaleProps {
   selectedValue?: number;
@@ -18,7 +19,22 @@ const NumberScale: React.FC<NumberScaleProps> = ({
 
   return (
     <View style={styles.container}>
-      <View style={styles.track} />
+      {/* Slider */}
+      <View style={styles.sliderContainer}>
+        <Slider
+          style={styles.slider}
+          minimumValue={min}
+          maximumValue={max}
+          step={1}
+          value={selectedValue ?? min}
+          onValueChange={onValueChange}
+          minimumTrackTintColor="#0154f8"
+          maximumTrackTintColor="rgba(217, 217, 217, 1)"
+          thumbTintColor="#0154f8"
+        />
+      </View>
+
+      {/* Números abaixo do slider */}
       <View style={styles.scaleRow}>
         {numbers.map((number) => {
           const isSelected = selectedValue === number;
@@ -26,14 +42,6 @@ const NumberScale: React.FC<NumberScaleProps> = ({
 
           return (
             <View key={number} style={styles.item}>
-              <TouchableOpacity
-                style={styles.pointHitbox}
-                onPress={() => onValueChange(number)}
-                activeOpacity={0.7}
-              >
-                <View style={[styles.point, isSelected && styles.pointSelected]} />
-              </TouchableOpacity>
-
               <TouchableOpacity
                 style={styles.numberHitbox}
                 onPress={() => onValueChange(number)}
@@ -72,23 +80,23 @@ const NumberScale: React.FC<NumberScaleProps> = ({
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    height: 55,
-    position: 'relative',
-    marginTop: 8,
+    paddingTop: 8,
+    paddingBottom: 8,
   },
-  track: {
-    position: 'absolute',
-    left: 20,
-    right: 20,
-    top: 11,
-    height: 1,
-    backgroundColor: 'rgba(217, 217, 217, 1)',
+  sliderContainer: {
+    paddingHorizontal: 10,
+    marginBottom: 4,
+  },
+  slider: {
+    width: '100%',
+    height: 40,
   },
   scaleRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
     width: '100%',
+    paddingHorizontal: 5,
   },
   item: {
     alignItems: 'center',
@@ -96,27 +104,9 @@ const styles = StyleSheet.create({
     flex: 1,
     maxWidth: '9.09%',
   },
-  pointHitbox: {
-    width: 24,
-    height: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  point: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: 'rgba(217, 217, 217, 1)',
-  },
-  pointSelected: {
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-    backgroundColor: '#0154f8',
-  },
   numberHitbox: {
-    marginTop: 8,
     paddingHorizontal: 2,
+    paddingVertical: 4,
   },
   numberText: {
     fontFamily: 'DM Sans',
@@ -132,7 +122,7 @@ const styles = StyleSheet.create({
   edgeLabelContainer: {
     alignItems: 'center',
     width: 43,
-    marginTop: 0,
+    marginTop: 2,
   },
   edgeLabelSpacer: {
     height: 16,
