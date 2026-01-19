@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import anamnesisService from '@/services/anamnesis/anamnesisService';
-import { useAuth } from '@/contexts/AuthContext';
+import userService from '@/services/user/userService';
 import { logger } from '@/utils/logger';
 
 export interface CategoryProgress {
@@ -32,21 +32,22 @@ export interface AnamnesisProgress {
 }
 
 export const useAnamnesisProgress = () => {
-  const { user } = useAuth();
   const [progress, setProgress] = useState<AnamnesisProgress | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const calculateProgress = useCallback(
     async (forceRefresh = false) => {
-      if (!user?.id) {
-        setLoading(false);
-        return;
-      }
-
       try {
         setLoading(true);
         setError(null);
+
+        // Obter usuário autenticado
+        const profileResponse = await userService.getProfile();
+        const userId = profileResponse.success ? profileResponse.data?.id : null;
+        if (!userId) {
+          throw new Error('Usuário não identificado');
+        }
 
         // Buscar todas as perguntas
         const [
@@ -74,7 +75,7 @@ export const useAnamnesisProgress = () => {
           anamnesisService.getQuestions({ locale: 'pt-BR', keyPrefix: 'habits_relacionamentos' }),
           anamnesisService.getQuestions({ locale: 'pt-BR', keyPrefix: 'habits_saude_bucal' }),
           anamnesisService.getQuestions({ locale: 'pt-BR', keyPrefix: 'habits_proposito' }),
-          anamnesisService.getUserAnswers({ userId: user.id }),
+          anamnesisService.getUserAnswers({ userId }),
         ]);
 
         const userAnswers = userAnswersResponse.data || [];
@@ -148,7 +149,7 @@ export const useAnamnesisProgress = () => {
         setLoading(false);
       }
     },
-    [user?.id]
+    []
   );
 
   useEffect(() => {
