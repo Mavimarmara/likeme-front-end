@@ -92,10 +92,10 @@ case $build_type in
     echo ""
     # Auto-confirmar se não for interativo
     if [ -t 0 ]; then
-      read -p "Continuar? (y/n): " confirm
-      if [ "$confirm" != "y" ]; then
-        echo "❌ Build cancelado"
-        exit 0
+    read -p "Continuar? (y/n): " confirm
+    if [ "$confirm" != "y" ]; then
+      echo "❌ Build cancelado"
+      exit 0
       fi
     else
       echo "✅ Modo não-interativo: continuando automaticamente..."
@@ -156,10 +156,10 @@ case $build_type in
         echo "⚠️  Export automático falhou."
         echo ""
         echo "📱 Você pode exportar manualmente via Xcode Organizer:"
-        echo "   1. Abra o Xcode"
+      echo "   1. Abra o Xcode"
         echo "   2. Window → Organizer (⌘⇧2)"
         echo "   3. Selecione o Archive"
-        echo "   4. Clique em 'Distribute App'"
+      echo "   4. Clique em 'Distribute App'"
         echo "   5. Escolha 'App Store Connect'"
         echo ""
         echo "📁 Archive localizado em: ios/build/LikeMe.xcarchive"

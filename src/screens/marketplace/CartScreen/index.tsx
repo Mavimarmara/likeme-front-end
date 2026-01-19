@@ -84,15 +84,15 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
           // Se quantity é null, ignora verificação de estoque (produto externo ou sem controle)
           if (product.quantity !== null) {
             const availableQuantity = product.quantity;
-            
-            if (availableQuantity < requestedQuantity) {
-              // Produto não tem saldo suficiente
-              if (availableQuantity === 0) {
-                removedItems.push(item.title || item.id);
-                continue;
-              }
-              // Ajustar quantidade para o saldo disponível
-              item.quantity = availableQuantity;
+          
+          if (availableQuantity < requestedQuantity) {
+            // Produto não tem saldo suficiente
+            if (availableQuantity === 0) {
+              removedItems.push(item.title || item.id);
+              continue;
+            }
+            // Ajustar quantidade para o saldo disponível
+            item.quantity = availableQuantity;
             }
           }
           

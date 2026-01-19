@@ -1,6 +1,5 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import Slider from '@react-native-community/slider';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, PanResponder, Animated } from 'react-native';
 
 interface NumberScaleProps {
   selectedValue?: number;
@@ -16,22 +15,53 @@ const NumberScale: React.FC<NumberScaleProps> = ({
   max = 10,
 }) => {
   const numbers = Array.from({ length: max - min + 1 }, (_, i) => min + i);
+  const [sliderWidth, setSliderWidth] = useState(0);
+
+  // Calcular posição do thumb baseado no valor selecionado
+  const getThumbPosition = () => {
+    if (selectedValue === undefined) return 0;
+    const percentage = (selectedValue - min) / (max - min);
+    return percentage * sliderWidth;
+  };
+
+  // PanResponder para arrastar o slider
+  const panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderGrant: (evt) => {
+      updateValueFromPosition(evt.nativeEvent.locationX);
+    },
+    onPanResponderMove: (evt) => {
+      updateValueFromPosition(evt.nativeEvent.locationX);
+    },
+  });
+
+  const updateValueFromPosition = (x: number) => {
+    if (sliderWidth === 0) return;
+    
+    const percentage = Math.max(0, Math.min(1, x / sliderWidth));
+    const value = Math.round(percentage * (max - min)) + min;
+    onValueChange(value);
+  };
 
   return (
     <View style={styles.container}>
-      {/* Slider */}
-      <View style={styles.sliderContainer}>
-        <Slider
-          style={styles.slider}
-          minimumValue={min}
-          maximumValue={max}
-          step={1}
-          value={selectedValue ?? min}
-          onValueChange={onValueChange}
-          minimumTrackTintColor="#0154f8"
-          maximumTrackTintColor="rgba(217, 217, 217, 1)"
-          thumbTintColor="#0154f8"
-        />
+      {/* Slider customizado */}
+      <View
+        style={styles.sliderContainer}
+        onLayout={(e) => setSliderWidth(e.nativeEvent.layout.width)}
+        {...panResponder.panHandlers}
+      >
+        {/* Track de fundo (cinza) */}
+        <View style={styles.track}>
+          {/* Track preenchido (azul) - dentro do track de fundo */}
+          <View
+            style={[
+              styles.trackFilled,
+              { width: getThumbPosition() }
+            ]}
+          />
+        </View>
       </View>
 
       {/* Números abaixo do slider */}
@@ -42,15 +72,9 @@ const NumberScale: React.FC<NumberScaleProps> = ({
 
           return (
             <View key={number} style={styles.item}>
-              <TouchableOpacity
-                style={styles.numberHitbox}
-                onPress={() => onValueChange(number)}
-                activeOpacity={0.7}
-              >
-                <Text style={[styles.numberText, isSelected && styles.numberTextSelected]}>
-                  {number}
-                </Text>
-              </TouchableOpacity>
+              <Text style={[styles.numberText, isSelected && styles.numberTextSelected]}>
+                {number}
+              </Text>
 
               {isEdgeValue ? (
                 <View style={styles.edgeLabelContainer}>
@@ -80,23 +104,34 @@ const NumberScale: React.FC<NumberScaleProps> = ({
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    paddingTop: 8,
+    marginTop: 8,
     paddingBottom: 8,
   },
   sliderContainer: {
-    paddingHorizontal: 10,
-    marginBottom: 4,
-  },
-  slider: {
     width: '100%',
     height: 40,
+    paddingHorizontal: 12,
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  track: {
+    width: '100%',
+    height: 28,
+    backgroundColor: '#E8E8E8',
+    borderRadius: 14,
+    overflow: 'hidden',
+  },
+  trackFilled: {
+    height: '100%',
+    backgroundColor: '#0154f8',
+    borderRadius: 14,
   },
   scaleRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
     width: '100%',
-    paddingHorizontal: 5,
+    paddingHorizontal: 8,
   },
   item: {
     alignItems: 'center',
@@ -104,16 +139,13 @@ const styles = StyleSheet.create({
     flex: 1,
     maxWidth: '9.09%',
   },
-  numberHitbox: {
-    paddingHorizontal: 2,
-    paddingVertical: 4,
-  },
   numberText: {
     fontFamily: 'DM Sans',
     fontSize: 12,
     fontWeight: '500',
     color: 'rgba(110, 106, 106, 1)',
     textAlign: 'center',
+    marginTop: 4,
   },
   numberTextSelected: {
     color: 'rgba(0, 17, 55, 1)',
@@ -122,7 +154,7 @@ const styles = StyleSheet.create({
   edgeLabelContainer: {
     alignItems: 'center',
     width: 43,
-    marginTop: 2,
+    marginTop: 4,
   },
   edgeLabelSpacer: {
     height: 16,
