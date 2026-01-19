@@ -44,7 +44,7 @@ const AnamnesisMindScreen: React.FC<Props> = ({ navigation }) => {
     const finalize = async () => {
       try {
         await complete();
-        navigation.goBack();
+        navigation.navigate('AnamnesisCompletion');
       } catch {
         Alert.alert('Erro', 'Não foi possível finalizar a anamnese. Tente novamente.');
       }
@@ -53,7 +53,7 @@ const AnamnesisMindScreen: React.FC<Props> = ({ navigation }) => {
     if (unansweredCount > 0) {
       Alert.alert(
         'Perguntas não respondidas',
-        `Você ainda não respondeu ${unansweredCount} pergunta(s). Deseja finalizar mesmo assim?`,
+        `Você ainda não respondou ${unansweredCount} pergunta(s). Deseja finalizar mesmo assim?`,
         [
           { text: 'Cancelar', style: 'cancel' },
           { text: 'Finalizar', onPress: finalize },

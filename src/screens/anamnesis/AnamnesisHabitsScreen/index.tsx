@@ -114,7 +114,7 @@ const AnamnesisHabitsScreen: React.FC<Props> = ({ navigation, route }) => {
 
     try {
       await complete();
-      navigation.goBack();
+      navigation.navigate('AnamnesisCompletion');
     } catch {
       Alert.alert('Erro', 'Não foi possível finalizar a anamnese. Tente novamente.');
     }

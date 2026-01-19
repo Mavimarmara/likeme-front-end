@@ -13,6 +13,8 @@ interface HeaderProps {
   showCartButton?: boolean;
   onBellPress?: () => void;
   showBellButton?: boolean;
+  onRatingPress?: () => void;
+  showRating?: boolean;
 }
 
 const Header: React.FC<HeaderProps> = ({ 
@@ -24,6 +26,8 @@ const Header: React.FC<HeaderProps> = ({
   showCartButton = false,
   onBellPress,
   showBellButton = false,
+  onRatingPress,
+  showRating = false,
 }) => {
   return (
     <View style={styles.header}>
@@ -85,6 +89,21 @@ const Header: React.FC<HeaderProps> = ({
             imageStyle={styles.logoutButtonImage}
           >
             <Icon name="logout" size={18} color="#0F1B33" />
+          </ImageBackground>
+        </TouchableOpacity>
+      )}
+      {showRating && (
+        <TouchableOpacity 
+          style={styles.ratingButton}
+          onPress={onRatingPress}
+          activeOpacity={0.7}
+        >
+          <ImageBackground
+            source={BackgroundIconButton}
+            style={styles.ratingButtonBackground}
+            imageStyle={styles.ratingButtonImage}
+          >
+            <Icon name="star" size={18} color="#0F1B33" />
           </ImageBackground>
         </TouchableOpacity>
       )}

@@ -45,7 +45,7 @@ const AnamnesisBodyScreen: React.FC<Props> = ({ navigation }) => {
     const finalize = async () => {
       try {
         await complete();
-        navigation.goBack();
+        navigation.navigate('AnamnesisCompletion');
       } catch {
         Alert.alert('Erro', 'Não foi possível finalizar a anamnese. Tente novamente.');
       }
