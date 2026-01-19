@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { View, Text, ScrollView, Image, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import { Header } from '@/components/ui';
 import { SecondaryButton } from '@/components/ui/buttons';
 import ProgressBar from '@/components/ui/feedback/ProgressBar';
@@ -11,7 +12,22 @@ import { styles } from './styles';
 type Props = { navigation: any };
 
 const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
-  const { progress, loading, error } = useAnamnesisProgress();
+  const { progress, loading, error, refresh } = useAnamnesisProgress();
+  const isRefreshing = useRef(false);
+
+  // Atualizar progresso quando a tela ganhar foco (com proteção contra loop)
+  useFocusEffect(
+    React.useCallback(() => {
+      if (!isRefreshing.current && !loading) {
+        isRefreshing.current = true;
+        refresh();
+        // Reset flag após um pequeno delay
+        setTimeout(() => {
+          isRefreshing.current = false;
+        }, 1000);
+      }
+    }, [refresh, loading])
+  );
   const handleContinueBody = () => {
     navigation.navigate('AnamnesisBody' as never);
   };
