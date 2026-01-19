@@ -49,37 +49,19 @@ export const useAnamnesisProgress = () => {
           throw new Error('Usuário não identificado');
         }
 
-        // Buscar todas as perguntas
-        const [
-          physicalResponse,
-          mentalResponse,
-          movimentoResponse,
-          espiritualidadeResponse,
-          sonoResponse,
-          nutricaoResponse,
-          estresseResponse,
-          autoestimaResponse,
-          relacionamentosResponse,
-          saudeBucalResponse,
-          propositoResponse,
-          userAnswersResponse,
-        ] = await Promise.all([
-          anamnesisService.getQuestions({ locale: 'pt-BR', keyPrefix: 'physical' }),
-          anamnesisService.getQuestions({ locale: 'pt-BR', keyPrefix: 'mental' }),
-          anamnesisService.getQuestions({ locale: 'pt-BR', keyPrefix: 'habits_movimento' }),
-          anamnesisService.getQuestions({ locale: 'pt-BR', keyPrefix: 'habits_espiritualidade' }),
-          anamnesisService.getQuestions({ locale: 'pt-BR', keyPrefix: 'habits_sono' }),
-          anamnesisService.getQuestions({ locale: 'pt-BR', keyPrefix: 'habits_nutricao' }),
-          anamnesisService.getQuestions({ locale: 'pt-BR', keyPrefix: 'habits_estresse' }),
-          anamnesisService.getQuestions({ locale: 'pt-BR', keyPrefix: 'habits_autoestima' }),
-          anamnesisService.getQuestions({ locale: 'pt-BR', keyPrefix: 'habits_relacionamentos' }),
-          anamnesisService.getQuestions({ locale: 'pt-BR', keyPrefix: 'habits_saude_bucal' }),
-          anamnesisService.getQuestions({ locale: 'pt-BR', keyPrefix: 'habits_proposito' }),
+        // Buscar TODAS as perguntas de uma vez + respostas do usuário (apenas 2 requisições)
+        const [allQuestionsResponse, userAnswersResponse] = await Promise.all([
+          anamnesisService.getQuestions({ locale: 'pt-BR' }), // Sem filtro = todas as perguntas
           anamnesisService.getUserAnswers({ userId }),
         ]);
 
+        const allQuestions = allQuestionsResponse.data || [];
         const userAnswers = userAnswersResponse.data || [];
         const answeredQuestionIds = new Set(userAnswers.map(a => a.questionConceptId));
+
+        // Filtrar perguntas por categoria (no frontend)
+        const filterByPrefix = (prefix: string) => 
+          allQuestions.filter(q => q.key.startsWith(prefix));
 
         const calculateCategoryProgress = (
           questions: any[],
@@ -95,28 +77,37 @@ export const useAnamnesisProgress = () => {
           };
         };
 
-        const physicalProgress = calculateCategoryProgress(
-          physicalResponse.data || [],
-          'physical'
-        );
-        const mentalProgress = calculateCategoryProgress(mentalResponse.data || [], 'mental');
+        const physicalQuestions = filterByPrefix('physical');
+        const mentalQuestions = filterByPrefix('mental');
+
+        const physicalProgress = calculateCategoryProgress(physicalQuestions, 'physical');
+        const mentalProgress = calculateCategoryProgress(mentalQuestions, 'mental');
 
         const habitsProgress = {
-          movimento: calculateCategoryProgress(movimentoResponse.data || [], 'movimento'),
+          movimento: calculateCategoryProgress(
+            filterByPrefix('habits_movimento'),
+            'movimento'
+          ),
           espiritualidade: calculateCategoryProgress(
-            espiritualidadeResponse.data || [],
+            filterByPrefix('habits_espiritualidade'),
             'espiritualidade'
           ),
-          sono: calculateCategoryProgress(sonoResponse.data || [], 'sono'),
-          nutricao: calculateCategoryProgress(nutricaoResponse.data || [], 'nutricao'),
-          estresse: calculateCategoryProgress(estresseResponse.data || [], 'estresse'),
-          autoestima: calculateCategoryProgress(autoestimaResponse.data || [], 'autoestima'),
+          sono: calculateCategoryProgress(filterByPrefix('habits_sono'), 'sono'),
+          nutricao: calculateCategoryProgress(filterByPrefix('habits_nutricao'), 'nutricao'),
+          estresse: calculateCategoryProgress(filterByPrefix('habits_estresse'), 'estresse'),
+          autoestima: calculateCategoryProgress(
+            filterByPrefix('habits_autoestima'),
+            'autoestima'
+          ),
           relacionamentos: calculateCategoryProgress(
-            relacionamentosResponse.data || [],
+            filterByPrefix('habits_relacionamentos'),
             'relacionamentos'
           ),
-          saude_bucal: calculateCategoryProgress(saudeBucalResponse.data || [], 'saude_bucal'),
-          proposito: calculateCategoryProgress(propositoResponse.data || [], 'proposito'),
+          saude_bucal: calculateCategoryProgress(
+            filterByPrefix('habits_saude_bucal'),
+            'saude_bucal'
+          ),
+          proposito: calculateCategoryProgress(filterByPrefix('habits_proposito'), 'proposito'),
         };
 
         const totalQuestions =
