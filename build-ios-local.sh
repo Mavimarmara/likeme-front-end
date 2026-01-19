@@ -54,6 +54,8 @@ fi
 echo ""
 echo "📦 Instalando dependências CocoaPods..."
 cd ios
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
 pod install
 cd ..
 
@@ -88,11 +90,15 @@ case $build_type in
     echo "   - O Bundle ID 'app.likeme.com' está registrado no Apple Developer"
     echo "   - Você tem um perfil de provisionamento válido"
     echo ""
-    read -p "Continuar? (y/n): " confirm
-    
-    if [ "$confirm" != "y" ]; then
-      echo "❌ Build cancelado"
-      exit 0
+    # Auto-confirmar se não for interativo
+    if [ -t 0 ]; then
+      read -p "Continuar? (y/n): " confirm
+      if [ "$confirm" != "y" ]; then
+        echo "❌ Build cancelado"
+        exit 0
+      fi
+    else
+      echo "✅ Modo não-interativo: continuando automaticamente..."
     fi
     
     # Build Archive usando Xcode
@@ -111,12 +117,53 @@ case $build_type in
       echo "✅ Archive criado com sucesso!"
       echo "📁 Localização: ios/build/LikeMe.xcarchive"
       echo ""
-      echo "📤 Para exportar o .ipa:"
-      echo "   1. Abra o Xcode"
-      echo "   2. Window → Organizer"
-      echo "   3. Selecione o archive"
-      echo "   4. Clique em 'Distribute App'"
-      echo "   5. Escolha 'App Store Connect' ou 'Ad Hoc'"
+      echo "📤 Exportando .ipa para App Store..."
+      
+      # Criar diretório para export
+      mkdir -p build/export
+      
+      # Exportar .ipa
+      xcodebuild -exportArchive \
+        -archivePath build/LikeMe.xcarchive \
+        -exportPath build/export \
+        -exportOptionsPlist exportOptions.plist \
+        -allowProvisioningUpdates
+      
+      if [ $? -eq 0 ]; then
+        echo ""
+        echo "✅ .ipa exportado com sucesso!"
+        echo "📁 Localização: ios/build/export/LikeMe.ipa"
+        echo ""
+        echo "📤 Próximos passos para upload ao TestFlight:"
+        echo "   OPÇÃO 1 - Via Transporter (mais fácil):"
+        echo "   1. Abra o app Transporter (baixe da App Store se não tiver)"
+        echo "   2. Arraste o arquivo ios/build/export/LikeMe.ipa"
+        echo "   3. Clique em 'Deliver'"
+        echo ""
+        echo "   OPÇÃO 2 - Via Xcode Organizer:"
+        echo "   1. Abra o Xcode"
+        echo "   2. Window → Organizer (⌘⇧2)"
+        echo "   3. Selecione o Archive"
+        echo "   4. Clique em 'Distribute App'"
+        echo "   5. Escolha 'App Store Connect' → Upload"
+        echo ""
+        echo "   OPÇÃO 3 - Via linha de comando (requer app-specific password):"
+        echo "   xcrun altool --upload-app --type ios --file ios/build/export/LikeMe.ipa \\"
+        echo "     --username seu-apple-id@email.com \\"
+        echo "     --password seu-app-specific-password"
+      else
+        echo ""
+        echo "⚠️  Export automático falhou."
+        echo ""
+        echo "📱 Você pode exportar manualmente via Xcode Organizer:"
+        echo "   1. Abra o Xcode"
+        echo "   2. Window → Organizer (⌘⇧2)"
+        echo "   3. Selecione o Archive"
+        echo "   4. Clique em 'Distribute App'"
+        echo "   5. Escolha 'App Store Connect'"
+        echo ""
+        echo "📁 Archive localizado em: ios/build/LikeMe.xcarchive"
+      fi
     else
       echo "❌ Erro ao criar Archive. Verifique os logs acima."
       exit 1

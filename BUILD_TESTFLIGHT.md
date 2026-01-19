@@ -1,90 +1,77 @@
-# 🚀 Como Gerar Build para TestFlight
+# 🚀 Como Gerar Build para TestFlight (100% Local - Sem EAS)
 
-Este guia mostra como gerar uma versão do app para distribuição no TestFlight.
+Este guia mostra como gerar uma versão do app para distribuição no TestFlight sem usar EAS (Expo Application Services).
 
 ## 📋 Pré-requisitos
 
 1. ✅ Conta Apple Developer ativa ($99/ano)
 2. ✅ App criado no App Store Connect
-3. ✅ EAS CLI instalado (`npm install -g eas-cli`)
-4. ✅ Login no EAS (`eas login`)
-5. ✅ Xcode instalado (para build local)
+3. ✅ Xcode instalado (versão mais recente)
+4. ✅ macOS (necessário para builds iOS)
+5. ✅ CocoaPods instalado (`sudo gem install cocoapods`)
+6. ✅ Certificados e Perfis de Provisionamento configurados no Xcode
 
-## 🎯 Método Recomendado: Build na Nuvem (EAS)
+## 🎯 Método: Build Local
 
-### Passo 1: Abra um terminal
+### Passo 1: Execute o script
 
 ```bash
 cd /Users/weber/Projetos/likeme/likeme-front-end
+./build-ios-local.sh
 ```
 
-### Passo 2: Execute o script
-
-```bash
-./build-testflight.sh
-```
-
-### Passo 3: Siga as instruções
+### Passo 2: Escolha a opção 3 (Archive para distribuição)
 
 O script irá:
-1. ✅ Verificar se você está logado no EAS
-2. ✅ Perguntar qual tipo de build (nuvem ou local)
-3. ✅ Incrementar automaticamente o buildNumber
-4. ✅ Criar o build com as configurações de staging
-5. ✅ Perguntar se deseja submeter automaticamente para TestFlight
+1. ✅ Verificar se o Xcode está instalado
+2. ✅ Verificar se o CocoaPods está instalado
+3. ✅ Gerar o projeto iOS se necessário
+4. ✅ Instalar as dependências CocoaPods
+5. ✅ Criar o Archive com xcodebuild
 
-### Passo 4: Aguarde o build
+### Passo 3: Aguarde a conclusão
 
-- ⏱️ **Tempo estimado**: 15-30 minutos
-- 📊 **Acompanhe o progresso**: O terminal mostrará o status em tempo real
-- 🔗 **Link do build**: Será exibido quando o build iniciar
+- ⏱️ **Tempo estimado**: 5-15 minutos (dependendo do hardware)
+- 📊 **Processo local**: Sem filas, sem depender de servidores externos
+- 📁 **Localização do Archive**: `ios/build/LikeMe.xcarchive`
 
-## 🔧 Método Alternativo: Comandos Diretos
+## 📤 Upload para TestFlight
 
-### Build na Nuvem
+Após o build concluir, você tem duas opções:
 
-```bash
-# 1. Fazer login no EAS (se ainda não estiver logado)
-eas login
+### Opção 1: Via Xcode Organizer (Recomendado)
 
-# 2. Criar build
-eas build --platform ios --profile staging
+1. Abra o **Xcode**
+2. Vá em **Window** → **Organizer** (ou pressione `⌘⇧2`)
+3. Selecione o Archive mais recente na lista
+4. Clique em **Distribute App**
+5. Escolha **App Store Connect**
+6. Siga o wizard:
+   - **Distribute**: App Store Connect
+   - **Upload**: ✅
+   - **Include bitcode**: Desmarque (não é mais necessário)
+   - **Upload symbols**: ✅ (recomendado para crash reports)
+   - **Manage Version and Build Number**: Automático
+7. Clique em **Upload**
+8. ✅ Aguarde o upload concluir
 
-# 3. Submeter para TestFlight (após o build concluir)
-eas submit --platform ios --profile staging --latest
-```
+### Opção 2: Via Transporter App
 
-### Build Local (Mais Rápido)
+1. Primeiro, exporte o .ipa:
+   - Abra o Xcode Organizer
+   - Selecione o Archive
+   - Clique em **Distribute App**
+   - Escolha **Custom**
+   - Selecione **App Store Connect**
+   - Escolha **Export**
+   - Salve o .ipa em um local conveniente
 
-```bash
-# 1. Instalar dependências
-cd ios
-export LANG=en_US.UTF-8
-pod install
-cd ..
+2. Abra o **Transporter** (App da Apple)
+3. Arraste o arquivo .ipa para o Transporter
+4. Clique em **Deliver**
+5. ✅ Aguarde o upload concluir
 
-# 2. Criar Archive
-cd ios
-xcodebuild archive \
-  -workspace LikeMe.xcworkspace \
-  -scheme LikeMe \
-  -configuration Release \
-  -archivePath build/LikeMe.xcarchive \
-  -allowProvisioningUpdates
-
-# 3. Exportar .ipa
-xcodebuild -exportArchive \
-  -archivePath build/LikeMe.xcarchive \
-  -exportPath build/export \
-  -exportOptionsPlist exportOptions.plist \
-  -allowProvisioningUpdates
-
-# 4. Submeter para TestFlight
-cd ..
-eas submit --platform ios --profile staging --path "ios/build/export/LikeMe.ipa"
-```
-
-## 📱 Após o Build
+## 📱 Após o Upload
 
 ### 1. Acessar App Store Connect
 
@@ -119,90 +106,65 @@ eas submit --platform ios --profile staging --path "ios/build/export/LikeMe.ipa"
 7. ⏱️ Aguarde aprovação (24-48h)
 8. ✅ Testadores recebem convite após aprovação
 
-## 🔍 Verificar Configurações
+## 🔧 Comandos Manuais
 
-### Build Number Atual
-
-```bash
-eas build:version:get --platform ios
-```
-
-### Listar Builds Recentes
+Se preferir executar os comandos manualmente:
 
 ```bash
-eas build:list --platform ios --limit 5
+# 1. Navegar para o diretório
+cd /Users/weber/Projetos/likeme/likeme-front-end
+
+# 2. Gerar projeto iOS (se necessário)
+npx expo prebuild --platform ios
+
+# 3. Instalar pods
+cd ios
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+pod install
+cd ..
+
+# 4. Criar Archive
+cd ios
+xcodebuild archive \
+  -workspace LikeMe.xcworkspace \
+  -scheme LikeMe \
+  -configuration Release \
+  -archivePath build/LikeMe.xcarchive \
+  -allowProvisioningUpdates
+cd ..
 ```
 
-### Ver Status de um Build
+## ⚙️ Configurações
 
-```bash
-eas build:view <BUILD_ID>
-```
+### Bundle ID
+- **Produção**: `app.likeme.com`
 
-## ⚙️ Configurações do Build
+### Certificados
+- Configurados automaticamente via Xcode
+- Use **Apple Development** para TestFlight Internal
+- Use **Apple Distribution** para TestFlight External e App Store
 
-### Perfil Staging (eas.json)
-
-```json
-{
-  "build": {
-    "staging": {
-      "distribution": "store",
-      "autoIncrement": true,
-      "env": {
-        "EXPO_PUBLIC_BACKEND_URL": "https://likeme-back-end-git-staging-pixel-pulse-labs.vercel.app"
-      },
-      "ios": {
-        "buildConfiguration": "Release"
-      }
-    }
-  },
-  "submit": {
-    "staging": {
-      "ios": {
-        "appleId": "6757706434",
-        "ascAppId": "6757706434",
-        "appleTeamId": "VS752K4DT8"
-      }
-    }
-  }
-}
-```
-
-### App Config (app.json)
-
-- **Bundle ID**: `com.likeme.app`
-- **Version**: `1.0.0`
-- **Build Number**: Auto-incrementado pelo EAS
+### Perfil de Provisionamento
+- **Development**: Para testes internos
+- **Ad Hoc**: Para distribuição limitada
+- **App Store**: Para TestFlight External e App Store
 
 ## ⚠️ Troubleshooting
 
-### Erro: "Not logged in"
+### Erro: "Xcode não encontrado"
 
 ```bash
-eas login
+# Instale o Xcode pela App Store
+# Ou use o Xcode Command Line Tools:
+xcode-select --install
 ```
 
-### Erro: "No valid iOS Distribution certificate"
+### Erro: "CocoaPods não encontrado"
 
 ```bash
-eas credentials
-# Selecione iOS → Manage credentials → Setup
+sudo gem install cocoapods
 ```
-
-### Erro: "Build failed"
-
-1. Verifique os logs: `eas build:view <BUILD_ID>`
-2. Verifique se o Bundle ID está correto
-3. Verifique se há certificados válidos
-4. Tente novamente: `eas build --platform ios --profile staging`
-
-### Erro: "Submit failed"
-
-1. Verifique se o build foi concluído com sucesso
-2. Verifique se o app existe no App Store Connect
-3. Verifique credenciais no `eas.json`
-4. Tente submeter manualmente via Xcode Organizer
 
 ### Erro de Encoding (CocoaPods)
 
@@ -211,36 +173,62 @@ export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 ```
 
-Adicione ao seu `~/.zshrc` ou `~/.bash_profile`:
+Adicione ao seu `~/.zshrc`:
 
 ```bash
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 ```
 
+### Erro: "No valid iOS Distribution certificate"
+
+1. Abra o Xcode
+2. Vá em **Xcode** → **Settings** → **Accounts**
+3. Selecione sua conta Apple Developer
+4. Clique em **Manage Certificates**
+5. Clique em **+** → **Apple Distribution**
+
+### Erro: "Provisioning profile doesn't include signing certificate"
+
+1. Abra o Xcode
+2. Abra o projeto em `ios/LikeMe.xcworkspace`
+3. Vá em **Signing & Capabilities**
+4. Marque **Automatically manage signing**
+5. Selecione seu Team
+
+### Archive não aparece no Organizer
+
+1. Verifique se o build foi **Release** (não Debug)
+2. Verifique se escolheu **Generic iOS Device** como destino
+3. Tente limpar o build: `xcodebuild clean`
+
 ## 📚 Recursos Úteis
 
-- [Documentação EAS Build](https://docs.expo.dev/build/introduction/)
-- [Documentação EAS Submit](https://docs.expo.dev/submit/introduction/)
+- [Xcode Organizer](https://developer.apple.com/documentation/xcode/distributing-your-app-to-registered-devices)
 - [App Store Connect Help](https://help.apple.com/app-store-connect/)
 - [TestFlight Documentation](https://developer.apple.com/testflight/)
+- [Code Signing Guide](https://developer.apple.com/support/code-signing/)
 
 ## ✅ Checklist Rápido
 
-- [ ] Logado no EAS (`eas whoami`)
-- [ ] Código commitado e pushed
-- [ ] Build criado (`./build-testflight.sh`)
-- [ ] Build concluído com sucesso
-- [ ] Build submetido para TestFlight
+- [ ] Xcode instalado e configurado
+- [ ] CocoaPods instalado
+- [ ] Certificados configurados
+- [ ] Projeto iOS gerado (se necessário)
+- [ ] Archive criado (`./build-ios-local.sh`)
+- [ ] Archive distribuído via Xcode Organizer
 - [ ] Build processado no App Store Connect
 - [ ] Testadores adicionados
 - [ ] Testadores receberam convites
 
-## 🎉 Sucesso!
+## 🎉 Vantagens do Build Local
 
-Após seguir estes passos, seu app estará disponível no TestFlight para os testadores instalarem e testarem!
+- ⚡ **Mais rápido**: Sem filas de build
+- 💰 **Sem custos**: Não depende de serviços pagos
+- 🔒 **Mais controle**: Build totalmente local
+- 🎯 **Mais flexível**: Customize o processo como quiser
+- 🐛 **Debug mais fácil**: Logs locais e imediatos
 
 ---
 
-**Dúvidas?** Consulte o arquivo `TESTFLIGHT_SETUP.md` para mais detalhes.
-
+**Dúvidas?** Consulte a documentação oficial do Xcode e App Store Connect.
