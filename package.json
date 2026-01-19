@@ -39,6 +39,7 @@
     "build:android:gradle": "npx expo prebuild --platform android && cd android && ./gradlew assembleRelease && cd ..",
     "build:ios": "eas build --platform ios",
     "build:ios:local": "./build-ios-local.sh",
+    "build:ios:auto": "echo '3\ny' | ./build-ios-local.sh",
     "build:ios:simulator": "npx expo run:ios",
     "build:ios:device": "npx expo run:ios --device",
     "build:all": "eas build --platform all",
