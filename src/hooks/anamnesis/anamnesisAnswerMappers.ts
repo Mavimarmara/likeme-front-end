@@ -99,7 +99,7 @@ export function buildBodyAnswer(value: BodySymptomLevel, question: AnamnesisQues
   
   return {
     answerOptionId: option.id,
-    answerText: String(BODY_LEVEL_TO_VALUE[value]),
+    answerText: null,
   };
 }
 
