@@ -38,7 +38,6 @@ type Props = {
 const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   const rootNavigation = navigation.getParent() ?? navigation;
   const [hasCompletedAnamnesis, setHasCompletedAnamnesis] = useState<boolean>(false);
-  const [isCheckingAnamnesis, setIsCheckingAnamnesis] = useState<boolean>(true);
 
   const handleCartPress = () => {
     rootNavigation.navigate('Cart' as never);
@@ -56,8 +55,6 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
       } catch (error) {
         console.error('Error checking anamnesis status:', error);
         setHasCompletedAnamnesis(false);
-      } finally {
-        setIsCheckingAnamnesis(false);
       }
     };
 
@@ -392,7 +389,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
       />
       <View style={styles.content}>
         <ScrollView showsVerticalScrollIndicator={false}>
-          {!isCheckingAnamnesis && !hasCompletedAnamnesis && (
+          {!hasCompletedAnamnesis && (
             <View style={styles.anamnesisPromptContainer}>
               <AnamnesisPromptCard onStartPress={handleStartAnamnesis} />
             </View>
