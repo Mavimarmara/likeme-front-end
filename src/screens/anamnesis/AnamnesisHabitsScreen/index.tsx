@@ -12,8 +12,12 @@ type HabitKeyPrefix =
   | 'habits_movimento'
   | 'habits_espiritualidade'
   | 'habits_sono'
-  | 'habits_alimentacao'
-  | 'habits_estresse';
+  | 'habits_nutricao'
+  | 'habits_estresse'
+  | 'habits_autoestima'
+  | 'habits_relacionamentos'
+  | 'habits_saude_bucal'
+  | 'habits_proposito';
 
 type Props = {
   navigation: any;

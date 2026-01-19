@@ -22,7 +22,7 @@ const AnamnesisMindScreen: React.FC<Props> = ({ navigation }) => {
     complete,
   } = useAnamnesisQuestionnaire<number>({
     locale: 'pt-BR',
-    keyPrefix: 'mind_',
+    keyPrefix: 'mental',
     parseAnswer: parseMindAnswer,
     buildAnswer: buildMindAnswer,
   });

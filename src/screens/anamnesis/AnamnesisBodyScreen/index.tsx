@@ -23,7 +23,7 @@ const AnamnesisBodyScreen: React.FC<Props> = ({ navigation }) => {
     complete,
   } = useAnamnesisQuestionnaire<BodySymptomLevel>({
     locale: 'pt-BR',
-    keyPrefix: 'body_',
+    keyPrefix: 'physical',
     parseAnswer: parseBodyAnswer,
     buildAnswer: buildBodyAnswer,
   });
