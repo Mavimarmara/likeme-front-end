@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { FONT_SIZES, SPACING, COLORS } from '@/constants';
+import { FONT_SIZES, SPACING, COLORS, BORDER_RADIUS } from '@/constants';
 
 export const styles = StyleSheet.create({
   container: {
@@ -7,33 +7,128 @@ export const styles = StyleSheet.create({
     width: '100%',
     paddingVertical: SPACING.MD,
   },
+  headerContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: SPACING.MD,
+    marginBottom: SPACING.SM,
+  },
   title: {
+    fontFamily: 'DM Sans',
+    fontSize: FONT_SIZES.XL,
+    fontWeight: '700',
+    color: COLORS.TEXT,
+    textAlign: 'left',
+  },
+  weekDropdown: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 17, 55, 0.8)',
+    paddingHorizontal: SPACING.MD,
+    paddingVertical: SPACING.SM,
+    borderRadius: 22,
+    gap: SPACING.SM,
+    position: 'absolute',
+    right: SPACING.MD,
+  },
+  weekText: {
     fontFamily: 'DM Sans',
     fontSize: FONT_SIZES.SM,
     fontWeight: '500',
-    color: COLORS.TEXT,
-    marginBottom: SPACING.LG,
-    textAlign: 'center',
+    color: '#FDFBEE',
   },
   avatarsContainer: {
     alignItems: 'center',
     opacity: 0.4,
+    width: '100%',
+    paddingHorizontal: SPACING.MD,
   },
   avatarsContainerActive: {
     opacity: 1,
+    borderRadius: BORDER_RADIUS.XL,
+    paddingTop: SPACING.XL,
+    paddingBottom: SPACING.LG,
+    marginHorizontal: SPACING.MD,
+  },
+  avatarsContent: {
+    alignItems: 'center',
+    gap: SPACING.LG,
+    marginBottom: SPACING.LG,
   },
   avatarItem: {
     alignItems: 'center',
+    gap: SPACING.SM,
   },
   avatarLabel: {
     fontFamily: 'DM Sans',
-    fontSize: FONT_SIZES.XS,
-    fontWeight: '500',
+    fontSize: FONT_SIZES.SM,
+    fontWeight: '400',
     color: COLORS.TEXT,
     textAlign: 'center',
     width: 280,
+    letterSpacing: 0.2,
   },
   mindAvatar: {},
   bodyAvatar: {},
+  actionsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '84%',
+    paddingTop: SPACING.MD,
+  },
+  actionButton: {
+    alignItems: 'center',
+    width: 72,
+    gap: 2,
+  },
+  actionIconContainer: {
+    width: 53,
+    height: 48,
+    borderRadius: BORDER_RADIUS.MD,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 4,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  actionIconContainerShare: {
+    width: 53,
+    height: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  actionIconBackground: {
+    width: 53,
+    height: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  actionIconImage: {
+    width: 53,
+    height: 48,
+    resizeMode: 'cover',
+  },
+  actionIconImageDark: {
+    width: 53,
+    height: 48,
+    resizeMode: 'cover',
+    tintColor: '#001137',
+  },
+  actionIcon: {
+    zIndex: 2,
+  },
+  actionLabel: {
+    fontFamily: 'DM Sans',
+    fontSize: 10,
+    fontWeight: '500',
+    color: '#6E6A6A',
+    textAlign: 'center',
+    letterSpacing: 0.2,
+    lineHeight: 22,
+  },
 });
 
