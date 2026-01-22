@@ -39,7 +39,7 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
         <Text style={styles.title}>Your Avatar</Text>
       </View>
       <View style={[styles.avatarsContainer, hasAnyAnswers && styles.avatarsContainerActive]}>
-      {hasAnyAnswers && (
+        {hasAnyAnswers && (
           <TouchableOpacity style={styles.weekDropdown} activeOpacity={0.7}>
             <Text style={styles.weekText}>Week</Text>
             <Icon name="keyboard-arrow-down" size={20} color="#FDFBEE" />

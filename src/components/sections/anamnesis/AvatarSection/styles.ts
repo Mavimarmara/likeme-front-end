@@ -12,7 +12,6 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: SPACING.MD,
     marginBottom: SPACING.SM,
   },
   title: {
@@ -31,7 +30,7 @@ export const styles = StyleSheet.create({
     borderRadius: 22,
     gap: SPACING.SM,
     position: 'absolute',
-    right: SPACING.MD,
+    right: 0,
   },
   weekText: {
     fontFamily: 'DM Sans',
@@ -43,19 +42,16 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     opacity: 0.4,
     width: '100%',
-    paddingHorizontal: SPACING.MD,
   },
   avatarsContainerActive: {
     opacity: 1,
     borderRadius: BORDER_RADIUS.XL,
     paddingTop: SPACING.XL,
     paddingBottom: SPACING.LG,
-    marginHorizontal: SPACING.MD,
   },
   avatarsContent: {
     alignItems: 'center',
     gap: SPACING.LG,
-    marginBottom: SPACING.LG,
   },
   avatarItem: {
     alignItems: 'center',
@@ -75,8 +71,8 @@ export const styles = StyleSheet.create({
   actionsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '84%',
-    paddingTop: SPACING.MD,
+    width: '100%',
+    paddingHorizontal: SPACING.MD,
   },
   actionButton: {
     alignItems: 'center',
