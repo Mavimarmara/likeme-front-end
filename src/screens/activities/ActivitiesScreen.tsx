@@ -13,7 +13,7 @@ import { EventReminder } from '@/components/ui/cards';
 import { orderService, activityService } from '@/services';
 import { storageService } from '@/services';
 import { formatPrice, getDateFromDatetime, getTimeFromDatetime, sortByDateTime, sortByDateField } from '@/utils';
-import { useActivities, useSuggestedProducts } from '@/hooks';
+import { useActivities, useSuggestedProducts, useMenuItems } from '@/hooks';
 import { AnamnesisPromptCard } from '@/components/sections/anamnesis';
 import type { Order } from '@/types/order';
 import type { RootStackParamList } from '@/types/navigation';
@@ -309,39 +309,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
     return sorted;
   }, [activeTab, selectedFilter, daySortOrder, historyActivities, activeActivities]);
 
-  const menuItems = useMemo(
-    () => [
-      {
-        id: 'activities',
-        icon: 'fitness-center',
-        label: 'Atividades',
-        fullLabel: 'Atividades',
-        onPress: () => rootNavigation.navigate('Activities' as never),
-      },
-      {
-        id: 'marketplace',
-        icon: 'store',
-        label: 'Marketplace',
-        fullLabel: 'Marketplace',
-        onPress: () => rootNavigation.navigate('Marketplace' as never),
-      },
-      {
-        id: 'community',
-        icon: 'group',
-        label: 'Comunidade',
-        fullLabel: 'Comunidade',
-        onPress: () => rootNavigation.navigate('Community' as never),
-      },
-      {
-        id: 'profile',
-        icon: 'person',
-        label: 'Perfil',
-        fullLabel: 'Perfil',
-        onPress: () => rootNavigation.navigate('Profile' as never),
-      },
-    ],
-    [rootNavigation]
-  );
+  const menuItems = useMenuItems(navigation);
 
   const handleMarkAsDone = async (activityId: string) => {
     try {

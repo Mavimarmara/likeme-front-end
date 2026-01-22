@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LogoutButton, Title, FloatingMenu } from '@/components/ui';
 import { storageService } from '@/services';
+import { useMenuItems } from '@/hooks';
 import type { StoredUser } from '@/types/auth';
 import { styles } from './styles';
 
@@ -30,41 +31,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
     }
   };
 
-  const rootNavigation = navigation.getParent() ?? navigation;
-
-  const menuItems = useMemo(
-    () => [
-      {
-        id: 'activities',
-        icon: 'fitness-center',
-        label: 'Atividades',
-        fullLabel: 'Atividades',
-        onPress: () => rootNavigation.navigate('Activities' as never),
-      },
-      {
-        id: 'marketplace',
-        icon: 'store',
-        label: 'Marketplace',
-        fullLabel: 'Marketplace',
-        onPress: () => rootNavigation.navigate('Marketplace' as never),
-      },
-      {
-        id: 'community',
-        icon: 'group',
-        label: 'Comunidade',
-        fullLabel: 'Comunidade',
-        onPress: () => rootNavigation.navigate('Community' as never),
-      },
-      {
-        id: 'profile',
-        icon: 'person',
-        label: 'Perfil',
-        fullLabel: 'Perfil',
-        onPress: () => rootNavigation.navigate('Profile' as never),
-      },
-    ],
-    [rootNavigation]
-  );
+  const menuItems = useMenuItems(navigation);
 
   const handleLogout = () => {
     rootNavigation.reset({

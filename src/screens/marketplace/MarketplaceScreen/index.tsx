@@ -9,7 +9,7 @@ import { Header, Background } from '@/components/ui/layout';
 import { storageService } from '@/services';
 import { formatPrice, handleAdNavigation, mapProductToCartItem } from '@/utils';
 import { WeekHighlightCard } from '@/components/sections/marketplace';
-import { useMarketplaceAds } from '@/hooks';
+import { useMarketplaceAds, useMenuItems } from '@/hooks';
 import type { Ad } from '@/types/ad';
 import type { RootStackParamList } from '@/types/navigation';
 import { styles } from './styles';
@@ -38,8 +38,6 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   const [selectedOrder, setSelectedOrder] = useState<string>('best-rated');
   const [page, setPage] = useState(1);
 
-  const rootNavigation = navigation.getParent() ?? navigation;
-  
   const { ads, loading, hasMore, loadAds } = useMarketplaceAds({
     selectedCategory,
     page,
@@ -83,39 +81,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   };
 
 
-  const menuItems = useMemo(
-    () => [
-      {
-        id: 'activities',
-        icon: 'fitness-center',
-        label: 'Atividades',
-        fullLabel: 'Atividades',
-        onPress: () => rootNavigation.navigate('Activities' as never),
-      },
-      {
-        id: 'marketplace',
-        icon: 'store',
-        label: 'Marketplace',
-        fullLabel: 'Marketplace',
-        onPress: () => rootNavigation.navigate('Marketplace' as never),
-      },
-      {
-        id: 'community',
-        icon: 'group',
-        label: 'Comunidade',
-        fullLabel: 'Comunidade',
-        onPress: () => rootNavigation.navigate('Community' as never),
-      },
-      {
-        id: 'profile',
-        icon: 'person',
-        label: 'Perfil',
-        fullLabel: 'Perfil',
-        onPress: () => rootNavigation.navigate('Profile' as never),
-      },
-    ],
-    [rootNavigation]
-  );
+  const menuItems = useMenuItems(navigation);
 
   const handleCategorySelect = (categoryId: string) => {
     setSelectedCategory(categoryId);

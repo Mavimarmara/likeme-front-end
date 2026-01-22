@@ -20,6 +20,9 @@ export type { FormattedInputType } from './useFormattedInput';
 
 export { useAnamnesisQuestionnaire } from './anamnesis/useAnamnesisQuestionnaire';
 
+// Navigation hooks
+export { useMenuItems } from './navigation/useMenuItems';
+
 // Types
 export type { ActivityItem, UseActivitiesOptions, UseActivitiesReturn } from '@/types/activity/hooks';
 

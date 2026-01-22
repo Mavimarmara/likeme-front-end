@@ -12,7 +12,7 @@ import type { Program, ProgramDetail } from '@/types/program';
 import type { CommunityCategory, Channel, CommunityFeedData } from '@/types/community';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
-import { useUserFeed, useCommunities, useSuggestedProducts } from '@/hooks';
+import { useUserFeed, useCommunities, useSuggestedProducts, useMenuItems } from '@/hooks';
 import { mapFiltersToFeedParams, mapCommunityToProgram, mapChannelsToEvents } from '@/utils';
 import { communityService } from '@/services';
 
@@ -304,39 +304,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   }, []);
 
 
-  const menuItems = useMemo(
-    () => [
-      {
-        id: 'activities',
-        icon: 'fitness-center',
-        label: 'Atividades',
-        fullLabel: 'Atividades',
-        onPress: () => rootNavigation?.navigate('Activities' as never),
-      },
-      {
-        id: 'marketplace',
-        icon: 'store',
-        label: 'Marketplace',
-        fullLabel: 'Marketplace',
-        onPress: () => rootNavigation?.navigate('Marketplace' as never),
-      },
-      {
-        id: 'community',
-        icon: 'group',
-        label: 'Comunidade',
-        fullLabel: 'Comunidade',
-        onPress: () => rootNavigation?.navigate('Community' as never),
-      },
-      {
-        id: 'profile',
-        icon: 'person',
-        label: 'Perfil',
-        fullLabel: 'Perfil',
-        onPress: () => rootNavigation?.navigate('Profile' as never),
-      },
-    ],
-    [rootNavigation]
-  );
+  const menuItems = useMenuItems(navigation);
 
   const MARKER_ID = '__MARKER__';
 

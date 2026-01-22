@@ -3,10 +3,9 @@ import { View, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FloatingMenu } from '@/components/ui/menu';
 import { Header, Background } from '@/components/ui/layout';
-import { useCommunities, useSuggestedProducts } from '@/hooks';
+import { useCommunities, useSuggestedProducts, useMenuItems } from '@/hooks';
 import { mapCommunityToRecommendedCommunity, mapCommunityToOtherCommunity, mapCommunityPostToPost, mapChannelsToEvents, sortByDateObject } from '@/utils';
-import { communityService } from '@/services';
-import { storageService } from '@/services';
+import { communityService, storageService, anamnesisService, userService } from '@/services';
 import type { Channel } from '@/types/community';
 import type { CommunityFeedData } from '@/types/community';
 import { 
@@ -38,6 +37,7 @@ type Props = {
 const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   const rootNavigation = navigation.getParent() ?? navigation;
   const [hasCompletedAnamnesis, setHasCompletedAnamnesis] = useState<boolean>(false);
+  const [hasAnyAnamnesisAnswers, setHasAnyAnamnesisAnswers] = useState<boolean>(false);
 
   const handleCartPress = () => {
     rootNavigation.navigate('Cart' as never);
@@ -52,9 +52,22 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
       try {
         const anamnesisCompletedAt = await storageService.getAnamnesisCompletedAt();
         setHasCompletedAnamnesis(!!anamnesisCompletedAt);
+
+        // Verificar se há respostas na anamnese
+        const profileResponse = await userService.getProfile();
+        const userId = profileResponse.success ? profileResponse.data?.id : null;
+        
+        if (userId) {
+          const answersResponse = await anamnesisService.getUserAnswers({ userId });
+          const hasAnswers = answersResponse.success && (answersResponse.data?.length || 0) > 0;
+          setHasAnyAnamnesisAnswers(hasAnswers);
+        } else {
+          setHasAnyAnamnesisAnswers(false);
+        }
       } catch (error) {
         console.error('Error checking anamnesis status:', error);
         setHasCompletedAnamnesis(false);
+        setHasAnyAnamnesisAnswers(false);
       }
     };
 
@@ -293,39 +306,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
       });
   }, [rawCommunities, categories]);
 
-  const menuItems = useMemo(
-    () => [
-      {
-        id: 'activities',
-        icon: 'fitness-center',
-        label: 'Atividades',
-        fullLabel: 'Atividades',
-        onPress: () => rootNavigation.navigate('Activities' as never),
-      },
-      {
-        id: 'marketplace',
-        icon: 'store',
-        label: 'Marketplace',
-        fullLabel: 'Marketplace',
-        onPress: () => rootNavigation.navigate('Marketplace' as never),
-      },
-      {
-        id: 'community',
-        icon: 'group',
-        label: 'Comunidade',
-        fullLabel: 'Comunidade',
-        onPress: () => rootNavigation.navigate('Community' as never),
-      },
-      {
-        id: 'profile',
-        icon: 'person',
-        label: 'Perfil',
-        fullLabel: 'Perfil',
-        onPress: () => rootNavigation.navigate('Profile' as never),
-      },
-    ],
-    [rootNavigation]
-  );
+  const menuItems = useMenuItems(navigation);
 
   const handleEventPress = (event: Event) => {
     console.log('Evento pressionado:', event.id);
@@ -389,7 +370,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
       />
       <View style={styles.content}>
         <ScrollView showsVerticalScrollIndicator={false}>
-          {!hasCompletedAnamnesis && (
+          {!hasCompletedAnamnesis && hasAnyAnamnesisAnswers && (
             <>
               <View style={styles.avatarContainer}>
                 <AvatarSection />
@@ -407,6 +388,16 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
                 onPostPress={handleYourCommunityPostPress}
               />
             </View>
+          )}
+          {!hasCompletedAnamnesis && !hasAnyAnamnesisAnswers && (
+            <>
+              <View style={styles.avatarContainer}>
+                <AvatarSection />
+              </View>
+              <View style={styles.anamnesisPromptContainer}>
+                <AnamnesisPromptCard onStartPress={handleStartAnamnesis} />
+              </View>
+            </>
           )}
           {events.length > 0 && (
             <View style={styles.eventsContainer}>
