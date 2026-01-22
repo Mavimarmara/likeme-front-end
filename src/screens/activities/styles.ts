@@ -26,6 +26,9 @@ export const styles = StyleSheet.create({
   eventReminderContainer: {
     marginHorizontal: SPACING.MD,
   },
+  anamnesisPromptContainer: {
+    paddingTop: SPACING.MD,
+  },
   sectionLabel: {
     fontSize: FONT_SIZES.XS,
     color: COLORS.TEXT_LIGHT,

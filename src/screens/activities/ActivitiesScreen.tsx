@@ -11,8 +11,10 @@ import { BackgroundIconButton, DoneIcon, CloseIcon } from '@/assets';
 import { ProductsCarousel, PlansCarousel, type Product, type Plan } from '@/components/sections/product';
 import { EventReminder } from '@/components/ui/cards';
 import { orderService, activityService } from '@/services';
+import { storageService } from '@/services';
 import { formatPrice, getDateFromDatetime, getTimeFromDatetime, sortByDateTime, sortByDateField } from '@/utils';
 import { useActivities, useSuggestedProducts } from '@/hooks';
+import { AnamnesisPromptCard } from '@/components/sections/anamnesis';
 import type { Order } from '@/types/order';
 import type { RootStackParamList } from '@/types/navigation';
 import { styles } from './styles';
@@ -41,6 +43,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
   const [daySortOrder, setDaySortOrder] = useState<'asc' | 'desc'>('desc');
   const [menuVisibleForId, setMenuVisibleForId] = useState<string | null>(null);
   const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null);
+  const [hasCompletedAnamnesis, setHasCompletedAnamnesis] = useState<boolean>(false);
 
   // Usar o hook useActivities
   const {
@@ -70,6 +73,20 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
       loadOrders();
     }
   }, [activeTab]);
+
+  useEffect(() => {
+    const checkAnamnesisStatus = async () => {
+      try {
+        const anamnesisCompletedAt = await storageService.getAnamnesisCompletedAt();
+        setHasCompletedAnamnesis(!!anamnesisCompletedAt);
+      } catch (error) {
+        console.error('Error checking anamnesis status:', error);
+        setHasCompletedAnamnesis(false);
+      }
+    };
+
+    checkAnamnesisStatus();
+  }, []);
 
   const { products: suggestedProducts } = useSuggestedProducts({
     limit: 4,
@@ -424,6 +441,10 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
         Alert.alert('Error', 'Failed to open meet link');
       });
     }
+  };
+
+  const handleStartAnamnesis = () => {
+    rootNavigation.navigate('Anamnesis' as never);
   };
 
   const renderTabs = () => (
@@ -781,6 +802,11 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
                 </View>
               ) : (
                 filteredActivities.map(renderActivityCard)
+              )}
+              {!hasCompletedAnamnesis && (
+                <View style={styles.anamnesisPromptContainer}>
+                  <AnamnesisPromptCard onStartPress={handleStartAnamnesis} />
+                </View>
               )}
               {activeTab === 'actives' && plans.length > 0 && (
                 <View>

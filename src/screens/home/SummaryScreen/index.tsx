@@ -21,7 +21,7 @@ import {
   type YourCommunity,
 } from '@/components/sections/community';
 import { ProductsCarousel, type Product } from '@/components/sections/product';
-import { AnamnesisPromptCard } from '@/components/sections/anamnesis';
+import { AnamnesisPromptCard, AvatarSection } from '@/components/sections/anamnesis';
 import type { Event } from '@/types/event';
 import type { Post } from '@/types';
 import { styles } from './styles';
@@ -390,9 +390,14 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
       <View style={styles.content}>
         <ScrollView showsVerticalScrollIndicator={false}>
           {!hasCompletedAnamnesis && (
-            <View style={styles.anamnesisPromptContainer}>
-              <AnamnesisPromptCard onStartPress={handleStartAnamnesis} />
-            </View>
+            <>
+              <View style={styles.avatarContainer}>
+                <AvatarSection />
+              </View>
+              <View style={styles.anamnesisPromptContainer}>
+                <AnamnesisPromptCard onStartPress={handleStartAnamnesis} />
+              </View>
+            </>
           )}
           {yourCommunity && (
             <View style={styles.yourCommunitiesContainer}>

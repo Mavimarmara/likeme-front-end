@@ -11,6 +11,10 @@ export const styles = StyleSheet.create({
     zIndex: 1,
     paddingBottom: SPACING.XXL,
   },
+  avatarContainer: {
+    paddingTop: SPACING.MD,
+    paddingHorizontal: SPACING.MD,
+  },
   anamnesisPromptContainer: {
     paddingTop: SPACING.MD,
   },

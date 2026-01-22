@@ -1,10 +1,10 @@
 export { default as LiveBanner, type LiveBannerData, type LiveStatus } from './LiveBanner';
 export { default as PostDetailsHeader } from './PostDetailsHeader';
 export { default as NextEventsSection } from './NextEventsSection';
-export { default as PopularProvidersSection } from './PopularProvidersSection';
-export { default as RecommendedCommunitiesSection } from './RecommendedCommunitiesSection';
-export { default as YourCommunitiesSection } from './YourCommunitiesSection';
-export { default as OtherCommunitiesSection } from './OtherCommunitiesSection';
+export { default as PopularProvidersSection, type Provider } from './PopularProvidersSection';
+export { default as RecommendedCommunitiesSection, type RecommendedCommunity } from './RecommendedCommunitiesSection';
+export { default as YourCommunitiesSection, type YourCommunity } from './YourCommunitiesSection';
+export { default as OtherCommunitiesSection, type OtherCommunity } from './OtherCommunitiesSection';
 export { default as PostCard } from './PostCard';
 export { default as EventCard } from './EventCard';
 export { default as PollCard } from './PollCard';
