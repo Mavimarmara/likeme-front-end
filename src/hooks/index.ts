@@ -19,6 +19,8 @@ export { useFormattedInput } from './useFormattedInput';
 export type { FormattedInputType } from './useFormattedInput';
 
 export { useAnamnesisQuestionnaire } from './anamnesis/useAnamnesisQuestionnaire';
+export { useAnamnesisProgress } from './anamnesis/useAnamnesisProgress';
+export type { AnamnesisProgress, CategoryProgress } from './anamnesis/useAnamnesisProgress';
 
 // Navigation hooks
 export { useMenuItems } from './navigation/useMenuItems';

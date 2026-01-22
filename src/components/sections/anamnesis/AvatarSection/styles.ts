@@ -19,6 +19,9 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     opacity: 0.4,
   },
+  avatarsContainerActive: {
+    opacity: 1,
+  },
   avatarItem: {
     alignItems: 'center',
   },
@@ -31,12 +34,10 @@ export const styles = StyleSheet.create({
     width: 280,
   },
   mindAvatar: {
-    width: 150,
-    height: 134,
+    // Dimensões serão definidas dinamicamente via props
   },
   bodyAvatar: {
-    width: 150,
-    height: 136,
+    // Dimensões serão definidas dinamicamente via props
   },
 });
 

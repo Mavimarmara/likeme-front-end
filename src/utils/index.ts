@@ -145,3 +145,6 @@ export * from './mappers/categoryMapper';
 // Community utilities
 export * from './community/filterMapper';
 export * from './community/mappers';
+
+// Anamnesis utilities
+export * from './anamnesis/avatarSizeMapper';

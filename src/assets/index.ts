@@ -29,4 +29,6 @@ export const MenuButtonBackground = require('../../assets/Menu.png');
 export const DoneIcon = require('../../assets/Done.png');
 export const CloseIcon = require('../../assets/Close.png'); 
 export const MindAvatar = require('../../assets/avatar/DisableMindAvatar.png');
-export const BodyAvatar = require('../../assets/avatar/DisableBodyAvatar.png'); 
+export const BodyAvatar = require('../../assets/avatar/DisableBodyAvatar.png');
+export const MindAvatarActive = require('../../assets/avatar/MindAvatar.png');
+export const BodyAvatarActive = require('../../assets/avatar/BodyAvatar.png'); 
