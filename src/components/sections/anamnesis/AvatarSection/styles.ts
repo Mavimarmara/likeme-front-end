@@ -33,11 +33,7 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
     width: 280,
   },
-  mindAvatar: {
-    // Dimensões serão definidas dinamicamente via props
-  },
-  bodyAvatar: {
-    // Dimensões serão definidas dinamicamente via props
-  },
+  mindAvatar: {},
+  bodyAvatar: {},
 });
 

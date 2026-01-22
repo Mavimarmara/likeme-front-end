@@ -14,11 +14,6 @@ const SIZE_DIMENSIONS: Record<AvatarSize, AvatarDimensions> = {
   XXL: { width: 105, height: 95 },
 };
 
-/**
- * Mapeia a porcentagem de progresso da anamnese para um tamanho de avatar
- * @param percentage Porcentagem de 0 a 100
- * @returns Tamanho do avatar (XXS a XXL)
- */
 export const getAvatarSizeFromPercentage = (percentage: number): AvatarSize => {
   if (percentage === 0) return 'XXS';
   if (percentage <= 16) return 'XS';
@@ -28,11 +23,6 @@ export const getAvatarSizeFromPercentage = (percentage: number): AvatarSize => {
   return 'XXL';
 };
 
-/**
- * Obtém as dimensões do avatar baseado no tamanho
- * @param size Tamanho do avatar
- * @returns Dimensões { width, height }
- */
 export const getAvatarDimensions = (size: AvatarSize): AvatarDimensions => {
   return SIZE_DIMENSIONS[size];
 };

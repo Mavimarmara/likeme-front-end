@@ -15,6 +15,8 @@ import type {
   GetCompleteAnamnesisParams,
   GetUserAnswersParams,
   GetUserAnswerParams,
+  GetUserScoresResponse,
+  GetUserScoresParams,
 } from '@/types/anamnesis';
 
 class AnamnesisService {
@@ -185,6 +187,31 @@ class AnamnesisService {
       return response;
     } catch (error) {
       logger.error('Error fetching user answer:', error);
+      throw error;
+    }
+  }
+
+  async getUserScores(params: GetUserScoresParams): Promise<GetUserScoresResponse> {
+    try {
+      if (!params.userId) {
+        throw new Error('userId is required');
+      }
+
+      const response = await apiClient.get<GetUserScoresResponse>(
+        `${this.anamnesisEndpoint}/scores/user/${params.userId}`,
+        undefined,
+        true,
+        false
+      );
+
+      logger.debug('User scores response:', {
+        userId: params.userId,
+        success: response.success,
+      });
+
+      return response;
+    } catch (error) {
+      logger.error('Error fetching user scores:', error);
       throw error;
     }
   }

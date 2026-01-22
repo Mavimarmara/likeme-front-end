@@ -136,6 +136,30 @@ export interface GetUserAnswerParams {
   questionConceptId: string;
 }
 
+/**
+ * Scores de mental e physical do usuário
+ */
+export interface UserScores {
+  mental: number;
+  physical: number;
+  maxMental: number;
+  maxPhysical: number;
+  mentalPercentage: number;
+  physicalPercentage: number;
+}
+
+/**
+ * Resposta da API para scores do usuário
+ */
+export interface GetUserScoresResponse extends ApiResponse<UserScores> {}
+
+/**
+ * Parâmetros para buscar scores do usuário
+ */
+export interface GetUserScoresParams {
+  userId: string;
+}
+
 export type {
   BuildAnswerResult,
   UseAnamnesisQuestionnaireParams,

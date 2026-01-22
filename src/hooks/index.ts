@@ -20,6 +20,7 @@ export type { FormattedInputType } from './useFormattedInput';
 
 export { useAnamnesisQuestionnaire } from './anamnesis/useAnamnesisQuestionnaire';
 export { useAnamnesisProgress } from './anamnesis/useAnamnesisProgress';
+export { useAnamnesisScores } from './anamnesis/useAnamnesisScores';
 export type { AnamnesisProgress, CategoryProgress } from './anamnesis/useAnamnesisProgress';
 
 // Navigation hooks

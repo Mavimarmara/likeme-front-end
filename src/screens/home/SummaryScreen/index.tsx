@@ -3,7 +3,7 @@ import { View, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FloatingMenu } from '@/components/ui/menu';
 import { Header, Background } from '@/components/ui/layout';
-import { useCommunities, useSuggestedProducts, useMenuItems, useAnamnesisProgress } from '@/hooks';
+import { useCommunities, useSuggestedProducts, useMenuItems, useAnamnesisProgress, useAnamnesisScores } from '@/hooks';
 import { mapCommunityToRecommendedCommunity, mapCommunityToOtherCommunity, mapCommunityPostToPost, mapChannelsToEvents, sortByDateObject } from '@/utils';
 import { communityService, storageService, anamnesisService, userService } from '@/services';
 import type { Channel } from '@/types/community';
@@ -39,6 +39,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   const [hasCompletedAnamnesis, setHasCompletedAnamnesis] = useState<boolean>(false);
   const [hasAnyAnamnesisAnswers, setHasAnyAnamnesisAnswers] = useState<boolean>(false);
   const { progress: anamnesisProgress } = useAnamnesisProgress();
+  const { scores: anamnesisScores } = useAnamnesisScores();
 
   const handleCartPress = () => {
     rootNavigation.navigate('Cart' as never);
@@ -376,8 +377,8 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
               <View style={styles.avatarContainer}>
                 <AvatarSection 
                   hasAnswers={hasAnyAnamnesisAnswers}
-                  mindPercentage={anamnesisProgress?.mental.percentage || 0}
-                  bodyPercentage={anamnesisProgress?.physical.percentage || 0}
+                  mindPercentage={anamnesisScores?.mentalPercentage || 0}
+                  bodyPercentage={anamnesisScores?.physicalPercentage || 0}
                 />
               </View>
               <View style={styles.anamnesisPromptContainer}>

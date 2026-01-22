@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, Image } from 'react-native';
 import { MindAvatar, BodyAvatar, MindAvatarActive, BodyAvatarActive } from '@/assets';
 import { getAvatarSizeFromPercentage, getAvatarDimensions, type AvatarSize } from '@/utils/anamnesis/avatarSizeMapper';
@@ -15,20 +15,21 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
   mindPercentage = 0,
   bodyPercentage = 0,
 }) => {
-  const mindAvatarSource = hasAnswers ? MindAvatarActive : MindAvatar;
-  const bodyAvatarSource = hasAnswers ? BodyAvatarActive : BodyAvatar;
+  const hasAnyAnswers = useMemo(() => hasAnswers || mindPercentage > 0 || bodyPercentage > 0, [hasAnswers, mindPercentage, bodyPercentage]);
+  
+  const mindAvatarSource = useMemo(() => hasAnyAnswers ? MindAvatarActive : MindAvatar, [hasAnyAnswers]);
+  const bodyAvatarSource = useMemo(() => hasAnyAnswers ? BodyAvatarActive : BodyAvatar, [hasAnyAnswers]);
 
-  // Calcular tamanhos baseados nas porcentagens
-  const mindSize: AvatarSize = getAvatarSizeFromPercentage(mindPercentage);
-  const bodySize: AvatarSize = getAvatarSizeFromPercentage(bodyPercentage);
+  const mindSize = useMemo(() => getAvatarSizeFromPercentage(mindPercentage), [mindPercentage]);
+  const bodySize = useMemo(() => getAvatarSizeFromPercentage(bodyPercentage), [bodyPercentage]);
 
-  const mindDimensions = getAvatarDimensions(mindSize);
-  const bodyDimensions = getAvatarDimensions(bodySize);
+  const mindDimensions = useMemo(() => getAvatarDimensions(mindSize), [mindSize]);
+  const bodyDimensions = useMemo(() => getAvatarDimensions(bodySize), [bodySize]);
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Your Avatar</Text>
-      <View style={[styles.avatarsContainer, hasAnswers && styles.avatarsContainerActive]}>
+      <View style={[styles.avatarsContainer, hasAnyAnswers && styles.avatarsContainerActive]}>
         <View style={styles.avatarItem}>
           <Text style={styles.avatarLabel}>MIND</Text>
           <Image
