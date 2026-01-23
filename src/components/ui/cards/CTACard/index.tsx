@@ -17,6 +17,13 @@ type Props = {
 	primaryButtonIcon?: string;
 	primaryButtonIconPosition?: 'left' | 'right';
 	descriptionColor?: string;
+	borderRadius?: {
+		topLeft?: number;
+		topRight?: number;
+		bottomLeft?: number;
+		bottomRight?: number;
+	};
+	titleStyle?: TextStyle;
 	style?: ViewStyle | ViewStyle[];
 };
 
@@ -33,15 +40,26 @@ const CTACard: React.FC<Props> = ({
 	primaryButtonIcon,
 	primaryButtonIconPosition = 'right',
 	descriptionColor,
+	borderRadius,
+	titleStyle,
 	style,
 }) => {
 	const hasPrimaryButton = primaryButtonLabel && primaryButtonOnPress;
 	const hasSecondaryButton = secondaryButtonLabel && secondaryButtonOnPress;
 	const hasSingleButton = (hasPrimaryButton && !hasSecondaryButton) || (!hasPrimaryButton && hasSecondaryButton);
 
+	const customBorderRadius = borderRadius
+		? {
+				borderTopLeftRadius: borderRadius.topLeft,
+				borderTopRightRadius: borderRadius.topRight,
+				borderBottomLeftRadius: borderRadius.bottomLeft,
+				borderBottomRightRadius: borderRadius.bottomRight,
+			}
+		: {};
+
 	return (
-		<View style={[styles.card, { backgroundColor }, style]}>
-			<Text style={styles.title}>{title}</Text>
+		<View style={[styles.card, { backgroundColor }, customBorderRadius, style]}>
+			<Text style={[styles.title, titleStyle]}>{title}</Text>
 			<View style={styles.content}>
 				{highlightText && <Text style={styles.highlightText}>{highlightText}</Text>}
 				{Array.isArray(description) ? (

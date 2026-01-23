@@ -6,6 +6,7 @@ import { Header } from '@/components/ui/layout';
 import { FloatingMenu } from '@/components/ui/menu';
 import ProgressBar from '@/components/ui/feedback/ProgressBar';
 import { ChartBar } from '@/components/ui/graphics';
+import { CTACard } from '@/components/ui/cards';
 import { useMenuItems } from '@/hooks';
 import { COLORS, SPACING, BORDER_RADIUS } from '@/constants';
 import { getMarkerColor, getMarkerGradient, MARKER_NAMES, hasMarkerGradient } from '@/constants/markers';
@@ -152,17 +153,28 @@ const MarkerDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
           </View>
 
           {/* Routine Section */}
-          <View style={[styles.routineCard, { backgroundColor: markerGradient?.[0] || markerColor }]}>
-            <Text style={styles.routineTitle}>{markerName.toUpperCase()} ROUTINE</Text>
-            <View style={styles.routineContent}>
-            <Text style={styles.routineSubtitle}>
-              Your average {markerName.toLowerCase()} score this week was {averageValue} points
-            </Text>
-            <Text style={styles.routineText}>
-              You've been maintaining a consistent routine. Continuing to focus on {markerName.toLowerCase()} could further boost your overall well-being and energy levels
-            </Text>
-            </View>
-          </View>
+          <CTACard
+            title={`${markerName.toUpperCase()} ROUTINE`}
+            highlightText={`Your average ${markerName.toLowerCase()} score this week was ${averageValue} points`}
+            description={[
+              `You've been maintaining a consistent routine. Continuing to focus on ${markerName.toLowerCase()} could further boost your overall well-being and energy levels`,
+            ]}
+            backgroundColor={COLORS.PRIMARY.LIGHT}
+            descriptionColor={COLORS.TEXT}
+            titleStyle={styles.routineTitle}
+            borderRadius={{
+              topLeft: 32,
+              topRight: 32,
+              bottomLeft: 12,
+              bottomRight: 64,
+            }}
+            style={[
+              styles.routineCard,
+              {
+                paddingBottom: SPACING.XL,
+              },
+            ]}
+          />
 
           {/* History Section */}
           <View style={styles.historyCard}>

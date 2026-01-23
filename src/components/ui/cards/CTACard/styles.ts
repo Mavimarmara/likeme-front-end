@@ -5,7 +5,6 @@ export const styles = StyleSheet.create({
 	card: {
 		paddingHorizontal: SPACING.XL + SPACING.MD,
 		paddingTop: SPACING.XXL,
-		paddingBottom: SPACING.LG,
 		borderTopLeftRadius: 64,
 		borderTopRightRadius: 64,
 		borderBottomLeftRadius: BORDER_RADIUS.XL,
@@ -22,12 +21,10 @@ export const styles = StyleSheet.create({
 		fontSize: FONT_SIZES.XXL,
 		fontWeight: '700',
 		color: COLORS.TEXT,
-		marginBottom: SPACING.MD,
 	},
 	content: {
 		gap: SPACING.SM,
-		marginBottom: SPACING.MD,
-		minHeight: 150,
+		paddingTop: SPACING.MD,
 		justifyContent: 'center',
 	},
 	highlightText: {
@@ -49,6 +46,7 @@ export const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		gap: SPACING.MD,
+		paddingVertical: SPACING.LG,
 	},
 	actionsSingle: {
 		justifyContent: 'center',
