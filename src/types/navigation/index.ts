@@ -42,6 +42,7 @@ export type RootStackParamList = {
   Profile: undefined;
   Home: undefined;
   Summary: undefined;
+  AvatarProgress: undefined;
   Cart: undefined;
   Checkout: undefined;
   CommunityPreview: {

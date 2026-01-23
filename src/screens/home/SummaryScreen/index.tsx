@@ -49,6 +49,10 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
     rootNavigation.navigate('Anamnesis' as never);
   };
 
+  const handleAvatarSeeMore = () => {
+    rootNavigation.navigate('AvatarProgress' as never);
+  };
+
   useEffect(() => {
     const checkAnamnesisStatus = async () => {
       try {
@@ -379,6 +383,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
                   hasAnswers={hasAnyAnamnesisAnswers}
                   mindPercentage={anamnesisScores?.mentalPercentage || 0}
                   bodyPercentage={anamnesisScores?.physicalPercentage || 0}
+                  onSeeMorePress={handleAvatarSeeMore}
                 />
               </View>
               <View style={styles.anamnesisPromptContainer}>
@@ -402,6 +407,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
                   hasAnswers={false}
                   mindPercentage={0}
                   bodyPercentage={0}
+                  onSeeMorePress={handleAvatarSeeMore}
                 />
               </View>
               <View style={styles.anamnesisPromptContainer}>

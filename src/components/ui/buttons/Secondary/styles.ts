@@ -7,7 +7,6 @@ export const styles = StyleSheet.create({
     backgroundColor: 'rgba(240, 238, 225, 0.16)',
     borderWidth: 1,
     borderColor: 'rgba(0, 17, 55, 1)',
-    borderRadius: 18,
     display: 'flex',
     gap: 2,
     justifyContent: 'center',
@@ -16,9 +15,11 @@ export const styles = StyleSheet.create({
   },
   buttonSmall: {
     minHeight: 36,
+    borderRadius: 18,
   },
   buttonMedium: {
     minHeight: 48,
+    borderRadius: 24,
   },
   buttonDark: {
     backgroundColor: '#FDFBEE',

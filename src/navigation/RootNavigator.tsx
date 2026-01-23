@@ -11,6 +11,7 @@ import { ActivitiesScreen } from '@/screens/activities';
 import { MarketplaceScreen, ProductDetailsScreen, AffiliateProductScreen, CartScreen, CheckoutScreen, CommunityPreviewScreen, ProviderProfileScreen } from '@/screens/marketplace';
 import { ProfileScreen } from '@/screens/profile';
 import { HomeScreen, SummaryScreen } from '@/screens/home';
+import { AvatarProgressScreen } from '@/screens/avatar';
 
 const Stack = createStackNavigator();
 
@@ -168,6 +169,11 @@ const RootNavigator: React.FC = () => {
           name="Summary"
           component={SummaryScreen}
           options={{ title: 'Resumo' }}
+        />
+        <Stack.Screen
+          name="AvatarProgress"
+          component={AvatarProgressScreen}
+          options={{ title: 'Seu Progresso' }}
         />
       </Stack.Navigator>
     </NavigationContainer>

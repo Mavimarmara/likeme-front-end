@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, TouchableOpacity, GestureResponderEvent, ViewStyle, ActivityIndicator, View } from 'react-native';
+import { Text, TouchableOpacity, GestureResponderEvent, ViewStyle, TextStyle, ActivityIndicator, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { styles } from './styles';
 
@@ -9,6 +9,7 @@ type Props = {
   label: string;
   onPress: (event: GestureResponderEvent) => void;
   style?: ViewStyle | ViewStyle[];
+  labelStyle?: TextStyle | TextStyle[];
   loading?: boolean;
   disabled?: boolean;
   size?: Size;
@@ -22,7 +23,8 @@ type Props = {
 const SecondaryButton: React.FC<Props> = ({ 
   label, 
   onPress, 
-  style, 
+  style,
+  labelStyle,
   loading = false, 
   disabled = false,
   size = 'medium',
@@ -78,7 +80,7 @@ const SecondaryButton: React.FC<Props> = ({
       ) : (
         <View style={styles.buttonContent}>
           {iconPosition === 'left' && renderIcon()}
-          <Text style={[styles.label, variant === 'dark' && styles.labelDark]}>{label}</Text>
+          <Text style={[styles.label, variant === 'dark' && styles.labelDark, labelStyle]}>{label}</Text>
           {iconPosition === 'right' && renderIcon()}
         </View>
       )}
