@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header, Background } from '@/components/ui/layout';
 import { FloatingMenu } from '@/components/ui/menu';
 import { PrimaryButton, SecondaryButton, ButtonGroup, IconButton } from '@/components/ui/buttons';
+import { CTACard } from '@/components/ui/cards';
 import ProgressBar from '@/components/ui/feedback/ProgressBar';
 import { BackgroundIconButton } from '@/assets';
 import { useMenuItems, useCommunities, useSuggestedProducts } from '@/hooks';
@@ -452,35 +453,20 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
             </View>
           </View>
 
-          <View style={styles.insightsCard}>
-            <Text style={styles.insightsTitle}>Insights</Text>
-            <View style={styles.insightsContent}>
-              <Text style={styles.insightsHighlight}>
-                Did you know that you ran a full marathon last week?
-              </Text>
-              <Text style={styles.insightsText}>
-                That's great for your body, and because of that your movement markers are off the
-                chart!
-              </Text>
-              <Text style={styles.insightsText}>
-                This week what about doing some regenerative mobility training like yoga or pilates?
-              </Text>
-            </View>
-            <View style={styles.insightsActions}>
-              <SecondaryButton
-                label="Share"
-                icon="share"
-                iconSize={24}
-                onPress={handleSharePress}
-                size="large"
-              />
-              <PrimaryButton
-                label="See marker"
-                onPress={() => handleSeeMarker(markers[0])}
-                size="large"
-              />
-            </View>
-          </View>
+          <CTACard
+            title="Insights"
+            highlightText="Did you know that you ran a full marathon last week?"
+            description={[
+              "That's great for your body, and because of that your movement markers are off the chart!",
+              'This week what about doing some regenerative mobility training like yoga or pilates?',
+            ]}
+            primaryButtonLabel="See marker"
+            primaryButtonOnPress={() => handleSeeMarker(markers[0])}
+            secondaryButtonLabel="Share"
+            secondaryButtonOnPress={handleSharePress}
+            secondaryButtonIcon="share"
+            backgroundColor={COLORS.SECONDARY.PURE}
+          />
 
           <View style={styles.biomarkersSection}>
             <Text style={styles.biomarkersTitle}>Biomarkers</Text>
