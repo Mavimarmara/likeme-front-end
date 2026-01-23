@@ -90,7 +90,6 @@ export const styles = StyleSheet.create({
     borderTopRightRadius: 64,
     borderBottomLeftRadius: BORDER_RADIUS.XL,
     borderBottomRightRadius: BORDER_RADIUS.XL,
-    marginHorizontal: SPACING.MD,
     marginBottom: SPACING.LG,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -130,12 +129,6 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: SPACING.MD,
-  },
-  insightsShareButton: {
-    flex: 1,
-  },
-  insightsSeeMarkerButton: {
-    flex: 1,
   },
   biomarkersSection: {
     paddingHorizontal: SPACING.MD,

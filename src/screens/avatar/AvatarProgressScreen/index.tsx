@@ -388,13 +388,11 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
                 iconSize={24}
                 onPress={handleSharePress}
                 size="large"
-                style={styles.insightsShareButton}
               />
               <PrimaryButton
                 label="See marker"
                 onPress={handleSeeMarker}
                 size="large"
-                style={styles.insightsSeeMarkerButton}
               />
             </View>
           </View>
