@@ -84,15 +84,14 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.SECONDARY.LIGHT,
     borderRadius: 24,
     padding: SPACING.MD,
-    minHeight: 154,
     justifyContent: 'space-between',
+    minHeight: 120,
   },
   metricLabel: {
     fontSize: 14,
     fontFamily: 'DM Sans',
     fontWeight: '600',
     color: COLORS.TEXT,
-    letterSpacing: -0.28,
     marginBottom: SPACING.XS,
   },
   metricValue: {
@@ -101,7 +100,8 @@ export const styles = StyleSheet.create({
     fontWeight: '400',
     color: COLORS.TEXT,
     textAlign: 'center',
-    lineHeight: 40,
+    lineHeight: 80,
+    includeFontPadding: false,
   },
   routineCard: {
     marginHorizontal: SPACING.MD,

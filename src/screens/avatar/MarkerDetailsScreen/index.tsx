@@ -172,6 +172,7 @@ const MarkerDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
               styles.routineCard,
               {
                 paddingBottom: SPACING.XL,
+                paddingHorizontal: SPACING.LG,
               },
             ]}
           />
