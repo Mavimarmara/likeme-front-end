@@ -189,6 +189,10 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
     console.log('Share progress');
   };
 
+  const handleSeeMarker = () => {
+    console.log('See marker details');
+  };
+
   const handleEventPress = (event: Event) => {
     console.log('Event pressed:', event.id);
   };
@@ -304,12 +308,14 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
             <View style={styles.markersListContainer}>
               {markers.map((marker) => (
                 <View key={marker.id} style={styles.markerItem}>
-                  <View style={styles.markerHeader}>
+                  <TouchableOpacity 
+                    style={styles.markerHeader}
+                    onPress={handleSeeMarker}
+                    activeOpacity={0.7}
+                  >
                     <Text style={styles.markerName}>{marker.name}</Text>
-                    <TouchableOpacity activeOpacity={0.7}>
-                      <Icon name="chevron-right" size={20} color="#001137" />
-                    </TouchableOpacity>
-                  </View>
+                    <Icon name="chevron-right" size={20} color="#001137" />
+                  </TouchableOpacity>
                   <View style={styles.markerContent}>
                     <View style={styles.markerProgressContainer}>
                       <ProgressBar
@@ -367,7 +373,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
               />
               <PrimaryButton
                 label="See marker"
-                onPress={() => console.log('See marker')}
+                onPress={handleSeeMarker}
                 size="large"
                 style={styles.insightsSeeMarkerButton}
               />
