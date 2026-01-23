@@ -195,15 +195,14 @@ const MarkerDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
             <View style={styles.chartContainer}>
               {weeklyData.map((data, index) => {
                 const barHeight = (data.value / maxValue) * 200; // Max height of 200
-                const barColor = markerGradient?.[0] || markerColor;
                 return (
                   <ChartBar
-                    key={`${data.day}-${index}`}
-                    day={data.day}
+                    key={`${data.date}-${index}`}
                     date={data.date}
                     value={data.value}
                     height={barHeight}
-                    color={barColor}
+                    gradientColors={markerGradient || undefined}
+                    color={markerColor}
                   />
                 );
               })}
@@ -211,7 +210,7 @@ const MarkerDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
           </View>
         </ScrollView>
       </View>
-      <FloatingMenu items={menuItems} selectedId="activities" />
+      <FloatingMenu items={menuItems} selectedId="home" />
     </SafeAreaView>
   );
 };

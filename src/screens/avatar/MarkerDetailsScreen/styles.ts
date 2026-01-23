@@ -134,9 +134,8 @@ export const styles = StyleSheet.create({
   historyCard: {
     backgroundColor: COLORS.SECONDARY.PURE,
     marginHorizontal: SPACING.MD,
-    marginTop: SPACING.MD,
     paddingHorizontal: SPACING.LG,
-    paddingVertical: SPACING.XL * 2,
+    paddingVertical: SPACING.XXL,
     borderRadius: BORDER_RADIUS.XL,
     borderTopLeftRadius: 64,
     borderTopRightRadius: 64,
@@ -161,10 +160,7 @@ export const styles = StyleSheet.create({
   chartContainer: {
     flexDirection: 'row',
     gap: SPACING.XS,
-    paddingHorizontal: SPACING.LG,
     alignItems: 'flex-end',
-    minHeight: 243,
-    marginTop: SPACING.MD,
   },
   chartBarContainer: {
     flex: 1,
