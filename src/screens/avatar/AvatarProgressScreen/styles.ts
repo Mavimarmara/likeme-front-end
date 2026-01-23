@@ -79,7 +79,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   shareButtonContainer: {
-    alignItems: 'center',
+    alignItems: 'flex-end',
     paddingTop: SPACING.MD,
   },
   insightsCard: {

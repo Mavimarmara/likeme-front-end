@@ -342,11 +342,8 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
             <View style={styles.shareButtonContainer}>
               <IconButton
                 icon="share"
-                iconSize={24}
-                iconColor="#001137"
                 onPress={handleSharePress}
                 label="Share"
-                showBackground={true}
                 backgroundTintColor="#FBF7E5"
               />
             </View>

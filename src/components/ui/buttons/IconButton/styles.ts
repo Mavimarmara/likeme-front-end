@@ -5,6 +5,7 @@ export const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     gap: 2,
+    padding: 4,
   },
   iconContainer: {
     justifyContent: 'center',
@@ -21,7 +22,6 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 8,
     elevation: 4,
-    overflow: 'hidden',
   },
   iconBackgroundImage: {
     width: 53,

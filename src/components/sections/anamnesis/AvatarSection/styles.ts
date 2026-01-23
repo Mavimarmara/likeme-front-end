@@ -75,8 +75,5 @@ export const styles = StyleSheet.create({
     width: '100%',
     paddingHorizontal: SPACING.MD,
   },
-  actionButton: {
-    width: 72,
-  },
 });
 
