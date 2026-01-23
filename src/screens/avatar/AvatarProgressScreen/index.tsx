@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header, Background } from '@/components/ui/layout';
 import { FloatingMenu } from '@/components/ui/menu';
-import { PrimaryButton, SecondaryButton, ButtonGroup } from '@/components/ui/buttons';
+import { PrimaryButton, SecondaryButton, ButtonGroup, IconButton } from '@/components/ui/buttons';
 import ProgressBar from '@/components/ui/feedback/ProgressBar';
 import { BackgroundIconButton } from '@/assets';
 import { useMenuItems, useCommunities, useSuggestedProducts } from '@/hooks';
@@ -340,12 +340,15 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
             </View>
 
             <View style={styles.shareButtonContainer}>
-              <TouchableOpacity style={styles.shareButton} onPress={handleSharePress} activeOpacity={0.7}>
-                <View style={styles.shareIconContainer}>
-                  <Icon name="share" size={24} color="#001137" />
-                </View>
-                <Text style={styles.shareButtonText}>Share</Text>
-              </TouchableOpacity>
+              <IconButton
+                icon="share"
+                iconSize={24}
+                iconColor="#001137"
+                onPress={handleSharePress}
+                label="Share"
+                showBackground={true}
+                backgroundTintColor="#FBF7E5"
+              />
             </View>
           </View>
 

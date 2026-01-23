@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ImageSourcePropType, ImageBackground, ViewStyle, TextStyle } from 'react-native';
+import { View, Text, TouchableOpacity, ImageBackground, ViewStyle, TextStyle } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { BackgroundIconButton } from '@/assets';
 import { styles } from './styles';
 
 type Props = {
@@ -9,9 +10,8 @@ type Props = {
   iconColor?: string;
   onPress: () => void;
   label?: string;
-  backgroundImage?: ImageSourcePropType;
+  showBackground?: boolean;
   backgroundTintColor?: string;
-  backgroundColor?: string;
   containerStyle?: ViewStyle;
   iconContainerStyle?: ViewStyle;
   labelStyle?: TextStyle;
@@ -24,9 +24,8 @@ const IconButton: React.FC<Props> = ({
   iconColor = '#001137',
   onPress,
   label,
-  backgroundImage,
+  showBackground = true,
   backgroundTintColor,
-  backgroundColor,
   containerStyle,
   iconContainerStyle,
   labelStyle,
@@ -37,10 +36,10 @@ const IconButton: React.FC<Props> = ({
       <Icon name={icon} size={iconSize} color={iconColor} />
     );
 
-    if (backgroundImage) {
+    if (showBackground) {
       return (
         <ImageBackground
-          source={backgroundImage}
+          source={BackgroundIconButton}
           style={[styles.iconBackground, iconContainerStyle]}
           imageStyle={[
             styles.iconBackgroundImage,
@@ -49,14 +48,6 @@ const IconButton: React.FC<Props> = ({
         >
           {iconElement}
         </ImageBackground>
-      );
-    }
-
-    if (backgroundColor) {
-      return (
-        <View style={[styles.iconContainer, { backgroundColor }, iconContainerStyle]}>
-          {iconElement}
-        </View>
       );
     }
 

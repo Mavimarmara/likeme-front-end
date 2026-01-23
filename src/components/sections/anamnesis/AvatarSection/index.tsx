@@ -72,6 +72,7 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
               iconColor="#001137"
               onPress={onSharePress || (() => {})}
               label="Share"
+              showBackground={false}
               containerStyle={styles.actionButton}
             />
             <IconButton
@@ -80,7 +81,6 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
               iconColor="#FDFBEE"
               onPress={onSeeMorePress || (() => {})}
               label="See more"
-              backgroundImage={BackgroundIconButton}
               backgroundTintColor="#001137"
               containerStyle={styles.actionButton}
             />
