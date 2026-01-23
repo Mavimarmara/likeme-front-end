@@ -35,7 +35,7 @@ export const styles = StyleSheet.create({
   buttonSelected: {
     backgroundColor: 'rgba(240, 238, 225, 0.9)',
     borderWidth: 1,
-    borderColor: COLORS.PRIMARY,
+    borderColor: '#4CAF50',
   },
   icon: {
     fontSize: 16,
@@ -49,7 +49,7 @@ export const styles = StyleSheet.create({
   },
   textSelected: {
     fontWeight: '500',
-    color: COLORS.PRIMARY,
+    color: '#4CAF50',
   },
 });
 

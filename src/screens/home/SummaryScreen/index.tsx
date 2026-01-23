@@ -20,7 +20,8 @@ import {
   type YourCommunity,
 } from '@/components/sections/community';
 import { ProductsCarousel, type Product } from '@/components/sections/product';
-import { AnamnesisPromptCard, AvatarSection } from '@/components/sections/anamnesis';
+import { AnamnesisPromptCard } from '@/components/sections/anamnesis';
+import { AvatarSection } from '@/components/sections/avatar';
 import type { Event } from '@/types/event';
 import type { Post } from '@/types';
 import { styles } from './styles';

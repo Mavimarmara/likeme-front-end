@@ -4,3 +4,4 @@ export * from './product';
 export * from './program';
 export * from './activity';
 export * from './anamnesis';
+export * from './avatar';

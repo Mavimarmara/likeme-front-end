@@ -1,9 +1,10 @@
 import { StyleSheet } from 'react-native';
+import { COLORS } from '@/constants';
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fbf7e5',
+    backgroundColor: COLORS.SECONDARY.PURE,
   },
   scrollView: {
     flex: 1,
@@ -25,7 +26,7 @@ export const styles = StyleSheet.create({
     fontFamily: 'Bricolage Grotesque',
     fontSize: 24,
     fontWeight: '700',
-    color: 'rgba(0, 17, 55, 1)',
+    color: COLORS.TEXT,
     textTransform: 'uppercase',
     marginBottom: 8,
     textAlign: 'center',
@@ -34,7 +35,7 @@ export const styles = StyleSheet.create({
     fontFamily: 'DM Sans',
     fontSize: 20,
     fontWeight: '400',
-    color: 'rgba(0, 17, 55, 1)',
+    color: COLORS.TEXT,
     marginBottom: 8,
     textAlign: 'center',
   },
@@ -42,7 +43,7 @@ export const styles = StyleSheet.create({
     fontFamily: 'DM Sans',
     fontSize: 14,
     fontWeight: '400',
-    color: 'rgba(110, 106, 106, 1)',
+    color: COLORS.TEXT_LIGHT,
     letterSpacing: 0.2,
     lineHeight: 20,
     textAlign: 'center',
@@ -52,7 +53,7 @@ export const styles = StyleSheet.create({
   },
   questionSection: {
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(217, 217, 217, 1)',
+    borderBottomColor: COLORS.NEUTRAL.LOW.LIGHT,
     paddingBottom: 16,
     gap: 16,
   },
@@ -64,7 +65,7 @@ export const styles = StyleSheet.create({
     fontFamily: 'DM Sans',
     fontSize: 14,
     fontWeight: '400',
-    color: 'rgba(0, 17, 55, 1)',
+    color: COLORS.TEXT,
     letterSpacing: 0.2,
     marginRight: 4,
   },
@@ -75,7 +76,7 @@ export const styles = StyleSheet.create({
     fontFamily: 'DM Sans',
     fontSize: 14,
     fontWeight: '600',
-    color: 'rgba(0, 17, 55, 1)',
+    color: COLORS.TEXT,
     letterSpacing: 0.2,
     marginBottom: 4,
   },
@@ -87,7 +88,7 @@ export const styles = StyleSheet.create({
     borderRadius: 24,
     paddingVertical: 12,
     paddingHorizontal: 16,
-    shadowColor: '#000',
+    shadowColor: COLORS.BLACK,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -107,7 +108,7 @@ export const styles = StyleSheet.create({
     fontFamily: 'DM Sans',
     fontSize: 16,
     fontWeight: '400',
-    color: 'rgba(0, 17, 55, 1)',
+    color: COLORS.TEXT,
   },
 });
 

@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { MindAvatar, BodyAvatar, MindAvatarActive, BodyAvatarActive, BackgroundIconButton } from '@/assets';
 import { IconButton } from '@/components/ui/buttons';
+import { COLORS } from '@/constants';
 import { getAvatarSizeFromPercentage, getAvatarDimensions, type AvatarSize } from '@/utils/anamnesis/avatarSizeMapper';
 import { styles } from './styles';
 
@@ -43,7 +44,7 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
         {hasAnyAnswers && (
           <TouchableOpacity style={styles.weekDropdown} activeOpacity={0.7}>
             <Text style={styles.weekText}>Week</Text>
-            <Icon name="keyboard-arrow-down" size={20} color="#FDFBEE" />
+            <Icon name="keyboard-arrow-down" size={20} color={COLORS.SECONDARY.LIGHT} />
           </TouchableOpacity>
         )}
         <View style={styles.avatarsContent}>
@@ -69,7 +70,7 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
             <IconButton
               icon="share"
               iconSize={24}
-              iconColor="#001137"
+              iconColor={COLORS.TEXT}
               onPress={onSharePress || (() => {})}
               label="Share"
               showBackground={false}
@@ -77,10 +78,10 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
             <IconButton
               icon="add"
               iconSize={24}
-              iconColor="#FDFBEE"
+              iconColor={COLORS.SECONDARY.LIGHT}
               onPress={onSeeMorePress || (() => {})}
               label="See more"
-              backgroundTintColor="#001137"
+              backgroundTintColor={COLORS.TEXT}
             />
           </View>
         )}

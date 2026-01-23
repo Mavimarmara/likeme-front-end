@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, ImageBackground, ViewStyle, TextStyle } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { BackgroundIconButton } from '@/assets';
+import { COLORS } from '@/constants';
 import { styles } from './styles';
 
 type Props = {
@@ -21,7 +22,7 @@ type Props = {
 const IconButton: React.FC<Props> = ({
   icon,
   iconSize = 24,
-  iconColor = '#001137',
+  iconColor = COLORS.TEXT,
   onPress,
   label,
   showBackground = true,

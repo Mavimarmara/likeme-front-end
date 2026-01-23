@@ -1,10 +1,11 @@
 import { StyleSheet } from 'react-native';
+import { COLORS } from '@/constants';
 
 export const styles = StyleSheet.create({
   button: {
     alignItems: 'center',
     alignSelf: 'stretch',
-    backgroundColor: 'rgba(0, 17, 55, 1)',
+    backgroundColor: COLORS.TEXT,
     display: 'flex',
     gap: 2,
     justifyContent: 'center',
@@ -14,7 +15,7 @@ export const styles = StyleSheet.create({
   buttonLight: {
     alignItems: 'center',
     alignSelf: 'stretch',
-    backgroundColor: '#FDFBEE',
+    backgroundColor: COLORS.SECONDARY.LIGHT,
     display: 'flex',
     gap: 2,
     justifyContent: 'center',
@@ -30,7 +31,7 @@ export const styles = StyleSheet.create({
     borderRadius: 24,
   },
   label: {
-    color: 'rgba(255, 255, 255, 1)',
+    color: COLORS.WHITE,
     fontFamily: 'DM Sans',
     fontSize: 14,
     fontWeight: '500',
@@ -39,7 +40,7 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
   },
   labelLight: {
-    color: 'rgba(0, 17, 55, 1)',
+    color: COLORS.TEXT,
     fontFamily: 'DM Sans',
     fontSize: 14,
     fontWeight: '500',

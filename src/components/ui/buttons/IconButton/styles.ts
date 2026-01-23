@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { BORDER_RADIUS, SPACING } from '@/constants';
+import { BORDER_RADIUS, SPACING, COLORS } from '@/constants';
 
 export const styles = StyleSheet.create({
   container: {
@@ -17,7 +17,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: BORDER_RADIUS.MD,
-    shadowColor: '#000',
+    shadowColor: COLORS.BLACK,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
     shadowRadius: 8,
@@ -32,7 +32,7 @@ export const styles = StyleSheet.create({
     fontFamily: 'DM Sans',
     fontSize: 10,
     fontWeight: '500',
-    color: '#6E6A6A',
+    color: COLORS.TEXT_LIGHT,
     textAlign: 'center',
     letterSpacing: 0.2,
     lineHeight: 22,

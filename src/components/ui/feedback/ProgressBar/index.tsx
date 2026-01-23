@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { View, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { COLORS } from '@/constants';
 import { styles } from './styles';
 
 type Props = {
@@ -18,9 +19,9 @@ const ProgressBar: React.FC<Props> = ({
   current, 
   total, 
   label = "", 
-  color = '#0154f8',
+  color = COLORS.PRIMARY.PURE,
   gradientColors,
-  backgroundColor = '#D9D9D9',
+  backgroundColor = COLORS.NEUTRAL.LOW.LIGHT,
   height = 25,
   showRemaining = true,
 }) => {

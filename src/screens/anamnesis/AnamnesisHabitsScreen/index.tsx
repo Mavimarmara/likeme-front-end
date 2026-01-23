@@ -6,6 +6,7 @@ import { Header } from '@/components/ui';
 import { PrimaryButton } from '@/components/ui/buttons';
 import { useAnamnesisQuestionnaire } from '@/hooks';
 import { buildSingleChoiceAnswerKey, parseSingleChoiceAnswerKey } from '@/hooks/anamnesis/anamnesisAnswerMappers';
+import { COLORS } from '@/constants';
 import { styles } from './styles';
 
 type HabitKeyPrefix =
@@ -145,7 +146,7 @@ const AnamnesisHabitsScreen: React.FC<Props> = ({ navigation, route }) => {
             <View style={styles.cardTopRow}>
               <Text style={styles.cardProgress}>{progressText}</Text>
               <TouchableOpacity onPress={handleClose} activeOpacity={0.7} style={styles.closeButton}>
-                <Icon name="close" size={18} color="#001137" />
+                <Icon name="close" size={18} color={COLORS.TEXT} />
               </TouchableOpacity>
             </View>
             <Text style={styles.cardQuestionText}>
@@ -155,7 +156,7 @@ const AnamnesisHabitsScreen: React.FC<Props> = ({ navigation, route }) => {
 
           {loading ? (
             <View style={styles.loadingCard}>
-              <ActivityIndicator size="large" color="#001137" />
+              <ActivityIndicator size="large" color={COLORS.TEXT} />
             </View>
           ) : totalSteps === 0 ? (
             <View style={styles.emptyState}>

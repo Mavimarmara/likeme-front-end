@@ -13,6 +13,7 @@ import { EventReminder } from '@/components/ui/cards';
 import { orderService, activityService } from '@/services';
 import { storageService } from '@/services';
 import { formatPrice, getDateFromDatetime, getTimeFromDatetime, sortByDateTime, sortByDateField } from '@/utils';
+import { COLORS } from '@/constants';
 import { useActivities, useSuggestedProducts, useMenuItems } from '@/hooks';
 import { AnamnesisPromptCard } from '@/components/sections/anamnesis';
 import type { Order } from '@/types/order';
@@ -537,7 +538,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
             </Text>
             {order.createdAt && (
               <View style={styles.dateTimeContainer}>
-                <Icon name="event" size={16} color="#001137" />
+                <Icon name="event" size={16} color={COLORS.TEXT} />
                 <Text style={styles.dateTimeText}>{orderDate}</Text>
               </View>
             )}
@@ -545,7 +546,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
 
           <View style={styles.cardActions}>
             <View style={[styles.actionButton, styles.doneButton]}>
-              <Icon name="check" size={16} color="#001137" />
+              <Icon name="check" size={16} color={COLORS.TEXT} />
               <Text style={styles.doneButtonText}>{getStatusText()}</Text>
             </View>
 
@@ -581,14 +582,14 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
                 activeOpacity={0.7}
                 onPress={(e) => handleMenuPress(activity.id, e)}
               >
-                <Icon name="more-vert" size={20} color="#001137" />
+                <Icon name="more-vert" size={20} color={COLORS.TEXT} />
               </TouchableOpacity>
             </View>
 
             <View>
               {activity.dateTime && (
                 <View style={styles.appointmentDateTimeRow}>
-                  <Icon name="event" size={16} color="#001137" />
+                  <Icon name="event" size={16} color={COLORS.TEXT} />
                   <Text style={styles.appointmentDateTimeText}>{activity.dateTime}</Text>
                 </View>
               )}
@@ -639,14 +640,14 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
               activeOpacity={0.7}
               onPress={(e) => handleMenuPress(activity.id, e)}
             >
-              <Icon name="more-vert" size={20} color="#001137" />
+              <Icon name="more-vert" size={20} color={COLORS.TEXT} />
             </TouchableOpacity>
           </View>
 
           <View>
             <View style={styles.cardTitleRow}>
               {activity.isFavorite && (
-                <Icon name="star" size={20} color="#001137" style={styles.starIcon} />
+                <Icon name="star" size={20} color={COLORS.TEXT} style={styles.starIcon} />
               )}
               <Text style={styles.cardTitle}>{activity.title}</Text>
             </View>
@@ -894,7 +895,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
                       }
                     }}
                   >
-                    <Icon name="edit" size={20} color="#001137" />
+                    <Icon name="edit" size={20} color={COLORS.TEXT} />
                     <Text style={styles.menuItemText}>Edit</Text>
                   </TouchableOpacity>
                   <TouchableOpacity

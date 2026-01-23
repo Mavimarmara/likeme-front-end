@@ -10,7 +10,7 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   topSection: {
-    backgroundColor: '#FBF7E5',
+    backgroundColor: COLORS.SECONDARY.PURE,
     paddingHorizontal: SPACING.XL,
     paddingTop: SPACING.MD,
     paddingBottom: SPACING.LG,
@@ -39,10 +39,10 @@ export const styles = StyleSheet.create({
     padding: SPACING.XS,
   },
   periodButtonActive: {
-    borderColor: '#0154F8',
+    borderColor: COLORS.PRIMARY.PURE,
   },
   periodButtonTextActive: {
-    color: '#0154F8',
+    color: COLORS.PRIMARY.PURE,
   },
   markersListContainer: {
     gap: SPACING.SM,
@@ -83,7 +83,7 @@ export const styles = StyleSheet.create({
     paddingTop: SPACING.MD,
   },
   insightsCard: {
-    backgroundColor: '#FBF7E5',
+    backgroundColor: COLORS.SECONDARY.PURE,
     paddingHorizontal: SPACING.XL + SPACING.MD,
     paddingTop: SPACING.XXL,
     paddingBottom: SPACING.LG,
@@ -123,7 +123,7 @@ export const styles = StyleSheet.create({
     fontFamily: 'DM Sans',
     fontSize: FONT_SIZES.SM,
     fontWeight: '400',
-    color: '#6E6A6A',
+    color: COLORS.TEXT_LIGHT,
     letterSpacing: 0.2,
     lineHeight: 20,
   },
@@ -151,7 +151,7 @@ export const styles = StyleSheet.create({
     paddingLeft: SPACING.MD,
   },
   biomarkerCard: {
-    backgroundColor: '#FBF7E5',
+    backgroundColor: COLORS.SECONDARY.PURE,
     paddingTop: SPACING.XXL,
     paddingBottom: SPACING.LG,
     paddingHorizontal: SPACING.LG,
@@ -196,13 +196,13 @@ export const styles = StyleSheet.create({
   },
   submarkerBar: {
     height: 25,
-    backgroundColor: '#FDFBEE',
+    backgroundColor: COLORS.SECONDARY.LIGHT,
     borderRadius: 18,
     overflow: 'hidden',
   },
   submarkerBarFill: {
     height: '100%',
-    backgroundColor: '#001137',
+    backgroundColor: COLORS.TEXT,
     borderRadius: 18,
   },
   submarkerName: {

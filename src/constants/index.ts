@@ -5,18 +5,50 @@ export const APP_CONFIG = {
 } as const;
 
 export const COLORS = {
-  PRIMARY: '#4CAF50',
-  SECONDARY: '#FFD700',
+  PRIMARY: {
+    PURE: '#0154F8',
+    LIGHT: '#D8E4D6',
+    MEDIUM: '#8FA3A1',
+  },
+  SECONDARY: {
+    LIGHT: '#FDFBEE',
+    PURE: '#FBF7E5',
+    MEDIUM: '#E1DFCF',
+    DARK: '#CCCABC',
+  },
+  HIGHLIGHT: {
+    PURE: '#C3D714',
+    LIGHT: '#EDEC80',
+    MEDIUM: '#B3B26D',
+    DARK: '#8F8104',
+  },
+  NEUTRAL: {
+    HIGH: {
+      LIGHT: '#FFFFFF',
+      PURE: '#F4F3EC',
+      DARK: '#958AAA',
+    },
+    LOW: {
+      PURE: '#001137',
+      LIGHT: '#D9D9D9',
+      MEDIUM: '#B2B2B2',
+      DARK: '#6E6A6A',
+    },
+  },
+  FEEDBACK: {
+    WARNING: '#E30F3C',
+    NOTIFICATION_PURE: '#FC8B5C',
+  },
   BACKGROUND: '#F4F3EC',
-  BACKGROUND_SECONDARY: '#F5F5DC',
-  TEXT: '#000000',
-  TEXT_LIGHT: '#666666',
+  BACKGROUND_SECONDARY: '#FBF7E5',
+  TEXT: '#001137',
+  TEXT_LIGHT: '#6E6A6A',
   WHITE: '#FFFFFF',
   BLACK: '#000000',
-  SUCCESS: '#4CAF50',
-  ERROR: '#F44336',
-  WARNING: '#FF9800',
-  INFO: '#2196F3',
+  SUCCESS: '#C3D714',
+  ERROR: '#E30F3C',
+  WARNING: '#E30F3C',
+  INFO: '#0154F8',
 } as const;
 
 export const GRADIENTS = {

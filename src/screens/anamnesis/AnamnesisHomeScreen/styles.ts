@@ -47,7 +47,7 @@ export const styles = StyleSheet.create({
     paddingLeft: 0,
   },
   card: {
-    backgroundColor: '#fbf7e5', // secondary-pure
+    backgroundColor: COLORS.SECONDARY.PURE,
     borderRadius: 28,
     borderTopLeftRadius: 24,
     borderBottomRightRadius: 32,
@@ -55,7 +55,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: SPACING.LG,
     paddingVertical: SPACING.XL,
     marginBottom: SPACING.LG,
-    shadowColor: '#000',
+    shadowColor: COLORS.BLACK,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -69,7 +69,7 @@ export const styles = StyleSheet.create({
     fontFamily: 'Bricolage Grotesque',
     fontSize: 24,
     fontWeight: '700',
-    color: '#001137',
+    color: COLORS.TEXT,
     lineHeight: 24,
     textTransform: 'uppercase',
     marginBottom: SPACING.LG,
@@ -80,7 +80,7 @@ export const styles = StyleSheet.create({
     fontFamily: 'DM Sans',
     fontSize: 20,
     fontWeight: '400',
-    color: '#001137',
+    color: COLORS.TEXT,
     lineHeight: 20,
     marginBottom: SPACING.SM,
     width: '100%',
@@ -90,7 +90,7 @@ export const styles = StyleSheet.create({
     fontFamily: 'DM Sans',
     fontSize: 14,
     fontWeight: '400',
-    color: '#001137',
+    color: COLORS.TEXT,
     lineHeight: 20,
     letterSpacing: 0.2,
     marginBottom: SPACING.LG,
@@ -114,7 +114,7 @@ export const styles = StyleSheet.create({
   habitDivider: {
     width: '100%',
     height: 1,
-    backgroundColor: '#D9D9D9',
+    backgroundColor: COLORS.NEUTRAL.LOW.LIGHT,
     marginVertical: 0,
   },
 });

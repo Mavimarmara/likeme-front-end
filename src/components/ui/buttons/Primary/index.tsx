@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, TouchableOpacity, GestureResponderEvent, ViewStyle, ActivityIndicator, TextStyle, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { COLORS } from '@/constants';
 import { styles } from './styles';
 
 type Variant = 'dark' | 'light';
@@ -41,8 +42,8 @@ const PrimaryButton: React.FC<Props> = ({
   const buttonStyle = [baseButtonStyle, sizeStyle];
   const defaultLabelStyle = variant === 'light' ? styles.labelLight : styles.label;
   const labelStyle = customLabelStyle ? [defaultLabelStyle, customLabelStyle] : defaultLabelStyle;
-  const indicatorColor = variant === 'light' ? '#001137' : '#FFFFFF';
-  const finalIconColor = iconColor || (variant === 'light' ? '#001137' : '#FFFFFF');
+  const indicatorColor = variant === 'light' ? COLORS.TEXT : COLORS.WHITE;
+  const finalIconColor = iconColor || (variant === 'light' ? COLORS.TEXT : COLORS.WHITE);
 
   const renderIcon = () => {
     if (!icon) return null;

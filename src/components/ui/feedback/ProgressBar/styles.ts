@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { COLORS } from '@/constants';
 
 export const styles = StyleSheet.create({
   container: {
@@ -9,7 +10,7 @@ export const styles = StyleSheet.create({
     fontFamily: 'DM Sans',
     fontSize: 16,
     fontWeight: '700',
-    color: '#001137',
+    color: COLORS.TEXT,
     lineHeight: 16,
   },
   progressContainer: {

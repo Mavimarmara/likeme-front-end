@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { COLORS } from '@/constants';
 
 export const styles = StyleSheet.create({
   container: {
@@ -21,26 +22,26 @@ export const styles = StyleSheet.create({
     fontFamily: 'Bricolage Grotesque',
     fontSize: 24,
     fontWeight: '700',
-    color: '#001137',
+    color: COLORS.TEXT,
     textTransform: 'uppercase',
   },
   screenSubtitle: {
     fontFamily: 'DM Sans',
     fontSize: 20,
     fontWeight: '400',
-    color: '#001137',
+    color: COLORS.TEXT,
   },
   screenDescription: {
     fontFamily: 'DM Sans',
     fontSize: 14,
     fontWeight: '400',
-    color: '#6e6a6a',
+    color: COLORS.TEXT_LIGHT,
     letterSpacing: 0.2,
     lineHeight: 20,
   },
   card: {
     marginTop: 32,
-    backgroundColor: '#fbf7e5',
+    backgroundColor: COLORS.SECONDARY.PURE,
     borderRadius: 28,
     borderTopLeftRadius: 24,
     borderBottomRightRadius: 32,
@@ -60,7 +61,7 @@ export const styles = StyleSheet.create({
     fontFamily: 'Bricolage Grotesque',
     fontSize: 25,
     fontWeight: '700',
-    color: '#001137',
+    color: COLORS.TEXT,
   },
   cardTopRow: {
     flexDirection: 'row',
@@ -71,7 +72,7 @@ export const styles = StyleSheet.create({
     fontFamily: 'Bricolage Grotesque',
     fontSize: 48,
     fontWeight: '700',
-    color: '#001137',
+    color: COLORS.TEXT,
   },
   closeButton: {
     width: 28,
@@ -83,7 +84,7 @@ export const styles = StyleSheet.create({
     fontFamily: 'DM Sans',
     fontSize: 14,
     fontWeight: '400',
-    color: '#000000',
+    color: COLORS.BLACK,
     letterSpacing: 0.2,
     lineHeight: 20,
   },
@@ -104,7 +105,7 @@ export const styles = StyleSheet.create({
     fontFamily: 'DM Sans',
     fontSize: 14,
     fontWeight: '400',
-    color: '#6e6a6a',
+    color: COLORS.TEXT_LIGHT,
     letterSpacing: 0.2,
     textAlign: 'center',
   },
@@ -123,7 +124,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 8,
     justifyContent: 'center',
-    backgroundColor: '#fbf7e5',
+    backgroundColor: COLORS.SECONDARY.PURE,
   },
   optionButtonSelected: {
     backgroundColor: '#edec80',
@@ -137,7 +138,7 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
   },
   optionTextSelected: {
-    color: '#001137',
+    color: COLORS.TEXT,
     textAlign: 'left',
   },
   footer: {

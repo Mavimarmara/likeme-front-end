@@ -136,6 +136,6 @@ export const styles = StyleSheet.create({
   },
   sliderIndicatorActive: {
     width: 20,
-    backgroundColor: COLORS.PRIMARY,
+    backgroundColor: '#4CAF50',
   },
 });

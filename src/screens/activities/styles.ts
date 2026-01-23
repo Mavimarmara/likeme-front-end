@@ -40,7 +40,7 @@ export const styles = StyleSheet.create({
     paddingBottom: SPACING.XL,
   },
   activityCard: {
-    backgroundColor: '#fbf7e5',
+    backgroundColor: COLORS.SECONDARY.PURE,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 28,
     borderBottomLeftRadius: 12,
@@ -60,7 +60,7 @@ export const styles = StyleSheet.create({
     elevation: 4,
   },
   appointmentCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: COLORS.WHITE,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -114,7 +114,7 @@ export const styles = StyleSheet.create({
   dateTimeText: {
     fontSize: 14,
     fontWeight: '400',
-    color: '#6e6a6a',
+    color: COLORS.TEXT_LIGHT,
     letterSpacing: 0.2,
     lineHeight: 14,
   },
@@ -161,7 +161,7 @@ export const styles = StyleSheet.create({
   providerAvatarText: {
     fontSize: FONT_SIZES.SM,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: COLORS.WHITE,
   },
   providerName: {
     fontSize: FONT_SIZES.SM,
@@ -180,7 +180,7 @@ export const styles = StyleSheet.create({
   markButton: {
     backgroundColor: 'rgba(240, 238, 225, 0.16)',
     borderWidth: 1,
-    borderColor: '#001137',
+    borderColor: COLORS.TEXT,
     borderRadius: 18,
     borderTopLeftRadius: 18,
     borderTopRightRadius: 18,
@@ -195,13 +195,13 @@ export const styles = StyleSheet.create({
   markButtonText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#001137',
+    color: COLORS.TEXT,
     textAlign: 'center',
   },
   doneButton: {
     backgroundColor: 'rgba(240, 238, 225, 0.16)',
     borderWidth: 1,
-    borderColor: '#001137',
+    borderColor: COLORS.TEXT,
     borderRadius: 18,
     borderTopLeftRadius: 18,
     borderTopRightRadius: 18,
@@ -216,13 +216,13 @@ export const styles = StyleSheet.create({
   doneButtonText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#001137',
+    color: COLORS.TEXT,
     textAlign: 'center',
   },
   openButton: {
     backgroundColor: 'rgba(240, 238, 225, 0.16)',
     borderWidth: 1,
-    borderColor: '#001137',
+    borderColor: COLORS.TEXT,
     borderRadius: 18,
     borderTopLeftRadius: 18,
     borderTopRightRadius: 18,
@@ -237,13 +237,13 @@ export const styles = StyleSheet.create({
   openButtonText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#001137',
+    color: COLORS.TEXT,
     textAlign: 'center',
   },
   viewLink: {
     fontSize: 12,
     fontWeight: '500',
-    color: '#0154f8',
+    color: COLORS.PRIMARY.PURE,
     letterSpacing: 0.2,
     lineHeight: 22,
   },
@@ -278,7 +278,7 @@ export const styles = StyleSheet.create({
     marginBottom: SPACING.MD,
   },
   anamnesisButton: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: COLORS.WHITE,
     borderWidth: 1,
     borderColor: '#FFF9C4',
     paddingVertical: SPACING.MD,
@@ -330,7 +330,7 @@ export const styles = StyleSheet.create({
   },
   menuContainer: {
     position: 'absolute',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: COLORS.WHITE,
     borderRadius: 8,
     paddingVertical: SPACING.XS,
     minWidth: 120,

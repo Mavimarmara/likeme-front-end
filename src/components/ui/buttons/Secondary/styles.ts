@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { COLORS } from '@/constants';
 
 export const styles = StyleSheet.create({
   button: {
@@ -22,9 +23,9 @@ export const styles = StyleSheet.create({
     borderRadius: 24,
   },
   buttonDark: {
-    backgroundColor: '#FDFBEE',
-    borderColor: '#FDFBEE',
-    shadowColor: '#000',
+    backgroundColor: COLORS.SECONDARY.LIGHT,
+    borderColor: COLORS.SECONDARY.LIGHT,
+    shadowColor: COLORS.BLACK,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -48,7 +49,7 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
   },
   labelDark: {
-    color: '#6E6A6A',
+    color: COLORS.TEXT_LIGHT,
   },
   iconLeft: {
     marginRight: 8,

@@ -50,7 +50,7 @@ export const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   activeDot: {
-    backgroundColor: COLORS.PRIMARY,
+    backgroundColor: '#4CAF50',
   },
   inactiveDot: {
     backgroundColor: '#CCCCCC',

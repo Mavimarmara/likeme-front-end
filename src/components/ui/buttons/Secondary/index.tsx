@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, TouchableOpacity, GestureResponderEvent, ViewStyle, TextStyle, ActivityIndicator, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { COLORS } from '@/constants';
 import { styles } from './styles';
 
 type Size = 'medium' | 'large';
@@ -38,11 +39,11 @@ const SecondaryButton: React.FC<Props> = ({
 
   const getIconColor = () => {
     if (iconColor) return iconColor;
-    return variant === 'dark' ? '#6E6A6A' : '#001137';
+    return variant === 'dark' ? COLORS.TEXT_LIGHT : COLORS.TEXT;
   };
 
   const getTextColor = () => {
-    return variant === 'dark' ? '#6E6A6A' : '#001137';
+    return variant === 'dark' ? COLORS.TEXT_LIGHT : COLORS.TEXT;
   };
 
   const getSizeStyle = () => {

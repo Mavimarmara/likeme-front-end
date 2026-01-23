@@ -11,6 +11,7 @@ import { useMenuItems, useCommunities, useSuggestedProducts } from '@/hooks';
 import { mapChannelsToEvents } from '@/utils';
 import { communityService } from '@/services';
 import { getMarkerColor, getMarkerGradient, hasMarkerGradient } from '@/constants/markers';
+import { COLORS } from '@/constants';
 import type { Channel } from '@/types/community';
 import type { Event } from '@/types/event';
 import { 
@@ -314,7 +315,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
                     activeOpacity={0.7}
                   >
                     <Text style={styles.markerName}>{marker.name}</Text>
-                    <Icon name="chevron-right" size={20} color="#001137" />
+                    <Icon name="chevron-right" size={20} color={COLORS.TEXT} />
                   </TouchableOpacity>
                   <View style={styles.markerContent}>
                     <View style={styles.markerProgressContainer}>
@@ -331,7 +332,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
                       <Icon 
                         name={marker.trend === 'increasing' ? 'trending-up' : 'trending-down'} 
                         size={20} 
-                        color="#6E6A6A" 
+                        color={COLORS.TEXT_LIGHT} 
                       />
                     </View>
                   </View>
@@ -344,7 +345,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
                 icon="share"
                 onPress={handleSharePress}
                 label="Share"
-                backgroundTintColor="#FBF7E5"
+                backgroundTintColor={COLORS.SECONDARY.PURE}
               />
             </View>
           </View>

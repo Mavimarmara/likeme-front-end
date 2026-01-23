@@ -7,6 +7,7 @@ import { SecondaryButton } from '@/components/ui/buttons';
 import ProgressBar from '@/components/ui/feedback/ProgressBar';
 import { BackgroundWithGradient2, BackgroundWithGradient3 } from '@/assets';
 import { useAnamnesisProgress } from '@/hooks/anamnesis/useAnamnesisProgress';
+import { COLORS } from '@/constants';
 import { styles } from './styles';
 
 type Props = { navigation: any };
@@ -72,7 +73,7 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
           onBackPress={() => navigation.goBack()}
         />
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <ActivityIndicator size="large" color="#0154f8" />
+          <ActivityIndicator size="large" color={COLORS.PRIMARY.PURE} />
           <Text style={{ marginTop: 16, color: '#666' }}>Carregando progresso...</Text>
         </View>
       </SafeAreaView>
@@ -135,7 +136,7 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
               current={progress?.physical.answered || 0}
               total={progress?.physical.total || 0}
               label="Corpo"
-              color="#0154f8"
+              color={COLORS.PRIMARY.PURE}
             />
             
             <SecondaryButton
@@ -186,7 +187,7 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
                 current={progress?.habits.movimento.answered || 0}
                 total={progress?.habits.movimento.total || 0}
                 label="Movimento"
-                color="#0154f8"
+                color={COLORS.PRIMARY.PURE}
               />
               <SecondaryButton
                 label={progress?.habits.movimento.answered === progress?.habits.movimento.total ? "Atualizar" : progress?.habits.movimento.answered === 0 ? "Iniciar" : "Continuar"}
@@ -203,7 +204,7 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
                 current={progress?.habits.espiritualidade.answered || 0}
                 total={progress?.habits.espiritualidade.total || 0}
                 label="Espiritualidade"
-                color="#0154f8"
+                color={COLORS.PRIMARY.PURE}
               />
               <SecondaryButton
                 label={progress?.habits.espiritualidade.answered === progress?.habits.espiritualidade.total ? "Atualizar" : progress?.habits.espiritualidade.answered === 0 ? "Iniciar" : "Continuar"}

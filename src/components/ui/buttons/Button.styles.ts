@@ -10,15 +10,15 @@ export const styles = StyleSheet.create({
   
   // Variants
   primary: {
-    backgroundColor: COLORS.PRIMARY,
+    backgroundColor: '#4CAF50',
   },
   secondary: {
-    backgroundColor: COLORS.SECONDARY,
+    backgroundColor: '#4CAF50',
   },
   outline: {
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: COLORS.PRIMARY,
+    borderColor: COLORS.PRIMARY.PURE,
   },
   
   // Sizes
@@ -53,7 +53,7 @@ export const styles = StyleSheet.create({
     color: COLORS.BLACK,
   },
   outlineText: {
-    color: COLORS.PRIMARY,
+    color: '#4CAF50',
   },
   
   // Text sizes

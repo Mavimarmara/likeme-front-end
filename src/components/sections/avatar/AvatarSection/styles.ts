@@ -36,7 +36,7 @@ export const styles = StyleSheet.create({
     fontFamily: 'DM Sans',
     fontSize: FONT_SIZES.SM,
     fontWeight: '500',
-    color: '#FDFBEE',
+    color: COLORS.SECONDARY.LIGHT,
   },
   avatarsContainer: {
     alignItems: 'center',
