@@ -206,8 +206,14 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
     console.log('Share progress');
   };
 
-  const handleSeeMarker = () => {
-    console.log('See marker details');
+  const handleSeeMarker = (marker?: UserMarker) => {
+    // Navegar para a tela de detalhes do marker
+    const markerToShow = marker || (markers.length > 0 ? markers[0] : null);
+    if (markerToShow) {
+      navigation.navigate('MarkerDetails', {
+        marker: markerToShow,
+      });
+    }
   };
 
   const handleEventPress = (event: Event) => {
@@ -395,7 +401,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
                     <View key={marker.id} style={styles.markerItem}>
                       <TouchableOpacity
                         style={styles.markerHeader}
-                        onPress={handleSeeMarker}
+                        onPress={() => handleSeeMarker(marker)}
                         activeOpacity={0.7}
                       >
                         <Text style={styles.markerName}>{marker.name}</Text>
@@ -470,7 +476,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
               />
               <PrimaryButton
                 label="See marker"
-                onPress={handleSeeMarker}
+                onPress={() => handleSeeMarker(markers[0])}
                 size="large"
               />
             </View>

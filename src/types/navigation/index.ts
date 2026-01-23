@@ -43,6 +43,14 @@ export type RootStackParamList = {
   Home: undefined;
   Summary: undefined;
   AvatarProgress: undefined;
+  MarkerDetails: {
+    marker: {
+      id: string;
+      name: string;
+      percentage: number;
+      trend: 'increasing' | 'decreasing' | 'stable';
+    };
+  };
   Cart: undefined;
   Checkout: undefined;
   CommunityPreview: {

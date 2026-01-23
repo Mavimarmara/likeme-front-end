@@ -41,3 +41,16 @@ export const getMarkerGradient = (
 export const hasMarkerGradient = (markerId: string): boolean => {
   return getMarkerGradient(markerId) !== null;
 };
+
+export const MARKER_NAMES: Record<string, string> = {
+  activity: 'Activity',
+  connection: 'Connection',
+  environment: 'Environment',
+  nutrition: 'Nutrition',
+  'purpose-vision': 'Purpose & vision',
+  'self-esteem': 'Self-esteem',
+  sleep: 'Sleep',
+  smile: 'Smile',
+  spirituality: 'Spirituality',
+  stress: 'Stress',
+} as const;
