@@ -10,6 +10,7 @@ import { BackgroundIconButton } from '@/assets';
 import { useMenuItems, useCommunities, useSuggestedProducts } from '@/hooks';
 import { mapChannelsToEvents } from '@/utils';
 import { communityService } from '@/services';
+import { getMarkerColor, getMarkerGradient, hasMarkerGradient } from '@/constants/markers';
 import type { Channel } from '@/types/community';
 import type { Event } from '@/types/event';
 import { 
@@ -314,7 +315,8 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
                       <ProgressBar
                         current={marker.percentage}
                         total={100}
-                        color="#001137"
+                        color={getMarkerColor(marker.id)}
+                        gradientColors={hasMarkerGradient(marker.id) ? getMarkerGradient(marker.id) || undefined : undefined}
                         height={30}
                         showRemaining={false}
                       />

@@ -23,7 +23,7 @@ type Props = {
 const SecondaryButton: React.FC<Props> = ({ 
   label, 
   onPress, 
-  style,
+  style, 
   labelStyle,
   loading = false, 
   disabled = false,

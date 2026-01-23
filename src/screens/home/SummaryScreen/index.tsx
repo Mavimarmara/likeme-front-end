@@ -386,9 +386,9 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
                   onSeeMorePress={handleAvatarSeeMore}
                 />
               </View>
-              <View style={styles.anamnesisPromptContainer}>
-                <AnamnesisPromptCard onStartPress={handleStartAnamnesis} />
-              </View>
+            <View style={styles.anamnesisPromptContainer}>
+              <AnamnesisPromptCard onStartPress={handleStartAnamnesis} />
+            </View>
             </>
           )}
           {yourCommunity && (
