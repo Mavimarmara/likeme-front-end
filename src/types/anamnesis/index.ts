@@ -160,6 +160,28 @@ export interface GetUserScoresParams {
   userId: string;
 }
 
+/**
+ * Marker (indicador) do usuário
+ */
+export interface UserMarker {
+  id: string;
+  name: string;
+  percentage: number;
+  trend: 'increasing' | 'decreasing' | 'stable';
+}
+
+/**
+ * Resposta da API para markers do usuário
+ */
+export interface GetUserMarkersResponse extends ApiResponse<UserMarker[]> {}
+
+/**
+ * Parâmetros para buscar markers do usuário
+ */
+export interface GetUserMarkersParams {
+  userId: string;
+}
+
 export type {
   BuildAnswerResult,
   UseAnamnesisQuestionnaireParams,

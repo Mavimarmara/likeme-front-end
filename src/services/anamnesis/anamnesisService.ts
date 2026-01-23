@@ -17,6 +17,8 @@ import type {
   GetUserAnswerParams,
   GetUserScoresResponse,
   GetUserScoresParams,
+  GetUserMarkersResponse,
+  GetUserMarkersParams,
 } from '@/types/anamnesis';
 
 class AnamnesisService {
@@ -216,6 +218,32 @@ class AnamnesisService {
       return response;
     } catch (error) {
       logger.error('Error fetching user scores:', error);
+      throw error;
+    }
+  }
+
+  async getUserMarkers(params: GetUserMarkersParams): Promise<GetUserMarkersResponse> {
+    try {
+      if (!params.userId) {
+        throw new Error('userId is required');
+      }
+
+      const response = await apiClient.get<GetUserMarkersResponse>(
+        `${this.anamnesisEndpoint}/markers/user/${params.userId}`,
+        undefined,
+        true,
+        false
+      );
+
+      logger.debug('User markers response:', {
+        userId: params.userId,
+        success: response.success,
+        markersCount: response.data?.length || 0,
+      });
+
+      return response;
+    } catch (error) {
+      logger.error('Error fetching user markers:', error);
       throw error;
     }
   }

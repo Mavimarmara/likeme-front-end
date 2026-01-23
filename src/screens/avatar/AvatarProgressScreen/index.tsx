@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { View, ScrollView, Text, TouchableOpacity, ImageBackground } from 'react-native';
+import { View, ScrollView, Text, TouchableOpacity, ImageBackground, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header, Background } from '@/components/ui/layout';
@@ -9,7 +9,8 @@ import ProgressBar from '@/components/ui/feedback/ProgressBar';
 import { BackgroundIconButton } from '@/assets';
 import { useMenuItems, useCommunities, useSuggestedProducts } from '@/hooks';
 import { mapChannelsToEvents } from '@/utils';
-import { communityService } from '@/services';
+import { communityService, anamnesisService, userService } from '@/services';
+import type { UserMarker } from '@/types/anamnesis';
 import { getMarkerColor, getMarkerGradient, hasMarkerGradient } from '@/constants/markers';
 import { COLORS } from '@/constants';
 import type { Channel } from '@/types/community';
@@ -35,9 +36,20 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month'>('week');
   const [events, setEvents] = useState<Event[]>([]);
   const [popularProviders, setPopularProviders] = useState<Provider[]>([]);
+  const [markers, setMarkers] = useState<UserMarker[]>([]);
   const [loadingEvents, setLoadingEvents] = useState(false);
   const [loadingProviders, setLoadingProviders] = useState(false);
+  const [loadingMarkers, setLoadingMarkers] = useState(true);
   const menuItems = useMenuItems(navigation);
+
+  // Debug: log markers state changes
+  useEffect(() => {
+    console.log('Markers state updated:', {
+      count: markers.length,
+      markers: markers,
+      loading: loadingMarkers,
+    });
+  }, [markers, loadingMarkers]);
 
   const { products: recommendedProducts } = useSuggestedProducts({
     limit: 3,
@@ -224,26 +236,70 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
     rootNavigation.navigate('Community' as never);
   };
 
-  const markers = useMemo(
-    () => [
-      { id: 'activity', name: 'Activity', trend: 'increasing' as const, percentage: 70 },
-      { id: 'connection', name: 'Connection', trend: 'decreasing' as const, percentage: 30 },
-      { id: 'environment', name: 'Environment', trend: 'increasing' as const, percentage: 80 },
-      { id: 'nutrition', name: 'Nutrition', trend: 'decreasing' as const, percentage: 40 },
-      {
-        id: 'purpose-vision',
-        name: 'Purpose & vision',
-        trend: 'increasing' as const,
-        percentage: 60,
-      },
-      { id: 'self-esteem', name: 'Self-esteem', trend: 'increasing' as const, percentage: 50 },
-      { id: 'sleep', name: 'Sleep', trend: 'increasing' as const, percentage: 70 },
-      { id: 'smile', name: 'Smile', trend: 'decreasing' as const, percentage: 20 },
-      { id: 'spirituality', name: 'Spirituality', trend: 'decreasing' as const, percentage: 40 },
-      { id: 'stress', name: 'Stress', trend: 'increasing' as const, percentage: 80 },
-    ],
-    []
-  );
+  useEffect(() => {
+    const loadMarkers = async () => {
+      try {
+        setLoadingMarkers(true);
+        const profileResponse = await userService.getProfile();
+        const userId = profileResponse.success ? profileResponse.data?.id : null;
+        
+        console.log('Loading markers for userId:', userId);
+        
+        if (!userId) {
+          console.error('User not identified');
+          setMarkers([]);
+          return;
+        }
+
+        const markersResponse = await anamnesisService.getUserMarkers({ userId });
+
+        console.log('Markers response:', {
+          success: markersResponse.success,
+          data: markersResponse.data,
+          error: markersResponse.error,
+        });
+
+        if (markersResponse.success && markersResponse.data) {
+          console.log('Setting markers:', markersResponse.data);
+          setMarkers(markersResponse.data);
+        } else {
+          console.error('Error loading markers:', markersResponse.error || 'Unknown error');
+          // Fallback para markers padrão se não houver dados
+          setMarkers([
+            { id: 'activity', name: 'Activity', trend: 'stable' as const, percentage: 0 },
+            { id: 'connection', name: 'Connection', trend: 'stable' as const, percentage: 0 },
+            { id: 'environment', name: 'Environment', trend: 'stable' as const, percentage: 0 },
+            { id: 'nutrition', name: 'Nutrition', trend: 'stable' as const, percentage: 0 },
+            { id: 'purpose-vision', name: 'Purpose & vision', trend: 'stable' as const, percentage: 0 },
+            { id: 'self-esteem', name: 'Self-esteem', trend: 'stable' as const, percentage: 0 },
+            { id: 'sleep', name: 'Sleep', trend: 'stable' as const, percentage: 0 },
+            { id: 'smile', name: 'Smile', trend: 'stable' as const, percentage: 0 },
+            { id: 'spirituality', name: 'Spirituality', trend: 'stable' as const, percentage: 0 },
+            { id: 'stress', name: 'Stress', trend: 'stable' as const, percentage: 0 },
+          ]);
+        }
+      } catch (error) {
+        console.error('Error loading markers:', error);
+        // Fallback para markers padrão em caso de erro
+        setMarkers([
+          { id: 'activity', name: 'Activity', trend: 'stable' as const, percentage: 0 },
+          { id: 'connection', name: 'Connection', trend: 'stable' as const, percentage: 0 },
+          { id: 'environment', name: 'Environment', trend: 'stable' as const, percentage: 0 },
+          { id: 'nutrition', name: 'Nutrition', trend: 'stable' as const, percentage: 0 },
+          { id: 'purpose-vision', name: 'Purpose & vision', trend: 'stable' as const, percentage: 0 },
+          { id: 'self-esteem', name: 'Self-esteem', trend: 'stable' as const, percentage: 0 },
+          { id: 'sleep', name: 'Sleep', trend: 'stable' as const, percentage: 0 },
+          { id: 'smile', name: 'Smile', trend: 'stable' as const, percentage: 0 },
+          { id: 'spirituality', name: 'Spirituality', trend: 'stable' as const, percentage: 0 },
+          { id: 'stress', name: 'Stress', trend: 'stable' as const, percentage: 0 },
+        ]);
+      } finally {
+        setLoadingMarkers(false);
+      }
+    };
+
+    loadMarkers();
+  }, []);
 
   const biomarkerCards = useMemo(
     () => [
@@ -293,6 +349,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor={COLORS.BACKGROUND} />
       <Header showBackButton={true} onBackPress={handleBackPress} showBellButton={true} />
       <View style={styles.content}>
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -320,41 +377,63 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
             </View>
 
             <View style={styles.markersListContainer}>
-              {markers.map((marker) => (
-                <View key={marker.id} style={styles.markerItem}>
-                  <TouchableOpacity
-                    style={styles.markerHeader}
-                    onPress={handleSeeMarker}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={styles.markerName}>{marker.name}</Text>
-                    <Icon name="chevron-right" size={20} color={COLORS.TEXT} />
-                  </TouchableOpacity>
-                  <View style={styles.markerContent}>
-                    <View style={styles.markerProgressContainer}>
-                      <ProgressBar
-                        current={marker.percentage}
-                        total={100}
-                        color={getMarkerColor(marker.id)}
-                        gradientColors={
-                          hasMarkerGradient(marker.id)
-                            ? getMarkerGradient(marker.id) || undefined
-                            : undefined
-                        }
-                        height={30}
-                        showRemaining={false}
-                      />
-                    </View>
-                    <View style={styles.markerTrend}>
-                      <Icon
-                        name={marker.trend === 'increasing' ? 'trending-up' : 'trending-down'}
-                        size={20}
-                        color={COLORS.TEXT_LIGHT}
-                      />
-                    </View>
-                  </View>
+              {loadingMarkers ? (
+                <View style={{ padding: 20, alignItems: 'center' }}>
+                  <Text style={{ color: COLORS.TEXT_LIGHT }}>Carregando markers...</Text>
                 </View>
-              ))}
+              ) : markers.length === 0 ? (
+                <View style={{ padding: 20, alignItems: 'center' }}>
+                  <Text style={{ color: COLORS.TEXT_LIGHT }}>Nenhum marker encontrado</Text>
+                  <Text style={{ color: COLORS.TEXT_LIGHT, fontSize: 12, marginTop: 8 }}>
+                    Verifique se você respondeu as perguntas da anamnesis
+                  </Text>
+                </View>
+              ) : (
+                markers.map((marker) => {
+                  console.log('Rendering marker:', marker);
+                  return (
+                    <View key={marker.id} style={styles.markerItem}>
+                      <TouchableOpacity
+                        style={styles.markerHeader}
+                        onPress={handleSeeMarker}
+                        activeOpacity={0.7}
+                      >
+                        <Text style={styles.markerName}>{marker.name}</Text>
+                        <Icon name="chevron-right" size={20} color={COLORS.TEXT} />
+                      </TouchableOpacity>
+                      <View style={styles.markerContent}>
+                        <View style={styles.markerProgressContainer}>
+                          <ProgressBar
+                            current={marker.percentage}
+                            total={100}
+                            color={getMarkerColor(marker.id)}
+                            gradientColors={
+                              hasMarkerGradient(marker.id)
+                                ? getMarkerGradient(marker.id) || undefined
+                                : undefined
+                            }
+                            height={30}
+                            showRemaining={false}
+                          />
+                        </View>
+                        <View style={styles.markerTrend}>
+                          <Icon
+                            name={
+                              marker.trend === 'increasing'
+                                ? 'trending-up'
+                                : marker.trend === 'decreasing'
+                                  ? 'trending-down'
+                                  : 'remove'
+                            }
+                            size={20}
+                            color={COLORS.TEXT_LIGHT}
+                          />
+                        </View>
+                      </View>
+                    </View>
+                  );
+                })
+              )}
             </View>
 
             <View style={styles.shareButtonContainer}>
