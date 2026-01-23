@@ -34,4 +34,3 @@ const Badge: React.FC<Props> = ({ label, color = 'beige' }) => {
 };
 
 export default Badge;
-

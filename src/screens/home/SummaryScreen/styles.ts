@@ -37,4 +37,3 @@ export const styles = StyleSheet.create({
     paddingTop: SPACING.LG,
   },
 });
-

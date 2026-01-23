@@ -108,7 +108,7 @@ describe('ProductDetailsScreen', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     mockUseProductDetails.mockReturnValue({
       product: mockProduct,
       ad: null,
@@ -156,9 +156,7 @@ describe('ProductDetailsScreen', () => {
       },
     };
 
-    render(
-      <ProductDetailsScreen navigation={mockNavigation as any} route={mockRoute as any} />
-    );
+    render(<ProductDetailsScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(mockNavigation.replace).toHaveBeenCalledWith('AffiliateProduct', expect.any(Object));
@@ -221,9 +219,7 @@ describe('ProductDetailsScreen', () => {
       },
     };
 
-    render(
-      <ProductDetailsScreen navigation={mockNavigation as any} route={mockRoute as any} />
-    );
+    render(<ProductDetailsScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(mockUseProductDetails).toHaveBeenCalled();
@@ -237,9 +233,7 @@ describe('ProductDetailsScreen', () => {
       },
     };
 
-    render(
-      <ProductDetailsScreen navigation={mockNavigation as any} route={mockRoute as any} />
-    );
+    render(<ProductDetailsScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(mockUseProductDetails).toHaveBeenCalledWith(
@@ -250,4 +244,3 @@ describe('ProductDetailsScreen', () => {
     });
   });
 });
-

@@ -31,16 +31,12 @@ const ProductsCarousel: React.FC<Props> = ({
           {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
         </View>
       )}
-      
+
       <View style={styles.carouselContainer}>
         <Carousel
           data={products}
           renderItem={(product) => (
-            <ProductCard
-              product={product}
-              onPress={onProductPress}
-              onLike={onProductLike}
-            />
+            <ProductCard product={product} onPress={onProductPress} onLike={onProductLike} />
           )}
           keyExtractor={(product) => product.id}
           itemWidth={170}
@@ -54,4 +50,3 @@ const ProductsCarousel: React.FC<Props> = ({
 };
 
 export default ProductsCarousel;
-

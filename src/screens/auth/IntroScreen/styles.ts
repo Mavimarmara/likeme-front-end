@@ -6,7 +6,6 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.BACKGROUND,
   },
-  
 
   // Content
   content: {
@@ -14,7 +13,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: SPACING.LG,
     justifyContent: 'space-between',
   },
-  
+
   // Greeting Section
   greetingContainer: {
     flex: 1,
@@ -26,7 +25,7 @@ export const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     transform: [{ scale: 1.5 }],
-    marginBottom: 5
+    marginBottom: 5,
   },
   greetingText: {
     fontSize: 48,

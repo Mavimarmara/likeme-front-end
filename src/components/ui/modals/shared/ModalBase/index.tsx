@@ -27,12 +27,7 @@ export const ModalBase: React.FC<ModalBaseProps> = ({
   header,
 }) => {
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
           {header ? (
@@ -44,11 +39,7 @@ export const ModalBase: React.FC<ModalBaseProps> = ({
               ) : (
                 <View style={styles.headerSpacer} />
               )}
-              <TouchableOpacity
-                style={styles.closeButton}
-                onPress={onClose}
-                activeOpacity={0.7}
-              >
+              <TouchableOpacity style={styles.closeButton} onPress={onClose} activeOpacity={0.7}>
                 <Icon name="close" size={24} color={COLORS.TEXT_DARK} />
               </TouchableOpacity>
             </View>
@@ -62,4 +53,3 @@ export const ModalBase: React.FC<ModalBaseProps> = ({
     </Modal>
   );
 };
-

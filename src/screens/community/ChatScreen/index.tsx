@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Image, TouchableOpacity, ImageBackground, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+  ImageBackground,
+  StyleSheet,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -61,7 +69,7 @@ const ChatScreen: React.FC<Props> = () => {
       id: '3',
       name: 'Carol Smith',
       avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200',
-      lastMessage: 'Hi, Carol! I think it\'s a great idea. More sleep would be beneficial...',
+      lastMessage: "Hi, Carol! I think it's a great idea. More sleep would be beneficial...",
       timestamp: '10:15',
       unreadCount: 2,
       isProvider: true,
@@ -70,7 +78,7 @@ const ChatScreen: React.FC<Props> = () => {
       id: '4',
       name: 'Michael Brown',
       avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200',
-      lastMessage: 'Hey Carol, I\'ve been adjusting my routine too. Let\'s share tips!',
+      lastMessage: "Hey Carol, I've been adjusting my routine too. Let's share tips!",
       timestamp: '4d',
       unreadCount: 3,
       isProvider: true,
@@ -98,12 +106,7 @@ const ChatScreen: React.FC<Props> = () => {
     }
 
     if (conversation.avatar) {
-      return (
-        <Image
-          source={{ uri: conversation.avatar }}
-          style={styles.avatar}
-        />
-      );
+      return <Image source={{ uri: conversation.avatar }} style={styles.avatar} />;
     }
 
     return (
@@ -134,7 +137,9 @@ const ChatScreen: React.FC<Props> = () => {
                 <Icon name="menu" size={16} color="#001137" style={styles.menuIcon} />
                 <View style={styles.menuAvatar}>
                   <Image
-                    source={{ uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100' }}
+                    source={{
+                      uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100',
+                    }}
                     style={styles.menuAvatarImage}
                   />
                 </View>
@@ -149,10 +154,7 @@ const ChatScreen: React.FC<Props> = () => {
 
           {/* Right Icons */}
           <View style={styles.headerRight}>
-            <TouchableOpacity
-              style={styles.iconButton}
-              activeOpacity={0.7}
-            >
+            <TouchableOpacity style={styles.iconButton} activeOpacity={0.7}>
               <ImageBackground
                 source={BackgroundIconButton}
                 style={styles.iconButtonBackground}
@@ -161,10 +163,7 @@ const ChatScreen: React.FC<Props> = () => {
                 <Icon name="notifications" size={20} color="#001137" />
               </ImageBackground>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.iconButton}
-              activeOpacity={0.7}
-            >
+            <TouchableOpacity style={styles.iconButton} activeOpacity={0.7}>
               <ImageBackground
                 source={BackgroundIconButton}
                 style={styles.iconButtonBackground}
@@ -203,13 +202,13 @@ const ChatScreen: React.FC<Props> = () => {
               key={conversation.id}
               style={[
                 styles.conversationItem,
-                index < conversations.length - 1 && styles.conversationItemBorder
+                index < conversations.length - 1 && styles.conversationItemBorder,
               ]}
               onPress={() => handleConversationPress(conversation)}
               activeOpacity={0.7}
             >
               {renderAvatar(conversation)}
-              
+
               <View style={styles.conversationInfo}>
                 <View style={styles.conversationHeader}>
                   <View style={styles.conversationNameContainer}>
@@ -222,32 +221,30 @@ const ChatScreen: React.FC<Props> = () => {
                       {conversation.name}
                     </Text>
                   </View>
-                  <Text style={styles.conversationTimestamp}>
-                    {conversation.timestamp}
-                  </Text>
+                  <Text style={styles.conversationTimestamp}>{conversation.timestamp}</Text>
                 </View>
-                
+
                 <View style={styles.conversationMessageRow}>
                   <View style={styles.conversationMessageContainer}>
                     <Text
                       style={[
                         styles.conversationMessage,
-                        conversation.unreadCount && conversation.unreadCount > 0 && styles.conversationMessageUnread
+                        conversation.unreadCount &&
+                          conversation.unreadCount > 0 &&
+                          styles.conversationMessageUnread,
                       ]}
                       numberOfLines={2}
                     >
-                      {typeof conversation.lastMessage === 'string' 
-                        ? conversation.lastMessage 
-                        : conversation.lastMessage instanceof Error 
-                          ? conversation.lastMessage.message || ''
-                          : String(conversation.lastMessage || '')}
+                      {typeof conversation.lastMessage === 'string'
+                        ? conversation.lastMessage
+                        : conversation.lastMessage instanceof Error
+                        ? conversation.lastMessage.message || ''
+                        : String(conversation.lastMessage || '')}
                     </Text>
                   </View>
                   {conversation.unreadCount && conversation.unreadCount > 0 && (
                     <View style={styles.notificationBadge}>
-                      <Text style={styles.notificationText}>
-                        {conversation.unreadCount}
-                      </Text>
+                      <Text style={styles.notificationText}>{conversation.unreadCount}</Text>
                     </View>
                   )}
                 </View>
@@ -261,4 +258,3 @@ const ChatScreen: React.FC<Props> = () => {
 };
 
 export default ChatScreen;
-

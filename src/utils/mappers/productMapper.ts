@@ -2,9 +2,7 @@ import { formatPrice } from '@/utils';
 import type { Product as ApiProduct } from '@/types/product';
 import type { Product } from '@/components/sections/product';
 
-export const mapApiProductToCarouselProduct = (
-  apiProduct: ApiProduct
-): Product => {
+export const mapApiProductToCarouselProduct = (apiProduct: ApiProduct): Product => {
   return {
     id: apiProduct.id,
     title: apiProduct.name,
@@ -15,9 +13,7 @@ export const mapApiProductToCarouselProduct = (
   };
 };
 
-export const mapApiProductToNavigationParams = (
-  apiProduct: ApiProduct
-) => {
+export const mapApiProductToNavigationParams = (apiProduct: ApiProduct) => {
   return {
     id: apiProduct.id,
     title: apiProduct.name,

@@ -26,4 +26,3 @@ export const getAvatarSizeFromPercentage = (percentage: number): AvatarSize => {
 export const getAvatarDimensions = (size: AvatarSize): AvatarDimensions => {
   return SIZE_DIMENSIONS[size];
 };
-

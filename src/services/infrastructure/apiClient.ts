@@ -10,27 +10,19 @@ class ApiClient {
     this.baseUrl = BACKEND_CONFIG.baseUrl || 'http://localhost:3000';
   }
 
-  private logAuthHeader(
-    method: string,
-    endpoint: string,
-    headers: Record<string, string>
-  ) {
+  private logAuthHeader(method: string, endpoint: string, headers: Record<string, string>) {
     const authorization = headers['Authorization'];
     if (authorization) {
-      console.log(
-        `[Auth] ${method.toUpperCase()} ${endpoint} usando token: ${authorization}`
-      );
+      console.log(`[Auth] ${method.toUpperCase()} ${endpoint} usando token: ${authorization}`);
     } else {
-      console.log(
-        `[Auth] ${method.toUpperCase()} ${endpoint} sem token no header`
-      );
+      console.log(`[Auth] ${method.toUpperCase()} ${endpoint} sem token no header`);
     }
   }
 
   private async getHeaders(includeAuth = true): Promise<Record<string, string>> {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      'accept': '*/*',
+      accept: '*/*',
     };
 
     if (includeAuth) {
@@ -51,7 +43,8 @@ class ApiClient {
 
       const errorData = await response.json().catch(() => ({}));
       // Extrair mensagem de erro do backend (pode estar em errorData.message ou errorData.error)
-      const errorMessage = errorData.message || errorData.error || `HTTP error! status: ${response.status}`;
+      const errorMessage =
+        errorData.message || errorData.error || `HTTP error! status: ${response.status}`;
       const error: ApiError = {
         message: errorMessage,
         status: response.status,
@@ -83,10 +76,7 @@ class ApiClient {
 
       const data = await response.json().catch(() => null);
       const newToken =
-        data?.data?.token ||
-        data?.token ||
-        data?.data?.accessToken ||
-        data?.accessToken;
+        data?.data?.token || data?.token || data?.data?.accessToken || data?.accessToken;
 
       if (!newToken) {
         return false;
@@ -133,14 +123,19 @@ class ApiClient {
     return response;
   }
 
-  async get<T>(endpoint: string, params?: Record<string, any>, includeAuth = true, useVersion = false): Promise<T> {
+  async get<T>(
+    endpoint: string,
+    params?: Record<string, any>,
+    includeAuth = true,
+    useVersion = false
+  ): Promise<T> {
     try {
       let url = `${this.baseUrl}${endpoint}`;
-      
+
       if (useVersion && !endpoint.startsWith('/api')) {
         url = `${this.baseUrl}/api/v1${endpoint}`;
       }
-      
+
       if (params) {
         const queryString = new URLSearchParams(
           Object.entries(params).reduce((acc, [key, value]) => {
@@ -150,7 +145,7 @@ class ApiClient {
             return acc;
           }, {} as Record<string, string>)
         ).toString();
-        
+
         if (queryString) {
           url += `?${queryString}`;
         }
@@ -279,4 +274,3 @@ class ApiClient {
 }
 
 export default new ApiClient();
-

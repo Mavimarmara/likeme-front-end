@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { anamnesisService, storageService, userService } from '@/services';
 import type { AnamnesisQuestion } from '@/types/anamnesis';
-import type { UseAnamnesisQuestionnaireParams, UseAnamnesisQuestionnaireReturn } from '@/types/anamnesis';
+import type {
+  UseAnamnesisQuestionnaireParams,
+  UseAnamnesisQuestionnaireReturn,
+} from '@/types/anamnesis';
 
 export function useAnamnesisQuestionnaire<T>(
   params: UseAnamnesisQuestionnaireParams<T>
@@ -129,5 +132,3 @@ export function useAnamnesisQuestionnaire<T>(
     complete,
   };
 }
-
-

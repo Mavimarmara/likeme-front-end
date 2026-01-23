@@ -15,10 +15,10 @@ type Props = {
   showRemaining?: boolean;
 };
 
-const ProgressBar: React.FC<Props> = ({ 
-  current, 
-  total, 
-  label = "", 
+const ProgressBar: React.FC<Props> = ({
+  current,
+  total,
+  label = '',
   color = COLORS.PRIMARY.PURE,
   gradientColors,
   backgroundColor = COLORS.NEUTRAL.LOW.LIGHT,
@@ -31,15 +31,18 @@ const ProgressBar: React.FC<Props> = ({
   }, [current, total]);
 
   const showLabel = useMemo(() => label.trim().length > 0, [label]);
-  const useGradient = useMemo(() => 
-    gradientColors !== undefined && gradientColors.length > 0, 
+  const useGradient = useMemo(
+    () => gradientColors !== undefined && gradientColors.length > 0,
     [gradientColors]
   );
 
-  const fillStyle = useMemo(() => ({
-    width: `${percentage}%` as const,
-    height,
-  }), [percentage, height]);
+  const fillStyle = useMemo(
+    () => ({
+      width: `${percentage}%` as const,
+      height,
+    }),
+    [percentage, height]
+  );
 
   const renderProgressFill = () => {
     if (useGradient && gradientColors) {
@@ -53,27 +56,21 @@ const ProgressBar: React.FC<Props> = ({
       );
     }
 
-    return (
-      <View 
-        style={[
-          styles.progressFill, 
-          fillStyle,
-          { backgroundColor: color }
-        ]} 
-      />
-    );
+    return <View style={[styles.progressFill, fillStyle, { backgroundColor: color }]} />;
   };
 
   return (
     <View style={styles.container}>
       {showLabel && (
-      <Text style={styles.label}>{label} [ {current}/{total} ]</Text>
+        <Text style={styles.label}>
+          {label} [ {current}/{total} ]
+        </Text>
       )}
       <View style={[styles.progressContainer, { height }]}>
         {showRemaining ? (
           <View style={[styles.progressBackground, { height, backgroundColor }]}>
             {renderProgressFill()}
-        </View>
+          </View>
         ) : (
           renderProgressFill()
         )}

@@ -42,13 +42,16 @@ Este guia explica como configurar e publicar o app LikeMe no TestFlight.
 ## 🔑 Passo 2: Obter Credenciais
 
 ### Apple ID
+
 - Email da conta Apple Developer
 
 ### App Store Connect App ID (ASC App ID)
+
 - Encontre em: App Store Connect → Seu App → App Information → **Apple ID**
 - Exemplo: `1234567890`
 
 ### Apple Team ID
+
 - Encontre em: [Apple Developer](https://developer.apple.com/account/) → Membership → **Team ID**
 - Exemplo: `ABC123DEF4`
 
@@ -80,6 +83,7 @@ Edite o arquivo `eas.json` e substitua os valores placeholder:
 ### Opção 1: Usar App-Specific Password (Recomendado)
 
 1. Gere uma senha específica para apps:
+
    - Acesse [appleid.apple.com](https://appleid.apple.com/)
    - Vá em **Sign-In and Security** → **App-Specific Passwords**
    - Clique em **Generate an app-specific password**
@@ -87,6 +91,7 @@ Edite o arquivo `eas.json` e substitua os valores placeholder:
    - Copie a senha gerada
 
 2. Configure no EAS:
+
 ```bash
 eas credentials
 ```
@@ -104,11 +109,13 @@ E siga as instruções para configurar as credenciais.
 ## 🏗️ Passo 5: Criar Build para TestFlight
 
 ### Build Staging (TestFlight Internal)
+
 ```bash
 eas build --platform ios --profile staging
 ```
 
 ### Build Production (TestFlight External)
+
 ```bash
 eas build --platform ios --profile production
 ```
@@ -120,6 +127,7 @@ eas build --platform ios --profile production
 Após o build ser concluído:
 
 ### Submeter Automaticamente
+
 ```bash
 # Para staging (TestFlight Internal)
 eas submit --platform ios --profile staging
@@ -141,6 +149,7 @@ eas submit --platform ios --profile production
 📖 **Guia Completo**: Veja `TESTFLIGHT_TESTERS.md` para instruções detalhadas.
 
 ### TestFlight Internal (Até 100 testadores)
+
 1. App Store Connect → TestFlight → **Internal Testing**
 2. Clique em **+** para criar grupo
 3. Adicione build ao grupo
@@ -148,6 +157,7 @@ eas submit --platform ios --profile production
 5. Eles receberão um convite por email automaticamente
 
 ### TestFlight External (Até 10.000 testadores)
+
 1. App Store Connect → TestFlight → **External Testing**
 2. Clique em **+** para criar grupo
 3. Preencha informações de compliance
@@ -166,6 +176,7 @@ eas submit --platform ios --profile production
 ## 🔄 Workflow Recomendado
 
 ### Para Testes Internos (Staging)
+
 ```bash
 # 1. Build
 eas build --platform ios --profile staging
@@ -177,6 +188,7 @@ eas submit --platform ios --profile staging --latest
 ```
 
 ### Para Testes Externos (Production)
+
 ```bash
 # 1. Build
 eas build --platform ios --profile production
@@ -190,21 +202,25 @@ eas submit --platform ios --profile production --latest
 ## ⚠️ Troubleshooting
 
 ### Erro: "No valid iOS Distribution certificate"
+
 ```bash
 eas credentials
 # Selecione iOS → Manage credentials → Setup
 ```
 
 ### Erro: "App Store Connect API Key required"
+
 - Crie uma API Key em App Store Connect → Users and Access → Keys
 - Configure no EAS: `eas credentials`
 
 ### Build falha
+
 - Verifique logs: `eas build:list`
 - Verifique se o Bundle ID está correto
 - Verifique se há certificados válidos
 
 ### Submit falha
+
 - Verifique se o build foi concluído com sucesso
 - Verifique se o app existe no App Store Connect
 - Verifique credenciais no `eas.json`
@@ -227,4 +243,3 @@ eas credentials
 - [ ] Build submetido para TestFlight
 - [ ] Testadores adicionados
 - [ ] Testadores receberam convites
-

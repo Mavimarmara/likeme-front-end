@@ -40,7 +40,7 @@ const CommunityPreviewScreen: React.FC<CommunityPreviewScreenProps> = ({ navigat
       id: '2',
       userName: 'Jane Smith',
       userAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100',
-      content: 'I\'ve been using this for a month now and I can see great improvements.',
+      content: "I've been using this for a month now and I can see great improvements.",
       createdAt: new Date('2024-01-14'),
       reactionsCount: 8,
       commentsCount: 3,
@@ -69,9 +69,7 @@ const CommunityPreviewScreen: React.FC<CommunityPreviewScreenProps> = ({ navigat
       <View style={styles.content}>
         <View style={styles.headerSection}>
           <Text style={styles.screenTitle}>Community Preview</Text>
-          {productName && (
-            <Text style={styles.screenSubtitle}>{productName}</Text>
-          )}
+          {productName && <Text style={styles.screenSubtitle}>{productName}</Text>}
         </View>
 
         <ScrollView
@@ -83,9 +81,7 @@ const CommunityPreviewScreen: React.FC<CommunityPreviewScreenProps> = ({ navigat
               <Text style={styles.emptyText}>No community posts found</Text>
             </View>
           ) : (
-            posts.map((post) => (
-              <PostCard key={post.id} post={post} />
-            ))
+            posts.map((post) => <PostCard key={post.id} post={post} />)
           )}
         </ScrollView>
       </View>

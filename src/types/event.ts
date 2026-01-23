@@ -14,4 +14,3 @@ export interface EventParticipant {
   name?: string;
   color?: 'Blue' | 'Light Pink' | 'Pink' | 'Green';
 }
-

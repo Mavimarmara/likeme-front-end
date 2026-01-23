@@ -1,4 +1,11 @@
-import type { CommunityPost, CommunityFile, CommunityUser, CommunityComment, Community, CommunityCategory } from '@/types/community';
+import type {
+  CommunityPost,
+  CommunityFile,
+  CommunityUser,
+  CommunityComment,
+  Community,
+  CommunityCategory,
+} from '@/types/community';
 import type { Post, Comment, Poll } from '@/types';
 import type { Program } from '@/types/program';
 import { logger } from '@/utils/logger';
@@ -8,16 +15,17 @@ const mapCommunityCommentToComment = (
   users?: CommunityUser[],
   files?: CommunityFile[]
 ): Comment => {
-  const content = communityComment.data?.text || 
+  const content =
+    communityComment.data?.text ||
     (typeof communityComment.data === 'string' ? communityComment.data : '') ||
     JSON.stringify(communityComment.data || {});
-  
-  const user = users?.find(u => u.userId === communityComment.userId);
-  
+
+  const user = users?.find((u) => u.userId === communityComment.userId);
+
   const reactionsObj = communityComment.reactions || {};
   const upvotes = reactionsObj['like'] || reactionsObj['upvote'] || reactionsObj['👍'] || 0;
   const downvotes = reactionsObj['dislike'] || reactionsObj['downvote'] || reactionsObj['👎'] || 0;
-  
+
   const reactionsArray: Array<{ id: string; userId: string; type: string }> = [];
   if (Object.keys(reactionsObj).length > 0) {
     Object.entries(reactionsObj).forEach(([type, count]) => {
@@ -32,15 +40,16 @@ const mapCommunityCommentToComment = (
     });
   }
   const reactions: Comment['reactions'] = reactionsArray.length > 0 ? reactionsArray : undefined;
-  
+
   return {
     id: communityComment.commentId,
     userId: communityComment.userId,
     content,
     createdAt: new Date(communityComment.createdAt),
     userName: user?.displayName,
-    userAvatar: user?.avatarFileId ? 
-      files?.find(f => f.fileId === user.avatarFileId)?.fileUrl : undefined,
+    userAvatar: user?.avatarFileId
+      ? files?.find((f) => f.fileId === user.avatarFileId)?.fileUrl
+      : undefined,
     reactionsCount: communityComment.reactionsCount,
     reactions,
   };
@@ -71,7 +80,7 @@ const mapCommunityPostToPoll = (
   }
 
   const question = communityPost.data?.text || '';
-  
+
   if (!question) {
     logger.warn('Poll post sem question (data.text):', {
       postId: communityPost.postId || communityPost._id,
@@ -88,7 +97,7 @@ const mapCommunityPostToPoll = (
 
   const pollOptions = sortedPollOptions.map((option, index) => {
     const text = option.data?.text || '';
-    
+
     if (!text) {
       logger.warn('Poll option sem text (data.text):', {
         optionId: option.postId || option._id,
@@ -97,9 +106,9 @@ const mapCommunityPostToPoll = (
         data: option.data,
       });
     }
-    
+
     const votes = option.reactionsCount || 0;
-    
+
     return {
       id: option.postId || option._id || `option-${index}`,
       text: text || `Opção ${index + 1}`,
@@ -109,26 +118,26 @@ const mapCommunityPostToPoll = (
   });
 
   const totalVotes = pollOptions.reduce((sum, opt) => sum + opt.votes, 0);
-  const pollOptionsWithPercentage = pollOptions.map(opt => ({
+  const pollOptionsWithPercentage = pollOptions.map((opt) => ({
     ...opt,
     percentage: totalVotes > 0 ? Math.round((opt.votes / totalVotes) * 100) : 0,
   }));
 
   const endedAt = communityPost.data?.endedAt || communityPost.data?.endDate;
-  
+
   let pollId = communityPost.data?.pollId;
-  
+
   if (!pollId && sortedPollOptions.length > 0) {
     pollId = sortedPollOptions[0].data?.pollId;
   }
-  
+
   logger.debug('Poll ID encontrado:', {
     postId: communityPost.postId || communityPost._id,
     pollIdFromMain: communityPost.data?.pollId,
     pollIdFromOptions: sortedPollOptions[0]?.data?.pollId,
     finalPollId: pollId,
   });
-  
+
   return {
     id: communityPost.postId || communityPost._id || '',
     pollId: pollId || undefined,
@@ -161,36 +170,37 @@ export const mapCommunityPostToPost = (
   }
 
   let imageUrl: string | undefined;
-  
+
   if (communityPost.data?.fileId && files) {
-    const file = files.find(f => f.fileId === communityPost.data?.fileId);
+    const file = files.find((f) => f.fileId === communityPost.data?.fileId);
     imageUrl = file?.fileUrl;
   }
 
-  const user = users?.find(u => u.userId === userId);
+  const user = users?.find((u) => u.userId === userId);
   const userName = user?.displayName || undefined;
-  const userAvatar = user?.avatarFileId ? 
-    files?.find(f => f.fileId === user.avatarFileId)?.fileUrl : undefined;
+  const userAvatar = user?.avatarFileId
+    ? files?.find((f) => f.fileId === user.avatarFileId)?.fileUrl
+    : undefined;
 
   const likes = communityPost.reactionsCount || 0;
-  
+
   const postComments: Post['comments'] = (comments || [])
-    .filter(comment => {
+    .filter((comment) => {
       const referenceId = comment.referenceId;
       return referenceId === postId || referenceId === communityPost._id;
     })
-    .map(comment => mapCommunityCommentToComment(comment, users, files));
+    .map((comment) => mapCommunityCommentToComment(comment, users, files));
 
   let content = '';
   let title: string | undefined;
-  
+
   if (communityPost.data) {
     if (typeof communityPost.data === 'string') {
       content = communityPost.data;
     } else if (typeof communityPost.data === 'object') {
       content = communityPost.data.text || '';
       title = communityPost.data.title;
-      
+
       if (!content && title) {
         logger.warn('Post sem data.text, usando title como fallback:', {
           postId,
@@ -215,17 +225,17 @@ export const mapCommunityPostToPost = (
 
   let tags: string | string[] | undefined;
   const rawTags = (communityPost as any).tags || communityPost.data?.tags;
-  
+
   if (rawTags) {
     if (Array.isArray(rawTags)) {
-      tags = rawTags.filter(tag => tag && typeof tag === 'string' && tag.toLowerCase() !== 'tags');
-    } 
-    else if (typeof rawTags === 'string' && rawTags.toLowerCase() !== 'tags') {
+      tags = rawTags.filter(
+        (tag) => tag && typeof tag === 'string' && tag.toLowerCase() !== 'tags'
+      );
+    } else if (typeof rawTags === 'string' && rawTags.toLowerCase() !== 'tags') {
       tags = rawTags;
-    }
-    else if (typeof rawTags === 'object') {
+    } else if (typeof rawTags === 'object') {
       const tagValues = Object.values(rawTags).filter(
-        val => val && typeof val === 'string' && val.toLowerCase() !== 'tags'
+        (val) => val && typeof val === 'string' && val.toLowerCase() !== 'tags'
       );
       if (tagValues.length > 0) {
         tags = tagValues.length === 1 ? (tagValues[0] as string) : (tagValues as string[]);
@@ -233,9 +243,8 @@ export const mapCommunityPostToPost = (
     }
   }
 
-  const commentsCount = communityPost.commentsCount !== undefined 
-    ? communityPost.commentsCount 
-    : postComments.length;
+  const commentsCount =
+    communityPost.commentsCount !== undefined ? communityPost.commentsCount : postComments.length;
 
   const post: Post = {
     id: postId,
@@ -254,17 +263,14 @@ export const mapCommunityPostToPost = (
     userAvatar,
     poll,
   };
-  
+
   return post;
 };
 
-export const mapCommunityToProgram = (
-  community: Community,
-  files?: CommunityFile[]
-): Program => {
+export const mapCommunityToProgram = (community: Community, files?: CommunityFile[]): Program => {
   let imageUrl: string | undefined;
   if (community.avatarFileId && files) {
-    const file = files.find(f => f.fileId === community.avatarFileId);
+    const file = files.find((f) => f.fileId === community.avatarFileId);
     imageUrl = file?.fileUrl;
   }
 
@@ -286,10 +292,11 @@ export const mapCommunityToRecommendedCommunity = (
   files?: CommunityFile[]
 ): { id: string; title: string; badge: string; image: string } => {
   const badge = category?.name || 'Community';
-  
-  const image = community.avatarFileId && files
-    ? files.find((f) => f.fileId === community.avatarFileId)?.fileUrl
-    : 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800';
+
+  const image =
+    community.avatarFileId && files
+      ? files.find((f) => f.fileId === community.avatarFileId)?.fileUrl
+      : 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800';
 
   return {
     id: community.communityId,
@@ -305,10 +312,11 @@ export const mapCommunityToOtherCommunity = (
   files?: CommunityFile[]
 ): { id: string; title: string; badge: string; image: string; rating: number; price: string } => {
   const badge = category?.name || 'Community';
-  
-  const image = community.avatarFileId && files
-    ? files.find((f) => f.fileId === community.avatarFileId)?.fileUrl
-    : 'https://images.unsplash.com/photo-1494390248081-4e521a5940db?w=400';
+
+  const image =
+    community.avatarFileId && files
+      ? files.find((f) => f.fileId === community.avatarFileId)?.fileUrl
+      : 'https://images.unsplash.com/photo-1494390248081-4e521a5940db?w=400';
 
   const rating = 5;
   const price = '$0.00';
@@ -322,4 +330,3 @@ export const mapCommunityToOtherCommunity = (
     price,
   };
 };
-

@@ -65,11 +65,7 @@ const OtherCommunitiesSection: React.FC<Props> = ({
             activeOpacity={0.8}
             onPress={() => onCommunityPress?.(community)}
           >
-            <Image
-              source={{ uri: community.image }}
-              style={styles.cardImage}
-              resizeMode="cover"
-            />
+            <Image source={{ uri: community.image }} style={styles.cardImage} resizeMode="cover" />
             <View style={styles.cardContent}>
               <View style={styles.cardHeader}>
                 <View style={styles.badge}>
@@ -110,4 +106,3 @@ const OtherCommunitiesSection: React.FC<Props> = ({
 };
 
 export default OtherCommunitiesSection;
-

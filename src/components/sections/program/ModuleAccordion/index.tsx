@@ -55,4 +55,3 @@ const ModuleAccordion: React.FC<Props> = ({ module, onToggle }) => {
 };
 
 export default ModuleAccordion;
-

@@ -70,4 +70,3 @@ export const styles = StyleSheet.create({
     marginTop: SPACING.MD,
   },
 });
-

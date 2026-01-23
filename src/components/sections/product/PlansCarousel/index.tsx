@@ -12,13 +12,7 @@ type Props = {
   onPlanLike?: (plan: Plan) => void;
 };
 
-const PlansCarousel: React.FC<Props> = ({
-  title,
-  subtitle,
-  plans,
-  onPlanPress,
-  onPlanLike,
-}) => {
+const PlansCarousel: React.FC<Props> = ({ title, subtitle, plans, onPlanPress, onPlanLike }) => {
   if (!plans || plans.length === 0) {
     return null;
   }
@@ -31,17 +25,11 @@ const PlansCarousel: React.FC<Props> = ({
           {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
         </View>
       )}
-      
+
       <View style={styles.carouselContainer}>
         <Carousel
           data={plans}
-          renderItem={(plan) => (
-            <PlanCard
-              plan={plan}
-              onPress={onPlanPress}
-              onLike={onPlanLike}
-            />
-          )}
+          renderItem={(plan) => <PlanCard plan={plan} onPress={onPlanPress} onLike={onPlanLike} />}
           keyExtractor={(plan) => plan.id}
           itemWidth={170}
           gap={10}
@@ -54,4 +42,3 @@ const PlansCarousel: React.FC<Props> = ({
 };
 
 export default PlansCarousel;
-

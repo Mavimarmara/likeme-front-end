@@ -14,8 +14,7 @@ export const styles = StyleSheet.create({
     lineHeight: 18,
     paddingHorizontal: SPACING.MD,
   },
-  scrollView: {
-  },
+  scrollView: {},
   scrollContent: {
     paddingLeft: SPACING.MD,
     paddingRight: SPACING.MD,
@@ -61,4 +60,3 @@ export const styles = StyleSheet.create({
     fontFamily: 'DM Sans',
   },
 });
-

@@ -28,4 +28,3 @@ export interface PersonalObjectivesParams {
   page?: number;
   limit?: number;
 }
-

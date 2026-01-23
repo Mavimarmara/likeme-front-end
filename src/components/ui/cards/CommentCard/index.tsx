@@ -47,7 +47,9 @@ const CommentCard: React.FC<Props> = ({
   const [isExpanded, setIsExpanded] = useState(true);
   const hasReplies = comment.replies && comment.replies.length > 0;
   const isAvatarUri = comment.author.avatar && typeof comment.author.avatar === 'string';
-  const [currentReaction, setCurrentReaction] = useState<'like' | 'dislike' | null>(comment.userReaction || null);
+  const [currentReaction, setCurrentReaction] = useState<'like' | 'dislike' | null>(
+    comment.userReaction || null
+  );
   const [upvotes, setUpvotes] = useState(comment.upvotes || 0);
   const [downvotes, setDownvotes] = useState(comment.downvotes || 0);
   const [reactionLoading, setReactionLoading] = useState(false);
@@ -62,7 +64,7 @@ const CommentCard: React.FC<Props> = ({
     const date = new Date(dateString);
     const now = new Date();
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-    
+
     if (diffInSeconds < 60) return 'agora';
     if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutos atrás`;
     if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} horas atrás`;
@@ -147,7 +149,7 @@ const CommentCard: React.FC<Props> = ({
   const capitalizeWords = (text: string): string => {
     return text
       .split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(' ');
   };
 
@@ -156,10 +158,7 @@ const CommentCard: React.FC<Props> = ({
       <View style={styles.commentHeader}>
         {comment.author.avatar ? (
           isAvatarUri ? (
-            <Image
-              source={{ uri: comment.author.avatar as string }}
-              style={styles.avatar}
-            />
+            <Image source={{ uri: comment.author.avatar as string }} style={styles.avatar} />
           ) : (
             <Image source={comment.author.avatar as ImageSourcePropType} style={styles.avatar} />
           )
@@ -215,4 +214,3 @@ const CommentCard: React.FC<Props> = ({
 };
 
 export default CommentCard;
-

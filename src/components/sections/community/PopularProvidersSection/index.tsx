@@ -13,10 +13,7 @@ type Props = {
   onProviderPress?: (provider: Provider) => void;
 };
 
-const PopularProvidersSection: React.FC<Props> = ({
-  providers,
-  onProviderPress,
-}) => {
+const PopularProvidersSection: React.FC<Props> = ({ providers, onProviderPress }) => {
   if (!providers || providers.length === 0) {
     return null;
   }
@@ -39,11 +36,7 @@ const PopularProvidersSection: React.FC<Props> = ({
           >
             <View style={styles.avatarContainer}>
               {provider.avatar ? (
-                <Image
-                  source={{ uri: provider.avatar }}
-                  style={styles.avatar}
-                  resizeMode="cover"
-                />
+                <Image source={{ uri: provider.avatar }} style={styles.avatar} resizeMode="cover" />
               ) : (
                 <View style={styles.avatarPlaceholder}>
                   <Text style={styles.avatarInitials}>
@@ -68,4 +61,3 @@ const PopularProvidersSection: React.FC<Props> = ({
 };
 
 export default PopularProvidersSection;
-

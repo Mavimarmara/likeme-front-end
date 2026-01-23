@@ -1,5 +1,14 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ImageBackground, Image, Dimensions, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  ImageBackground,
+  Image,
+  Dimensions,
+  ActivityIndicator,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { CommonActions } from '@react-navigation/native';
@@ -73,7 +82,8 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
   const providerData = provider || {
     name: 'Marcela Ferraz',
     title: 'Professora de Yoga',
-    description: 'Hello! I\'m Marcela Ferraz, a Yoga teacher passionate about everything that involves conscious movement, well-being, and self-connection. I believe that Yoga is a transformative journey—a space where body, mind, and breath come together in balance and purpose.',
+    description:
+      "Hello! I'm Marcela Ferraz, a Yoga teacher passionate about everything that involves conscious movement, well-being, and self-connection. I believe that Yoga is a transformative journey—a space where body, mind, and breath come together in balance and purpose.",
     rating: 5,
     specialties: ['Provider', 'Shop', 'Spirituality'],
     followers: 2846,
@@ -82,7 +92,9 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
 
   // Imagem do provider para background e hero section
   const backgroundImage = useMemo(() => {
-    return providerData.avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400';
+    return (
+      providerData.avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400'
+    );
   }, [providerData.avatar]);
 
   // Carregar posts quando a aba communities estiver ativa
@@ -118,7 +130,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
       timestamp: 'Now',
       unreadCount: 0,
     };
-    
+
     // Navegar para ChatScreen dentro do Community stack usando CommonActions
     rootNavigation.dispatch(
       CommonActions.navigate({
@@ -148,234 +160,239 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
   };
 
   // Mock events data
-  const providerEvents: Event[] = useMemo(() => [
-    {
-      id: '1',
-      title: 'Home Mobility Challenge',
-      date: '2024-01-15',
-      time: '10:00',
-      thumbnail: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400',
-      participants: [],
-      participantsCount: 42,
-    },
-    {
-      id: '2',
-      title: 'Trail Run - United State',
-      date: '2024-01-20',
-      time: '08:00',
-      thumbnail: 'https://images.unsplash.com/photo-1571008887538-b36bb32f4571?w=400',
-      participants: [],
-      participantsCount: 38,
-    },
-  ], []);
+  const providerEvents: Event[] = useMemo(
+    () => [
+      {
+        id: '1',
+        title: 'Home Mobility Challenge',
+        date: '2024-01-15',
+        time: '10:00',
+        thumbnail: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400',
+        participants: [],
+        participantsCount: 42,
+      },
+      {
+        id: '2',
+        title: 'Trail Run - United State',
+        date: '2024-01-20',
+        time: '08:00',
+        thumbnail: 'https://images.unsplash.com/photo-1571008887538-b36bb32f4571?w=400',
+        participants: [],
+        participantsCount: 38,
+      },
+    ],
+    []
+  );
 
   // Mock products data
-  const recommendedProducts: Product[] = useMemo(() => [
-    {
-      id: '1',
-      title: 'Omega 3 Supplement',
-      price: 150.99,
-      tag: 'Medicine',
-      image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
-      likes: 0,
-    },
-    {
-      id: '2',
-      title: 'Melatonin Chocolate',
-      price: 10.50,
-      tag: 'Nutrition',
-      image: 'https://images.unsplash.com/photo-1606312619070-d48d4e5b6916?w=400',
-      likes: 0,
-    },
-  ], []);
+  const recommendedProducts: Product[] = useMemo(
+    () => [
+      {
+        id: '1',
+        title: 'Omega 3 Supplement',
+        price: 150.99,
+        tag: 'Medicine',
+        image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
+        likes: 0,
+      },
+      {
+        id: '2',
+        title: 'Melatonin Chocolate',
+        price: 10.5,
+        tag: 'Nutrition',
+        image: 'https://images.unsplash.com/photo-1606312619070-d48d4e5b6916?w=400',
+        likes: 0,
+      },
+    ],
+    []
+  );
 
   return (
     <SafeAreaView style={styles.container}>
-        <Header showBackButton={true} onBackPress={handleBackPress} />
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Hero Section with Image */}
-          <View style={styles.heroSection}>
-            <ImageBackground source={{ uri: backgroundImage }} style={styles.heroImage} imageStyle={styles.heroImageStyle}>
-              <View style={styles.heroOverlay}>
-                <LinearGradient
-                  colors={['rgba(48, 48, 48, 0)', 'rgba(41, 41, 41, 1)']}
-                  locations={[0.64, 1]}
-                  style={styles.heroGradient}
-                />
-                <View style={styles.heroContent}>
-                  <View style={styles.badgesContainer}>
-                    {providerData.specialties?.map((specialty, index) => (
-                      <View key={index} style={styles.badge}>
-                        <Text style={styles.badgeText}>{specialty}</Text>
-                      </View>
-                    ))}
-                  </View>
-                  {providerData.title && (
-                    <Text style={styles.heroTitle}>{providerData.title}</Text>
-                  )}
-                  <Text style={styles.heroName}>{providerData.name}</Text>
-                  <View style={styles.heroFooter}>
-                    <View style={styles.heroStats}>
-                      <View style={styles.statItem}>
-                        <Icon name="star" size={16} color="#FFFFFF" />
-                        <Text style={styles.statText}>{providerData.rating || 5}</Text>
-                      </View>
-                      <View style={styles.statItem}>
-                        <Icon name="people" size={16} color="#FFFFFF" />
-                        <Text style={styles.statText}>{providerData.followers || 2846}</Text>
-                      </View>
+      <Header showBackButton={true} onBackPress={handleBackPress} />
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {/* Hero Section with Image */}
+        <View style={styles.heroSection}>
+          <ImageBackground
+            source={{ uri: backgroundImage }}
+            style={styles.heroImage}
+            imageStyle={styles.heroImageStyle}
+          >
+            <View style={styles.heroOverlay}>
+              <LinearGradient
+                colors={['rgba(48, 48, 48, 0)', 'rgba(41, 41, 41, 1)']}
+                locations={[0.64, 1]}
+                style={styles.heroGradient}
+              />
+              <View style={styles.heroContent}>
+                <View style={styles.badgesContainer}>
+                  {providerData.specialties?.map((specialty, index) => (
+                    <View key={index} style={styles.badge}>
+                      <Text style={styles.badgeText}>{specialty}</Text>
                     </View>
-                    <TouchableOpacity style={styles.followButton} onPress={handleFollow} activeOpacity={0.7}>
-                      <Text style={styles.followButtonText}>Follow</Text>
-                    </TouchableOpacity>
+                  ))}
+                </View>
+                {providerData.title && <Text style={styles.heroTitle}>{providerData.title}</Text>}
+                <Text style={styles.heroName}>{providerData.name}</Text>
+                <View style={styles.heroFooter}>
+                  <View style={styles.heroStats}>
+                    <View style={styles.statItem}>
+                      <Icon name="star" size={16} color="#FFFFFF" />
+                      <Text style={styles.statText}>{providerData.rating || 5}</Text>
+                    </View>
+                    <View style={styles.statItem}>
+                      <Icon name="people" size={16} color="#FFFFFF" />
+                      <Text style={styles.statText}>{providerData.followers || 2846}</Text>
+                    </View>
                   </View>
+                  <TouchableOpacity
+                    style={styles.followButton}
+                    onPress={handleFollow}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={styles.followButtonText}>Follow</Text>
+                  </TouchableOpacity>
                 </View>
               </View>
-            </ImageBackground>
+            </View>
+          </ImageBackground>
+        </View>
+
+        <View style={styles.content}>
+          <View style={styles.tabsContainer}>
+            <Toggle
+              options={['About', 'My communities'] as const}
+              selected={activeTab === 'about' ? 'About' : 'My communities'}
+              onSelect={(option) => {
+                if (option === 'About') {
+                  setActiveTab('about');
+                } else {
+                  setActiveTab('communities');
+                }
+              }}
+            />
           </View>
 
-          <View style={styles.content}>
-            <View style={styles.tabsContainer}>
-              <Toggle
-                options={['About', 'My communities'] as const}
-                selected={activeTab === 'about' ? 'About' : 'My communities'}
-                onSelect={(option) => {
-                  if (option === 'About') {
-                    setActiveTab('about');
-                  } else {
-                    setActiveTab('communities');
-                  }
-                }}
-              />
-            </View>
-
-            {activeTab === 'about' && (
-              <>
-                <View style={styles.aboutSection}>
-                  <TouchableOpacity 
-                    style={styles.sectionHeader}
-                    onPress={() => setIsAboutExpanded(!isAboutExpanded)}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={styles.sectionTitle}>About {providerData.name}</Text>
-                    <Icon 
-                      name={isAboutExpanded ? "keyboard-arrow-up" : "keyboard-arrow-down"} 
-                      size={24} 
-                      color="#001137" 
-                    />
-                  </TouchableOpacity>
-                  {isAboutExpanded && (
-                    <Text style={styles.descriptionText}>{providerData.description}</Text>
-                  )}
-                </View>
-
-                <View style={styles.aboutSection}>
-                  <TouchableOpacity 
-                    style={styles.sectionHeader}
-                    onPress={() => setIsAcademicExpanded(!isAcademicExpanded)}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={styles.sectionTitle}>Academic background</Text>
-                    <Icon 
-                      name={isAcademicExpanded ? "keyboard-arrow-up" : "keyboard-arrow-down"} 
-                      size={24} 
-                      color="#001137" 
-                    />
-                  </TouchableOpacity>
-                  {isAcademicExpanded && (
-                    <Text style={styles.descriptionText}>
-                      I am trained in Yoga with specializations in meditation, mindful breathing, and restorative practices.
-                      I've been teaching and supporting students for over 10 years working with people in different stages of their journey.
-                    </Text>
-                  )}
-                </View>
-
-                {providerEvents.length > 0 && (
-                  <View style={styles.programsSection}>
-                    <NextEventsSection
-                      events={providerEvents}
-                      onEventPress={handleEventPress}
-                      onEventSave={handleEventSave}
-                    />
-                  </View>
+          {activeTab === 'about' && (
+            <>
+              <View style={styles.aboutSection}>
+                <TouchableOpacity
+                  style={styles.sectionHeader}
+                  onPress={() => setIsAboutExpanded(!isAboutExpanded)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.sectionTitle}>About {providerData.name}</Text>
+                  <Icon
+                    name={isAboutExpanded ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
+                    size={24}
+                    color="#001137"
+                  />
+                </TouchableOpacity>
+                {isAboutExpanded && (
+                  <Text style={styles.descriptionText}>{providerData.description}</Text>
                 )}
+              </View>
 
-                {recommendedProducts.length > 0 && (
-                  <View style={styles.productsSection}>
-                    <Text style={styles.sectionTitle}>Products I recommend</Text>
-                    {recommendedProducts.map((product) => (
-                      <TouchableOpacity
-                        key={product.id}
-                        style={styles.productRow}
-                        onPress={() => handleProductPress(product)}
-                        activeOpacity={0.8}
-                      >
-                        <Image 
-                          source={{ uri: product.image }} 
-                          style={styles.productRowImage} 
-                        />
-                        <View style={styles.productRowContent}>
-                          {product.tag && (
-                            <View style={styles.productRowCategory}>
-                              <Text style={styles.productRowCategoryText}>{product.tag}</Text>
-                            </View>
-                          )}
-                          <Text style={styles.productRowTitle}>{product.title}</Text>
-                          <View style={styles.productRowFooter}>
-                            <Text style={styles.productRowPrice}>{formatPrice(product.price)}</Text>
-                          </View>
-                        </View>
-                        <TouchableOpacity 
-                          style={styles.productRowAddButton} 
-                          activeOpacity={0.7}
-                          onPress={(e) => {
-                            e.stopPropagation();
-                            handleProductPress(product);
-                          }}
-                        >
-                          <Icon name="add" size={24} color="#000" />
-                        </TouchableOpacity>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
+              <View style={styles.aboutSection}>
+                <TouchableOpacity
+                  style={styles.sectionHeader}
+                  onPress={() => setIsAcademicExpanded(!isAcademicExpanded)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.sectionTitle}>Academic background</Text>
+                  <Icon
+                    name={isAcademicExpanded ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
+                    size={24}
+                    color="#001137"
+                  />
+                </TouchableOpacity>
+                {isAcademicExpanded && (
+                  <Text style={styles.descriptionText}>
+                    I am trained in Yoga with specializations in meditation, mindful breathing, and
+                    restorative practices. I've been teaching and supporting students for over 10
+                    years working with people in different stages of their journey.
+                  </Text>
                 )}
+              </View>
 
-                <View style={styles.talkButtonContainer}>
-                  <SecondaryButton
-                    label="Talk to Marcela"
-                    onPress={handleTalkToProvider}
-                    icon="arrow-forward"
-                    iconPosition="right"
-                    style={styles.talkButton}
+              {providerEvents.length > 0 && (
+                <View style={styles.programsSection}>
+                  <NextEventsSection
+                    events={providerEvents}
+                    onEventPress={handleEventPress}
+                    onEventSave={handleEventSave}
                   />
                 </View>
+              )}
 
-                {renderUserFeedback()}
-              </>
-            )}
+              {recommendedProducts.length > 0 && (
+                <View style={styles.productsSection}>
+                  <Text style={styles.sectionTitle}>Products I recommend</Text>
+                  {recommendedProducts.map((product) => (
+                    <TouchableOpacity
+                      key={product.id}
+                      style={styles.productRow}
+                      onPress={() => handleProductPress(product)}
+                      activeOpacity={0.8}
+                    >
+                      <Image source={{ uri: product.image }} style={styles.productRowImage} />
+                      <View style={styles.productRowContent}>
+                        {product.tag && (
+                          <View style={styles.productRowCategory}>
+                            <Text style={styles.productRowCategoryText}>{product.tag}</Text>
+                          </View>
+                        )}
+                        <Text style={styles.productRowTitle}>{product.title}</Text>
+                        <View style={styles.productRowFooter}>
+                          <Text style={styles.productRowPrice}>{formatPrice(product.price)}</Text>
+                        </View>
+                      </View>
+                      <TouchableOpacity
+                        style={styles.productRowAddButton}
+                        activeOpacity={0.7}
+                        onPress={(e) => {
+                          e.stopPropagation();
+                          handleProductPress(product);
+                        }}
+                      >
+                        <Icon name="add" size={24} color="#000" />
+                      </TouchableOpacity>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
 
-            {activeTab === 'communities' && (
-              <View style={styles.communityPreviewContainer}>
-                {loadingPosts ? (
-                  <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color="#001137" />
-                  </View>
-                ) : !communityPosts || communityPosts.length === 0 ? (
-                  <View style={styles.emptyContainer}>
-                    <Text style={styles.emptyText}>No community posts found</Text>
-                  </View>
-                ) : (
-                  communityPosts.map((post) => (
-                    <PostCard key={post.id} post={post} />
-                  ))
-                )}
+              <View style={styles.talkButtonContainer}>
+                <SecondaryButton
+                  label="Talk to Marcela"
+                  onPress={handleTalkToProvider}
+                  icon="arrow-forward"
+                  iconPosition="right"
+                  style={styles.talkButton}
+                />
               </View>
-            )}
-          </View>
-        </ScrollView>
+
+              {renderUserFeedback()}
+            </>
+          )}
+
+          {activeTab === 'communities' && (
+            <View style={styles.communityPreviewContainer}>
+              {loadingPosts ? (
+                <View style={styles.loadingContainer}>
+                  <ActivityIndicator size="large" color="#001137" />
+                </View>
+              ) : !communityPosts || communityPosts.length === 0 ? (
+                <View style={styles.emptyContainer}>
+                  <Text style={styles.emptyText}>No community posts found</Text>
+                </View>
+              ) : (
+                communityPosts.map((post) => <PostCard key={post.id} post={post} />)
+              )}
+            </View>
+          )}
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 

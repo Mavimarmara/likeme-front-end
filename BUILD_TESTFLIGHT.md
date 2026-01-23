@@ -23,6 +23,7 @@ cd /Users/weber/Projetos/likeme/likeme-front-end
 ### Passo 2: Escolha a opção 3 (Archive para distribuição)
 
 O script irá:
+
 1. ✅ Verificar se o Xcode está instalado
 2. ✅ Verificar se o CocoaPods está instalado
 3. ✅ Gerar o projeto iOS se necessário
@@ -58,6 +59,7 @@ Após o build concluir, você tem duas opções:
 ### Opção 2: Via Transporter App
 
 1. Primeiro, exporte o .ipa:
+
    - Abra o Xcode Organizer
    - Selecione o Archive
    - Clique em **Distribute App**
@@ -138,14 +140,17 @@ cd ..
 ## ⚙️ Configurações
 
 ### Bundle ID
+
 - **Produção**: `app.likeme.com`
 
 ### Certificados
+
 - Configurados automaticamente via Xcode
 - Use **Apple Development** para TestFlight Internal
 - Use **Apple Distribution** para TestFlight External e App Store
 
 ### Perfil de Provisionamento
+
 - **Development**: Para testes internos
 - **Ad Hoc**: Para distribuição limitada
 - **App Store**: Para TestFlight External e App Store

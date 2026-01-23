@@ -14,11 +14,13 @@ Um aplicativo React Native completo para saúde e bem-estar, com funcionalidades
 ## 📱 Telas Implementadas
 
 ### Telas de Onboarding
+
 - OnboardingScreen: Introdução ao app
 - RegisterScreen: Cadastro de usuários
 - AnamneseScreen: Questionário de saúde
 
 ### Telas Principais
+
 - ActivitiesScreen: Gerenciamento de atividades
 - MarketplaceScreen: Loja de produtos
 - CommunityScreen: Rede social
@@ -38,12 +40,14 @@ Um aplicativo React Native completo para saúde e bem-estar, com funcionalidades
 ## 📦 Instalação
 
 1. Clone o repositório:
+
 ```bash
 git clone <repository-url>
 cd likeme-front-end
 ```
 
 2. Instale as dependências:
+
 ```bash
 npm install
 # ou
@@ -51,6 +55,7 @@ yarn install
 ```
 
 3. Inicie o servidor de desenvolvimento:
+
 ```bash
 npm start
 # ou
@@ -62,6 +67,7 @@ npx expo start
 4. Para executar no dispositivo/simulador:
 
 **iOS:**
+
 ```bash
 # Abrir o simulador (caso ainda não esteja em execução)
 open -a Simulator
@@ -76,6 +82,7 @@ npx expo start --reset-cache --clear --ios --tunnel
 ```
 
 **Android:**
+
 ```bash
 npm run android
 # ou
@@ -85,6 +92,7 @@ npx expo start --android
 ```
 
 **Web:**
+
 ```bash
 npm run web
 # ou
@@ -96,6 +104,7 @@ npx expo start --web
 ## 📱 Executando no Dispositivo
 
 ### Usando Expo Go (Recomendado para desenvolvimento)
+
 1. Instale o app **Expo Go** no seu dispositivo
 2. Execute `npx expo start`
 3. Escaneie o QR code com o Expo Go (Android) ou Camera (iOS)
@@ -196,6 +205,7 @@ likeme-front-end/
 ## 🎨 Design System
 
 O app utiliza um design system consistente com:
+
 - **Cores primárias**: Verde (#4CAF50) para saúde e bem-estar
 - **Tipografia**: Sistema de fontes hierárquico
 - **Componentes**: Cards, botões, chips e ícones padronizados
@@ -204,6 +214,7 @@ O app utiliza um design system consistente com:
 ## 📱 Navegação
 
 O app utiliza React Navigation com:
+
 - **Stack Navigator**: Para fluxo de onboarding
 - **Tab Navigator**: Para navegação principal
 - **Navegação hierárquica**: Onboarding → Cadastro → Anamnese → App Principal
@@ -211,6 +222,7 @@ O app utiliza React Navigation com:
 ## 🔧 Configuração
 
 ### Dependências Principais
+
 - `expo`: SDK do Expo
 - `@react-navigation/native`: Navegação
 - `@react-navigation/stack`: Stack navigator
@@ -222,6 +234,7 @@ O app utiliza React Navigation com:
 - `expo-file-system`: Sistema de arquivos
 
 ### Scripts Disponíveis
+
 ```bash
 npm start          # Inicia o servidor de desenvolvimento
 npm run android    # Executa no Android
@@ -232,6 +245,7 @@ npm run lint       # Executa o linter
 ```
 
 ### Configurações
+
 - **Expo**: Configuração completa do Expo SDK 52
 - **Metro**: Configurado para Expo
 - **Babel**: Preset para Expo
@@ -240,6 +254,7 @@ npm run lint       # Executa o linter
 ## 🛠 Desenvolvimento
 
 ### Comandos Úteis do Expo
+
 ```bash
 # Verificar status do projeto
 npx expo doctor
@@ -258,6 +273,7 @@ npx expo logs
 ```
 
 ### Debugging
+
 ```bash
 # Abrir DevTools
 npx expo start --dev-client
@@ -310,16 +326,19 @@ src/
 ### Tipos de Testes Implementados
 
 #### 1. Testes de Componentes
+
 - **Renderização**: Verifica se componentes renderizam corretamente
 - **Interações**: Testa cliques, navegação e eventos
 - **Props**: Valida comportamento com diferentes props
 
 #### 2. Testes de Navegação
+
 - **Navegação entre telas**: Verifica se a navegação funciona
 - **Parâmetros de rota**: Testa passagem de dados entre telas
 - **Stack Navigator**: Valida configuração do navegador
 
 #### 3. Testes de Funcionalidades
+
 - **Formulários**: Validação de inputs e submissão
 - **Estado**: Gerenciamento de estado dos componentes
 - **Hooks**: Testa custom hooks e hooks do React
@@ -344,7 +363,7 @@ jest.mock('@react-navigation/native', () => ({
 describe('UnauthenticatedScreen', () => {
   it('renders correctly', () => {
     const { getByText } = render(<UnauthenticatedScreen />);
-    
+
     expect(getByText('LIKE YOUR LIFE')).toBeTruthy();
     expect(getByText('Next')).toBeTruthy();
     expect(getByText('Login')).toBeTruthy();
@@ -352,10 +371,10 @@ describe('UnauthenticatedScreen', () => {
 
   it('handles next button press', () => {
     const { getByText } = render(<UnauthenticatedScreen />);
-    
+
     const nextButton = getByText('Next');
     fireEvent.press(nextButton);
-    
+
     expect(mockNavigation.navigate).toHaveBeenCalledWith('Welcome');
   });
 });
@@ -364,6 +383,7 @@ describe('UnauthenticatedScreen', () => {
 ### Configuração dos Testes
 
 O projeto usa:
+
 - **Jest**: Framework de testes
 - **React Native Testing Library**: Utilitários para testar componentes React Native
 - **React Test Renderer**: Renderização de componentes para testes
@@ -410,6 +430,7 @@ npm test -- --coverage --coverageReporters=html
 ### Troubleshooting
 
 **Problema**: Testes falhando com erro de SVG
+
 ```bash
 # Solução: Adicionar mock para SVG
 jest.mock('@/assets', () => ({
@@ -418,6 +439,7 @@ jest.mock('@/assets', () => ({
 ```
 
 **Problema**: Erro de navegação nos testes
+
 ```bash
 # Solução: Mock do useNavigation
 jest.mock('@react-navigation/native', () => ({
@@ -426,6 +448,7 @@ jest.mock('@react-navigation/native', () => ({
 ```
 
 ### Build e Deploy
+
 ```bash
 # Build de desenvolvimento
 eas build --profile development
@@ -452,28 +475,33 @@ eas submit --platform ios
 ### Problemas Comuns
 
 **Erro de cache:**
+
 ```bash
 npx expo start --clear
 ```
 
 **Problemas de dependências:**
+
 ```bash
 rm -rf node_modules
 npm install
 ```
 
 **Problemas com Metro:**
+
 ```bash
 npx expo start --reset-cache
 ```
 
 **Problemas de build:**
+
 ```bash
 npx expo doctor
 eas build --clear-cache
 ```
 
 ### Requisitos do Sistema
+
 - **Node.js**: 18.x ou superior
 - **npm**: 8.x ou superior
 - **Expo CLI**: Última versão
@@ -485,17 +513,21 @@ eas build --clear-cache
 Este projeto possui documentação detalhada em vários arquivos:
 
 ### 📖 Documentação Principal
+
 - **[README.md](./README.md)** - Este arquivo com visão geral do projeto
 - **[src/ARCHITECTURE.md](./src/ARCHITECTURE.md)** - Arquitetura detalhada e princípios do projeto
 
 ### 🏗 Documentação de Desenvolvimento
+
 - **[src/screens/TEMPLATE.md](./src/screens/TEMPLATE.md)** - Template para criar novas telas
 - **[src/onboarding/README.md](./src/onboarding/README.md)** - Documentação dos componentes de onboarding
 
 ### 🔧 Documentação Técnica
+
 - **[.expo/README.md](./.expo/README.md)** - Documentação sobre a pasta .expo (gerada automaticamente)
 
 ### 📁 Estrutura de Documentação
+
 ```
 likeme-front-end/
 ├── README.md                    # 📖 Visão geral do projeto
@@ -520,6 +552,7 @@ likeme-front-end/
 ### 📝 Contribuindo com Documentação
 
 Ao adicionar novas funcionalidades, lembre-se de:
+
 - Atualizar a documentação correspondente
 - Seguir os templates estabelecidos
 - Manter a consistência com a arquitetura documentada

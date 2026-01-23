@@ -39,7 +39,7 @@ xcrun simctl install booted com.apple.Preferences
 Edite o arquivo de teste e substitua a URL:
 
 ```yaml
-- openLink: "exp://192.168.1.100:8081"  # ← Use sua URL aqui
+- openLink: 'exp://192.168.1.100:8081' # ← Use sua URL aqui
 ```
 
 ### 4. Executar os Testes
@@ -57,27 +57,28 @@ npm run test:e2e
 ```yaml
 ---
 # Abrir app no Expo Go
-- openLink: "exp://192.168.1.100:8081"
+- openLink: 'exp://192.168.1.100:8081'
 
 # Aguardar carregamento
 - waitForAnimationToEnd
 - waitForAnimationToEnd
 
 # Navegar até Welcome
-- assertVisible: "LIKE YOUR LIFE"
-- tapOn: "Next"
+- assertVisible: 'LIKE YOUR LIFE'
+- tapOn: 'Next'
 
 # Testar Welcome Screen
-- assertVisible: "Welcome!"
-- tapOn: 
-    id: "input-Your name"
-- inputText: "João"
-- tapOn: "Next"
+- assertVisible: 'Welcome!'
+- tapOn:
+    id: 'input-Your name'
+- inputText: 'João'
+- tapOn: 'Next'
 ```
 
 ## Limitações do Expo Go
 
 ⚠️ **Importante**: Alguns recursos podem não funcionar no Expo Go:
+
 - Módulos nativos customizados
 - Alguns plugins do Expo podem ter limitações
 - Performance pode ser diferente de um build nativo
@@ -110,15 +111,18 @@ Adicione ao `package.json`:
 ## Troubleshooting
 
 ### Erro: "Cannot open link"
+
 - Verifique se o Expo Go está aberto no simulador
 - Verifique se a URL está correta (formato `exp://IP:PORT`)
 - Verifique se o servidor Expo está rodando
 
 ### Erro: "App not found"
+
 - Certifique-se de que o Expo Go está instalado
 - Tente abrir manualmente o Expo Go e escanear o QR code primeiro
 
 ### Testes não encontram elementos
+
 - Aguarde mais tempo com `waitForAnimationToEnd`
 - Use `optional: true` em asserts para debug
 - Verifique screenshots em `/Users/weber/.maestro/tests/`

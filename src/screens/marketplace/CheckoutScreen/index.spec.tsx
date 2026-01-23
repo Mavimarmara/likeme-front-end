@@ -60,20 +60,22 @@ jest.mock('@react-navigation/native', () => {
 jest.mock('./address', () => {
   const React = require('react');
   const { View, Text } = require('react-native');
-  
+
   function AddressForm(props: any) {
-    return React.createElement(View, { testID: 'address-form' }, 
+    return React.createElement(
+      View,
+      { testID: 'address-form' },
       React.createElement(Text, null, 'Address Form')
     );
   }
-  
+
   return AddressForm;
 });
 
 jest.mock('./payment', () => {
   const React = require('react');
   const { View, Text } = require('react-native');
-  
+
   function PaymentForm(props: any) {
     // Preencher os dados imediatamente quando o componente é renderizado
     // Usar useLayoutEffect para executar síncronamente antes da pintura
@@ -86,31 +88,42 @@ jest.mock('./payment', () => {
         if (props.onCvvChange) props.onCvvChange('123');
       }
     });
-    
-    return React.createElement(View, { testID: 'payment-form' },
+
+    return React.createElement(
+      View,
+      { testID: 'payment-form' },
       React.createElement(Text, null, 'Payment Form')
     );
   }
-  
+
   return PaymentForm;
 });
 
 jest.mock('./order', () => {
   const React = require('react');
   const { View, Text } = require('react-native');
-  
-  const CartItemList = (props: any) => React.createElement(View, { testID: 'cart-item-list' },
-    React.createElement(Text, null, 'Cart Items')
-  );
-  
-  const OrderSummary = (props: any) => React.createElement(View, { testID: 'order-summary' },
-    React.createElement(Text, null, 'Order Summary')
-  );
-  
-  const OrderScreen = (props: any) => React.createElement(View, { testID: 'order-screen' },
-    React.createElement(Text, null, 'Order Screen')
-  );
-  
+
+  const CartItemList = (props: any) =>
+    React.createElement(
+      View,
+      { testID: 'cart-item-list' },
+      React.createElement(Text, null, 'Cart Items')
+    );
+
+  const OrderSummary = (props: any) =>
+    React.createElement(
+      View,
+      { testID: 'order-summary' },
+      React.createElement(Text, null, 'Order Summary')
+    );
+
+  const OrderScreen = (props: any) =>
+    React.createElement(
+      View,
+      { testID: 'order-screen' },
+      React.createElement(Text, null, 'Order Screen')
+    );
+
   return {
     CartItemList,
     OrderSummary,
@@ -214,9 +227,7 @@ describe('CheckoutScreen', () => {
   });
 
   it('loads cart items on mount', async () => {
-    render(
-      <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />
-    );
+    render(<CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(storageService.getCartItems).toHaveBeenCalled();
@@ -283,18 +294,24 @@ describe('CheckoutScreen', () => {
     });
 
     // Aguardar um pouco para que o PaymentForm preencha os dados
-    await waitFor(() => {
-      // Aguardar que o createOrder seja chamado (indicando que os dados foram preenchidos)
-    }, { timeout: 2000 });
+    await waitFor(
+      () => {
+        // Aguardar que o createOrder seja chamado (indicando que os dados foram preenchidos)
+      },
+      { timeout: 2000 }
+    );
 
     // Depois avança para order
     fireEvent.press(continueButton);
 
-    await waitFor(() => {
-      // Na etapa order, não deve ter payment-form nem address-form
-      expect(queryByTestId('payment-form')).toBeNull();
-      expect(queryByTestId('address-form')).toBeNull();
-    }, { timeout: 3000 });
+    await waitFor(
+      () => {
+        // Na etapa order, não deve ter payment-form nem address-form
+        expect(queryByTestId('payment-form')).toBeNull();
+        expect(queryByTestId('address-form')).toBeNull();
+      },
+      { timeout: 3000 }
+    );
   });
 
   it('navigates back when Continue is pressed from order step', async () => {
@@ -307,7 +324,7 @@ describe('CheckoutScreen', () => {
     });
 
     const continueButton = getByText('Continue');
-    
+
     // Avança para payment
     fireEvent.press(continueButton);
     await waitFor(() => {
@@ -315,9 +332,12 @@ describe('CheckoutScreen', () => {
     });
 
     // Aguardar que os dados sejam preenchidos
-    await waitFor(() => {
-      expect(mockOrderService.createOrder).toHaveBeenCalled();
-    }, { timeout: 3000 });
+    await waitFor(
+      () => {
+        expect(mockOrderService.createOrder).toHaveBeenCalled();
+      },
+      { timeout: 3000 }
+    );
 
     // Na etapa order, Continue deve navegar para Home (não goBack)
     const homeButton = getByText('Home');
@@ -344,7 +364,7 @@ describe('CheckoutScreen', () => {
       {
         id: '1',
         title: 'Expensive Product',
-        price: 100.00,
+        price: 100.0,
         quantity: 2,
         image: 'https://example.com/image.jpg',
       },
@@ -387,20 +407,23 @@ describe('CheckoutScreen', () => {
       // O PaymentForm mockado preenche os dados usando useLayoutEffect (síncrono)
       // Mas precisamos aguardar que o React processe as atualizações de estado
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       // Avançar para order step (que vai tentar criar o pedido)
       fireEvent.press(continueButton);
 
-      await waitFor(() => {
-        // Verificar se createOrder foi chamado
-        expect(mockOrderService.createOrder).toHaveBeenCalled();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          // Verificar se createOrder foi chamado
+          expect(mockOrderService.createOrder).toHaveBeenCalled();
+        },
+        { timeout: 3000 }
+      );
 
       // Verificar o formato dos dados enviados
       const createOrderCall = mockOrderService.createOrder.mock.calls[0][0];
-      
+
       // Quando paymentMethod é credit_card, deve ter cardData e billingAddress como objeto
       expect(createOrderCall.paymentMethod).toBe('credit_card');
       expect(createOrderCall.cardData).toBeDefined();
@@ -461,10 +484,13 @@ describe('CheckoutScreen', () => {
       // Avançar para order step
       fireEvent.press(continueButton);
 
-      await waitFor(() => {
-        expect(mockOrderService.createOrder).toHaveBeenCalled();
-        expect(mockStorageService.clearCart).toHaveBeenCalled();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(mockOrderService.createOrder).toHaveBeenCalled();
+          expect(mockStorageService.clearCart).toHaveBeenCalled();
+        },
+        { timeout: 3000 }
+      );
     });
 
     it('shows error alert when order creation fails', async () => {
@@ -489,9 +515,12 @@ describe('CheckoutScreen', () => {
       // Avançar para order step (vai falhar)
       fireEvent.press(continueButton);
 
-      await waitFor(() => {
-        expect(mockAlert).toHaveBeenCalled();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(mockAlert).toHaveBeenCalled();
+        },
+        { timeout: 3000 }
+      );
     });
 
     it('validates expiry date format (MMYY)', async () => {
@@ -542,12 +571,15 @@ describe('CheckoutScreen', () => {
       // Avançar para order step
       fireEvent.press(continueButton);
 
-      await waitFor(() => {
-        expect(mockOrderService.createOrder).toHaveBeenCalled();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(mockOrderService.createOrder).toHaveBeenCalled();
+        },
+        { timeout: 3000 }
+      );
 
       const orderData = mockOrderService.createOrder.mock.calls[0][0];
-      
+
       // Verificar se billingAddress está no formato correto quando é objeto
       if (typeof orderData.billingAddress === 'object') {
         expect(orderData.billingAddress).toMatchObject({
@@ -582,12 +614,15 @@ describe('CheckoutScreen', () => {
       // Avançar para order step
       fireEvent.press(continueButton);
 
-      await waitFor(() => {
-        expect(mockOrderService.createOrder).toHaveBeenCalled();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(mockOrderService.createOrder).toHaveBeenCalled();
+        },
+        { timeout: 3000 }
+      );
 
       const orderData = mockOrderService.createOrder.mock.calls[0][0];
-      
+
       if (typeof orderData.billingAddress === 'object') {
         // O endereço padrão é "Rua Marselha, 1029 - Apto 94"
         // Deve extrair streetNumber como "1029"
@@ -616,12 +651,15 @@ describe('CheckoutScreen', () => {
       // Avançar para order step
       fireEvent.press(continueButton);
 
-      await waitFor(() => {
-        expect(mockOrderService.createOrder).toHaveBeenCalled();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(mockOrderService.createOrder).toHaveBeenCalled();
+        },
+        { timeout: 3000 }
+      );
 
       const orderData = mockOrderService.createOrder.mock.calls[0][0];
-      
+
       if (typeof orderData.billingAddress === 'object') {
         // O endereço padrão tem "Apto 94" como complemento
         if (orderData.billingAddress.complement) {
@@ -652,12 +690,15 @@ describe('CheckoutScreen', () => {
       // Avançar para order step
       fireEvent.press(continueButton);
 
-      await waitFor(() => {
-        expect(mockOrderService.createOrder).toHaveBeenCalled();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(mockOrderService.createOrder).toHaveBeenCalled();
+        },
+        { timeout: 3000 }
+      );
 
       const orderData = mockOrderService.createOrder.mock.calls[0][0];
-      
+
       // Se paymentMethod for credit_card, deve ter cardData
       if (orderData.paymentMethod === 'credit_card' && orderData.cardData) {
         expect(orderData.cardData).toMatchObject({
@@ -689,12 +730,15 @@ describe('CheckoutScreen', () => {
       // Avançar para order step
       fireEvent.press(continueButton);
 
-      await waitFor(() => {
-        expect(mockOrderService.createOrder).toHaveBeenCalled();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(mockOrderService.createOrder).toHaveBeenCalled();
+        },
+        { timeout: 3000 }
+      );
 
       const orderData = mockOrderService.createOrder.mock.calls[0][0];
-      
+
       if (orderData.cardData) {
         // Card number não deve ter espaços
         expect(orderData.cardData.cardNumber).not.toContain(' ');
@@ -725,12 +769,12 @@ describe('CheckoutScreen', () => {
       // Tentar criar pedido com carrinho vazio
       fireEvent.press(continueButton);
 
-      await waitFor(() => {
-        expect(mockAlert).toHaveBeenCalledWith(
-          'Erro',
-          'Seu carrinho está vazio'
-        );
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(mockAlert).toHaveBeenCalledWith('Erro', 'Seu carrinho está vazio');
+        },
+        { timeout: 3000 }
+      );
     });
 
     it('handles order creation failure gracefully', async () => {
@@ -758,10 +802,12 @@ describe('CheckoutScreen', () => {
       // Avançar para order step
       fireEvent.press(continueButton);
 
-      await waitFor(() => {
-        expect(mockAlert).toHaveBeenCalled();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(mockAlert).toHaveBeenCalled();
+        },
+        { timeout: 3000 }
+      );
     });
   });
 });
-

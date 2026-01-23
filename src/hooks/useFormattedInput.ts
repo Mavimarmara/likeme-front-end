@@ -14,29 +14,31 @@ interface UseFormattedInputOptions {
  * @returns Handler formatado para onChangeText
  */
 export const useFormattedInput = ({ type, onChangeText }: UseFormattedInputOptions) => {
-  const handleChange = useCallback((text: string) => {
-    let formattedText = text;
-    
-    switch (type) {
-      case 'cardNumber':
-        formattedText = formatCardNumber(text);
-        break;
-      case 'expiryDate':
-        formattedText = formatExpiryDate(text);
-        break;
-      case 'cpf':
-        formattedText = formatCpf(text);
-        break;
-      case 'phone':
-        formattedText = formatPhone(text);
-        break;
-      default:
-        formattedText = text;
-    }
-    
-    onChangeText(formattedText);
-  }, [type, onChangeText]);
+  const handleChange = useCallback(
+    (text: string) => {
+      let formattedText = text;
+
+      switch (type) {
+        case 'cardNumber':
+          formattedText = formatCardNumber(text);
+          break;
+        case 'expiryDate':
+          formattedText = formatExpiryDate(text);
+          break;
+        case 'cpf':
+          formattedText = formatCpf(text);
+          break;
+        case 'phone':
+          formattedText = formatPhone(text);
+          break;
+        default:
+          formattedText = text;
+      }
+
+      onChangeText(formattedText);
+    },
+    [type, onChangeText]
+  );
 
   return handleChange;
 };
-

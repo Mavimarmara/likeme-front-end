@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  Image,
-} from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { formatPrice } from '@/utils';
 import { styles } from '../styles';
@@ -61,9 +55,7 @@ const OrderScreen: React.FC<OrderScreenProps> = ({
       const date = new Date(dateString);
       const day = String(date.getDate()).padStart(2, '0');
       const month = String(date.getMonth() + 1).padStart(2, '0');
-      const year = includeYear 
-        ? date.getFullYear() 
-        : String(date.getFullYear()).slice(-2);
+      const year = includeYear ? date.getFullYear() : String(date.getFullYear()).slice(-2);
       return `${day}/${month}/${year}`;
     } catch {
       return dateString;
@@ -82,7 +74,7 @@ const OrderScreen: React.FC<OrderScreenProps> = ({
         </TouchableOpacity>
       );
     }
-    
+
     if (item.category === 'Service' || item.category === 'Sport') {
       return (
         <TouchableOpacity
@@ -94,14 +86,14 @@ const OrderScreen: React.FC<OrderScreenProps> = ({
         </TouchableOpacity>
       );
     }
-    
+
     return null;
   };
 
   const renderOrderItem = (item: CartItem) => (
     <View key={item.id} style={styles.orderItemCard}>
       <Image source={{ uri: item.image }} style={styles.orderItemImage} />
-      
+
       <View style={styles.orderItemContent}>
         <View style={styles.orderItemHeader}>
           <View style={styles.orderItemTags}>
@@ -113,9 +105,7 @@ const OrderScreen: React.FC<OrderScreenProps> = ({
           </View>
           {item.rating !== undefined && item.rating !== null && (
             <View style={styles.orderItemRating}>
-              <Text style={styles.orderItemRatingText}>
-                {formatRating(item.rating)}
-              </Text>
+              <Text style={styles.orderItemRatingText}>{formatRating(item.rating)}</Text>
               <Icon name="star" size={16} color="#001137" />
             </View>
           )}
@@ -126,20 +116,21 @@ const OrderScreen: React.FC<OrderScreenProps> = ({
         </Text>
 
         {item.date && (
-          <Text style={styles.orderItemDate}>
-            Date: {formatDateDisplay(item.date)}
-          </Text>
+          <Text style={styles.orderItemDate}>Date: {formatDateDisplay(item.date)}</Text>
         )}
 
         {item.deliveryForecast && (
           <Text style={styles.orderItemDeliveryForecast}>
-            Delivery forecast{'\n'}{formatDateDisplay(item.deliveryForecast, true)}
+            Delivery forecast{'\n'}
+            {formatDateDisplay(item.deliveryForecast, true)}
           </Text>
         )}
 
         <View style={styles.orderItemFooter}>
           <Text style={styles.orderItemPrice}>{formatPrice(item.price)}</Text>
-          <Text style={styles.orderItemQuantity}>QTD: {String(item.quantity).padStart(2, '0')}</Text>
+          <Text style={styles.orderItemQuantity}>
+            QTD: {String(item.quantity).padStart(2, '0')}
+          </Text>
         </View>
 
         {getItemActionButton(item)}
@@ -194,9 +185,7 @@ const OrderScreen: React.FC<OrderScreenProps> = ({
 
       {/* Your Products Section */}
       <Text style={styles.yourProductsTitle}>Your products</Text>
-      <View style={styles.orderItemsList}>
-        {cartItems.map(item => renderOrderItem(item))}
-      </View>
+      <View style={styles.orderItemsList}>{cartItems.map((item) => renderOrderItem(item))}</View>
     </ScrollView>
   );
 };

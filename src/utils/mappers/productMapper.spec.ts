@@ -1,14 +1,11 @@
 /**
  * Testes unitários para productMapper
- * 
+ *
  * Documenta como produtos são mapeados entre diferentes formatos
  * usados no sistema (API, Carousel, Navigation).
  */
 
-import {
-  mapApiProductToCarouselProduct,
-  mapApiProductToNavigationParams,
-} from './productMapper';
+import { mapApiProductToCarouselProduct, mapApiProductToNavigationParams } from './productMapper';
 import type { Product as ApiProduct } from '@/types/product';
 import type { Product } from '@/components/sections/product';
 

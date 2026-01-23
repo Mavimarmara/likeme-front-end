@@ -8,7 +8,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.BACKGROUND,
   },
-  
+
   scrollView: {
     flex: 1,
   },
@@ -82,7 +82,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
     paddingHorizontal: SPACING.MD,
-    paddingVertical: SPACING.MD
+    paddingVertical: SPACING.MD,
   },
   footerActions: {
     flexDirection: 'row',

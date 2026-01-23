@@ -29,4 +29,3 @@ export const styles = StyleSheet.create({
     color: '#f4f3ec',
   },
 });
-

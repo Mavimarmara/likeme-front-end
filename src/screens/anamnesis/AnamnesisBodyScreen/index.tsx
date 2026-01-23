@@ -12,21 +12,13 @@ import { styles } from './styles';
 type Props = { navigation: any };
 
 const AnamnesisBodyScreen: React.FC<Props> = ({ navigation }) => {
-  const {
-    questions,
-    answers,
-    loading,
-    completing,
-    error,
-    unansweredCount,
-    setAnswer,
-    complete,
-  } = useAnamnesisQuestionnaire<BodySymptomLevel>({
-    locale: 'pt-BR',
-    keyPrefix: 'physical',
-    parseAnswer: parseBodyAnswer,
-    buildAnswer: buildBodyAnswer,
-  });
+  const { questions, answers, loading, completing, error, unansweredCount, setAnswer, complete } =
+    useAnamnesisQuestionnaire<BodySymptomLevel>({
+      locale: 'pt-BR',
+      keyPrefix: 'physical',
+      parseAnswer: parseBodyAnswer,
+      buildAnswer: buildBodyAnswer,
+    });
 
   useEffect(() => {
     if (!error) {
@@ -81,7 +73,7 @@ const AnamnesisBodyScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <Header onBackPress={() => navigation.goBack()} />
-      
+
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -102,9 +94,7 @@ const AnamnesisBodyScreen: React.FC<Props> = ({ navigation }) => {
                 <View style={styles.questionHeader}>
                   <Text style={styles.questionNumber}>{index + 1}.</Text>
                   <View style={styles.questionTextContainer}>
-                    <Text style={styles.questionTitle}>
-                      {question.text || question.key}
-                    </Text>
+                    <Text style={styles.questionTitle}>{question.text || question.key}</Text>
                     {question.text && question.text !== question.key && (
                       <Text style={styles.questionDescription}>{question.key}</Text>
                     )}
@@ -133,4 +123,3 @@ const AnamnesisBodyScreen: React.FC<Props> = ({ navigation }) => {
 };
 
 export default AnamnesisBodyScreen;
-

@@ -1,11 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import {
-  View,
-  Text,
-  Animated,
-  Dimensions,
-  Image,
-} from 'react-native';
+import { View, Text, Animated, Dimensions, Image } from 'react-native';
 import { PrimaryButton, SecondaryButton, ButtonGroup } from '@/components/ui';
 import { GradientSplash2, PartialLogo, PartialLogo2 } from '@/assets';
 import { styles } from './UnauthenticatedStep1.styles';
@@ -16,7 +10,11 @@ interface UnauthenticatedStep1Props {
   isLoading?: boolean;
 }
 
-const UnauthenticatedStep1: React.FC<UnauthenticatedStep1Props> = ({ onNext, onLogin, isLoading = false }) => {
+const UnauthenticatedStep1: React.FC<UnauthenticatedStep1Props> = ({
+  onNext,
+  onLogin,
+  isLoading = false,
+}) => {
   const { width } = Dimensions.get('window');
   const slideLeft = useRef(new Animated.Value(0)).current;
   const slideRight = useRef(new Animated.Value(width * 0.5)).current;
@@ -53,7 +51,7 @@ const UnauthenticatedStep1: React.FC<UnauthenticatedStep1Props> = ({ onNext, onL
       <Animated.View style={[styles.background, { opacity: bgOpacity }]}>
         <Image source={GradientSplash2} />
       </Animated.View>
-      
+
       <Animated.View style={[styles.buttonContainer, { opacity: buttonsOpacity }]}>
         <ButtonGroup>
           <PrimaryButton label="Next" onPress={onNext} disabled={isLoading} />
@@ -68,7 +66,7 @@ const UnauthenticatedStep1: React.FC<UnauthenticatedStep1Props> = ({ onNext, onL
         <Animated.View style={[styles.logoOverlay, { transform: [{ translateX: slideRight }] }]}>
           <PartialLogo2 width={170} height={54} />
         </Animated.View>
-        </View>
+      </View>
 
       <View style={styles.taglineContainer}>
         <Text style={styles.taglineText}>LIKE YOUR LIFE</Text>
@@ -76,6 +74,5 @@ const UnauthenticatedStep1: React.FC<UnauthenticatedStep1Props> = ({ onNext, onL
     </View>
   );
 };
-
 
 export default UnauthenticatedStep1;

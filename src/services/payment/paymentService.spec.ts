@@ -39,11 +39,7 @@ describe('PaymentService', () => {
 
       const result = await paymentService.processPayment(paymentData);
 
-      expect(apiClient.post).toHaveBeenCalledWith(
-        '/api/payment/process',
-        paymentData,
-        true
-      );
+      expect(apiClient.post).toHaveBeenCalledWith('/api/payment/process', paymentData, true);
       expect(result).toEqual(mockResponse);
     });
   });
@@ -85,11 +81,11 @@ describe('PaymentService', () => {
 
       (apiClient.post as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await paymentService.captureTransaction('trans-123', { amount: 50.00 });
+      const result = await paymentService.captureTransaction('trans-123', { amount: 50.0 });
 
       expect(apiClient.post).toHaveBeenCalledWith(
         '/api/payment/capture/trans-123',
-        { amount: 50.00 },
+        { amount: 50.0 },
         true
       );
       expect(result).toEqual(mockResponse);
@@ -129,11 +125,11 @@ describe('PaymentService', () => {
 
       (apiClient.post as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await paymentService.refundTransaction('trans-123', { amount: 50.00 });
+      const result = await paymentService.refundTransaction('trans-123', { amount: 50.0 });
 
       expect(apiClient.post).toHaveBeenCalledWith(
         '/api/payment/refund/trans-123',
-        { amount: 50.00 },
+        { amount: 50.0 },
         true
       );
       expect(result).toEqual(mockResponse);
@@ -152,11 +148,7 @@ describe('PaymentService', () => {
 
       const result = await paymentService.refundTransaction('trans-123');
 
-      expect(apiClient.post).toHaveBeenCalledWith(
-        '/api/payment/refund/trans-123',
-        undefined,
-        true
-      );
+      expect(apiClient.post).toHaveBeenCalledWith('/api/payment/refund/trans-123', undefined, true);
       expect(result).toEqual(mockResponse);
     });
   });

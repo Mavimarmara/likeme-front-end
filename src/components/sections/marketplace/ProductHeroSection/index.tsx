@@ -23,9 +23,11 @@ export const ProductHeroSection: React.FC<ProductHeroSectionProps> = ({
 }) => {
   return (
     <View style={styles.heroSection}>
-      <Image 
-        source={{ uri: image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=800' }} 
-        style={styles.heroImage} 
+      <Image
+        source={{
+          uri: image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=800',
+        }}
+        style={styles.heroImage}
       />
       <View style={styles.heroProductCard}>
         <View style={styles.heroCardTags}>
@@ -39,9 +41,9 @@ export const ProductHeroSection: React.FC<ProductHeroSectionProps> = ({
         <View style={styles.heroCardPriceRow}>
           <Text style={styles.heroCardPrice}>{formatPrice(price)}</Text>
           {!isOutOfStock && (
-            <TouchableOpacity 
-              style={styles.heroCardCartButton} 
-              onPress={onAddToCart} 
+            <TouchableOpacity
+              style={styles.heroCardCartButton}
+              onPress={onAddToCart}
               activeOpacity={0.7}
             >
               <Icon name="shopping-cart" size={20} color="#001137" />

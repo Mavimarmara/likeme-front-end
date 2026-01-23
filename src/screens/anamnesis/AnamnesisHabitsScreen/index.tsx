@@ -5,7 +5,10 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header } from '@/components/ui';
 import { PrimaryButton } from '@/components/ui/buttons';
 import { useAnamnesisQuestionnaire } from '@/hooks';
-import { buildSingleChoiceAnswerKey, parseSingleChoiceAnswerKey } from '@/hooks/anamnesis/anamnesisAnswerMappers';
+import {
+  buildSingleChoiceAnswerKey,
+  parseSingleChoiceAnswerKey,
+} from '@/hooks/anamnesis/anamnesisAnswerMappers';
 import { COLORS } from '@/constants';
 import { styles } from './styles';
 
@@ -46,20 +49,13 @@ const AnamnesisHabitsScreen: React.FC<Props> = ({ navigation, route }) => {
   const { title, keyPrefix } = route.params;
   const [stepIndex, setStepIndex] = useState(0);
 
-  const {
-    questions,
-    answers,
-    loading,
-    completing,
-    error,
-    setAnswer,
-    complete,
-  } = useAnamnesisQuestionnaire<string>({
-    locale: 'pt-BR',
-    keyPrefix,
-    parseAnswer: parseSingleChoiceAnswerKey,
-    buildAnswer: buildSingleChoiceAnswerKey,
-  });
+  const { questions, answers, loading, completing, error, setAnswer, complete } =
+    useAnamnesisQuestionnaire<string>({
+      locale: 'pt-BR',
+      keyPrefix,
+      parseAnswer: parseSingleChoiceAnswerKey,
+      buildAnswer: buildSingleChoiceAnswerKey,
+    });
 
   useEffect(() => {
     if (!error) {
@@ -145,7 +141,11 @@ const AnamnesisHabitsScreen: React.FC<Props> = ({ navigation, route }) => {
             <Text style={styles.cardTopicTitle}>{title}</Text>
             <View style={styles.cardTopRow}>
               <Text style={styles.cardProgress}>{progressText}</Text>
-              <TouchableOpacity onPress={handleClose} activeOpacity={0.7} style={styles.closeButton}>
+              <TouchableOpacity
+                onPress={handleClose}
+                activeOpacity={0.7}
+                style={styles.closeButton}
+              >
                 <Icon name="close" size={18} color={COLORS.TEXT} />
               </TouchableOpacity>
             </View>
@@ -192,7 +192,9 @@ const AnamnesisHabitsScreen: React.FC<Props> = ({ navigation, route }) => {
               style={styles.backButton}
             />
             <PrimaryButton
-              label={totalSteps === 0 ? 'Fechar' : stepIndex === totalSteps - 1 ? 'Finalizar' : 'Próximo'}
+              label={
+                totalSteps === 0 ? 'Fechar' : stepIndex === totalSteps - 1 ? 'Finalizar' : 'Próximo'
+              }
               onPress={handleNext}
               icon="chevron-right"
               iconPosition="right"
@@ -207,5 +209,3 @@ const AnamnesisHabitsScreen: React.FC<Props> = ({ navigation, route }) => {
 };
 
 export default AnamnesisHabitsScreen;
-
-

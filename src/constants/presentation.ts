@@ -35,5 +35,3 @@ export const PRESENTATION_PAGES: PresentationPage[] = [
     order: 3,
   },
 ];
-
-

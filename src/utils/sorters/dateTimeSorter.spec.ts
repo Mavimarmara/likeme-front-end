@@ -1,16 +1,11 @@
 /**
  * Testes unitários para dateTimeSorter
- * 
+ *
  * Estes testes verificam o comportamento das funções de ordenação
  * por data e hora, incluindo diferentes formatos e casos extremos.
  */
 
-import {
-  sortByDateTime,
-  sortByDateField,
-  sortByDateObject,
-  SortOrder,
-} from './dateTimeSorter';
+import { sortByDateTime, sortByDateField, sortByDateObject, SortOrder } from './dateTimeSorter';
 
 describe('dateTimeSorter', () => {
   describe('sortByDateTime', () => {
@@ -71,11 +66,7 @@ describe('dateTimeSorter', () => {
         { id: '3', customDate: '2023-01-02T10:00:00Z' },
       ];
 
-      const sorted = sortByDateTime(
-        items as any,
-        'desc',
-        (item) => item.customDate
-      );
+      const sorted = sortByDateTime(items as any, 'desc', (item) => item.customDate);
 
       expect(sorted[0].id).toBe('1');
       expect(sorted[1].id).toBe('3');
@@ -141,9 +132,24 @@ describe('dateTimeSorter', () => {
 
     it('deve ordenar por diferentes campos de data', () => {
       const items: TestItem[] = [
-        { id: '1', createdAt: '2023-01-01T10:00:00Z', updatedAt: '2023-01-05T10:00:00Z', name: 'First' },
-        { id: '2', createdAt: '2023-01-03T10:00:00Z', updatedAt: '2023-01-02T10:00:00Z', name: 'Second' },
-        { id: '3', createdAt: '2023-01-02T10:00:00Z', updatedAt: '2023-01-04T10:00:00Z', name: 'Third' },
+        {
+          id: '1',
+          createdAt: '2023-01-01T10:00:00Z',
+          updatedAt: '2023-01-05T10:00:00Z',
+          name: 'First',
+        },
+        {
+          id: '2',
+          createdAt: '2023-01-03T10:00:00Z',
+          updatedAt: '2023-01-02T10:00:00Z',
+          name: 'Second',
+        },
+        {
+          id: '3',
+          createdAt: '2023-01-02T10:00:00Z',
+          updatedAt: '2023-01-04T10:00:00Z',
+          name: 'Third',
+        },
       ];
 
       const sortedByCreated = sortByDateField(items, 'createdAt', 'desc');
@@ -215,8 +221,18 @@ describe('dateTimeSorter', () => {
     it('deve lidar com objetos Date nulos ou undefined', () => {
       const items: TestItem[] = [
         { id: '1', createdAt: new Date('2023-01-02T10:00:00Z'), name: 'With Date' },
-        { id: '2', createdAt: new Date('2023-01-01T10:00:00Z'), updatedAt: null, name: 'No Updated' },
-        { id: '3', createdAt: new Date('2023-01-03T10:00:00Z'), updatedAt: new Date('2023-01-04T10:00:00Z'), name: 'With Updated' },
+        {
+          id: '2',
+          createdAt: new Date('2023-01-01T10:00:00Z'),
+          updatedAt: null,
+          name: 'No Updated',
+        },
+        {
+          id: '3',
+          createdAt: new Date('2023-01-03T10:00:00Z'),
+          updatedAt: new Date('2023-01-04T10:00:00Z'),
+          name: 'With Updated',
+        },
       ];
 
       const sorted = sortByDateObject(items, 'createdAt', 'desc');
@@ -272,4 +288,3 @@ describe('dateTimeSorter', () => {
     });
   });
 });
-

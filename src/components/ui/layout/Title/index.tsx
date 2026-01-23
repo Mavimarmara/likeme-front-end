@@ -9,12 +9,7 @@ interface TitleProps {
   rightAdornment?: React.ReactNode;
 }
 
-const Title: React.FC<TitleProps> = ({ 
-  title, 
-  subtitle, 
-  variant = 'large',
-  rightAdornment,
-}) => {
+const Title: React.FC<TitleProps> = ({ title, subtitle, variant = 'large', rightAdornment }) => {
   // Garante que subtitle seja sempre uma string válida
   let subtitleText: string | undefined;
   if (subtitle) {
@@ -26,7 +21,7 @@ const Title: React.FC<TitleProps> = ({
       subtitleText = String(subtitle);
     }
   }
-  
+
   return (
     <View style={styles.container}>
       <View style={styles.titleRow}>

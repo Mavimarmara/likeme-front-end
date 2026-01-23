@@ -55,10 +55,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
   return (
     <View>
       {!isEditing ? (
-        <AddressView
-          address={currentAddress}
-          onEditPress={handleEditPress}
-        />
+        <AddressView address={currentAddress} onEditPress={handleEditPress} />
       ) : (
         <AddressEdit
           initialData={currentAddress}

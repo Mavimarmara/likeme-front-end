@@ -10,12 +10,12 @@ export const styles = StyleSheet.create({
     position: 'absolute',
     bottom: SPACING.XL,
     zIndex: 1000,
-    width: "100%"
+    width: '100%',
   },
   menuWrapper: {
     flexDirection: 'row',
     gap: SPACING.SM,
-    width: "100%"
+    width: '100%',
   },
   selectedPill: {
     flexDirection: 'row',
@@ -95,4 +95,3 @@ export const styles = StyleSheet.create({
     elevation: 2,
   },
 });
-

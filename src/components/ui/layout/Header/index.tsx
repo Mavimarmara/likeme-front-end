@@ -17,8 +17,8 @@ interface HeaderProps {
   showRating?: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({ 
-  onBackPress, 
+const Header: React.FC<HeaderProps> = ({
+  onBackPress,
   showBackButton = true,
   onLogoutPress,
   showLogoutButton = false,
@@ -32,11 +32,7 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <View style={styles.header}>
       {showBackButton && (
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={onBackPress}
-          activeOpacity={0.7}
-        >
+        <TouchableOpacity style={styles.backButton} onPress={onBackPress} activeOpacity={0.7}>
           <ImageBackground
             source={BackgroundIconButton}
             style={styles.backButtonBackground}
@@ -48,11 +44,7 @@ const Header: React.FC<HeaderProps> = ({
       )}
       <LogoMini width={87} height={16} />
       {showBellButton && (
-        <TouchableOpacity 
-          style={styles.bellButton}
-          onPress={onBellPress}
-          activeOpacity={0.7}
-        >
+        <TouchableOpacity style={styles.bellButton} onPress={onBellPress} activeOpacity={0.7}>
           <ImageBackground
             source={BackgroundIconButton}
             style={styles.bellButtonBackground}
@@ -63,11 +55,7 @@ const Header: React.FC<HeaderProps> = ({
         </TouchableOpacity>
       )}
       {showCartButton && onCartPress && (
-        <TouchableOpacity 
-          style={styles.cartButton}
-          onPress={onCartPress}
-          activeOpacity={0.7}
-        >
+        <TouchableOpacity style={styles.cartButton} onPress={onCartPress} activeOpacity={0.7}>
           <ImageBackground
             source={BackgroundIconButton}
             style={styles.cartButtonBackground}
@@ -78,11 +66,7 @@ const Header: React.FC<HeaderProps> = ({
         </TouchableOpacity>
       )}
       {showLogoutButton && onLogoutPress && (
-        <TouchableOpacity 
-          style={styles.logoutButton}
-          onPress={onLogoutPress}
-          activeOpacity={0.7}
-        >
+        <TouchableOpacity style={styles.logoutButton} onPress={onLogoutPress} activeOpacity={0.7}>
           <ImageBackground
             source={BackgroundIconButton}
             style={styles.logoutButtonBackground}
@@ -93,11 +77,7 @@ const Header: React.FC<HeaderProps> = ({
         </TouchableOpacity>
       )}
       {showRating && (
-        <TouchableOpacity 
-          style={styles.ratingButton}
-          onPress={onRatingPress}
-          activeOpacity={0.7}
-        >
+        <TouchableOpacity style={styles.ratingButton} onPress={onRatingPress} activeOpacity={0.7}>
           <ImageBackground
             source={BackgroundIconButton}
             style={styles.ratingButtonBackground}

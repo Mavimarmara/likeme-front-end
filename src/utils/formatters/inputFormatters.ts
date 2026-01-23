@@ -8,7 +8,7 @@ export const formatCardNumber = (text: string): string => {
 
 export const formatCpf = (text: string): string => {
   const numbers = text.replace(/\D/g, '');
-  
+
   if (numbers.length <= 3) {
     return numbers;
   } else if (numbers.length <= 6) {
@@ -16,7 +16,10 @@ export const formatCpf = (text: string): string => {
   } else if (numbers.length <= 9) {
     return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6)}`;
   } else {
-    return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6, 9)}-${numbers.slice(9, 11)}`;
+    return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6, 9)}-${numbers.slice(
+      9,
+      11
+    )}`;
   }
 };
 
@@ -30,7 +33,7 @@ export const formatExpiryDate = (text: string): string => {
 
 export const formatPhone = (text: string): string => {
   const numbers = text.replace(/\D/g, '');
-  
+
   if (numbers.length <= 2) {
     return numbers.length > 0 ? `(${numbers}` : numbers;
   } else if (numbers.length <= 7) {

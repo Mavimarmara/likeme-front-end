@@ -1,5 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image, Linking, Dimensions, ImageBackground } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+  Linking,
+  Dimensions,
+  ImageBackground,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -100,7 +109,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
           if (adResponse.success && adResponse.data) {
             const loadedAd = adResponse.data;
             setAd(loadedAd);
-            
+
             // Se o ad tem product diretamente (produtos afiliados), usar esse produto
             if (loadedAd.product) {
               const adProduct = loadedAd.product;
@@ -146,7 +155,9 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
                     status: 'active',
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString(),
-                    ...(fallbackProduct.externalUrl && { externalUrl: fallbackProduct.externalUrl }),
+                    ...(fallbackProduct.externalUrl && {
+                      externalUrl: fallbackProduct.externalUrl,
+                    }),
                   });
                 }
               } catch (error) {
@@ -165,7 +176,9 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
                     status: 'active',
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString(),
-                    ...(fallbackProduct.externalUrl && { externalUrl: fallbackProduct.externalUrl }),
+                    ...(fallbackProduct.externalUrl && {
+                      externalUrl: fallbackProduct.externalUrl,
+                    }),
                   });
                 }
               }
@@ -294,9 +307,8 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
 
       // Carregar outras opções relacionadas
       // Prioridade: ad.product > product carregado > params.product
-      const category = ad?.product?.category || 
-                      product?.category || 
-                      route.params?.product?.category;
+      const category =
+        ad?.product?.category || product?.category || route.params?.product?.category;
       if (category) {
         try {
           const relatedResponse = await productService.listProducts({
@@ -305,7 +317,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
           });
           if (relatedResponse.success && relatedResponse.data) {
             const currentProductId = ad?.product?.id || product?.id || productId || adId;
-            setOtherOptions(relatedResponse.data.products.filter(p => p.id !== currentProductId));
+            setOtherOptions(relatedResponse.data.products.filter((p) => p.id !== currentProductId));
           }
         } catch (error) {
           console.warn('Could not load related products:', error);
@@ -324,9 +336,8 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
 
   const handleBuyOnAmazon = () => {
     // Prioridade: ad.product > product carregado > product dos params
-    const externalUrl = ad?.product?.externalUrl || 
-                       product?.externalUrl || 
-                       route.params?.product?.externalUrl;
+    const externalUrl =
+      ad?.product?.externalUrl || product?.externalUrl || route.params?.product?.externalUrl;
     if (externalUrl) {
       Linking.openURL(externalUrl);
     }
@@ -334,25 +345,24 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
 
   // Prioridade: ad.product > product carregado > params.product
   const paramsProduct = route.params?.product;
-  const displayTitle = ad?.product?.name || 
-                      product?.name || 
-                      paramsProduct?.title || 
-                      'Product';
-  const displayDescription = ad?.product?.description || 
-                            product?.description || 
-                            paramsProduct?.description || 
-                            '';
-  const displayImage = ad?.product?.image || 
-                      product?.image || 
-                      paramsProduct?.image || 
-                      'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
-  
+  const displayTitle = ad?.product?.name || product?.name || paramsProduct?.title || 'Product';
+  const displayDescription =
+    ad?.product?.description || product?.description || paramsProduct?.description || '';
+  const displayImage =
+    ad?.product?.image ||
+    product?.image ||
+    paramsProduct?.image ||
+    'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
+
   // Array de imagens do produto
   // Por enquanto, produtos têm apenas uma imagem, mas o código está preparado para múltiplas
   const productImages = useMemo(() => {
     const images: string[] = [];
     // Adicionar imagem principal se existir e não for placeholder
-    if (displayImage && displayImage !== 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400') {
+    if (
+      displayImage &&
+      displayImage !== 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400'
+    ) {
       images.push(displayImage);
     }
     // Se no futuro houver um campo images[] no produto, adicionar aqui:
@@ -361,11 +371,9 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
     // }
     return images;
   }, [displayImage]);
-  
-  const productCategory = ad?.product?.category || 
-                          product?.category || 
-                          paramsProduct?.category || 
-                          'Product';
+
+  const productCategory =
+    ad?.product?.category || product?.category || paramsProduct?.category || 'Product';
 
   const tabs = [
     { id: 'goal' as TabType, label: 'Goal' },
@@ -393,14 +401,12 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
   const renderTabContent = () => {
     // Dividir a descrição em linhas para criar bullet points
     const descriptionLines = displayDescription
-      ? displayDescription.split('\n').filter(line => line.trim().length > 0)
+      ? displayDescription.split('\n').filter((line) => line.trim().length > 0)
       : [];
 
     const renderDescriptionWithBullets = () => {
       if (descriptionLines.length === 0) {
-        return (
-          <Text style={styles.descriptionText}>No description available.</Text>
-        );
+        return <Text style={styles.descriptionText}>No description available.</Text>;
       }
 
       return (
@@ -416,18 +422,10 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
     };
 
     if (activeTab === 'goal') {
-      return (
-        <View style={styles.tabContent}>
-          {renderDescriptionWithBullets()}
-        </View>
-      );
+      return <View style={styles.tabContent}>{renderDescriptionWithBullets()}</View>;
     }
     // Para description e composition, mostrar a mesma descrição por enquanto
-    return (
-      <View style={styles.tabContent}>
-        {renderDescriptionWithBullets()}
-      </View>
-    );
+    return <View style={styles.tabContent}>{renderDescriptionWithBullets()}</View>;
   };
 
   if (loading) {
@@ -443,14 +441,15 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
   return (
     <SafeAreaView style={styles.container}>
       <Header showBackButton={true} onBackPress={handleBackPress} />
-      
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
+
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Hero Section with Image */}
         <View style={styles.heroSection}>
-          <ImageBackground source={{ uri: displayImage }} style={styles.heroImage} imageStyle={styles.heroImageStyle}>
+          <ImageBackground
+            source={{ uri: displayImage }}
+            style={styles.heroImage}
+            imageStyle={styles.heroImageStyle}
+          >
             <View style={styles.heroOverlay}>
               <LinearGradient
                 colors={['rgba(48, 48, 48, 0)', 'rgba(41, 41, 41, 1)']}
@@ -480,10 +479,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
             {productImages.map((_, index) => (
               <View
                 key={index}
-                style={[
-                  styles.paginationDot,
-                  index === 0 && styles.paginationDotActive
-                ]}
+                style={[styles.paginationDot, index === 0 && styles.paginationDotActive]}
               />
             ))}
           </View>
@@ -540,4 +536,3 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
 };
 
 export default AffiliateProductScreen;
-

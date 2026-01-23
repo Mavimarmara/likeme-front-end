@@ -21,14 +21,10 @@ type Props = {
 };
 
 const ProductCard: React.FC<Props> = ({ product, onPress, onLike }) => {
-
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-        <Image
-          source={{ uri: product.image }}
-          style={styles.image}
-        />
+        <Image source={{ uri: product.image }} style={styles.image} />
         <BlurView intensity={10} tint="dark" style={styles.imageOverlay} />
         <View style={styles.contentOverlay}>
           <View style={styles.tagBadge}>
@@ -64,4 +60,3 @@ const ProductCard: React.FC<Props> = ({ product, onPress, onLike }) => {
 };
 
 export default ProductCard;
-

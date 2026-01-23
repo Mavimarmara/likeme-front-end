@@ -1,12 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  ScrollView,
-  Dimensions,
-} from 'react-native';
+import { View, Text, Image, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '@/components/ui';
 import { PRESENTATION_PAGES } from '@/constants/presentation';
@@ -49,25 +42,18 @@ const AppPresentationScreen: React.FC<Props> = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <Header onBackPress={handleBack} />
 
-      <ScrollView 
+      <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
         <View style={styles.imageContainer}>
-          <Image 
-            source={currentPageData.image}
-            style={styles.image}
-            resizeMode="cover"
-          />
+          <Image source={currentPageData.image} style={styles.image} resizeMode="cover" />
           <View style={[styles.pagination, styles.paginationAligned]}>
             {pages.map((_, index) => (
               <View
                 key={index}
-                style={[
-                  styles.dot,
-                  index === currentPage ? styles.activeDot : styles.inactiveDot,
-                ]}
+                style={[styles.dot, index === currentPage ? styles.activeDot : styles.inactiveDot]}
               />
             ))}
           </View>
@@ -80,28 +66,22 @@ const AppPresentationScreen: React.FC<Props> = ({ navigation }) => {
       </ScrollView>
 
       <View style={styles.footer}>
-          <View style={styles.footerActions}>
-            <TouchableOpacity 
-              style={[
-                styles.skipButton,
-                isLoading && styles.skipButtonDisabled,
-              ]}
-              onPress={handleSkip}
-              disabled={isLoading}
-            >
-              <Text style={styles.skipText}>Skip</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={[
-                styles.nextButton,
-                isLoading && styles.nextButtonDisabled,
-              ]}
-              onPress={handleNext}
-              disabled={isLoading}
-            >
-              <Text style={styles.nextButtonText}>›</Text>
-            </TouchableOpacity>
-          </View>
+        <View style={styles.footerActions}>
+          <TouchableOpacity
+            style={[styles.skipButton, isLoading && styles.skipButtonDisabled]}
+            onPress={handleSkip}
+            disabled={isLoading}
+          >
+            <Text style={styles.skipText}>Skip</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.nextButton, isLoading && styles.nextButtonDisabled]}
+            onPress={handleNext}
+            disabled={isLoading}
+          >
+            <Text style={styles.nextButtonText}>›</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   );

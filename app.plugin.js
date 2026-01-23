@@ -4,4 +4,3 @@ module.exports = function withEnvPlugin(config) {
   // A cópia do .env é feita no app.config.js antes de carregar as variáveis
   return config;
 };
-

@@ -47,21 +47,25 @@ Os testes usam `openLink` com a URL do Expo (formato `exp://IP:PORT`).
 ## Executando os Testes
 
 ### Executar um teste específico:
+
 ```bash
 ~/.maestro/bin/maestro test maestro/welcome-screen.yaml
 ```
 
 ### Executar todos os testes:
+
 ```bash
 ~/.maestro/bin/maestro test maestro/
 ```
 
 ### Executar em um dispositivo específico:
+
 ```bash
 ~/.maestro/bin/maestro test maestro/welcome-screen.yaml --device <DEVICE_ID>
 ```
 
 ### Verificar dispositivos disponíveis:
+
 ```bash
 xcrun simctl list devices
 ```
@@ -79,11 +83,13 @@ npx expo run:ios
 ## Debugging
 
 Para ver logs detalhados durante a execução:
+
 ```bash
 ~/.maestro/bin/maestro test maestro/welcome-screen.yaml --verbose
 ```
 
 Para ver o que o Maestro está fazendo em tempo real:
+
 ```bash
 ~/.maestro/bin/maestro test maestro/welcome-screen.yaml --debug-output
 ```

@@ -13,4 +13,3 @@ class PersonsService {
 }
 
 export default new PersonsService();
-

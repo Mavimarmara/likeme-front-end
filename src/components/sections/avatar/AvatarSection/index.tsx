@@ -1,10 +1,20 @@
 import React, { useMemo } from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { MindAvatar, BodyAvatar, MindAvatarActive, BodyAvatarActive, BackgroundIconButton } from '@/assets';
+import {
+  MindAvatar,
+  BodyAvatar,
+  MindAvatarActive,
+  BodyAvatarActive,
+  BackgroundIconButton,
+} from '@/assets';
 import { IconButton } from '@/components/ui/buttons';
 import { COLORS } from '@/constants';
-import { getAvatarSizeFromPercentage, getAvatarDimensions, type AvatarSize } from '@/utils/anamnesis/avatarSizeMapper';
+import {
+  getAvatarSizeFromPercentage,
+  getAvatarDimensions,
+  type AvatarSize,
+} from '@/utils/anamnesis/avatarSizeMapper';
 import { styles } from './styles';
 
 interface AvatarSectionProps {
@@ -16,7 +26,7 @@ interface AvatarSectionProps {
   onWeekChange?: (week: string) => void;
 }
 
-const AvatarSection: React.FC<AvatarSectionProps> = ({ 
+const AvatarSection: React.FC<AvatarSectionProps> = ({
   hasAnswers = false,
   mindPercentage = 0,
   bodyPercentage = 0,
@@ -24,10 +34,19 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
   onSeeMorePress,
   onWeekChange,
 }) => {
-  const hasAnyAnswers = useMemo(() => hasAnswers || mindPercentage > 0 || bodyPercentage > 0, [hasAnswers, mindPercentage, bodyPercentage]);
-  
-  const mindAvatarSource = useMemo(() => hasAnyAnswers ? MindAvatarActive : MindAvatar, [hasAnyAnswers]);
-  const bodyAvatarSource = useMemo(() => hasAnyAnswers ? BodyAvatarActive : BodyAvatar, [hasAnyAnswers]);
+  const hasAnyAnswers = useMemo(
+    () => hasAnswers || mindPercentage > 0 || bodyPercentage > 0,
+    [hasAnswers, mindPercentage, bodyPercentage]
+  );
+
+  const mindAvatarSource = useMemo(
+    () => (hasAnyAnswers ? MindAvatarActive : MindAvatar),
+    [hasAnyAnswers]
+  );
+  const bodyAvatarSource = useMemo(
+    () => (hasAnyAnswers ? BodyAvatarActive : BodyAvatar),
+    [hasAnyAnswers]
+  );
 
   const mindSize = useMemo(() => getAvatarSizeFromPercentage(mindPercentage), [mindPercentage]);
   const bodySize = useMemo(() => getAvatarSizeFromPercentage(bodyPercentage), [bodyPercentage]);
@@ -52,14 +71,20 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
             <Text style={styles.avatarLabel}>MIND</Text>
             <Image
               source={mindAvatarSource}
-              style={[styles.mindAvatar, { width: mindDimensions.width, height: mindDimensions.height }]}
+              style={[
+                styles.mindAvatar,
+                { width: mindDimensions.width, height: mindDimensions.height },
+              ]}
               resizeMode="cover"
             />
           </View>
           <View style={styles.avatarItem}>
             <Image
               source={bodyAvatarSource}
-              style={[styles.bodyAvatar, { width: bodyDimensions.width, height: bodyDimensions.height }]}
+              style={[
+                styles.bodyAvatar,
+                { width: bodyDimensions.width, height: bodyDimensions.height },
+              ]}
               resizeMode="cover"
             />
             <Text style={styles.avatarLabel}>BODY</Text>
@@ -91,4 +116,3 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
 };
 
 export default AvatarSection;
-

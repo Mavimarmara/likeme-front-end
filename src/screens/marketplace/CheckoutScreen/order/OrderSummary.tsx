@@ -8,11 +8,7 @@ interface OrderSummaryProps {
   formatPrice: (price: number) => string;
 }
 
-const OrderSummary: React.FC<OrderSummaryProps> = ({
-  subtotal,
-  shipping,
-  formatPrice,
-}) => {
+const OrderSummary: React.FC<OrderSummaryProps> = ({ subtotal, shipping, formatPrice }) => {
   const total = subtotal + shipping;
 
   return (

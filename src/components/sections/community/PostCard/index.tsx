@@ -22,53 +22,53 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
   const capitalizeWords = (text: string): string => {
     return text
       .split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(' ');
   };
 
   const getTitle = (): string => {
     if (post.title) return post.title;
-    
-    const lines = post.content.split('\n').filter(line => line.trim());
+
+    const lines = post.content.split('\n').filter((line) => line.trim());
     if (lines.length > 0) {
       const firstLine = lines[0].trim();
       if (firstLine.length > 30 && firstLine.length < 150) {
         return firstLine;
       }
     }
-    
-    const sentences = post.content.split(/[.!?]/).filter(s => s.trim());
+
+    const sentences = post.content.split(/[.!?]/).filter((s) => s.trim());
     if (sentences.length > 0) {
       const firstSentence = sentences[0].trim();
       if (firstSentence.length > 30 && firstSentence.length < 150) {
         return firstSentence;
       }
     }
-    
+
     const truncated = post.content.substring(0, 120).trim();
     if (truncated.length >= 30) {
       return truncated;
     }
-    
+
     return post.content.substring(0, 100);
   };
 
   const getContent = (): string => {
     if (!post.content) return '';
-    
+
     const title = getTitle();
     let remaining = post.content;
-    
+
     if (post.title && post.content.startsWith(post.title)) {
       remaining = post.content.substring(post.title.length).trim();
     } else if (post.content.startsWith(title)) {
       remaining = post.content.substring(title.length).trim();
     }
-    
+
     if (remaining.length > 0) {
       return remaining;
     }
-    
+
     return '';
   };
 
@@ -76,28 +76,27 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
   // Filtrar a string "Tags" se vier como valor literal
   const getFirstTag = (): string | null => {
     if (!post.tags) return null;
-    
+
     if (Array.isArray(post.tags)) {
-      const validTag = post.tags.find(tag => 
-        tag && typeof tag === 'string' && tag.toLowerCase() !== 'tags'
+      const validTag = post.tags.find(
+        (tag) => tag && typeof tag === 'string' && tag.toLowerCase() !== 'tags'
       );
       return validTag || null;
     }
-    
+
     if (typeof post.tags === 'string' && post.tags.toLowerCase() !== 'tags') {
       return post.tags;
     }
-    
+
     return null;
   };
-  
+
   const badgeLabel = getFirstTag();
   const title = getTitle();
   const content = getContent();
   // Usar commentsCount do post se disponível, senão usar o tamanho do array de comentários
-  const commentsCount = post.commentsCount !== undefined 
-    ? post.commentsCount 
-    : (post.comments?.length || 0);
+  const commentsCount =
+    post.commentsCount !== undefined ? post.commentsCount : post.comments?.length || 0;
 
   const handleCommentsPress = () => {
     setIsCommentsOpen(!isCommentsOpen);
@@ -111,7 +110,7 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
     try {
       // Usar o pollId real da enquete (data.pollId), não o postId
       const realPollId = post.poll?.pollId;
-      
+
       if (!realPollId) {
         logger.error('Poll ID não encontrado na enquete', {
           postId: post.id,
@@ -120,13 +119,13 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
         });
         return;
       }
-      
+
       logger.debug('Votando na enquete:', {
         pollId: realPollId,
         optionId,
         postId: post.id,
       });
-      
+
       await communityService.votePoll(realPollId, [optionId]);
       logger.info('Voto registrado com sucesso:', { pollId: realPollId, optionId });
       // TODO: Atualizar o estado do post para refletir o novo voto
@@ -149,10 +148,7 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
         <View>
           <View style={styles.authorSection}>
             {post.userAvatar ? (
-              <Image
-                source={{ uri: post.userAvatar }}
-                style={styles.avatar}
-              />
+              <Image source={{ uri: post.userAvatar }} style={styles.avatar} />
             ) : (
               <View style={styles.avatarPlaceholder}>
                 <Icon name="person" size={12} color={COLORS.TEXT_LIGHT} />
@@ -165,9 +161,7 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
 
           {title ? (
             <View style={styles.titleContainer}>
-              <Text style={styles.title}>
-                {title}
-              </Text>
+              <Text style={styles.title}>{title}</Text>
             </View>
           ) : null}
 
@@ -179,39 +173,29 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
         </View>
       </View>
 
-      {post.poll && (
-        <PollCard 
-          poll={post.poll} 
-          onVote={handlePollVote}
-          disabled={false}
-        />
-      )}
+      {post.poll && <PollCard poll={post.poll} onVote={handlePollVote} disabled={false} />}
 
       <View style={styles.footer}>
         {content && (
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.seeMoreButton}
             onPress={handleSeeMorePress}
             activeOpacity={0.7}
           >
             <Text style={styles.seeMoreButtonText}>
-              {isContentExpanded ? "See less" : "See more"}
+              {isContentExpanded ? 'See less' : 'See more'}
             </Text>
           </TouchableOpacity>
         )}
 
         {/* Não mostrar botão de comentários quando for uma enquete */}
         {!post.poll && (
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.commentsInfo}
             onPress={handleCommentsPress}
             activeOpacity={0.7}
           >
-            <Icon
-              name="chat-bubble-outline"
-              size={24}
-              color="#0154f8"
-            />
+            <Icon name="chat-bubble-outline" size={24} color="#0154f8" />
             <Text style={styles.commentsCount}>{commentsCount}</Text>
           </TouchableOpacity>
         )}
@@ -232,13 +216,20 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
                   avatar: comment.userAvatar,
                 },
                 content: comment.content,
-                upvotes: comment.reactions?.filter(r => r.type === 'like' || r.type === 'upvote' || r.type === '👍').length || 0,
-                downvotes: comment.reactions?.filter(r => r.type === 'dislike' || r.type === 'downvote' || r.type === '👎').length || 0,
+                upvotes:
+                  comment.reactions?.filter(
+                    (r) => r.type === 'like' || r.type === 'upvote' || r.type === '👍'
+                  ).length || 0,
+                downvotes:
+                  comment.reactions?.filter(
+                    (r) => r.type === 'dislike' || r.type === 'downvote' || r.type === '👎'
+                  ).length || 0,
                 reactionsCount: comment.reactionsCount,
                 commentsCount: comment.commentsCount,
-                createdAt: comment.createdAt instanceof Date 
-                  ? comment.createdAt.toISOString() 
-                  : new Date(comment.createdAt).toISOString(),
+                createdAt:
+                  comment.createdAt instanceof Date
+                    ? comment.createdAt.toISOString()
+                    : new Date(comment.createdAt).toISOString(),
               }}
               showReplies={true}
             />
@@ -250,4 +241,3 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
 };
 
 export default PostCard;
-

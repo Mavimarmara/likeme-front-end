@@ -15,11 +15,7 @@ class OrderService {
 
   async createOrder(data: CreateOrderData): Promise<ApiResponse<Order>> {
     try {
-      const response = await apiClient.post<ApiResponse<Order>>(
-        this.ordersEndpoint,
-        data,
-        true
-      );
+      const response = await apiClient.post<ApiResponse<Order>>(this.ordersEndpoint, data, true);
 
       logger.debug('Order created:', {
         orderId: response.data?.id,
@@ -36,11 +32,11 @@ class OrderService {
   async listOrders(params: ListOrdersParams = {}): Promise<ListOrdersApiResponse> {
     try {
       const queryParams: Record<string, string> = {};
-      
+
       if (params.page !== undefined) {
         queryParams.page = String(params.page);
       }
-      
+
       if (params.limit !== undefined) {
         queryParams.limit = String(params.limit);
       }
@@ -85,13 +81,8 @@ class OrderService {
       }
 
       const endpoint = `${this.ordersEndpoint}/${orderId.trim()}`;
-      
-      const response = await apiClient.get<GetOrderApiResponse>(
-        endpoint,
-        undefined,
-        true,
-        false
-      );
+
+      const response = await apiClient.get<GetOrderApiResponse>(endpoint, undefined, true, false);
 
       logger.debug('Order detail response:', {
         orderId,
@@ -113,12 +104,8 @@ class OrderService {
       }
 
       const endpoint = `${this.ordersEndpoint}/${orderId.trim()}`;
-      
-      const response = await apiClient.put<ApiResponse<Order>>(
-        endpoint,
-        data,
-        true
-      );
+
+      const response = await apiClient.put<ApiResponse<Order>>(endpoint, data, true);
 
       logger.debug('Order updated:', {
         orderId,
@@ -139,12 +126,8 @@ class OrderService {
       }
 
       const endpoint = `${this.ordersEndpoint}/${orderId.trim()}`;
-      
-      const response = await apiClient.delete<ApiResponse<null>>(
-        endpoint,
-        { restoreStock },
-        true
-      );
+
+      const response = await apiClient.delete<ApiResponse<null>>(endpoint, { restoreStock }, true);
 
       logger.debug('Order deleted:', {
         orderId,
@@ -165,12 +148,8 @@ class OrderService {
       }
 
       const endpoint = `${this.ordersEndpoint}/${orderId.trim()}/cancel`;
-      
-      const response = await apiClient.post<ApiResponse<Order>>(
-        endpoint,
-        {},
-        true
-      );
+
+      const response = await apiClient.post<ApiResponse<Order>>(endpoint, {}, true);
 
       logger.debug('Order cancelled:', {
         orderId,

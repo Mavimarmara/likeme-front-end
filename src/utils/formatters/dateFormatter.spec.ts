@@ -1,11 +1,17 @@
 /**
  * Testes unitários para DateFormatter
- * 
+ *
  * Estes testes servem como documentação viva do comportamento esperado
  * do formatter de datas, demonstrando diferentes formatos de saída.
  */
 
-import { DateFormatter, formatDate, formatDateTime, getDateFromDatetime, getTimeFromDatetime } from './dateFormatter';
+import {
+  DateFormatter,
+  formatDate,
+  formatDateTime,
+  getDateFromDatetime,
+  getTimeFromDatetime,
+} from './dateFormatter';
 
 describe('DateFormatter', () => {
   const testDate = new Date('2023-12-25T14:30:00');
@@ -153,7 +159,7 @@ describe('getDateFromDatetime', () => {
 
   it('deve extrair a data corretamente para diferentes meses', () => {
     const currentYear = new Date().getFullYear();
-    
+
     expect(getDateFromDatetime('1 Jan. at 10:00 am')).toBe(`${currentYear}-01-01`);
     expect(getDateFromDatetime('15 Feb. at 2:30 pm')).toBe(`${currentYear}-02-15`);
     expect(getDateFromDatetime('31 Dec. at 11:59 pm')).toBe(`${currentYear}-12-31`);

@@ -152,8 +152,8 @@ class StorageService {
   async addToCart(item: any): Promise<void> {
     try {
       const cartItems = await this.getCartItems();
-      const existingItemIndex = cartItems.findIndex(cartItem => cartItem.id === item.id);
-      
+      const existingItemIndex = cartItems.findIndex((cartItem) => cartItem.id === item.id);
+
       if (existingItemIndex >= 0) {
         // Se o item já existe, aumenta a quantidade
         cartItems[existingItemIndex].quantity = (cartItems[existingItemIndex].quantity || 1) + 1;
@@ -161,7 +161,7 @@ class StorageService {
         // Adiciona novo item
         cartItems.push({ ...item, quantity: 1 });
       }
-      
+
       await this.setCartItems(cartItems);
     } catch (error) {
       logger.error('Error adding to cart:', error);
@@ -171,7 +171,7 @@ class StorageService {
   async removeCartItem(itemId: string): Promise<void> {
     try {
       const cartItems = await this.getCartItems();
-      const filteredItems = cartItems.filter(item => item.id !== itemId);
+      const filteredItems = cartItems.filter((item) => item.id !== itemId);
       await this.setCartItems(filteredItems);
     } catch (error) {
       logger.error('Error removing cart item:', error);
@@ -201,4 +201,3 @@ class StorageService {
 }
 
 export default new StorageService();
-

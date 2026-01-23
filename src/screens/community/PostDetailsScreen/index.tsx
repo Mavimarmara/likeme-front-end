@@ -56,4 +56,3 @@ const PostDetailsScreen: React.FC = () => {
 };
 
 export default PostDetailsScreen;
-

@@ -1,5 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { View, Image, TouchableOpacity, LayoutChangeEvent, ViewStyle, StyleProp } from 'react-native';
+import {
+  View,
+  Image,
+  TouchableOpacity,
+  LayoutChangeEvent,
+  ViewStyle,
+  StyleProp,
+} from 'react-native';
 import { BlurView } from 'expo-blur';
 import {
   styles,
@@ -51,39 +58,19 @@ const BlurCard: React.FC<Props> = ({
     return [styles.container, style];
   }, [style]);
 
-  const footerSectionStyle = useMemo(() => 
-    getFooterSectionStyle(borderRadius), 
-    [borderRadius]
-  );
+  const footerSectionStyle = useMemo(() => getFooterSectionStyle(borderRadius), [borderRadius]);
 
   const content = (
     <View style={containerStyle}>
-      <Image
-        source={{ uri: backgroundImage }}
-        style={styles.backgroundImage}
-        resizeMode="cover"
-      />
-      
-      <View style={styles.content}>
-        {topSection && (
-          <View style={styles.topSection}>
-            {topSection}
-          </View>
-        )}
+      <Image source={{ uri: backgroundImage }} style={styles.backgroundImage} resizeMode="cover" />
 
-        <BlurView 
-          intensity={BLUR_INTENSITY} 
-          tint={BLUR_TINT} 
-          style={blurStyle}
-        />
-        
-        <View 
-          style={[styles.footerSection, footerSectionStyle]}
-          onLayout={handleFooterLayout}
-        >
-          <View style={styles.footerContent}>
-            {footerSection.component}
-          </View>
+      <View style={styles.content}>
+        {topSection && <View style={styles.topSection}>{topSection}</View>}
+
+        <BlurView intensity={BLUR_INTENSITY} tint={BLUR_TINT} style={blurStyle} />
+
+        <View style={[styles.footerSection, footerSectionStyle]} onLayout={handleFooterLayout}>
+          <View style={styles.footerContent}>{footerSection.component}</View>
         </View>
       </View>
     </View>
@@ -91,10 +78,7 @@ const BlurCard: React.FC<Props> = ({
 
   if (onPress) {
     return (
-      <TouchableOpacity
-        onPress={onPress}
-        activeOpacity={0.9}
-      >
+      <TouchableOpacity onPress={onPress} activeOpacity={0.9}>
         {content}
       </TouchableOpacity>
     );
@@ -105,4 +89,3 @@ const BlurCard: React.FC<Props> = ({
 
 export default BlurCard;
 export type { FooterSection, Props as BlurCardProps };
-

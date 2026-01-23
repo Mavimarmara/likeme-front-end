@@ -1,12 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  View,
-  Text,
-  Animated,
-  Dimensions,
-  Image,
-  ImageStyle,
-} from 'react-native';
+import { View, Text, Animated, Dimensions, Image, ImageStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PartialLogo, GradientSplash7, GradientSplash8, GradientSplash9 } from '@/assets';
 import { styles, GRADIENT_STRIP_HEIGHT, GRADIENT_STRIP_WIDTH } from './styles';
@@ -64,14 +57,24 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
     const run = async () => {
       const timing = (anim: Animated.Value, toValue: number, duration: number) =>
         new Promise<void>((resolve) => {
-          Animated.timing(anim, { toValue, duration, useNativeDriver: true }).start(() => resolve());
+          Animated.timing(anim, { toValue, duration, useNativeDriver: true }).start(() =>
+            resolve()
+          );
         });
       const delay = (ms: number) => new Promise<void>((r) => setTimeout(() => r(), ms));
       const fadeTagToStep = (next: number, fadeOutMs = 180, fadeInMs = 900) =>
         new Promise<void>((resolve) => {
-          Animated.timing(taglineOpacity, { toValue: 0, duration: fadeOutMs, useNativeDriver: true }).start(() => {
+          Animated.timing(taglineOpacity, {
+            toValue: 0,
+            duration: fadeOutMs,
+            useNativeDriver: true,
+          }).start(() => {
             setStep(next);
-            Animated.timing(taglineOpacity, { toValue: 1, duration: fadeInMs, useNativeDriver: true }).start(() => resolve());
+            Animated.timing(taglineOpacity, {
+              toValue: 1,
+              duration: fadeInMs,
+              useNativeDriver: true,
+            }).start(() => resolve());
           });
         });
 
@@ -80,19 +83,12 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
 
       const firstOffset = cumulativeOffsets[0] ?? -GRADIENT_STRIP_HEIGHT;
 
-      await Promise.all([
-        timing(scrollAnim, firstOffset, 1200),
-        fadeTagToStep(1, 160, 1040),
-      ]);
+      await Promise.all([timing(scrollAnim, firstOffset, 1200), fadeTagToStep(1, 160, 1040)]);
       await delay(240);
 
-      const secondOffset =
-        cumulativeOffsets[1] ?? cumulativeOffsets[0] ?? -GRADIENT_STRIP_HEIGHT;
+      const secondOffset = cumulativeOffsets[1] ?? cumulativeOffsets[0] ?? -GRADIENT_STRIP_HEIGHT;
 
-      await Promise.all([
-        timing(scrollAnim, secondOffset, 1200),
-        fadeTagToStep(2, 160, 1040),
-      ]);
+      await Promise.all([timing(scrollAnim, secondOffset, 1200), fadeTagToStep(2, 160, 1040)]);
 
       await delay(360);
 
@@ -105,7 +101,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
+              Authorization: `Bearer ${token}`,
             },
           });
 
@@ -134,15 +130,14 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Animated.View style={[styles.splashContainer, { opacity: fadeAnim }]}>        
+      <Animated.View style={[styles.splashContainer, { opacity: fadeAnim }]}>
         <View style={styles.gradientEffect}>
           <Animated.View
             style={[
               styles.scrollContainer,
               {
                 transform: [{ translateY: scrollAnim }],
-                height:
-                  totalGradientHeight || GRADIENT_STRIP_HEIGHT * GRADIENT_SOURCES.length,
+                height: totalGradientHeight || GRADIENT_STRIP_HEIGHT * GRADIENT_SOURCES.length,
               },
             ]}
           >

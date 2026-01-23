@@ -23,7 +23,6 @@ type Props = {
 };
 
 const PlanCard: React.FC<Props> = ({ plan, onPress, onLike }) => {
-
   const getTagColor = () => {
     switch (plan.tagColor) {
       case 'orange':
@@ -38,21 +37,14 @@ const PlanCard: React.FC<Props> = ({ plan, onPress, onLike }) => {
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-        <Image
-          source={{ uri: plan.image }}
-          style={styles.image}
-        />
+        <Image source={{ uri: plan.image }} style={styles.image} />
         <BlurView intensity={10} tint="dark" style={styles.imageOverlay} />
         <View style={styles.contentOverlay}>
           <View style={[styles.tagBadge, { backgroundColor: 'rgba(0, 17, 55, 0.64)' }]}>
-            <Text style={[styles.tagText, { color: getTagColor() }]}>
-              {plan.tag}
-            </Text>
+            <Text style={[styles.tagText, { color: getTagColor() }]}>{plan.tag}</Text>
           </View>
           <View style={styles.bottomInfo}>
-            <Text style={styles.price}>
-              {formatPrice(plan.price, plan.currency || 'BRL')}
-            </Text>
+            <Text style={styles.price}>{formatPrice(plan.price, plan.currency || 'BRL')}</Text>
             <TouchableOpacity
               style={styles.likeButton}
               onPress={() => onLike?.(plan)}
@@ -81,4 +73,3 @@ const PlanCard: React.FC<Props> = ({ plan, onPress, onLike }) => {
 };
 
 export default PlanCard;
-

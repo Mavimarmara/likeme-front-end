@@ -6,25 +6,25 @@ export class DateFormatter {
   }
 
   toShortDate(): string {
-    return this.date.toLocaleDateString('en-US', { 
-      day: 'numeric', 
-      month: 'short' 
+    return this.date.toLocaleDateString('en-US', {
+      day: 'numeric',
+      month: 'short',
     });
   }
 
   toLongDate(): string {
-    return this.date.toLocaleDateString('en-US', { 
-      day: 'numeric', 
-      month: 'long', 
-      year: 'numeric' 
+    return this.date.toLocaleDateString('en-US', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
     });
   }
 
   toTime(): string {
-    return this.date.toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
+    return this.date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
       minute: '2-digit',
-      hour12: true 
+      hour12: true,
     });
   }
 
@@ -61,9 +61,18 @@ export const getDateFromDatetime = (dateTime: string): string => {
       const datePart = parts[0]; // "13 Nov."
       const [day, month] = datePart.split(' ');
       const monthMap: Record<string, string> = {
-        'Jan.': '01', 'Feb.': '02', 'Mar.': '03', 'Apr.': '04',
-        'May.': '05', 'Jun.': '06', 'Jul.': '07', 'Aug.': '08',
-        'Sep.': '09', 'Oct.': '10', 'Nov.': '11', 'Dec.': '12',
+        'Jan.': '01',
+        'Feb.': '02',
+        'Mar.': '03',
+        'Apr.': '04',
+        'May.': '05',
+        'Jun.': '06',
+        'Jul.': '07',
+        'Aug.': '08',
+        'Sep.': '09',
+        'Oct.': '10',
+        'Nov.': '11',
+        'Dec.': '12',
       };
       const currentYear = new Date().getFullYear();
       const monthNum = monthMap[month] || '01';

@@ -9,11 +9,7 @@ interface LogoutButtonProps {
   style?: any;
 }
 
-const LogoutButton: React.FC<LogoutButtonProps> = ({ 
-  onPress, 
-  label = 'Log out',
-  style 
-}) => {
+const LogoutButton: React.FC<LogoutButtonProps> = ({ onPress, label = 'Log out', style }) => {
   const [isLoading, setIsLoading] = React.useState(false);
 
   const handleLogout = async () => {
@@ -24,7 +20,7 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({
       console.log(e);
     } finally {
       setIsLoading(false);
-      
+
       if (onPress) {
         onPress();
       }
@@ -32,8 +28,8 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({
   };
 
   return (
-    <TouchableOpacity 
-      style={[styles.button, style, isLoading && styles.buttonDisabled]} 
+    <TouchableOpacity
+      style={[styles.button, style, isLoading && styles.buttonDisabled]}
       onPress={handleLogout}
       disabled={isLoading}
       activeOpacity={0.7}
@@ -48,4 +44,3 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({
 };
 
 export default LogoutButton;
-

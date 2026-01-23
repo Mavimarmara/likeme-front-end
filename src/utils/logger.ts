@@ -51,4 +51,3 @@ export const logger: Logger = {
   info: createLogger('info'),
   debug: createLogger('debug'),
 };
-

@@ -42,4 +42,3 @@ export const styles = StyleSheet.create({
     paddingVertical: SPACING.SM,
   },
 });
-

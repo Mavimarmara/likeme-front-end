@@ -55,7 +55,7 @@ export const styles = StyleSheet.create({
   markerHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
   },
   markerName: {
     fontFamily: 'DM Sans',
@@ -80,7 +80,6 @@ export const styles = StyleSheet.create({
   },
   shareButtonContainer: {
     alignItems: 'flex-end',
-    paddingTop: SPACING.MD,
   },
   insightsCard: {
     backgroundColor: COLORS.SECONDARY.PURE,

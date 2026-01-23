@@ -1,5 +1,13 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image, Dimensions, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+  Dimensions,
+  ActivityIndicator,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -37,7 +45,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedOrder, setSelectedOrder] = useState<string>('best-rated');
   const [page, setPage] = useState(1);
-  
+
   const { ads, loading, hasMore, loadAds } = useMarketplaceAds({
     selectedCategory,
     page,
@@ -66,7 +74,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     if (event) {
       event.stopPropagation();
     }
-    
+
     if (!ad.product) {
       return;
     }
@@ -79,7 +87,6 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       // Error handling
     }
   };
-
 
   const menuItems = useMenuItems(navigation);
 
@@ -132,7 +139,10 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
         <Text style={styles.sectionTitle}>Week highlights</Text>
         <WeekHighlightCard
           title={highlight.product.name || 'Product'}
-          image={highlight.product.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400'}
+          image={
+            highlight.product.image ||
+            'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400'
+          }
           price={highlight.product.price}
           onPress={() => handleAdPress(highlight)}
         />
@@ -180,7 +190,9 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
             displayAds.map((ad) => {
               const product = ad.product;
               const displayTitle = product?.name || 'Product';
-              const displayImage = product?.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
+              const displayImage =
+                product?.image ||
+                'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
               const displayCategory = product?.category;
               const productPrice = product?.price;
 
@@ -191,10 +203,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
                   onPress={() => handleAdPress(ad)}
                   activeOpacity={0.8}
                 >
-                  <Image 
-                    source={{ uri: displayImage }} 
-                    style={styles.productRowImage} 
-                  />
+                  <Image source={{ uri: displayImage }} style={styles.productRowImage} />
                   <View style={styles.productRowContent}>
                     {displayCategory && (
                       <View style={styles.productRowCategory}>
@@ -212,8 +221,8 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
                     </View>
                   </View>
                   {product && !product.externalUrl && (
-                    <TouchableOpacity 
-                      style={styles.productRowAddButton} 
+                    <TouchableOpacity
+                      style={styles.productRowAddButton}
                       activeOpacity={0.7}
                       onPress={(e) => {
                         e.stopPropagation();
@@ -236,7 +245,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
             <TouchableOpacity
               style={styles.loadMoreButton}
               onPress={() => {
-                setPage(prev => prev + 1);
+                setPage((prev) => prev + 1);
               }}
               activeOpacity={0.7}
             >
@@ -251,11 +260,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   return (
     <SafeAreaView style={styles.container}>
       <Background />
-      <Header 
-        showBackButton={false} 
-        showCartButton={true}
-        onCartPress={handleCartPress}
-      />
+      <Header showBackButton={false} showCartButton={true} onCartPress={handleCartPress} />
       <View style={styles.content}>
         {renderCustomHeader()}
         <ScrollView

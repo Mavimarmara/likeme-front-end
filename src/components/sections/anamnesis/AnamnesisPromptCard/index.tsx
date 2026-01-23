@@ -14,7 +14,8 @@ const AnamnesisPromptCard: React.FC<AnamnesisPromptCardProps> = ({ onStartPress 
         <Text style={styles.title}>Bring your avatar to life</Text>
         <View style={styles.descriptionContainer}>
           <Text style={styles.description}>
-            By completing your anamnesis, your well-being avatar is born from your data and rhythms. Because feeling good should feel like you!
+            By completing your anamnesis, your well-being avatar is born from your data and rhythms.
+            Because feeling good should feel like you!
           </Text>
         </View>
         <PrimaryButton
@@ -32,4 +33,3 @@ const AnamnesisPromptCard: React.FC<AnamnesisPromptCardProps> = ({ onStartPress 
 };
 
 export default AnamnesisPromptCard;
-

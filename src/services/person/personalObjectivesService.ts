@@ -10,11 +10,8 @@ class PersonalObjectivesService {
     params: PersonalObjectivesParams = {}
   ): Promise<PersonalObjectivesResponse> {
     const { page = 1, limit = 10 } = params;
-    
-    return apiClient.get<PersonalObjectivesResponse>(
-      '/api/personal-objectives',
-      { page, limit }
-    );
+
+    return apiClient.get<PersonalObjectivesResponse>('/api/personal-objectives', { page, limit });
   }
 
   async getAllPersonalObjectives(): Promise<PersonalObjective[]> {
@@ -39,4 +36,3 @@ class PersonalObjectivesService {
 }
 
 export default new PersonalObjectivesService();
-

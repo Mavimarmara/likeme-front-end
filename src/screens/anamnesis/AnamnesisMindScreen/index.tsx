@@ -11,21 +11,13 @@ import { styles } from './styles';
 type Props = { navigation: any };
 
 const AnamnesisMindScreen: React.FC<Props> = ({ navigation }) => {
-  const {
-    questions,
-    answers,
-    loading,
-    completing,
-    error,
-    unansweredCount,
-    setAnswer,
-    complete,
-  } = useAnamnesisQuestionnaire<number>({
-    locale: 'pt-BR',
-    keyPrefix: 'mental',
-    parseAnswer: parseMindAnswer,
-    buildAnswer: buildMindAnswer,
-  });
+  const { questions, answers, loading, completing, error, unansweredCount, setAnswer, complete } =
+    useAnamnesisQuestionnaire<number>({
+      locale: 'pt-BR',
+      keyPrefix: 'mental',
+      parseAnswer: parseMindAnswer,
+      buildAnswer: buildMindAnswer,
+    });
 
   useEffect(() => {
     if (!error) {
@@ -80,7 +72,7 @@ const AnamnesisMindScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <Header onBackPress={() => navigation.goBack()} />
-      
+
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -91,7 +83,8 @@ const AnamnesisMindScreen: React.FC<Props> = ({ navigation }) => {
             <Text style={styles.title}>MENTE</Text>
             <Text style={styles.subtitle}>Bem-estar emocional</Text>
             <Text style={styles.introText}>
-              Pensando na última semana, com que intensidade você percebeu esses sentimentos no seu dia a dia?
+              Pensando na última semana, com que intensidade você percebeu esses sentimentos no seu
+              dia a dia?
             </Text>
           </View>
 
@@ -101,9 +94,7 @@ const AnamnesisMindScreen: React.FC<Props> = ({ navigation }) => {
                 <View style={styles.questionHeader}>
                   <Text style={styles.questionNumber}>{index + 1}.</Text>
                   <View style={styles.questionTextContainer}>
-                    <Text style={styles.questionTitle}>
-                      {question.text || question.key}
-                    </Text>
+                    <Text style={styles.questionTitle}>{question.text || question.key}</Text>
                   </View>
                 </View>
                 <NumberScale
@@ -129,4 +120,3 @@ const AnamnesisMindScreen: React.FC<Props> = ({ navigation }) => {
 };
 
 export default AnamnesisMindScreen;
-

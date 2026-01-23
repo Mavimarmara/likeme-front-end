@@ -18,9 +18,7 @@ const ProgramsList: React.FC<Props> = ({
   onProgramPress,
   selectedProgramId,
 }) => {
-  const [expandedModules, setExpandedModules] = useState<Set<string>>(
-    new Set()
-  );
+  const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
 
   const handleModuleToggle = (moduleId: string) => {
     const newExpanded = new Set(expandedModules);
@@ -70,9 +68,7 @@ const ProgramsList: React.FC<Props> = ({
           <View style={styles.programHeader}>
             <Text style={styles.programTitle}>{programDetails.name}</Text>
             <View style={styles.descriptionContainer}>
-              <Text style={styles.programDescription}>
-                {programDetails.description}
-              </Text>
+              <Text style={styles.programDescription}>{programDetails.description}</Text>
             </View>
           </View>
 
@@ -85,21 +81,17 @@ const ProgramsList: React.FC<Props> = ({
                   isExpanded: expandedModules.has(module.id),
                 }}
                 onToggle={handleModuleToggle}
-      />
+              />
             ))}
           </View>
         </ScrollView>
       ) : selectedProgramId ? (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>
-            Detalhes do programa não disponíveis
-          </Text>
+          <Text style={styles.emptyText}>Detalhes do programa não disponíveis</Text>
         </View>
       ) : (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>
-            Selecione um programa para ver os detalhes
-          </Text>
+          <Text style={styles.emptyText}>Selecione um programa para ver os detalhes</Text>
         </View>
       )}
     </View>
@@ -107,4 +99,3 @@ const ProgramsList: React.FC<Props> = ({
 };
 
 export default ProgramsList;
-

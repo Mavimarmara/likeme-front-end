@@ -19,30 +19,22 @@ type Props = {
 
 const ProviderChatCard: React.FC<Props> = ({ chat, onPress }) => {
   // Garante que lastMessage seja sempre uma string válida
-  const lastMessage = typeof chat.lastMessage === 'string' && chat.lastMessage.trim() !== ''
-    ? chat.lastMessage
-    : '';
+  const lastMessage =
+    typeof chat.lastMessage === 'string' && chat.lastMessage.trim() !== '' ? chat.lastMessage : '';
 
   return (
     <View style={styles.container}>
       <Text style={styles.sectionTitle}>Chat with your provider</Text>
-      <TouchableOpacity
-        style={styles.card}
-        onPress={() => onPress?.(chat)}
-        activeOpacity={0.8}
-      >
+      <TouchableOpacity style={styles.card} onPress={() => onPress?.(chat)} activeOpacity={0.8}>
         <View style={styles.content}>
           {chat.providerAvatar ? (
-            <Image
-              source={{ uri: chat.providerAvatar }}
-              style={styles.avatar}
-            />
+            <Image source={{ uri: chat.providerAvatar }} style={styles.avatar} />
           ) : (
             <View style={styles.avatarPlaceholder}>
               <Icon name="person" size={32} color="#6e6a6a" />
             </View>
           )}
-          
+
           <View style={styles.infoContainer}>
             <View style={styles.headerRow}>
               <Text style={styles.providerName} numberOfLines={1}>
@@ -50,7 +42,7 @@ const ProviderChatCard: React.FC<Props> = ({ chat, onPress }) => {
               </Text>
               <Text style={styles.timestamp}>{chat.timestamp}</Text>
             </View>
-            
+
             <View style={styles.messageRow}>
               <View style={styles.messageContainer}>
                 {lastMessage ? (
@@ -61,9 +53,7 @@ const ProviderChatCard: React.FC<Props> = ({ chat, onPress }) => {
               </View>
               {chat.unreadCount && chat.unreadCount > 0 ? (
                 <View style={styles.notificationBadge}>
-                  <Text style={styles.notificationText}>
-                    {String(chat.unreadCount)}
-                  </Text>
+                  <Text style={styles.notificationText}>{String(chat.unreadCount)}</Text>
                 </View>
               ) : null}
             </View>
@@ -75,4 +65,3 @@ const ProviderChatCard: React.FC<Props> = ({ chat, onPress }) => {
 };
 
 export default ProviderChatCard;
-

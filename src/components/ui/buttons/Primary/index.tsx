@@ -1,5 +1,13 @@
 import React from 'react';
-import { Text, TouchableOpacity, GestureResponderEvent, ViewStyle, ActivityIndicator, TextStyle, View } from 'react-native';
+import {
+  Text,
+  TouchableOpacity,
+  GestureResponderEvent,
+  ViewStyle,
+  ActivityIndicator,
+  TextStyle,
+  View,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { COLORS } from '@/constants';
 import { styles } from './styles';
@@ -22,12 +30,12 @@ type Props = {
   iconPosition?: 'left' | 'right';
 };
 
-const PrimaryButton: React.FC<Props> = ({ 
-  label, 
-  onPress, 
-  style, 
+const PrimaryButton: React.FC<Props> = ({
+  label,
+  onPress,
+  style,
   labelStyle: customLabelStyle,
-  loading = false, 
+  loading = false,
   disabled = false,
   variant = 'dark',
   size = 'medium',
@@ -47,20 +55,20 @@ const PrimaryButton: React.FC<Props> = ({
 
   const renderIcon = () => {
     if (!icon) return null;
-    
+
     return (
-      <Icon 
-        name={icon} 
-        size={iconSize} 
-        color={finalIconColor} 
+      <Icon
+        name={icon}
+        size={iconSize}
+        color={finalIconColor}
         style={iconPosition === 'left' ? styles.iconLeft : styles.iconRight}
       />
     );
   };
 
   return (
-    <TouchableOpacity 
-      style={[buttonStyle, style, isDisabled && styles.buttonDisabled]} 
+    <TouchableOpacity
+      style={[buttonStyle, style, isDisabled && styles.buttonDisabled]}
       onPress={onPress}
       disabled={isDisabled}
       activeOpacity={0.7}
@@ -79,5 +87,3 @@ const PrimaryButton: React.FC<Props> = ({
 };
 
 export default PrimaryButton;
-
-

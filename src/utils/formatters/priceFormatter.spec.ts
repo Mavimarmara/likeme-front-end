@@ -1,6 +1,6 @@
 /**
  * Testes unitários para PriceFormatter
- * 
+ *
  * Estes testes servem como documentação viva do comportamento esperado
  * do formatter de preços, demonstrando como lidar com diferentes cenários.
  */

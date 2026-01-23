@@ -17,15 +17,8 @@ export const WeekHighlightCard: React.FC<WeekHighlightCardProps> = ({
   onPress,
 }) => {
   return (
-    <TouchableOpacity
-      style={styles.weekHighlightCard}
-      onPress={onPress}
-      activeOpacity={0.9}
-    >
-      <Image 
-        source={{ uri: image }} 
-        style={styles.weekHighlightImage} 
-      />
+    <TouchableOpacity style={styles.weekHighlightCard} onPress={onPress} activeOpacity={0.9}>
+      <Image source={{ uri: image }} style={styles.weekHighlightImage} />
       <View style={styles.weekHighlightBadge}>
         <Text style={styles.weekHighlightBadgeText}>Featured</Text>
       </View>

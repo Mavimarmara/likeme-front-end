@@ -49,11 +49,7 @@ const FilterButton: React.FC<Props> = ({
         iconPosition={iconPosition}
       />
       {hasModal && (
-        <ModalBase
-          visible={isModalVisible}
-          onClose={handleClose}
-          title={modalTitle}
-        >
+        <ModalBase visible={isModalVisible} onClose={handleClose} title={modalTitle}>
           {modalContent}
         </ModalBase>
       )}

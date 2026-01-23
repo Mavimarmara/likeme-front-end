@@ -42,7 +42,7 @@ export const useMarketplaceAds = ({
       setLoading(true);
       const params = buildParams();
       const response = await adService.listAds(params);
-      
+
       if (!response.success || !response.data) {
         handleEmptyResponse();
         return;
@@ -70,14 +70,10 @@ export const useMarketplaceAds = ({
       setAds(adsArray);
       return;
     }
-    setAds(prev => [...prev, ...adsArray]);
+    setAds((prev) => [...prev, ...adsArray]);
   };
 
-  const updatePagination = (
-    pagination: any,
-    adsLength: number,
-    limit: number
-  ) => {
+  const updatePagination = (pagination: any, adsLength: number, limit: number) => {
     if (pagination) {
       setHasMore(pagination.page < pagination.totalPages);
       return;

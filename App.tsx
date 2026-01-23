@@ -16,18 +16,26 @@ const App: React.FC = () => {
       console.log('═══════════════════════════════════════════════════════════');
       console.log('AUTH0_CONFIG:', {
         domain: AUTH0_CONFIG.domain,
-        clientId: AUTH0_CONFIG.clientId ? `${AUTH0_CONFIG.clientId.substring(0, 10)}...` : 'NÃO ENCONTRADO',
+        clientId: AUTH0_CONFIG.clientId
+          ? `${AUTH0_CONFIG.clientId.substring(0, 10)}...`
+          : 'NÃO ENCONTRADO',
         audience: AUTH0_CONFIG.audience ? 'ENCONTRADO' : 'NÃO ENCONTRADO',
       });
       console.log('');
-      
+
       // Verifica se Constants está disponível antes de acessar (lazy import)
       try {
         const Constants = require('expo-constants').default;
         if (Constants?.expoConfig) {
           console.log('Constants.expoConfig:', 'existe');
-          console.log('Constants.expoConfig.extra:', Constants.expoConfig?.extra ? 'existe' : 'não existe');
-          console.log('Constants.expoConfig.extra.env:', Constants.expoConfig?.extra?.env ? 'existe' : 'não existe');
+          console.log(
+            'Constants.expoConfig.extra:',
+            Constants.expoConfig?.extra ? 'existe' : 'não existe'
+          );
+          console.log(
+            'Constants.expoConfig.extra.env:',
+            Constants.expoConfig?.extra?.env ? 'existe' : 'não existe'
+          );
           if (Constants.expoConfig?.extra?.env) {
             console.log('Variáveis em extra.env:', Object.keys(Constants.expoConfig.extra.env));
           }

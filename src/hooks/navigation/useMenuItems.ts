@@ -45,4 +45,3 @@ export const useMenuItems = (navigation: any): MenuItem[] => {
     [rootNavigation]
   );
 };
-

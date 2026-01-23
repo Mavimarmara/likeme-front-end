@@ -86,17 +86,16 @@ export function sortByDateObject<T extends Record<string, any>>(
   const sorted = [...items].sort((a, b) => {
     const dateA = a[dateField] as Date | null | undefined;
     const dateB = b[dateField] as Date | null | undefined;
-    
+
     if (!dateA && !dateB) return 0;
     if (!dateA) return 1;
     if (!dateB) return -1;
-    
+
     const timeA = dateA.getTime();
     const timeB = dateB.getTime();
-    
+
     if (timeA === timeB) return 0;
     return order === 'asc' ? timeA - timeB : timeB - timeA;
   });
   return sorted;
 }
-

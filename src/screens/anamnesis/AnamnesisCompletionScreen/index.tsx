@@ -23,20 +23,12 @@ const AnamnesisCompletionScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       {/* Background superior */}
-      <Image
-        source={BackgroundWithGradient4}
-        style={styles.backgroundTop}
-        resizeMode="cover"
-      />
-      
+      <Image source={BackgroundWithGradient4} style={styles.backgroundTop} resizeMode="cover" />
+
       {/* Background inferior */}
-      <Image
-        source={BackgroundWithGradient5}
-        style={styles.backgroundBottom}
-        resizeMode="cover"
-      />
-      
-      <Header 
+      <Image source={BackgroundWithGradient5} style={styles.backgroundBottom} resizeMode="cover" />
+
+      <Header
         showBackButton={true}
         onBackPress={() => navigation.navigate('Home')}
         showRating={true}
@@ -44,7 +36,7 @@ const AnamnesisCompletionScreen: React.FC<Props> = ({ navigation }) => {
           // TODO: Implementar lógica de rating/avaliação
         }}
       />
-      
+
       <View style={styles.content}>
         {/* Imagem decorativa rotacionada 270 graus e centralizada */}
         <View style={styles.decorativeImageContainer}>

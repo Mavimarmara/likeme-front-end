@@ -26,16 +26,18 @@ jest.mock('@/components/ui', () => {
         {subtitle && <Text>{subtitle}</Text>}
       </View>
     ),
-    TextInput: React.forwardRef(({ placeholder, onChangeText, value, onSubmitEditing }: any, ref: any) => (
-      <RNTextInput
-        ref={ref}
-        placeholder={placeholder}
-        onChangeText={onChangeText}
-        value={value}
-        onSubmitEditing={onSubmitEditing}
-        testID={`input-${placeholder}`}
-      />
-    )),
+    TextInput: React.forwardRef(
+      ({ placeholder, onChangeText, value, onSubmitEditing }: any, ref: any) => (
+        <RNTextInput
+          ref={ref}
+          placeholder={placeholder}
+          onChangeText={onChangeText}
+          value={value}
+          onSubmitEditing={onSubmitEditing}
+          testID={`input-${placeholder}`}
+        />
+      )
+    ),
   };
 });
 
@@ -53,7 +55,7 @@ describe('WelcomeScreen', () => {
     const { getByText, getByPlaceholderText } = render(
       <WelcomeScreen navigation={mockNavigation} />
     );
-    
+
     expect(getByText('Welcome!')).toBeTruthy();
     expect(getByText('How can I call you?')).toBeTruthy();
     expect(getByPlaceholderText('Your name')).toBeTruthy();
@@ -65,9 +67,7 @@ describe('WelcomeScreen', () => {
       goBack: jest.fn(),
     };
 
-    const { getByPlaceholderText } = render(
-      <WelcomeScreen navigation={mockNavigation} />
-    );
+    const { getByPlaceholderText } = render(<WelcomeScreen navigation={mockNavigation} />);
 
     const input = getByPlaceholderText('Your name');
     fireEvent.changeText(input, 'John');
@@ -84,9 +84,7 @@ describe('WelcomeScreen', () => {
 
     const alertSpy = jest.spyOn(Alert, 'alert');
 
-    const { getByPlaceholderText } = render(
-      <WelcomeScreen navigation={mockNavigation} />
-    );
+    const { getByPlaceholderText } = render(<WelcomeScreen navigation={mockNavigation} />);
 
     const input = getByPlaceholderText('Your name');
     fireEvent.changeText(input, '');
@@ -109,9 +107,7 @@ describe('WelcomeScreen', () => {
 
     const alertSpy = jest.spyOn(Alert, 'alert');
 
-    const { getByPlaceholderText } = render(
-      <WelcomeScreen navigation={mockNavigation} />
-    );
+    const { getByPlaceholderText } = render(<WelcomeScreen navigation={mockNavigation} />);
 
     const input = getByPlaceholderText('Your name');
     fireEvent.changeText(input, '   ');

@@ -40,11 +40,7 @@ jest.mock('@/components/ui/inputs', () => {
     SearchBar: ({ value, onChangeText, placeholder }: any) => (
       <View>
         <Text>{placeholder}</Text>
-        <RNTextInput
-          value={value}
-          onChangeText={onChangeText}
-          testID="search-input"
-        />
+        <RNTextInput value={value} onChangeText={onChangeText} testID="search-input" />
       </View>
     ),
   };
@@ -152,9 +148,7 @@ describe('MarketplaceScreen', () => {
   });
 
   it('loads ads on mount', async () => {
-    render(
-      <MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />
-    );
+    render(<MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(adService.listAds).toHaveBeenCalledWith({
@@ -255,4 +249,3 @@ describe('MarketplaceScreen', () => {
     expect(adService.listAds).toHaveBeenCalled();
   });
 });
-

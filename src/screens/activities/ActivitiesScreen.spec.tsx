@@ -30,7 +30,13 @@ jest.mock('@/components/ui/menu', () => {
   const { View } = require('react-native');
   return {
     FloatingMenu: () => <View testID="floating-menu" />,
-    FilterMenu: ({ filterButtonLabel, onFilterButtonPress, carouselOptions, selectedCarouselId, onCarouselSelect }: any) => (
+    FilterMenu: ({
+      filterButtonLabel,
+      onFilterButtonPress,
+      carouselOptions,
+      selectedCarouselId,
+      onCarouselSelect,
+    }: any) => (
       <View testID="filter-menu">
         <View testID="filter-button" onTouchEnd={onFilterButtonPress}>
           {filterButtonLabel}
@@ -96,15 +102,18 @@ jest.mock('@/components/sections/activity', () => {
           <TouchableOpacity
             testID="save-activity-button"
             onPress={() => {
-              onSave({
-                name: initialData?.name || 'Test Activity',
-                type: initialData?.type || 'event',
-                startDate: '2024-01-01',
-                startTime: '10:00',
-                location: 'Test Location',
-                reminderEnabled: false,
-                reminderMinutes: 5,
-              }, activityId);
+              onSave(
+                {
+                  name: initialData?.name || 'Test Activity',
+                  type: initialData?.type || 'event',
+                  startDate: '2024-01-01',
+                  startTime: '10:00',
+                  location: 'Test Location',
+                  reminderEnabled: false,
+                  reminderMinutes: 5,
+                },
+                activityId
+              );
             }}
           >
             <Text>Save</Text>
@@ -204,9 +213,9 @@ const mockOrders = [
     id: 'order-1',
     userId: 'user1',
     status: 'delivered' as const,
-    total: 100.00,
-    subtotal: 90.00,
-    shippingCost: 10.00,
+    total: 100.0,
+    subtotal: 90.0,
+    shippingCost: 10.0,
     tax: 0,
     paymentStatus: 'paid' as const,
     createdAt: '2024-01-01T00:00:00Z',
@@ -217,9 +226,9 @@ const mockOrders = [
         orderId: 'order-1',
         productId: 'product-1',
         quantity: 1,
-        unitPrice: 90.00,
+        unitPrice: 90.0,
         discount: 0,
-        total: 90.00,
+        total: 90.0,
         createdAt: '2024-01-01T00:00:00Z',
         updatedAt: '2024-01-01T00:00:00Z',
       },
@@ -232,7 +241,7 @@ describe('ActivitiesScreen', () => {
     jest.clearAllMocks();
     console.log = jest.fn();
     console.error = jest.fn();
-    
+
     (activityService.listActivities as jest.Mock).mockResolvedValue({
       success: true,
       data: {
@@ -280,9 +289,7 @@ describe('ActivitiesScreen', () => {
 
   describe('Rendering', () => {
     it('renders correctly', async () => {
-      const { getByText } = render(
-        <ActivitiesScreen navigation={mockNavigation} />
-      );
+      const { getByText } = render(<ActivitiesScreen navigation={mockNavigation} />);
 
       await waitFor(() => {
         expect(getByText('Actives')).toBeTruthy();
@@ -302,9 +309,7 @@ describe('ActivitiesScreen', () => {
     });
 
     it('displays activity cards', async () => {
-      const { getByText } = render(
-        <ActivitiesScreen navigation={mockNavigation} />
-      );
+      const { getByText } = render(<ActivitiesScreen navigation={mockNavigation} />);
 
       await waitFor(() => {
         expect(getByText('Breathing exercises')).toBeTruthy();
@@ -313,9 +318,7 @@ describe('ActivitiesScreen', () => {
     });
 
     it('displays festival banner initially in actives tab', async () => {
-      const { getByText } = render(
-        <ActivitiesScreen navigation={mockNavigation} />
-      );
+      const { getByText } = render(<ActivitiesScreen navigation={mockNavigation} />);
 
       await waitFor(() => {
         expect(getByText(/Spring Festival kicks off/i)).toBeTruthy();
@@ -323,9 +326,7 @@ describe('ActivitiesScreen', () => {
     });
 
     it('hides festival banner in history tab', async () => {
-      const { getByText, queryByText } = render(
-        <ActivitiesScreen navigation={mockNavigation} />
-      );
+      const { getByText, queryByText } = render(<ActivitiesScreen navigation={mockNavigation} />);
 
       const historyTab = getByText('History');
       fireEvent.press(historyTab);
@@ -338,9 +339,7 @@ describe('ActivitiesScreen', () => {
 
   describe('Tabs', () => {
     it('switches between actives and history tabs', async () => {
-      const { getByText } = render(
-        <ActivitiesScreen navigation={mockNavigation} />
-      );
+      const { getByText } = render(<ActivitiesScreen navigation={mockNavigation} />);
 
       const historyTab = getByText('History');
       fireEvent.press(historyTab);
@@ -354,9 +353,7 @@ describe('ActivitiesScreen', () => {
     });
 
     it('shows "Create activities +" button only in actives tab', async () => {
-      const { getByText, queryByTestId } = render(
-        <ActivitiesScreen navigation={mockNavigation} />
-      );
+      const { getByText, queryByTestId } = render(<ActivitiesScreen navigation={mockNavigation} />);
 
       await waitFor(() => {
         expect(getByText('Create activities +')).toBeTruthy();
@@ -373,9 +370,7 @@ describe('ActivitiesScreen', () => {
 
   describe('Filters', () => {
     it('displays filter options', async () => {
-      const { getByTestId } = render(
-        <ActivitiesScreen navigation={mockNavigation} />
-      );
+      const { getByTestId } = render(<ActivitiesScreen navigation={mockNavigation} />);
 
       await waitFor(() => {
         expect(getByTestId('filter-option-all')).toBeTruthy();
@@ -386,9 +381,7 @@ describe('ActivitiesScreen', () => {
     });
 
     it('filters activities when filter is selected', async () => {
-      const { getByTestId, getByText } = render(
-        <ActivitiesScreen navigation={mockNavigation} />
-      );
+      const { getByTestId, getByText } = render(<ActivitiesScreen navigation={mockNavigation} />);
 
       await waitFor(() => {
         expect(getByText('Breathing exercises')).toBeTruthy();
@@ -402,9 +395,7 @@ describe('ActivitiesScreen', () => {
     });
 
     it('filters appointments when appointments filter is selected', async () => {
-      const { getByTestId } = render(
-        <ActivitiesScreen navigation={mockNavigation} />
-      );
+      const { getByTestId } = render(<ActivitiesScreen navigation={mockNavigation} />);
 
       await waitFor(() => {
         const appointmentsFilter = getByTestId('filter-option-appointments');
@@ -413,9 +404,7 @@ describe('ActivitiesScreen', () => {
     });
 
     it('shows orders when orders filter is selected in history tab', async () => {
-      const { getByText, getByTestId } = render(
-        <ActivitiesScreen navigation={mockNavigation} />
-      );
+      const { getByText, getByTestId } = render(<ActivitiesScreen navigation={mockNavigation} />);
 
       const historyTab = getByText('History');
       fireEvent.press(historyTab);
@@ -433,9 +422,7 @@ describe('ActivitiesScreen', () => {
 
   describe('Day Sort Toggle', () => {
     it('toggles sort order when Day button is pressed', async () => {
-      const { getByTestId } = render(
-        <ActivitiesScreen navigation={mockNavigation} />
-      );
+      const { getByTestId } = render(<ActivitiesScreen navigation={mockNavigation} />);
 
       await waitFor(() => {
         const dayButton = getByTestId('filter-button');
@@ -446,9 +433,7 @@ describe('ActivitiesScreen', () => {
 
   describe('Create Activity Modal', () => {
     it('opens create activity modal when "Create activities +" button is pressed', async () => {
-      const { getByText, getByTestId } = render(
-        <ActivitiesScreen navigation={mockNavigation} />
-      );
+      const { getByText, getByTestId } = render(<ActivitiesScreen navigation={mockNavigation} />);
 
       await waitFor(() => {
         const createButton = getByText('Create activities +');
@@ -461,9 +446,7 @@ describe('ActivitiesScreen', () => {
     });
 
     it('creates new activity when save is pressed', async () => {
-      const { getByText, getByTestId } = render(
-        <ActivitiesScreen navigation={mockNavigation} />
-      );
+      const { getByText, getByTestId } = render(<ActivitiesScreen navigation={mockNavigation} />);
 
       await waitFor(() => {
         const createButton = getByText('Create activities +');
@@ -506,9 +489,7 @@ describe('ActivitiesScreen', () => {
 
   describe('Activity Actions', () => {
     it('opens menu when three dots icon is pressed', async () => {
-      const { getAllByTestId } = render(
-        <ActivitiesScreen navigation={mockNavigation} />
-      );
+      const { getAllByTestId } = render(<ActivitiesScreen navigation={mockNavigation} />);
 
       await waitFor(() => {
         // Find the more-vert icon (it's rendered as Icon component)
@@ -521,9 +502,7 @@ describe('ActivitiesScreen', () => {
     it('opens edit modal when Edit is selected from menu', async () => {
       // This test would require more detailed mocking of the menu component
       // For now, we'll test the handleViewActivity function indirectly
-      const { getByText } = render(
-        <ActivitiesScreen navigation={mockNavigation} />
-      );
+      const { getByText } = render(<ActivitiesScreen navigation={mockNavigation} />);
 
       await waitFor(() => {
         expect(getByText('Breathing exercises')).toBeTruthy();
@@ -544,9 +523,7 @@ describe('ActivitiesScreen', () => {
 
   describe('Activity Cards', () => {
     it('displays activity title and description', async () => {
-      const { getByText } = render(
-        <ActivitiesScreen navigation={mockNavigation} />
-      );
+      const { getByText } = render(<ActivitiesScreen navigation={mockNavigation} />);
 
       await waitFor(() => {
         expect(getByText('Breathing exercises')).toBeTruthy();
@@ -554,9 +531,7 @@ describe('ActivitiesScreen', () => {
     });
 
     it('shows status icon in history tab for completed activities', async () => {
-      const { getByText } = render(
-        <ActivitiesScreen navigation={mockNavigation} />
-      );
+      const { getByText } = render(<ActivitiesScreen navigation={mockNavigation} />);
 
       const historyTab = getByText('History');
       fireEvent.press(historyTab);
@@ -570,9 +545,7 @@ describe('ActivitiesScreen', () => {
     });
 
     it('shows "Mark as done" button in actives tab', async () => {
-      const { getByText } = render(
-        <ActivitiesScreen navigation={mockNavigation} />
-      );
+      const { getByText } = render(<ActivitiesScreen navigation={mockNavigation} />);
 
       await waitFor(() => {
         expect(getByText('Mark as done')).toBeTruthy();
@@ -580,9 +553,7 @@ describe('ActivitiesScreen', () => {
     });
 
     it('does not show "View" button in history tab', async () => {
-      const { getByText, queryByText } = render(
-        <ActivitiesScreen navigation={mockNavigation} />
-      );
+      const { getByText, queryByText } = render(<ActivitiesScreen navigation={mockNavigation} />);
 
       const historyTab = getByText('History');
       fireEvent.press(historyTab);
@@ -597,9 +568,7 @@ describe('ActivitiesScreen', () => {
 
   describe('Order Cards', () => {
     it('displays orders in history tab', async () => {
-      const { getByText } = render(
-        <ActivitiesScreen navigation={mockNavigation} />
-      );
+      const { getByText } = render(<ActivitiesScreen navigation={mockNavigation} />);
 
       const historyTab = getByText('History');
       fireEvent.press(historyTab);
@@ -610,9 +579,7 @@ describe('ActivitiesScreen', () => {
     });
 
     it('does not show three dots menu on order cards', async () => {
-      const { getByText } = render(
-        <ActivitiesScreen navigation={mockNavigation} />
-      );
+      const { getByText } = render(<ActivitiesScreen navigation={mockNavigation} />);
 
       const historyTab = getByText('History');
       fireEvent.press(historyTab);
@@ -642,9 +609,7 @@ describe('ActivitiesScreen', () => {
         new Error('Failed to create activity')
       );
 
-      const { getByText, getByTestId } = render(
-        <ActivitiesScreen navigation={mockNavigation} />
-      );
+      const { getByText, getByTestId } = render(<ActivitiesScreen navigation={mockNavigation} />);
 
       await waitFor(() => {
         const createButton = getByText('Create activities +');
@@ -687,9 +652,7 @@ describe('ActivitiesScreen', () => {
         },
       });
 
-      const { getByText } = render(
-        <ActivitiesScreen navigation={mockNavigation} />
-      );
+      const { getByText } = render(<ActivitiesScreen navigation={mockNavigation} />);
 
       await waitFor(() => {
         expect(getByText('No activities found')).toBeTruthy();
@@ -724,9 +687,7 @@ describe('ActivitiesScreen', () => {
         },
       });
 
-      const { getByText } = render(
-        <ActivitiesScreen navigation={mockNavigation} />
-      );
+      const { getByText } = render(<ActivitiesScreen navigation={mockNavigation} />);
 
       const historyTab = getByText('History');
       fireEvent.press(historyTab);

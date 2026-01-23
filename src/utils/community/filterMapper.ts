@@ -1,4 +1,8 @@
-import type { CommunityFeedFilters, PublicationDateFilter, SortByFilter } from '@/types/community/filters';
+import type {
+  CommunityFeedFilters,
+  PublicationDateFilter,
+  SortByFilter,
+} from '@/types/community/filters';
 import type { UserFeedParams } from '@/types/community';
 
 type FeedQueryParams = Partial<Omit<UserFeedParams, 'page' | 'limit' | 'search'>>;
@@ -32,9 +36,7 @@ const getDateRangeForFilter = (filter?: PublicationDateFilter | null) => {
   };
 };
 
-const mapSortFilter = (
-  sortBy?: SortByFilter
-): Pick<UserFeedParams, 'orderBy' | 'order'> => {
+const mapSortFilter = (sortBy?: SortByFilter): Pick<UserFeedParams, 'orderBy' | 'order'> => {
   switch (sortBy) {
     case 'recent':
       return { orderBy: 'createdAt', order: 'desc' };
@@ -47,9 +49,7 @@ const mapSortFilter = (
   }
 };
 
-export const mapFiltersToFeedParams = (
-  filters?: CommunityFeedFilters | null
-): FeedQueryParams => {
+export const mapFiltersToFeedParams = (filters?: CommunityFeedFilters | null): FeedQueryParams => {
   if (!filters) {
     return {};
   }
@@ -84,5 +84,3 @@ export const mapFiltersToFeedParams = (
 
   return query;
 };
-
-

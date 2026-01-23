@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  Image,
-  useWindowDimensions,
-} from 'react-native';
+import { View, Text, ScrollView, Image, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Header, Title, Chip, PrimaryButton, SecondaryButton, ButtonGroup, Loading } from '@/components/ui';
+import {
+  Header,
+  Title,
+  Chip,
+  PrimaryButton,
+  SecondaryButton,
+  ButtonGroup,
+  Loading,
+} from '@/components/ui';
 import { GradientSplash6 } from '@/assets';
 import { personalObjectivesService, storageService } from '@/services';
 import { PersonalObjective } from '@/types';
@@ -27,7 +29,7 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
     return {
       width: size,
       height: size,
-      right: -size * 0.10,
+      right: -size * 0.1,
       top: -size * 0.3,
     };
   }, [windowWidth]);
@@ -80,7 +82,7 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
     <SafeAreaView style={styles.container}>
       <Header onBackPress={() => navigation.goBack()} />
 
-      <ScrollView 
+      <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
@@ -92,15 +94,10 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
               style={[styles.titleAdornment, adornmentStyle]}
               resizeMode="contain"
             />
-          <Title
-            title={`${userName},`}
-            variant="large"
-          />
+            <Title title={`${userName},`} variant="large" />
           </View>
 
-          <Text style={styles.question}>
-            What are the main things we can help you with?
-          </Text>
+          <Text style={styles.question}>What are the main things we can help you with?</Text>
 
           {loading ? (
             <Loading message="Carregando objetivos..." />
@@ -130,4 +127,3 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
 };
 
 export default PersonalObjectivesScreen;
-

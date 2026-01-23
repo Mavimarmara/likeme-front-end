@@ -36,24 +36,24 @@ const CartItemList: React.FC<CartItemListProps> = ({
     <View key={item.id} style={cartStyles.cartItemCard}>
       {/* Imagem posicionada à esquerda */}
       <Image source={{ uri: item.image }} style={cartStyles.itemImage} />
-      
+
       {/* Tags e botão delete - PRIMEIRO (acima do título) */}
       <View style={cartStyles.itemTagsRow}>
         <View style={cartStyles.tagsContainer}>
-          {item.tags && item.tags.map((tag, index) => (
-            <View 
-              key={index} 
-              style={cartStyles.tagBadge}
-            >
-              <Text style={[
-                cartStyles.tagText,
-                index === 0 && cartStyles.tagTextOrange,
-                index === 1 && cartStyles.tagTextGreen
-              ]}>
-                {tag}
-              </Text>
-            </View>
-          ))}
+          {item.tags &&
+            item.tags.map((tag, index) => (
+              <View key={index} style={cartStyles.tagBadge}>
+                <Text
+                  style={[
+                    cartStyles.tagText,
+                    index === 0 && cartStyles.tagTextOrange,
+                    index === 1 && cartStyles.tagTextGreen,
+                  ]}
+                >
+                  {tag}
+                </Text>
+              </View>
+            ))}
         </View>
         {onRemoveItem && (
           <TouchableOpacity
@@ -65,7 +65,7 @@ const CartItemList: React.FC<CartItemListProps> = ({
           </TouchableOpacity>
         )}
       </View>
-      
+
       {/* Conteúdo principal - título, subtitle/date e rating */}
       <View style={cartStyles.itemHeaderContainer}>
         <View style={cartStyles.itemInfo}>
@@ -80,9 +80,7 @@ const CartItemList: React.FC<CartItemListProps> = ({
           {!item.subtitle && item.date && (
             <Text style={cartStyles.itemDate}>Date: {item.date}</Text>
           )}
-          {item.subtitle && item.date && (
-            <Text style={cartStyles.itemDate}>Date: {item.date}</Text>
-          )}
+          {item.subtitle && item.date && <Text style={cartStyles.itemDate}>Date: {item.date}</Text>}
         </View>
         {item.rating !== undefined && item.rating !== null && (
           <View style={cartStyles.ratingContainer}>
@@ -91,7 +89,7 @@ const CartItemList: React.FC<CartItemListProps> = ({
           </View>
         )}
       </View>
-      
+
       {/* Preço e controles de quantidade */}
       <View style={cartStyles.itemFooter}>
         <Text style={cartStyles.itemPrice}>{formatPrice(item.price)}</Text>
@@ -104,9 +102,7 @@ const CartItemList: React.FC<CartItemListProps> = ({
             >
               <Icon name="remove-circle-outline" size={24} color="#001137" />
             </TouchableOpacity>
-            <Text style={cartStyles.quantityText}>
-              {String(item.quantity).padStart(2, '0')}
-            </Text>
+            <Text style={cartStyles.quantityText}>{String(item.quantity).padStart(2, '0')}</Text>
             <TouchableOpacity
               style={cartStyles.quantityButton}
               onPress={() => onIncreaseQuantity(item.id)}
@@ -120,11 +116,7 @@ const CartItemList: React.FC<CartItemListProps> = ({
     </View>
   );
 
-  return (
-    <View style={cartStyles.cartItemsList}>
-      {items.map(item => renderCartItem(item))}
-    </View>
-  );
+  return <View style={cartStyles.cartItemsList}>{items.map((item) => renderCartItem(item))}</View>;
 };
 
 export default CartItemList;

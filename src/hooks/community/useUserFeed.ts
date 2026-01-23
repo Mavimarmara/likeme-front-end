@@ -29,12 +29,7 @@ interface UseUserFeedReturn {
 }
 
 export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn => {
-  const {
-    enabled = true,
-    searchQuery = '',
-    pageSize = DEFAULT_PAGE_SIZE,
-    params = {},
-  } = options;
+  const { enabled = true, searchQuery = '', pageSize = DEFAULT_PAGE_SIZE, params = {} } = options;
 
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
@@ -61,7 +56,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
       try {
         isLoadingRef.current = true;
         hasErrorRef.current = false;
-        
+
         if (page === 1) {
           setLoading(true);
         } else {
@@ -75,19 +70,20 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
           ...memoizedParams,
         });
 
-        const isSuccess = userFeedResponse.success === true || 
-                         userFeedResponse.status === 'ok' || 
-                         userFeedResponse.data?.status === 'ok';
-        
+        const isSuccess =
+          userFeedResponse.success === true ||
+          userFeedResponse.status === 'ok' ||
+          userFeedResponse.data?.status === 'ok';
+
         let feedData: CommunityFeedData | undefined;
         if (userFeedResponse.data?.data) {
           feedData = userFeedResponse.data.data;
         } else if (userFeedResponse.data && 'posts' in userFeedResponse.data) {
           feedData = userFeedResponse.data as CommunityFeedData;
         }
-        
+
         const pagination = userFeedResponse.data?.pagination || userFeedResponse.pagination;
-        
+
         if (!isSuccess || !feedData) {
           throw new Error(userFeedResponse.message || 'Erro ao carregar feed do usuário');
         }
@@ -107,16 +103,13 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
         });
 
         const mappedPostsPromises = (feedData.posts || []).map((communityPost) =>
-          mapCommunityPostToPost(
-            communityPost, 
-            feedData.files, 
-            feedData.users, 
-            feedData.comments
-          )
+          mapCommunityPostToPost(communityPost, feedData.files, feedData.users, feedData.comments)
         );
-        
+
         const mappedPostsResults = await Promise.all(mappedPostsPromises);
-        const mappedPosts: Post[] = mappedPostsResults.filter((post): post is Post => post !== null);
+        const mappedPosts: Post[] = mappedPostsResults.filter(
+          (post): post is Post => post !== null
+        );
 
         if (append) {
           setPosts((prev) => [...prev, ...mappedPosts]);
@@ -125,18 +118,17 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
         }
 
         setCurrentPage(page);
-        
-        const hasMorePages = pagination 
-          ? page < pagination.totalPages 
+
+        const hasMorePages = pagination
+          ? page < pagination.totalPages
           : feedData.paging?.next !== undefined;
         setHasMore(hasMorePages);
       } catch (err) {
         hasErrorRef.current = true;
-        const errorMessage =
-          err instanceof Error ? err.message : 'Erro ao carregar posts';
+        const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar posts';
         setError(errorMessage);
         setHasMore(false);
-        
+
         if (page === 1) {
           setPosts([]);
         }
@@ -163,13 +155,16 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
     loadPosts(1, searchQuery);
   }, [searchQuery, loadPosts]);
 
-  const search = useCallback((query: string) => {
-    previousSearchQuery.current = query;
-    hasLoadedInitially.current = false;
-    setCurrentPage(1);
-    setHasMore(true);
-    loadPosts(1, query);
-  }, [loadPosts]);
+  const search = useCallback(
+    (query: string) => {
+      previousSearchQuery.current = query;
+      hasLoadedInitially.current = false;
+      setCurrentPage(1);
+      setHasMore(true);
+      loadPosts(1, query);
+    },
+    [loadPosts]
+  );
 
   useEffect(() => {
     if (!enabled) {
@@ -183,13 +178,13 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
     const searchChanged = previousSearchQuery.current !== searchQuery;
     const paramsChanged = previousParamsKey.current !== paramsKey;
     const shouldLoad = !hasLoadedInitially.current || searchChanged || paramsChanged;
-    
+
     if (shouldLoad) {
       hasLoadedInitially.current = true;
       previousSearchQuery.current = searchQuery;
       previousParamsKey.current = paramsKey;
       hasErrorRef.current = false;
-      
+
       if (searchChanged || paramsChanged) {
         setCurrentPage(1);
         setHasMore(true);
@@ -211,4 +206,3 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
     search,
   };
 };
-

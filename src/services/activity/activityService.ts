@@ -16,11 +16,11 @@ class ActivityService {
   async listActivities(params: ListActivitiesParams = {}): Promise<ListActivitiesApiResponse> {
     try {
       const queryParams: Record<string, string> = {};
-      
+
       if (params.page !== undefined) {
         queryParams.page = String(params.page);
       }
-      
+
       if (params.limit !== undefined) {
         queryParams.limit = String(params.limit);
       }
@@ -71,7 +71,7 @@ class ActivityService {
       }
 
       const endpoint = `${this.activitiesEndpoint}/${activityId.trim()}`;
-      
+
       const response = await apiClient.get<GetActivityApiResponse>(
         endpoint,
         undefined,
@@ -112,19 +112,18 @@ class ActivityService {
     }
   }
 
-  async updateActivity(activityId: string, data: UpdateActivityData): Promise<ApiResponse<UserActivity>> {
+  async updateActivity(
+    activityId: string,
+    data: UpdateActivityData
+  ): Promise<ApiResponse<UserActivity>> {
     try {
       if (!activityId || activityId.trim() === '') {
         throw new Error('Activity ID is required');
       }
 
       const endpoint = `${this.activitiesEndpoint}/${activityId.trim()}`;
-      
-      const response = await apiClient.put<ApiResponse<UserActivity>>(
-        endpoint,
-        data,
-        true
-      );
+
+      const response = await apiClient.put<ApiResponse<UserActivity>>(endpoint, data, true);
 
       logger.debug('Activity updated:', {
         activityId,
@@ -145,12 +144,8 @@ class ActivityService {
       }
 
       const endpoint = `${this.activitiesEndpoint}/${activityId.trim()}`;
-      
-      const response = await apiClient.delete<ApiResponse<null>>(
-        endpoint,
-        undefined,
-        true
-      );
+
+      const response = await apiClient.delete<ApiResponse<null>>(endpoint, undefined, true);
 
       logger.debug('Activity deleted:', {
         activityId,

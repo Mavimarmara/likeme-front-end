@@ -12,23 +12,11 @@ const CommunityStackNavigator: React.FC = () => {
         headerShown: false,
       }}
     >
-      <Stack.Screen
-        name="CommunityList"
-        component={CommunityScreen}
-      />
-      <Stack.Screen
-        name="PostDetails"
-        component={PostDetailsScreen}
-        options={{ title: 'Post' }}
-      />
-      <Stack.Screen
-        name="ChatScreen"
-        component={ChatScreen}
-        options={{ title: 'Chat' }}
-      />
+      <Stack.Screen name="CommunityList" component={CommunityScreen} />
+      <Stack.Screen name="PostDetails" component={PostDetailsScreen} options={{ title: 'Post' }} />
+      <Stack.Screen name="ChatScreen" component={ChatScreen} options={{ title: 'Chat' }} />
     </Stack.Navigator>
   );
 };
 
 export default CommunityStackNavigator;
-

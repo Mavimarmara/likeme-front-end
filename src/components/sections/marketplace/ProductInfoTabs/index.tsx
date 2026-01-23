@@ -9,10 +9,7 @@ interface ProductInfoTabsProps {
   onTabChange: (tab: InfoTab) => void;
 }
 
-export const ProductInfoTabs: React.FC<ProductInfoTabsProps> = ({
-  activeTab,
-  onTabChange,
-}) => {
+export const ProductInfoTabs: React.FC<ProductInfoTabsProps> = ({ activeTab, onTabChange }) => {
   const tabs: InfoTab[] = ['about', 'objectives', 'communities'];
   const tabLabels: Record<InfoTab, string> = {
     about: 'About',
@@ -29,10 +26,7 @@ export const ProductInfoTabs: React.FC<ProductInfoTabsProps> = ({
           onPress={() => onTabChange(tab)}
           activeOpacity={0.7}
         >
-          <Text style={[
-            styles.infoTabText,
-            activeTab === tab && styles.infoTabTextActive
-          ]}>
+          <Text style={[styles.infoTabText, activeTab === tab && styles.infoTabTextActive]}>
             {tabLabels[tab]}
           </Text>
         </TouchableOpacity>

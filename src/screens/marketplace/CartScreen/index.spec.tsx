@@ -16,7 +16,6 @@ jest.mock('@/assets', () => ({
   BackgroundIconButton: { uri: 'background-icon-button' },
 }));
 
-
 jest.mock('@/components/ui/layout', () => {
   const React = require('react');
   const { View, TouchableOpacity, Text } = require('react-native');
@@ -88,7 +87,7 @@ const mockCartItems = [
 
 describe('CartScreen', () => {
   const mockUnsubscribe = jest.fn();
-  
+
   const mockNavigation = {
     navigate: jest.fn(),
     goBack: jest.fn(),
@@ -109,7 +108,7 @@ describe('CartScreen', () => {
     (storageService.getCartItems as jest.Mock).mockResolvedValue(mockCartItems);
     (storageService.setCartItems as jest.Mock).mockResolvedValue(undefined);
     (storageService.removeCartItem as jest.Mock).mockResolvedValue(undefined);
-    
+
     // Reset do mock do addListener - apenas registra, não chama o callback
     // O loadCartItems será chamado apenas pelo useEffect
     mockNavigation.addListener.mockImplementation((event: string, callback: () => void) => {
@@ -123,12 +122,15 @@ describe('CartScreen', () => {
     );
 
     // Aguarda que o loading termine e os itens sejam carregados
-    await waitFor(() => {
-      // Verifica que não está mais em loading
-      expect(queryByText('Loading cart...')).toBeNull();
-      // E que os produtos foram renderizados
-      expect(getByText('Product 1')).toBeTruthy();
-    }, { timeout: 3000 });
+    await waitFor(
+      () => {
+        // Verifica que não está mais em loading
+        expect(queryByText('Loading cart...')).toBeNull();
+        // E que os produtos foram renderizados
+        expect(getByText('Product 1')).toBeTruthy();
+      },
+      { timeout: 3000 }
+    );
   });
 
   it('renders empty state when cart is empty', async () => {
@@ -144,14 +146,15 @@ describe('CartScreen', () => {
   });
 
   it('loads cart items on mount', async () => {
-    render(
-      <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />
-    );
+    render(<CartScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     // Aguarda o carregamento dos itens - o useEffect chama loadCartItems imediatamente
-    await waitFor(() => {
-      expect(storageService.getCartItems).toHaveBeenCalled();
-    }, { timeout: 2000 });
+    await waitFor(
+      () => {
+        expect(storageService.getCartItems).toHaveBeenCalled();
+      },
+      { timeout: 2000 }
+    );
   });
 
   it('navigates to checkout when Buy button is pressed', async () => {
@@ -159,10 +162,13 @@ describe('CartScreen', () => {
       <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />
     );
 
-    await waitFor(() => {
-      expect(queryByText('Loading cart...')).toBeNull();
-      expect(getByText('Buy')).toBeTruthy();
-    }, { timeout: 3000 });
+    await waitFor(
+      () => {
+        expect(queryByText('Loading cart...')).toBeNull();
+        expect(getByText('Buy')).toBeTruthy();
+      },
+      { timeout: 3000 }
+    );
 
     const buyButton = getByText('Buy');
     fireEvent.press(buyButton);
@@ -175,10 +181,13 @@ describe('CartScreen', () => {
       <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />
     );
 
-    await waitFor(() => {
-      expect(queryByText('Loading cart...')).toBeNull();
-      expect(getByTestId('back-button')).toBeTruthy();
-    }, { timeout: 3000 });
+    await waitFor(
+      () => {
+        expect(queryByText('Loading cart...')).toBeNull();
+        expect(getByTestId('back-button')).toBeTruthy();
+      },
+      { timeout: 3000 }
+    );
 
     const backButton = getByTestId('back-button');
     fireEvent.press(backButton);
@@ -191,11 +200,14 @@ describe('CartScreen', () => {
       <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />
     );
 
-    await waitFor(() => {
-      expect(queryByText('Loading cart...')).toBeNull();
-      // Verifica se os produtos foram renderizados, o que indica que os cálculos foram feitos
-      expect(getByText('Product 1')).toBeTruthy();
-    }, { timeout: 3000 });
+    await waitFor(
+      () => {
+        expect(queryByText('Loading cart...')).toBeNull();
+        // Verifica se os produtos foram renderizados, o que indica que os cálculos foram feitos
+        expect(getByText('Product 1')).toBeTruthy();
+      },
+      { timeout: 3000 }
+    );
   });
 
   it('increases item quantity when plus button is pressed', async () => {
@@ -203,17 +215,23 @@ describe('CartScreen', () => {
       <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />
     );
 
-    await waitFor(() => {
-      expect(queryByText('Loading cart...')).toBeNull();
-      expect(getByText('Product 1')).toBeTruthy();
-    }, { timeout: 3000 });
+    await waitFor(
+      () => {
+        expect(queryByText('Loading cart...')).toBeNull();
+        expect(getByText('Product 1')).toBeTruthy();
+      },
+      { timeout: 3000 }
+    );
 
     const increaseButton = getByTestId('increase-quantity-1');
     fireEvent.press(increaseButton);
 
-    await waitFor(() => {
-      expect(storageService.setCartItems).toHaveBeenCalled();
-    }, { timeout: 2000 });
+    await waitFor(
+      () => {
+        expect(storageService.setCartItems).toHaveBeenCalled();
+      },
+      { timeout: 2000 }
+    );
   });
 
   it('decreases item quantity when minus button is pressed', async () => {
@@ -221,17 +239,23 @@ describe('CartScreen', () => {
       <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />
     );
 
-    await waitFor(() => {
-      expect(queryByText('Loading cart...')).toBeNull();
-      expect(getByText('Product 1')).toBeTruthy();
-    }, { timeout: 3000 });
+    await waitFor(
+      () => {
+        expect(queryByText('Loading cart...')).toBeNull();
+        expect(getByText('Product 1')).toBeTruthy();
+      },
+      { timeout: 3000 }
+    );
 
     const decreaseButton = getByTestId('decrease-quantity-1');
     fireEvent.press(decreaseButton);
 
-    await waitFor(() => {
-      expect(storageService.setCartItems).toHaveBeenCalled();
-    }, { timeout: 2000 });
+    await waitFor(
+      () => {
+        expect(storageService.setCartItems).toHaveBeenCalled();
+      },
+      { timeout: 2000 }
+    );
   });
 
   it('removes item when delete button is pressed', async () => {
@@ -239,17 +263,23 @@ describe('CartScreen', () => {
       <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />
     );
 
-    await waitFor(() => {
-      expect(queryByText('Loading cart...')).toBeNull();
-      expect(getByText('Product 1')).toBeTruthy();
-    }, { timeout: 3000 });
+    await waitFor(
+      () => {
+        expect(queryByText('Loading cart...')).toBeNull();
+        expect(getByText('Product 1')).toBeTruthy();
+      },
+      { timeout: 3000 }
+    );
 
     const deleteButton = getByTestId('delete-item-1');
     fireEvent.press(deleteButton);
 
-    await waitFor(() => {
-      expect(storageService.removeCartItem).toHaveBeenCalledWith('1');
-    }, { timeout: 2000 });
+    await waitFor(
+      () => {
+        expect(storageService.removeCartItem).toHaveBeenCalledWith('1');
+      },
+      { timeout: 2000 }
+    );
   });
 
   it('applies shipping when apply button is pressed', async () => {
@@ -257,10 +287,13 @@ describe('CartScreen', () => {
       <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />
     );
 
-    await waitFor(() => {
-      expect(queryByText('Loading cart...')).toBeNull();
-      expect(getByText('Product 1')).toBeTruthy();
-    }, { timeout: 3000 });
+    await waitFor(
+      () => {
+        expect(queryByText('Loading cart...')).toBeNull();
+        expect(getByText('Product 1')).toBeTruthy();
+      },
+      { timeout: 3000 }
+    );
 
     const zipInput = getByPlaceholderText('00000-000');
     fireEvent.changeText(zipInput, '12345-678');
@@ -289,4 +322,3 @@ describe('CartScreen', () => {
     expect(mockNavigation.navigate).toHaveBeenCalledWith('Marketplace');
   });
 });
-

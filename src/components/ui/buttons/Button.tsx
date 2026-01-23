@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-  TouchableOpacity,
-  Text,
-  TouchableOpacityProps,
-} from 'react-native';
+import { TouchableOpacity, Text, TouchableOpacityProps } from 'react-native';
 import { styles } from './Button.styles';
 
 interface ButtonProps extends TouchableOpacityProps {
@@ -29,11 +25,7 @@ const Button: React.FC<ButtonProps> = ({
     style,
   ];
 
-  const textStyle = [
-    styles.text,
-    styles[`${variant}Text`],
-    styles[`${size}Text`],
-  ];
+  const textStyle = [styles.text, styles[`${variant}Text`], styles[`${size}Text`]];
 
   return (
     <TouchableOpacity style={buttonStyle} {...props}>
@@ -41,6 +33,5 @@ const Button: React.FC<ButtonProps> = ({
     </TouchableOpacity>
   );
 };
-
 
 export default Button;

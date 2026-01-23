@@ -12,10 +12,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     navigation.replace('Summary' as never);
   }, [navigation]);
 
-  return (
-    <SafeAreaView style={styles.container} />
-  );
+  return <SafeAreaView style={styles.container} />;
 };
 
 export default HomeScreen;
-

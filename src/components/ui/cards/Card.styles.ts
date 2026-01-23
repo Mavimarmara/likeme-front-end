@@ -7,7 +7,7 @@ export const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.MD,
     padding: SPACING.MD,
   },
-  
+
   // Variants
   default: {
     backgroundColor: COLORS.WHITE,
@@ -28,24 +28,24 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E0E0E0',
   },
-  
+
   // Header
   header: {
     marginBottom: SPACING.SM,
   },
-  
+
   title: {
     fontSize: FONT_SIZES.LG,
     fontWeight: 'bold',
     color: COLORS.TEXT,
     marginBottom: SPACING.XS,
   },
-  
+
   subtitle: {
     fontSize: FONT_SIZES.SM,
     color: COLORS.TEXT_LIGHT,
   },
-  
+
   // Content
   content: {
     flex: 1,

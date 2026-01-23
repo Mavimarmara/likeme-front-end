@@ -16,7 +16,7 @@ const AuthenticatedScreen: React.FC<Props> = ({ navigation }) => {
       try {
         const registerCompletedAt = await storageService.getRegisterCompletedAt();
         const objectivesSelectedAt = await storageService.getObjectivesSelectedAt();
-        
+
         if (!registerCompletedAt) {
           navigation.replace('Register' as never);
         } else if (!objectivesSelectedAt) {
@@ -35,10 +35,7 @@ const AuthenticatedScreen: React.FC<Props> = ({ navigation }) => {
     checkOnboardingStatus();
   }, [navigation]);
 
-  return (
-    <SafeAreaView style={styles.container} />
-  );
+  return <SafeAreaView style={styles.container} />;
 };
 
 export default AuthenticatedScreen;
-

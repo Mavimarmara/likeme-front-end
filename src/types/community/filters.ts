@@ -8,5 +8,3 @@ export interface CommunityFeedFilters {
   sortBy?: SortByFilter;
   author?: string;
 }
-
-

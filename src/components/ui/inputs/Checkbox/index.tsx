@@ -11,11 +11,7 @@ interface CheckboxProps {
 
 const Checkbox: React.FC<CheckboxProps> = ({ label, checked, onPress }) => {
   return (
-    <TouchableOpacity
-      style={styles.container}
-      onPress={onPress}
-      activeOpacity={0.7}
-    >
+    <TouchableOpacity style={styles.container} onPress={onPress} activeOpacity={0.7}>
       <View style={[styles.checkbox, checked && styles.checkboxChecked]}>
         {checked && <Icon name="check" size={14} color="#0154f8" />}
       </View>
@@ -25,4 +21,3 @@ const Checkbox: React.FC<CheckboxProps> = ({ label, checked, onPress }) => {
 };
 
 export default Checkbox;
-

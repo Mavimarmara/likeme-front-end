@@ -1,5 +1,14 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, ImageBackground, Dimensions, Image } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  ActivityIndicator,
+  ImageBackground,
+  Dimensions,
+  Image,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -8,11 +17,20 @@ import { Header } from '@/components/ui/layout';
 import { Toggle } from '@/components/ui';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { LogoMini } from '@/assets';
-import { ProductsCarousel, PlansCarousel, type Product, type Plan } from '@/components/sections/product';
+import {
+  ProductsCarousel,
+  PlansCarousel,
+  type Product,
+  type Plan,
+} from '@/components/sections/product';
 import { PostCard } from '@/components/sections/community';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
 import { useProductDetails } from '@/hooks';
-import { formatPrice, mapApiProductToCarouselProduct, mapApiProductToNavigationParams } from '@/utils';
+import {
+  formatPrice,
+  mapApiProductToCarouselProduct,
+  mapApiProductToNavigationParams,
+} from '@/utils';
 import { useUserFeed } from '@/hooks';
 import type { Post } from '@/types';
 import type { RootStackParamList } from '@/types/navigation';
@@ -67,9 +85,13 @@ const USER_REVIEWS = [
 
 const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation, route }) => {
   const [activeTab, setActiveTab] = useState<'info' | 'preview'>('info');
-  const [activeInfoTab, setActiveInfoTab] = useState<'about' | 'objectives' | 'communities'>('about');
-  const [activeProductTab, setActiveProductTab] = useState<'goal' | 'description' | 'composition' | 'review'>('goal');
-  
+  const [activeInfoTab, setActiveInfoTab] = useState<'about' | 'objectives' | 'communities'>(
+    'about'
+  );
+  const [activeProductTab, setActiveProductTab] = useState<
+    'goal' | 'description' | 'composition' | 'review'
+  >('goal');
+
   const {
     product,
     ad,
@@ -107,22 +129,31 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     return relatedProducts.map(mapApiProductToCarouselProduct);
   }, [relatedProducts]);
 
-  const infoTabOptions: ButtonCarouselOption<'about' | 'objectives' | 'communities'>[] = useMemo(() => [
-    { id: 'about', label: 'About' },
-    { id: 'objectives', label: 'Objectives' },
-    { id: 'communities', label: 'Communities' },
-  ], []);
+  const infoTabOptions: ButtonCarouselOption<'about' | 'objectives' | 'communities'>[] = useMemo(
+    () => [
+      { id: 'about', label: 'About' },
+      { id: 'objectives', label: 'Objectives' },
+      { id: 'communities', label: 'Communities' },
+    ],
+    []
+  );
 
-  const productTabOptions: ButtonCarouselOption<'goal' | 'description' | 'composition' | 'review'>[] = useMemo(() => [
-    { id: 'goal', label: 'Goal' },
-    { id: 'description', label: 'Description' },
-    { id: 'composition', label: 'Composition' },
-    { id: 'review', label: 'Review' },
-  ], []);
+  const productTabOptions: ButtonCarouselOption<
+    'goal' | 'description' | 'composition' | 'review'
+  >[] = useMemo(
+    () => [
+      { id: 'goal', label: 'Goal' },
+      { id: 'description', label: 'Description' },
+      { id: 'composition', label: 'Composition' },
+      { id: 'review', label: 'Review' },
+    ],
+    []
+  );
 
   // Categoria do produto para badges
-  const productCategory = displayData?.tags?.[0] || product?.category || route.params?.product?.category || 'Product';
-  
+  const productCategory =
+    displayData?.tags?.[0] || product?.category || route.params?.product?.category || 'Product';
+
   const isProductType = productCategory == 'Product';
 
   const handleBackPress = () => {
@@ -139,7 +170,8 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
         name: provider.name,
         avatar: provider.avatar,
         title: 'Therapist & Wellness Coach',
-        description: 'Specialized in mental health and wellness coaching with over 10 years of experience.',
+        description:
+          'Specialized in mental health and wellness coaching with over 10 years of experience.',
         rating: route.params?.product?.rating || 4.8,
         specialties: ['Mental Health', 'Wellness Coaching', 'Therapy'],
       },
@@ -148,13 +180,15 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
 
   const handleSeeProviderProfile = () => {
     const provider = route.params?.product?.provider || product?.provider;
-    
+
     // Dados mockados quando não há provider disponível
     const mockProvider = {
       name: provider?.name || 'Dr. Avery Parker',
-      avatar: provider?.avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200',
+      avatar:
+        provider?.avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200',
       title: 'Therapist & Wellness Coach',
-      description: 'Specialized in mental health and wellness coaching with over 10 years of experience.',
+      description:
+        'Specialized in mental health and wellness coaching with over 10 years of experience.',
       rating: route.params?.product?.rating || product?.rating || 4.8,
       specialties: ['Mental Health', 'Wellness Coaching', 'Therapy'],
     };
@@ -182,7 +216,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   }, [activeTab, loadCommunityPosts]);
 
   const handleProductPress = (recommendedProduct: Product) => {
-    const relatedProduct = relatedProducts.find(rp => rp.id === recommendedProduct.id);
+    const relatedProduct = relatedProducts.find((rp) => rp.id === recommendedProduct.id);
     if (!relatedProduct) return;
 
     navigation.navigate('ProductDetails', {
@@ -216,7 +250,10 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   // Array de imagens do produto (por enquanto apenas uma)
   const productImages = useMemo(() => {
     const images: string[] = [];
-    if (backgroundImage && backgroundImage !== 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400') {
+    if (
+      backgroundImage &&
+      backgroundImage !== 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400'
+    ) {
       images.push(backgroundImage);
     }
     return images;
@@ -225,10 +262,10 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#2196F3" />
-            <Text style={styles.loadingText}>Loading product...</Text>
-          </View>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#2196F3" />
+          <Text style={styles.loadingText}>Loading product...</Text>
+        </View>
       </SafeAreaView>
     );
   }
@@ -236,24 +273,20 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   if (!product || !displayData) {
     return (
       <SafeAreaView style={styles.container}>
-
-          <View style={styles.loadingContainer}>
-            <Text style={styles.loadingText}>Product not found</Text>
-            <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
-              <Text>Go Back</Text>
-            </TouchableOpacity>
-          </View>
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Product not found</Text>
+          <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
+            <Text>Go Back</Text>
+          </TouchableOpacity>
+        </View>
       </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView style={styles.container}>
-        <Header showBackButton={true} onBackPress={handleBackPress} />
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
+      <Header showBackButton={true} onBackPress={handleBackPress} />
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Hero Section with Image */}
         <View style={styles.heroSection}>
           <Image
@@ -261,29 +294,29 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
             style={styles.backgroundImage}
             resizeMode="cover"
           />
-            <View style={styles.heroOverlay}>
-              <LinearGradient
-                colors={['rgba(48, 48, 48, 0)', 'rgba(41, 41, 41, 1)']}
-                locations={[0.64, 1]}
-                style={styles.heroGradient}
-              />
-              <View style={styles.heroContent}>
-                <View style={styles.badgesContainer}>
-                  <View style={styles.badge}>
-                    <Text style={styles.badgeText}>Product</Text>
-                  </View>
-                  {productCategory && productCategory !== 'Product' && (
-                    <View style={styles.badge}>
-                      <Text style={styles.badgeText}>{productCategory}</Text>
-                    </View>
-                  )}
+          <View style={styles.heroOverlay}>
+            <LinearGradient
+              colors={['rgba(48, 48, 48, 0)', 'rgba(41, 41, 41, 1)']}
+              locations={[0.64, 1]}
+              style={styles.heroGradient}
+            />
+            <View style={styles.heroContent}>
+              <View style={styles.badgesContainer}>
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>Product</Text>
                 </View>
-                <Text style={styles.heroTitle}>{displayData.title}</Text>
-                {displayData.price && (
-                  <Text style={styles.heroPrice}>{formatPrice(displayData.price)}</Text>
+                {productCategory && productCategory !== 'Product' && (
+                  <View style={styles.badge}>
+                    <Text style={styles.badgeText}>{productCategory}</Text>
+                  </View>
                 )}
               </View>
+              <Text style={styles.heroTitle}>{displayData.title}</Text>
+              {displayData.price && (
+                <Text style={styles.heroPrice}>{formatPrice(displayData.price)}</Text>
+              )}
             </View>
+          </View>
         </View>
 
         {/* Pagination Dots - Mostrar apenas se houver mais de uma imagem */}
@@ -292,10 +325,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
             {productImages.map((_, index) => (
               <View
                 key={index}
-                style={[
-                  styles.paginationDot,
-                  index === 0 && styles.paginationDotActive
-                ]}
+                style={[styles.paginationDot, index === 0 && styles.paginationDotActive]}
               />
             ))}
           </View>
@@ -345,7 +375,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                   {renderPlansCarousel()}
                 </>
               )}
-              
+
               {activeTab === 'preview' && (
                 <View style={styles.communityPreviewContainer}>
                   {loadingPosts ? (
@@ -357,9 +387,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                       <Text style={styles.emptyText}>No community posts found</Text>
                     </View>
                   ) : (
-                    communityPosts.map((post) => (
-                      <PostCard key={post.id} post={post} />
-                    ))
+                    communityPosts.map((post) => <PostCard key={post.id} post={post} />)
                   )}
                 </View>
               )}
@@ -374,54 +402,43 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   function renderCustomHeader() {
     return (
       <View style={styles.customHeader}>
-        <TouchableOpacity 
-          style={styles.backButton} 
-          onPress={handleBackPress} 
-          activeOpacity={0.7}
-        >
+        <TouchableOpacity style={styles.backButton} onPress={handleBackPress} activeOpacity={0.7}>
           <Icon name="arrow-back" size={24} color="#001137" />
         </TouchableOpacity>
         <View style={styles.logoContainer}>
           <LogoMini width={87} height={16} />
         </View>
-        <TouchableOpacity 
-          style={styles.favoriteButton} 
-          onPress={() => setIsFavorite(!isFavorite)} 
+        <TouchableOpacity
+          style={styles.favoriteButton}
+          onPress={() => setIsFavorite(!isFavorite)}
           activeOpacity={0.7}
         >
-          <Icon 
-            name={isFavorite ? 'star' : 'star-border'} 
-            size={24} 
-            color="#001137" 
-          />
+          <Icon name={isFavorite ? 'star' : 'star-border'} size={24} color="#001137" />
         </TouchableOpacity>
       </View>
     );
   }
 
-
   function renderAddToCartButton() {
     const provider = route.params?.product?.provider || product?.provider;
-    const providerAvatar = provider?.avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200';
+    const providerAvatar =
+      provider?.avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200';
 
     return (
       <View style={styles.floatingButtonContainer}>
         {!displayData.isOutOfStock && (
           <View style={styles.floatingButtonRow}>
-              <Image 
-              source={{ uri: providerAvatar }} 
-              style={styles.providerAvatarInButton}
-            />
-          <TouchableOpacity 
-            style={styles.floatingAddToCartButton}
-            onPress={handleAddToCart} 
-            activeOpacity={0.8}
-          >
-            <Text style={styles.floatingAddToCartText}>Add to cart</Text>
-            <View style={styles.floatingCartIconContainer}>
-              <Icon name="shopping-cart" size={20} color="#FFFFFF" />
-            </View>
-          </TouchableOpacity>
+            <Image source={{ uri: providerAvatar }} style={styles.providerAvatarInButton} />
+            <TouchableOpacity
+              style={styles.floatingAddToCartButton}
+              onPress={handleAddToCart}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.floatingAddToCartText}>Add to cart</Text>
+              <View style={styles.floatingCartIconContainer}>
+                <Icon name="shopping-cart" size={20} color="#FFFFFF" />
+              </View>
+            </TouchableOpacity>
           </View>
         )}
         <View style={styles.providerButtonContainer}>
@@ -429,7 +446,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
             label="See provider profile"
             onPress={handleSeeProviderProfile}
             style={styles.providerProfileButton}
-            size='large'
+            size="large"
           />
         </View>
       </View>
@@ -543,14 +560,12 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   function renderProductTabContent() {
     const description = displayData?.description || product?.description || '';
     const descriptionLines = description
-      ? description.split('\n').filter(line => line.trim().length > 0)
+      ? description.split('\n').filter((line) => line.trim().length > 0)
       : [];
 
     const renderDescriptionWithBullets = () => {
       if (descriptionLines.length === 0) {
-        return (
-          <Text style={styles.productDescription}>No description available.</Text>
-        );
+        return <Text style={styles.productDescription}>No description available.</Text>;
       }
 
       return (
@@ -569,17 +584,9 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       case 'goal':
       case 'description':
       case 'composition':
-        return (
-          <View style={styles.tabContent}>
-            {renderDescriptionWithBullets()}
-          </View>
-        );
+        return <View style={styles.tabContent}>{renderDescriptionWithBullets()}</View>;
       case 'review':
-        return (
-          <>
-            {renderUserFeedback()}
-          </>
-        );
+        return <>{renderUserFeedback()}</>;
       default:
         return null;
     }

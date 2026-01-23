@@ -11,7 +11,6 @@ jest.mock('react-native-safe-area-context', () => {
   };
 });
 
-
 jest.mock('expo-linear-gradient', () => {
   const React = require('react');
   const { View } = require('react-native');
@@ -45,7 +44,6 @@ jest.mock('@/services', () => ({
     listProducts: jest.fn(),
   },
 }));
-
 
 const mockAd = {
   id: 'ad-1',
@@ -139,9 +137,7 @@ describe('AffiliateProductScreen', () => {
       },
     };
 
-    render(
-      <AffiliateProductScreen navigation={mockNavigation as any} route={mockRoute as any} />
-    );
+    render(<AffiliateProductScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(adService.getAdById).toHaveBeenCalledWith('ad-1');
@@ -155,9 +151,7 @@ describe('AffiliateProductScreen', () => {
       },
     };
 
-    render(
-      <AffiliateProductScreen navigation={mockNavigation as any} route={mockRoute as any} />
-    );
+    render(<AffiliateProductScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(adService.listAds).toHaveBeenCalled();
@@ -269,13 +263,15 @@ describe('AffiliateProductScreen', () => {
     );
 
     // Aguarda o loading terminar - o componente deve renderizar mesmo que loadData não encontre nada
-    await waitFor(() => {
-      expect(queryByText('Loading product...')).toBeNull();
-    }, { timeout: 3000 });
+    await waitFor(
+      () => {
+        expect(queryByText('Loading product...')).toBeNull();
+      },
+      { timeout: 3000 }
+    );
 
     // Verifica que o componente renderizou (não está em loading)
     // O teste verifica que o componente não crasha e renderiza algo
     expect(queryByText('Loading product...')).toBeNull();
   });
 });
-

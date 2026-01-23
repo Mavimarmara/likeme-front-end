@@ -10,7 +10,7 @@ export const styles = StyleSheet.create({
     position: 'relative',
     width: '100%',
   },
-  
+
   inputSection: {
     alignItems: 'flex-start',
     display: 'flex',
@@ -19,7 +19,7 @@ export const styles = StyleSheet.create({
     position: 'relative',
     width: '100%',
   },
-  
+
   label: {
     color: '#001137',
     fontFamily: 'DM Sans',
@@ -28,7 +28,7 @@ export const styles = StyleSheet.create({
     letterSpacing: 0.2,
     lineHeight: 22,
   },
-  
+
   inputWrapper: {
     alignItems: 'flex-start',
     alignSelf: 'stretch',
@@ -37,7 +37,7 @@ export const styles = StyleSheet.create({
     position: 'relative',
     width: '100%',
   },
-  
+
   input: {
     alignSelf: 'stretch',
     backgroundColor: '#fdfbee',
@@ -62,7 +62,7 @@ export const styles = StyleSheet.create({
     width: '100%',
     minHeight: 42,
   },
-  
+
   helperContainer: {
     alignItems: 'flex-start',
     display: 'flex',
@@ -73,7 +73,7 @@ export const styles = StyleSheet.create({
     position: 'relative',
     width: '100%',
   },
-  
+
   helperText: {
     color: '#6e6a6a',
     fontFamily: 'DM Sans',
@@ -82,7 +82,7 @@ export const styles = StyleSheet.create({
     letterSpacing: 0.2,
     lineHeight: 22,
   },
-  
+
   errorText: {
     color: '#e30f3c',
     fontFamily: 'DM Sans',

@@ -18,10 +18,7 @@ export interface RecommendedCommunity {
   image: string;
 }
 
-const RecommendedCommunitiesSection: React.FC<Props> = ({
-  communities,
-  onCommunityPress,
-}) => {
+const RecommendedCommunitiesSection: React.FC<Props> = ({ communities, onCommunityPress }) => {
   if (!communities || communities.length === 0) {
     return null;
   }
@@ -37,11 +34,7 @@ const RecommendedCommunitiesSection: React.FC<Props> = ({
             activeOpacity={0.8}
             onPress={() => onCommunityPress?.(community)}
           >
-            <Image
-              source={{ uri: community.image }}
-              style={styles.cardImage}
-              resizeMode="cover"
-            />
+            <Image source={{ uri: community.image }} style={styles.cardImage} resizeMode="cover" />
             <LinearGradient
               colors={['rgba(48, 48, 48, 0)', 'rgba(41, 41, 41, 0.69)']}
               locations={[0.5, 0.69]}
@@ -80,4 +73,3 @@ const RecommendedCommunitiesSection: React.FC<Props> = ({
 };
 
 export default RecommendedCommunitiesSection;
-

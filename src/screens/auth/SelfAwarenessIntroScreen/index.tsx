@@ -1,8 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-} from 'react-native';
+import { View, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header, PrimaryButton, SecondaryButton, ButtonGroup } from '@/components/ui';
 import { styles } from './styles';
@@ -24,9 +21,7 @@ const SelfAwarenessIntroScreen: React.FC<Props> = ({ navigation }) => {
       {/*TODO: Adicionar tela quando houver as perguntas*/}
       <View style={styles.content}>
         <View style={styles.textContainer}>
-          <Text style={styles.title}>
-            YOUR JOURNEY TO SELF-AWARENESS STARTS HERE!
-          </Text>
+          <Text style={styles.title}>YOUR JOURNEY TO SELF-AWARENESS STARTS HERE!</Text>
           <Text style={styles.subtitle}>
             Pause for 2 minutes — let Like Me guide you toward your own balance
           </Text>
@@ -44,4 +39,3 @@ const SelfAwarenessIntroScreen: React.FC<Props> = ({ navigation }) => {
 };
 
 export default SelfAwarenessIntroScreen;
-

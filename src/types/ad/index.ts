@@ -39,15 +39,16 @@ export interface ListAdsParams {
   activeOnly?: boolean;
 }
 
-export interface ListAdsApiResponse extends ApiResponse<{
-  ads: Ad[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}> {}
+export interface ListAdsApiResponse
+  extends ApiResponse<{
+    ads: Ad[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
+  }> {}
 
 export interface GetAdApiResponse extends ApiResponse<Ad> {}
 

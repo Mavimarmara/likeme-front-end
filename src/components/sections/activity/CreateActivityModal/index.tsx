@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Switch, TextInput as RNTextInput, Platform, Modal } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Switch,
+  TextInput as RNTextInput,
+  Platform,
+  Modal,
+} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ModalBase } from '@/components/ui/modals/shared';
@@ -12,18 +20,21 @@ type ActivityType = 'task' | 'event';
 type Props = {
   visible: boolean;
   onClose: () => void;
-  onSave: (data: {
-    name: string;
-    type: ActivityType;
-    startDate?: string;
-    startTime?: string;
-    endDate?: string;
-    endTime?: string;
-    location?: string;
-    description?: string;
-    reminderEnabled: boolean;
-    reminderMinutes?: number;
-  }, activityId?: string) => void;
+  onSave: (
+    data: {
+      name: string;
+      type: ActivityType;
+      startDate?: string;
+      startTime?: string;
+      endDate?: string;
+      endTime?: string;
+      location?: string;
+      description?: string;
+      reminderEnabled: boolean;
+      reminderMinutes?: number;
+    },
+    activityId?: string
+  ) => void;
   activityId?: string;
   initialData?: {
     name: string;
@@ -84,7 +95,9 @@ const CreateActivityModal: React.FC<Props> = ({
         setName(initialData.name || '');
         setType(initialData.type || 'event');
         setStartDateValue(initialData.startDate ? new Date(initialData.startDate) : new Date());
-        setStartTimeValue(initialData.startTime ? parseTimeToDate(initialData.startTime) : new Date());
+        setStartTimeValue(
+          initialData.startTime ? parseTimeToDate(initialData.startTime) : new Date()
+        );
         setEndDateValue(initialData.endDate ? new Date(initialData.endDate) : new Date());
         setEndTimeValue(initialData.endTime ? parseTimeToDate(initialData.endTime) : new Date());
         setLocation(initialData.location || '');
@@ -106,7 +119,7 @@ const CreateActivityModal: React.FC<Props> = ({
       }
     }
   }, [visible, initialData]);
-  
+
   // Picker visibility states
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showStartTimePicker, setShowStartTimePicker] = useState(false);
@@ -122,10 +135,10 @@ const CreateActivityModal: React.FC<Props> = ({
 
   // Format time for display
   const formatTime = (date: Date): string => {
-    return date.toLocaleTimeString('en-US', { 
-      hour: 'numeric', 
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
       minute: '2-digit',
-      hour12: true 
+      hour12: true,
     });
   };
 
@@ -143,18 +156,21 @@ const CreateActivityModal: React.FC<Props> = ({
   };
 
   const handleSave = () => {
-    onSave({
-      name,
-      type,
-      startDate: formatDateLocal(startDateValue),
-      startTime: formatTime(startTimeValue),
-      endDate: formatDateLocal(endDateValue),
-      endTime: formatTime(endTimeValue),
-      location,
-      description: type === 'task' ? description : undefined,
-      reminderEnabled,
-      reminderMinutes: reminderEnabled ? reminderMinutes : undefined,
-    }, activityId);
+    onSave(
+      {
+        name,
+        type,
+        startDate: formatDateLocal(startDateValue),
+        startTime: formatTime(startTimeValue),
+        endDate: formatDateLocal(endDateValue),
+        endTime: formatTime(endTimeValue),
+        location,
+        description: type === 'task' ? description : undefined,
+        reminderEnabled,
+        reminderMinutes: reminderEnabled ? reminderMinutes : undefined,
+      },
+      activityId
+    );
     onClose();
   };
 
@@ -225,10 +241,7 @@ const CreateActivityModal: React.FC<Props> = ({
       showTitle={false}
       header={
         <View style={styles.header}>
-          <SecondaryButton
-            label="Cancel"
-            onPress={handleCancel}
-          />
+          <SecondaryButton label="Cancel" onPress={handleCancel} />
           <PrimaryButton
             label="Save"
             onPress={handleSave}

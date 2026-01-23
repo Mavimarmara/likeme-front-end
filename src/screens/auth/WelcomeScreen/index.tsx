@@ -22,7 +22,7 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
     const timer = setTimeout(() => {
       inputRef.current?.focus();
     }, 300);
-    
+
     return () => clearTimeout(timer);
   }, []);
 
@@ -38,18 +38,20 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         style={styles.keyboardAvoidingView}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <Header onBackPress={() => navigation.goBack()} />
 
         <View style={styles.content}>
-          <Title 
+          <Title
             title="Welcome!"
             subtitle="How can I call you?"
             variant="large"
-            rightAdornment={<Image source={GradientSplash3} style={styles.titleAdornment} resizeMode="cover" />}
+            rightAdornment={
+              <Image source={GradientSplash3} style={styles.titleAdornment} resizeMode="cover" />
+            }
           />
 
           <View style={styles.inputContainer}>

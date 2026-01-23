@@ -10,16 +10,16 @@ export const styles = StyleSheet.create({
     position: 'relative',
     width: '100%',
   },
-  
+
   titleRow: {
     alignSelf: 'stretch',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
     minHeight: 48,
-    maxWidth: "85%"
+    maxWidth: '85%',
   },
-  
+
   adornmentWrapper: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -27,7 +27,7 @@ export const styles = StyleSheet.create({
     width: 90,
     overflow: 'hidden',
   },
-  
+
   title: {
     alignItems: 'center',
     alignSelf: 'auto',
@@ -39,22 +39,22 @@ export const styles = StyleSheet.create({
     letterSpacing: 0,
     position: 'relative',
   },
-  
+
   large: {
     fontSize: 48,
     lineHeight: 48,
   },
-  
+
   medium: {
     fontSize: 32,
     lineHeight: 32,
   },
-  
+
   small: {
     fontSize: 24,
     lineHeight: 24,
   },
-  
+
   subtitle: {
     alignItems: 'center',
     alignSelf: 'stretch',

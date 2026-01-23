@@ -11,7 +11,7 @@ export const styles = StyleSheet.create({
   keyboardAvoidingView: {
     flex: 1,
   },
-  
+
   content: {
     alignItems: 'flex-start',
     display: 'flex',
@@ -28,9 +28,9 @@ export const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     transform: [{ scale: 1.3 }],
-    marginBottom: 5
+    marginBottom: 5,
   },
-  
+
   inputContainer: {
     alignItems: 'flex-start',
     display: 'flex',
@@ -41,5 +41,4 @@ export const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
   },
-  
 });

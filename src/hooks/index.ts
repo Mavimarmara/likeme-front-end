@@ -27,5 +27,8 @@ export type { AnamnesisProgress, CategoryProgress } from './anamnesis/useAnamnes
 export { useMenuItems } from './navigation/useMenuItems';
 
 // Types
-export type { ActivityItem, UseActivitiesOptions, UseActivitiesReturn } from '@/types/activity/hooks';
-
+export type {
+  ActivityItem,
+  UseActivitiesOptions,
+  UseActivitiesReturn,
+} from '@/types/activity/hooks';

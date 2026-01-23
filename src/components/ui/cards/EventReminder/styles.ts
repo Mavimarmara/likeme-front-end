@@ -114,4 +114,3 @@ export const styles = StyleSheet.create({
     color: '#001137',
   },
 });
-

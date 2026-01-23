@@ -534,10 +534,8 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#001137',
   },
-  recommendedSection: {
-  },
-  plansSection: {
-  },
+  recommendedSection: {},
+  plansSection: {},
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',

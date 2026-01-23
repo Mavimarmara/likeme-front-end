@@ -97,4 +97,3 @@ describe('Card Data Formatting', () => {
     });
   });
 });
-

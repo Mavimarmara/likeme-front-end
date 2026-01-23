@@ -1,5 +1,13 @@
 import React from 'react';
-import { Text, TouchableOpacity, GestureResponderEvent, ViewStyle, TextStyle, ActivityIndicator, View } from 'react-native';
+import {
+  Text,
+  TouchableOpacity,
+  GestureResponderEvent,
+  ViewStyle,
+  TextStyle,
+  ActivityIndicator,
+  View,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { COLORS } from '@/constants';
 import { styles } from './styles';
@@ -21,12 +29,12 @@ type Props = {
   variant?: 'default' | 'dark';
 };
 
-const SecondaryButton: React.FC<Props> = ({ 
-  label, 
-  onPress, 
-  style, 
+const SecondaryButton: React.FC<Props> = ({
+  label,
+  onPress,
+  style,
   labelStyle,
-  loading = false, 
+  loading = false,
   disabled = false,
   size = 'medium',
   icon,
@@ -52,26 +60,26 @@ const SecondaryButton: React.FC<Props> = ({
 
   const renderIcon = () => {
     if (!icon) return null;
-    
+
     return (
-      <Icon 
-        name={icon} 
-        size={iconSize} 
-        color={getIconColor()} 
+      <Icon
+        name={icon}
+        size={iconSize}
+        color={getIconColor()}
         style={iconPosition === 'left' ? styles.iconLeft : styles.iconRight}
       />
     );
   };
 
   return (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={[
-        styles.button, 
+        styles.button,
         variant === 'dark' && styles.buttonDark,
         getSizeStyle(),
-        style, 
-        isDisabled && styles.buttonDisabled
-      ]} 
+        style,
+        isDisabled && styles.buttonDisabled,
+      ]}
       onPress={onPress}
       disabled={isDisabled}
       activeOpacity={0.7}
@@ -81,7 +89,9 @@ const SecondaryButton: React.FC<Props> = ({
       ) : (
         <View style={styles.buttonContent}>
           {iconPosition === 'left' && renderIcon()}
-          <Text style={[styles.label, variant === 'dark' && styles.labelDark, labelStyle]}>{label}</Text>
+          <Text style={[styles.label, variant === 'dark' && styles.labelDark, labelStyle]}>
+            {label}
+          </Text>
           {iconPosition === 'right' && renderIcon()}
         </View>
       )}
@@ -90,5 +100,3 @@ const SecondaryButton: React.FC<Props> = ({
 };
 
 export default SecondaryButton;
-
-

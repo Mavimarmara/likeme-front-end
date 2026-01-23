@@ -22,7 +22,7 @@ const ActivityContent: React.FC<Props> = ({ activity }) => {
 
   return (
     <View style={styles.container}>
-            <View style={styles.header}>
+      <View style={styles.header}>
         <Text style={styles.title}>{activity.title}</Text>
         <View style={styles.checkContainer}>
           <View style={styles.checkCircle} />
@@ -32,11 +32,7 @@ const ActivityContent: React.FC<Props> = ({ activity }) => {
       <View style={styles.content}>
         <View style={styles.questionContainer}>
           <View style={styles.questionHeader}>
-            <SecondaryButton
-              label="Edit"
-              onPress={() => {}}
-              style={styles.editButton}
-            />
+            <SecondaryButton label="Edit" onPress={() => {}} style={styles.editButton} />
           </View>
           <Text style={styles.question}>{activity.question}</Text>
         </View>
@@ -48,19 +44,11 @@ const ActivityContent: React.FC<Props> = ({ activity }) => {
               return (
                 <TouchableOpacity
                   key={index}
-                  style={[
-                    styles.optionButton,
-                    isSelected && styles.optionButtonSelected,
-                  ]}
+                  style={[styles.optionButton, isSelected && styles.optionButtonSelected]}
                   onPress={() => handleOptionPress(option)}
                   activeOpacity={0.7}
                 >
-                  <Text
-                    style={[
-                      styles.optionText,
-                      isSelected && styles.optionTextSelected,
-                    ]}
-                  >
+                  <Text style={[styles.optionText, isSelected && styles.optionTextSelected]}>
                     {option}
                   </Text>
                 </TouchableOpacity>
@@ -68,17 +56,16 @@ const ActivityContent: React.FC<Props> = ({ activity }) => {
             })}
           </View>
         )}
-<View style={styles.submitButtonContainer}>
-        <PrimaryButton
-          label={activity.isSubmitted ? 'Submitted' : 'Submit'}
-          onPress={() => {}}
-          style={styles.submitButton}
-        />
-      </View>
+        <View style={styles.submitButtonContainer}>
+          <PrimaryButton
+            label={activity.isSubmitted ? 'Submitted' : 'Submit'}
+            onPress={() => {}}
+            style={styles.submitButton}
+          />
+        </View>
       </View>
     </View>
   );
 };
 
 export default ActivityContent;
-

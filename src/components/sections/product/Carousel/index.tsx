@@ -87,7 +87,6 @@ const Carousel: React.FC<Props> = ({
       {renderPagination()}
     </View>
   );
-}
+};
 
 export default Carousel;
-

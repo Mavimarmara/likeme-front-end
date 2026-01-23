@@ -59,15 +59,16 @@ export interface ListProductsParams {
   search?: string;
 }
 
-export interface ListProductsApiResponse extends ApiResponse<{
-  products: Product[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}> {}
+export interface ListProductsApiResponse
+  extends ApiResponse<{
+    products: Product[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
+  }> {}
 
 export interface GetProductApiResponse extends ApiResponse<Product> {}
 

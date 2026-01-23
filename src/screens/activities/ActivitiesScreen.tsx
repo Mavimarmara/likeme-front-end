@@ -1,5 +1,16 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image, ImageBackground, Dimensions, Modal, Alert, Linking } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+  ImageBackground,
+  Dimensions,
+  Modal,
+  Alert,
+  Linking,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -8,11 +19,22 @@ import { Header, Background } from '@/components/ui/layout';
 import { Toggle, PrimaryButton, Badge } from '@/components/ui';
 import { CreateActivityModal } from '@/components/sections/activity';
 import { BackgroundIconButton, DoneIcon, CloseIcon } from '@/assets';
-import { ProductsCarousel, PlansCarousel, type Product, type Plan } from '@/components/sections/product';
+import {
+  ProductsCarousel,
+  PlansCarousel,
+  type Product,
+  type Plan,
+} from '@/components/sections/product';
 import { EventReminder } from '@/components/ui/cards';
 import { orderService, activityService } from '@/services';
 import { storageService } from '@/services';
-import { formatPrice, getDateFromDatetime, getTimeFromDatetime, sortByDateTime, sortByDateField } from '@/utils';
+import {
+  formatPrice,
+  getDateFromDatetime,
+  getTimeFromDatetime,
+  sortByDateTime,
+  sortByDateField,
+} from '@/utils';
 import { COLORS } from '@/constants';
 import { useActivities, useSuggestedProducts, useMenuItems } from '@/hooks';
 import { AnamnesisPromptCard } from '@/components/sections/anamnesis';
@@ -95,7 +117,6 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
     enabled: true,
   });
 
-
   // Função para encontrar a próxima atividade que acontece hoje usando dados originais
   const getUpcomingActivity = useMemo(() => {
     if (activeTab === 'history' || rawActivities.length === 0) return null;
@@ -129,10 +150,10 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
             startDate = new Date(activity.startDate);
           }
           startDate.setHours(0, 0, 0, 0);
-          
+
           // Verificar se é hoje
           const isTodayDate = startDate.getTime() === today.getTime();
-          
+
           // Retornar true se for hoje (mostrar todas as atividades de hoje)
           return isTodayDate;
         } catch (error) {
@@ -145,7 +166,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
           // Parsear datas corretamente (extrair da string ISO)
           let dateA: Date;
           let dateB: Date;
-          
+
           if (typeof a.startDate === 'string') {
             const dateOnlyA = a.startDate.split('T')[0];
             if (/^\d{4}-\d{2}-\d{2}$/.test(dateOnlyA)) {
@@ -157,7 +178,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
           } else {
             dateA = new Date(a.startDate);
           }
-          
+
           if (typeof b.startDate === 'string') {
             const dateOnlyB = b.startDate.split('T')[0];
             if (/^\d{4}-\d{2}-\d{2}$/.test(dateOnlyB)) {
@@ -169,18 +190,18 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
           } else {
             dateB = new Date(b.startDate);
           }
-          
+
           // Se ambas têm startTime, ordenar por hora
           if (a.startTime && b.startTime) {
             const timeA = parseTimeString(a.startTime, dateA);
             const timeB = parseTimeString(b.startTime, dateB);
             return timeA.getTime() - timeB.getTime();
           }
-          
+
           // Se só uma tem startTime, priorizar a que tem
           if (a.startTime && !b.startTime) return -1;
           if (!a.startTime && b.startTime) return 1;
-          
+
           // Se nenhuma tem, manter ordem original
           return 0;
         } catch {
@@ -199,7 +220,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
 
     try {
       const now = new Date();
-      
+
       // Se não tiver startTime, apenas mostrar que é hoje
       if (!activity.startTime) {
         return `${activity.name} is scheduled for today—don't miss it!`;
@@ -226,9 +247,13 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
       const diffHours = Math.floor(diffMinutes / 60);
 
       if (diffHours > 0) {
-        return `${activity.name} kicks off in ${diffHours} hour${diffHours > 1 ? 's' : ''}—don't miss it!`;
+        return `${activity.name} kicks off in ${diffHours} hour${
+          diffHours > 1 ? 's' : ''
+        }—don't miss it!`;
       } else if (diffMinutes > 0) {
-        return `${activity.name} starts in ${diffMinutes} minute${diffMinutes > 1 ? 's' : ''}—don't miss it!`;
+        return `${activity.name} starts in ${diffMinutes} minute${
+          diffMinutes > 1 ? 's' : ''
+        }—don't miss it!`;
       } else if (diffMinutes > -60) {
         // Se passou há menos de 1 hora, ainda mostrar
         return `${activity.name} is happening now—don't miss it!`;
@@ -264,7 +289,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
         startDate = new Date(activity.startDate);
       }
       const isTodayDate = isToday(startDate);
-      
+
       return {
         date: isTodayDate ? 'Today' : formatDate(startDate),
         time: activity.startTime || '',
@@ -294,14 +319,14 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
 
   const filteredActivities = useMemo(() => {
     let source = activeTab === 'history' ? historyActivities : activeActivities;
-    
+
     // Apply filter
     if (selectedFilter === 'all') {
       // Keep all
     } else if (selectedFilter === 'activities') {
-      source = source.filter(a => a.type === 'program' || a.type === 'personal');
+      source = source.filter((a) => a.type === 'program' || a.type === 'personal');
     } else {
-      source = source.filter(a => a.type === 'appointment');
+      source = source.filter((a) => a.type === 'appointment');
     }
 
     // Sort by date
@@ -314,19 +339,19 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
 
   const handleMarkAsDone = async (activityId: string) => {
     try {
-      const activity = activities.find(a => a.id === activityId);
+      const activity = activities.find((a) => a.id === activityId);
       if (!activity) return;
 
       // Atualizar a descrição para incluir marcador de completada antes de deletar
-      const updatedDescription = activity.description.startsWith('[COMPLETED]') 
-        ? activity.description 
+      const updatedDescription = activity.description.startsWith('[COMPLETED]')
+        ? activity.description
         : `[COMPLETED]${activity.description}`;
-      
+
       // Atualizar a atividade com a descrição marcada antes de deletar
       await activityService.updateActivity(activityId, {
         description: updatedDescription,
       });
-      
+
       // Marcar atividade como concluída (deletada) para que apareça no histórico como completada
       await activityService.deleteActivity(activityId);
       // Recarregar atividades para atualizar a lista
@@ -341,10 +366,13 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
     // Abrir modal de edição
     setEditingActivityData({
       name: activity.title,
-      type: activity.type === 'personal' ? 'task' : activity.type === 'appointment' ? 'event' : 'event',
+      type:
+        activity.type === 'personal' ? 'task' : activity.type === 'appointment' ? 'event' : 'event',
       startDate: activity.dateTime ? getDateFromDatetime(activity.dateTime) : undefined,
       startTime: activity.dateTime ? getTimeFromDatetime(activity.dateTime) : undefined,
-      location: activity.providerName ? `Meet with ${activity.providerName}` : activity.description || '',
+      location: activity.providerName
+        ? `Meet with ${activity.providerName}`
+        : activity.description || '',
       description: activity.description,
       reminderEnabled: false,
       reminderMinutes: 5,
@@ -355,30 +383,26 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
   };
 
   const handleDeleteActivity = async (activityId: string) => {
-    Alert.alert(
-      'Delete Activity',
-      'Are you sure you want to delete this activity?',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
+    Alert.alert('Delete Activity', 'Are you sure you want to delete this activity?', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await activityService.deleteActivity(activityId);
+            await loadActivities(activeTab === 'history');
+            setMenuVisibleForId(null);
+          } catch (error) {
+            console.error('Error deleting activity:', error);
+            Alert.alert('Error', 'Failed to delete activity');
+          }
         },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await activityService.deleteActivity(activityId);
-              await loadActivities(activeTab === 'history');
-              setMenuVisibleForId(null);
-            } catch (error) {
-              console.error('Error deleting activity:', error);
-              Alert.alert('Error', 'Failed to delete activity');
-            }
-          },
-        },
-      ]
-    );
+      },
+    ]);
   };
 
   const handleMenuPress = (activityId: string, event: any) => {
@@ -388,7 +412,6 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
     setMenuPosition({ x: pageX - 100, y: pageY + 10 });
     setMenuVisibleForId(activityId);
   };
-
 
   const handleSkipAppointment = async (activityId: string) => {
     try {
@@ -439,17 +462,17 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
       { id: 'activities', label: 'Activities' },
       { id: 'appointments', label: 'Appointments' },
     ];
-    
+
     // Orders só aparece quando estiver na aba History
     if (activeTab === 'history') {
       baseOptions.push({ id: 'orders', label: 'Orders' });
     }
-    
+
     return baseOptions;
   }, [activeTab]);
 
   const handleDaySortToggle = () => {
-    setDaySortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
+    setDaySortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
   };
 
   const renderFilters = () => (
@@ -464,15 +487,15 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
       />
       {activeTab === 'actives' && (
         <View style={styles.createButtonContainer}>
-        <PrimaryButton
-          label="Create activities +"
-          onPress={() => {
-            setEditingActivityId(null);
-            setEditingActivityData(null);
-            setIsCreateActivityModalVisible(true);
-          }}
-          style={styles.createButton}
-        />
+          <PrimaryButton
+            label="Create activities +"
+            onPress={() => {
+              setEditingActivityId(null);
+              setEditingActivityData(null);
+              setIsCreateActivityModalVisible(true);
+            }}
+            style={styles.createButton}
+          />
         </View>
       )}
     </View>
@@ -482,7 +505,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
     if (activeTab === 'history') return null;
 
     const upcomingActivity = getUpcomingActivity;
-    
+
     if (!upcomingActivity) return null;
 
     const { date, time } = getReminderDateAndTime(upcomingActivity);
@@ -578,7 +601,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
           <View style={styles.cardContent}>
             <View style={styles.cardHeader}>
               <Badge label={typeLabels[activity.type]} color="orange" />
-              <TouchableOpacity 
+              <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={(e) => handleMenuPress(activity.id, e)}
               >
@@ -636,10 +659,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
         <View style={styles.cardContent}>
           <View style={styles.cardHeader}>
             <Badge label={typeLabels[activity.type]} color="orange" />
-            <TouchableOpacity 
-              activeOpacity={0.7}
-              onPress={(e) => handleMenuPress(activity.id, e)}
-            >
+            <TouchableOpacity activeOpacity={0.7} onPress={(e) => handleMenuPress(activity.id, e)}>
               <Icon name="more-vert" size={20} color={COLORS.TEXT} />
             </TouchableOpacity>
           </View>
@@ -674,10 +694,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
             )}
 
             {activeTab === 'actives' && (
-              <TouchableOpacity
-                onPress={() => handleViewActivity(activity)}
-                activeOpacity={0.7}
-              >
+              <TouchableOpacity onPress={() => handleViewActivity(activity)} activeOpacity={0.7}>
                 <Text style={styles.viewLink}>View</Text>
               </TouchableOpacity>
             )}
@@ -711,7 +728,6 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
     },
   ];
 
-
   return (
     <SafeAreaView style={styles.container}>
       <Background />
@@ -722,9 +738,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
         {renderEventReminder()}
 
         {activeTab === 'actives' && (
-          <Text style={styles.sectionLabel}>
-            Mark as done for completed activities
-          </Text>
+          <Text style={styles.sectionLabel}>Mark as done for completed activities</Text>
         )}
 
         <ScrollView
@@ -742,11 +756,14 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
               {selectedFilter === 'activities' && filteredActivities.map(renderActivityCard)}
               {selectedFilter === 'appointments' && filteredActivities.map(renderActivityCard)}
               {selectedFilter === 'orders' && sortedOrders.map(renderOrderCard)}
-              {selectedFilter === 'all' && filteredActivities.length === 0 && sortedOrders.length === 0 && !isLoadingOrders && (
-                <View style={styles.emptyContainer}>
-                  <Text style={styles.emptyText}>No history found</Text>
-                </View>
-              )}
+              {selectedFilter === 'all' &&
+                filteredActivities.length === 0 &&
+                sortedOrders.length === 0 &&
+                !isLoadingOrders && (
+                  <View style={styles.emptyContainer}>
+                    <Text style={styles.emptyText}>No history found</Text>
+                  </View>
+                )}
               {selectedFilter === 'activities' && filteredActivities.length === 0 && (
                 <View style={styles.emptyContainer}>
                   <Text style={styles.emptyText}>No activities found</Text>
@@ -849,7 +866,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
               });
               console.log('Activity created:', response.data?.id);
             }
-            
+
             // Verificar se a operação foi bem-sucedida antes de recarregar
             if (response && response.success && response.data) {
               // Refresh activities list after save
@@ -869,7 +886,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
         activityId={editingActivityId || undefined}
         initialData={editingActivityData}
       />
-      
+
       {/* Action Menu Modal */}
       <Modal
         visible={menuVisibleForId !== null}
@@ -889,7 +906,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
                   <TouchableOpacity
                     style={styles.menuItem}
                     onPress={() => {
-                      const activity = activities.find(a => a.id === menuVisibleForId);
+                      const activity = activities.find((a) => a.id === menuVisibleForId);
                       if (activity) {
                         handleViewActivity(activity);
                       }

@@ -73,7 +73,7 @@ import [ScreenName] from './index';
 describe('[ScreenName]', () => {
   it('renders correctly', () => {
     const { getByText } = render(<[ScreenName] />);
-    
+
     expect(getByText('[ScreenName]')).toBeTruthy();
   });
 

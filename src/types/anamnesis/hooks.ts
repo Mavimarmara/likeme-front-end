@@ -24,5 +24,3 @@ export type UseAnamnesisQuestionnaireReturn<T> = {
   setAnswer: (questionConceptId: string, value: T) => Promise<void>;
   complete: () => Promise<void>;
 };
-
-

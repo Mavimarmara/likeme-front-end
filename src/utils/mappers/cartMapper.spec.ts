@@ -1,6 +1,6 @@
 /**
  * Testes unitários para cartMapper
- * 
+ *
  * Documenta como produtos são mapeados para itens do carrinho,
  * incluindo normalização de preços e valores padrão.
  */

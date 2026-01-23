@@ -20,7 +20,7 @@ const NumberScale: React.FC<NumberScaleProps> = ({
 
   // Calcular posição baseado no valor (usa temp durante arraste, selectedValue depois)
   const getCurrentValue = () => tempValue ?? selectedValue ?? min;
-  
+
   const getThumbPosition = () => {
     const value = getCurrentValue();
     const percentage = (value - min) / (max - min);
@@ -50,7 +50,7 @@ const NumberScale: React.FC<NumberScaleProps> = ({
 
   const updateTempValueFromPosition = (x: number) => {
     if (sliderWidth === 0) return;
-    
+
     const percentage = Math.max(0, Math.min(1, x / sliderWidth));
     const value = Math.round(percentage * (max - min)) + min;
     setTempValue(value);
@@ -67,12 +67,7 @@ const NumberScale: React.FC<NumberScaleProps> = ({
         {/* Track de fundo (cinza) */}
         <View style={styles.track}>
           {/* Track preenchido (azul) - dentro do track de fundo */}
-          <View
-            style={[
-              styles.trackFilled,
-              { width: getThumbPosition() }
-            ]}
-          />
+          <View style={[styles.trackFilled, { width: getThumbPosition() }]} />
         </View>
       </View>
 
@@ -182,4 +177,3 @@ const styles = StyleSheet.create({
 });
 
 export default NumberScale;
-

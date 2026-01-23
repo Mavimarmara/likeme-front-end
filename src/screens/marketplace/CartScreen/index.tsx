@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  ScrollView, 
-  TouchableOpacity, 
-  Image, 
-  StyleSheet, 
-  TextInput 
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -45,12 +45,12 @@ type CartScreenProps = {
 const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [zipCode, setZipCode] = useState('00000-000');
-  const [shipping, setShipping] = useState(0.00);
+  const [shipping, setShipping] = useState(0.0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadCartItems();
-    
+
     // Listener para quando a tela recebe foco (para atualizar quando voltar de outra tela)
     const unsubscribe = navigation.addListener('focus', () => {
       loadCartItems();
@@ -63,39 +63,39 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
     try {
       setLoading(true);
       const items = await storageService.getCartItems();
-      
+
       // Validar produtos: verificar se ainda existem e têm saldo
       const validatedItems: CartItem[] = [];
       const removedItems: string[] = [];
-      
+
       for (const item of items) {
         try {
           const productResponse = await productService.getProductById(item.id);
-          
+
           if (!productResponse.success || !productResponse.data) {
             // Produto não existe mais
             removedItems.push(item.title || item.id);
             continue;
           }
-          
+
           const product = productResponse.data;
           const requestedQuantity = Number(item.quantity) || 1;
-          
+
           // Se quantity é null, ignora verificação de estoque (produto externo ou sem controle)
           if (product.quantity !== null) {
             const availableQuantity = product.quantity;
-          
-          if (availableQuantity < requestedQuantity) {
-            // Produto não tem saldo suficiente
-            if (availableQuantity === 0) {
-              removedItems.push(item.title || item.id);
-              continue;
-            }
-            // Ajustar quantidade para o saldo disponível
-            item.quantity = availableQuantity;
+
+            if (availableQuantity < requestedQuantity) {
+              // Produto não tem saldo suficiente
+              if (availableQuantity === 0) {
+                removedItems.push(item.title || item.id);
+                continue;
+              }
+              // Ajustar quantidade para o saldo disponível
+              item.quantity = availableQuantity;
             }
           }
-          
+
           // Garante que price e quantity são números
           validatedItems.push({
             ...item,
@@ -109,19 +109,21 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
           removedItems.push(item.title || item.id);
         }
       }
-      
+
       // Atualizar carrinho com itens validados
       if (validatedItems.length !== items.length || removedItems.length > 0) {
         await storageService.setCartItems(validatedItems);
-        
+
         if (removedItems.length > 0) {
           Alert.alert(
             'Carrinho atualizado',
-            `Os seguintes produtos foram removidos do carrinho por não estarem mais disponíveis:\n\n${removedItems.join('\n')}`
+            `Os seguintes produtos foram removidos do carrinho por não estarem mais disponíveis:\n\n${removedItems.join(
+              '\n'
+            )}`
           );
         }
       }
-      
+
       setCartItems(validatedItems);
     } catch (error) {
       console.error('Error loading cart items:', error);
@@ -144,7 +146,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
   };
 
   const handleIncreaseQuantity = async (id: string) => {
-    const updatedItems = cartItems.map(item => {
+    const updatedItems = cartItems.map((item) => {
       if (item.id === id) {
         const currentQuantity = Number(item.quantity) || 1;
         return { ...item, quantity: currentQuantity + 1 };
@@ -156,7 +158,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
 
   const handleDecreaseQuantity = async (id: string) => {
     const updatedItems = cartItems
-      .map(item => {
+      .map((item) => {
         if (item.id === id) {
           const currentQuantity = Number(item.quantity) || 1;
           if (currentQuantity > 1) {
@@ -177,7 +179,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
 
   const handleApplyShipping = () => {
     // Lógica para calcular frete
-    setShipping(0.00);
+    setShipping(0.0);
   };
 
   const handleBuy = () => {
@@ -196,7 +198,6 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
     return calculateSubtotal() + shipping;
   };
 
-
   const formatRating = (rating: number | undefined | null) => {
     if (rating === undefined || rating === null || isNaN(Number(rating))) {
       return '0.000';
@@ -206,8 +207,8 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
 
   const renderHeader = () => (
     <View style={styles.headerContainer}>
-      <TouchableOpacity 
-        style={styles.backButton} 
+      <TouchableOpacity
+        style={styles.backButton}
         onPress={handleBackPress}
         activeOpacity={0.7}
         testID="back-button"
@@ -239,20 +240,19 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
     <View key={item.id} style={styles.cartItemCard}>
       {/* Imagem posicionada à esquerda */}
       <Image source={{ uri: item.image }} style={styles.itemImage} />
-      
+
       {/* Tags e botão delete - PRIMEIRO (acima do título) */}
       <View style={styles.itemTagsRow}>
         <View style={styles.tagsContainer}>
           {item.tags.map((tag, index) => (
-            <View 
-              key={index} 
-              style={styles.tagBadge}
-            >
-              <Text style={[
-                styles.tagText,
-                index === 0 && styles.tagTextOrange,
-                index === 1 && styles.tagTextGreen
-              ]}>
+            <View key={index} style={styles.tagBadge}>
+              <Text
+                style={[
+                  styles.tagText,
+                  index === 0 && styles.tagTextOrange,
+                  index === 1 && styles.tagTextGreen,
+                ]}
+              >
                 {tag}
               </Text>
             </View>
@@ -267,7 +267,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
           <Icon name="delete" size={24} color="#001137" />
         </TouchableOpacity>
       </View>
-      
+
       {/* Conteúdo principal - título, subtitle/date e rating */}
       <View style={styles.itemHeaderContainer}>
         <View style={styles.itemInfo}>
@@ -279,12 +279,8 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
               {item.subtitle}
             </Text>
           )}
-          {!item.subtitle && item.date && (
-            <Text style={styles.itemDate}>Date: {item.date}</Text>
-          )}
-          {item.subtitle && item.date && (
-            <Text style={styles.itemDate}>Date: {item.date}</Text>
-          )}
+          {!item.subtitle && item.date && <Text style={styles.itemDate}>Date: {item.date}</Text>}
+          {item.subtitle && item.date && <Text style={styles.itemDate}>Date: {item.date}</Text>}
         </View>
         {item.rating !== undefined && item.rating !== null && (
           <View style={styles.ratingContainer}>
@@ -293,7 +289,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
           </View>
         )}
       </View>
-      
+
       {/* Preço e controles de quantidade */}
       <View style={styles.itemFooter}>
         <Text style={styles.itemPrice}>{formatPrice(item.price)}</Text>
@@ -306,9 +302,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
           >
             <Icon name="remove-circle-outline" size={24} color="#001137" />
           </TouchableOpacity>
-          <Text style={styles.quantityText}>
-            {String(item.quantity).padStart(2, '0')}
-          </Text>
+          <Text style={styles.quantityText}>{String(item.quantity).padStart(2, '0')}</Text>
           <TouchableOpacity
             style={styles.quantityButton}
             onPress={() => handleIncreaseQuantity(item.id)}
@@ -390,7 +384,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
           <>
             <Text style={styles.productsTitle}>Your products</Text>
             <View style={styles.cartItemsList}>
-              {cartItems.map(item => renderCartItem(item))}
+              {cartItems.map((item) => renderCartItem(item))}
             </View>
             {renderShippingSection()}
             {renderOrderSummary()}
@@ -419,4 +413,3 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
 };
 
 export default CartScreen;
-

@@ -19,18 +19,32 @@ jest.mock('@/components/ui', () => {
   return {
     Header: () => null,
     Title: ({ title }: { title: string }) => <Text>{title}</Text>,
-    Chip: ({ label, onPress, selected }: { label: string; onPress: () => void; selected: boolean }) => (
+    Chip: ({
+      label,
+      onPress,
+      selected,
+    }: {
+      label: string;
+      onPress: () => void;
+      selected: boolean;
+    }) => (
       <TouchableOpacity onPress={onPress} testID={`chip-${label}`}>
         <Text>{label}</Text>
       </TouchableOpacity>
     ),
     PrimaryButton: ({ label, onPress }: { label: string; onPress: () => void }) => (
-      <TouchableOpacity onPress={onPress} testID={`button-${label.toLowerCase().replace(/\s+/g, '-')}`}>
+      <TouchableOpacity
+        onPress={onPress}
+        testID={`button-${label.toLowerCase().replace(/\s+/g, '-')}`}
+      >
         <Text>{label}</Text>
       </TouchableOpacity>
     ),
     SecondaryButton: ({ label, onPress }: { label: string; onPress: () => void }) => (
-      <TouchableOpacity onPress={onPress} testID={`button-${label.toLowerCase().replace(/\s+/g, '-')}`}>
+      <TouchableOpacity
+        onPress={onPress}
+        testID={`button-${label.toLowerCase().replace(/\s+/g, '-')}`}
+      >
         <Text>{label}</Text>
       </TouchableOpacity>
     ),
@@ -200,4 +214,3 @@ describe('PersonalObjectivesScreen', () => {
     expect(chip).toBeTruthy();
   });
 });
-

@@ -23,11 +23,7 @@ export const EventReminder: React.FC<EventReminderProps> = ({
   return (
     <View style={styles.container}>
       {onClose && (
-        <TouchableOpacity
-          style={styles.closeButton}
-          onPress={onClose}
-          activeOpacity={0.7}
-        >
+        <TouchableOpacity style={styles.closeButton} onPress={onClose} activeOpacity={0.7}>
           <Icon name="close" size={16} color="#001137" />
         </TouchableOpacity>
       )}
@@ -54,4 +50,3 @@ export const EventReminder: React.FC<EventReminderProps> = ({
 };
 
 export default EventReminder;
-

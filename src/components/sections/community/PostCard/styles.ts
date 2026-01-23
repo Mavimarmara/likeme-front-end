@@ -116,4 +116,3 @@ export const styles = StyleSheet.create({
     borderTopColor: '#E0E0E0',
   },
 });
-

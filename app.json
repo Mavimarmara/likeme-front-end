@@ -5,11 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ],
+    "platforms": ["ios", "android", "web"],
     "jsEngine": "hermes",
     "sdkVersion": "54.0.0",
     "plugins": [

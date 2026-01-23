@@ -73,4 +73,3 @@ export const formatBillingAddress = (address: AddressData): BillingAddress => {
     complement: complement || undefined,
   };
 };
-

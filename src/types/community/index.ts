@@ -226,4 +226,3 @@ export interface ChannelsApiResponse {
 export interface GetChannelsParams {
   types?: string | string[];
 }
-

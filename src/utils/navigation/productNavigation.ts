@@ -6,10 +6,7 @@ interface Navigation {
   replace: (screen: string, params?: any) => void;
 }
 
-export const navigateToAmazonProduct = (
-  ad: Ad,
-  navigation: Navigation
-): boolean => {
+export const navigateToAmazonProduct = (ad: Ad, navigation: Navigation): boolean => {
   const isAmazonProduct = ad.product?.category === 'amazon product';
   if (!isAmazonProduct) {
     return false;
@@ -24,14 +21,17 @@ export const navigateToAmazonProduct = (
     return false;
   }
 
-  const productParams = ad.product ? {
-    id: ad.product.id,
-    title: ad.product.name,
-    price: formatPrice(ad.product.price),
-    image: ad.product.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
-    category: ad.product.category,
-    description: ad.product.description,
-  } : undefined;
+  const productParams = ad.product
+    ? {
+        id: ad.product.id,
+        title: ad.product.name,
+        price: formatPrice(ad.product.price),
+        image:
+          ad.product.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
+        category: ad.product.category,
+        description: ad.product.description,
+      }
+    : undefined;
 
   navigation.navigate('AffiliateProduct', {
     productId,
@@ -42,10 +42,7 @@ export const navigateToAmazonProduct = (
   return true;
 };
 
-export const navigateToExternalProduct = (
-  ad: Ad,
-  navigation: Navigation
-): boolean => {
+export const navigateToExternalProduct = (ad: Ad, navigation: Navigation): boolean => {
   if (!ad.product?.externalUrl) {
     return false;
   }
@@ -62,7 +59,8 @@ export const navigateToExternalProduct = (
       id: ad.product.id,
       title: ad.product.name,
       price: formatPrice(ad.product.price),
-      image: ad.product.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
+      image:
+        ad.product.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
       category: ad.product.category,
       description: ad.product.description,
       externalUrl: ad.product.externalUrl,
@@ -72,10 +70,7 @@ export const navigateToExternalProduct = (
   return true;
 };
 
-export const navigateToProductDetails = (
-  ad: Ad,
-  navigation: Navigation
-): boolean => {
+export const navigateToProductDetails = (ad: Ad, navigation: Navigation): boolean => {
   if (!ad.productId || !ad.product) {
     return false;
   }
@@ -86,7 +81,8 @@ export const navigateToProductDetails = (
       id: ad.product.id,
       title: ad.product.name,
       price: formatPrice(ad.product.price),
-      image: ad.product.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
+      image:
+        ad.product.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
       category: ad.product.category,
       description: ad.product.description,
     },
@@ -95,10 +91,7 @@ export const navigateToProductDetails = (
   return true;
 };
 
-export const handleAdNavigation = (
-  ad: Ad,
-  navigation: Navigation
-): void => {
+export const handleAdNavigation = (ad: Ad, navigation: Navigation): void => {
   if (navigateToAmazonProduct(ad, navigation)) {
     return;
   }

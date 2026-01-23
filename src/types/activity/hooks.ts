@@ -42,4 +42,3 @@ export interface UseActivitiesReturn {
   parseTimeString: (timeString: string, baseDate: Date) => Date;
   isToday: (date: Date) => boolean;
 }
-

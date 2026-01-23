@@ -3,7 +3,7 @@ import { COLORS, SPACING } from '@/constants';
 
 export const styles = StyleSheet.create({
   container: {
-    width: "100%",
+    width: '100%',
     alignSelf: 'center',
     gap: 24,
     paddingHorizontal: SPACING.MD,
@@ -12,7 +12,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: "100%",
+    width: '100%',
     alignSelf: 'center',
     paddingHorizontal: SPACING.MD,
   },
@@ -125,4 +125,3 @@ export const styles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
 });
-

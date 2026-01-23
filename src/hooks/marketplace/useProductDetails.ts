@@ -46,19 +46,19 @@ export const useProductDetails = ({
     try {
       setLoading(true);
       const response = await productService.getProductById(productId);
-      
+
       if (!response.success || !response.data) {
         setLoading(false);
         return;
       }
 
       const productData = response.data;
-      
+
       if (productData.category === 'amazon product') {
         await handleAmazonProductRedirect(productData, productId, navigation);
         return;
       }
-      
+
       setProduct(productData);
     } catch (error) {
       console.error('Error loading product:', error);
@@ -78,23 +78,25 @@ export const useProductDetails = ({
       activeOnly: true,
       limit: 1,
     });
-    
-    const adId = adsResponse.success && adsResponse.data?.ads.length > 0
-      ? adsResponse.data.ads[0].id
-      : undefined;
-    
-      nav.replace('AffiliateProduct', {
-        productId,
-        adId,
-        product: {
-          id: productData.id,
-          title: productData.name,
-          price: formatPrice(productData.price),
-          image: productData.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
-          category: productData.category,
-          description: productData.description,
-        },
-      });
+
+    const adId =
+      adsResponse.success && adsResponse.data?.ads.length > 0
+        ? adsResponse.data.ads[0].id
+        : undefined;
+
+    nav.replace('AffiliateProduct', {
+      productId,
+      adId,
+      product: {
+        id: productData.id,
+        title: productData.name,
+        price: formatPrice(productData.price),
+        image:
+          productData.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
+        category: productData.category,
+        description: productData.description,
+      },
+    });
   };
 
   const loadRelatedProducts = useCallback(async () => {
@@ -105,9 +107,9 @@ export const useProductDetails = ({
         limit: 5,
         category: fallbackProduct?.category,
       });
-      
+
       if (response.success && response.data) {
-        setRelatedProducts(response.data.products.filter(p => p.id !== productId));
+        setRelatedProducts(response.data.products.filter((p) => p.id !== productId));
       }
     } catch (error) {
       console.error('Error loading related products:', error);
@@ -123,17 +125,17 @@ export const useProductDetails = ({
         activeOnly: true,
         limit: 1,
       });
-      
+
       if (!response.success || !response.data?.ads.length) return;
 
       const adData = response.data.ads[0];
       const adDetailResponse = await adService.getAdById(adData.id);
-      
+
       if (adDetailResponse.success && adDetailResponse.data) {
         setAd(adDetailResponse.data);
         return;
       }
-      
+
       setAd(adData);
     } catch (error) {
       console.error('Error loading ad:', error);
@@ -142,7 +144,7 @@ export const useProductDetails = ({
 
   const handleAddToCart = useCallback(async () => {
     if (!product) return;
-    
+
     if (product.status === 'out_of_stock' || product.quantity === 0) {
       Alert.alert('Out of Stock', 'This product is currently out of stock');
       return;

@@ -1,6 +1,6 @@
 /**
  * Testes unitários para eventMapper
- * 
+ *
  * Documenta como channels são mapeados para eventos,
  * incluindo tratamento de metadados e valores padrão.
  */

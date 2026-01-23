@@ -17,11 +17,11 @@ class ProductService {
   async listProducts(params: ListProductsParams = {}): Promise<ListProductsApiResponse> {
     try {
       const queryParams: Record<string, string> = {};
-      
+
       if (params.page !== undefined) {
         queryParams.page = String(params.page);
       }
-      
+
       if (params.limit !== undefined) {
         queryParams.limit = String(params.limit);
       }
@@ -66,13 +66,8 @@ class ProductService {
       }
 
       const endpoint = `${this.productsEndpoint}/${productId.trim()}`;
-      
-      const response = await apiClient.get<GetProductApiResponse>(
-        endpoint,
-        undefined,
-        true,
-        false
-      );
+
+      const response = await apiClient.get<GetProductApiResponse>(endpoint, undefined, true, false);
 
       logger.debug('Product detail response:', {
         productId,
@@ -114,12 +109,8 @@ class ProductService {
       }
 
       const endpoint = `${this.productsEndpoint}/${productId.trim()}`;
-      
-      const response = await apiClient.put<ApiResponse<Product>>(
-        endpoint,
-        data,
-        true
-      );
+
+      const response = await apiClient.put<ApiResponse<Product>>(endpoint, data, true);
 
       logger.debug('Product updated:', {
         productId,
@@ -140,12 +131,8 @@ class ProductService {
       }
 
       const endpoint = `${this.productsEndpoint}/${productId.trim()}`;
-      
-      const response = await apiClient.delete<ApiResponse<null>>(
-        endpoint,
-        undefined,
-        true
-      );
+
+      const response = await apiClient.delete<ApiResponse<null>>(endpoint, undefined, true);
 
       logger.debug('Product deleted:', {
         productId,
@@ -166,12 +153,8 @@ class ProductService {
       }
 
       const endpoint = `${this.productsEndpoint}/${productId.trim()}/stock`;
-      
-      const response = await apiClient.patch<ApiResponse<Product>>(
-        endpoint,
-        data,
-        true
-      );
+
+      const response = await apiClient.patch<ApiResponse<Product>>(endpoint, data, true);
 
       logger.debug('Stock updated:', {
         productId,

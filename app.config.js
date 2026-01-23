@@ -8,12 +8,12 @@ function findOriginalEnvFile() {
   if (process.env.ENV_FILE_PATH && fs.existsSync(process.env.ENV_FILE_PATH)) {
     return process.env.ENV_FILE_PATH;
   }
-  
+
   const possiblePaths = [
-    path.resolve(__dirname, '.env'),           // Diretório do app.config.js
-    path.join(__dirname, '..', '.env'),        // Um nível acima
+    path.resolve(__dirname, '.env'), // Diretório do app.config.js
+    path.join(__dirname, '..', '.env'), // Um nível acima
     '/Users/weber/Projetos/likeme/likeme-front-end/.env', // Caminho absoluto do projeto
-    path.join(process.cwd(), '..', '.env'),    // Um nível acima do cwd
+    path.join(process.cwd(), '..', '.env'), // Um nível acima do cwd
   ];
 
   // Tenta encontrar o arquivo .env
@@ -23,25 +23,28 @@ function findOriginalEnvFile() {
       return resolvedPath;
     }
   }
-  
+
   return null;
 }
 
 // Função para copiar o .env para o diretório atual (onde o build está executando)
 function ensureEnvFileInCurrentDir() {
   const currentDirEnv = path.resolve(process.cwd(), '.env');
-  
+
   // Se já existe no diretório atual, usa ele
   if (fs.existsSync(currentDirEnv)) {
     return currentDirEnv;
   }
-  
+
   // Tenta encontrar o .env original e copia para o diretório atual
   const originalEnvPath = findOriginalEnvFile();
   if (originalEnvPath && originalEnvPath !== currentDirEnv) {
     try {
       fs.copyFileSync(originalEnvPath, currentDirEnv);
-      console.log('[app.config.js] ✓ Arquivo .env copiado do diretório original para:', currentDirEnv);
+      console.log(
+        '[app.config.js] ✓ Arquivo .env copiado do diretório original para:',
+        currentDirEnv
+      );
       return currentDirEnv;
     } catch (error) {
       console.warn('[app.config.js] ⚠️ Erro ao copiar .env:', error.message);
@@ -49,7 +52,7 @@ function ensureEnvFileInCurrentDir() {
       return originalEnvPath;
     }
   }
-  
+
   return originalEnvPath;
 }
 
@@ -57,7 +60,7 @@ function ensureEnvFileInCurrentDir() {
 // do shell. Por isso, sempre copiamos o .env para o diretório atual e carregamos dele.
 // As variáveis em process.env têm prioridade, mas carregamos o .env para garantir que
 // todas as variáveis estejam disponíveis.
-const hasEnvVarsInProcess = Object.keys(process.env).some(key => key.startsWith('EXPO_PUBLIC_'));
+const hasEnvVarsInProcess = Object.keys(process.env).some((key) => key.startsWith('EXPO_PUBLIC_'));
 
 // Garante que o .env esteja no diretório atual (copia se necessário)
 const envPath = ensureEnvFileInCurrentDir();
@@ -73,20 +76,33 @@ if (envPath) {
     // Log das variáveis carregadas (apenas nomes, não valores por segurança)
     const loadedVars = Object.keys(result.parsed || {});
     if (loadedVars.length > 0) {
-      console.log(`[app.config.js] ✓ ${loadedVars.length} variáveis carregadas do .env:`, loadedVars.join(', '));
+      console.log(
+        `[app.config.js] ✓ ${loadedVars.length} variáveis carregadas do .env:`,
+        loadedVars.join(', ')
+      );
       envLoaded = true;
-      
+
       // Verifica se há variáveis EXPO_PUBLIC_ no arquivo
-      const expoPublicVars = loadedVars.filter(key => key.startsWith('EXPO_PUBLIC_'));
+      const expoPublicVars = loadedVars.filter((key) => key.startsWith('EXPO_PUBLIC_'));
       if (expoPublicVars.length > 0) {
-        console.log(`[app.config.js] ✓ ${expoPublicVars.length} variáveis EXPO_PUBLIC_ encontradas no .env`);
+        console.log(
+          `[app.config.js] ✓ ${expoPublicVars.length} variáveis EXPO_PUBLIC_ encontradas no .env`
+        );
       } else {
-        console.warn('[app.config.js] ⚠️ O .env foi carregado mas não contém variáveis EXPO_PUBLIC_');
-        console.warn('[app.config.js] ⚠️ Certifique-se de que as variáveis no .env começam com EXPO_PUBLIC_');
+        console.warn(
+          '[app.config.js] ⚠️ O .env foi carregado mas não contém variáveis EXPO_PUBLIC_'
+        );
+        console.warn(
+          '[app.config.js] ⚠️ Certifique-se de que as variáveis no .env começam com EXPO_PUBLIC_'
+        );
       }
     } else {
-      console.warn('[app.config.js] ⚠️ Arquivo .env encontrado mas está vazio ou não contém variáveis válidas');
-      console.warn('[app.config.js] ⚠️ Verifique se o arquivo .env tem o formato correto (KEY=value)');
+      console.warn(
+        '[app.config.js] ⚠️ Arquivo .env encontrado mas está vazio ou não contém variáveis válidas'
+      );
+      console.warn(
+        '[app.config.js] ⚠️ Verifique se o arquivo .env tem o formato correto (KEY=value)'
+      );
     }
   }
 } else {
@@ -95,7 +111,8 @@ if (envPath) {
   if (result.error) {
     console.warn('[app.config.js] ⚠️ Arquivo .env não encontrado em nenhum dos caminhos testados');
     if (process.env.DEBUG_ENV === 'true') {
-      console.warn('[app.config.js] Caminhos testados:', 
+      console.warn(
+        '[app.config.js] Caminhos testados:',
         path.resolve(__dirname, '.env'),
         path.resolve(process.cwd(), '.env'),
         process.env.ENV_FILE_PATH || 'não definido',
@@ -106,7 +123,10 @@ if (envPath) {
     const loadedVars = Object.keys(result.parsed || {});
     if (loadedVars.length > 0) {
       console.log('[app.config.js] ✓ Arquivo .env carregado do diretório atual');
-      console.log(`[app.config.js] ✓ ${loadedVars.length} variáveis carregadas:`, loadedVars.join(', '));
+      console.log(
+        `[app.config.js] ✓ ${loadedVars.length} variáveis carregadas:`,
+        loadedVars.join(', ')
+      );
       envLoaded = true;
     } else {
       console.warn('[app.config.js] ⚠️ dotenv não encontrou variáveis no .env');
@@ -116,17 +136,21 @@ if (envPath) {
 
 // Log sobre variáveis em process.env (podem vir do script ou do .env carregado)
 if (hasEnvVarsInProcess) {
-  const processVars = Object.keys(process.env).filter(key => key.startsWith('EXPO_PUBLIC_'));
-  console.log(`[app.config.js] ✓ ${processVars.length} variáveis EXPO_PUBLIC_ disponíveis em process.env`);
+  const processVars = Object.keys(process.env).filter((key) => key.startsWith('EXPO_PUBLIC_'));
+  console.log(
+    `[app.config.js] ✓ ${processVars.length} variáveis EXPO_PUBLIC_ disponíveis em process.env`
+  );
 }
 
 // Verifica se as variáveis EXPO_PUBLIC_ estão disponíveis
 // Elas podem vir do .env carregado acima ou do ambiente (exportadas pelo script de build)
-const foundVars = Object.keys(process.env).filter(key => key.startsWith('EXPO_PUBLIC_'));
+const foundVars = Object.keys(process.env).filter((key) => key.startsWith('EXPO_PUBLIC_'));
 const hasEnvVars = foundVars.length > 0;
 
 if (hasEnvVars) {
-  console.log(`[app.config.js] ✓ ${foundVars.length} variáveis EXPO_PUBLIC_ disponíveis em process.env`);
+  console.log(
+    `[app.config.js] ✓ ${foundVars.length} variáveis EXPO_PUBLIC_ disponíveis em process.env`
+  );
   if (process.env.DEBUG_ENV === 'true') {
     console.log(`[app.config.js] Variáveis: ${foundVars.join(', ')}`);
   }
@@ -136,7 +160,9 @@ if (hasEnvVars) {
     console.warn('[app.config.js] ⚠️ O arquivo .env não foi encontrado ou carregado');
     console.warn('[app.config.js] ⚠️ Verifique se o arquivo .env existe na raiz do projeto');
   } else {
-    console.warn('[app.config.js] ⚠️ O .env foi carregado mas não contém variáveis EXPO_PUBLIC_ válidas');
+    console.warn(
+      '[app.config.js] ⚠️ O .env foi carregado mas não contém variáveis EXPO_PUBLIC_ válidas'
+    );
   }
 }
 
@@ -151,14 +177,14 @@ const getEnvVar = (key, defaultValue = '') => {
     }
     return value;
   }
-  
+
   // Log apenas para variáveis críticas sem default ou com default placeholder
   if (!defaultValue || defaultValue.includes('your-') || defaultValue === '') {
     if (process.env.DEBUG_ENV === 'true') {
       console.warn(`[app.config.js] ⚠️ ${key} não encontrado em process.env, usando default`);
     }
   }
-  
+
   return defaultValue;
 };
 
@@ -204,7 +230,10 @@ module.exports = {
         EXPO_PUBLIC_AUTH0_DOMAIN: getEnvVar('EXPO_PUBLIC_AUTH0_DOMAIN', 'likeme.us.auth0.com'),
         EXPO_PUBLIC_AUTH0_CLIENT_ID: getEnvVar('EXPO_PUBLIC_AUTH0_CLIENT_ID', ''),
         EXPO_PUBLIC_AUTH0_AUDIENCE: getEnvVar('EXPO_PUBLIC_AUTH0_AUDIENCE', ''),
-        EXPO_PUBLIC_BACKEND_URL: getEnvVar('EXPO_PUBLIC_BACKEND_URL', 'https://likeme-back-end-one.vercel.app'),
+        EXPO_PUBLIC_BACKEND_URL: getEnvVar(
+          'EXPO_PUBLIC_BACKEND_URL',
+          'https://likeme-back-end-one.vercel.app'
+        ),
         EXPO_PUBLIC_USE_AUTH_PROXY: getEnvVar('EXPO_PUBLIC_USE_AUTH_PROXY', 'false'),
         EXPO_PUBLIC_AUTH_SCHEME: getEnvVar('EXPO_PUBLIC_AUTH_SCHEME', 'likeme'),
         EXPO_PUBLIC_AUTH_REDIRECT_PATH: getEnvVar('EXPO_PUBLIC_AUTH_REDIRECT_PATH', 'auth'),
@@ -212,6 +241,3 @@ module.exports = {
     },
   },
 };
-
-
-

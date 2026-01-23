@@ -37,4 +37,3 @@ export interface ProgramActivity {
 export interface ProgramDetail extends Program {
   modules: ProgramModule[];
 }
-

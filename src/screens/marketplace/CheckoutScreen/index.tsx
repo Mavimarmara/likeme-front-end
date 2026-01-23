@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  SafeAreaView,
-  Alert,
-} from 'react-native';
+import { View, Text, ScrollView, SafeAreaView, Alert } from 'react-native';
 import { Header } from '@/components/ui/layout';
 import { Background } from '@/components/ui/layout';
 import { SecondaryButton } from '@/components/ui/buttons';
@@ -35,7 +29,6 @@ type Props = {
   navigation: any;
   route?: any;
 };
-
 
 const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
   const [currentStep, setCurrentStep] = useState<CheckoutStep>('address');
@@ -80,7 +73,6 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
     loadCartItems();
   }, []);
 
-
   useEffect(() => {
     calculateTotals();
   }, [cartItems, shipping]);
@@ -98,12 +90,11 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
     const sub = cartItems.reduce((sum, item) => {
       const price = Number(item.price) || 0;
       const quantity = Number(item.quantity) || 0;
-      return sum + (price * quantity);
+      return sum + price * quantity;
     }, 0);
     setSubtotal(sub);
     setTotal(sub + shipping);
   };
-
 
   const formatRating = (rating: number): string => {
     if (rating === undefined || rating === null || isNaN(rating)) {
@@ -111,7 +102,6 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
     }
     return Number(rating).toFixed(3);
   };
-
 
   const handleContinue = async () => {
     if (currentStep === 'address') {
@@ -137,7 +127,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
           setIsProcessing(false);
           return;
         }
-        
+
         // Validar formato da data de expiração (deve ter 4 dígitos)
         const formattedExpiry = expiryDate.replace(/\D/g, '');
         if (formattedExpiry.length !== 4) {
@@ -166,17 +156,24 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
         })),
       });
 
-      console.log('📦 Produtos do pedido:', JSON.stringify(cartItems.map((item) => ({
-        productId: item.id,
-        title: item.title,
-        quantity: item.quantity,
-        price: item.price,
-        total: item.price * item.quantity,
-      })), null, 2));
+      console.log(
+        '📦 Produtos do pedido:',
+        JSON.stringify(
+          cartItems.map((item) => ({
+            productId: item.id,
+            title: item.title,
+            quantity: item.quantity,
+            price: item.price,
+            total: item.price * item.quantity,
+          })),
+          null,
+          2
+        )
+      );
 
       // Preparar billingAddress sempre como objeto estruturado (backend sempre exige)
       const billingAddressObj = formatBillingAddress(addressData);
-      
+
       // Preparar cardData quando for cartão de crédito (backend sempre exige quando paymentMethod é credit_card)
       const cardDataObj = formatCardData();
 
@@ -208,7 +205,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
 
       // Criar o pedido
       const orderResponse = await orderService.createOrder(orderData);
-      
+
       if (!orderResponse.success || !orderResponse.data) {
         throw new Error('Falha ao criar pedido');
       }
@@ -227,7 +224,8 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
     } catch (error: any) {
       console.error('Error completing order:', error);
       // Extrair mensagem de erro (pode estar em error.message ou error.error)
-      const errorMessage = error?.message || error?.error || 'Erro ao processar pedido. Tente novamente.';
+      const errorMessage =
+        error?.message || error?.error || 'Erro ao processar pedido. Tente novamente.';
       Alert.alert('Erro', errorMessage);
     } finally {
       setIsProcessing(false);
@@ -249,7 +247,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
 
     // Formatar CPF (remover caracteres não numéricos)
     const formattedCpf = cpf.replace(/\D/g, '');
-    
+
     // Formatar telefone (remover caracteres não numéricos)
     const formattedPhone = phone.replace(/\D/g, '');
 
@@ -290,7 +288,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <Background />
       <Header onBackPress={() => navigation.goBack()} />
-      
+
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
@@ -299,37 +297,49 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
         {/* Stepper - Address, Payment, Order */}
         <View style={styles.stepperContainer}>
           <View style={styles.stepperItem}>
-            <Text style={[
-              currentStep === 'address' ? styles.stepperLabelActive : styles.stepperLabelInactive
-            ]}>
+            <Text
+              style={[
+                currentStep === 'address' ? styles.stepperLabelActive : styles.stepperLabelInactive,
+              ]}
+            >
               Adress
             </Text>
-            <View style={[
-              styles.stepperLine,
-              currentStep === 'address' ? styles.stepperLineActive : styles.stepperLineInactive
-            ]} />
+            <View
+              style={[
+                styles.stepperLine,
+                currentStep === 'address' ? styles.stepperLineActive : styles.stepperLineInactive,
+              ]}
+            />
           </View>
           <View style={styles.stepperItem}>
-            <Text style={[
-              currentStep === 'payment' ? styles.stepperLabelActive : styles.stepperLabelInactive
-            ]}>
+            <Text
+              style={[
+                currentStep === 'payment' ? styles.stepperLabelActive : styles.stepperLabelInactive,
+              ]}
+            >
               Payment
             </Text>
-            <View style={[
-              styles.stepperLine,
-              currentStep === 'payment' ? styles.stepperLineActive : styles.stepperLineInactive
-            ]} />
+            <View
+              style={[
+                styles.stepperLine,
+                currentStep === 'payment' ? styles.stepperLineActive : styles.stepperLineInactive,
+              ]}
+            />
           </View>
           <View style={styles.stepperItem}>
-            <Text style={[
-              currentStep === 'order' ? styles.stepperLabelActive : styles.stepperLabelInactive
-            ]}>
+            <Text
+              style={[
+                currentStep === 'order' ? styles.stepperLabelActive : styles.stepperLabelInactive,
+              ]}
+            >
               Order
             </Text>
-            <View style={[
-              styles.stepperLine,
-              currentStep === 'order' ? styles.stepperLineActive : styles.stepperLineInactive
-            ]} />
+            <View
+              style={[
+                styles.stepperLine,
+                currentStep === 'order' ? styles.stepperLineActive : styles.stepperLineInactive,
+              ]}
+            />
           </View>
         </View>
 
@@ -345,18 +355,10 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
 
             {/* Your Deliveries Section */}
             <Text style={styles.deliveriesTitle}>Your deliveries</Text>
-            <CartItemList
-              items={cartItems}
-              formatPrice={formatPrice}
-              formatRating={formatRating}
-            />
+            <CartItemList items={cartItems} formatPrice={formatPrice} formatRating={formatRating} />
 
             {/* Order Summary */}
-            <OrderSummary
-              subtotal={subtotal}
-              shipping={shipping}
-              formatPrice={formatPrice}
-            />
+            <OrderSummary subtotal={subtotal} shipping={shipping} formatPrice={formatPrice} />
           </>
         )}
 
@@ -386,11 +388,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
             />
 
             {/* Order Summary */}
-            <OrderSummary
-              subtotal={subtotal}
-              shipping={shipping}
-              formatPrice={formatPrice}
-            />
+            <OrderSummary subtotal={subtotal} shipping={shipping} formatPrice={formatPrice} />
           </>
         )}
 

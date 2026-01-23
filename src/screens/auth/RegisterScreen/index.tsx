@@ -11,7 +11,14 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Header, Title, TextInput, PrimaryButton, SecondaryButton, ButtonGroup } from '@/components/ui';
+import {
+  Header,
+  Title,
+  TextInput,
+  PrimaryButton,
+  SecondaryButton,
+  ButtonGroup,
+} from '@/components/ui';
 import { GradientSplash5 } from '@/assets';
 import { storageService, personsService } from '@/services';
 import type { PersonData } from '@/types/person';
@@ -77,7 +84,9 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
       await storageService.setRegisterCompletedAt(now);
 
       // Navegar para a próxima tela
-      navigation.navigate('PersonalObjectives' as never, { userName: fullName || route.params?.userName || 'Usuário' });
+      navigation.navigate('PersonalObjectives' as never, {
+        userName: fullName || route.params?.userName || 'Usuário',
+      });
     } catch (error: any) {
       console.error('Erro ao salvar dados da pessoa:', error);
     } finally {
@@ -88,7 +97,9 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
   const handleSkip = async () => {
     const now = new Date().toISOString();
     await storageService.setRegisterCompletedAt(now);
-    navigation.navigate('PersonalObjectives' as never, { userName: fullName || route.params?.userName || 'Usuário' });
+    navigation.navigate('PersonalObjectives' as never, {
+      userName: fullName || route.params?.userName || 'Usuário',
+    });
   };
 
   const adornmentSize = windowWidth * 0.45;
@@ -124,13 +135,12 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
                   ]}
                   resizeMode="contain"
                 />
-                <Title
-                  title="Let's start,"
-                  variant="large"
-                />
+                <Title title="Let's start," variant="large" />
 
                 <View style={styles.invitationSection}>
-                  <Text style={styles.invitationQuestion}>Did you come from a provider's invitation?</Text>
+                  <Text style={styles.invitationQuestion}>
+                    Did you come from a provider's invitation?
+                  </Text>
                   <TextInput
                     label="Enter code"
                     value={invitationCode}
@@ -199,16 +209,12 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
 
           <View style={styles.footer}>
             <ButtonGroup style={styles.buttonGroup}>
-              <PrimaryButton 
-                label={isLoading ? 'Salvando...' : 'Next'} 
-                onPress={handleNext} 
+              <PrimaryButton
+                label={isLoading ? 'Salvando...' : 'Next'}
+                onPress={handleNext}
                 disabled={isLoading}
               />
-              <SecondaryButton 
-                label="Skip information" 
-                onPress={handleSkip}
-                disabled={isLoading}
-              />
+              <SecondaryButton label="Skip information" onPress={handleSkip} disabled={isLoading} />
             </ButtonGroup>
           </View>
         </KeyboardAvoidingView>

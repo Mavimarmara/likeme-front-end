@@ -9,36 +9,33 @@ export const useAnamnesisScores = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchScores = useCallback(
-    async (forceRefresh = false) => {
-      try {
-        setLoading(true);
-        setError(null);
+  const fetchScores = useCallback(async (forceRefresh = false) => {
+    try {
+      setLoading(true);
+      setError(null);
 
-        const profileResponse = await userService.getProfile();
-        const userId = profileResponse.success ? profileResponse.data?.id : null;
-        if (!userId) {
-          throw new Error('Usuário não identificado');
-        }
-
-        const scoresResponse = await anamnesisService.getUserScores({ userId });
-
-        if (scoresResponse.success && scoresResponse.data) {
-          setScores(scoresResponse.data);
-          logger.debug('Anamnesis scores fetched:', scoresResponse.data);
-        } else {
-          throw new Error('Erro ao buscar scores');
-        }
-      } catch (err: any) {
-        logger.error('Error fetching anamnesis scores:', err);
-        setError(err.message || 'Erro ao buscar scores');
-        setScores(null);
-      } finally {
-        setLoading(false);
+      const profileResponse = await userService.getProfile();
+      const userId = profileResponse.success ? profileResponse.data?.id : null;
+      if (!userId) {
+        throw new Error('Usuário não identificado');
       }
-    },
-    []
-  );
+
+      const scoresResponse = await anamnesisService.getUserScores({ userId });
+
+      if (scoresResponse.success && scoresResponse.data) {
+        setScores(scoresResponse.data);
+        logger.debug('Anamnesis scores fetched:', scoresResponse.data);
+      } else {
+        throw new Error('Erro ao buscar scores');
+      }
+    } catch (err: any) {
+      logger.error('Error fetching anamnesis scores:', err);
+      setError(err.message || 'Erro ao buscar scores');
+      setScores(null);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     fetchScores();
@@ -51,4 +48,3 @@ export const useAnamnesisScores = () => {
     refresh: () => fetchScores(true),
   };
 };
-

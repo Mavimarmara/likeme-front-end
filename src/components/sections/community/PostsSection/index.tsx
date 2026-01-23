@@ -60,15 +60,15 @@ const PostsSection: React.FC<Props> = ({
 
   const renderEmpty = () => {
     if (loading) return null;
-    
-    const emptyMessage = error 
-      ? `Erro: ${error}` 
-      : posts.length === 0 
-        ? 'Nenhum post encontrado' 
-        : null;
-    
+
+    const emptyMessage = error
+      ? `Erro: ${error}`
+      : posts.length === 0
+      ? 'Nenhum post encontrado'
+      : null;
+
     if (!emptyMessage) return null;
-    
+
     return (
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyText}>{emptyMessage}</Text>
@@ -108,24 +108,25 @@ const PostsSection: React.FC<Props> = ({
     <View>
       {renderHeader()}
       <View style={styles.container}>
-      {posts.length === 0 ? renderEmpty() : (
-        <>
-          {posts.map((post) => (
-            <PostCard key={post.id} post={post} />
-          ))}
-          {renderLoadingFooter()}
-        </>
-      )}
-      <FilterModal
-        visible={isFilterModalVisible}
-        onClose={handleFilterClose}
-        onSave={handleFilterSave}
-        selectedFilters={selectedFilters}
-      />
+        {posts.length === 0 ? (
+          renderEmpty()
+        ) : (
+          <>
+            {posts.map((post) => (
+              <PostCard key={post.id} post={post} />
+            ))}
+            {renderLoadingFooter()}
+          </>
+        )}
+        <FilterModal
+          visible={isFilterModalVisible}
+          onClose={handleFilterClose}
+          onSave={handleFilterSave}
+          selectedFilters={selectedFilters}
+        />
       </View>
     </View>
   );
 };
 
 export default PostsSection;
-

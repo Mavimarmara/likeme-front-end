@@ -41,9 +41,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
   };
 
   const [isEditing, setIsEditing] = useState(false);
-  const [editData, setEditData] = useState<AddressData>(
-    addressData || defaultAddress
-  );
+  const [editData, setEditData] = useState<AddressData>(addressData || defaultAddress);
 
   const formatAddressText = (address: AddressData) => {
     const addressParts = [
@@ -54,7 +52,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
       `${address.neighborhood} - ${address.city} - ${address.state}`,
       address.zipCode,
       address.phone,
-    ].filter(part => part !== '');
+    ].filter((part) => part !== '');
 
     return addressParts.join('\n');
   };

@@ -15,4 +15,3 @@ const LoadingScreen: React.FC<Props> = ({ route }) => {
 };
 
 export default LoadingScreen;
-

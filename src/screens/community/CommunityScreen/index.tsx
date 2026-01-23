@@ -3,7 +3,12 @@ import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { Toggle, Header } from '@/components/ui';
-import { SocialList, ProgramsList, LiveBannerData, ProviderChat } from '@/components/sections/community';
+import {
+  SocialList,
+  ProgramsList,
+  LiveBannerData,
+  ProviderChat,
+} from '@/components/sections/community';
 import { ProductsCarousel, Product, PlansCarousel, Plan } from '@/components/sections/product';
 import { Background } from '@/components/ui/layout';
 import { FloatingMenu } from '@/components/ui/menu';
@@ -20,11 +25,11 @@ type CommunityMode = 'Social' | 'Programs';
 
 const TOGGLE_OPTIONS: readonly [CommunityMode, CommunityMode] = ['Social', 'Programs'] as const;
 
-
 const mockProgramDetails: ProgramDetail = {
   id: '1',
   name: 'The best sleep for an offline life',
-  description: 'This protocol establishes guidelines to promote a healthy work environment, prevent psychological distress, and provide appropriate support to those in need.',
+  description:
+    'This protocol establishes guidelines to promote a healthy work environment, prevent psychological distress, and provide appropriate support to those in need.',
   duration: '30 dias',
   participantsCount: 450,
   modules: [
@@ -109,8 +114,6 @@ const mockProgramDetails: ProgramDetail = {
   ],
 };
 
-
-
 const SUGGESTED_PLANS: Plan[] = [
   {
     id: '1',
@@ -194,15 +197,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     [selectedFilters]
   );
 
-  const {
-    posts,
-    loading,
-    loadingMore,
-    error,
-    hasMore,
-    loadMore,
-    search,
-  } = useUserFeed({
+  const { posts, loading, loadingMore, error, hasMore, loadMore, search } = useUserFeed({
     enabled: selectedMode === 'Social',
     searchQuery,
     params: feedFilterParams,
@@ -242,19 +237,25 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
           communityService.getChannels({ types: 'community' }),
         ]);
 
-        if (liveAndBroadcastChannelsResponse.success && liveAndBroadcastChannelsResponse.data?.channels) {
+        if (
+          liveAndBroadcastChannelsResponse.success &&
+          liveAndBroadcastChannelsResponse.data?.channels
+        ) {
           const liveAndBroadcastChannels = liveAndBroadcastChannelsResponse.data.channels;
-          
+
           // Map channels to events
           const mappedEvents = mapChannelsToEvents(liveAndBroadcastChannels);
           setEvents(mappedEvents);
-          
+
           if (liveAndBroadcastChannels.length > 0) {
             const firstChannel = liveAndBroadcastChannels[0];
             const metadata = firstChannel.metadata || {};
-            const thumbnail = (metadata.thumbnailUrl as string) || 
-              (firstChannel.avatarFileId ? undefined : 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400');
-            
+            const thumbnail =
+              (metadata.thumbnailUrl as string) ||
+              (firstChannel.avatarFileId
+                ? undefined
+                : 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400');
+
             setLiveBanner({
               id: firstChannel.channelId,
               title: (metadata.title as string) || firstChannel.displayName || 'Live Session',
@@ -278,10 +279,11 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
             const firstCommunityChannel = communityChannels[0];
             const metadata = firstCommunityChannel.metadata || {};
             const avatarUrl = (metadata.avatarUrl as string) || undefined;
-            
+
             setProviderChat({
               id: firstCommunityChannel.channelId,
-              providerName: firstCommunityChannel.displayName || (metadata.displayName as string) || 'Provider',
+              providerName:
+                firstCommunityChannel.displayName || (metadata.displayName as string) || 'Provider',
               providerAvatar: avatarUrl,
               lastMessage: (metadata.lastMessage as string) || 'Hello! How can I help you today?',
               timestamp: (metadata.timestamp as string) || 'Now',
@@ -302,7 +304,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
 
     loadChannels();
   }, []);
-
 
   const menuItems = useMenuItems(navigation);
 
@@ -346,7 +347,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('ChatScreen', { chat });
   };
 
-
   const handleSearchChange = (text: string) => {
     setSearchQuery(text);
   };
@@ -375,11 +375,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <Background />
-      <Header 
-        showBackButton={false} 
-        showCartButton={true}
-        onCartPress={handleCartPress}
-      />
+      <Header showBackButton={false} showCartButton={true} onCartPress={handleCartPress} />
       <View style={styles.content}>
         <View style={styles.toggleContainer}>
           <Toggle<CommunityMode>
@@ -388,7 +384,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
             onSelect={handleModeSelect}
           />
         </View>
-        
+
         {selectedMode === 'Social' ? (
           <SocialList
             programs={programs}
@@ -425,9 +421,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
         ) : (
           <ProgramsList
             programs={programs}
-            programDetails={
-              selectedProgramId === '1' ? mockProgramDetails : undefined
-            }
+            programDetails={selectedProgramId === '1' ? mockProgramDetails : undefined}
             onProgramPress={handleProgramPress}
             selectedProgramId={selectedProgramId}
           />

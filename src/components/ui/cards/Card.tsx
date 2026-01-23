@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  ViewProps,
-} from 'react-native';
+import { View, Text, ViewProps } from 'react-native';
 import { styles } from './Card.styles';
 
 interface CardProps extends ViewProps {
@@ -21,11 +17,7 @@ const Card: React.FC<CardProps> = ({
   style,
   ...props
 }) => {
-  const cardStyle = [
-    styles.base,
-    styles[variant],
-    style,
-  ];
+  const cardStyle = [styles.base, styles[variant], style];
 
   return (
     <View style={cardStyle} {...props}>
@@ -39,6 +31,5 @@ const Card: React.FC<CardProps> = ({
     </View>
   );
 };
-
 
 export default Card;

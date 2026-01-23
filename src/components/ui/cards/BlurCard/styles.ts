@@ -61,11 +61,9 @@ const normalizeBorderRadius = (borderRadius: ViewStyle['borderRadius']): number 
  */
 export const extractBorderRadius = (style: StyleProp<ViewStyle>): number => {
   if (!style) return DEFAULT_BORDER_RADIUS;
-  
-  const styleObj = Array.isArray(style)
-    ? Object.assign({}, ...style.filter(Boolean))
-    : style;
-  
+
+  const styleObj = Array.isArray(style) ? Object.assign({}, ...style.filter(Boolean)) : style;
+
   const borderRadius = (styleObj as ViewStyle)?.borderRadius;
   return normalizeBorderRadius(borderRadius);
 };
@@ -75,17 +73,20 @@ export const extractBorderRadius = (style: StyleProp<ViewStyle>): number => {
  */
 export const normalizeStyle = (style: StyleProp<ViewStyle>): ViewStyle => {
   if (!style) return {};
-  
+
   if (Array.isArray(style)) {
     return Object.assign({}, ...style.filter(Boolean));
   }
-  
+
   return style as ViewStyle;
 };
 
-export const getBlurStyle = (footerHeight: number, borderRadius: ViewStyle['borderRadius']): ViewStyle => {
+export const getBlurStyle = (
+  footerHeight: number,
+  borderRadius: ViewStyle['borderRadius']
+): ViewStyle => {
   const radius = normalizeBorderRadius(borderRadius);
-  
+
   return {
     position: 'absolute',
     bottom: 0,
@@ -99,10 +100,9 @@ export const getBlurStyle = (footerHeight: number, borderRadius: ViewStyle['bord
 
 export const getFooterSectionStyle = (borderRadius: ViewStyle['borderRadius']): ViewStyle => {
   const radius = normalizeBorderRadius(borderRadius);
-  
+
   return {
     borderBottomLeftRadius: radius,
     borderBottomRightRadius: radius,
   };
 };
-

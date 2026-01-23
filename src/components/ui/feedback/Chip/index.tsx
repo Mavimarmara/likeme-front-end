@@ -9,16 +9,10 @@ interface ChipProps extends TouchableOpacityProps {
 
 const Chip: React.FC<ChipProps> = ({ label, selected = false, style, ...props }) => {
   return (
-    <TouchableOpacity
-      style={[styles.chip, selected && styles.chipSelected, style]}
-      {...props}
-    >
-      <Text style={[styles.chipText, selected && styles.chipTextSelected]}>
-        {label}
-      </Text>
+    <TouchableOpacity style={[styles.chip, selected && styles.chipSelected, style]} {...props}>
+      <Text style={[styles.chipText, selected && styles.chipTextSelected]}>{label}</Text>
     </TouchableOpacity>
   );
 };
 
 export default Chip;
-

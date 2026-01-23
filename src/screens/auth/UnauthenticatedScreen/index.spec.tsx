@@ -50,7 +50,7 @@ describe('UnauthenticatedScreen', () => {
 
   it('renders correctly', () => {
     const { getByText } = render(<UnauthenticatedScreen />);
-    
+
     expect(getByText('LIKE YOUR LIFE')).toBeTruthy();
     expect(getByText('Next')).toBeTruthy();
     expect(getByText('Login')).toBeTruthy();
@@ -58,19 +58,19 @@ describe('UnauthenticatedScreen', () => {
 
   it('handles next button press', () => {
     const { getByText } = render(<UnauthenticatedScreen />);
-    
+
     const nextButton = getByText('Next');
     fireEvent.press(nextButton);
-    
+
     expect(mockNavigation.navigate).toHaveBeenCalledWith('Welcome');
   });
 
   it('handles login button press', () => {
     const { getByText } = render(<UnauthenticatedScreen />);
-    
+
     const loginButton = getByText('Login');
     fireEvent.press(loginButton);
-    
+
     expect(mockNavigation.navigate).toHaveBeenCalledWith('Welcome');
   });
 });

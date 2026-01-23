@@ -40,23 +40,11 @@ const ErrorScreen: React.FC<Props> = ({ navigation, route }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        <Title
-          title="Oops..."
-          subtitle={errorMessage}
-          variant="large"
-        />
+        <Title title="Oops..." subtitle={errorMessage} variant="large" />
 
         <View style={styles.actions}>
-          {onRetry && (
-            <PrimaryButton
-              label="Tentar novamente"
-              onPress={handleRetry}
-            />
-          )}
-          <PrimaryButton
-            label="Voltar"
-            onPress={handleGoBack}
-          />
+          {onRetry && <PrimaryButton label="Tentar novamente" onPress={handleRetry} />}
+          <PrimaryButton label="Voltar" onPress={handleGoBack} />
         </View>
       </View>
     </SafeAreaView>
@@ -64,4 +52,3 @@ const ErrorScreen: React.FC<Props> = ({ navigation, route }) => {
 };
 
 export default ErrorScreen;
-

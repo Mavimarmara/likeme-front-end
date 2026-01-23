@@ -33,9 +33,7 @@ const IconButton: React.FC<Props> = ({
   disabled = false,
 }) => {
   const renderIcon = () => {
-    const iconElement = (
-      <Icon name={icon} size={iconSize} color={iconColor} />
-    );
+    const iconElement = <Icon name={icon} size={iconSize} color={iconColor} />;
 
     if (showBackground) {
       return (
@@ -52,11 +50,7 @@ const IconButton: React.FC<Props> = ({
       );
     }
 
-    return (
-      <View style={[styles.iconContainer, iconContainerStyle]}>
-        {iconElement}
-      </View>
-    );
+    return <View style={[styles.iconContainer, iconContainerStyle]}>{iconElement}</View>;
   };
 
   return (
@@ -67,12 +61,9 @@ const IconButton: React.FC<Props> = ({
       activeOpacity={0.7}
     >
       {renderIcon()}
-      {label && (
-        <Text style={[styles.label, labelStyle]}>{label}</Text>
-      )}
+      {label && <Text style={[styles.label, labelStyle]}>{label}</Text>}
     </TouchableOpacity>
   );
 };
 
 export default IconButton;
-

@@ -29,7 +29,7 @@ export const navigateToError = (
       message = String(errorMessage);
     }
   }
-  
+
   navigation.dispatch(
     CommonActions.reset({
       index: 0,
@@ -65,11 +65,14 @@ export const showError = (
       message = String(errorMessage);
     }
   }
-  
-  navigation.navigate('Error' as never, {
-    errorMessage: message,
-    onRetry,
-  } as never);
+
+  navigation.navigate(
+    'Error' as never,
+    {
+      errorMessage: message,
+      onRetry,
+    } as never
+  );
 };
 
 export interface LoadingNavigationParams {
@@ -81,10 +84,7 @@ export interface LoadingNavigationParams {
  * @param navigation - Objeto de navegação do React Navigation
  * @param loadingMessage - Mensagem de loading a ser exibida
  */
-export const navigateToLoading = (
-  navigation: any,
-  loadingMessage?: string
-) => {
+export const navigateToLoading = (navigation: any, loadingMessage?: string) => {
   navigation.dispatch(
     CommonActions.reset({
       index: 0,
@@ -103,12 +103,11 @@ export const navigateToLoading = (
 /**
  * Alternativa mais simples usando navigate
  */
-export const showLoading = (
-  navigation: any,
-  loadingMessage?: string
-) => {
-  navigation.navigate('AppLoading' as never, {
-    loadingMessage: loadingMessage || 'Carregando...',
-  } as never);
+export const showLoading = (navigation: any, loadingMessage?: string) => {
+  navigation.navigate(
+    'AppLoading' as never,
+    {
+      loadingMessage: loadingMessage || 'Carregando...',
+    } as never
+  );
 };
-

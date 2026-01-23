@@ -103,4 +103,3 @@ export const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.MD,
   },
 });
-

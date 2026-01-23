@@ -3,12 +3,24 @@ import { View, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FloatingMenu } from '@/components/ui/menu';
 import { Header, Background } from '@/components/ui/layout';
-import { useCommunities, useSuggestedProducts, useMenuItems, useAnamnesisProgress, useAnamnesisScores } from '@/hooks';
-import { mapCommunityToRecommendedCommunity, mapCommunityToOtherCommunity, mapCommunityPostToPost, mapChannelsToEvents, sortByDateObject } from '@/utils';
+import {
+  useCommunities,
+  useSuggestedProducts,
+  useMenuItems,
+  useAnamnesisProgress,
+  useAnamnesisScores,
+} from '@/hooks';
+import {
+  mapCommunityToRecommendedCommunity,
+  mapCommunityToOtherCommunity,
+  mapCommunityPostToPost,
+  mapChannelsToEvents,
+  sortByDateObject,
+} from '@/utils';
 import { communityService, storageService, anamnesisService, userService } from '@/services';
 import type { Channel } from '@/types/community';
 import type { CommunityFeedData } from '@/types/community';
-import { 
+import {
   NextEventsSection,
   RecommendedCommunitiesSection,
   OtherCommunitiesSection,
@@ -30,10 +42,6 @@ type Props = {
   navigation: any;
   route: any;
 };
-
-
-
-
 
 const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   const rootNavigation = navigation.getParent() ?? navigation;
@@ -63,7 +71,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
         // Verificar se há respostas na anamnese
         const profileResponse = await userService.getProfile();
         const userId = profileResponse.success ? profileResponse.data?.id : null;
-        
+
         if (userId) {
           const answersResponse = await anamnesisService.getUserAnswers({ userId });
           const hasAnswers = answersResponse.success && (answersResponse.data?.length || 0) > 0;
@@ -122,10 +130,11 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
           limit: 20,
         });
 
-        const isSuccess = userFeedResponse.success === true || 
-                         userFeedResponse.status === 'ok' || 
-                         userFeedResponse.data?.status === 'ok';
-        
+        const isSuccess =
+          userFeedResponse.success === true ||
+          userFeedResponse.status === 'ok' ||
+          userFeedResponse.data?.status === 'ok';
+
         let feedData: CommunityFeedData | undefined;
         if (userFeedResponse.data?.data) {
           feedData = userFeedResponse.data.data;
@@ -139,21 +148,20 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
         }
 
         const filteredCommunityPosts = (feedData.posts || []).filter((communityPost) => {
-          return communityPost.targetId === firstCommunity.communityId && 
-                 communityPost.targetType === 'community';
+          return (
+            communityPost.targetId === firstCommunity.communityId &&
+            communityPost.targetType === 'community'
+          );
         });
 
         const mappedPostsPromises = filteredCommunityPosts.map((communityPost) =>
-          mapCommunityPostToPost(
-            communityPost, 
-            feedData.files, 
-            feedData.users, 
-            feedData.comments
-          )
+          mapCommunityPostToPost(communityPost, feedData.files, feedData.users, feedData.comments)
         );
-        
+
         const mappedPostsResults = await Promise.all(mappedPostsPromises);
-        const mappedPosts: Post[] = mappedPostsResults.filter((post): post is Post => post !== null);
+        const mappedPosts: Post[] = mappedPostsResults.filter(
+          (post): post is Post => post !== null
+        );
 
         const sortedPosts = sortByDateObject(mappedPosts, 'createdAt', 'desc');
 
@@ -192,16 +200,17 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
     const loadProviders = async () => {
       try {
         setLoadingProviders(true);
-        
+
         const userFeedResponse = await communityService.getUserFeed({
           page: 1,
           limit: 50,
         });
 
-        const isSuccess = userFeedResponse.success === true || 
-                         userFeedResponse.status === 'ok' || 
-                         userFeedResponse.data?.status === 'ok';
-        
+        const isSuccess =
+          userFeedResponse.success === true ||
+          userFeedResponse.status === 'ok' ||
+          userFeedResponse.data?.status === 'ok';
+
         let feedData: CommunityFeedData | undefined;
         if (userFeedResponse.data?.data) {
           feedData = userFeedResponse.data.data;
@@ -217,14 +226,16 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
         const communityUsers = feedData.communityUsers || [];
         const users = feedData.users || [];
         const files = feedData.files || [];
-        
+
         const ownerUserIds = new Set<string>();
         communityUsers.forEach((relation) => {
           const roles = relation.roles || [];
-          if (roles.includes('community-moderator') || 
-              roles.includes('community-admin') || 
-              roles.includes('owner') ||
-              relation.communityMembership === 'owner') {
+          if (
+            roles.includes('community-moderator') ||
+            roles.includes('community-admin') ||
+            roles.includes('owner') ||
+            relation.communityMembership === 'owner'
+          ) {
             ownerUserIds.add(relation.userId);
           }
         });
@@ -297,20 +308,17 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   }, [firstCommunity, communityPosts]);
 
   const recommendedCommunities = useMemo(() => {
-    return rawCommunities
-      .slice(0, 2)
-      .map((community) => {
-        const category = categories.length > 0 ? categories[0] : undefined;
-        return mapCommunityToRecommendedCommunity(community, category);
-      });
+    return rawCommunities.slice(0, 2).map((community) => {
+      const category = categories.length > 0 ? categories[0] : undefined;
+      return mapCommunityToRecommendedCommunity(community, category);
+    });
   }, [rawCommunities, categories]);
 
   const otherCommunities = useMemo(() => {
-    return rawCommunities
-      .map((community) => {
-        const category = categories.length > 0 ? categories[0] : undefined;
-        return mapCommunityToOtherCommunity(community, category);
-      });
+    return rawCommunities.map((community) => {
+      const category = categories.length > 0 ? categories[0] : undefined;
+      return mapCommunityToOtherCommunity(community, category);
+    });
   }, [rawCommunities, categories]);
 
   const menuItems = useMenuItems(navigation);
@@ -370,26 +378,22 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <Background />
-      <Header 
-        showBackButton={false} 
-        showCartButton={true}
-        onCartPress={handleCartPress}
-      />
+      <Header showBackButton={false} showCartButton={true} onCartPress={handleCartPress} />
       <View style={styles.content}>
         <ScrollView showsVerticalScrollIndicator={false}>
           {!hasCompletedAnamnesis && hasAnyAnamnesisAnswers && (
             <>
               <View style={styles.avatarContainer}>
-                <AvatarSection 
+                <AvatarSection
                   hasAnswers={hasAnyAnamnesisAnswers}
                   mindPercentage={anamnesisScores?.mentalPercentage || 0}
                   bodyPercentage={anamnesisScores?.physicalPercentage || 0}
                   onSeeMorePress={handleAvatarSeeMore}
                 />
               </View>
-            <View style={styles.anamnesisPromptContainer}>
-              <AnamnesisPromptCard onStartPress={handleStartAnamnesis} />
-            </View>
+              <View style={styles.anamnesisPromptContainer}>
+                <AnamnesisPromptCard onStartPress={handleStartAnamnesis} />
+              </View>
             </>
           )}
           {yourCommunity && (
@@ -404,7 +408,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
           {!hasCompletedAnamnesis && !hasAnyAnamnesisAnswers && (
             <>
               <View style={styles.avatarContainer}>
-                <AvatarSection 
+                <AvatarSection
                   hasAnswers={false}
                   mindPercentage={0}
                   bodyPercentage={0}
@@ -467,4 +471,3 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
 };
 
 export default SummaryScreen;
-

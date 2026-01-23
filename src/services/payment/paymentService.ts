@@ -74,7 +74,9 @@ class PaymentService {
   /**
    * Get payment transaction status
    */
-  async getTransactionStatus(transactionId: string): Promise<ApiResponse<TransactionStatusResponse>> {
+  async getTransactionStatus(
+    transactionId: string
+  ): Promise<ApiResponse<TransactionStatusResponse>> {
     try {
       if (!transactionId || transactionId.trim() === '') {
         throw new Error('Transaction ID is required');

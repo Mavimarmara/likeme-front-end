@@ -16,11 +16,11 @@ class AdService {
   async listAds(params: ListAdsParams = {}): Promise<ListAdsApiResponse> {
     try {
       const queryParams: Record<string, string> = {};
-      
+
       if (params.page !== undefined) {
         queryParams.page = String(params.page);
       }
-      
+
       if (params.limit !== undefined) {
         queryParams.limit = String(params.limit);
       }
@@ -73,13 +73,8 @@ class AdService {
       }
 
       const endpoint = `${this.adsEndpoint}/${adId.trim()}`;
-      
-      const response = await apiClient.get<GetAdApiResponse>(
-        endpoint,
-        undefined,
-        true,
-        false
-      );
+
+      const response = await apiClient.get<GetAdApiResponse>(endpoint, undefined, true, false);
 
       logger.debug('Ad detail response:', {
         adId,
@@ -96,11 +91,7 @@ class AdService {
 
   async createAd(data: CreateAdData): Promise<ApiResponse<Ad>> {
     try {
-      const response = await apiClient.post<ApiResponse<Ad>>(
-        this.adsEndpoint,
-        data,
-        true
-      );
+      const response = await apiClient.post<ApiResponse<Ad>>(this.adsEndpoint, data, true);
 
       logger.debug('Ad created:', {
         adId: response.data?.id,
@@ -121,12 +112,8 @@ class AdService {
       }
 
       const endpoint = `${this.adsEndpoint}/${adId.trim()}`;
-      
-      const response = await apiClient.put<ApiResponse<Ad>>(
-        endpoint,
-        data,
-        true
-      );
+
+      const response = await apiClient.put<ApiResponse<Ad>>(endpoint, data, true);
 
       logger.debug('Ad updated:', {
         adId,
@@ -147,12 +134,8 @@ class AdService {
       }
 
       const endpoint = `${this.adsEndpoint}/${adId.trim()}`;
-      
-      const response = await apiClient.delete<ApiResponse<null>>(
-        endpoint,
-        undefined,
-        true
-      );
+
+      const response = await apiClient.delete<ApiResponse<null>>(endpoint, undefined, true);
 
       logger.debug('Ad deleted:', {
         adId,

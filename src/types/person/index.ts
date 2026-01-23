@@ -26,4 +26,3 @@ export interface PersonResponse {
   createdAt: string;
   updatedAt: string;
 }
-

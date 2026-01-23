@@ -14,5 +14,3 @@ const ButtonGroup: React.FC<Props> = ({ children, style, direction = 'vertical' 
 };
 
 export default ButtonGroup;
-
-

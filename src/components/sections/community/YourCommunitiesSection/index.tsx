@@ -19,11 +19,7 @@ type Props = {
   onPostPress?: (post: Post) => void;
 };
 
-const YourCommunitiesSection: React.FC<Props> = ({
-  community,
-  onCommunityPress,
-  onPostPress,
-}) => {
+const YourCommunitiesSection: React.FC<Props> = ({ community, onCommunityPress, onPostPress }) => {
   if (!community) {
     return null;
   }
@@ -31,9 +27,7 @@ const YourCommunitiesSection: React.FC<Props> = ({
   const getPostTitle = (post: Post): string => {
     if (post.title) return post.title;
     if (post.content) {
-      return post.content.length > 50 
-        ? post.content.substring(0, 50) + '...' 
-        : post.content;
+      return post.content.length > 50 ? post.content.substring(0, 50) + '...' : post.content;
     }
     return 'Post sem título';
   };
@@ -48,7 +42,7 @@ const YourCommunitiesSection: React.FC<Props> = ({
   return (
     <View style={styles.container}>
       <Text style={styles.sectionTitle}>Your communities</Text>
-      
+
       <TouchableOpacity
         style={styles.communityCard}
         activeOpacity={0.9}
@@ -64,7 +58,7 @@ const YourCommunitiesSection: React.FC<Props> = ({
               </View>
             </View>
           </View>
-          
+
           {community.newPostsCount > 0 && (
             <View style={styles.newPostBadge}>
               <Text style={styles.newPostText}>{community.newPostsCount} New Post</Text>
@@ -75,9 +69,9 @@ const YourCommunitiesSection: React.FC<Props> = ({
         <View style={styles.communityContent}>
           <Text style={styles.communityTitle}>{community.title}</Text>
           <Text style={styles.communityDescription}>{community.description}</Text>
-          
+
           <Text style={styles.postsSectionTitle}>Newest posts</Text>
-          
+
           <ScrollView
             style={styles.postsScrollView}
             showsVerticalScrollIndicator={false}
@@ -92,36 +86,29 @@ const YourCommunitiesSection: React.FC<Props> = ({
               >
                 <View style={styles.postHeader}>
                   {post.userAvatar ? (
-                    <Image
-                      source={{ uri: post.userAvatar }}
-                      style={styles.postAvatar}
-                    />
+                    <Image source={{ uri: post.userAvatar }} style={styles.postAvatar} />
                   ) : (
                     <View style={styles.postAvatarPlaceholder}>
                       <Icon name="person" size={12} color="#6e6a6a" />
                     </View>
                   )}
-                  {post.userName && (
-                    <Text style={styles.postAuthorName}>{post.userName}</Text>
-                  )}
+                  {post.userName && <Text style={styles.postAuthorName}>{post.userName}</Text>}
                 </View>
-                
+
                 <Text style={styles.postTitle} numberOfLines={2}>
                   {getPostTitle(post)}
                 </Text>
-                
+
                 {getPostContent(post) && (
                   <Text style={styles.postContent} numberOfLines={2}>
                     {getPostContent(post)}
                   </Text>
                 )}
-                
+
                 <View style={styles.postFooter}>
                   <View style={styles.postAction}>
                     <Icon name="chat-bubble-outline" size={20} color="#0154f8" />
-                    <Text style={styles.postActionText}>
-                      {post.commentsCount || 0}
-                    </Text>
+                    <Text style={styles.postActionText}>{post.commentsCount || 0}</Text>
                   </View>
                 </View>
               </TouchableOpacity>
@@ -134,4 +121,3 @@ const YourCommunitiesSection: React.FC<Props> = ({
 };
 
 export default YourCommunitiesSection;
-

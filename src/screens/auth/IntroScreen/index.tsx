@@ -30,14 +30,26 @@ const IntroScreen: React.FC<Props> = ({ navigation, route }) => {
             title={`Hello, ${userName}!`}
             subtitle={`Wellcome to Like Me,\n\nFirst, can I introduce you to our app?`}
             variant="large"
-            rightAdornment={<Image source={GradientSplash4} style={styles.titleAdornment} resizeMode="cover" />}
+            rightAdornment={
+              <Image source={GradientSplash4} style={styles.titleAdornment} resizeMode="cover" />
+            }
           />
         </View>
 
         <View style={styles.buttonContainer}>
-          <ButtonGroup style={{ position: 'relative', left: 0, right: 0, bottom: 0, paddingBottom: 0 }}>
-            <PrimaryButton label="Yes, sure" onPress={handleShowPresentation} disabled={isLoading} />
-            <SecondaryButton label="No, I want to go straight to the app" onPress={handleGoToApp} loading={isLoading} />
+          <ButtonGroup
+            style={{ position: 'relative', left: 0, right: 0, bottom: 0, paddingBottom: 0 }}
+          >
+            <PrimaryButton
+              label="Yes, sure"
+              onPress={handleShowPresentation}
+              disabled={isLoading}
+            />
+            <SecondaryButton
+              label="No, I want to go straight to the app"
+              onPress={handleGoToApp}
+              loading={isLoading}
+            />
           </ButtonGroup>
         </View>
       </View>

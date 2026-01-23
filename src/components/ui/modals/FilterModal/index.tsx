@@ -52,24 +52,13 @@ const DATE_OPTIONS: FilterOption[] = [
   { id: 'all', label: 'All Time' },
 ];
 
-const FilterModal: React.FC<Props> = ({
-  visible,
-  onClose,
-  onSave,
-  selectedFilters = {},
-}) => {
+const FilterModal: React.FC<Props> = ({ visible, onClose, onSave, selectedFilters = {} }) => {
   const [selectedPostTypes, setSelectedPostTypes] = useState<string[]>(
     selectedFilters.postType || []
   );
-  const [selectedSortBy, setSelectedSortBy] = useState<string>(
-    selectedFilters.sortBy || ''
-  );
-  const [selectedDate, setSelectedDate] = useState<string>(
-    selectedFilters.publicationDate || ''
-  );
-  const [selectedAuthor, setSelectedAuthor] = useState<string>(
-    selectedFilters.author || ''
-  );
+  const [selectedSortBy, setSelectedSortBy] = useState<string>(selectedFilters.sortBy || '');
+  const [selectedDate, setSelectedDate] = useState<string>(selectedFilters.publicationDate || '');
+  const [selectedAuthor, setSelectedAuthor] = useState<string>(selectedFilters.author || '');
 
   const handlePostTypeToggle = (id: string) => {
     setSelectedPostTypes((prev) =>
@@ -117,51 +106,21 @@ const FilterModal: React.FC<Props> = ({
   );
 
   const isSaveDisabled =
-    selectedPostTypes.length === 0 &&
-    !selectedSortBy &&
-    !selectedDate &&
-    !selectedAuthor;
+    selectedPostTypes.length === 0 && !selectedSortBy && !selectedDate && !selectedAuthor;
 
   return (
     <ModalBase
       visible={visible}
       onClose={onClose}
       title="Filter"
-      footer={
-        <SubmitButton
-          label="Save"
-          onPress={handleSave}
-          disabled={isSaveDisabled}
-        />
-      }
+      footer={<SubmitButton label="Save" onPress={handleSave} disabled={isSaveDisabled} />}
     >
-      <ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-      >
-        {renderSection(
-          'Tipo de post',
-          POST_TYPES,
-          selectedPostTypes,
-          handlePostTypeToggle,
-          true
-        )}
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        {renderSection('Tipo de post', POST_TYPES, selectedPostTypes, handlePostTypeToggle, true)}
 
-        {renderSection(
-          'Data de publicação',
-          DATE_OPTIONS,
-          selectedDate,
-          setSelectedDate,
-          false
-        )}
+        {renderSection('Data de publicação', DATE_OPTIONS, selectedDate, setSelectedDate, false)}
 
-        {renderSection(
-          'Ordenação',
-          SORT_OPTIONS,
-          selectedSortBy,
-          setSelectedSortBy,
-          false
-        )}
+        {renderSection('Ordenação', SORT_OPTIONS, selectedSortBy, setSelectedSortBy, false)}
 
         {/* Autor */}
         <View style={styles.section}>
@@ -180,4 +139,3 @@ const FilterModal: React.FC<Props> = ({
 };
 
 export default FilterModal;
-

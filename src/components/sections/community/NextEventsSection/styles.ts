@@ -22,4 +22,3 @@ export const styles = StyleSheet.create({
     gap: SPACING.SM,
   },
 });
-

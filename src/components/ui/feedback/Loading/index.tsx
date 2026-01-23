@@ -22,13 +22,10 @@ const Loading: React.FC<LoadingProps> = ({
     <View style={containerStyle}>
       <View style={contentStyle}>
         <ActivityIndicator size={size} color={color} />
-        {message && (
-          <Text style={styles.message}>{message}</Text>
-        )}
+        {message && <Text style={styles.message}>{message}</Text>}
       </View>
     </View>
   );
 };
 
 export default Loading;
-

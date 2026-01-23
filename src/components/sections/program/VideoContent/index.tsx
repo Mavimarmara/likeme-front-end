@@ -20,11 +20,7 @@ const VideoContent: React.FC<Props> = ({ content }) => {
 
       <View style={styles.videoCard}>
         {content.thumbnail && (
-          <Image
-            source={{ uri: content.thumbnail }}
-            style={styles.thumbnail}
-            resizeMode="cover"
-          />
+          <Image source={{ uri: content.thumbnail }} style={styles.thumbnail} resizeMode="cover" />
         )}
         <View style={styles.overlay}>
           <View style={styles.playButton}>
@@ -34,9 +30,7 @@ const VideoContent: React.FC<Props> = ({ content }) => {
 
         <View style={styles.videoInfo}>
           <Text style={styles.videoTitle}>{content.title.toUpperCase()}</Text>
-          {content.duration && (
-            <Text style={styles.videoDuration}>{content.duration}</Text>
-          )}
+          {content.duration && <Text style={styles.videoDuration}>{content.duration}</Text>}
         </View>
       </View>
     </View>
@@ -44,4 +38,3 @@ const VideoContent: React.FC<Props> = ({ content }) => {
 };
 
 export default VideoContent;
-

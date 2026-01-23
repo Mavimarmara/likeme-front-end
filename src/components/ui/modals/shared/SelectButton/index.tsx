@@ -9,12 +9,7 @@ type SelectButtonProps = {
   onPress: () => void;
 };
 
-export const SelectButton: React.FC<SelectButtonProps> = ({
-  label,
-  icon,
-  isSelected,
-  onPress,
-}) => {
+export const SelectButton: React.FC<SelectButtonProps> = ({ label, icon, isSelected, onPress }) => {
   return (
     <TouchableOpacity
       style={[styles.button, isSelected && styles.buttonSelected]}
@@ -22,13 +17,9 @@ export const SelectButton: React.FC<SelectButtonProps> = ({
       activeOpacity={0.7}
     >
       {icon && <Text style={styles.icon}>{icon}</Text>}
-      <Text
-        style={[styles.text, isSelected && styles.textSelected]}
-        numberOfLines={1}
-      >
+      <Text style={[styles.text, isSelected && styles.textSelected]} numberOfLines={1}>
         {label}
       </Text>
     </TouchableOpacity>
   );
 };
-

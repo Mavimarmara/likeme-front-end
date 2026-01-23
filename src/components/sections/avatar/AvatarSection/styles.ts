@@ -76,4 +76,3 @@ export const styles = StyleSheet.create({
     paddingHorizontal: SPACING.MD,
   },
 });
-

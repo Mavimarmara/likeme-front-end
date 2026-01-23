@@ -11,7 +11,7 @@ export const styles = StyleSheet.create({
     position: 'relative',
     width: '100%',
   },
-  
+
   background: {
     position: 'absolute',
     top: 0,

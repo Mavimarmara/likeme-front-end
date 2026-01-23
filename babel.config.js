@@ -2,7 +2,7 @@
 // Isso garante que process.env.EXPO_PUBLIC_* esteja disponível durante o build do Metro
 require('dotenv').config();
 
-module.exports = function(api) {
+module.exports = function (api) {
   api.cache(true);
   return {
     presets: ['babel-preset-expo'],

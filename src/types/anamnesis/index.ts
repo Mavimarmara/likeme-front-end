@@ -165,4 +165,3 @@ export type {
   UseAnamnesisQuestionnaireParams,
   UseAnamnesisQuestionnaireReturn,
 } from './hooks';
-

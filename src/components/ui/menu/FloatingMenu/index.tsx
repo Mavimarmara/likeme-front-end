@@ -30,20 +30,18 @@ const FloatingMenu: React.FC<Props> = ({ items, selectedId }) => {
   return (
     <View style={styles.container}>
       <View style={styles.menuWrapper}>
-          <TouchableOpacity 
-            style={[styles.selectedPill, isHomeSelected && styles.selectedPillWithLabel]}
-            onPress={handleHomePress}
-            activeOpacity={0.8}
-            accessibilityRole="button"
-            accessibilityLabel="Ir para Home"
-          >
-            <View style={styles.selectedIconWrapper}>
-              <Image source={MenuButtonBackground} style={styles.selectedIcon} resizeMode="contain" />
-            </View>
-            {isHomeSelected && (
-              <Text style={styles.selectedPillLabel}>Home</Text>
-            )}
-          </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.selectedPill, isHomeSelected && styles.selectedPillWithLabel]}
+          onPress={handleHomePress}
+          activeOpacity={0.8}
+          accessibilityRole="button"
+          accessibilityLabel="Ir para Home"
+        >
+          <View style={styles.selectedIconWrapper}>
+            <Image source={MenuButtonBackground} style={styles.selectedIcon} resizeMode="contain" />
+          </View>
+          {isHomeSelected && <Text style={styles.selectedPillLabel}>Home</Text>}
+        </TouchableOpacity>
         <View style={styles.actionsPill}>
           {items.map((item) => {
             const isSelected = item.id === selectedId;
@@ -56,15 +54,9 @@ const FloatingMenu: React.FC<Props> = ({ items, selectedId }) => {
                 accessibilityRole="button"
                 accessibilityLabel={item.fullLabel || item.label}
               >
-                <Icon
-                  name={item.icon}
-                  size={20}
-                  color={isSelected ? '#0154F8' : '#001137'}
-                />
+                <Icon name={item.icon} size={20} color={isSelected ? '#0154F8' : '#001137'} />
                 {isSelected && (
-                          <Text style={styles.selectedLabel}>
-                    {item.fullLabel || item.label}
-          </Text>
+                  <Text style={styles.selectedLabel}>{item.fullLabel || item.label}</Text>
                 )}
               </TouchableOpacity>
             );
@@ -76,4 +68,3 @@ const FloatingMenu: React.FC<Props> = ({ items, selectedId }) => {
 };
 
 export default FloatingMenu;
-

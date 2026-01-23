@@ -71,7 +71,12 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
             onPress={() => onPaymentMethodChange('credit_card')}
             activeOpacity={0.7}
           >
-            <View style={[styles.radioButton, paymentMethod === 'credit_card' && styles.radioButtonSelected]}>
+            <View
+              style={[
+                styles.radioButton,
+                paymentMethod === 'credit_card' && styles.radioButtonSelected,
+              ]}
+            >
               {paymentMethod === 'credit_card' && <View style={styles.radioButtonInner} />}
             </View>
             <Text style={styles.paymentMethodLabel}>Credit card</Text>
@@ -81,7 +86,9 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
             onPress={() => onPaymentMethodChange('pix')}
             activeOpacity={0.7}
           >
-            <View style={[styles.radioButton, paymentMethod === 'pix' && styles.radioButtonSelected]}>
+            <View
+              style={[styles.radioButton, paymentMethod === 'pix' && styles.radioButtonSelected]}
+            >
               {paymentMethod === 'pix' && <View style={styles.radioButtonInner} />}
             </View>
             <Text style={styles.paymentMethodLabel}>Pix</Text>
@@ -164,11 +171,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
             containerStyle={styles.couponInput}
             style={styles.couponInputField}
           />
-          <TouchableOpacity
-            style={styles.applyButton}
-            onPress={onApplyCoupon}
-            activeOpacity={0.7}
-          >
+          <TouchableOpacity style={styles.applyButton} onPress={onApplyCoupon} activeOpacity={0.7}>
             <Text style={styles.applyButtonText}>Apply</Text>
           </TouchableOpacity>
         </View>

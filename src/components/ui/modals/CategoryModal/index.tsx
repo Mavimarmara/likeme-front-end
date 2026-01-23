@@ -64,9 +64,7 @@ const CategoryModal: React.FC<Props> = ({
       visible={visible}
       onClose={onClose}
       showTitle={false}
-      footer={
-        <SubmitButton label="Save" onPress={handleSave} />
-      }
+      footer={<SubmitButton label="Save" onPress={handleSave} />}
     >
       <View style={styles.optionsGrid}>
         {categories.length === 0 ? (
@@ -94,4 +92,3 @@ const CategoryModal: React.FC<Props> = ({
 };
 
 export default CategoryModal;
-

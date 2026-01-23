@@ -8,12 +8,7 @@ import {
   NextEventsSection,
   ProviderChatCard,
 } from '@/components/sections/community';
-import {
-  ProductsCarousel,
-  PlansCarousel,
-  Product,
-  Plan,
-} from '@/components/sections/product';
+import { ProductsCarousel, PlansCarousel, Product, Plan } from '@/components/sections/product';
 import { FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
 import { CategoryModal } from '@/components/ui/modals';
 import type { Post, Event } from '@/types';
@@ -108,11 +103,12 @@ const SocialList: React.FC<Props> = ({
   };
 
   const filterOptions: ButtonCarouselOption<string>[] = useMemo(() => {
-    const options = programs?.map((program) => ({
-      id: program.id,
-      label: program.name,
-    })) || [];
-    
+    const options =
+      programs?.map((program) => ({
+        id: program.id,
+        label: program.name,
+      })) || [];
+
     return [{ id: '__ALL__', label: 'All' }, ...options];
   }, [programs]);
 
@@ -226,10 +222,7 @@ const SocialList: React.FC<Props> = ({
 
         {providerChat && (
           <View style={styles.sectionContainer}>
-            <ProviderChatCard
-              chat={providerChat}
-              onPress={onProviderChatPress}
-            />
+            <ProviderChatCard chat={providerChat} onPress={onProviderChatPress} />
           </View>
         )}
       </ScrollView>
@@ -238,4 +231,3 @@ const SocialList: React.FC<Props> = ({
 };
 
 export default SocialList;
-

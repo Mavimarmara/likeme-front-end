@@ -7,11 +7,13 @@ Este documento descreve a integração do Auth0 entre o frontend (React Native/E
 ### Frontend (React Native/Expo)
 
 1. **Autenticação com Auth0**
+
    - Autentica usuário com Auth0 (email/password ou social)
    - Obtém tokens do Auth0: `accessToken`, `idToken`, `refreshToken`
    - Gerencia refresh token quando necessário
 
 2. **Comunicação com Backend**
+
    - Envia `idToken` do Auth0 para o backend validar
    - Recebe token de sessão do backend
    - Armazena token de sessão localmente (AsyncStorage)
@@ -25,15 +27,18 @@ Este documento descreve a integração do Auth0 entre o frontend (React Native/E
 ### Backend (Node.js)
 
 1. **Validação de Token Auth0**
+
    - Recebe `idToken` do frontend
    - Valida `idToken` com Auth0 (verifica assinatura e expiração)
    - Extrai informações do usuário do token
 
 2. **Gerenciamento de Usuário**
+
    - Cria ou atualiza usuário no banco de dados
    - Associa usuário do Auth0 com registro local
 
 3. **Geração de Token de Sessão**
+
    - Gera token JWT próprio para sessão do usuário
    - Retorna token de sessão para o frontend
    - Valida token de sessão em todas as requisições protegidas
@@ -112,6 +117,7 @@ Frontend                          Auth0                          Backend
 ### POST /api/auth/login
 
 **Request:**
+
 ```json
 {
   "idToken": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -124,12 +130,14 @@ Frontend                          Auth0                          Backend
 ```
 
 **Headers:**
+
 ```
 Authorization: Bearer {idToken}
 Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -146,12 +154,14 @@ Content-Type: application/json
 ### POST /api/auth/logout (opcional)
 
 **Headers:**
+
 ```
 Authorization: Bearer {sessionToken}
 Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -202,3 +212,4 @@ const response = await apiClient.get('/api/personal-objectives');
 EXPO_PUBLIC_AUTH0_DOMAIN=your-auth0-domain.auth0.com
 EXPO_PUBLIC_AUTH0_CLIENT_ID=your-auth0-client-id
 EXPO_PUBLIC_AUTH0_AUDIENCE=your-api-identifier
+```

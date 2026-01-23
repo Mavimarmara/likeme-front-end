@@ -45,21 +45,27 @@ class AuthService {
 
   async login(): Promise<AuthResult> {
     try {
-      if (AUTH0_CONFIG.domain === 'your-auth0-domain.auth0.com' || 
-          AUTH0_CONFIG.clientId === 'your-auth0-client-id') {
-        throw new Error('Configuração do Auth0 não encontrada. Verifique as variáveis de ambiente EXPO_PUBLIC_AUTH0_DOMAIN, EXPO_PUBLIC_AUTH0_CLIENT_ID e EXPO_PUBLIC_AUTH0_AUDIENCE.');
+      if (
+        AUTH0_CONFIG.domain === 'your-auth0-domain.auth0.com' ||
+        AUTH0_CONFIG.clientId === 'your-auth0-client-id'
+      ) {
+        throw new Error(
+          'Configuração do Auth0 não encontrada. Verifique as variáveis de ambiente EXPO_PUBLIC_AUTH0_DOMAIN, EXPO_PUBLIC_AUTH0_CLIENT_ID e EXPO_PUBLIC_AUTH0_AUDIENCE.'
+        );
       }
 
       console.log('Starting login with domain:', AUTH0_CONFIG.domain);
       console.log('Redirect URI:', this.getRedirectUri());
-      
+
       let discovery;
       try {
         discovery = await AuthSession.fetchDiscoveryAsync(`https://${AUTH0_CONFIG.domain}`);
       } catch (error) {
         logger.error('Discovery error:', error);
         if (error instanceof Error && error.message.includes('JSON')) {
-          throw new Error(`Erro ao conectar com Auth0. Verifique se o domínio ${AUTH0_CONFIG.domain} está correto.`);
+          throw new Error(
+            `Erro ao conectar com Auth0. Verifique se o domínio ${AUTH0_CONFIG.domain} está correto.`
+          );
         }
         throw error;
       }
@@ -84,11 +90,12 @@ class AuthService {
         responseType: AuthSession.ResponseType.Code,
         redirectUri,
         usePKCE: true,
-        extraParams: AUTH0_CONFIG.audience && AUTH0_CONFIG.audience !== 'your-api-identifier' 
-          ? { audience: AUTH0_CONFIG.audience }
-          : {},
+        extraParams:
+          AUTH0_CONFIG.audience && AUTH0_CONFIG.audience !== 'your-api-identifier'
+            ? { audience: AUTH0_CONFIG.audience }
+            : {},
       });
-      
+
       console.log('Auth request redirect URI:', request.redirectUri);
 
       console.log('Prompting for authentication...');
@@ -102,13 +109,19 @@ class AuthService {
         }
         if (result.type === 'error') {
           const error = (result as any).error;
-          const errorDescription = error?.description || error?.error_description || error?.message || 'Erro desconhecido';
+          const errorDescription =
+            error?.description || error?.error_description || error?.message || 'Erro desconhecido';
           logger.error('Auth error details:', errorDescription);
-          
-          if (errorDescription.includes('Service not found') || errorDescription.includes('your-api-identifier')) {
-            throw new Error('Configuração do Auth0 Audience incorreta. Verifique a variável EXPO_PUBLIC_AUTH0_AUDIENCE no arquivo .env e configure com o identifier da sua API no Auth0 Dashboard.');
+
+          if (
+            errorDescription.includes('Service not found') ||
+            errorDescription.includes('your-api-identifier')
+          ) {
+            throw new Error(
+              'Configuração do Auth0 Audience incorreta. Verifique a variável EXPO_PUBLIC_AUTH0_AUDIENCE no arquivo .env e configure com o identifier da sua API no Auth0 Dashboard.'
+            );
           }
-          
+
           throw new Error(`Falha na autenticação: ${errorDescription}`);
         }
         throw new Error(`Falha na autenticação. Tipo: ${result.type}`);
@@ -119,13 +132,15 @@ class AuthService {
         console.log('Exchanging code for token...');
         console.log('Request code:', result.params.code);
         console.log('Request state:', result.params.state);
-        
+
         const codeVerifier = (request as any).codeVerifier;
         if (!codeVerifier) {
-          throw new Error('code_verifier não encontrado no request. O PKCE pode não ter sido gerado corretamente.');
+          throw new Error(
+            'code_verifier não encontrado no request. O PKCE pode não ter sido gerado corretamente.'
+          );
         }
         console.log('Code verifier found:', codeVerifier ? 'Yes' : 'No');
-        
+
         tokenResponse = await AuthSession.exchangeCodeAsync(
           {
             clientId: AUTH0_CONFIG.clientId,
@@ -142,10 +157,14 @@ class AuthService {
         logger.error('Token exchange error:', error);
         if (error instanceof Error) {
           if (error.message.includes('code_verifier') || error.message.includes('codeVerifier')) {
-            throw new Error('Erro PKCE: O code_verifier não foi encontrado. Isso pode acontecer se a sessão foi perdida. Tente fazer login novamente.');
+            throw new Error(
+              'Erro PKCE: O code_verifier não foi encontrado. Isso pode acontecer se a sessão foi perdida. Tente fazer login novamente.'
+            );
           }
           if (error.message.includes('JSON')) {
-            throw new Error('Erro ao processar resposta do Auth0. Verifique a configuração do cliente e do audience.');
+            throw new Error(
+              'Erro ao processar resposta do Auth0. Verifique a configuração do cliente e do audience.'
+            );
           }
           throw new Error(`Erro ao trocar código por token: ${error.message}`);
         }
@@ -154,7 +173,9 @@ class AuthService {
 
       if (!tokenResponse.idToken) {
         logger.debug('Token response:', JSON.stringify(tokenResponse, null, 2));
-        throw new Error('Erro de configuração: idToken não foi retornado pelo Auth0. Verifique a configuração do audience.');
+        throw new Error(
+          'Erro de configuração: idToken não foi retornado pelo Auth0. Verifique a configuração do audience.'
+        );
       }
 
       console.log('idToken received, length:', tokenResponse.idToken.length);
@@ -197,7 +218,7 @@ class AuthService {
         message: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
       });
-      
+
       if (error instanceof Error) {
         if (error.message.includes('idToken')) {
           throw error;
@@ -274,7 +295,7 @@ class AuthService {
       console.log('Validating token with backend:', url);
       console.log('Token length:', authResult.idToken.length);
       console.log('Token parts:', authResult.idToken.split('.').length);
-      
+
       // Decode token header to check for kid
       try {
         const tokenParts = authResult.idToken.split('.');
@@ -286,7 +307,7 @@ class AuthService {
       } catch (decodeError) {
         console.error('Error decoding token:', decodeError);
       }
-      
+
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -301,7 +322,7 @@ class AuthService {
       if (!response.ok) {
         const contentType = response.headers.get('content-type');
         let errorMessage = `Erro ${response.status}: ${response.statusText}`;
-        
+
         if (contentType && contentType.includes('application/json')) {
           try {
             const errorData = await response.json();
@@ -315,7 +336,7 @@ class AuthService {
           const errorText = await response.text();
           logger.error('Backend error response (not JSON):', errorText.substring(0, 200));
         }
-        
+
         throw new Error(errorMessage);
       }
 
@@ -327,12 +348,13 @@ class AuthService {
       }
 
       const backendResponse = await response.json();
-      
-      const sessionToken = backendResponse.token 
-        || backendResponse.accessToken 
-        || backendResponse.data?.token
-        || backendResponse.data?.accessToken;
-      
+
+      const sessionToken =
+        backendResponse.token ||
+        backendResponse.accessToken ||
+        backendResponse.data?.token ||
+        backendResponse.data?.accessToken;
+
       if (sessionToken) {
         await storageService.setToken(sessionToken);
       } else {
@@ -341,18 +363,16 @@ class AuthService {
       }
 
       await storageService.setUser(authResult.user);
-      
-      const registerCompletedAt = backendResponse.registerCompletedAt 
-        || backendResponse.data?.registerCompletedAt 
-        || null;
-      
-      const objectivesSelectedAt = backendResponse.objectivesSelectedAt 
-        || backendResponse.data?.objectivesSelectedAt 
-        || null;
-      
+
+      const registerCompletedAt =
+        backendResponse.registerCompletedAt || backendResponse.data?.registerCompletedAt || null;
+
+      const objectivesSelectedAt =
+        backendResponse.objectivesSelectedAt || backendResponse.data?.objectivesSelectedAt || null;
+
       await storageService.setRegisterCompletedAt(registerCompletedAt);
       await storageService.setObjectivesSelectedAt(objectivesSelectedAt);
-      
+
       return backendResponse;
     } catch (error) {
       logger.error('Backend communication error:', error);
@@ -372,14 +392,14 @@ class AuthService {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
+              Authorization: `Bearer ${token}`,
             },
           }).catch(() => {});
         }
       } catch (error) {
         logger.warn('Erro ao fazer logout no backend:', error);
       }
-      
+
       await storageService.clearAll();
     } catch (error) {
       logger.error('Logout error:', error);

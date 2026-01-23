@@ -20,7 +20,7 @@ export function parseMindAnswer(answer: UserAnswer): number | undefined {
         return clampInt(value, 0, 10);
       }
     }
-    
+
     // Fallback: tentar parse direto do key
     const fromKey = parseInt(answer.answerOptionKey, 10);
     if (!Number.isNaN(fromKey)) {
@@ -35,11 +35,11 @@ export function buildMindAnswer(value: number, question: AnamnesisQuestion) {
   const clamped = clampInt(value, 0, 10);
   const optionKey = `score_${clamped}`;
   const option = question.answerOptions.find((o) => o.key === optionKey);
-  
+
   if (!option) {
     throw new Error(`Opção "${optionKey}" não encontrada para a pergunta "${question.key}"`);
   }
-  
+
   return {
     answerOptionId: option.id,
     answerText: null,
@@ -106,11 +106,11 @@ export function parseBodyAnswer(answer: UserAnswer): BodySymptomLevel | undefine
 export function buildBodyAnswer(value: BodySymptomLevel, question: AnamnesisQuestion) {
   const optionKey = BODY_LEVEL_TO_OPTION_KEY[value];
   const option = question.answerOptions.find((o) => o.key === optionKey);
-  
+
   if (!option) {
     throw new Error(`Opção "${optionKey}" não encontrada para a pergunta "${question.key}"`);
   }
-  
+
   return {
     answerOptionId: option.id,
     answerText: null,
@@ -123,15 +123,13 @@ export function parseSingleChoiceAnswerKey(answer: UserAnswer): string | undefin
 
 export function buildSingleChoiceAnswerKey(value: string, question: AnamnesisQuestion) {
   const option = question.answerOptions.find((o) => o.key === value);
-  
+
   if (!option) {
     throw new Error(`Opção "${value}" não encontrada para a pergunta "${question.key}"`);
   }
-  
+
   return {
     answerOptionId: option.id,
     answerText: null,
   };
 }
-
-

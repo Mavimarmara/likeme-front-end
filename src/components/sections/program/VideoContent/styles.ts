@@ -10,7 +10,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: "100%",
+    width: '100%',
     alignSelf: 'center',
     paddingHorizontal: SPACING.XL,
   },
@@ -33,7 +33,7 @@ export const styles = StyleSheet.create({
     borderColor: '#8fa3a1',
   },
   videoCard: {
-    width: "100%",
+    width: '100%',
     height: 500,
     borderRadius: 64,
     borderTopLeftRadius: 64,
@@ -125,4 +125,3 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
-

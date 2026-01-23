@@ -23,10 +23,7 @@ interface SymptomSliderProps {
   onValueChange: (value: SymptomLevel) => void;
 }
 
-const SymptomSlider: React.FC<SymptomSliderProps> = ({
-  selectedValue,
-  onValueChange,
-}) => {
+const SymptomSlider: React.FC<SymptomSliderProps> = ({ selectedValue, onValueChange }) => {
   return (
     <View style={styles.container}>
       <View style={styles.sliderTrack} />
@@ -40,12 +37,7 @@ const SymptomSlider: React.FC<SymptomSliderProps> = ({
                 onPress={() => onValueChange(option.value)}
                 activeOpacity={0.7}
               >
-                <View
-                  style={[
-                    styles.radioButton,
-                    isSelected && styles.radioButtonSelected,
-                  ]}
-                >
+                <View style={[styles.radioButton, isSelected && styles.radioButtonSelected]}>
                   {isSelected && <View style={styles.radioButtonInner} />}
                 </View>
               </TouchableOpacity>
@@ -62,4 +54,3 @@ const SymptomSlider: React.FC<SymptomSliderProps> = ({
 };
 
 export default SymptomSlider;
-

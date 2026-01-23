@@ -19,7 +19,7 @@ const AddressView: React.FC<AddressViewProps> = ({ address, onEditPress }) => {
       `${address.neighborhood} - ${address.city} - ${address.state}`,
       address.zipCode,
       address.phone,
-    ].filter(part => part !== '');
+    ].filter((part) => part !== '');
 
     return addressParts.join('\n');
   };
@@ -33,13 +33,10 @@ const AddressView: React.FC<AddressViewProps> = ({ address, onEditPress }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.addressCardContent}>
-        <Text style={styles.addressText}>
-          {formatAddressText(address)}
-        </Text>
+        <Text style={styles.addressText}>{formatAddressText(address)}</Text>
       </View>
     </View>
   );
 };
 
 export default AddressView;
-

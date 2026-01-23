@@ -31,47 +31,59 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleUpdateMovement = () => {
-    navigation.navigate('AnamnesisHabits' as never, {
-      title: 'Movimento',
-      keyPrefix: 'habits_movimento',
-    } as never);
+    navigation.navigate(
+      'AnamnesisHabits' as never,
+      {
+        title: 'Movimento',
+        keyPrefix: 'habits_movimento',
+      } as never
+    );
   };
 
   const handleStartSpirituality = () => {
-    navigation.navigate('AnamnesisHabits' as never, {
-      title: 'Espiritualidade',
-      keyPrefix: 'habits_espiritualidade',
-    } as never);
+    navigation.navigate(
+      'AnamnesisHabits' as never,
+      {
+        title: 'Espiritualidade',
+        keyPrefix: 'habits_espiritualidade',
+      } as never
+    );
   };
 
   const handleContinueSleep = () => {
-    navigation.navigate('AnamnesisHabits' as never, {
-      title: 'Sono',
-      keyPrefix: 'habits_sono',
-    } as never);
+    navigation.navigate(
+      'AnamnesisHabits' as never,
+      {
+        title: 'Sono',
+        keyPrefix: 'habits_sono',
+      } as never
+    );
   };
 
   const handleContinueNutrition = () => {
-    navigation.navigate('AnamnesisHabits' as never, {
-      title: 'Alimentação',
-      keyPrefix: 'habits_nutricao',
-    } as never);
+    navigation.navigate(
+      'AnamnesisHabits' as never,
+      {
+        title: 'Alimentação',
+        keyPrefix: 'habits_nutricao',
+      } as never
+    );
   };
 
   const handleContinueStress = () => {
-    navigation.navigate('AnamnesisHabits' as never, {
-      title: 'Estresse',
-      keyPrefix: 'habits_estresse',
-    } as never);
+    navigation.navigate(
+      'AnamnesisHabits' as never,
+      {
+        title: 'Estresse',
+        keyPrefix: 'habits_estresse',
+      } as never
+    );
   };
 
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
-        <Header 
-          showBackButton={true}
-          onBackPress={() => navigation.goBack()}
-        />
+        <Header showBackButton={true} onBackPress={() => navigation.goBack()} />
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <ActivityIndicator size="large" color={COLORS.PRIMARY.PURE} />
           <Text style={{ marginTop: 16, color: '#666' }}>Carregando progresso...</Text>
@@ -83,10 +95,7 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
   if (error) {
     return (
       <SafeAreaView style={styles.container}>
-        <Header 
-          showBackButton={true}
-          onBackPress={() => navigation.goBack()}
-        />
+        <Header showBackButton={true} onBackPress={() => navigation.goBack()} />
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
           <Text style={{ color: '#EF4444', marginBottom: 16 }}>Erro ao carregar dados</Text>
           <Text style={{ color: '#666', textAlign: 'center' }}>{error}</Text>
@@ -98,23 +107,12 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       {/* Background superior */}
-      <Image
-        source={BackgroundWithGradient3}
-        style={styles.backgroundTop}
-        resizeMode="cover"
-      />
-      
-      {/* Background inferior */}
-      <Image
-        source={BackgroundWithGradient2}
-        style={styles.backgroundBottom}
-        resizeMode="cover"
-      />
+      <Image source={BackgroundWithGradient3} style={styles.backgroundTop} resizeMode="cover" />
 
-      <Header 
-        showBackButton={true}
-        onBackPress={() => navigation.goBack()}
-      />
+      {/* Background inferior */}
+      <Image source={BackgroundWithGradient2} style={styles.backgroundBottom} resizeMode="cover" />
+
+      <Header showBackButton={true} onBackPress={() => navigation.goBack()} />
 
       <ScrollView
         style={styles.scrollView}
@@ -130,7 +128,7 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
           <Text style={styles.cardDescription}>
             Um espaço para sabermos como seu corpo tem respondido ao seu cotidiano.
           </Text>
-          
+
           <View style={styles.cardContent}>
             <ProgressBar
               current={progress?.physical.answered || 0}
@@ -138,9 +136,15 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
               label="Corpo"
               color={COLORS.PRIMARY.PURE}
             />
-            
+
             <SecondaryButton
-              label={progress?.physical.answered === progress?.physical.total ? "Atualizar" : progress?.physical.answered === 0 ? "Iniciar" : "Continuar"}
+              label={
+                progress?.physical.answered === progress?.physical.total
+                  ? 'Atualizar'
+                  : progress?.physical.answered === 0
+                  ? 'Iniciar'
+                  : 'Continuar'
+              }
               onPress={handleContinueBody}
               size="medium"
             />
@@ -152,9 +156,10 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
           <Text style={styles.cardTitle}>SUA MENTE</Text>
           <Text style={styles.cardSubtitle}>Bem-estar emocional</Text>
           <Text style={styles.cardDescription}>
-            Como você tem se sentido?{'\n'}Um espaço para refletir sobre emoções e equilíbrio no dia a dia.
+            Como você tem se sentido?{'\n'}Um espaço para refletir sobre emoções e equilíbrio no dia
+            a dia.
           </Text>
-          
+
           <View style={styles.cardContent}>
             <ProgressBar
               current={progress?.mental.answered || 0}
@@ -162,9 +167,15 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
               label="Mente"
               color="#D794FF"
             />
-            
+
             <SecondaryButton
-              label={progress?.mental.answered === progress?.mental.total ? "Atualizar" : progress?.mental.answered === 0 ? "Iniciar" : "Continuar"}
+              label={
+                progress?.mental.answered === progress?.mental.total
+                  ? 'Atualizar'
+                  : progress?.mental.answered === 0
+                  ? 'Iniciar'
+                  : 'Continuar'
+              }
               onPress={handleContinueMind}
               size="medium"
             />
@@ -178,7 +189,7 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
           <Text style={styles.cardDescription}>
             Uma sessão para entender um pouco mais sobre o seu dia a dia, sem certo ou errado
           </Text>
-          
+
           <View style={styles.habitsContainer}>
             {/* Movimento */}
             <View style={styles.habitSection}>
@@ -190,7 +201,13 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
                 color={COLORS.PRIMARY.PURE}
               />
               <SecondaryButton
-                label={progress?.habits.movimento.answered === progress?.habits.movimento.total ? "Atualizar" : progress?.habits.movimento.answered === 0 ? "Iniciar" : "Continuar"}
+                label={
+                  progress?.habits.movimento.answered === progress?.habits.movimento.total
+                    ? 'Atualizar'
+                    : progress?.habits.movimento.answered === 0
+                    ? 'Iniciar'
+                    : 'Continuar'
+                }
                 onPress={handleUpdateMovement}
                 size="medium"
               />
@@ -207,7 +224,14 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
                 color={COLORS.PRIMARY.PURE}
               />
               <SecondaryButton
-                label={progress?.habits.espiritualidade.answered === progress?.habits.espiritualidade.total ? "Atualizar" : progress?.habits.espiritualidade.answered === 0 ? "Iniciar" : "Continuar"}
+                label={
+                  progress?.habits.espiritualidade.answered ===
+                  progress?.habits.espiritualidade.total
+                    ? 'Atualizar'
+                    : progress?.habits.espiritualidade.answered === 0
+                    ? 'Iniciar'
+                    : 'Continuar'
+                }
                 onPress={handleStartSpirituality}
                 size="medium"
               />
@@ -224,7 +248,13 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
                 color="#9B51E0"
               />
               <SecondaryButton
-                label={progress?.habits.sono.answered === progress?.habits.sono.total ? "Atualizar" : progress?.habits.sono.answered === 0 ? "Iniciar" : "Continuar"}
+                label={
+                  progress?.habits.sono.answered === progress?.habits.sono.total
+                    ? 'Atualizar'
+                    : progress?.habits.sono.answered === 0
+                    ? 'Iniciar'
+                    : 'Continuar'
+                }
                 onPress={handleContinueSleep}
                 size="medium"
               />
@@ -241,7 +271,13 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
                 color="#6FCF97"
               />
               <SecondaryButton
-                label={progress?.habits.nutricao.answered === progress?.habits.nutricao.total ? "Atualizar" : progress?.habits.nutricao.answered === 0 ? "Iniciar" : "Continuar"}
+                label={
+                  progress?.habits.nutricao.answered === progress?.habits.nutricao.total
+                    ? 'Atualizar'
+                    : progress?.habits.nutricao.answered === 0
+                    ? 'Iniciar'
+                    : 'Continuar'
+                }
                 onPress={handleContinueNutrition}
                 size="medium"
               />
@@ -258,7 +294,13 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
                 color="#F2994A"
               />
               <SecondaryButton
-                label={progress?.habits.estresse.answered === progress?.habits.estresse.total ? "Atualizar" : progress?.habits.estresse.answered === 0 ? "Iniciar" : "Continuar"}
+                label={
+                  progress?.habits.estresse.answered === progress?.habits.estresse.total
+                    ? 'Atualizar'
+                    : progress?.habits.estresse.answered === 0
+                    ? 'Iniciar'
+                    : 'Continuar'
+                }
                 onPress={handleContinueStress}
                 size="medium"
               />

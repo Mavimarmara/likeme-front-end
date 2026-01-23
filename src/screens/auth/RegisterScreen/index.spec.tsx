@@ -34,12 +34,18 @@ jest.mock('@/components/ui', () => {
       </View>
     )),
     PrimaryButton: ({ label, onPress }: { label: string; onPress: () => void }) => (
-      <TouchableOpacity onPress={onPress} testID={`button-${label.toLowerCase().replace(/\s+/g, '-')}`}>
+      <TouchableOpacity
+        onPress={onPress}
+        testID={`button-${label.toLowerCase().replace(/\s+/g, '-')}`}
+      >
         <Text>{label}</Text>
       </TouchableOpacity>
     ),
     SecondaryButton: ({ label, onPress }: { label: string; onPress: () => void }) => (
-      <TouchableOpacity onPress={onPress} testID={`button-${label.toLowerCase().replace(/\s+/g, '-')}`}>
+      <TouchableOpacity
+        onPress={onPress}
+        testID={`button-${label.toLowerCase().replace(/\s+/g, '-')}`}
+      >
         <Text>{label}</Text>
       </TouchableOpacity>
     ),
@@ -61,9 +67,7 @@ describe('RegisterScreen', () => {
       params: {},
     };
 
-    const { getByText } = render(
-      <RegisterScreen navigation={mockNavigation} route={mockRoute} />
-    );
+    const { getByText } = render(<RegisterScreen navigation={mockNavigation} route={mockRoute} />);
 
     expect(getByText("Let's start,")).toBeTruthy();
     expect(getByText('Next')).toBeTruthy();
@@ -81,9 +85,7 @@ describe('RegisterScreen', () => {
       },
     };
 
-    const { getByText } = render(
-      <RegisterScreen navigation={mockNavigation} route={mockRoute} />
-    );
+    const { getByText } = render(<RegisterScreen navigation={mockNavigation} route={mockRoute} />);
 
     const nextButton = getByText('Next');
     fireEvent.press(nextButton);
@@ -130,9 +132,7 @@ describe('RegisterScreen', () => {
       },
     };
 
-    const { getByText } = render(
-      <RegisterScreen navigation={mockNavigation} route={mockRoute} />
-    );
+    const { getByText } = render(<RegisterScreen navigation={mockNavigation} route={mockRoute} />);
 
     const skipButton = getByText('Skip information');
     fireEvent.press(skipButton);

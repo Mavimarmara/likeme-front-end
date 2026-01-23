@@ -6,4 +6,3 @@ export { default as ButtonGroup } from './ButtonGroup';
 export { default as LogoutButton } from './LogoutButton';
 export { default as FilterButton } from './FilterButton';
 export { default as IconButton } from './IconButton';
-

@@ -42,34 +42,20 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView 
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-      >
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
           <Title title="Profile" variant="large" />
 
           {user && (
             <View style={styles.userInfo}>
-              {user.picture && (
-                <Image 
-                  source={{ uri: user.picture }} 
-                  style={styles.avatar}
-                />
-              )}
-              
+              {user.picture && <Image source={{ uri: user.picture }} style={styles.avatar} />}
+
               <View style={styles.userDetails}>
-                {user.name && (
-                  <Text style={styles.userName}>{user.name}</Text>
-                )}
-                
-                {user.email && (
-                  <Text style={styles.userEmail}>{user.email}</Text>
-                )}
-                
-                {user.nickname && (
-                  <Text style={styles.userNickname}>@{user.nickname}</Text>
-                )}
+                {user.name && <Text style={styles.userName}>{user.name}</Text>}
+
+                {user.email && <Text style={styles.userEmail}>{user.email}</Text>}
+
+                {user.nickname && <Text style={styles.userNickname}>@{user.nickname}</Text>}
               </View>
             </View>
           )}
@@ -86,10 +72,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
 
           {user && (
             <View style={styles.logoutContainer}>
-              <LogoutButton 
-                label="Log out" 
-                onPress={handleLogout}
-              />
+              <LogoutButton label="Log out" onPress={handleLogout} />
             </View>
           )}
         </View>
@@ -100,4 +83,3 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
 };
 
 export default ProfileScreen;
-

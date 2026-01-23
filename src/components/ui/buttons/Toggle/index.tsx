@@ -20,12 +20,7 @@ const Toggle = <T extends string>({ options, selected, onSelect }: Props<T>) => 
             onPress={() => onSelect(option)}
             activeOpacity={0.7}
           >
-            <Text
-              style={[
-                styles.optionText,
-                isSelected && styles.optionTextSelected,
-              ]}
-            >
+            <Text style={[styles.optionText, isSelected && styles.optionTextSelected]}>
               {option}
             </Text>
           </TouchableOpacity>
@@ -36,4 +31,3 @@ const Toggle = <T extends string>({ options, selected, onSelect }: Props<T>) => 
 };
 
 export default Toggle;
-

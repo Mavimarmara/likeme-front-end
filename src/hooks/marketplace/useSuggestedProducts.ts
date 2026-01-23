@@ -38,7 +38,7 @@ export const useSuggestedProducts = (
       });
 
       if (response.success && response.data) {
-        const mappedProducts: Product[] = response.data.products.map(p => ({
+        const mappedProducts: Product[] = response.data.products.map((p) => ({
           id: p.id,
           title: p.name,
           price: p.price || 0,
@@ -70,4 +70,3 @@ export const useSuggestedProducts = (
     refresh: loadProducts,
   };
 };
-

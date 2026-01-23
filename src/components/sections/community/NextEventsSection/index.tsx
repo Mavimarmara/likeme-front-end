@@ -10,11 +10,7 @@ type Props = {
   onEventSave?: (event: Event) => void;
 };
 
-const NextEventsSection: React.FC<Props> = ({
-  events,
-  onEventPress,
-  onEventSave,
-}) => {
+const NextEventsSection: React.FC<Props> = ({ events, onEventPress, onEventSave }) => {
   if (!events || events.length === 0) {
     return null;
   }
@@ -29,12 +25,7 @@ const NextEventsSection: React.FC<Props> = ({
         style={styles.scrollView}
       >
         {events.map((event) => (
-          <EventCard
-            key={event.id}
-            event={event}
-            onPress={onEventPress}
-            onSave={onEventSave}
-          />
+          <EventCard key={event.id} event={event} onPress={onEventPress} onSave={onEventSave} />
         ))}
       </ScrollView>
     </View>
@@ -42,4 +33,3 @@ const NextEventsSection: React.FC<Props> = ({
 };
 
 export default NextEventsSection;
-

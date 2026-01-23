@@ -56,7 +56,9 @@ class AnamnesisService {
     }
   }
 
-  async getQuestionByKey(params: GetAnamnesisQuestionParams): Promise<GetAnamnesisQuestionResponse> {
+  async getQuestionByKey(
+    params: GetAnamnesisQuestionParams
+  ): Promise<GetAnamnesisQuestionResponse> {
     try {
       if (!params.key || !params.locale) {
         throw new Error('Key and locale are required');
@@ -82,7 +84,9 @@ class AnamnesisService {
     }
   }
 
-  async getCompleteAnamnesis(params: GetCompleteAnamnesisParams): Promise<GetCompleteAnamnesisResponse> {
+  async getCompleteAnamnesis(
+    params: GetCompleteAnamnesisParams
+  ): Promise<GetCompleteAnamnesisResponse> {
     try {
       if (!params.locale) {
         throw new Error('Locale is required');
@@ -218,4 +222,3 @@ class AnamnesisService {
 }
 
 export default new AnamnesisService();
-

@@ -21,4 +21,3 @@ export interface StoredUser {
   picture?: string;
   nickname?: string;
 }
-

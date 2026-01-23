@@ -24,26 +24,14 @@ const AnamnesisStartScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       {/* Background superior */}
-      <Image
-        source={BackgroundWithGradient3}
-        style={styles.backgroundTop}
-        resizeMode="cover"
-      />
-      
-      {/* Background inferior */}
-      <Image
-        source={BackgroundWithGradient2}
-        style={styles.backgroundBottom}
-        resizeMode="cover"
-      />
-      
-      <Header 
-        showBackButton={true}
-        onBackPress={() => navigation.goBack()}
-      />
-      
-      <View style={styles.content}>
+      <Image source={BackgroundWithGradient3} style={styles.backgroundTop} resizeMode="cover" />
 
+      {/* Background inferior */}
+      <Image source={BackgroundWithGradient2} style={styles.backgroundBottom} resizeMode="cover" />
+
+      <Header showBackButton={true} onBackPress={() => navigation.goBack()} />
+
+      <View style={styles.content}>
         {/* Imagem decorativa rotacionada 270 graus e centralizada */}
         <View style={styles.decorativeImageContainer}>
           <View style={styles.decorativeImageWrapper}>
@@ -58,11 +46,10 @@ const AnamnesisStartScreen: React.FC<Props> = ({ navigation }) => {
         {/* Conteúdo principal */}
         <View style={styles.mainContent}>
           <View style={styles.textContainer}>
-            <Text style={styles.title}>
-              Sua jornada rumo ao autoconhecimento começa aqui!
-            </Text>
+            <Text style={styles.title}>Sua jornada rumo ao autoconhecimento começa aqui!</Text>
             <Text style={styles.description}>
-              Faça uma pausa de alguns minutos e deixe que o Like Me o guie em direção ao seu próprio equilíbrio.
+              Faça uma pausa de alguns minutos e deixe que o Like Me o guie em direção ao seu
+              próprio equilíbrio.
             </Text>
           </View>
 

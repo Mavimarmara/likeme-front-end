@@ -28,11 +28,11 @@ class CommunityService {
         }
         return value.trim();
       };
-      
+
       if (params.page !== undefined) {
         queryParams.page = String(params.page);
       }
-      
+
       if (params.limit !== undefined) {
         queryParams.limit = String(params.limit);
       }
@@ -73,7 +73,7 @@ class CommunityService {
         true,
         false
       );
-console.log('userFeedResponse', JSON.stringify(userFeedResponse));
+      console.log('userFeedResponse', JSON.stringify(userFeedResponse));
       return userFeedResponse;
     } catch (error) {
       logger.error('Error fetching user feed:', error);
@@ -88,13 +88,8 @@ console.log('userFeedResponse', JSON.stringify(userFeedResponse));
       }
 
       const endpoint = `${this.pollDetailEndpoint}/${pollId.trim()}`;
-      
-      const pollResponse = await apiClient.get<any>(
-        endpoint,
-        undefined,
-        true,
-        false
-      );
+
+      const pollResponse = await apiClient.get<any>(endpoint, undefined, true, false);
 
       logger.debug('Poll detail response:', {
         pollId,
@@ -122,12 +117,12 @@ console.log('userFeedResponse', JSON.stringify(userFeedResponse));
 
       // Endpoint fixo, pollId vai no body
       const endpoint = `/api/communities/polls/${pollId.trim()}/votes`;
-      
+
       const voteResponse = await apiClient.put<any>(
         endpoint,
-        { 
+        {
           pollId: pollId.trim(),
-          answerIds 
+          answerIds,
         },
         true
       );
@@ -145,7 +140,10 @@ console.log('userFeedResponse', JSON.stringify(userFeedResponse));
     }
   }
 
-  async addCommentReaction(commentId: string, reactionName: 'like' | 'dislike' = 'like'): Promise<boolean> {
+  async addCommentReaction(
+    commentId: string,
+    reactionName: 'like' | 'dislike' = 'like'
+  ): Promise<boolean> {
     try {
       if (!commentId || commentId.trim() === '') {
         throw new Error('Comment ID is required');
@@ -169,7 +167,10 @@ console.log('userFeedResponse', JSON.stringify(userFeedResponse));
     }
   }
 
-  async removeCommentReaction(commentId: string, reactionName: 'like' | 'dislike' = 'like'): Promise<boolean> {
+  async removeCommentReaction(
+    commentId: string,
+    reactionName: 'like' | 'dislike' = 'like'
+  ): Promise<boolean> {
     try {
       if (!commentId || commentId.trim() === '') {
         throw new Error('Comment ID is required');
@@ -196,11 +197,11 @@ console.log('userFeedResponse', JSON.stringify(userFeedResponse));
   async listCommunities(params: ListCommunitiesParams = {}): Promise<ListCommunitiesApiResponse> {
     try {
       const queryParams: Record<string, string> = {};
-      
+
       if (params.page !== undefined) {
         queryParams.page = String(params.page);
       }
-      
+
       if (params.limit !== undefined) {
         queryParams.limit = String(params.limit);
       }
@@ -237,7 +238,7 @@ console.log('userFeedResponse', JSON.stringify(userFeedResponse));
   async getChannels(params: GetChannelsParams = {}): Promise<ChannelsApiResponse> {
     try {
       const queryParams: Record<string, string> = {};
-      
+
       if (params.types) {
         if (Array.isArray(params.types)) {
           queryParams.types = params.types.join(',');
@@ -269,4 +270,3 @@ console.log('userFeedResponse', JSON.stringify(userFeedResponse));
 }
 
 export default new CommunityService();
-

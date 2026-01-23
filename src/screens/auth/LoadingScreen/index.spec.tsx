@@ -21,7 +21,12 @@ describe('LoadingScreen', () => {
     jest.spyOn(Animated, 'timing').mockImplementation((value: any, config: any) => {
       return {
         start: (cb?: any) => {
-          if (value && typeof value.setValue === 'function' && config && typeof config.toValue === 'number') {
+          if (
+            value &&
+            typeof value.setValue === 'function' &&
+            config &&
+            typeof config.toValue === 'number'
+          ) {
             value.setValue(config.toValue);
           }
           if (cb) cb({ finished: true });
@@ -47,5 +52,3 @@ describe('LoadingScreen', () => {
     expect(replace).toHaveBeenCalledWith('Unauthenticated');
   });
 });
-
-

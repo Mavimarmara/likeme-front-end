@@ -55,36 +55,43 @@ src/
 ## 🎯 Princípios da Arquitetura
 
 ### 1. **Separação por Domínio**
+
 - Telas agrupadas por funcionalidade (auth, wellness, marketplace, community)
 - Facilita manutenção e escalabilidade
 - Reduz acoplamento entre módulos
 
 ### 2. **Coesão de Arquivos**
+
 - Cada tela tem sua própria pasta com arquivos relacionados
 - `index.tsx`, `styles.ts` e `[ScreenName].spec.tsx` ficam juntos
 - Facilita localização e manutenção de código relacionado
 
 ### 3. **Componentização**
+
 - Componentes reutilizáveis em `components/ui/`
 - Separação clara entre UI e lógica de negócio
 - Facilita testes e manutenção
 
 ### 4. **Tipagem Forte**
+
 - Todos os tipos centralizados em `types/`
 - Interfaces bem definidas para cada entidade
 - Melhora IntelliSense e detecção de erros
 
 ### 5. **Constantes Centralizadas**
+
 - Cores, espaçamentos, fontes em `constants/`
 - Facilita manutenção do design system
 - Consistência visual em todo o app
 
 ### 6. **Utilitários Organizados**
+
 - Funções helper em `utils/`
 - Validações, formatações, cálculos
 - Código reutilizável e testável
 
 ### 7. **Testabilidade**
+
 - Testes próximos ao código que testam
 - Estrutura consistente para todos os testes
 - Facilita manutenção e execução de testes
@@ -92,6 +99,7 @@ src/
 ## 🔧 Como Usar
 
 ### Importando Telas
+
 ```typescript
 // Import específico
 import { ActivitiesScreen } from '@/screens/wellness';
@@ -104,6 +112,7 @@ import * as Screens from '@/screens';
 ```
 
 ### Importando Componentes
+
 ```typescript
 // Componentes UI
 import { Button, Card } from '@/components/ui';
@@ -113,6 +122,7 @@ import * as Components from '@/components';
 ```
 
 ### Importando Utilitários
+
 ```typescript
 import { dateUtils, validationUtils } from '@/utils';
 import { COLORS, SPACING } from '@/constants';

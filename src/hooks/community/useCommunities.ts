@@ -30,11 +30,7 @@ interface UseCommunitiesReturn {
 }
 
 export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunitiesReturn => {
-  const {
-    enabled = true,
-    pageSize = DEFAULT_PAGE_SIZE,
-    params = {},
-  } = options;
+  const { enabled = true, pageSize = DEFAULT_PAGE_SIZE, params = {} } = options;
 
   const [communities, setCommunities] = useState<Community[]>([]);
   const [categories, setCategories] = useState<CommunityCategory[]>([]);
@@ -65,14 +61,14 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
       try {
         isLoadingRef.current = true;
         hasErrorRef.current = false;
-        
+
         if (page === 1) {
           setLoading(true);
         } else {
           setLoadingMore(true);
         }
         setError(null);
-        
+
         const response = await communityService.listCommunities({
           page,
           limit: pageSize,
@@ -80,7 +76,7 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
         });
 
         const isSuccess = response.success === true || response.status === 'success';
-        
+
         if (!isSuccess || !response.data) {
           throw new Error(response.message || 'Erro ao listar comunidades');
         }
@@ -109,22 +105,19 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
 
         setCurrentPage(page);
         setPaging(pagingData);
-        
+
         // Determina se há mais páginas baseado no paging.next ou pagination
         const hasMorePages = pagingData?.next !== null && pagingData?.next !== undefined;
         const pagination = response.data.pagination || response.pagination;
-        const hasMoreFromPagination = pagination 
-          ? page < pagination.totalPages 
-          : false;
-        
+        const hasMoreFromPagination = pagination ? page < pagination.totalPages : false;
+
         setHasMore(hasMorePages || hasMoreFromPagination);
       } catch (err) {
         hasErrorRef.current = true;
-        const errorMessage =
-          err instanceof Error ? err.message : 'Erro ao listar comunidades';
+        const errorMessage = err instanceof Error ? err.message : 'Erro ao listar comunidades';
         setError(errorMessage);
         setHasMore(false);
-        
+
         if (page === 1) {
           setCommunities([]);
           setCategories([]);
@@ -164,12 +157,12 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
 
     const paramsChanged = previousParamsKey.current !== paramsKey;
     const shouldLoad = !hasLoadedInitially.current || paramsChanged;
-    
+
     if (shouldLoad) {
       hasLoadedInitially.current = true;
       previousParamsKey.current = paramsKey;
       hasErrorRef.current = false;
-      
+
       if (paramsChanged) {
         setCurrentPage(1);
         setHasMore(true);
@@ -192,4 +185,3 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
     refresh,
   };
 };
-
