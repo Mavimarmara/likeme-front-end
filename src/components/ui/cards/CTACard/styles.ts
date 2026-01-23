@@ -50,5 +50,19 @@ export const styles = StyleSheet.create({
 		justifyContent: 'space-between',
 		gap: SPACING.MD,
 	},
+	actionsSingle: {
+		justifyContent: 'center',
+	},
+	singleButton: {
+		width: '100%',
+		borderRadius: BORDER_RADIUS.XL,
+		borderBottomLeftRadius: 22,
+		borderBottomRightRadius: 22,
+		shadowColor: COLORS.BLACK,
+		shadowOffset: { width: 0, height: 4 },
+		shadowOpacity: 0.08,
+		shadowRadius: 8,
+		elevation: 4,
+	},
 });
 

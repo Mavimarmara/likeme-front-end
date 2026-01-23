@@ -1,35 +1,26 @@
 import React from 'react';
-import { View, Text } from 'react-native';
-import { PrimaryButton } from '@/components/ui/buttons';
+import { CTACard } from '@/components/ui/cards';
+import { COLORS } from '@/constants';
 import { styles } from './styles';
 
 interface AnamnesisPromptCardProps {
-  onStartPress: () => void;
+	onStartPress: () => void;
 }
 
 const AnamnesisPromptCard: React.FC<AnamnesisPromptCardProps> = ({ onStartPress }) => {
-  return (
-    <View style={styles.container}>
-      <View style={styles.content}>
-        <Text style={styles.title}>Bring your avatar to life</Text>
-        <View style={styles.descriptionContainer}>
-          <Text style={styles.description}>
-            By completing your anamnesis, your well-being avatar is born from your data and rhythms.
-            Because feeling good should feel like you!
-          </Text>
-        </View>
-        <PrimaryButton
-          label="Start Anamnesis"
-          onPress={onStartPress}
-          size="large"
-          icon="chevron-right"
-          iconPosition="right"
-          iconSize={24}
-          style={styles.button}
-        />
-      </View>
-    </View>
-  );
+	return (
+		<CTACard
+			title="Bring your avatar to life"
+			description="By completing your anamnesis, your well-being avatar is born from your data and rhythms. Because feeling good should feel like you!"
+			primaryButtonLabel="Start Anamnesis"
+			primaryButtonOnPress={onStartPress}
+			primaryButtonIcon="chevron-right"
+			primaryButtonIconPosition="right"
+			backgroundColor={COLORS.HIGHLIGHT.LIGHT}
+			descriptionColor={COLORS.TEXT}
+			style={styles.card}
+		/>
+	);
 };
 
 export default AnamnesisPromptCard;
