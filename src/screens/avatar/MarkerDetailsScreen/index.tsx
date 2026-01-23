@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header } from '@/components/ui/layout';
 import { FloatingMenu } from '@/components/ui/menu';
 import ProgressBar from '@/components/ui/feedback/ProgressBar';
+import { ChartBar } from '@/components/ui/graphics';
 import { useMenuItems } from '@/hooks';
 import { COLORS, SPACING, BORDER_RADIUS } from '@/constants';
 import { getMarkerColor, getMarkerGradient, MARKER_NAMES, hasMarkerGradient } from '@/constants/markers';
@@ -226,38 +227,16 @@ const MarkerDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
             <View style={styles.chartContainer}>
               {weeklyData.map((data, index) => {
                 const barHeight = (data.value / maxValue) * 200; // Max height of 200
-                const actualHeight = Math.max(barHeight, 30);
+                const barColor = markerGradient?.[0] || markerColor;
                 return (
-                  <View key={index} style={styles.chartBarContainer}>
-                    <View style={styles.chartBarWrapper}>
-                      {/* Value dot above bar */}
-                      <View
-                        style={[
-                          styles.chartValueDot,
-                          {
-                            backgroundColor: markerGradient?.[0] || markerColor,
-                            bottom: actualHeight + 8,
-                          },
-                        ]}
-                      >
-                        <Text style={styles.chartValueText}>{data.value.toString().padStart(2, '0')}</Text>
-                      </View>
-                      {/* Bar */}
-                      <View
-                        style={[
-                          styles.chartBar,
-                          {
-                            height: actualHeight,
-                            backgroundColor: markerGradient?.[0] || markerColor,
-                          },
-                        ]}
-                      />
-                    </View>
-                    {/* Day label */}
-                    <Text style={styles.chartDayLabel}>{data.day}</Text>
-                    {/* Date label */}
-                    <Text style={styles.chartDateLabel}>{data.date}</Text>
-                  </View>
+                  <ChartBar
+                    key={`${data.day}-${index}`}
+                    day={data.day}
+                    date={data.date}
+                    value={data.value}
+                    height={barHeight}
+                    color={barColor}
+                  />
                 );
               })}
             </View>
