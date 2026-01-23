@@ -71,60 +71,12 @@ export const styles = StyleSheet.create({
   actionsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     width: '100%',
     paddingHorizontal: SPACING.MD,
   },
   actionButton: {
-    alignItems: 'center',
     width: 72,
-    gap: 2,
-  },
-  actionIconContainer: {
-    width: 53,
-    height: 48,
-    borderRadius: BORDER_RADIUS.MD,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 4,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  actionIconContainerShare: {
-    width: 53,
-    height: 48,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  actionIconBackground: {
-    width: 53,
-    height: 48,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  actionIconImage: {
-    width: 53,
-    height: 48,
-    resizeMode: 'cover',
-  },
-  actionIconImageDark: {
-    width: 53,
-    height: 48,
-    resizeMode: 'cover',
-    tintColor: '#001137',
-  },
-  actionIcon: {
-    zIndex: 2,
-  },
-  actionLabel: {
-    fontFamily: 'DM Sans',
-    fontSize: 10,
-    fontWeight: '500',
-    color: '#6E6A6A',
-    textAlign: 'center',
-    letterSpacing: 0.2,
-    lineHeight: 22,
   },
 });
 

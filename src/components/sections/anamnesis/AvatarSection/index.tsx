@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react';
-import { View, Text, Image, TouchableOpacity, ImageBackground } from 'react-native';
+import { View, Text, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { MindAvatar, BodyAvatar, MindAvatarActive, BodyAvatarActive, BackgroundIconButton } from '@/assets';
+import { IconButton } from '@/components/ui/buttons';
 import { getAvatarSizeFromPercentage, getAvatarDimensions, type AvatarSize } from '@/utils/anamnesis/avatarSizeMapper';
 import { styles } from './styles';
 
@@ -65,24 +66,24 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
         </View>
         {hasAnyAnswers && (
           <View style={styles.actionsContainer}>
-            <TouchableOpacity style={styles.actionButton} onPress={onSharePress} activeOpacity={0.7}>
-              <View style={styles.actionIconContainerShare}>
-                <Icon name="share" size={24} color="#001137" />
-              </View>
-              <Text style={styles.actionLabel}>Share</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton} onPress={onSeeMorePress} activeOpacity={0.7}>
-              <View style={styles.actionIconContainer}>
-                <ImageBackground
-                  source={BackgroundIconButton}
-                  style={styles.actionIconBackground}
-                  imageStyle={styles.actionIconImageDark}
-                >
-                  <Icon name="add" size={24} color="#FDFBEE" style={styles.actionIcon} />
-                </ImageBackground>
-              </View>
-              <Text style={styles.actionLabel}>See more</Text>
-            </TouchableOpacity>
+            <IconButton
+              icon="share"
+              iconSize={24}
+              iconColor="#001137"
+              onPress={onSharePress || (() => {})}
+              label="Share"
+              containerStyle={styles.actionButton}
+            />
+            <IconButton
+              icon="add"
+              iconSize={24}
+              iconColor="#FDFBEE"
+              onPress={onSeeMorePress || (() => {})}
+              label="See more"
+              backgroundImage={BackgroundIconButton}
+              backgroundTintColor="#001137"
+              containerStyle={styles.actionButton}
+            />
           </View>
         )}
       </View>
