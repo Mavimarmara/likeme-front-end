@@ -66,13 +66,13 @@ const ProgressBar: React.FC<Props> = ({
   return (
     <View style={styles.container}>
       {showLabel && (
-        <Text style={styles.label}>{label} [ {current}/{total} ]</Text>
+      <Text style={styles.label}>{label} [ {current}/{total} ]</Text>
       )}
       <View style={[styles.progressContainer, { height }]}>
         {showRemaining ? (
           <View style={[styles.progressBackground, { height, backgroundColor }]}>
             {renderProgressFill()}
-          </View>
+        </View>
         ) : (
           renderProgressFill()
         )}

@@ -12,12 +12,16 @@ export const MARKER_COLORS = {
 } as const;
 
 export const MARKER_GRADIENTS: Record<string, readonly [string, string, ...string[]]> = {
-  connection: ['#D2B48C', '#8A2BE2'] as const,
-  environment: ['#87CEEB', '#32CD32'] as const,
-  'purpose-vision': ['#6B8E23', '#8B7355'] as const,
-  'self-esteem': ['#F5DEB3', '#D2B48C'] as const,
-  sleep: ['#9370DB', '#87CEEB'] as const,
-  stress: ['#FF4500', '#FF6B6B'] as const,
+  activity: ['#B7CFFF', '#0154F8', '#003EB8', '#003191'] as const,
+  connection: ['#FFEABC', '#F6DEA9', '#DFC488', '#BA9F62'] as const,
+  environment: ['#d8e4d6', '#8F988E', '#767D75'] as const,
+  nutrition: ['#E0F431', '#C3D714', '#AFC211', '#96A60C'] as const,
+  'purpose-vision': ['#D3BE15', '#A6950B', '#90820F', '#675D08'] as const,
+  'self-esteem': ['#F6DEA9', '#C4B179', '#8E7A3F'] as const,
+  sleep: ['#E3DBF2', '#958AAA', '#706683', '#655C74'] as const,
+  smile: ['#FCE3FF', '#F6CFFB', '#EE8AFB', '#E760F9'] as const,
+  spirituality: ['#F6CFFB', '#EB7DC6', '#E23BAA', '#DC1499'] as const,
+  stress: ['#FFAB76', '#FF6300', '#D85400', '#C24B00'] as const,
 } as const;
 
 export type MarkerId = keyof typeof MARKER_COLORS;
