@@ -1,29 +1,51 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
+import { styles } from './styles';
 
 type Props = {
   current: number;
   total: number;
-  label: string;
+  label?: string;
   color?: string;
+  backgroundColor?: string;
   height?: number;
+  showRemaining?: boolean;
 };
 
 const ProgressBar: React.FC<Props> = ({ 
   current, 
   total, 
-  label, 
+  label = "", 
   color = '#0154f8',
+  backgroundColor = '#D9D9D9',
   height = 25,
+  showRemaining = true,
 }) => {
   const percentage = total > 0 ? (current / total) * 100 : 0;
   const clampedPercentage = Math.min(Math.max(percentage, 0), 100);
 
+  const showLabel = label.trim().length > 0;
+
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>{label} [ {current}/{total} ]</Text>
+      {showLabel && (
+        <Text style={styles.label}>{label} [ {current}/{total} ]</Text>
+      )}
       <View style={[styles.progressContainer, { height }]}>
-        <View style={[styles.progressBackground, { height }]}>
+        {showRemaining ? (
+          <View style={[styles.progressBackground, { height, backgroundColor }]}>
+            <View 
+              style={[
+                styles.progressFill, 
+                { 
+                  width: `${clampedPercentage}%`,
+                  backgroundColor: color,
+                  height,
+                }
+              ]} 
+            />
+          </View>
+        ) : (
           <View 
             style={[
               styles.progressFill, 
@@ -34,37 +56,10 @@ const ProgressBar: React.FC<Props> = ({
               }
             ]} 
           />
-        </View>
+        )}
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    gap: 8,
-  },
-  label: {
-    fontFamily: 'DM Sans',
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#001137',
-    lineHeight: 16,
-  },
-  progressContainer: {
-    width: '100%',
-    position: 'relative',
-  },
-  progressBackground: {
-    width: '100%',
-    backgroundColor: '#D9D9D9',
-    borderRadius: 12.5,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    borderRadius: 12.5,
-  },
-});
 
 export default ProgressBar;

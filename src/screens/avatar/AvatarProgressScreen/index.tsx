@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header, Background } from '@/components/ui/layout';
 import { FloatingMenu } from '@/components/ui/menu';
 import { PrimaryButton, SecondaryButton, ButtonGroup } from '@/components/ui/buttons';
+import ProgressBar from '@/components/ui/feedback/ProgressBar';
 import { BackgroundIconButton } from '@/assets';
 import { useMenuItems, useCommunities, useSuggestedProducts } from '@/hooks';
 import { mapChannelsToEvents } from '@/utils';
@@ -309,8 +310,14 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
                     </TouchableOpacity>
                   </View>
                   <View style={styles.markerContent}>
-                    <View style={styles.markerGraph}>
-                      <View style={[styles.markerBar, { width: `${marker.percentage}%` }]} />
+                    <View style={styles.markerProgressContainer}>
+                      <ProgressBar
+                        current={marker.percentage}
+                        total={100}
+                        color="#001137"
+                        height={30}
+                        showRemaining={false}
+                      />
                     </View>
                     <View style={styles.markerTrend}>
                       <Icon 

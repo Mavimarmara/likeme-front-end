@@ -69,18 +69,8 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     gap: SPACING.SM,
   },
-  markerGraph: {
+  markerProgressContainer: {
     flex: 1,
-    height: 30,
-    backgroundColor: '#FDFBEE',
-    borderRadius: BORDER_RADIUS.LG,
-    overflow: 'hidden',
-    justifyContent: 'center',
-  },
-  markerBar: {
-    height: '100%',
-    backgroundColor: '#001137',
-    borderRadius: BORDER_RADIUS.LG,
   },
   markerTrend: {
     width: 34,
