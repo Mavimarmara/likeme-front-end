@@ -156,36 +156,7 @@ export const styles = StyleSheet.create({
     marginBottom: SPACING.LG,
   },
   periodSelector: {
-    flexDirection: 'row',
-    gap: SPACING.SM,
     marginBottom: SPACING.LG,
-    padding: 4,
-  },
-  periodButton: {
-    height: 20,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: COLORS.SECONDARY.MEDIUM,
-    backgroundColor: COLORS.SECONDARY.PURE,
-    justifyContent: 'center',
-    alignItems: 'center',
-    minWidth: 54,
-  },
-  periodButtonActive: {
-    backgroundColor: COLORS.SECONDARY.MEDIUM,
-    borderColor: COLORS.SECONDARY.MEDIUM,
-  },
-  periodButtonText: {
-    fontSize: 12,
-    fontFamily: 'DM Sans',
-    fontWeight: '400',
-    color: COLORS.TEXT_LIGHT,
-    letterSpacing: -0.24,
-  },
-  periodButtonTextActive: {
-    color: COLORS.SECONDARY.PURE,
   },
   chartContainer: {
     flexDirection: 'row',

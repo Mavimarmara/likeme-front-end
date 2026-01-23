@@ -7,6 +7,7 @@ import { FloatingMenu } from '@/components/ui/menu';
 import ProgressBar from '@/components/ui/feedback/ProgressBar';
 import { ChartBar } from '@/components/ui/graphics';
 import { CTACard } from '@/components/ui/cards';
+import { PeriodSelector } from '@/components/ui/inputs';
 import { useMenuItems } from '@/hooks';
 import { COLORS, SPACING, BORDER_RADIUS } from '@/constants';
 import { getMarkerColor, getMarkerGradient, MARKER_NAMES, hasMarkerGradient } from '@/constants/markers';
@@ -182,59 +183,13 @@ const MarkerDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
             <Text style={styles.historyTitle}>Quality of {markerName} History</Text>
 
             {/* Period Selector */}
-            <View style={styles.periodSelector}>
-              <TouchableOpacity
-                style={[
-                  styles.periodButton,
-                  selectedPeriod === 'day' && styles.periodButtonActive,
-                  selectedPeriod === 'day' && { backgroundColor: markerColor },
-                ]}
-                onPress={() => setSelectedPeriod('day')}
-              >
-                <Text
-                  style={[
-                    styles.periodButtonText,
-                    selectedPeriod === 'day' && styles.periodButtonTextActive,
-                  ]}
-                >
-                  day
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.periodButton,
-                  selectedPeriod === 'week' && styles.periodButtonActive,
-                  selectedPeriod === 'week' && { backgroundColor: markerColor },
-                ]}
-                onPress={() => setSelectedPeriod('week')}
-              >
-                <Text
-                  style={[
-                    styles.periodButtonText,
-                    selectedPeriod === 'week' && styles.periodButtonTextActive,
-                  ]}
-                >
-                  week
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.periodButton,
-                  selectedPeriod === 'month' && styles.periodButtonActive,
-                  selectedPeriod === 'month' && { backgroundColor: markerColor },
-                ]}
-                onPress={() => setSelectedPeriod('month')}
-              >
-                <Text
-                  style={[
-                    styles.periodButtonText,
-                    selectedPeriod === 'month' && styles.periodButtonTextActive,
-                  ]}
-                >
-                  month
-                </Text>
-              </TouchableOpacity>
-            </View>
+            <PeriodSelector
+              selectedPeriod={selectedPeriod}
+              onPeriodChange={(period) => setSelectedPeriod(period)}
+              options={['day', 'week', 'month']}
+              activeColor={markerColor}
+              style={styles.periodSelector}
+            />
 
             {/* Weekly Chart */}
             <View style={styles.chartContainer}>

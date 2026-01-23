@@ -31,19 +31,6 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
     letterSpacing: -1.38,
   },
-  periodSelector: {
-    flexDirection: 'row',
-    gap: SPACING.XS,
-    backgroundColor: 'rgba(240, 238, 225, 0.16)',
-    borderRadius: BORDER_RADIUS.LG,
-    padding: SPACING.XS,
-  },
-  periodButtonActive: {
-    borderColor: COLORS.PRIMARY.PURE,
-  },
-  periodButtonTextActive: {
-    color: COLORS.PRIMARY.PURE,
-  },
   markersListContainer: {
     gap: SPACING.SM,
     marginBottom: SPACING.LG,

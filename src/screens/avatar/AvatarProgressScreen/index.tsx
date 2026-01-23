@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header, Background } from '@/components/ui/layout';
 import { FloatingMenu } from '@/components/ui/menu';
 import { PrimaryButton, SecondaryButton, ButtonGroup, IconButton } from '@/components/ui/buttons';
+import { PeriodSelector } from '@/components/ui/inputs';
 import { CTACard } from '@/components/ui/cards';
 import ProgressBar from '@/components/ui/feedback/ProgressBar';
 import { BackgroundIconButton } from '@/assets';
@@ -363,24 +364,11 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
           <View style={styles.topSection}>
             <View style={styles.headerContainer}>
               <Text style={styles.title}>Your Progress</Text>
-              <ButtonGroup style={styles.periodSelector} direction="horizontal">
-                <SecondaryButton
-                  label="Week"
-                  onPress={() => setSelectedPeriod('week')}
-                  size="medium"
-                  style={selectedPeriod === 'week' ? styles.periodButtonActive : undefined}
-                  labelStyle={selectedPeriod === 'week' ? styles.periodButtonTextActive : undefined}
-                />
-                <SecondaryButton
-                  label="Month"
-                  onPress={() => setSelectedPeriod('month')}
-                  size="medium"
-                  style={selectedPeriod === 'month' ? styles.periodButtonActive : undefined}
-                  labelStyle={
-                    selectedPeriod === 'month' ? styles.periodButtonTextActive : undefined
-                  }
-                />
-              </ButtonGroup>
+              <PeriodSelector
+                selectedPeriod={selectedPeriod}
+                onPeriodChange={(period) => setSelectedPeriod(period as 'week' | 'month')}
+                options={['week', 'month']}
+              />
             </View>
 
             <View style={styles.markersListContainer}>
