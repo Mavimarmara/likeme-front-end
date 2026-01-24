@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { View, TouchableOpacity, ImageBackground } from 'react-native';
 import { LogoMini, BackgroundIconButton } from '@/assets';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -15,6 +15,7 @@ interface HeaderProps {
   showBellButton?: boolean;
   onRatingPress?: () => void;
   showRating?: boolean;
+  customLogo?: ReactNode;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -28,6 +29,7 @@ const Header: React.FC<HeaderProps> = ({
   showBellButton = false,
   onRatingPress,
   showRating = false,
+  customLogo,
 }) => {
   return (
     <View style={styles.header}>
@@ -42,7 +44,7 @@ const Header: React.FC<HeaderProps> = ({
           </ImageBackground>
         </TouchableOpacity>
       )}
-      <LogoMini width={87} height={16} />
+      {customLogo || <LogoMini width={87} height={16} />}
       {showBellButton && (
         <TouchableOpacity style={styles.bellButton} onPress={onBellPress} activeOpacity={0.7}>
           <ImageBackground

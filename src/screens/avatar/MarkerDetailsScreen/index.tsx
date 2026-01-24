@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, ScrollView, Text, TouchableOpacity, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Header, FloatingMenu, ChartBar, CTACard, PeriodSelector } from '@/components/ui';
+import { Header, FloatingMenu, ChartBar, CTACard, PeriodSelector, ProgressHeaderLogo } from '@/components/ui';
 import ProgressBar from '@/components/ui/feedback/ProgressBar';
 import { useMenuItems } from '@/hooks';
 import { COLORS, SPACING, BORDER_RADIUS } from '@/constants';
@@ -91,7 +91,12 @@ const MarkerDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.BACKGROUND }} edges={['top']}>
     <Background/>
     <StatusBar backgroundColor={COLORS.BACKGROUND} barStyle="dark-content" />
-      <Header onBackPress={handleBack} showBackButton showBellButton />
+            <Header
+              onBackPress={handleBack}
+              showBackButton
+              showBellButton
+              customLogo={<ProgressHeaderLogo />}
+            />
       
       <View style={styles.content}>
         <ScrollView
@@ -114,7 +119,7 @@ const MarkerDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
                 current={marker.percentage}
                 total={100}
                 color={markerColor}
-                gradientColors={hasMarkerGradient(marker.id) ? (getMarkerGradient(marker.id) as string[]) : undefined}
+                gradientColors={hasMarkerGradient(marker.id) ? getMarkerGradient(marker.id) || undefined : undefined}
                 height={30}
                 showRemaining={false}
               />

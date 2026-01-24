@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { View, ScrollView, Text, TouchableOpacity, ImageBackground, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Header, Background } from '@/components/ui/layout';
+import { Header, Background, ProgressHeaderLogo } from '@/components/ui/layout';
 import { FloatingMenu } from '@/components/ui/menu';
 import { PrimaryButton, SecondaryButton, ButtonGroup, IconButton } from '@/components/ui/buttons';
 import { PeriodSelector } from '@/components/ui/inputs';
@@ -13,7 +13,7 @@ import { useMenuItems, useCommunities, useSuggestedProducts } from '@/hooks';
 import { mapChannelsToEvents } from '@/utils';
 import { communityService, anamnesisService, userService } from '@/services';
 import type { UserMarker } from '@/types/anamnesis';
-import { getMarkerColor, getMarkerGradient, hasMarkerGradient } from '@/constants/markers';
+import { getMarkerColor, getMarkerGradient, hasMarkerGradient, MARKER_NAMES } from '@/constants/markers';
 import { COLORS } from '@/constants';
 import type { Channel } from '@/types/community';
 import type { Event } from '@/types/event';
@@ -309,61 +309,54 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
     loadMarkers();
   }, []);
 
-  const biomarkerCards = useMemo(
-    () => [
-      {
-        id: 'stress',
-        title: 'STRESS : +30%',
+  const biomarkerCards = useMemo(() => {
+    const increasingMarkers = markers.filter((marker) => marker.trend === 'increasing');
+    
+    if (increasingMarkers.length === 0) {
+      // Se não houver marcadores com trend increasing, mostra todos os marcadores
+      return markers.map((marker) => {
+        const markerName = MARKER_NAMES[marker.id] || marker.name;
+        const improvementPercentage = marker.percentage > 0 ? Math.round(marker.percentage / 10) : 0;
+        
+        return {
+          id: marker.id,
+          markerId: marker.id,
+          percentage: marker.percentage,
+          title: `${markerName.toUpperCase()} : +${improvementPercentage}%`,
+          message: "You've improved a lot!",
+          description: `Nice job taking care of your ${markerName.toLowerCase()}!\nWhat about improving your state of mind?`,
+        };
+      });
+    }
+    
+    return increasingMarkers.map((marker) => {
+      const markerName = MARKER_NAMES[marker.id] || marker.name;
+      const improvementPercentage = marker.percentage > 0 ? Math.round(marker.percentage / 10) : 0;
+      
+      return {
+        id: marker.id,
+        markerId: marker.id,
+        percentage: marker.percentage,
+        title: `${markerName.toUpperCase()} : +${improvementPercentage}%`,
         message: "You've improved a lot!",
-        description: 'Nice job taking care of your body!\nWhat about improving your state of mind?',
-        submarkers: [
-          { id: 'longevity', name: 'Longevity', percentage: 70 },
-          { id: 'performance', name: 'Performance', percentage: 50 },
-        ],
-      },
-      {
-        id: 'nutrition',
-        title: 'NUTRITION : +30%',
-        message: "You've improved a lot!",
-        description: 'Nice job taking care of your body!\nWhat about improving your state of mind?',
-        submarkers: [
-          { id: 'longevity', name: 'Longevity', percentage: 60 },
-          { id: 'performance', name: 'Performance', percentage: 40 },
-        ],
-      },
-      {
-        id: 'sleep',
-        title: 'SLEEP : +30%',
-        message: "You've improved a lot!",
-        description: 'Nice job taking care of your body!\nWhat about improving your state of mind?',
-        submarkers: [
-          { id: 'longevity', name: 'Longevity', percentage: 80 },
-          { id: 'performance', name: 'Performance', percentage: 65 },
-        ],
-      },
-      {
-        id: 'connection',
-        title: 'CONNECTION : +30%',
-        message: "You've improved a lot!",
-        description: 'Nice job taking care of your body!\nWhat about improving your state of mind?',
-        submarkers: [
-          { id: 'longevity', name: 'Longevity', percentage: 55 },
-          { id: 'performance', name: 'Performance', percentage: 45 },
-        ],
-      },
-    ],
-    []
-  );
+        description: `Nice job taking care of your ${markerName.toLowerCase()}!\nWhat about improving your state of mind?`,
+      };
+    });
+  }, [markers]);
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.BACKGROUND} />
-      <Header showBackButton={true} onBackPress={handleBackPress} showBellButton={true} />
+      <Header
+        showBackButton={true}
+        onBackPress={handleBackPress}
+        showBellButton={true}
+        customLogo={<ProgressHeaderLogo textStyle={styles.title} />}
+      />
       <View style={styles.content}>
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.topSection}>
             <View style={styles.headerContainer}>
-              <Text style={styles.title}>Your Progress</Text>
               <PeriodSelector
                 selectedPeriod={selectedPeriod}
                 onPeriodChange={(period) => setSelectedPeriod(period as 'week' | 'month')}
@@ -399,7 +392,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
                       <View style={styles.markerContent}>
                         <View style={styles.markerProgressContainer}>
                           <ProgressBar
-                            current={marker.percentage}
+                            current={Math.max(marker.percentage, 1)}
                             total={100}
                             color={getMarkerColor(marker.id)}
                             gradientColors={
@@ -456,36 +449,40 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
             backgroundColor={COLORS.SECONDARY.PURE}
           />
 
-          <View style={styles.biomarkersSection}>
-            <Text style={styles.biomarkersTitle}>Biomarkers</Text>
-            <Carousel
-              data={biomarkerCards}
-              renderItem={(card) => (
-                <View key={card.id} style={styles.biomarkerCard}>
-                  <Text style={styles.biomarkerCardTitle}>{card.title}</Text>
-                  <Text style={styles.biomarkerCardMessage}>{card.message}</Text>
-                  <Text style={styles.biomarkerCardDescription}>{card.description}</Text>
-                  <View style={styles.biomarkerSubmarkers}>
-                    {card.submarkers.map((submarker) => (
-                      <View key={submarker.id} style={styles.submarkerItem}>
-                        <View style={styles.submarkerBar}>
-                          <View
-                            style={[styles.submarkerBarFill, { width: `${submarker.percentage}%` }]}
-                          />
-                        </View>
-                        <Text style={styles.submarkerName}>{submarker.name}</Text>
-                      </View>
-                    ))}
+          {biomarkerCards.length > 0 && (
+            <View style={styles.biomarkersSection}>
+              <Text style={styles.biomarkersTitle}>Biomarkers</Text>
+              <Carousel
+                data={biomarkerCards}
+                renderItem={(card) => (
+                  <View key={card.id} style={styles.biomarkerCard}>
+                    <Text style={styles.biomarkerCardTitle}>{card.title}</Text>
+                    <Text style={styles.biomarkerCardMessage}>{card.message}</Text>
+                    <Text style={styles.biomarkerCardDescription}>{card.description}</Text>
+                    <View style={styles.biomarkerProgressContainer}>
+                      <ProgressBar
+                        current={Math.max(card.percentage, 1)}
+                        total={100}
+                        color={getMarkerColor(card.markerId)}
+                        gradientColors={
+                          hasMarkerGradient(card.markerId)
+                            ? getMarkerGradient(card.markerId) || undefined
+                            : undefined
+                        }
+                        height={30}
+                        showRemaining={false}
+                      />
+                    </View>
                   </View>
-                </View>
-              )}
-              keyExtractor={(card) => card.id}
-              itemWidth={307}
-              gap={8}
-              showPagination={true}
-              paginationSize="Large"
-            />
-          </View>
+                )}
+                keyExtractor={(card) => card.id}
+                itemWidth={307}
+                gap={8}
+                showPagination={true}
+                paginationSize="Large"
+              />
+            </View>
+          )}
 
           <NextEventsSection
             events={events}

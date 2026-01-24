@@ -4,6 +4,7 @@ export { default as PartialLogo } from '../../assets/PartialLogo.svg';
 export { default as PartialLogo2 } from '../../assets/PartialLogo2.svg';
 export { default as RightArrow } from '../../assets/RightArrow.svg';
 export { default as LogoMini } from '../../assets/LogoMini.svg';
+export { default as LogoPartialMini } from '../../assets/LogoPartialMini.svg';
 export { default as GradientSplash } from '../../assets/GradientSplash.svg';
 
 // Para imagens PNG, vamos usar require direto

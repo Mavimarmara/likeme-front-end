@@ -118,29 +118,8 @@ export const styles = StyleSheet.create({
     letterSpacing: 0.2,
     lineHeight: 20,
   },
-  biomarkerSubmarkers: {
-    gap: SPACING.SM,
-  },
-  submarkerItem: {
-    gap: SPACING.SM,
-  },
-  submarkerBar: {
-    height: 25,
-    backgroundColor: COLORS.SECONDARY.LIGHT,
-    borderRadius: 18,
-    overflow: 'hidden',
-  },
-  submarkerBarFill: {
-    height: '100%',
-    backgroundColor: COLORS.TEXT,
-    borderRadius: 18,
-  },
-  submarkerName: {
-    fontFamily: 'DM Sans',
-    fontSize: FONT_SIZES.SM,
-    fontWeight: '400',
-    color: COLORS.TEXT,
-    letterSpacing: 0.2,
+  biomarkerProgressContainer: {
+    marginTop: SPACING.MD,
   },
   productsSection: {
     marginBottom: SPACING.XL,
