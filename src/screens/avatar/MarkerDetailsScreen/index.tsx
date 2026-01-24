@@ -94,7 +94,6 @@ const MarkerDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
             <Header
               onBackPress={handleBack}
               showBackButton
-              showBellButton
               customLogo={<ProgressHeaderLogo />}
             />
       

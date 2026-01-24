@@ -350,8 +350,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
       <Header
         showBackButton={true}
         onBackPress={handleBackPress}
-        showBellButton={true}
-        customLogo={<ProgressHeaderLogo textStyle={styles.title} />}
+        customLogo={<ProgressHeaderLogo />}
       />
       <View style={styles.content}>
         <ScrollView showsVerticalScrollIndicator={false}>
