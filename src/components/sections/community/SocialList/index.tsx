@@ -11,6 +11,7 @@ import {
 import { ProductsCarousel, PlansCarousel, Product, Plan } from '@/components/sections/product';
 import { FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
 import { CategoryModal } from '@/components/ui/modals';
+import { useTranslation } from '@/hooks/i18n';
 import type { Post, Event } from '@/types';
 import type { Program } from '@/types/program';
 import type { FilterType } from '@/components/ui/modals/FilterModal';
@@ -84,6 +85,7 @@ const SocialList: React.FC<Props> = ({
   onCategorySelect,
   selectedCategoryId,
 }) => {
+  const { t } = useTranslation();
   const [isCategoryModalVisible, setIsCategoryModalVisible] = useState(false);
 
   const handleMarkerPress = () => {
@@ -109,8 +111,8 @@ const SocialList: React.FC<Props> = ({
         label: program.name,
       })) || [];
 
-    return [{ id: '__ALL__', label: 'All' }, ...options];
-  }, [programs]);
+    return [{ id: '__ALL__', label: t('common.all') }, ...options];
+  }, [programs, t]);
 
   const handleSelect = (optionId: string) => {
     if (optionId === '__ALL__') {
@@ -131,7 +133,7 @@ const SocialList: React.FC<Props> = ({
       {programs && programs.length > 0 && (
         <View style={styles.programsContainer}>
           <FilterMenu
-            filterButtonLabel="Marker"
+            filterButtonLabel={t('marketplace.marker')}
             onFilterButtonPress={handleMarkerPress}
             carouselOptions={filterOptions}
             selectedCarouselId={selectedId}
@@ -199,8 +201,8 @@ const SocialList: React.FC<Props> = ({
         {products && products.length > 0 && (
           <View>
             <ProductsCarousel
-              title="Products recommended for your sleep journey by Dr. Peter Valasquez"
-              subtitle="Discover our options selected just for you"
+              title={t('home.productsRecommended')}
+              subtitle={t('home.discoverProducts')}
               products={products}
               onProductPress={onProductPress}
               onProductLike={onProductLike}
@@ -211,8 +213,8 @@ const SocialList: React.FC<Props> = ({
         {plans && plans.length > 0 && (
           <View>
             <PlansCarousel
-              title="Plans for you based on the evolution of your markers"
-              subtitle="Discover our options selected just for you"
+              title={t('activities.plansForYou')}
+              subtitle={t('activities.discoverOptions')}
               plans={plans}
               onPlanPress={onPlanPress}
               onPlanLike={onPlanLike}

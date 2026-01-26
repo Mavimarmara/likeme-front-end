@@ -2,7 +2,8 @@ import React, { useEffect } from 'react';
 import { LogBox } from 'react-native';
 import { RootNavigator } from './src/navigation';
 import { AUTH0_CONFIG } from './src/config/environment';
-import './src/i18n'; // Inicializa o sistema de traduções
+// Importar i18n antes de qualquer componente que use useTranslation
+import './src/i18n';
 
 // Desabilitar todos os logs que aparecem na tela
 LogBox.ignoreAllLogs(true);

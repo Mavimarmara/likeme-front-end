@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity, ScrollView, ImageBackground } from
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { BackgroundIconButton } from '@/assets';
 import { SearchBar } from '@/components/ui';
+import { useTranslation } from '@/hooks/i18n';
 import { styles } from './styles';
 
 type Props = {
@@ -31,6 +32,7 @@ const OtherCommunitiesSection: React.FC<Props> = ({
   onFilterPress,
   searchQuery = '',
 }) => {
+  const { t } = useTranslation();
   const [searchText, setSearchText] = useState(searchQuery);
 
   const handleSearchChange = (text: string) => {
@@ -44,9 +46,9 @@ const OtherCommunitiesSection: React.FC<Props> = ({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Other communities</Text>
+      <Text style={styles.title}>{t('home.otherCommunities')}</Text>
       <SearchBar
-        placeholder="Search"
+        placeholder={t('common.search')}
         value={searchText}
         onChangeText={handleSearchChange}
         onSearchPress={onSearchPress}

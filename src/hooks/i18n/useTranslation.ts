@@ -17,7 +17,21 @@ export const useTranslation = () => {
 
 	return {
 		t: (key: string, options?: Record<string, any>): string => {
-			const result = t(key, options);
+			// Obter a tradução base
+			let result = t(key, options);
+			
+			// Se houver opções e o resultado contém chaves, fazer interpolação manual
+			if (options && Object.keys(options).length > 0 && typeof result === 'string' && result.includes('{')) {
+				Object.keys(options).forEach((optionKey) => {
+					const value = options[optionKey];
+					// Substituir {key} e {{key}} para garantir compatibilidade
+					result = result.replace(
+						new RegExp(`\\{\\{?${optionKey}\\}?\\}`, 'g'),
+						String(value)
+					);
+				});
+			}
+			
 			return typeof result === 'string' ? result : String(result);
 		},
 		changeLanguage: (lng: string) => i18n.changeLanguage(lng),

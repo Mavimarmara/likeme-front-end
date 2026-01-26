@@ -76,7 +76,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
       return {
         id: community.communityId,
         title: community.displayName,
-        badge: category?.name || 'Community',
+        badge: category?.name || t('home.community'),
         image: '',
       };
     });
@@ -266,14 +266,13 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
         console.log('Markers response:', {
           success: markersResponse.success,
           data: markersResponse.data,
-          error: markersResponse.error,
         });
 
         if (markersResponse.success && markersResponse.data) {
           console.log('Setting markers:', markersResponse.data);
           setMarkers(markersResponse.data);
         } else {
-          console.error('Error loading markers:', markersResponse.error || 'Unknown error');
+          console.error('Error loading markers:', markersResponse.message || 'Unknown error');
           // Fallback para markers padrão se não houver dados
           setMarkers([
             { id: 'activity', name: 'Activity', trend: 'stable' as const, percentage: 0 },
@@ -437,10 +436,10 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
 
           <CTACard
             title={t('avatar.insights')}
-            highlightText="Did you know that you ran a full marathon last week?"
+            highlightText={t('avatar.didYouRunMarathon')}
             description={[
-              t('avatar.niceJobBody'),
-              'This week what about doing some regenerative mobility training like yoga or pilates?',
+              t('avatar.greatForBody'),
+              t('avatar.regenerativeTraining'),
             ]}
             primaryButtonLabel={t('avatar.seeMarker')}
             primaryButtonOnPress={() => handleSeeMarker(markers[0])}

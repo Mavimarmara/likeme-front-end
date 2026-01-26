@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LogoutButton, Title, FloatingMenu } from '@/components/ui';
 import { storageService } from '@/services';
 import { useMenuItems } from '@/hooks';
+import { useTranslation } from '@/hooks/i18n';
 import type { StoredUser } from '@/types/auth';
 import { styles } from './styles';
 
@@ -14,6 +15,7 @@ type Props = {
 
 const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   const { t } = useTranslation();
+  const rootNavigation = navigation.getParent() ?? navigation;
   const [user, setUser] = useState<StoredUser | null>(null);
   const [loading, setLoading] = useState(true);
 
