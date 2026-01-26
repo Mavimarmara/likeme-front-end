@@ -109,11 +109,24 @@ pip install google-api-python-client
 # (requer configuração adicional)
 ```
 
+## 🔧 Aplicar Patch do build.gradle
+
+Após o `prebuild`, você precisa aplicar as mudanças no `build.gradle` para usar o keystore de produção.
+
+O arquivo `android/app/build.gradle.patch` contém as instruções. Aplique manualmente:
+
+1. Abra `android/app/build.gradle`
+2. Adicione o código de carregamento do keystore antes de `signingConfigs`
+3. Adicione o `signingConfigs.release` 
+4. Mude `signingConfig signingConfigs.debug` para `signingConfig signingConfigs.release` no `buildTypes.release`
+
+Ou use o script que já aplica automaticamente (se o patch estiver configurado).
+
 ## 🔧 Scripts Automatizados
 
 ### Script para Build Completo
 
-Crie `build-android-production.sh`:
+Já existe `build-android-production.sh`:
 
 ```bash
 #!/bin/bash

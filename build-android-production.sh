@@ -55,6 +55,13 @@ echo ""
 echo "📦 Executando prebuild..."
 npx expo prebuild --platform android --clean
 
+# Aplicar patch do build.gradle se necessário
+if [ -f "android/app/build.gradle.patch" ] && ! grep -q "keystorePropertiesFile" android/app/build.gradle 2>/dev/null; then
+	echo "📝 Aplicando configuração de keystore de produção..."
+	# O patch será aplicado manualmente - instruções no BUILD_GOOGLE_PLAY_LOCAL.md
+	echo "⚠️  Lembre-se de aplicar as mudanças do build.gradle.patch manualmente!"
+fi
+
 # Desabilitar postinstall do iOS durante o build Android
 export SKIP_IOS_POD_INSTALL=true
 
