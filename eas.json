@@ -38,7 +38,8 @@
         "buildType": "app-bundle",
         "env": {
           "EXPO_USE_HERMES": "true"
-        }
+        },
+        "gradleCommand": ":app:bundleRelease"
       }
     }
   },

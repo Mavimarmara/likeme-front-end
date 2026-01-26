@@ -211,6 +211,23 @@ module.exports = {
     android: {
       package: 'com.likeme.app',
       versionCode: 1,
+      adaptiveIcon: {
+        foregroundImage: './assets/Logo2.png',
+        backgroundColor: '#FFFFFF',
+      },
+      permissions: [],
+      intentFilters: [
+        {
+          action: 'VIEW',
+          autoVerify: true,
+          data: [
+            {
+              scheme: 'likeme',
+            },
+          ],
+          category: ['BROWSABLE', 'DEFAULT'],
+        },
+      ],
     },
     ios: {
       bundleIdentifier: 'app.likeme.com',
