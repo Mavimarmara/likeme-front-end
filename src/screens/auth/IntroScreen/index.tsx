@@ -4,11 +4,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header, Title, ButtonGroup, PrimaryButton, SecondaryButton } from '@/components/ui';
 import { GradientSplash4 } from '@/assets';
 import { useAuthLogin } from '@/hooks';
+import { useTranslation } from '@/hooks/i18n';
 import { styles } from './styles';
 
 type Props = { navigation: any; route: any };
 
 const IntroScreen: React.FC<Props> = ({ navigation, route }) => {
+  const { t } = useTranslation();
   const userName = route.params?.userName || 'Usuário';
   const { handleLogin, isLoading } = useAuthLogin(navigation);
 
@@ -27,8 +29,8 @@ const IntroScreen: React.FC<Props> = ({ navigation, route }) => {
       <View style={styles.content}>
         <View style={styles.greetingContainer}>
           <Title
-            title={`Hello, ${userName}!`}
-            subtitle={`Wellcome to Like Me,\n\nFirst, can I introduce you to our app?`}
+            title={t('auth.introGreeting', { userName })}
+            subtitle={t('auth.introWelcome')}
             variant="large"
             rightAdornment={
               <Image source={GradientSplash4} style={styles.titleAdornment} resizeMode="cover" />
@@ -41,12 +43,12 @@ const IntroScreen: React.FC<Props> = ({ navigation, route }) => {
             style={{ position: 'relative', left: 0, right: 0, bottom: 0, paddingBottom: 0 }}
           >
             <PrimaryButton
-              label="Yes, sure"
+              label={t('auth.yesSure')}
               onPress={handleShowPresentation}
               disabled={isLoading}
             />
             <SecondaryButton
-              label="No, I want to go straight to the app"
+              label={t('auth.noStraightToApp')}
               onPress={handleGoToApp}
               loading={isLoading}
             />

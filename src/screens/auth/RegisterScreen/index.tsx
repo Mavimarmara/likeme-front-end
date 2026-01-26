@@ -21,6 +21,7 @@ import {
 } from '@/components/ui';
 import { GradientSplash5 } from '@/assets';
 import { storageService, personsService } from '@/services';
+import { useTranslation } from '@/hooks/i18n';
 import type { PersonData } from '@/types/person';
 import { styles } from './styles';
 import { COLORS } from '@/constants';
@@ -28,6 +29,7 @@ import { COLORS } from '@/constants';
 type Props = { navigation: any; route: any };
 
 const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const { width: windowWidth } = useWindowDimensions();
   const [invitationCode, setInvitationCode] = useState('');
@@ -55,7 +57,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
 
       // Validação dos campos obrigatórios
       if (!fullName.trim()) {
-        Alert.alert('Campo obrigatório', 'Por favor, preencha o nome completo.');
+        Alert.alert(t('auth.requiredField'), t('auth.fillFullName'));
         setIsLoading(false);
         return;
       }
@@ -135,17 +137,17 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
                   ]}
                   resizeMode="contain"
                 />
-                <Title title="Let's start," variant="large" />
+                <Title title={t('auth.registerTitle')} variant="large" />
 
                 <View style={styles.invitationSection}>
                   <Text style={styles.invitationQuestion}>
-                    Did you come from a provider's invitation?
+                    {t('auth.registerInvitationQuestion')}
                   </Text>
                   <TextInput
-                    label="Enter code"
+                    label={t('auth.registerEnterCode')}
                     value={invitationCode}
                     onChangeText={setInvitationCode}
-                    placeholder="Code"
+                    placeholder={t('auth.registerCodePlaceholder')}
                   />
                 </View>
               </View>
@@ -154,53 +156,53 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
             <View style={styles.content}>
               <View style={styles.infoSection}>
                 <Text style={styles.infoText}>
-                  For us to be able to personalize your experience, we need some more information.
+                  {t('auth.registerInfoMessage')}
                 </Text>
 
                 <View style={styles.fieldsContainer}>
                   <TextInput
-                    label="Full Name"
+                    label={t('auth.fullName')}
                     value={fullName}
                     onChangeText={setFullName}
-                    placeholder="Full Name"
+                    placeholder={t('auth.fullNamePlaceholder')}
                   />
 
                   <TextInput
-                    label="Age"
+                    label={t('auth.age')}
                     value={age}
                     onChangeText={setAge}
-                    placeholder="Age"
+                    placeholder={t('auth.agePlaceholder')}
                     keyboardType="numeric"
                   />
 
                   <TextInput
-                    label="Gender"
+                    label={t('auth.gender')}
                     value={gender}
                     onChangeText={setGender}
-                    placeholder="Gender"
+                    placeholder={t('auth.genderPlaceholder')}
                   />
 
                   <TextInput
-                    label="Weight"
+                    label={t('auth.weight')}
                     value={weight}
                     onChangeText={setWeight}
-                    placeholder="Weight"
+                    placeholder={t('auth.weightPlaceholder')}
                     keyboardType="numeric"
                   />
 
                   <TextInput
-                    label="Height"
+                    label={t('auth.height')}
                     value={height}
                     onChangeText={setHeight}
-                    placeholder="Height"
+                    placeholder={t('auth.heightPlaceholder')}
                     keyboardType="numeric"
                   />
 
                   <TextInput
-                    label="Insurance"
+                    label={t('auth.insurance')}
                     value={insurance}
                     onChangeText={setInsurance}
-                    placeholder="Insurance"
+                    placeholder={t('auth.insurancePlaceholder')}
                   />
                 </View>
               </View>
@@ -210,11 +212,11 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
           <View style={styles.footer}>
             <ButtonGroup style={styles.buttonGroup}>
               <PrimaryButton
-                label={isLoading ? 'Salvando...' : 'Next'}
+                label={isLoading ? t('common.saving') : t('common.next')}
                 onPress={handleNext}
                 disabled={isLoading}
               />
-              <SecondaryButton label="Skip information" onPress={handleSkip} disabled={isLoading} />
+              <SecondaryButton label={t('common.skipInformation')} onPress={handleSkip} disabled={isLoading} />
             </ButtonGroup>
           </View>
         </KeyboardAvoidingView>

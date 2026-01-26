@@ -6,6 +6,7 @@ import { SecondaryButton } from '@/components/ui/buttons';
 import { storageService, orderService, paymentService } from '@/services';
 import { formatPrice, formatAddress, formatBillingAddress } from '@/utils';
 import { useFormattedInput } from '@/hooks';
+import { useTranslation } from '@/hooks/i18n';
 import { logger } from '@/utils/logger';
 import { styles } from './styles';
 import AddressForm, { AddressData } from './address';
@@ -31,6 +32,7 @@ type Props = {
 };
 
 const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
+  const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState<CheckoutStep>('address');
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [sameBillingAddress, setSameBillingAddress] = useState(false);
@@ -117,13 +119,13 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
 
       // Validar dados necessários
       if (cartItems.length === 0) {
-        Alert.alert('Erro', 'Seu carrinho está vazio');
+        Alert.alert(t('errors.error'), t('checkout.emptyCartError'));
         return;
       }
 
       if (paymentMethod === 'credit_card') {
         if (!cardholderName || !cardNumber || !expiryDate || !cvv) {
-          Alert.alert('Erro', 'Por favor, preencha todos os dados do cartão');
+          Alert.alert(t('errors.error'), t('checkout.fillCardDataError'));
           setIsProcessing(false);
           return;
         }
@@ -131,7 +133,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
         // Validar formato da data de expiração (deve ter 4 dígitos)
         const formattedExpiry = expiryDate.replace(/\D/g, '');
         if (formattedExpiry.length !== 4) {
-          Alert.alert('Erro', 'Data de expiração inválida. Use o formato MM/YY');
+          Alert.alert(t('errors.error'), t('checkout.invalidExpiryError'));
           setIsProcessing(false);
           return;
         }
@@ -193,7 +195,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
       // A validação acima já garante que os dados estão preenchidos e válidos
       if (paymentMethod === 'credit_card') {
         if (!cardDataObj) {
-          Alert.alert('Erro', 'Dados do cartão inválidos');
+          Alert.alert(t('errors.error'), t('checkout.invalidCardDataError'));
           setIsProcessing(false);
           return;
         }
@@ -225,8 +227,8 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
       console.error('Error completing order:', error);
       // Extrair mensagem de erro (pode estar em error.message ou error.error)
       const errorMessage =
-        error?.message || error?.error || 'Erro ao processar pedido. Tente novamente.';
-      Alert.alert('Erro', errorMessage);
+        error?.message || error?.error || t('checkout.orderError');
+      Alert.alert(t('errors.error'), errorMessage);
     } finally {
       setIsProcessing(false);
     }
@@ -302,7 +304,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
                 currentStep === 'address' ? styles.stepperLabelActive : styles.stepperLabelInactive,
               ]}
             >
-              Adress
+              {t('checkout.address')}
             </Text>
             <View
               style={[
@@ -317,7 +319,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
                 currentStep === 'payment' ? styles.stepperLabelActive : styles.stepperLabelInactive,
               ]}
             >
-              Payment
+              {t('checkout.payment')}
             </Text>
             <View
               style={[
@@ -332,7 +334,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
                 currentStep === 'order' ? styles.stepperLabelActive : styles.stepperLabelInactive,
               ]}
             >
-              Order
+              {t('checkout.order')}
             </Text>
             <View
               style={[
@@ -410,7 +412,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
       {currentStep !== 'order' && (
         <View style={styles.buttonContainer}>
           <SecondaryButton
-            label="Continue"
+            label={t('common.continue')}
             onPress={handleContinue}
             style={styles.completeButton}
             size="large"
@@ -423,7 +425,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
       {currentStep === 'order' && (
         <View style={styles.buttonContainer}>
           <SecondaryButton
-            label="Home"
+            label={t('common.home')}
             onPress={handleHomePress}
             style={styles.completeButton}
             size="large"

@@ -13,6 +13,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ModalBase } from '@/components/ui/modals/shared';
 import { SecondaryButton, PrimaryButton } from '@/components/ui/buttons';
 import { Badge } from '@/components/ui';
+import { useTranslation } from '@/hooks/i18n';
 import { styles } from './styles';
 
 type ActivityType = 'task' | 'event';
@@ -57,6 +58,7 @@ const CreateActivityModal: React.FC<Props> = ({
   activityId,
   initialData,
 }) => {
+  const { t } = useTranslation();
   const [name, setName] = useState(initialData?.name || '');
   const [type, setType] = useState<ActivityType>(initialData?.type || 'event');
   const [startDateValue, setStartDateValue] = useState(
@@ -241,9 +243,9 @@ const CreateActivityModal: React.FC<Props> = ({
       showTitle={false}
       header={
         <View style={styles.header}>
-          <SecondaryButton label="Cancel" onPress={handleCancel} />
+          <SecondaryButton label={t('common.cancel')} onPress={handleCancel} />
           <PrimaryButton
-            label="Save"
+            label={t('common.save')}
             onPress={handleSave}
             icon="arrow-upward"
             iconPosition="right"
@@ -256,7 +258,7 @@ const CreateActivityModal: React.FC<Props> = ({
           <RNTextInput
             value={name}
             onChangeText={setName}
-            placeholder="Name"
+            placeholder={t('activities.activityName')}
             placeholderTextColor="#999"
             style={styles.nameInput}
           />
@@ -264,12 +266,12 @@ const CreateActivityModal: React.FC<Props> = ({
 
         <View style={styles.typeSelector}>
           <SecondaryButton
-            label="Task"
+            label={t('activities.task')}
             onPress={() => setType('task')}
             style={[styles.typeButtonBase, type === 'task' && styles.typeButtonSelected]}
           />
           <SecondaryButton
-            label="Event"
+            label={t('activities.event')}
             onPress={() => setType('event')}
             style={[styles.typeButtonBase, type === 'event' && styles.typeButtonSelected]}
           />
@@ -282,7 +284,7 @@ const CreateActivityModal: React.FC<Props> = ({
               <RNTextInput
                 value={description}
                 onChangeText={setDescription}
-                placeholder="Description"
+                placeholder={t('activities.description')}
                 placeholderTextColor="#999"
                 style={styles.descriptionInput}
                 multiline
@@ -341,7 +343,7 @@ const CreateActivityModal: React.FC<Props> = ({
           </View>
           <View style={styles.dateTimeFieldContainer}>
             <SecondaryButton
-              label={`Starts – ${startTime}`}
+              label={t('activities.startsAt', { time: startTime })}
               onPress={() => setShowStartTimePicker(true)}
               variant="dark"
             />
@@ -431,7 +433,7 @@ const CreateActivityModal: React.FC<Props> = ({
           </View>
           <View style={styles.dateTimeFieldContainer}>
             <SecondaryButton
-              label={`Ends – ${endTime}`}
+              label={t('activities.endsAt', { time: endTime })}
               onPress={() => setShowEndTimePicker(true)}
               variant="dark"
             />
@@ -478,7 +480,7 @@ const CreateActivityModal: React.FC<Props> = ({
           <RNTextInput
             value={location}
             onChangeText={setLocation}
-            placeholder="Address or Meet URL"
+            placeholder={t('activities.addressOrMeetUrl')}
             placeholderTextColor="#999"
             style={styles.locationInput}
             multiline={false}
@@ -491,7 +493,7 @@ const CreateActivityModal: React.FC<Props> = ({
         <View style={styles.reminderContainer}>
           <View style={styles.reminderContent}>
             <Icon name="notifications" size={20} color="#001137" />
-            <Text style={styles.reminderText}>{reminderMinutes} min after reminder</Text>
+            <Text style={styles.reminderText}>{t('activities.reminderMinutes', { minutes: reminderMinutes })}</Text>
           </View>
           <View style={styles.switchContainer}>
             <Switch
@@ -500,7 +502,7 @@ const CreateActivityModal: React.FC<Props> = ({
               trackColor={{ false: '#E0E0E0', true: '#0154f8' }}
               thumbColor="#FFFFFF"
             />
-            <Text style={styles.switchLabel}>{reminderEnabled ? 'On' : 'Off'}</Text>
+            <Text style={styles.switchLabel}>{reminderEnabled ? t('activities.on') : t('activities.off')}</Text>
           </View>
         </View>
       </View>

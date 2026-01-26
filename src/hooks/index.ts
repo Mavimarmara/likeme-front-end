@@ -26,6 +26,9 @@ export type { AnamnesisProgress, CategoryProgress } from './anamnesis/useAnamnes
 // Navigation hooks
 export { useMenuItems } from './navigation/useMenuItems';
 
+// i18n hooks
+export { useTranslation } from './i18n';
+
 // Types
 export type {
   ActivityItem,

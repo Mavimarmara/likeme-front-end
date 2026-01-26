@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Alert } from 'react-native';
+import { useTranslation } from '@/hooks/i18n';
 import { productService, adService, storageService } from '@/services';
 import { mapProductToCartItem, formatPrice } from '@/utils';
 import type { Product as ApiProduct } from '@/types/product';
@@ -34,6 +35,7 @@ export const useProductDetails = ({
   fallbackProduct,
   navigation,
 }: UseProductDetailsParams): UseProductDetailsReturn => {
+  const { t } = useTranslation();
   const [product, setProduct] = useState<ApiProduct | null>(null);
   const [ad, setAd] = useState<Ad | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<ApiProduct[]>([]);
@@ -62,7 +64,7 @@ export const useProductDetails = ({
       setProduct(productData);
     } catch (error) {
       console.error('Error loading product:', error);
-      Alert.alert('Error', 'Failed to load product details');
+      Alert.alert(t('errors.error'), t('errors.loadProductError'));
     } finally {
       setLoading(false);
     }
@@ -146,7 +148,7 @@ export const useProductDetails = ({
     if (!product) return;
 
     if (product.status === 'out_of_stock' || product.quantity === 0) {
-      Alert.alert('Out of Stock', 'This product is currently out of stock');
+      Alert.alert(t('marketplace.outOfStock'), t('marketplace.productOutOfStockMessage'));
       return;
     }
 
@@ -156,7 +158,7 @@ export const useProductDetails = ({
       navigation.navigate('Cart');
     } catch (error) {
       console.error('Error adding to cart:', error);
-      Alert.alert('Error', 'Failed to add product to cart');
+      Alert.alert(t('errors.error'), t('errors.addToCartError'));
     }
   }, [product, navigation]);
 

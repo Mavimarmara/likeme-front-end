@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { View, Text, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '@/components/ui';
+import { useTranslation } from '@/hooks/i18n';
 import { BackgroundWithGradient4, BackgroundWithGradient5 } from '@/assets';
 import { styles } from './styles';
 
@@ -11,6 +12,7 @@ type Props = { navigation: any };
 const IMAGE_DECORATIVE = 'https://www.figma.com/api/mcp/asset/e6ee3d5c-e9d8-4bf5-bf75-48f53768bafe';
 
 const AnamnesisCompletionScreen: React.FC<Props> = ({ navigation }) => {
+  const { t } = useTranslation();
   useEffect(() => {
     // Auto-redirecionar para home após 3 segundos
     const timer = setTimeout(() => {
@@ -52,7 +54,7 @@ const AnamnesisCompletionScreen: React.FC<Props> = ({ navigation }) => {
         {/* Conteúdo principal */}
         <View style={styles.mainContent}>
           <View style={styles.textContainer}>
-            <Text style={styles.title}>GREAT JOB !</Text>
+            <Text style={styles.title}>{t('anamnesis.completionTitle')}</Text>
           </View>
         </View>
       </View>

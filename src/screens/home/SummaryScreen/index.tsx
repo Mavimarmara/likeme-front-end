@@ -10,6 +10,7 @@ import {
   useAnamnesisProgress,
   useAnamnesisScores,
 } from '@/hooks';
+import { useTranslation } from '@/hooks/i18n';
 import {
   mapCommunityToRecommendedCommunity,
   mapCommunityToOtherCommunity,
@@ -44,6 +45,7 @@ type Props = {
 };
 
 const SummaryScreen: React.FC<Props> = ({ navigation }) => {
+  const { t } = useTranslation();
   const rootNavigation = navigation.getParent() ?? navigation;
   const [hasCompletedAnamnesis, setHasCompletedAnamnesis] = useState<boolean>(false);
   const [hasAnyAnamnesisAnswers, setHasAnyAnamnesisAnswers] = useState<boolean>(false);
@@ -440,8 +442,8 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
           {recommendedProducts.length > 0 && (
             <View style={styles.productsContainer}>
               <ProductsCarousel
-                title="Products recommended for your sleep journey by Dr. Peter Valasquez"
-                subtitle="Discover our options selected just for you"
+                title={t('home.productsRecommended')}
+                subtitle={t('home.discoverProducts')}
                 products={recommendedProducts}
                 onProductPress={handleProductPress}
                 onProductLike={handleProductLike}

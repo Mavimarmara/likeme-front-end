@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Badge, CommentCard } from '@/components/ui';
 import { PollCard } from '@/components/sections/community';
+import { useTranslation } from '@/hooks/i18n';
 import { styles } from './styles';
 import { COLORS } from '@/constants';
 import type { Post } from '@/types';
@@ -16,6 +17,7 @@ type Props = {
 };
 
 const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
+  const { t } = useTranslation();
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
   const [isContentExpanded, setIsContentExpanded] = useState(false);
 
@@ -183,7 +185,7 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
             activeOpacity={0.7}
           >
             <Text style={styles.seeMoreButtonText}>
-              {isContentExpanded ? 'See less' : 'See more'}
+              {isContentExpanded ? t('common.seeLess') : t('avatar.seeMore')}
             </Text>
           </TouchableOpacity>
         )}

@@ -12,6 +12,7 @@ import {
 } from '@/components/ui';
 import { GradientSplash6 } from '@/assets';
 import { personalObjectivesService, storageService } from '@/services';
+import { useTranslation } from '@/hooks/i18n';
 import { PersonalObjective } from '@/types';
 import { showError } from '@/utils';
 import { styles } from './styles';
@@ -19,6 +20,7 @@ import { styles } from './styles';
 type Props = { navigation: any; route: any };
 
 const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
+  const { t } = useTranslation();
   const userName = route.params?.userName || 'Usuário';
   const [objectives, setObjectives] = useState<PersonalObjective[]>([]);
   const [selectedObjectives, setSelectedObjectives] = useState<Set<string>>(new Set());
@@ -47,7 +49,7 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
       });
       setObjectives(response.data.objectives);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar objetivos';
+      const errorMessage = err instanceof Error ? err.message : t('auth.loadingObjectives');
       showError(navigation, errorMessage, () => {
         loadObjectives();
       });
@@ -94,13 +96,13 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
               style={[styles.titleAdornment, adornmentStyle]}
               resizeMode="contain"
             />
-            <Title title={`${userName},`} variant="large" />
+            <Title title={t('auth.personalObjectivesTitle', { userName })} variant="large" />
           </View>
 
-          <Text style={styles.question}>What are the main things we can help you with?</Text>
+          <Text style={styles.question}>{t('auth.personalObjectivesQuestion')}</Text>
 
           {loading ? (
-            <Loading message="Carregando objetivos..." />
+            <Loading message={t('auth.loadingObjectives')} />
           ) : (
             <View style={styles.chipsContainer}>
               {objectives.map((objective) => (
@@ -118,8 +120,8 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
 
       <View style={styles.footer}>
         <ButtonGroup style={styles.buttonGroup}>
-          <PrimaryButton label="Next" onPress={handleNext} />
-          <SecondaryButton label="Skip information" onPress={handleSkip} />
+          <PrimaryButton label={t('common.next')} onPress={handleNext} />
+          <SecondaryButton label={t('common.skipInformation')} onPress={handleSkip} />
         </ButtonGroup>
       </View>
     </SafeAreaView>

@@ -2,11 +2,13 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header, PrimaryButton, SecondaryButton, ButtonGroup } from '@/components/ui';
+import { useTranslation } from '@/hooks/i18n';
 import { styles } from './styles';
 
 type Props = { navigation: any };
 
 const SelfAwarenessIntroScreen: React.FC<Props> = ({ navigation }) => {
+  const { t } = useTranslation();
   const handleTakeQuiz = () => {
     navigation.navigate('Main' as never);
   };
@@ -21,16 +23,16 @@ const SelfAwarenessIntroScreen: React.FC<Props> = ({ navigation }) => {
       {/*TODO: Adicionar tela quando houver as perguntas*/}
       <View style={styles.content}>
         <View style={styles.textContainer}>
-          <Text style={styles.title}>YOUR JOURNEY TO SELF-AWARENESS STARTS HERE!</Text>
+          <Text style={styles.title}>{t('auth.selfAwarenessTitle')}</Text>
           <Text style={styles.subtitle}>
-            Pause for 2 minutes — let Like Me guide you toward your own balance
+            {t('auth.selfAwarenessSubtitle')}
           </Text>
         </View>
 
         <View style={styles.footer}>
           <ButtonGroup style={styles.buttonGroup}>
-            <PrimaryButton label="Take a Quizz" onPress={handleTakeQuiz} />
-            <SecondaryButton label="Skip" onPress={handleSkip} />
+            <PrimaryButton label={t('auth.takeQuiz')} onPress={handleTakeQuiz} />
+            <SecondaryButton label={t('common.skip')} onPress={handleSkip} />
           </ButtonGroup>
         </View>
       </View>

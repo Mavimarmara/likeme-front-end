@@ -10,11 +10,13 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header, Title, TextInput } from '@/components/ui';
 import { GradientSplash3 } from '@/assets';
+import { useTranslation } from '@/hooks/i18n';
 import { styles } from './styles';
 
 type Props = { navigation: any };
 
 const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
+  const { t } = useTranslation();
   const [name, setName] = useState('');
   const inputRef = useRef<RNTextInput>(null);
 
@@ -28,7 +30,7 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleContinue = () => {
     if (!name.trim()) {
-      Alert.alert('Nome obrigatório', 'Por favor, digite seu nome para continuar.');
+      Alert.alert(t('auth.nameRequired'), t('auth.nameRequiredMessage'));
       return;
     }
 
@@ -46,8 +48,8 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
 
         <View style={styles.content}>
           <Title
-            title="Welcome!"
-            subtitle="How can I call you?"
+            title={t('auth.welcomeTitle')}
+            subtitle={t('auth.welcomeSubtitle')}
             variant="large"
             rightAdornment={
               <Image source={GradientSplash3} style={styles.titleAdornment} resizeMode="cover" />
@@ -59,7 +61,7 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
               ref={inputRef}
               value={name}
               onChangeText={setName}
-              placeholder="Your name"
+              placeholder={t('auth.yourNamePlaceholder')}
               autoFocus
               returnKeyType="next"
               onSubmitEditing={handleContinue}

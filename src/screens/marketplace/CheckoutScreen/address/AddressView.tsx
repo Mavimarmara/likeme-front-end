@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useTranslation } from '@/hooks/i18n';
 import { AddressData } from './AddressForm';
 import { styles } from '../styles';
 
@@ -10,6 +11,7 @@ interface AddressViewProps {
 }
 
 const AddressView: React.FC<AddressViewProps> = ({ address, onEditPress }) => {
+  const { t } = useTranslation();
   const formatAddressText = (address: AddressData) => {
     const addressParts = [
       address.fullName,
@@ -27,7 +29,7 @@ const AddressView: React.FC<AddressViewProps> = ({ address, onEditPress }) => {
   return (
     <View style={styles.addressCard}>
       <View style={styles.addressCardHeader}>
-        <Text style={styles.addressCardTitle}>Endereço de entrega</Text>
+        <Text style={styles.addressCardTitle}>{t('checkout.deliveryAddress')}</Text>
         <TouchableOpacity onPress={onEditPress} activeOpacity={0.7}>
           <Icon name="edit" size={24} color="#001137" />
         </TouchableOpacity>

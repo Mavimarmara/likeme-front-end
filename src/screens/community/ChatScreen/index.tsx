@@ -15,6 +15,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SearchBar } from '@/components/ui';
 import { Background } from '@/components/ui/layout';
+import { useTranslation } from '@/hooks/i18n';
 import { BackgroundIconButton, LogoMini } from '@/assets';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '@/constants';
 import type { CommunityStackParamList } from '@/types/navigation';
@@ -40,6 +41,7 @@ interface ChatConversation {
 }
 
 const ChatScreen: React.FC<Props> = () => {
+  const { t } = useTranslation();
   const route = useRoute<ChatScreenRouteProp>();
   const navigation = useNavigation<ChatScreenNavigationProp>();
   const [searchQuery, setSearchQuery] = useState('');
@@ -177,7 +179,7 @@ const ChatScreen: React.FC<Props> = () => {
 
         {/* Search Bar */}
         <SearchBar
-          placeholder="Search"
+          placeholder={t('common.search')}
           value={searchQuery}
           onChangeText={setSearchQuery}
           onSearchPress={() => {}}

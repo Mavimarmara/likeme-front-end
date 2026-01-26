@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '@/components/ui';
 import { PRESENTATION_PAGES } from '@/constants/presentation';
 import { useAuthLogin } from '@/hooks';
+import { useTranslation } from '@/hooks/i18n';
 import { styles } from './styles';
 
 const { width } = Dimensions.get('window');
@@ -11,10 +12,17 @@ const { width } = Dimensions.get('window');
 type Props = { navigation: any };
 
 const AppPresentationScreen: React.FC<Props> = ({ navigation }) => {
+  const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState(0);
   const { handleLogin, isLoading } = useAuthLogin(navigation);
 
-  const pages = useMemo(() => PRESENTATION_PAGES, []);
+  const pages = useMemo(() => {
+    return PRESENTATION_PAGES.map((page, index) => ({
+      ...page,
+      title: t(`presentation.page${index + 1}Title`),
+      description: t(`presentation.page${index + 1}Description`),
+    }));
+  }, [t]);
 
   const handleNext = () => {
     if (currentPage < pages.length - 1) {
@@ -72,7 +80,7 @@ const AppPresentationScreen: React.FC<Props> = ({ navigation }) => {
             onPress={handleSkip}
             disabled={isLoading}
           >
-            <Text style={styles.skipText}>Skip</Text>
+            <Text style={styles.skipText}>{t('common.skip')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.nextButton, isLoading && styles.nextButtonDisabled]}

@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity, ImageBackground } from 'react-nati
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { BackgroundIconButton } from '@/assets';
+import { useTranslation } from '@/hooks/i18n';
 import { styles } from './styles';
 import type { Community } from '@/types/community';
 
@@ -19,13 +20,14 @@ export interface RecommendedCommunity {
 }
 
 const RecommendedCommunitiesSection: React.FC<Props> = ({ communities, onCommunityPress }) => {
+  const { t } = useTranslation();
   if (!communities || communities.length === 0) {
     return null;
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Recommended Communities</Text>
+      <Text style={styles.title}>{t('home.recommendedCommunities')}</Text>
       <View style={styles.communitiesList}>
         {communities.map((community) => (
           <TouchableOpacity

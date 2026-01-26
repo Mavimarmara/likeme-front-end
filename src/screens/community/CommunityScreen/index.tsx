@@ -18,12 +18,16 @@ import type { CommunityCategory, Channel, CommunityFeedData } from '@/types/comm
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
 import { useUserFeed, useCommunities, useSuggestedProducts, useMenuItems } from '@/hooks';
+import { useTranslation } from '@/hooks/i18n';
 import { mapFiltersToFeedParams, mapCommunityToProgram, mapChannelsToEvents } from '@/utils';
 import { communityService } from '@/services';
 
 type CommunityMode = 'Social' | 'Programs';
 
-const TOGGLE_OPTIONS: readonly [CommunityMode, CommunityMode] = ['Social', 'Programs'] as const;
+const getToggleOptions = (t: (key: string) => string): readonly [CommunityMode, CommunityMode] => [
+  t('community.social') as CommunityMode,
+  t('community.programs') as CommunityMode,
+] as const;
 
 const mockProgramDetails: ProgramDetail = {
   id: '1',
@@ -153,6 +157,8 @@ type Props = { navigation: NavigationProp };
 import type { FilterType } from '@/components/ui/modals/FilterModal';
 
 const CommunityScreen: React.FC<Props> = ({ navigation }) => {
+  const { t } = useTranslation();
+  const toggleOptions = useMemo(() => getToggleOptions(t), [t]);
   const rootNavigation = navigation.getParent()?.getParent?.() ?? navigation.getParent();
   const [selectedMode, setSelectedMode] = useState<CommunityMode>('Social');
   const [selectedProgramId, setSelectedProgramId] = useState<string | undefined>();
@@ -379,7 +385,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
       <View style={styles.content}>
         <View style={styles.toggleContainer}>
           <Toggle<CommunityMode>
-            options={TOGGLE_OPTIONS}
+            options={toggleOptions}
             selected={selectedMode}
             onSelect={handleModeSelect}
           />

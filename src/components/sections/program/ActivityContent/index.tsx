@@ -4,12 +4,14 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { styles } from './styles';
 import type { ProgramActivity } from '@/types/program';
 import { SecondaryButton, PrimaryButton } from '@/components/ui/buttons';
+import { useTranslation } from '@/hooks/i18n';
 
 type Props = {
   activity: ProgramActivity;
 };
 
 const ActivityContent: React.FC<Props> = ({ activity }) => {
+  const { t } = useTranslation();
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
 
   const handleOptionPress = (option: string) => {
@@ -32,7 +34,7 @@ const ActivityContent: React.FC<Props> = ({ activity }) => {
       <View style={styles.content}>
         <View style={styles.questionContainer}>
           <View style={styles.questionHeader}>
-            <SecondaryButton label="Edit" onPress={() => {}} style={styles.editButton} />
+            <SecondaryButton label={t('activities.edit')} onPress={() => {}} style={styles.editButton} />
           </View>
           <Text style={styles.question}>{activity.question}</Text>
         </View>
@@ -58,7 +60,7 @@ const ActivityContent: React.FC<Props> = ({ activity }) => {
         )}
         <View style={styles.submitButtonContainer}>
           <PrimaryButton
-            label={activity.isSubmitted ? 'Submitted' : 'Submit'}
+            label={activity.isSubmitted ? t('activities.submitted') : t('activities.submit')}
             onPress={() => {}}
             style={styles.submitButton}
           />

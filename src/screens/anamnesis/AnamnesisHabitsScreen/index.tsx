@@ -46,6 +46,7 @@ function getQuestionBodyText(questionText: string | null, title: string) {
 }
 
 const AnamnesisHabitsScreen: React.FC<Props> = ({ navigation, route }) => {
+  const { t } = useTranslation();
   const { title, keyPrefix } = route.params;
   const [stepIndex, setStepIndex] = useState(0);
 
@@ -61,9 +62,9 @@ const AnamnesisHabitsScreen: React.FC<Props> = ({ navigation, route }) => {
     if (!error) {
       return;
     }
-    Alert.alert('Erro', error, [
+    Alert.alert(t('errors.error'), error, [
       {
-        text: 'OK',
+        text: t('common.ok'),
         onPress: () => navigation.goBack(),
       },
     ]);
@@ -113,7 +114,7 @@ const AnamnesisHabitsScreen: React.FC<Props> = ({ navigation, route }) => {
       await complete();
       navigation.navigate('AnamnesisCompletion');
     } catch {
-      Alert.alert('Erro', 'Não foi possível finalizar a anamnese. Tente novamente.');
+      Alert.alert(t('errors.error'), t('anamnesis.finalizationError'));
     }
   };
 
@@ -127,12 +128,12 @@ const AnamnesisHabitsScreen: React.FC<Props> = ({ navigation, route }) => {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.headerText}>
-          <Text style={styles.screenTitle}>HÁBITOS</Text>
+          <Text style={styles.screenTitle}>{t('anamnesis.habitsTitle')}</Text>
           <Text style={styles.screenSubtitle}>
-            Aqui a gente olha para as suas rotinas e escolhas, sem julgamentos.
+            {t('anamnesis.habitsSubtitle')}
           </Text>
           <Text style={styles.screenDescription}>
-            Responda pensando no que mais se aproxima do seu dia a dia na última semana.
+            {t('anamnesis.habitsDescription')}
           </Text>
         </View>
 
@@ -160,7 +161,7 @@ const AnamnesisHabitsScreen: React.FC<Props> = ({ navigation, route }) => {
             </View>
           ) : totalSteps === 0 ? (
             <View style={styles.emptyState}>
-              <Text style={styles.emptyStateText}>Nenhuma pergunta disponível no momento.</Text>
+              <Text style={styles.emptyStateText}>{t('anamnesis.noQuestionsAvailable')}</Text>
             </View>
           ) : (
             <View style={styles.optionsContainer}>
@@ -184,7 +185,7 @@ const AnamnesisHabitsScreen: React.FC<Props> = ({ navigation, route }) => {
 
           <View style={styles.footer}>
             <PrimaryButton
-              label="Voltar"
+              label={t('common.back')}
               onPress={handleBack}
               variant="light"
               icon="chevron-left"
@@ -193,7 +194,7 @@ const AnamnesisHabitsScreen: React.FC<Props> = ({ navigation, route }) => {
             />
             <PrimaryButton
               label={
-                totalSteps === 0 ? 'Fechar' : stepIndex === totalSteps - 1 ? 'Finalizar' : 'Próximo'
+                totalSteps === 0 ? t('common.close') : stepIndex === totalSteps - 1 ? t('common.finalize') : t('common.next')
               }
               onPress={handleNext}
               icon="chevron-right"

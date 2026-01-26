@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { EventCard } from '@/components/sections/community';
 import type { Event } from '@/types/event';
+import { useTranslation } from '@/hooks/i18n';
 import { styles } from './styles';
 
 type Props = {
@@ -11,13 +12,14 @@ type Props = {
 };
 
 const NextEventsSection: React.FC<Props> = ({ events, onEventPress, onEventSave }) => {
+  const { t } = useTranslation();
   if (!events || events.length === 0) {
     return null;
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Next Events</Text>
+      <Text style={styles.title}>{t('home.nextEvents')}</Text>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}

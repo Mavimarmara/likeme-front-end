@@ -26,6 +26,7 @@ import {
 import { PostCard } from '@/components/sections/community';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
 import { useProductDetails } from '@/hooks';
+import { useTranslation } from '@/hooks/i18n';
 import {
   formatPrice,
   mapApiProductToCarouselProduct,
@@ -84,6 +85,7 @@ const USER_REVIEWS = [
 ] as const;
 
 const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation, route }) => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'info' | 'preview'>('info');
   const [activeInfoTab, setActiveInfoTab] = useState<'about' | 'objectives' | 'communities'>(
     'about'
@@ -131,23 +133,23 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
 
   const infoTabOptions: ButtonCarouselOption<'about' | 'objectives' | 'communities'>[] = useMemo(
     () => [
-      { id: 'about', label: 'About' },
-      { id: 'objectives', label: 'Objectives' },
-      { id: 'communities', label: 'Communities' },
+      { id: 'about', label: t('marketplace.about') },
+      { id: 'objectives', label: t('marketplace.objectives') },
+      { id: 'communities', label: t('marketplace.communities') },
     ],
-    []
+    [t]
   );
 
   const productTabOptions: ButtonCarouselOption<
     'goal' | 'description' | 'composition' | 'review'
   >[] = useMemo(
     () => [
-      { id: 'goal', label: 'Goal' },
-      { id: 'description', label: 'Description' },
-      { id: 'composition', label: 'Composition' },
-      { id: 'review', label: 'Review' },
+      { id: 'goal', label: t('marketplace.goal') },
+      { id: 'description', label: t('marketplace.description') },
+      { id: 'composition', label: t('marketplace.composition') },
+      { id: 'review', label: t('marketplace.review') },
     ],
-    []
+    [t]
   );
 
   // Categoria do produto para badges
@@ -264,7 +266,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#2196F3" />
-          <Text style={styles.loadingText}>Loading product...</Text>
+          <Text style={styles.loadingText}>{t('marketplace.loadingProduct')}</Text>
         </View>
       </SafeAreaView>
     );
@@ -274,9 +276,9 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Product not found</Text>
+          <Text style={styles.loadingText}>{t('marketplace.productNotFound')}</Text>
           <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
-            <Text>Go Back</Text>
+            <Text>{t('common.goBack')}</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -361,7 +363,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                 <>
                   <Text style={styles.sectionTitle}>{displayData.title}</Text>
                   <Text style={styles.productDescription}>
-                    {displayData.description || 'No description available'}
+                    {displayData.description || t('marketplace.noDescriptionAvailable')}
                   </Text>
                   <View style={styles.productImageContainer}>
                     <Image
@@ -384,7 +386,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                     </View>
                   ) : !communityPosts || communityPosts.length === 0 ? (
                     <View style={styles.emptyContainer}>
-                      <Text style={styles.emptyText}>No community posts found</Text>
+                      <Text style={styles.emptyText}>{t('marketplace.noCommunityPostsFound')}</Text>
                     </View>
                   ) : (
                     communityPosts.map((post) => <PostCard key={post.id} post={post} />)
@@ -434,7 +436,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
               onPress={handleAddToCart}
               activeOpacity={0.8}
             >
-              <Text style={styles.floatingAddToCartText}>Add to cart</Text>
+              <Text style={styles.floatingAddToCartText}>{t('marketplace.addToCart')}</Text>
               <View style={styles.floatingCartIconContainer}>
                 <Icon name="shopping-cart" size={20} color="#FFFFFF" />
               </View>
@@ -443,7 +445,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
         )}
         <View style={styles.providerButtonContainer}>
           <SecondaryButton
-            label="See provider profile"
+            label={t('marketplace.seeProviderProfile')}
             onPress={handleSeeProviderProfile}
             style={styles.providerProfileButton}
             size="large"
@@ -480,7 +482,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     return (
       <View style={styles.feedbackSection}>
         <View style={styles.feedbackHeader}>
-          <Text style={styles.feedbackTitle}>User Feedback</Text>
+          <Text style={styles.feedbackTitle}>{t('marketplace.userFeedback')}</Text>
           <View style={styles.feedbackRating}>
             <Text style={styles.feedbackRatingText}>5</Text>
             <Icon name="star" size={16} color="#FFB800" />
@@ -547,7 +549,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     return (
       <View style={styles.plansSection}>
         <PlansCarousel
-          title="Recommended Plans"
+          title={t('marketplace.recommendedPlans')}
           subtitle="Discover programs tailored for you"
           plans={plans}
           onPlanPress={handlePlanPress}
@@ -565,7 +567,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
 
     const renderDescriptionWithBullets = () => {
       if (descriptionLines.length === 0) {
-        return <Text style={styles.productDescription}>No description available.</Text>;
+        return <Text style={styles.productDescription}>{t('marketplace.noDescriptionAvailable')}</Text>;
       }
 
       return (

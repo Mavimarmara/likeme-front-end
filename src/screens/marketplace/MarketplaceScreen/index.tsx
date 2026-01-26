@@ -18,6 +18,7 @@ import { storageService } from '@/services';
 import { formatPrice, handleAdNavigation, mapProductToCartItem } from '@/utils';
 import { WeekHighlightCard } from '@/components/sections/marketplace';
 import { useMarketplaceAds, useMenuItems } from '@/hooks';
+import { useTranslation } from '@/hooks/i18n';
 import type { Ad } from '@/types/ad';
 import type { RootStackParamList } from '@/types/navigation';
 import { styles } from './styles';
@@ -25,15 +26,15 @@ import { logger } from '@/utils/logger';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const CATEGORY_OPTIONS: ButtonCarouselOption<string>[] = [
-  { id: 'all', label: 'All' },
-  { id: 'products', label: 'Products' },
-  { id: 'specialists', label: 'Specialists' },
+const getCategoryOptions = (t: (key: string) => string): ButtonCarouselOption<string>[] => [
+  { id: 'all', label: t('marketplace.allCategory') },
+  { id: 'products', label: t('marketplace.productsCategory') },
+  { id: 'specialists', label: t('marketplace.specialistsCategory') },
 ];
 
-const ORDER_OPTIONS: ButtonCarouselOption<string>[] = [
-  { id: 'best-rated', label: 'Best rated' },
-  { id: 'above-100', label: 'Above $100' },
+const getOrderOptions = (t: (key: string) => string): ButtonCarouselOption<string>[] => [
+  { id: 'best-rated', label: t('marketplace.bestRated') },
+  { id: 'above-100', label: t('marketplace.above100') },
 ];
 
 type MarketplaceScreenProps = {
@@ -41,10 +42,14 @@ type MarketplaceScreenProps = {
 };
 
 const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedOrder, setSelectedOrder] = useState<string>('best-rated');
   const [page, setPage] = useState(1);
+  
+  const categoryOptions = useMemo(() => getCategoryOptions(t), [t]);
+  const orderOptions = useMemo(() => getOrderOptions(t), [t]);
 
   const { ads, loading, hasMore, loadAds } = useMarketplaceAds({
     selectedCategory,
@@ -103,7 +108,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     <View style={styles.customHeader}>
       <View style={styles.searchContainer}>
         <SearchBar
-          placeholder="Search"
+          placeholder={t('marketplace.searchPlaceholder')}
           value={searchQuery}
           onChangeText={setSearchQuery}
           onSearchPress={() => {
@@ -115,12 +120,12 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       </View>
       <View style={styles.filterMenuContainer}>
         <FilterMenu
-          filterButtonLabel="Marker"
+          filterButtonLabel={t('marketplace.marker')}
           onFilterButtonPress={() => {
             // TODO: Implementar modal de marker se necessário
             console.log('Marker button pressed');
           }}
-          carouselOptions={CATEGORY_OPTIONS}
+          carouselOptions={categoryOptions}
           selectedCarouselId={selectedCategory}
           onCarouselSelect={handleCategorySelect}
         />
@@ -136,9 +141,9 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
 
     return (
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Week highlights</Text>
+        <Text style={styles.sectionTitle}>{t('marketplace.weekHighlights')}</Text>
         <WeekHighlightCard
-          title={highlight.product.name || 'Product'}
+          title={highlight.product.name || t('marketplace.product')}
           image={
             highlight.product.image ||
             'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400'
@@ -155,7 +160,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       return (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#2196F3" />
-          <Text style={styles.loadingText}>Loading ads...</Text>
+          <Text style={styles.loadingText}>{t('marketplace.loadingAds')}</Text>
         </View>
       );
     }
@@ -167,16 +172,16 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     return (
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>All products</Text>
+          <Text style={styles.sectionTitle}>{t('marketplace.allProducts')}</Text>
         </View>
         <View style={styles.orderFilterMenuContainer}>
           <FilterMenu
-            filterButtonLabel="Order by"
+            filterButtonLabel={t('marketplace.orderBy')}
             onFilterButtonPress={() => {
               // TODO: Implementar modal de order se necessário
               console.log('Order by button pressed');
             }}
-            carouselOptions={ORDER_OPTIONS}
+            carouselOptions={orderOptions}
             selectedCarouselId={selectedOrder}
             onCarouselSelect={handleOrderSelect}
           />
@@ -184,12 +189,12 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
         <View style={styles.productsList}>
           {displayAds.length === 0 ? (
             <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>No ads found</Text>
+              <Text style={styles.emptyText}>{t('marketplace.noAdsFound')}</Text>
             </View>
           ) : (
             displayAds.map((ad) => {
               const product = ad.product;
-              const displayTitle = product?.name || 'Product';
+              const displayTitle = product?.name || t('marketplace.product');
               const displayImage =
                 product?.image ||
                 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
@@ -216,7 +221,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
                         <Text style={styles.productRowPrice}>{formatPrice(productPrice)}</Text>
                       )}
                       {product && product.status === 'out_of_stock' && (
-                        <Text style={styles.outOfStockText}>Out of stock</Text>
+                        <Text style={styles.outOfStockText}>{t('marketplace.outOfStock')}</Text>
                       )}
                     </View>
                   </View>
@@ -249,7 +254,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
               }}
               activeOpacity={0.7}
             >
-              <Text style={styles.loadMoreText}>Load more</Text>
+              <Text style={styles.loadMoreText}>{t('marketplace.loadMore')}</Text>
             </TouchableOpacity>
           )}
         </View>

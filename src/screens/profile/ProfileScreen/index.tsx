@@ -13,6 +13,7 @@ type Props = {
 };
 
 const ProfileScreen: React.FC<Props> = ({ navigation }) => {
+  const { t } = useTranslation();
   const [user, setUser] = useState<StoredUser | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -44,7 +45,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
-          <Title title="Profile" variant="large" />
+          <Title title={t('profile.title')} variant="large" />
 
           {user && (
             <View style={styles.userInfo}>
@@ -62,17 +63,17 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
 
           {loading ? (
             <View style={styles.notLoggedIn}>
-              <Text style={styles.notLoggedInText}>Carregando...</Text>
+              <Text style={styles.notLoggedInText}>{t('profile.loading')}</Text>
             </View>
           ) : !user ? (
             <View style={styles.notLoggedIn}>
-              <Text style={styles.notLoggedInText}>Not logged in</Text>
+              <Text style={styles.notLoggedInText}>{t('auth.notLoggedIn')}</Text>
             </View>
           ) : null}
 
           {user && (
             <View style={styles.logoutContainer}>
-              <LogoutButton label="Log out" onPress={handleLogout} />
+              <LogoutButton label={t('auth.logout')} onPress={handleLogout} />
             </View>
           )}
         </View>

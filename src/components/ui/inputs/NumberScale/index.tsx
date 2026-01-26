@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, PanResponder } from 'react-native';
+import { useTranslation } from '@/hooks/i18n';
 
 interface NumberScaleProps {
   selectedValue?: number;
@@ -14,6 +15,7 @@ const NumberScale: React.FC<NumberScaleProps> = ({
   min = 0,
   max = 10,
 }) => {
+  const { t } = useTranslation();
   const numbers = Array.from({ length: max - min + 1 }, (_, i) => min + i);
   const [sliderWidth, setSliderWidth] = useState(0);
   const [tempValue, setTempValue] = useState<number | undefined>(selectedValue);
@@ -88,13 +90,13 @@ const NumberScale: React.FC<NumberScaleProps> = ({
                 <View style={styles.edgeLabelContainer}>
                   {number === min ? (
                     <>
-                      <Text style={styles.edgeLabelLine}>tudo a</Text>
-                      <Text style={styles.edgeLabelLine}>ver comigo</Text>
+                      <Text style={styles.edgeLabelLine}>{t('anamnesis.scaleMin').split(' ')[0]} {t('anamnesis.scaleMin').split(' ')[1]}</Text>
+                      <Text style={styles.edgeLabelLine}>{t('anamnesis.scaleMin').split(' ').slice(2).join(' ')}</Text>
                     </>
                   ) : (
                     <>
-                      <Text style={styles.edgeLabelLine}>nada a</Text>
-                      <Text style={styles.edgeLabelLine}>ver comigo</Text>
+                      <Text style={styles.edgeLabelLine}>{t('anamnesis.scaleMax').split(' ')[0]} {t('anamnesis.scaleMax').split(' ')[1]}</Text>
+                      <Text style={styles.edgeLabelLine}>{t('anamnesis.scaleMax').split(' ').slice(2).join(' ')}</Text>
                     </>
                   )}
                 </View>

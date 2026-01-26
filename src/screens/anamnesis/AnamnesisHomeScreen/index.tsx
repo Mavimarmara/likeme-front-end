@@ -7,12 +7,14 @@ import { SecondaryButton } from '@/components/ui/buttons';
 import ProgressBar from '@/components/ui/feedback/ProgressBar';
 import { BackgroundWithGradient2, BackgroundWithGradient3 } from '@/assets';
 import { useAnamnesisProgress } from '@/hooks/anamnesis/useAnamnesisProgress';
+import { useTranslation } from '@/hooks/i18n';
 import { COLORS } from '@/constants';
 import { styles } from './styles';
 
 type Props = { navigation: any };
 
 const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
+  const { t } = useTranslation();
   const { progress, loading, error, refresh } = useAnamnesisProgress();
 
   // Atualizar progresso quando a tela ganhar foco
@@ -86,7 +88,7 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
         <Header showBackButton={true} onBackPress={() => navigation.goBack()} />
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <ActivityIndicator size="large" color={COLORS.PRIMARY.PURE} />
-          <Text style={{ marginTop: 16, color: '#666' }}>Carregando progresso...</Text>
+          <Text style={{ marginTop: 16, color: '#666' }}>{t('anamnesis.loadingProgress')}</Text>
         </View>
       </SafeAreaView>
     );
@@ -97,7 +99,7 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
       <SafeAreaView style={styles.container}>
         <Header showBackButton={true} onBackPress={() => navigation.goBack()} />
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
-          <Text style={{ color: '#EF4444', marginBottom: 16 }}>Erro ao carregar dados</Text>
+          <Text style={{ color: '#EF4444', marginBottom: 16 }}>{t('anamnesis.errorLoadingData')}</Text>
           <Text style={{ color: '#666', textAlign: 'center' }}>{error}</Text>
         </View>
       </SafeAreaView>
@@ -119,7 +121,7 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.screenTitle}>Minha anaminese</Text>
+        <Text style={styles.screenTitle}>{t('anamnesis.homeTitle')}</Text>
 
         {/* Card: SEU CORPO */}
         <View style={styles.card}>
@@ -153,28 +155,27 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* Card: SUA MENTE */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>SUA MENTE</Text>
-          <Text style={styles.cardSubtitle}>Bem-estar emocional</Text>
+          <Text style={styles.cardTitle}>{t('anamnesis.yourMind')}</Text>
+          <Text style={styles.cardSubtitle}>{t('anamnesis.yourMindSubtitle')}</Text>
           <Text style={styles.cardDescription}>
-            Como você tem se sentido?{'\n'}Um espaço para refletir sobre emoções e equilíbrio no dia
-            a dia.
+            {t('anamnesis.yourMindDescription')}
           </Text>
 
           <View style={styles.cardContent}>
             <ProgressBar
               current={progress?.mental.answered || 0}
               total={progress?.mental.total || 0}
-              label="Mente"
+              label={t('anamnesis.mind')}
               color="#D794FF"
             />
 
             <SecondaryButton
               label={
                 progress?.mental.answered === progress?.mental.total
-                  ? 'Atualizar'
+                  ? t('anamnesis.update')
                   : progress?.mental.answered === 0
-                  ? 'Iniciar'
-                  : 'Continuar'
+                  ? t('anamnesis.start')
+                  : t('anamnesis.continue')
               }
               onPress={handleContinueMind}
               size="medium"
@@ -184,10 +185,10 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* Card: SEUS HÁBITOS */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>SEUS HÁBITOS</Text>
-          <Text style={styles.cardSubtitle}>Mapeamento de hábitos</Text>
+          <Text style={styles.cardTitle}>{t('anamnesis.yourHabits')}</Text>
+          <Text style={styles.cardSubtitle}>{t('anamnesis.yourHabitsSubtitle')}</Text>
           <Text style={styles.cardDescription}>
-            Uma sessão para entender um pouco mais sobre o seu dia a dia, sem certo ou errado
+            {t('anamnesis.yourHabitsDescription')}
           </Text>
 
           <View style={styles.habitsContainer}>
@@ -197,16 +198,16 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
               <ProgressBar
                 current={progress?.habits.movimento.answered || 0}
                 total={progress?.habits.movimento.total || 0}
-                label="Movimento"
+                label={t('anamnesis.movement')}
                 color={COLORS.PRIMARY.PURE}
               />
               <SecondaryButton
                 label={
                   progress?.habits.movimento.answered === progress?.habits.movimento.total
-                    ? 'Atualizar'
+                    ? t('anamnesis.update')
                     : progress?.habits.movimento.answered === 0
-                    ? 'Iniciar'
-                    : 'Continuar'
+                    ? t('anamnesis.start')
+                    : t('anamnesis.continue')
                 }
                 onPress={handleUpdateMovement}
                 size="medium"
@@ -220,17 +221,17 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
               <ProgressBar
                 current={progress?.habits.espiritualidade.answered || 0}
                 total={progress?.habits.espiritualidade.total || 0}
-                label="Espiritualidade"
+                label={t('anamnesis.spirituality')}
                 color={COLORS.PRIMARY.PURE}
               />
               <SecondaryButton
                 label={
                   progress?.habits.espiritualidade.answered ===
                   progress?.habits.espiritualidade.total
-                    ? 'Atualizar'
+                    ? t('anamnesis.update')
                     : progress?.habits.espiritualidade.answered === 0
-                    ? 'Iniciar'
-                    : 'Continuar'
+                    ? t('anamnesis.start')
+                    : t('anamnesis.continue')
                 }
                 onPress={handleStartSpirituality}
                 size="medium"
@@ -244,16 +245,16 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
               <ProgressBar
                 current={progress?.habits.sono.answered || 0}
                 total={progress?.habits.sono.total || 0}
-                label="Sono"
+                label={t('anamnesis.sleep')}
                 color="#9B51E0"
               />
               <SecondaryButton
                 label={
                   progress?.habits.sono.answered === progress?.habits.sono.total
-                    ? 'Atualizar'
+                    ? t('anamnesis.update')
                     : progress?.habits.sono.answered === 0
-                    ? 'Iniciar'
-                    : 'Continuar'
+                    ? t('anamnesis.start')
+                    : t('anamnesis.continue')
                 }
                 onPress={handleContinueSleep}
                 size="medium"
@@ -267,16 +268,16 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
               <ProgressBar
                 current={progress?.habits.nutricao.answered || 0}
                 total={progress?.habits.nutricao.total || 0}
-                label="Alimentação"
+                label={t('anamnesis.nutrition')}
                 color="#6FCF97"
               />
               <SecondaryButton
                 label={
                   progress?.habits.nutricao.answered === progress?.habits.nutricao.total
-                    ? 'Atualizar'
+                    ? t('anamnesis.update')
                     : progress?.habits.nutricao.answered === 0
-                    ? 'Iniciar'
-                    : 'Continuar'
+                    ? t('anamnesis.start')
+                    : t('anamnesis.continue')
                 }
                 onPress={handleContinueNutrition}
                 size="medium"
@@ -290,16 +291,16 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
               <ProgressBar
                 current={progress?.habits.estresse.answered || 0}
                 total={progress?.habits.estresse.total || 0}
-                label="Estresse"
+                label={t('anamnesis.stress')}
                 color="#F2994A"
               />
               <SecondaryButton
                 label={
                   progress?.habits.estresse.answered === progress?.habits.estresse.total
-                    ? 'Atualizar'
+                    ? t('anamnesis.update')
                     : progress?.habits.estresse.answered === 0
-                    ? 'Iniciar'
-                    : 'Continuar'
+                    ? t('anamnesis.start')
+                    : t('anamnesis.continue')
                 }
                 onPress={handleContinueStress}
                 size="medium"

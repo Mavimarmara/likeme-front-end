@@ -3,6 +3,7 @@ import { View, Text } from 'react-native';
 import TextInput from '@/components/ui/inputs/TextInput';
 import { Checkbox } from '@/components/ui/inputs';
 import { SecondaryButton } from '@/components/ui/buttons';
+import { useTranslation } from '@/hooks/i18n';
 import { AddressData } from './AddressForm';
 import { styles } from '../styles';
 
@@ -19,6 +20,7 @@ const AddressEdit: React.FC<AddressEditProps> = ({
   onSave,
   onSameBillingAddressChange,
 }) => {
+  const { t } = useTranslation();
   const [editData, setEditData] = useState<AddressData>(initialData);
 
   useEffect(() => {
@@ -32,46 +34,46 @@ const AddressEdit: React.FC<AddressEditProps> = ({
   return (
     <View style={styles.addressCard}>
       <View style={styles.addressCardHeader}>
-        <Text style={styles.addressCardTitle}>Endereço de entrega</Text>
+        <Text style={styles.addressCardTitle}>{t('checkout.deliveryAddress')}</Text>
       </View>
       <View style={styles.editAddressContainer}>
         <TextInput
-          label="Full name"
-          placeholder="Full name"
+          label={t('checkout.fullName')}
+          placeholder={t('checkout.fullNamePlaceholder')}
           value={editData.fullName}
           onChangeText={(text) => setEditData({ ...editData, fullName: text })}
         />
         <TextInput
-          label="Address line 1"
-          placeholder="Street name and number"
+          label={t('checkout.addressLine1')}
+          placeholder={t('checkout.addressLine1Placeholder')}
           value={editData.addressLine1}
           onChangeText={(text) => setEditData({ ...editData, addressLine1: text })}
         />
         <TextInput
-          label="Address line 2"
-          placeholder="Apartment, suite, etc. (optional)"
+          label={t('checkout.addressLine2')}
+          placeholder={t('checkout.addressLine2Placeholder')}
           value={editData.addressLine2}
           onChangeText={(text) => setEditData({ ...editData, addressLine2: text })}
         />
         <TextInput
-          label="Neighborhood"
-          placeholder="Neighborhood"
+          label={t('checkout.neighborhood')}
+          placeholder={t('checkout.neighborhoodPlaceholder')}
           value={editData.neighborhood}
           onChangeText={(text) => setEditData({ ...editData, neighborhood: text })}
         />
         <View style={styles.addressRow}>
           <View style={styles.addressFieldHalf}>
             <TextInput
-              label="City"
-              placeholder="City"
+              label={t('checkout.city')}
+              placeholder={t('checkout.cityPlaceholder')}
               value={editData.city}
               onChangeText={(text) => setEditData({ ...editData, city: text })}
             />
           </View>
           <View style={styles.addressFieldHalf}>
             <TextInput
-              label="State"
-              placeholder="State"
+              label={t('checkout.state')}
+              placeholder={t('checkout.statePlaceholder')}
               value={editData.state}
               onChangeText={(text) => setEditData({ ...editData, state: text })}
             />
@@ -80,8 +82,8 @@ const AddressEdit: React.FC<AddressEditProps> = ({
         <View style={styles.addressRow}>
           <View style={styles.addressFieldHalf}>
             <TextInput
-              label="ZIP code"
-              placeholder="00000-000"
+              label={t('checkout.zipCode')}
+              placeholder={t('cart.zipCodePlaceholder')}
               value={editData.zipCode}
               onChangeText={(text) => setEditData({ ...editData, zipCode: text })}
               keyboardType="numeric"
@@ -89,8 +91,8 @@ const AddressEdit: React.FC<AddressEditProps> = ({
           </View>
           <View style={styles.addressFieldHalf}>
             <TextInput
-              label="Phone"
-              placeholder="+55 11 97979-2016"
+              label={t('checkout.phone')}
+              placeholder={t('checkout.phonePlaceholder')}
               value={editData.phone}
               onChangeText={(text) => setEditData({ ...editData, phone: text })}
               keyboardType="phone-pad"
@@ -99,13 +101,13 @@ const AddressEdit: React.FC<AddressEditProps> = ({
         </View>
         {onSameBillingAddressChange && (
           <Checkbox
-            label="Endereço de cobrança será o mesmo de entrega"
+            label={t('checkout.sameBillingAddress')}
             checked={sameBillingAddress}
             onPress={() => onSameBillingAddressChange(!sameBillingAddress)}
           />
         )}
         <View style={styles.editAddressActions}>
-          <SecondaryButton label="Save" onPress={handleSave} />
+          <SecondaryButton label={t('common.save')} onPress={handleSave} />
         </View>
       </View>
     </View>

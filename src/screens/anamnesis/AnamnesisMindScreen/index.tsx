@@ -5,12 +5,14 @@ import { Header } from '@/components/ui';
 import { PrimaryButton } from '@/components/ui/buttons';
 import { NumberScale } from '@/components/ui/inputs';
 import { useAnamnesisQuestionnaire } from '@/hooks';
+import { useTranslation } from '@/hooks/i18n';
 import { buildMindAnswer, parseMindAnswer } from '@/hooks/anamnesis/anamnesisAnswerMappers';
 import { styles } from './styles';
 
 type Props = { navigation: any };
 
 const AnamnesisMindScreen: React.FC<Props> = ({ navigation }) => {
+  const { t } = useTranslation();
   const { questions, answers, loading, completing, error, unansweredCount, setAnswer, complete } =
     useAnamnesisQuestionnaire<number>({
       locale: 'pt-BR',
@@ -24,13 +26,13 @@ const AnamnesisMindScreen: React.FC<Props> = ({ navigation }) => {
       return;
     }
 
-    Alert.alert('Erro', error, [
+    Alert.alert(t('errors.error'), error, [
       {
-        text: 'OK',
+        text: t('common.ok'),
         onPress: () => navigation.goBack(),
       },
     ]);
-  }, [error, navigation]);
+  }, [error, navigation, t]);
 
   const handleFinish = async () => {
     const finalize = async () => {
@@ -38,17 +40,17 @@ const AnamnesisMindScreen: React.FC<Props> = ({ navigation }) => {
         await complete();
         navigation.navigate('AnamnesisCompletion');
       } catch {
-        Alert.alert('Erro', 'Não foi possível finalizar a anamnese. Tente novamente.');
+        Alert.alert(t('errors.error'), t('anamnesis.finalizationError'));
       }
     };
 
     if (unansweredCount > 0) {
       Alert.alert(
-        'Perguntas não respondidas',
-        `Você ainda não respondou ${unansweredCount} pergunta(s). Deseja finalizar mesmo assim?`,
+        t('anamnesis.unansweredQuestions'),
+        t('anamnesis.unansweredQuestionsMessage', { count: unansweredCount }),
         [
-          { text: 'Cancelar', style: 'cancel' },
-          { text: 'Finalizar', onPress: finalize },
+          { text: t('common.cancel'), style: 'cancel' },
+          { text: t('common.finalize'), onPress: finalize },
         ]
       );
       return;
@@ -63,7 +65,7 @@ const AnamnesisMindScreen: React.FC<Props> = ({ navigation }) => {
         <Header onBackPress={() => navigation.goBack()} />
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#007AFF" />
-          <Text style={styles.loadingText}>Carregando perguntas...</Text>
+          <Text style={styles.loadingText}>{t('anamnesis.loadingQuestions')}</Text>
         </View>
       </SafeAreaView>
     );
@@ -80,11 +82,10 @@ const AnamnesisMindScreen: React.FC<Props> = ({ navigation }) => {
       >
         <View style={styles.content}>
           <View style={styles.headerSection}>
-            <Text style={styles.title}>MENTE</Text>
-            <Text style={styles.subtitle}>Bem-estar emocional</Text>
+            <Text style={styles.title}>{t('anamnesis.mindTitle')}</Text>
+            <Text style={styles.subtitle}>{t('anamnesis.mindSubtitle')}</Text>
             <Text style={styles.introText}>
-              Pensando na última semana, com que intensidade você percebeu esses sentimentos no seu
-              dia a dia?
+              {t('anamnesis.mindIntro')}
             </Text>
           </View>
 
@@ -107,7 +108,7 @@ const AnamnesisMindScreen: React.FC<Props> = ({ navigation }) => {
 
           <View style={styles.footer}>
             <PrimaryButton
-              label={completing ? 'Finalizando...' : 'Finalizar'}
+              label={completing ? t('common.finalizing') : t('common.finalize')}
               onPress={handleFinish}
               style={styles.finishButton}
               disabled={completing}

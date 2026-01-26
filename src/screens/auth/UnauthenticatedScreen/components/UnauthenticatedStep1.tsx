@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Animated, Dimensions, Image } from 'react-native';
 import { PrimaryButton, SecondaryButton, ButtonGroup } from '@/components/ui';
+import { useTranslation } from '@/hooks/i18n';
 import { GradientSplash2, PartialLogo, PartialLogo2 } from '@/assets';
 import { styles } from './UnauthenticatedStep1.styles';
 
@@ -15,6 +16,7 @@ const UnauthenticatedStep1: React.FC<UnauthenticatedStep1Props> = ({
   onLogin,
   isLoading = false,
 }) => {
+  const { t } = useTranslation();
   const { width } = Dimensions.get('window');
   const slideLeft = useRef(new Animated.Value(0)).current;
   const slideRight = useRef(new Animated.Value(width * 0.5)).current;
@@ -54,8 +56,8 @@ const UnauthenticatedStep1: React.FC<UnauthenticatedStep1Props> = ({
 
       <Animated.View style={[styles.buttonContainer, { opacity: buttonsOpacity }]}>
         <ButtonGroup>
-          <PrimaryButton label="Next" onPress={onNext} disabled={isLoading} />
-          <SecondaryButton label="Login" onPress={onLogin} loading={isLoading} />
+          <PrimaryButton label={t('common.next')} onPress={onNext} disabled={isLoading} />
+          <SecondaryButton label={t('auth.login')} onPress={onLogin} loading={isLoading} />
         </ButtonGroup>
       </Animated.View>
 
@@ -69,7 +71,7 @@ const UnauthenticatedStep1: React.FC<UnauthenticatedStep1Props> = ({
       </View>
 
       <View style={styles.taglineContainer}>
-        <Text style={styles.taglineText}>LIKE YOUR LIFE</Text>
+        <Text style={styles.taglineText}>{t('auth.tagline')}</Text>
       </View>
     </View>
   );

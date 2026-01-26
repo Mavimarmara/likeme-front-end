@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { useTranslation } from '@/hooks/i18n';
 import { styles } from './styles';
 
 export interface Provider {
@@ -14,13 +15,14 @@ type Props = {
 };
 
 const PopularProvidersSection: React.FC<Props> = ({ providers, onProviderPress }) => {
+  const { t } = useTranslation();
   if (!providers || providers.length === 0) {
     return null;
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Most Popular Providers</Text>
+      <Text style={styles.title}>{t('home.popularProviders')}</Text>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}

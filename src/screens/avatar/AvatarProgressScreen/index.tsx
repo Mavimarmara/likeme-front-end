@@ -15,6 +15,7 @@ import { communityService, anamnesisService, userService } from '@/services';
 import type { UserMarker } from '@/types/anamnesis';
 import { getMarkerColor, getMarkerGradient, hasMarkerGradient, MARKER_NAMES } from '@/constants/markers';
 import { COLORS } from '@/constants';
+import { useTranslation } from '@/hooks/i18n';
 import type { Channel } from '@/types/community';
 import type { Event } from '@/types/event';
 import {
@@ -34,6 +35,7 @@ type Props = {
 };
 
 const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
+  const { t } = useTranslation();
   const rootNavigation = navigation.getParent() ?? navigation;
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month'>('week');
   const [events, setEvents] = useState<Event[]>([]);
@@ -323,8 +325,8 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
           markerId: marker.id,
           percentage: marker.percentage,
           title: `${markerName.toUpperCase()} : +${improvementPercentage}%`,
-          message: "You've improved a lot!",
-          description: `Nice job taking care of your ${markerName.toLowerCase()}!\nWhat about improving your state of mind?`,
+          message: t('avatar.youveImproved'),
+          description: `${t('avatar.niceJobBody')}\n${t('avatar.improveMind')}`,
         };
       });
     }
@@ -338,11 +340,11 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
         markerId: marker.id,
         percentage: marker.percentage,
         title: `${markerName.toUpperCase()} : +${improvementPercentage}%`,
-        message: "You've improved a lot!",
-        description: `Nice job taking care of your ${markerName.toLowerCase()}!\nWhat about improving your state of mind?`,
+        message: t('avatar.youveImproved'),
+        description: `${t('avatar.niceJobBody')}\n${t('avatar.improveMind')}`,
       };
     });
-  }, [markers]);
+  }, [markers, t]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -427,22 +429,22 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
               <IconButton
                 icon="share"
                 onPress={handleSharePress}
-                label="Share"
+                label={t('avatar.share')}
                 backgroundTintColor={COLORS.SECONDARY.PURE}
               />
             </View>
           </View>
 
           <CTACard
-            title="Insights"
+            title={t('avatar.insights')}
             highlightText="Did you know that you ran a full marathon last week?"
             description={[
-              "That's great for your body, and because of that your movement markers are off the chart!",
+              t('avatar.niceJobBody'),
               'This week what about doing some regenerative mobility training like yoga or pilates?',
             ]}
-            primaryButtonLabel="See marker"
+            primaryButtonLabel={t('avatar.seeMarker')}
             primaryButtonOnPress={() => handleSeeMarker(markers[0])}
-            secondaryButtonLabel="Share"
+            secondaryButtonLabel={t('avatar.share')}
             secondaryButtonOnPress={handleSharePress}
             secondaryButtonIcon="share"
             backgroundColor={COLORS.SECONDARY.PURE}
@@ -450,7 +452,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
 
           {biomarkerCards.length > 0 && (
             <View style={styles.biomarkersSection}>
-              <Text style={styles.biomarkersTitle}>Biomarkers</Text>
+              <Text style={styles.biomarkersTitle}>{t('avatar.biomarkers')}</Text>
               <Carousel
                 data={biomarkerCards}
                 renderItem={(card) => (

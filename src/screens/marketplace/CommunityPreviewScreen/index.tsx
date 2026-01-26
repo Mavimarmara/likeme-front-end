@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header, Background } from '@/components/ui/layout';
+import { useTranslation } from '@/hooks/i18n';
 import { PostCard } from '@/components/sections/community';
 import type { Post } from '@/types';
 import type { RootStackParamList } from '@/types/navigation';
@@ -22,6 +23,7 @@ type CommunityPreviewScreenProps = {
 };
 
 const CommunityPreviewScreen: React.FC<CommunityPreviewScreenProps> = ({ navigation, route }) => {
+  const { t } = useTranslation();
   const { productId, productName } = route.params;
 
   // Mock data - será substituído por dados reais do backend
@@ -68,7 +70,7 @@ const CommunityPreviewScreen: React.FC<CommunityPreviewScreenProps> = ({ navigat
       <Header showBackButton={true} onBackPress={handleBackPress} />
       <View style={styles.content}>
         <View style={styles.headerSection}>
-          <Text style={styles.screenTitle}>Community Preview</Text>
+          <Text style={styles.screenTitle}>{t('marketplace.communityPreview')}</Text>
           {productName && <Text style={styles.screenSubtitle}>{productName}</Text>}
         </View>
 
@@ -78,7 +80,7 @@ const CommunityPreviewScreen: React.FC<CommunityPreviewScreenProps> = ({ navigat
         >
           {posts.length === 0 ? (
             <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>No community posts found</Text>
+              <Text style={styles.emptyText}>{t('marketplace.noCommunityPostsFound')}</Text>
             </View>
           ) : (
             posts.map((post) => <PostCard key={post.id} post={post} />)

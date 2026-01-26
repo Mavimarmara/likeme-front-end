@@ -37,6 +37,7 @@ import {
 } from '@/utils';
 import { COLORS } from '@/constants';
 import { useActivities, useSuggestedProducts, useMenuItems } from '@/hooks';
+import { useTranslation } from '@/hooks/i18n';
 import { AnamnesisPromptCard } from '@/components/sections/anamnesis';
 import type { Order } from '@/types/order';
 import type { RootStackParamList } from '@/types/navigation';
@@ -54,6 +55,7 @@ type FilterType = 'all' | 'activities' | 'appointments' | 'orders';
 import type { ActivityItem } from '@/types/activity/hooks';
 
 const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
+  const { t } = useTranslation();
   const rootNavigation = navigation.getParent() ?? navigation;
   const [activeTab, setActiveTab] = useState<TabType>('actives');
   const [selectedFilter, setSelectedFilter] = useState<FilterType>('all');
@@ -215,7 +217,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
   // Função para calcular tempo restante e formatar mensagem
   const getReminderMessage = (activity: any): string => {
     if (!activity || !activity.startDate) {
-      return activity?.name || 'Event is coming up soon!';
+      return activity?.name || t('activities.eventReminderSoon');
     }
 
     try {
@@ -223,7 +225,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
 
       // Se não tiver startTime, apenas mostrar que é hoje
       if (!activity.startTime) {
-        return `${activity.name} is scheduled for today—don't miss it!`;
+        return t('activities.eventReminderToday', { name: activity.name });
       }
 
       // Parsear como data local para evitar problemas de timezone
@@ -247,29 +249,25 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
       const diffHours = Math.floor(diffMinutes / 60);
 
       if (diffHours > 0) {
-        return `${activity.name} kicks off in ${diffHours} hour${
-          diffHours > 1 ? 's' : ''
-        }—don't miss it!`;
+        return t('activities.eventReminder', { name: activity.name, hours: diffHours });
       } else if (diffMinutes > 0) {
-        return `${activity.name} starts in ${diffMinutes} minute${
-          diffMinutes > 1 ? 's' : ''
-        }—don't miss it!`;
+        return t('activities.eventReminderMinutes', { name: activity.name, minutes: diffMinutes });
       } else if (diffMinutes > -60) {
         // Se passou há menos de 1 hora, ainda mostrar
-        return `${activity.name} is happening now—don't miss it!`;
+        return t('activities.eventReminderNow', { name: activity.name });
       } else {
-        return `${activity.name} is scheduled for today—don't miss it!`;
+        return t('activities.eventReminderToday', { name: activity.name });
       }
     } catch (error) {
       console.error('Error calculating reminder message:', error);
-      return `${activity.name} is scheduled for today—don't miss it!`;
+      return t('activities.eventReminderToday', { name: activity.name });
     }
   };
 
   // Função para extrair data e hora
   const getReminderDateAndTime = (activity: any): { date: string; time: string } => {
     if (!activity || !activity.startDate) {
-      return { date: 'Today', time: '' };
+      return { date: t('activities.today'), time: '' };
     }
 
     try {
@@ -291,12 +289,12 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
       const isTodayDate = isToday(startDate);
 
       return {
-        date: isTodayDate ? 'Today' : formatDate(startDate),
+        date: isTodayDate ? t('activities.today') : formatDate(startDate),
         time: activity.startTime || '',
       };
     } catch (error) {
       console.error('Error parsing date and time:', error);
-      return { date: 'Today', time: '' };
+      return { date: t('activities.today'), time: '' };
     }
   };
 
@@ -358,7 +356,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
       await loadActivities(activeTab === 'history');
     } catch (error) {
       console.error('Error marking activity as done:', error);
-      Alert.alert('Error', 'Failed to mark activity as done');
+      Alert.alert(t('errors.error'), t('activities.markError'));
     }
   };
 
@@ -383,13 +381,13 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
   };
 
   const handleDeleteActivity = async (activityId: string) => {
-    Alert.alert('Delete Activity', 'Are you sure you want to delete this activity?', [
+    Alert.alert(t('activities.deleteConfirm'), t('activities.deleteConfirmMessage'), [
       {
-        text: 'Cancel',
+        text: t('common.cancel'),
         style: 'cancel',
       },
       {
-        text: 'Delete',
+        text: t('activities.delete'),
         style: 'destructive',
         onPress: async () => {
           try {
@@ -398,7 +396,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
             setMenuVisibleForId(null);
           } catch (error) {
             console.error('Error deleting activity:', error);
-            Alert.alert('Error', 'Failed to delete activity');
+            Alert.alert(t('errors.error'), t('activities.deleteError'));
           }
         },
       },
@@ -421,7 +419,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
       await loadActivities(activeTab === 'history');
     } catch (error) {
       console.error('Error skipping activity:', error);
-      Alert.alert('Error', 'Failed to skip activity');
+      Alert.alert(t('errors.error'), t('activities.skipError'));
     }
   };
 
@@ -430,7 +428,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
       // Abrir link do meet em um navegador ou app apropriado
       Linking.openURL(activity.meetUrl).catch((err: Error) => {
         console.error('Error opening meet URL:', err);
-        Alert.alert('Error', 'Failed to open meet link');
+        Alert.alert(t('errors.error'), t('activities.openMeetError'));
       });
     }
   };
@@ -442,10 +440,10 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
   const renderTabs = () => (
     <View style={styles.tabsContainer}>
       <Toggle
-        options={['Actives', 'History'] as const}
-        selected={activeTab === 'actives' ? 'Actives' : 'History'}
+        options={[t('activities.actives'), t('activities.history')] as any}
+        selected={activeTab === 'actives' ? t('activities.actives') : t('activities.history')}
         onSelect={(option) => {
-          const newTab = option === 'Actives' ? 'actives' : 'history';
+          const newTab = option === t('activities.actives') ? 'actives' : 'history';
           setActiveTab(newTab);
           // Resetar filtro para 'all' se estiver em 'orders' e mudar para 'actives'
           if (newTab === 'actives' && selectedFilter === 'orders') {
@@ -458,14 +456,14 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
 
   const filterCarouselOptions: ButtonCarouselOption<FilterType>[] = useMemo(() => {
     const baseOptions: ButtonCarouselOption<FilterType>[] = [
-      { id: 'all', label: 'All' },
-      { id: 'activities', label: 'Activities' },
-      { id: 'appointments', label: 'Appointments' },
+      { id: 'all', label: t('activities.all') },
+      { id: 'activities', label: t('activities.activities') },
+      { id: 'appointments', label: t('activities.appointments') },
     ];
 
     // Orders só aparece quando estiver na aba History
     if (activeTab === 'history') {
-      baseOptions.push({ id: 'orders', label: 'Orders' });
+      baseOptions.push({ id: 'orders', label: t('activities.orders') });
     }
 
     return baseOptions;
@@ -478,7 +476,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
   const renderFilters = () => (
     <View style={styles.filtersContainer}>
       <FilterMenu
-        filterButtonLabel="Day"
+        filterButtonLabel={t('activities.day')}
         onFilterButtonPress={handleDaySortToggle}
         filterButtonIcon={daySortOrder === 'asc' ? 'arrow-drop-up' : 'arrow-drop-down'}
         carouselOptions={filterCarouselOptions}
@@ -488,7 +486,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
       {activeTab === 'actives' && (
         <View style={styles.createButtonContainer}>
           <PrimaryButton
-            label="Create activities +"
+            label={t('activities.createActivities')}
             onPress={() => {
               setEditingActivityId(null);
               setEditingActivityData(null);
@@ -535,14 +533,13 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
     });
 
     const itemsCount = order.items?.length || 0;
-    const itemsText = itemsCount === 1 ? 'item' : 'items';
 
     const getStatusText = () => {
       if (order.paymentStatus === 'paid') {
-        return 'Paid ✓';
+        return t('activities.paid');
       }
       if (order.paymentStatus === 'pending') {
-        return 'Pending';
+        return t('activities.pending');
       }
       return order.status.charAt(0).toUpperCase() + order.status.slice(1);
     };
@@ -551,13 +548,13 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
       <View key={`order-${order.id}`} style={styles.activityCard}>
         <View style={styles.cardContent}>
           <View style={styles.cardHeader}>
-            <Badge label="Order" color="orange" />
+            <Badge label={t('activities.order')} color="orange" />
           </View>
 
           <View>
-            <Text style={styles.cardTitle}>Order #{order.id.slice(0, 8).toUpperCase()}</Text>
+            <Text style={styles.cardTitle}>{t('activities.order')} #{order.id.slice(0, 8).toUpperCase()}</Text>
             <Text style={styles.cardDescription}>
-              {itemsCount} {itemsText} • {formatPrice(order.total)}
+              {itemsCount} {itemsCount === 1 ? t('activities.item') : t('activities.items')} • {formatPrice(order.total)}
             </Text>
             {order.createdAt && (
               <View style={styles.dateTimeContainer}>
@@ -578,7 +575,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
                 onPress={() => console.log('View order:', order.id)}
                 activeOpacity={0.7}
               >
-                <Text style={styles.viewLink}>View</Text>
+                <Text style={styles.viewLink}>{t('common.view')}</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -589,9 +586,9 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
 
   const renderActivityCard = (activity: ActivityItem) => {
     const typeLabels = {
-      program: 'Programs',
-      appointment: 'Appointments',
-      personal: 'Personal',
+      program: t('activities.programs'),
+      appointment: t('activities.appointments'),
+      personal: t('activities.personal'),
     };
 
     // For appointments, show date/time in title row
@@ -619,7 +616,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
 
               {activity.providerName && (
                 <View style={styles.providerContainer}>
-                  <Text style={styles.providerText}>Therapy Session with</Text>
+                  <Text style={styles.providerText}>{t('activities.therapySession')}</Text>
                   <View style={styles.providerAvatar}>
                     <Text style={styles.providerAvatarText}>{activity.providerAvatar || 'A'}</Text>
                   </View>
@@ -635,7 +632,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
                   onPress={() => handleOpenMeet(activity)}
                   activeOpacity={0.7}
                 >
-                  <Text style={styles.openButtonText}>Open meet {'>'}</Text>
+                  <Text style={styles.openButtonText}>{t('activities.openMeet')}</Text>
                 </TouchableOpacity>
               )}
 
@@ -644,7 +641,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
                   onPress={() => handleSkipAppointment(activity.id)}
                   activeOpacity={0.7}
                 >
-                  <Text style={styles.viewLink}>Skip</Text>
+                  <Text style={styles.viewLink}>{t('activities.skip')}</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -689,13 +686,13 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
                 onPress={() => handleMarkAsDone(activity.id)}
                 activeOpacity={0.7}
               >
-                <Text style={styles.markButtonText}>Mark as done</Text>
+                <Text style={styles.markButtonText}>{t('activities.markAsDone')}</Text>
               </TouchableOpacity>
             )}
 
             {activeTab === 'actives' && (
               <TouchableOpacity onPress={() => handleViewActivity(activity)} activeOpacity={0.7}>
-                <Text style={styles.viewLink}>View</Text>
+                <Text style={styles.viewLink}>{t('common.view')}</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -738,7 +735,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
         {renderEventReminder()}
 
         {activeTab === 'actives' && (
-          <Text style={styles.sectionLabel}>Mark as done for completed activities</Text>
+          <Text style={styles.sectionLabel}>{t('activities.markAsDoneLabel')}</Text>
         )}
 
         <ScrollView
@@ -761,22 +758,22 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
                 sortedOrders.length === 0 &&
                 !isLoadingOrders && (
                   <View style={styles.emptyContainer}>
-                    <Text style={styles.emptyText}>No history found</Text>
+                    <Text style={styles.emptyText}>{t('activities.noHistoryFound')}</Text>
                   </View>
                 )}
               {selectedFilter === 'activities' && filteredActivities.length === 0 && (
                 <View style={styles.emptyContainer}>
-                  <Text style={styles.emptyText}>No activities found</Text>
+                  <Text style={styles.emptyText}>{t('activities.noActivitiesFound')}</Text>
                 </View>
               )}
               {selectedFilter === 'appointments' && filteredActivities.length === 0 && (
                 <View style={styles.emptyContainer}>
-                  <Text style={styles.emptyText}>No appointments found</Text>
+                  <Text style={styles.emptyText}>{t('activities.noAppointmentsFound')}</Text>
                 </View>
               )}
               {selectedFilter === 'orders' && sortedOrders.length === 0 && !isLoadingOrders && (
                 <View style={styles.emptyContainer}>
-                  <Text style={styles.emptyText}>No orders found</Text>
+                  <Text style={styles.emptyText}>{t('activities.noOrdersFound')}</Text>
                 </View>
               )}
             </>
@@ -784,7 +781,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
             <>
               {filteredActivities.length === 0 ? (
                 <View style={styles.emptyContainer}>
-                  <Text style={styles.emptyText}>No activities found</Text>
+                  <Text style={styles.emptyText}>{t('activities.noActivitiesFound')}</Text>
                 </View>
               ) : (
                 filteredActivities.map(renderActivityCard)
@@ -797,8 +794,8 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
               {activeTab === 'actives' && plans.length > 0 && (
                 <View>
                   <PlansCarousel
-                    title="Plans for you based on the evolution of your markers"
-                    subtitle="Discover our options selected just for you"
+                    title={t('activities.plansForYou')}
+                    subtitle={t('activities.discoverOptions')}
                     plans={plans}
                     onPlanPress={(plan) => console.log('Plan pressed:', plan.id)}
                     onPlanLike={(plan) => console.log('Plan liked:', plan.id)}
@@ -808,8 +805,8 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
               {activeTab === 'actives' && suggestedProducts.length > 0 && (
                 <View>
                   <ProductsCarousel
-                    title="Products recommended for your sleep journey by Dr. Peter Valasquez"
-                    subtitle="Discover our options selected just for you"
+                    title={t('activities.productsRecommended')}
+                    subtitle={t('activities.discoverOptions')}
                     products={suggestedProducts}
                     onProductPress={(product) => {
                       rootNavigation.navigate('ProductDetails', {
@@ -877,9 +874,9 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
           } catch (error: any) {
             console.error('Error saving activity:', error);
             Alert.alert(
-              'Erro',
-              error?.message || 'Não foi possível salvar a atividade. Por favor, tente novamente.',
-              [{ text: 'OK' }]
+              t('errors.error'),
+              error?.message || t('activities.saveError'),
+              [{ text: t('common.ok') }]
             );
           }
         }}
@@ -913,7 +910,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
                     }}
                   >
                     <Icon name="edit" size={20} color={COLORS.TEXT} />
-                    <Text style={styles.menuItemText}>Edit</Text>
+                    <Text style={styles.menuItemText}>{t('activities.edit')}</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.menuItem}
@@ -924,7 +921,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
                     }}
                   >
                     <Icon name="delete" size={20} color="#F44336" />
-                    <Text style={[styles.menuItemText, styles.menuItemTextDanger]}>Delete</Text>
+                    <Text style={[styles.menuItemText, styles.menuItemTextDanger]}>{t('activities.delete')}</Text>
                   </TouchableOpacity>
                 </>
               )}

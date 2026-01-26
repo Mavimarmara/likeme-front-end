@@ -3,6 +3,7 @@ import { View, Text, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '@/components/ui';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
+import { useTranslation } from '@/hooks/i18n';
 import { BackgroundWithGradient2, BackgroundWithGradient3 } from '@/assets';
 import { SPACING, COLORS, FONT_SIZES } from '@/constants';
 import { styles } from './styles';
@@ -13,6 +14,7 @@ type Props = { navigation: any };
 const IMAGE_DECORATIVE = 'https://www.figma.com/api/mcp/asset/a21f05fe-cd0c-48af-8604-1984f766c8c9';
 
 const AnamnesisStartScreen: React.FC<Props> = ({ navigation }) => {
+  const { t } = useTranslation();
   const handleStartAnamnesis = () => {
     navigation.navigate('AnamnesisHome' as never);
   };
@@ -46,23 +48,22 @@ const AnamnesisStartScreen: React.FC<Props> = ({ navigation }) => {
         {/* Conteúdo principal */}
         <View style={styles.mainContent}>
           <View style={styles.textContainer}>
-            <Text style={styles.title}>Sua jornada rumo ao autoconhecimento começa aqui!</Text>
+            <Text style={styles.title}>{t('anamnesis.startTitle')}</Text>
             <Text style={styles.description}>
-              Faça uma pausa de alguns minutos e deixe que o Like Me o guie em direção ao seu
-              próprio equilíbrio.
+              {t('anamnesis.startDescription')}
             </Text>
           </View>
 
           {/* Botões */}
           <View style={styles.buttonsContainer}>
             <PrimaryButton
-              label="Começar sua anaminese"
+              label={t('anamnesis.startButton')}
               onPress={handleStartAnamnesis}
               size="large"
               style={styles.primaryButton}
             />
             <SecondaryButton
-              label="Pular"
+              label={t('common.skip')}
               onPress={handleSkip}
               size="large"
               style={styles.secondaryButton}

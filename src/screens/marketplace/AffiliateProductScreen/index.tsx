@@ -14,6 +14,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header } from '@/components/ui/layout';
+import { useTranslation } from '@/hooks/i18n';
 import { adService, productService } from '@/services';
 import type { Ad } from '@/types/ad';
 import type { Product as ApiProduct } from '@/types/product';
@@ -44,6 +45,7 @@ type AffiliateProductScreenProps = {
 type TabType = 'goal' | 'description' | 'composition';
 
 const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigation, route }) => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabType>('goal');
   const [product, setProduct] = useState<ApiProduct | null>(null);
   const [ad, setAd] = useState<Ad | null>(null);
@@ -375,11 +377,14 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
   const productCategory =
     ad?.product?.category || product?.category || paramsProduct?.category || 'Product';
 
-  const tabs = [
-    { id: 'goal' as TabType, label: 'Goal' },
-    { id: 'description' as TabType, label: 'Description' },
-    { id: 'composition' as TabType, label: 'Composition' },
-  ];
+  const tabs = useMemo(
+    () => [
+      { id: 'goal' as TabType, label: t('marketplace.goal') },
+      { id: 'description' as TabType, label: t('marketplace.description') },
+      { id: 'composition' as TabType, label: t('marketplace.composition') },
+    ],
+    [t]
+  );
 
   const renderTabs = () => (
     <View style={styles.tabsContainer}>
@@ -406,7 +411,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
 
     const renderDescriptionWithBullets = () => {
       if (descriptionLines.length === 0) {
-        return <Text style={styles.descriptionText}>No description available.</Text>;
+        return <Text style={styles.descriptionText}>{t('marketplace.noDescriptionAvailable')}</Text>;
       }
 
       return (
@@ -432,7 +437,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Loading product...</Text>
+          <Text style={styles.loadingText}>{t('marketplace.loadingProduct')}</Text>
         </View>
       </SafeAreaView>
     );
@@ -493,7 +498,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
           {/* Other Options */}
           {/*otherOptions.length > 0 && (
             <View style={styles.otherOptionsSection}>
-              <Text style={styles.sectionTitle}>Other options</Text>
+              <Text style={styles.sectionTitle}>{t('marketplace.otherOptions')}</Text>
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
@@ -521,12 +526,12 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
               onPress={handleBuyOnAmazon}
               activeOpacity={0.7}
             >
-              <Text style={styles.buyButtonText}>Buy on Amazon</Text>
+              <Text style={styles.buyButtonText}>{t('marketplace.buyOnAmazon')}</Text>
               <Icon name="shopping-cart" size={24} color="#001137" />
             </TouchableOpacity>
             <Text style={styles.disclaimerText}>
-              The purchase of the selected product will be completed on Amazon.{' '}
-              <Text style={styles.learnMoreLink}>Learn More</Text>
+              {t('marketplace.amazonDisclaimer')}{' '}
+              <Text style={styles.learnMoreLink}>{t('marketplace.learnMore')}</Text>
             </Text>
           </View>
         </View>

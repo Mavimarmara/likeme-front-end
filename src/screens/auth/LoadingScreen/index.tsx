@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { PartialLogo, GradientSplash7, GradientSplash8, GradientSplash9 } from '@/assets';
 import { styles, GRADIENT_STRIP_HEIGHT, GRADIENT_STRIP_WIDTH } from './styles';
 import { storageService } from '@/services';
+import { useTranslation } from '@/hooks/i18n';
 import { getApiUrl } from '@/config';
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 const GRADIENT_SOURCES = [GradientSplash7, GradientSplash8, GradientSplash9];
@@ -13,12 +14,13 @@ const { height } = Dimensions.get('window');
 type Props = { navigation: any };
 
 const LoadingScreen: React.FC<Props> = ({ navigation }) => {
+  const { t } = useTranslation();
   const scrollAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const taglineOpacity = useRef(new Animated.Value(1)).current;
   const [step, setStep] = useState(0);
 
-  const TAGLINES = ['YOUR RHYTHM', 'YOUR JOURNEY', 'YOUR ROUTINE'];
+  const TAGLINES = [t('auth.taglineRhythm'), t('auth.taglineJourney'), t('auth.taglineRoutine')];
 
   const gradientAssets = useMemo(
     () => GRADIENT_SOURCES.map((source) => Image.resolveAssetSource(source)),

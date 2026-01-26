@@ -2,19 +2,21 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Title, PrimaryButton } from '@/components/ui';
+import { useTranslation } from '@/hooks/i18n';
 import { styles } from './styles';
 
 type Props = { navigation: any; route: any };
 
 const ErrorScreen: React.FC<Props> = ({ navigation, route }) => {
+  const { t } = useTranslation();
   // Garante que errorMessage seja sempre uma string válida
   const rawErrorMessage = route.params?.errorMessage;
-  let errorMessage = 'Algo deu errado';
+  let errorMessage = t('errors.somethingWrong');
   if (rawErrorMessage) {
     if (typeof rawErrorMessage === 'string') {
       errorMessage = rawErrorMessage;
     } else if (rawErrorMessage instanceof Error) {
-      errorMessage = rawErrorMessage.message || 'Erro desconhecido';
+      errorMessage = rawErrorMessage.message || t('errors.unknownError');
     } else {
       errorMessage = String(rawErrorMessage);
     }
@@ -40,11 +42,11 @@ const ErrorScreen: React.FC<Props> = ({ navigation, route }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        <Title title="Oops..." subtitle={errorMessage} variant="large" />
+        <Title title={t('errors.oops')} subtitle={errorMessage} variant="large" />
 
         <View style={styles.actions}>
-          {onRetry && <PrimaryButton label="Tentar novamente" onPress={handleRetry} />}
-          <PrimaryButton label="Voltar" onPress={handleGoBack} />
+          {onRetry && <PrimaryButton label={t('common.retry')} onPress={handleRetry} />}
+          <PrimaryButton label={t('common.back')} onPress={handleGoBack} />
         </View>
       </View>
     </SafeAreaView>

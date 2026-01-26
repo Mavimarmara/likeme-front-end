@@ -1,6 +1,7 @@
 import React from 'react';
 import { CTACard } from '@/components/ui/cards';
 import { COLORS } from '@/constants';
+import { useTranslation } from '@/hooks/i18n';
 import { styles } from './styles';
 
 interface AnamnesisPromptCardProps {
@@ -8,11 +9,13 @@ interface AnamnesisPromptCardProps {
 }
 
 const AnamnesisPromptCard: React.FC<AnamnesisPromptCardProps> = ({ onStartPress }) => {
+	const { t } = useTranslation();
+	
 	return (
 		<CTACard
-			title="Bring your avatar to life"
-			description="By completing your anamnesis, your well-being avatar is born from your data and rhythms. Because feeling good should feel like you!"
-			primaryButtonLabel="Start Anamnesis"
+			title={t('anamnesis.promptCardTitle')}
+			description={t('anamnesis.promptCardDescription')}
+			primaryButtonLabel={t('anamnesis.startAnamnesis')}
 			primaryButtonOnPress={onStartPress}
 			primaryButtonIcon="chevron-right"
 			primaryButtonIconPosition="right"

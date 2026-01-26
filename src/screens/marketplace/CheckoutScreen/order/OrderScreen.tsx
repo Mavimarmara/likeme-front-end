@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useTranslation } from '@/hooks/i18n';
 import { formatPrice } from '@/utils';
 import { styles } from '../styles';
 import type { AddressData } from '../address';
@@ -40,6 +41,7 @@ const OrderScreen: React.FC<OrderScreenProps> = ({
   onAddToCalendar,
   onHomePress,
 }) => {
+  const { t } = useTranslation();
   const total = subtotal + shipping;
 
   const formatRating = (rating: number | undefined | null): string => {
@@ -70,7 +72,7 @@ const OrderScreen: React.FC<OrderScreenProps> = ({
           onPress={() => onViewProgram?.(item.id)}
           activeOpacity={0.7}
         >
-          <Text style={styles.orderItemActionButtonText}>View program</Text>
+          <Text style={styles.orderItemActionButtonText}>{t('checkout.viewProgram')}</Text>
         </TouchableOpacity>
       );
     }
@@ -82,7 +84,7 @@ const OrderScreen: React.FC<OrderScreenProps> = ({
           onPress={() => onAddToCalendar?.(item.id)}
           activeOpacity={0.7}
         >
-          <Text style={styles.orderItemActionButtonText}>Add to calendar</Text>
+          <Text style={styles.orderItemActionButtonText}>{t('checkout.addToCalendar')}</Text>
         </TouchableOpacity>
       );
     }
@@ -116,12 +118,12 @@ const OrderScreen: React.FC<OrderScreenProps> = ({
         </Text>
 
         {item.date && (
-          <Text style={styles.orderItemDate}>Date: {formatDateDisplay(item.date)}</Text>
+          <Text style={styles.orderItemDate}>{t('cart.date')}: {formatDateDisplay(item.date)}</Text>
         )}
 
         {item.deliveryForecast && (
           <Text style={styles.orderItemDeliveryForecast}>
-            Delivery forecast{'\n'}
+            {t('checkout.deliveryForecast')}{'\n'}
             {formatDateDisplay(item.deliveryForecast, true)}
           </Text>
         )}
@@ -146,19 +148,19 @@ const OrderScreen: React.FC<OrderScreenProps> = ({
     >
       {/* Order Summary Section */}
       <View style={styles.orderSummarySection}>
-        <Text style={styles.orderSummaryTitle}>Order sumary</Text>
+        <Text style={styles.orderSummaryTitle}>{t('checkout.orderSummary')}</Text>
         <Text style={styles.orderId}>#{orderId}</Text>
         <View style={styles.orderSummaryDetails}>
           <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Subtotal</Text>
+            <Text style={styles.summaryLabel}>{t('cart.subtotal')}</Text>
             <Text style={styles.summaryValue}>{formatPrice(subtotal)}</Text>
           </View>
           <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Shipping</Text>
+            <Text style={styles.summaryLabel}>{t('cart.shipping')}</Text>
             <Text style={styles.summaryValue}>{formatPrice(shipping)}</Text>
           </View>
           <View style={styles.summaryRow}>
-            <Text style={[styles.summaryLabel, styles.summaryTotalLabel]}>Total</Text>
+            <Text style={[styles.summaryLabel, styles.summaryTotalLabel]}>{t('cart.total')}</Text>
             <Text style={[styles.summaryValue, styles.summaryTotalValue]}>
               {formatPrice(total)}
             </Text>
@@ -168,7 +170,7 @@ const OrderScreen: React.FC<OrderScreenProps> = ({
 
       {/* Delivery Address Section */}
       <View style={styles.deliveryAddressCard}>
-        <Text style={styles.deliveryAddressTitle}>Endereço de entrega</Text>
+        <Text style={styles.deliveryAddressTitle}>{t('checkout.deliveryAddress')}</Text>
         <View style={styles.deliveryAddressContent}>
           <Text style={styles.deliveryAddressText}>{addressData.fullName}</Text>
           <Text style={styles.deliveryAddressText}>
@@ -184,7 +186,7 @@ const OrderScreen: React.FC<OrderScreenProps> = ({
       </View>
 
       {/* Your Products Section */}
-      <Text style={styles.yourProductsTitle}>Your products</Text>
+      <Text style={styles.yourProductsTitle}>{t('cart.yourProducts')}</Text>
       <View style={styles.orderItemsList}>{cartItems.map((item) => renderOrderItem(item))}</View>
     </ScrollView>
   );

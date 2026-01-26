@@ -50,6 +50,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   onCouponCodeChange,
   onApplyCoupon,
 }) => {
+  const { t } = useTranslation();
   const handleCardNumberChange = useFormattedInput({
     type: 'cardNumber',
     onChangeText: onCardNumberChange,
@@ -64,7 +65,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
     <>
       {/* Payment Method Selection */}
       <View style={styles.paymentMethodSection}>
-        <Text style={styles.sectionTitle}>Payment method</Text>
+        <Text style={styles.sectionTitle}>{t('checkout.paymentMethod')}</Text>
         <View style={styles.paymentMethodOptions}>
           <TouchableOpacity
             style={styles.paymentMethodOption}
@@ -79,7 +80,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
             >
               {paymentMethod === 'credit_card' && <View style={styles.radioButtonInner} />}
             </View>
-            <Text style={styles.paymentMethodLabel}>Credit card</Text>
+            <Text style={styles.paymentMethodLabel}>{t('checkout.creditCard')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.paymentMethodOption}
@@ -91,7 +92,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
             >
               {paymentMethod === 'pix' && <View style={styles.radioButtonInner} />}
             </View>
-            <Text style={styles.paymentMethodLabel}>Pix</Text>
+            <Text style={styles.paymentMethodLabel}>{t('checkout.pix')}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -100,14 +101,14 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
       {paymentMethod === 'credit_card' && (
         <View style={styles.cardForm}>
           <TextInput
-            label="Cardholder's name"
-            placeholder="Complete name"
+            label={t('checkout.cardholderName')}
+            placeholder={t('checkout.cardholderNamePlaceholder')}
             value={cardholderName}
             onChangeText={onCardholderNameChange}
           />
           <TextInput
-            label="Card number"
-            placeholder="1234 5678 9101 1121"
+            label={t('checkout.cardNumber')}
+            placeholder={t('checkout.cardNumberPlaceholder')}
             value={cardNumber}
             onChangeText={handleCardNumberChange}
             keyboardType="numeric"
@@ -115,8 +116,8 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
           <View style={styles.cardRow}>
             <View style={styles.cardFieldHalf}>
               <TextInput
-                label="Expiration date"
-                placeholder="mm/yy"
+                label={t('checkout.expiryDate')}
+                placeholder={t('checkout.expiryDatePlaceholder')}
                 value={expiryDate}
                 onChangeText={handleExpiryDateChange}
                 keyboardType="numeric"
@@ -124,8 +125,8 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
             </View>
             <View style={styles.cardFieldHalf}>
               <TextInput
-                label="CVV"
-                placeholder="123"
+                label={t('checkout.cvv')}
+                placeholder={t('checkout.cvvPlaceholder')}
                 value={cvv}
                 onChangeText={onCvvChange}
                 keyboardType="numeric"
@@ -134,15 +135,15 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
             </View>
           </View>
           <TextInput
-            label="CPF"
-            placeholder="000.000.000-00"
+            label={t('checkout.cpf')}
+            placeholder={t('checkout.cpfPlaceholder')}
             value={cpf}
             onChangeText={onCpfChange}
             keyboardType="numeric"
           />
           <TextInput
-            label="Telefone"
-            placeholder="(11) 99999-9999"
+            label={t('checkout.phone')}
+            placeholder={t('checkout.phonePlaceholder')}
             value={phone}
             onChangeText={onPhoneChange}
             keyboardType="numeric"
@@ -155,24 +156,24 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
             <View style={[styles.checkbox, saveCardDetails && styles.checkboxChecked]}>
               {saveCardDetails && <Icon name="check" size={14} color="#0154f8" />}
             </View>
-            <Text style={styles.checkboxLabel}>Save card datails</Text>
+            <Text style={styles.checkboxLabel}>{t('checkout.saveCardDetails')}</Text>
           </TouchableOpacity>
         </View>
       )}
 
       {/* Discount Coupon */}
       <View style={styles.couponSection}>
-        <Text style={styles.sectionTitle}>Discount coupon</Text>
+        <Text style={styles.sectionTitle}>{t('checkout.discountCoupon')}</Text>
         <View style={styles.couponRow}>
           <TextInput
-            placeholder="PRIMEIRACOMPRA"
+            placeholder={t('checkout.couponPlaceholder')}
             value={couponCode}
             onChangeText={onCouponCodeChange}
             containerStyle={styles.couponInput}
             style={styles.couponInputField}
           />
           <TouchableOpacity style={styles.applyButton} onPress={onApplyCoupon} activeOpacity={0.7}>
-            <Text style={styles.applyButtonText}>Apply</Text>
+            <Text style={styles.applyButtonText}>{t('common.apply')}</Text>
           </TouchableOpacity>
         </View>
       </View>

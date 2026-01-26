@@ -15,6 +15,7 @@ import {
   getAvatarDimensions,
   type AvatarSize,
 } from '@/utils/anamnesis/avatarSizeMapper';
+import { useTranslation } from '@/hooks/i18n';
 import { styles } from './styles';
 
 interface AvatarSectionProps {
@@ -34,6 +35,7 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
   onSeeMorePress,
   onWeekChange,
 }) => {
+  const { t } = useTranslation();
   const hasAnyAnswers = useMemo(
     () => hasAnswers || mindPercentage > 0 || bodyPercentage > 0,
     [hasAnswers, mindPercentage, bodyPercentage]
@@ -57,18 +59,18 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <Text style={styles.title}>Your Avatar</Text>
+        <Text style={styles.title}>{t('avatar.yourAvatar')}</Text>
       </View>
       <View style={[styles.avatarsContainer, hasAnyAnswers && styles.avatarsContainerActive]}>
         {hasAnyAnswers && (
           <TouchableOpacity style={styles.weekDropdown} activeOpacity={0.7}>
-            <Text style={styles.weekText}>Week</Text>
+            <Text style={styles.weekText}>{t('avatar.week')}</Text>
             <Icon name="keyboard-arrow-down" size={20} color={COLORS.SECONDARY.LIGHT} />
           </TouchableOpacity>
         )}
         <View style={styles.avatarsContent}>
           <View style={styles.avatarItem}>
-            <Text style={styles.avatarLabel}>MIND</Text>
+            <Text style={styles.avatarLabel}>{t('avatar.mind')}</Text>
             <Image
               source={mindAvatarSource}
               style={[
@@ -87,7 +89,7 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
               ]}
               resizeMode="cover"
             />
-            <Text style={styles.avatarLabel}>BODY</Text>
+            <Text style={styles.avatarLabel}>{t('avatar.body')}</Text>
           </View>
         </View>
         {hasAnyAnswers && (
@@ -97,7 +99,7 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
               iconSize={24}
               iconColor={COLORS.TEXT}
               onPress={onSharePress || (() => {})}
-              label="Share"
+              label={t('avatar.share')}
               showBackground={false}
             />
             <IconButton
@@ -105,7 +107,7 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
               iconSize={24}
               iconColor={COLORS.SECONDARY.LIGHT}
               onPress={onSeeMorePress || (() => {})}
-              label="See more"
+              label={t('avatar.seeMore')}
               backgroundTintColor={COLORS.TEXT}
             />
           </View>

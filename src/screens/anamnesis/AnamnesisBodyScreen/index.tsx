@@ -5,6 +5,7 @@ import { Header } from '@/components/ui';
 import { PrimaryButton } from '@/components/ui/buttons';
 import { SymptomSlider } from '@/components/ui/inputs';
 import { useAnamnesisQuestionnaire } from '@/hooks';
+import { useTranslation } from '@/hooks/i18n';
 import type { BodySymptomLevel } from '@/hooks/anamnesis/anamnesisAnswerMappers';
 import { buildBodyAnswer, parseBodyAnswer } from '@/hooks/anamnesis/anamnesisAnswerMappers';
 import { styles } from './styles';
@@ -12,6 +13,7 @@ import { styles } from './styles';
 type Props = { navigation: any };
 
 const AnamnesisBodyScreen: React.FC<Props> = ({ navigation }) => {
+  const { t } = useTranslation();
   const { questions, answers, loading, completing, error, unansweredCount, setAnswer, complete } =
     useAnamnesisQuestionnaire<BodySymptomLevel>({
       locale: 'pt-BR',
@@ -25,9 +27,9 @@ const AnamnesisBodyScreen: React.FC<Props> = ({ navigation }) => {
       return;
     }
 
-    Alert.alert('Erro', error, [
+    Alert.alert(t('errors.error'), error, [
       {
-        text: 'OK',
+        text: t('common.ok'),
         onPress: () => navigation.goBack(),
       },
     ]);
@@ -39,17 +41,17 @@ const AnamnesisBodyScreen: React.FC<Props> = ({ navigation }) => {
         await complete();
         navigation.navigate('AnamnesisCompletion');
       } catch {
-        Alert.alert('Erro', 'Não foi possível finalizar a anamnese. Tente novamente.');
+        Alert.alert(t('errors.error'), t('anamnesis.finalizationError'));
       }
     };
 
     if (unansweredCount > 0) {
       Alert.alert(
-        'Perguntas não respondidas',
-        `Você ainda não respondeu ${unansweredCount} pergunta(s). Deseja finalizar mesmo assim?`,
+        t('anamnesis.unansweredQuestions'),
+        t('anamnesis.unansweredQuestionsMessage', { count: unansweredCount }),
         [
-          { text: 'Cancelar', style: 'cancel' },
-          { text: 'Finalizar', onPress: finalize },
+          { text: t('common.cancel'), style: 'cancel' },
+          { text: t('common.finalize'), onPress: finalize },
         ]
       );
       return;
@@ -64,7 +66,7 @@ const AnamnesisBodyScreen: React.FC<Props> = ({ navigation }) => {
         <Header onBackPress={() => navigation.goBack()} />
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#007AFF" />
-          <Text style={styles.loadingText}>Carregando perguntas...</Text>
+          <Text style={styles.loadingText}>{t('anamnesis.loadingQuestions')}</Text>
         </View>
       </SafeAreaView>
     );
@@ -81,10 +83,10 @@ const AnamnesisBodyScreen: React.FC<Props> = ({ navigation }) => {
       >
         <View style={styles.content}>
           <View style={styles.headerSection}>
-            <Text style={styles.title}>CORPO</Text>
-            <Text style={styles.subtitle}>Bem-estar físico</Text>
+            <Text style={styles.title}>{t('anamnesis.bodyTitle')}</Text>
+            <Text style={styles.subtitle}>{t('anamnesis.bodySubtitle')}</Text>
             <Text style={styles.introText}>
-              pensando na última semana, como você percebeu o seu corpo nas seguintes áreas:
+              {t('anamnesis.bodyIntro')}
             </Text>
           </View>
 
@@ -110,7 +112,7 @@ const AnamnesisBodyScreen: React.FC<Props> = ({ navigation }) => {
 
           <View style={styles.footer}>
             <PrimaryButton
-              label={completing ? 'Finalizando...' : 'Finalizar'}
+              label={completing ? t('common.finalizing') : t('common.finalize')}
               onPress={handleFinish}
               style={styles.finishButton}
               disabled={completing}

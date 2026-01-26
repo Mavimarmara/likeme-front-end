@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useTranslation } from '@/hooks/i18n';
 import { styles } from './styles';
 import type { Post } from '@/types';
 
@@ -24,12 +25,13 @@ const YourCommunitiesSection: React.FC<Props> = ({ community, onCommunityPress, 
     return null;
   }
 
+  const { t } = useTranslation();
   const getPostTitle = (post: Post): string => {
     if (post.title) return post.title;
     if (post.content) {
       return post.content.length > 50 ? post.content.substring(0, 50) + '...' : post.content;
     }
-    return 'Post sem título';
+    return t('community.postWithoutTitle');
   };
 
   const getPostContent = (post: Post): string => {
@@ -41,7 +43,7 @@ const YourCommunitiesSection: React.FC<Props> = ({ community, onCommunityPress, 
 
   return (
     <View style={styles.container}>
-      <Text style={styles.sectionTitle}>Your communities</Text>
+      <Text style={styles.sectionTitle}>{t('home.yourCommunities')}</Text>
 
       <TouchableOpacity
         style={styles.communityCard}
@@ -61,7 +63,7 @@ const YourCommunitiesSection: React.FC<Props> = ({ community, onCommunityPress, 
 
           {community.newPostsCount > 0 && (
             <View style={styles.newPostBadge}>
-              <Text style={styles.newPostText}>{community.newPostsCount} New Post</Text>
+              <Text style={styles.newPostText}>{t('community.newPost', { count: community.newPostsCount })}</Text>
             </View>
           )}
         </View>
@@ -70,7 +72,7 @@ const YourCommunitiesSection: React.FC<Props> = ({ community, onCommunityPress, 
           <Text style={styles.communityTitle}>{community.title}</Text>
           <Text style={styles.communityDescription}>{community.description}</Text>
 
-          <Text style={styles.postsSectionTitle}>Newest posts</Text>
+          <Text style={styles.postsSectionTitle}>{t('community.newestPosts')}</Text>
 
           <ScrollView
             style={styles.postsScrollView}

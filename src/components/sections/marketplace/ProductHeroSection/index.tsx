@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { formatPrice } from '@/utils';
+import { useTranslation } from '@/hooks/i18n';
 import { styles } from './styles';
 
 interface ProductHeroSectionProps {
@@ -21,6 +22,7 @@ export const ProductHeroSection: React.FC<ProductHeroSectionProps> = ({
   isOutOfStock,
   onAddToCart,
 }) => {
+  const { t } = useTranslation();
   return (
     <View style={styles.heroSection}>
       <Image
@@ -52,7 +54,7 @@ export const ProductHeroSection: React.FC<ProductHeroSectionProps> = ({
         </View>
         {isOutOfStock && (
           <View style={styles.outOfStockBadge}>
-            <Text style={styles.outOfStockText}>Out of Stock</Text>
+            <Text style={styles.outOfStockText}>{t('marketplace.outOfStock')}</Text>
           </View>
         )}
       </View>

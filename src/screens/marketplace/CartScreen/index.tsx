@@ -22,6 +22,7 @@ import productService from '@/services/product/productService';
 import { formatPrice } from '@/utils';
 import { Alert } from 'react-native';
 import { SecondaryButton } from '@/components/ui/buttons';
+import { useTranslation } from '@/hooks/i18n';
 import { styles } from './styles';
 
 interface CartItem {
@@ -43,6 +44,7 @@ type CartScreenProps = {
 };
 
 const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
+  const { t } = useTranslation();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [zipCode, setZipCode] = useState('00000-000');
   const [shipping, setShipping] = useState(0.0);
@@ -116,10 +118,8 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
 
         if (removedItems.length > 0) {
           Alert.alert(
-            'Carrinho atualizado',
-            `Os seguintes produtos foram removidos do carrinho por não estarem mais disponíveis:\n\n${removedItems.join(
-              '\n'
-            )}`
+            t('cart.cartUpdated'),
+            `${t('cart.productsRemoved')}\n\n${removedItems.join('\n')}`
           );
         }
       }
@@ -231,7 +231,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
   const renderWarningBanner = () => (
     <View style={styles.warningBanner}>
       <Text style={styles.warningText}>
-        The items in your shopping cart are not reserved until you complete your purchase.
+        {t('cart.warningMessage')}
       </Text>
     </View>
   );
@@ -279,8 +279,8 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
               {item.subtitle}
             </Text>
           )}
-          {!item.subtitle && item.date && <Text style={styles.itemDate}>Date: {item.date}</Text>}
-          {item.subtitle && item.date && <Text style={styles.itemDate}>Date: {item.date}</Text>}
+          {!item.subtitle && item.date && <Text style={styles.itemDate}>{t('cart.date')}: {item.date}</Text>}
+          {item.subtitle && item.date && <Text style={styles.itemDate}>{t('cart.date')}: {item.date}</Text>}
         </View>
         {item.rating !== undefined && item.rating !== null && (
           <View style={styles.ratingContainer}>
@@ -318,13 +318,13 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
 
   const renderShippingSection = () => (
     <View style={styles.shippingSection}>
-      <Text style={styles.shippingTitle}>Calculate shipping</Text>
+      <Text style={styles.shippingTitle}>{t('cart.calculateShipping')}</Text>
       <View style={styles.shippingInputRow}>
         <TextInput
           style={styles.zipCodeInput}
           value={zipCode}
           onChangeText={setZipCode}
-          placeholder="00000-000"
+          placeholder={t('cart.zipCodePlaceholder')}
           placeholderTextColor="#6e6a6a"
         />
         <TouchableOpacity
@@ -332,11 +332,11 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
           onPress={handleApplyShipping}
           activeOpacity={0.8}
         >
-          <Text style={styles.applyButtonText}>Apply</Text>
+          <Text style={styles.applyButtonText}>{t('common.apply')}</Text>
         </TouchableOpacity>
       </View>
       <TouchableOpacity style={styles.dontKnowZipButton} activeOpacity={0.7}>
-        <Text style={styles.dontKnowZipText}>I don't know the zip code</Text>
+        <Text style={styles.dontKnowZipText}>{t('cart.dontKnowZipCode')}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -349,16 +349,16 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
       <View style={styles.orderSummary}>
         <View style={styles.separator} />
         <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>Subtotal</Text>
+          <Text style={styles.summaryLabel}>{t('cart.subtotal')}</Text>
           <Text style={styles.summaryValue}>{formatPrice(subtotal)}</Text>
         </View>
         <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>Shipping</Text>
+          <Text style={styles.summaryLabel}>{t('cart.shipping')}</Text>
           <Text style={styles.summaryValue}>{formatPrice(shipping)}</Text>
         </View>
         <View style={styles.separator} />
         <View style={styles.totalRow}>
-          <Text style={styles.totalLabel}>Total</Text>
+          <Text style={styles.totalLabel}>{t('cart.total')}</Text>
           <Text style={styles.totalValue}>{formatPrice(total)}</Text>
         </View>
       </View>
@@ -374,22 +374,22 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.screenTitle}>Your cart</Text>
+        <Text style={styles.screenTitle}>{t('cart.yourCart')}</Text>
         {renderWarningBanner()}
         {loading ? (
           <View style={styles.loadingContainer}>
-            <Text style={styles.loadingText}>Loading cart...</Text>
+            <Text style={styles.loadingText}>{t('cart.loadingCart')}</Text>
           </View>
         ) : cartItems.length > 0 ? (
           <>
-            <Text style={styles.productsTitle}>Your products</Text>
+            <Text style={styles.productsTitle}>{t('cart.yourProducts')}</Text>
             <View style={styles.cartItemsList}>
               {cartItems.map((item) => renderCartItem(item))}
             </View>
             {renderShippingSection()}
             {renderOrderSummary()}
             <SecondaryButton
-              label="Buy"
+              label={t('common.buy')}
               onPress={handleBuy}
               style={styles.buyButton}
               size="large"
@@ -397,13 +397,13 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
           </>
         ) : (
           <View style={styles.emptyCartContainer}>
-            <Text style={styles.emptyCartText}>Your cart is empty</Text>
+            <Text style={styles.emptyCartText}>{t('cart.emptyCart')}</Text>
             <TouchableOpacity
               style={styles.shopButton}
               onPress={() => navigation.navigate('Marketplace')}
               activeOpacity={0.8}
             >
-              <Text style={styles.shopButtonText}>Start Shopping</Text>
+              <Text style={styles.shopButtonText}>{t('cart.startShopping')}</Text>
             </TouchableOpacity>
           </View>
         )}

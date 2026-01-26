@@ -20,6 +20,7 @@ import { SecondaryButton } from '@/components/ui/buttons';
 import { ProductsCarousel, type Product } from '@/components/sections/product';
 import { PostCard, NextEventsSection, type ProviderChat } from '@/components/sections/community';
 import { useUserFeed } from '@/hooks';
+import { useTranslation } from '@/hooks/i18n';
 import { formatPrice } from '@/utils';
 import type { Post } from '@/types';
 import type { Event } from '@/types/event';
@@ -71,6 +72,7 @@ const USER_REVIEWS = [
 ] as const;
 
 const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigation, route }) => {
+  const { t } = useTranslation();
   const { providerId, provider } = route.params;
   const [activeTab, setActiveTab] = useState<'about' | 'communities'>('about');
   const [isFavorite, setIsFavorite] = useState(false);
@@ -261,10 +263,10 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
         <View style={styles.content}>
           <View style={styles.tabsContainer}>
             <Toggle
-              options={['About', 'My communities'] as const}
-              selected={activeTab === 'about' ? 'About' : 'My communities'}
+              options={[t('marketplace.about'), t('marketplace.myCommunities')] as any}
+              selected={activeTab === 'about' ? t('marketplace.about') : t('marketplace.myCommunities')}
               onSelect={(option) => {
-                if (option === 'About') {
+                if (option === t('marketplace.about')) {
                   setActiveTab('about');
                 } else {
                   setActiveTab('communities');
@@ -281,7 +283,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
                   onPress={() => setIsAboutExpanded(!isAboutExpanded)}
                   activeOpacity={0.7}
                 >
-                  <Text style={styles.sectionTitle}>About {providerData.name}</Text>
+                  <Text style={styles.sectionTitle}>{t('marketplace.about')} {providerData.name}</Text>
                   <Icon
                     name={isAboutExpanded ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
                     size={24}
@@ -384,7 +386,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
                 </View>
               ) : !communityPosts || communityPosts.length === 0 ? (
                 <View style={styles.emptyContainer}>
-                  <Text style={styles.emptyText}>No community posts found</Text>
+                  <Text style={styles.emptyText}>{t('marketplace.noCommunityPostsFound')}</Text>
                 </View>
               ) : (
                 communityPosts.map((post) => <PostCard key={post.id} post={post} />)
@@ -400,7 +402,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
     return (
       <View style={styles.feedbackSection}>
         <View style={styles.feedbackHeader}>
-          <Text style={styles.feedbackTitle}>User Feedback</Text>
+          <Text style={styles.feedbackTitle}>{t('marketplace.userFeedback')}</Text>
           <View style={styles.feedbackRating}>
             <Text style={styles.feedbackRatingText}>5</Text>
             <Icon name="star" size={16} color="#FFB800" />

@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useTranslation } from '@/hooks/i18n';
 import { styles as cartStyles } from '../../CartScreen/styles';
 
 interface CartItem {
@@ -32,6 +33,7 @@ const CartItemList: React.FC<CartItemListProps> = ({
   formatPrice,
   formatRating,
 }) => {
+  const { t } = useTranslation();
   const renderCartItem = (item: CartItem) => (
     <View key={item.id} style={cartStyles.cartItemCard}>
       {/* Imagem posicionada à esquerda */}
@@ -78,9 +80,9 @@ const CartItemList: React.FC<CartItemListProps> = ({
             </Text>
           )}
           {!item.subtitle && item.date && (
-            <Text style={cartStyles.itemDate}>Date: {item.date}</Text>
+            <Text style={cartStyles.itemDate}>{t('cart.date')}: {item.date}</Text>
           )}
-          {item.subtitle && item.date && <Text style={cartStyles.itemDate}>Date: {item.date}</Text>}
+          {item.subtitle && item.date && <Text style={cartStyles.itemDate}>{t('cart.date')}: {item.date}</Text>}
         </View>
         {item.rating !== undefined && item.rating !== null && (
           <View style={cartStyles.ratingContainer}>
