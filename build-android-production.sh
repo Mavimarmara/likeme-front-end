@@ -69,6 +69,12 @@ export SKIP_IOS_POD_INSTALL=true
 echo ""
 echo "🔨 Gerando AAB (Android App Bundle)..."
 cd android
+
+# Limpar build anterior para forçar recompilação
+echo "🧹 Limpando build anterior..."
+./gradlew clean
+
+# Gerar AAB
 ./gradlew bundleRelease
 
 echo ""

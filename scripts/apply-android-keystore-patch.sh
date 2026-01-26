@@ -40,21 +40,13 @@ sed -i.bak "${SIGNING_CONFIGS_LINE}i\\
 \\
 " "$BUILD_GRADLE"
 
-# Substituir signingConfigs.release
-# Encontrar a linha do release signingConfig
-RELEASE_CONFIG_START=$(grep -n "release {" "$BUILD_GRADLE" | grep -A 5 "signingConfigs" | head -1 | cut -d: -f1)
-
-if [ ! -z "$RELEASE_CONFIG_START" ]; then
-	# Substituir o bloco release em signingConfigs
-	# Isso é mais complexo, então vamos fazer uma substituição mais simples
-	sed -i.bak 's/signingConfig signingConfigs\.debug/signingConfig signingConfigs.release/g' "$BUILD_GRADLE"
+# Adicionar release signingConfig se não existir
+if ! grep -A 15 "signingConfigs {" "$BUILD_GRADLE" | grep -q "release {"; then
+	# Encontrar linha após debug config (primeira } após signingConfigs)
+	DEBUG_END=$(awk -v start="$SIGNING_CONFIGS_LINE" 'NR > start && /^[[:space:]]*}[[:space:]]*$/ {print NR; exit}' "$BUILD_GRADLE")
 	
-	# Adicionar release signingConfig se não existir
-	if ! grep -q "signingConfigs.release" "$BUILD_GRADLE" || ! grep -A 10 "signingConfigs {" "$BUILD_GRADLE" | grep -q "release {"; then
-		# Encontrar linha após debug config
-		DEBUG_END=$(grep -n "}" "$BUILD_GRADLE" | awk -v after="$SIGNING_CONFIGS_LINE" '$1 > after' | head -1 | cut -d: -f1)
-		if [ ! -z "$DEBUG_END" ]; then
-			sed -i.bak "${DEBUG_END}a\\
+	if [ ! -z "$DEBUG_END" ]; then
+		sed -i.bak "${DEBUG_END}a\\
         release {\\
             if (keystorePropertiesFile.exists()) {\\
                 storeFile file(keystoreProperties['storeFile'] ?: 'debug.keystore')\\
@@ -69,9 +61,11 @@ if [ ! -z "$RELEASE_CONFIG_START" ]; then
             }\\
         }\\
 " "$BUILD_GRADLE"
-		fi
 	fi
 fi
+
+# Substituir signingConfig no buildTypes.release
+sed -i.bak 's/signingConfig signingConfigs\.debug/signingConfig signingConfigs.release/g' "$BUILD_GRADLE"
 
 # Limpar arquivos .bak
 rm -f "$BUILD_GRADLE.bak"
