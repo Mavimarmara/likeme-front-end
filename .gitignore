@@ -147,3 +147,9 @@ dist/
 android/
 ios/
 devices.json
+
+# Keystore de produção (NUNCA commitar!)
+android/keystore.properties
+android/app/*.keystore
+android/app/*.jks
+!android/app/debug.keystore

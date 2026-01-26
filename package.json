@@ -37,6 +37,8 @@
     "build:android": "eas build --platform android",
     "build:android:local": "./build-android-local.sh",
     "build:android:gradle": "npx expo prebuild --platform android && cd android && ./gradlew assembleRelease && cd ..",
+    "build:android:production": "./build-android-production.sh",
+    "build:android:apk": "./build-android-apk.sh",
     "build:ios": "eas build --platform ios",
     "build:ios:local": "./build-ios-local.sh",
     "build:ios:auto": "echo '3\ny' | ./build-ios-local.sh",
