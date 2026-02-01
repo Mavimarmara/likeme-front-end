@@ -55,7 +55,7 @@ const UnauthenticatedStep1: React.FC<UnauthenticatedStep1Props> = ({
       </Animated.View>
 
       <Animated.View style={[styles.buttonContainer, { opacity: buttonsOpacity }]}>
-        <ButtonGroup>
+        <ButtonGroup direction='vertical'>
           <PrimaryButton label={t('common.next')} onPress={onNext} disabled={isLoading} />
           <SecondaryButton label={t('auth.login')} onPress={onLogin} loading={isLoading} />
         </ButtonGroup>
