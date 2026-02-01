@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '@/components/ui';
 import { useTranslation } from '@/hooks/i18n';
 import { BackgroundWithGradient4, BackgroundWithGradient5 } from '@/assets';
+import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
 type Props = { navigation: any };
@@ -12,6 +13,7 @@ type Props = { navigation: any };
 const IMAGE_DECORATIVE = 'https://www.figma.com/api/mcp/asset/e6ee3d5c-e9d8-4bf5-bf75-48f53768bafe';
 
 const AnamnesisCompletionScreen: React.FC<Props> = ({ navigation }) => {
+  useAnalyticsScreen({ screenName: 'AnamnesisCompletion', screenClass: 'AnamnesisCompletionScreen' });
   const { t } = useTranslation();
   useEffect(() => {
     // Auto-redirecionar para home após 3 segundos

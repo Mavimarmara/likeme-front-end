@@ -8,6 +8,7 @@ import { useMenuItems } from '@/hooks';
 import { COLORS, SPACING, BORDER_RADIUS } from '@/constants';
 import { getMarkerColor, getMarkerGradient, MARKER_NAMES, hasMarkerGradient } from '@/constants/markers';
 import type { UserMarker } from '@/types/anamnesis';
+import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 import Background from '../../../components/ui/layout/Background';
 
@@ -23,6 +24,7 @@ type Props = {
 type Period = 'day' | 'week' | 'month';
 
 const MarkerDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
+  useAnalyticsScreen({ screenName: 'MarkerDetails', screenClass: 'MarkerDetailsScreen' });
   const rootNavigation = navigation.getParent() ?? navigation;
   const menuItems = useMenuItems(rootNavigation);
   

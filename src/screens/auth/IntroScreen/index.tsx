@@ -5,11 +5,13 @@ import { Header, Title, ButtonGroup, PrimaryButton, SecondaryButton } from '@/co
 import { GradientSplash4 } from '@/assets';
 import { useAuthLogin } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
+import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
 type Props = { navigation: any; route: any };
 
 const IntroScreen: React.FC<Props> = ({ navigation, route }) => {
+  useAnalyticsScreen({ screenName: 'Intro', screenClass: 'IntroScreen' });
   const { t } = useTranslation();
   const userName = route.params?.userName || 'Usuário';
   const { handleLogin, isLoading } = useAuthLogin(navigation);

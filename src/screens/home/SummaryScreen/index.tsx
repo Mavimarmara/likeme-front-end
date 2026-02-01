@@ -37,6 +37,7 @@ import { AnamnesisPromptCard } from '@/components/sections/anamnesis';
 import { AvatarSection } from '@/components/sections/avatar';
 import type { Event } from '@/types/event';
 import type { Post } from '@/types';
+import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
 type Props = {
@@ -45,6 +46,7 @@ type Props = {
 };
 
 const SummaryScreen: React.FC<Props> = ({ navigation }) => {
+  useAnalyticsScreen({ screenName: 'Summary', screenClass: 'SummaryScreen' });
   const { t } = useTranslation();
   const rootNavigation = navigation.getParent() ?? navigation;
   const [hasCompletedAnamnesis, setHasCompletedAnamnesis] = useState<boolean>(false);

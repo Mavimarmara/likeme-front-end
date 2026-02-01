@@ -41,6 +41,7 @@ import { useTranslation } from '@/hooks/i18n';
 import { AnamnesisPromptCard } from '@/components/sections/anamnesis';
 import type { Order } from '@/types/order';
 import type { RootStackParamList } from '@/types/navigation';
+import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -55,6 +56,7 @@ type FilterType = 'all' | 'activities' | 'appointments' | 'orders';
 import type { ActivityItem } from '@/types/activity/hooks';
 
 const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
+  useAnalyticsScreen({ screenName: 'Activities', screenClass: 'ActivitiesScreen' });
   const { t } = useTranslation();
   const rootNavigation = navigation.getParent() ?? navigation;
   const [activeTab, setActiveTab] = useState<TabType>('actives');

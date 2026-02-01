@@ -3,11 +3,13 @@ import { View, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header, PrimaryButton, SecondaryButton, ButtonGroup } from '@/components/ui';
 import { useTranslation } from '@/hooks/i18n';
+import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
 type Props = { navigation: any };
 
 const SelfAwarenessIntroScreen: React.FC<Props> = ({ navigation }) => {
+  useAnalyticsScreen({ screenName: 'SelfAwarenessIntro', screenClass: 'SelfAwarenessIntroScreen' });
   const { t } = useTranslation();
   const handleTakeQuiz = () => {
     navigation.navigate('Main' as never);

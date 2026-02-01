@@ -20,6 +20,7 @@ import { BackgroundIconButton, LogoMini } from '@/assets';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '@/constants';
 import type { CommunityStackParamList } from '@/types/navigation';
 import type { ProviderChat } from '@/components/sections/community';
+import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
 type ChatScreenNavigationProp = StackNavigationProp<CommunityStackParamList, 'ChatScreen'>;
@@ -41,6 +42,7 @@ interface ChatConversation {
 }
 
 const ChatScreen: React.FC<Props> = () => {
+  useAnalyticsScreen({ screenName: 'ChatScreen', screenClass: 'ChatScreen' });
   const { t } = useTranslation();
   const route = useRoute<ChatScreenRouteProp>();
   const navigation = useNavigation<ChatScreenNavigationProp>();

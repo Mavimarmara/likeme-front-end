@@ -206,10 +206,12 @@ module.exports = {
           domain: getEnvVar('EXPO_PUBLIC_AUTH0_DOMAIN', 'likeme.us.auth0.com'),
         },
       ],
+      '@react-native-firebase/app',
     ],
     scheme: 'likeme',
     android: {
       package: 'com.likeme.app',
+      googleServicesFile: './google-services.json',
       versionCode: 1,
       adaptiveIcon: {
         foregroundImage: './assets/Logo2.png',
@@ -230,7 +232,8 @@ module.exports = {
       ],
     },
     ios: {
-      bundleIdentifier: 'app.likeme.com',
+      bundleIdentifier: 'com.likeme.app',
+      googleServicesFile: './GoogleService-Info.plist',
       buildNumber: '1',
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,

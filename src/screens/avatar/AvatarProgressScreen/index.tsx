@@ -27,6 +27,7 @@ import {
 } from '@/components/sections/community';
 import { ProductsCarousel, type Product } from '@/components/sections/product';
 import Carousel from '@/components/sections/product/Carousel';
+import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
 type Props = {
@@ -35,6 +36,7 @@ type Props = {
 };
 
 const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
+  useAnalyticsScreen({ screenName: 'AvatarProgress', screenClass: 'AvatarProgressScreen' });
   const { t } = useTranslation();
   const rootNavigation = navigation.getParent() ?? navigation;
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month'>('week');

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native';
 import { styles } from './styles';
 import { storageService } from '@/services';
+import { useAnalyticsScreen } from '@/analytics';
 
 type Props = {
   navigation: any;
@@ -9,6 +10,7 @@ type Props = {
 };
 
 const AuthenticatedScreen: React.FC<Props> = ({ navigation }) => {
+  useAnalyticsScreen({ screenName: 'Authenticated', screenClass: 'AuthenticatedScreen' });
   const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {

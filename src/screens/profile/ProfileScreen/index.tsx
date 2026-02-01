@@ -6,6 +6,7 @@ import { storageService } from '@/services';
 import { useMenuItems } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import type { StoredUser } from '@/types/auth';
+import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
 type Props = {
@@ -14,6 +15,7 @@ type Props = {
 };
 
 const ProfileScreen: React.FC<Props> = ({ navigation }) => {
+  useAnalyticsScreen({ screenName: 'Profile', screenClass: 'ProfileScreen' });
   const { t } = useTranslation();
   const rootNavigation = navigation.getParent() ?? navigation;
   const [user, setUser] = useState<StoredUser | null>(null);

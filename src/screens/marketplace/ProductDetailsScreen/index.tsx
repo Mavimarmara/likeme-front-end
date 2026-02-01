@@ -33,6 +33,14 @@ import {
   mapApiProductToNavigationParams,
 } from '@/utils';
 import { useUserFeed } from '@/hooks';
+import {
+  useAnalyticsScreen,
+  logButtonClick,
+  logTabSelect,
+  logAddToCart,
+  logSelectContent,
+  logError,
+} from '@/analytics';
 import type { Post } from '@/types';
 import type { RootStackParamList } from '@/types/navigation';
 import { styles } from './styles';
@@ -85,6 +93,7 @@ const USER_REVIEWS = [
 ] as const;
 
 const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation, route }) => {
+  useAnalyticsScreen({ screenName: 'ProductDetails', screenClass: 'ProductDetailsScreen' });
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'info' | 'preview'>('info');
   const [activeInfoTab, setActiveInfoTab] = useState<'about' | 'objectives' | 'communities'>(
@@ -159,13 +168,22 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   const isProductType = productCategory == 'Product';
 
   const handleBackPress = () => {
+    logButtonClick({
+      screen_name: 'product_details',
+      button_label: 'back',
+      action_name: 'go_back',
+    });
     navigation.goBack();
   };
 
   const handleSeeProvider = () => {
     const provider = route.params?.product?.provider;
     if (!provider) return;
-
+    logSelectContent({
+      content_type: 'provider_profile',
+      item_id: route.params?.productId,
+      screen_name: 'product_details',
+    });
     navigation.navigate('ProviderProfile', {
       providerId: route.params?.productId,
       provider: {
@@ -182,7 +200,12 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
 
   const handleSeeProviderProfile = () => {
     const provider = route.params?.product?.provider || product?.provider;
-
+    logButtonClick({
+      screen_name: 'product_details',
+      button_label: 'see_provider_profile',
+      action_name: 'navigate_provider',
+      item_id: route.params?.productId || product?.id,
+    });
     // Dados mockados quando não há provider disponível
     const mockProvider = {
       name: provider?.name || 'Dr. Avery Parker',
@@ -220,7 +243,12 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   const handleProductPress = (recommendedProduct: Product) => {
     const relatedProduct = relatedProducts.find((rp) => rp.id === recommendedProduct.id);
     if (!relatedProduct) return;
-
+    logSelectContent({
+      content_type: 'related_product',
+      item_id: recommendedProduct.id,
+      item_name: recommendedProduct.title,
+      screen_name: 'product_details',
+    });
     navigation.navigate('ProductDetails', {
       productId: relatedProduct.id,
       product: mapApiProductToNavigationParams(relatedProduct),
@@ -228,16 +256,28 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   };
 
   const handleProductLike = (recommendedProduct: Product) => {
-    console.log('Like product:', recommendedProduct.id);
+    logSelectContent({
+      content_type: 'product_like',
+      item_id: recommendedProduct.id,
+      screen_name: 'product_details',
+    });
   };
 
   const handlePlanPress = (plan: Plan) => {
-    console.log('Plan pressed:', plan.id);
-    // TODO: Navegar para detalhes do plano quando necessário
+    logSelectContent({
+      content_type: 'plan',
+      item_id: plan.id,
+      item_name: plan.title,
+      screen_name: 'product_details',
+    });
   };
 
   const handlePlanLike = (plan: Plan) => {
-    console.log('Like plan:', plan.id);
+    logSelectContent({
+      content_type: 'plan_like',
+      item_id: plan.id,
+      screen_name: 'product_details',
+    });
   };
 
   // Obter imagem do produto para o background e hero section
@@ -273,6 +313,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   }
 
   if (!product || !displayData) {
+    logError({ screen_name: 'product_details', error_type: 'product_not_found' });
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
@@ -339,7 +380,10 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                 <ButtonCarousel
                   options={productTabOptions}
                   selectedId={activeProductTab}
-                  onSelect={setActiveProductTab}
+                  onSelect={(tabId) => {
+                    logTabSelect({ screen_name: 'product_details', tab_id: tabId });
+                    setActiveProductTab(tabId);
+                  }}
                 />
               </View>
               {renderProductTabContent()}
@@ -351,11 +395,9 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                   options={['Program info', 'Community preview'] as const}
                   selected={activeTab === 'info' ? 'Program info' : 'Community preview'}
                   onSelect={(option) => {
-                    if (option === 'Program info') {
-                      setActiveTab('info');
-                    } else {
-                      setActiveTab('preview');
-                    }
+                    const tabId = option === 'Program info' ? 'info' : 'preview';
+                    logTabSelect({ screen_name: 'product_details', tab_id: tabId });
+                    setActiveTab(tabId);
                   }}
                 />
               </View>
@@ -433,7 +475,14 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
             <Image source={{ uri: providerAvatar }} style={styles.providerAvatarInButton} />
             <TouchableOpacity
               style={styles.floatingAddToCartButton}
-              onPress={handleAddToCart}
+              onPress={() => {
+                logAddToCart({
+                  item_id: product?.id ?? route.params?.productId ?? '',
+                  item_name: displayData?.title,
+                  item_category: productCategory,
+                });
+                handleAddToCart();
+              }}
               activeOpacity={0.8}
             >
               <Text style={styles.floatingAddToCartText}>{t('marketplace.addToCart')}</Text>
@@ -461,7 +510,10 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
         <ButtonCarousel
           options={infoTabOptions}
           selectedId={activeInfoTab}
-          onSelect={setActiveInfoTab}
+          onSelect={(tabId) => {
+            logTabSelect({ screen_name: 'product_details', tab_id: tabId });
+            setActiveInfoTab(tabId);
+          }}
         />
         {renderAboutContent()}
       </View>

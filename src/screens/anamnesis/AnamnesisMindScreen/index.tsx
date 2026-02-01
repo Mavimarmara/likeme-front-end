@@ -7,11 +7,13 @@ import { NumberScale } from '@/components/ui/inputs';
 import { useAnamnesisQuestionnaire } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import { buildMindAnswer, parseMindAnswer } from '@/hooks/anamnesis/anamnesisAnswerMappers';
+import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
 type Props = { navigation: any };
 
 const AnamnesisMindScreen: React.FC<Props> = ({ navigation }) => {
+  useAnalyticsScreen({ screenName: 'AnamnesisMind', screenClass: 'AnamnesisMindScreen' });
   const { t } = useTranslation();
   const { questions, answers, loading, completing, error, unansweredCount, setAnswer, complete } =
     useAnamnesisQuestionnaire<number>({

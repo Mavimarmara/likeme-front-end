@@ -25,10 +25,12 @@ import { useTranslation } from '@/hooks/i18n';
 import type { PersonData } from '@/types/person';
 import { styles } from './styles';
 import { COLORS } from '@/constants';
+import { useAnalyticsScreen } from '@/analytics';
 
 type Props = { navigation: any; route: any };
 
 const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
+  useAnalyticsScreen({ screenName: 'Register', screenClass: 'RegisterScreen' });
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const { width: windowWidth } = useWindowDimensions();

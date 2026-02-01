@@ -9,11 +9,13 @@ import { BackgroundWithGradient2, BackgroundWithGradient3 } from '@/assets';
 import { useAnamnesisProgress } from '@/hooks/anamnesis/useAnamnesisProgress';
 import { useTranslation } from '@/hooks/i18n';
 import { COLORS } from '@/constants';
+import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
 type Props = { navigation: any };
 
 const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
+  useAnalyticsScreen({ screenName: 'AnamnesisHome', screenClass: 'AnamnesisHomeScreen' });
   const { t } = useTranslation();
   const { progress, loading, error, refresh } = useAnamnesisProgress();
 

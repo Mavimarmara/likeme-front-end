@@ -25,6 +25,7 @@ import { formatPrice } from '@/utils';
 import type { Post } from '@/types';
 import type { Event } from '@/types/event';
 import type { RootStackParamList } from '@/types/navigation';
+import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -72,6 +73,7 @@ const USER_REVIEWS = [
 ] as const;
 
 const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigation, route }) => {
+  useAnalyticsScreen({ screenName: 'ProviderProfile', screenClass: 'ProviderProfileScreen' });
   const { t } = useTranslation();
   const { providerId, provider } = route.params;
   const [activeTab, setActiveTab] = useState<'about' | 'communities'>('about');

@@ -15,11 +15,13 @@ import { personalObjectivesService, storageService } from '@/services';
 import { useTranslation } from '@/hooks/i18n';
 import { PersonalObjective } from '@/types';
 import { showError } from '@/utils';
+import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
 type Props = { navigation: any; route: any };
 
 const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
+  useAnalyticsScreen({ screenName: 'PersonalObjectives', screenClass: 'PersonalObjectivesScreen' });
   const { t } = useTranslation();
   const userName = route.params?.userName || 'Usuário';
   const [objectives, setObjectives] = useState<PersonalObjective[]>([]);

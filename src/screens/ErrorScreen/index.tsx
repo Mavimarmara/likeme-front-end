@@ -3,11 +3,13 @@ import { View, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Title, PrimaryButton } from '@/components/ui';
 import { useTranslation } from '@/hooks/i18n';
+import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
 type Props = { navigation: any; route: any };
 
 const ErrorScreen: React.FC<Props> = ({ navigation, route }) => {
+  useAnalyticsScreen({ screenName: 'Error', screenClass: 'ErrorScreen' });
   const { t } = useTranslation();
   // Garante que errorMessage seja sempre uma string válida
   const rawErrorMessage = route.params?.errorMessage;

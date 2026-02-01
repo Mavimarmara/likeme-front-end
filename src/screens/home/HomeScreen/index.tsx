@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { SafeAreaView } from 'react-native';
+import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
 type Props = {
@@ -8,6 +9,7 @@ type Props = {
 };
 
 const HomeScreen: React.FC<Props> = ({ navigation }) => {
+  useAnalyticsScreen({ screenName: 'Home', screenClass: 'HomeScreen' });
   useEffect(() => {
     navigation.replace('Summary' as never);
   }, [navigation]);

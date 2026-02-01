@@ -5,6 +5,7 @@ import { Header } from '@/components/ui';
 import { PRESENTATION_PAGES } from '@/constants/presentation';
 import { useAuthLogin } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
+import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
 const { width } = Dimensions.get('window');
@@ -12,6 +13,7 @@ const { width } = Dimensions.get('window');
 type Props = { navigation: any };
 
 const AppPresentationScreen: React.FC<Props> = ({ navigation }) => {
+  useAnalyticsScreen({ screenName: 'AppPresentation', screenClass: 'AppPresentationScreen' });
   const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState(0);
   const { handleLogin, isLoading } = useAuthLogin(navigation);

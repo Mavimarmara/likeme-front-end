@@ -5,6 +5,7 @@ import { PartialLogo, GradientSplash7, GradientSplash8, GradientSplash9 } from '
 import { styles, GRADIENT_STRIP_HEIGHT, GRADIENT_STRIP_WIDTH } from './styles';
 import { storageService } from '@/services';
 import { useTranslation } from '@/hooks/i18n';
+import { useAnalyticsScreen } from '@/analytics';
 import { getApiUrl } from '@/config';
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 const GRADIENT_SOURCES = [GradientSplash7, GradientSplash8, GradientSplash9];
@@ -14,6 +15,7 @@ const { height } = Dimensions.get('window');
 type Props = { navigation: any };
 
 const LoadingScreen: React.FC<Props> = ({ navigation }) => {
+  useAnalyticsScreen({ screenName: 'Loading', screenClass: 'LoadingScreen' });
   const { t } = useTranslation();
   const scrollAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;

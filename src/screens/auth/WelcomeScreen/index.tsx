@@ -11,11 +11,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header, Title, TextInput } from '@/components/ui';
 import { GradientSplash3 } from '@/assets';
 import { useTranslation } from '@/hooks/i18n';
+import { useAnalyticsScreen, logButtonClick, logFormSubmit, logNavigation } from '@/analytics';
 import { styles } from './styles';
 
 type Props = { navigation: any };
 
 const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
+  useAnalyticsScreen({ screenName: 'Welcome', screenClass: 'WelcomeScreen' });
   const { t } = useTranslation();
   const [name, setName] = useState('');
   const inputRef = useRef<RNTextInput>(null);
@@ -30,11 +32,25 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleContinue = () => {
     if (!name.trim()) {
+      logFormSubmit({
+        screen_name: 'welcome',
+        form_name: 'welcome_name',
+        success: false,
+        error_type: 'validation_empty_name',
+      });
       Alert.alert(t('auth.nameRequired'), t('auth.nameRequiredMessage'));
       return;
     }
-
-    console.log('Nome do usuário:', name.trim());
+    logFormSubmit({
+      screen_name: 'welcome',
+      form_name: 'welcome_name',
+      success: true,
+    });
+    logNavigation({
+      source_screen: 'welcome',
+      destination_screen: 'intro',
+      action_name: 'continue',
+    });
     navigation.navigate('Intro' as never, { userName: name.trim() });
   };
 
@@ -44,7 +60,17 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
         style={styles.keyboardAvoidingView}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <Header onBackPress={() => navigation.goBack()} />
+        <Header
+          onBackPress={() => {
+            logButtonClick({
+              screen_name: 'welcome',
+              button_label: 'back',
+              action_name: 'go_back',
+            });
+            logNavigation({ source_screen: 'welcome', destination_screen: 'unauthenticated', action_name: 'go_back' });
+            navigation.goBack();
+          }}
+        />
 
         <View style={styles.content}>
           <Title

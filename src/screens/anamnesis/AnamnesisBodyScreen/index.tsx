@@ -8,11 +8,13 @@ import { useAnamnesisQuestionnaire } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import type { BodySymptomLevel } from '@/hooks/anamnesis/anamnesisAnswerMappers';
 import { buildBodyAnswer, parseBodyAnswer } from '@/hooks/anamnesis/anamnesisAnswerMappers';
+import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
 type Props = { navigation: any };
 
 const AnamnesisBodyScreen: React.FC<Props> = ({ navigation }) => {
+  useAnalyticsScreen({ screenName: 'AnamnesisBody', screenClass: 'AnamnesisBodyScreen' });
   const { t } = useTranslation();
   const { questions, answers, loading, completing, error, unansweredCount, setAnswer, complete } =
     useAnamnesisQuestionnaire<BodySymptomLevel>({

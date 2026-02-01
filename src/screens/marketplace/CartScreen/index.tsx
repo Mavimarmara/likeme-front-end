@@ -23,6 +23,7 @@ import { formatPrice } from '@/utils';
 import { Alert } from 'react-native';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { useTranslation } from '@/hooks/i18n';
+import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
 interface CartItem {
@@ -44,6 +45,7 @@ type CartScreenProps = {
 };
 
 const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
+  useAnalyticsScreen({ screenName: 'Cart', screenClass: 'CartScreen' });
   const { t } = useTranslation();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [zipCode, setZipCode] = useState('00000-000');

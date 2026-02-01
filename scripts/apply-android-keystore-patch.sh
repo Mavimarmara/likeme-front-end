@@ -11,7 +11,7 @@ if [ ! -f "$BUILD_GRADLE" ]; then
 fi
 
 # Verificar se o patch já foi aplicado
-if grep -q "keystorePropertiesFile" "$BUILD_GRADLE"; then
+if grep -q "keystorePropertiesFile" "$BUILD_GRADLE" && grep -A 15 "signingConfigs {" "$BUILD_GRADLE" | grep -q "release {"; then
 	echo "✓ Patch do keystore já aplicado em $BUILD_GRADLE"
 	exit 0
 fi
@@ -64,8 +64,14 @@ if ! grep -A 15 "signingConfigs {" "$BUILD_GRADLE" | grep -q "release {"; then
 	fi
 fi
 
-# Substituir signingConfig no buildTypes.release
-sed -i.bak 's/signingConfig signingConfigs\.debug/signingConfig signingConfigs.release/g' "$BUILD_GRADLE"
+# Corrigir signingConfig no buildTypes
+# Primeiro, garantir que debug usa debug
+sed -i.bak 's/signingConfig signingConfigs\.release/signingConfig signingConfigs.debug/g' "$BUILD_GRADLE"
+# Depois, mudar apenas o release para usar release
+sed -i.bak '/buildTypes {/,/release {/,/signingConfig signingConfigs\.debug/s/signingConfig signingConfigs\.debug/signingConfig signingConfigs.release/' "$BUILD_GRADLE" || \
+sed -i.bak '/release {/,/signingConfig signingConfigs\.debug/s/signingConfig signingConfigs\.debug/signingConfig signingConfigs.release/' "$BUILD_GRADLE" || \
+# Fallback: substituir apenas na seção release
+awk '/buildTypes {/,/^    }/ {if (/release {/ || (inRelease && /signingConfig signingConfigs\.debug/)) {gsub(/signingConfig signingConfigs\.debug/, "signingConfig signingConfigs.release"); inRelease=1} else if (/^    }/) inRelease=0} 1' "$BUILD_GRADLE" > "$BUILD_GRADLE.tmp" && mv "$BUILD_GRADLE.tmp" "$BUILD_GRADLE"
 
 # Limpar arquivos .bak
 rm -f "$BUILD_GRADLE.bak"

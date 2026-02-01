@@ -13,6 +13,7 @@ import AddressForm, { AddressData } from './address';
 import PaymentForm from './payment';
 import { CartItemList, OrderSummary, OrderScreen } from './order';
 import type { CreateOrderData, BillingAddress, CardData } from '@/types/order';
+import { useAnalyticsScreen } from '@/analytics';
 
 interface CartItem {
   id: string;
@@ -32,6 +33,7 @@ type Props = {
 };
 
 const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
+  useAnalyticsScreen({ screenName: 'Checkout', screenClass: 'CheckoutScreen' });
   const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState<CheckoutStep>('address');
   const [cartItems, setCartItems] = useState<CartItem[]>([]);

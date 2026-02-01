@@ -5,12 +5,14 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { PostDetailsHeader, FloatingMenu } from '@/components/ui';
 import { useTranslation } from '@/hooks/i18n';
 import { CommunityStackParamList } from '@/types';
+import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
 type PostDetailsRouteProp = RouteProp<CommunityStackParamList, 'PostDetails'>;
 type PostDetailsNavigationProp = StackNavigationProp<CommunityStackParamList, 'PostDetails'>;
 
 const PostDetailsScreen: React.FC = () => {
+  useAnalyticsScreen({ screenName: 'PostDetails', screenClass: 'PostDetailsScreen' });
   const { t } = useTranslation();
   const route = useRoute<PostDetailsRouteProp>();
   const navigation = useNavigation<PostDetailsNavigationProp>();

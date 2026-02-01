@@ -19,6 +19,7 @@ import { adService, productService } from '@/services';
 import type { Ad } from '@/types/ad';
 import type { Product as ApiProduct } from '@/types/product';
 import type { RootStackParamList } from '@/types/navigation';
+import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -45,6 +46,7 @@ type AffiliateProductScreenProps = {
 type TabType = 'goal' | 'description' | 'composition';
 
 const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigation, route }) => {
+  useAnalyticsScreen({ screenName: 'AffiliateProduct', screenClass: 'AffiliateProductScreen' });
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabType>('goal');
   const [product, setProduct] = useState<ApiProduct | null>(null);

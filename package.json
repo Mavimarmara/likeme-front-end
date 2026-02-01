@@ -45,7 +45,7 @@
     "build:ios:simulator": "npx expo run:ios",
     "build:ios:device": "npx expo run:ios --device",
     "build:all": "eas build --platform all",
-    "submit:android": "eas submit --platform android",
+    "submit:android": "eas submit --platform android --latest --profile production",
     "submit:ios": "eas submit --platform ios",
     "submit:testflight": "./submit-to-testflight.sh",
     "run:apk": "./run-apk.sh",
@@ -55,7 +55,7 @@
     "clean:all": "rm -rf node_modules/.cache .expo dist android/build ios/build android/app/build ios/Pods ios/Podfile.lock",
     "clean:android": "cd android && ./gradlew clean && cd ..",
     "clean:ios": "cd ios && rm -rf Pods Podfile.lock build && pod install && cd ..",
-    "postinstall": "if [ \"$SKIP_IOS_POD_INSTALL\" != \"true\" ]; then cd ios && pod install && cd ..; fi",
+    "postinstall": "if [ -d ios ] && [ \"$SKIP_IOS_POD_INSTALL\" != \"true\" ]; then cd ios && pod install && cd ..; fi",
     "run:emulator:ios": "open -a Simulator"
   },
   "dependencies": {
@@ -63,6 +63,8 @@
     "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-native-community/datetimepicker": "^8.5.1",
     "@react-native-community/slider": "^5.1.2",
+    "@react-native-firebase/analytics": "^23.8.5",
+    "@react-native-firebase/app": "^23.8.5",
     "@react-navigation/bottom-tabs": "^6.5.11",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/stack": "^6.3.20",

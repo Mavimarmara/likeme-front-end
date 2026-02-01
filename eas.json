@@ -25,7 +25,10 @@
         "buildConfiguration": "Release"
       },
       "android": {
-        "buildType": "apk"
+        "buildType": "apk",
+        "env": {
+          "SKIP_IOS_POD_INSTALL": "true"
+        }
       }
     },
     "production": {
@@ -37,7 +40,8 @@
       "android": {
         "buildType": "app-bundle",
         "env": {
-          "EXPO_USE_HERMES": "true"
+          "EXPO_USE_HERMES": "true",
+          "SKIP_IOS_POD_INSTALL": "true"
         },
         "gradleCommand": ":app:bundleRelease"
       }

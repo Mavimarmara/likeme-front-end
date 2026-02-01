@@ -10,6 +10,7 @@ import {
   parseSingleChoiceAnswerKey,
 } from '@/hooks/anamnesis/anamnesisAnswerMappers';
 import { COLORS } from '@/constants';
+import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
 type HabitKeyPrefix =
@@ -46,6 +47,7 @@ function getQuestionBodyText(questionText: string | null, title: string) {
 }
 
 const AnamnesisHabitsScreen: React.FC<Props> = ({ navigation, route }) => {
+  useAnalyticsScreen({ screenName: 'AnamnesisHabits', screenClass: 'AnamnesisHabitsScreen' });
   const { t } = useTranslation();
   const { title, keyPrefix } = route.params;
   const [stepIndex, setStepIndex] = useState(0);

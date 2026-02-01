@@ -69,24 +69,30 @@ npm run build:android:local
 
 ### Opção 1: Upload Automático (Recomendado)
 
-Após o build, envie automaticamente:
+**Imediatamente após o build completar**, rode no terminal (é interativo na primeira vez):
 
 ```bash
-# Enviar build mais recente para produção
+# Enviar o último build para produção
 npm run submit:android
-
-# Ou diretamente
-eas submit --platform android --profile production
 ```
+
+Na **primeira vez** o EAS vai pedir o **Google Service Account (JSON)**:
+- Se ainda não configurou: rode `eas credentials` → Android → *Set up Google Play credentials* → informe o caminho do JSON.
+- Guia do Google: [Expo - Creating Google Service Account](https://expo.fyi/creating-google-service-account)  
+  Resumo: Google Play Console → **Setup** → **API access** → criar Service Account → baixar JSON.
+
+Depois de configurado, `npm run submit:android` envia o build mais recente direto para a track **production**.
 
 O EAS irá:
 1. ✅ Pegar o build mais recente
 2. ✅ Fazer upload para a Google Play Console
 3. ✅ Publicar na track de produção (ou internal, conforme configurado)
 
-### Opção 2: Upload Manual
+### Opção 2: Upload Manual (sem Google Cloud / sem JSON)
 
-1. Baixe o `.aab` do EAS Dashboard
+Se você **não tem acesso ao Google Cloud** ou é apenas **desenvolvedor** no Play, use o upload manual. Guia completo: [PUBLICAR_SEM_GOOGLE_CLOUD.md](./PUBLICAR_SEM_GOOGLE_CLOUD.md).
+
+1. Baixe o `.aab` do [EAS / expo.dev](https://expo.dev) → Builds → build Android → Download
 2. Acesse [Google Play Console](https://play.google.com/console)
 3. Vá em: **Production** → **Releases** → **Create new release**
 4. Faça upload do arquivo `.aab`

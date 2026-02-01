@@ -6,6 +6,7 @@ import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import { useTranslation } from '@/hooks/i18n';
 import { BackgroundWithGradient2, BackgroundWithGradient3 } from '@/assets';
 import { SPACING, COLORS, FONT_SIZES } from '@/constants';
+import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
 type Props = { navigation: any };
@@ -14,6 +15,7 @@ type Props = { navigation: any };
 const IMAGE_DECORATIVE = 'https://www.figma.com/api/mcp/asset/a21f05fe-cd0c-48af-8604-1984f766c8c9';
 
 const AnamnesisStartScreen: React.FC<Props> = ({ navigation }) => {
+  useAnalyticsScreen({ screenName: 'Anamnesis', screenClass: 'AnamnesisStartScreen' });
   const { t } = useTranslation();
   const handleStartAnamnesis = () => {
     navigation.navigate('AnamnesisHome' as never);

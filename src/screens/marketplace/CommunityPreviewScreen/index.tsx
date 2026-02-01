@@ -8,6 +8,7 @@ import { useTranslation } from '@/hooks/i18n';
 import { PostCard } from '@/components/sections/community';
 import type { Post } from '@/types';
 import type { RootStackParamList } from '@/types/navigation';
+import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -23,6 +24,7 @@ type CommunityPreviewScreenProps = {
 };
 
 const CommunityPreviewScreen: React.FC<CommunityPreviewScreenProps> = ({ navigation, route }) => {
+  useAnalyticsScreen({ screenName: 'CommunityPreview', screenClass: 'CommunityPreviewScreen' });
   const { t } = useTranslation();
   const { productId, productName } = route.params;
 

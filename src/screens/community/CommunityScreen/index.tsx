@@ -21,6 +21,7 @@ import { useUserFeed, useCommunities, useSuggestedProducts, useMenuItems } from 
 import { useTranslation } from '@/hooks/i18n';
 import { mapFiltersToFeedParams, mapCommunityToProgram, mapChannelsToEvents } from '@/utils';
 import { communityService } from '@/services';
+import { useAnalyticsScreen } from '@/analytics';
 
 type CommunityMode = 'Social' | 'Programs';
 
@@ -157,6 +158,7 @@ type Props = { navigation: NavigationProp };
 import type { FilterType } from '@/components/ui/modals/FilterModal';
 
 const CommunityScreen: React.FC<Props> = ({ navigation }) => {
+  useAnalyticsScreen({ screenName: 'CommunityList', screenClass: 'CommunityScreen' });
   const { t } = useTranslation();
   const toggleOptions = useMemo(() => getToggleOptions(t), [t]);
   const rootNavigation = navigation.getParent()?.getParent?.() ?? navigation.getParent();

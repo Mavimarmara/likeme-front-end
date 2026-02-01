@@ -23,6 +23,7 @@ import type { Ad } from '@/types/ad';
 import type { RootStackParamList } from '@/types/navigation';
 import { styles } from './styles';
 import { logger } from '@/utils/logger';
+import { useAnalyticsScreen } from '@/analytics';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -42,6 +43,7 @@ type MarketplaceScreenProps = {
 };
 
 const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => {
+  useAnalyticsScreen({ screenName: 'Marketplace', screenClass: 'MarketplaceScreen' });
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
