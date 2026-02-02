@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header } from '@/components/ui';
 import { PrimaryButton } from '@/components/ui/buttons';
-import { useAnamnesisQuestionnaire } from '@/hooks';
+import { useAnamnesisQuestionnaire, useTranslation } from '@/hooks';
 import {
   buildSingleChoiceAnswerKey,
   parseSingleChoiceAnswerKey,

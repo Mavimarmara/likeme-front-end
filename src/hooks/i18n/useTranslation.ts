@@ -1,4 +1,12 @@
-import { useTranslation as useI18nTranslation } from 'react-i18next';
+import * as ReactI18Next from 'react-i18next';
+
+const useI18nTranslation =
+	typeof ReactI18Next?.useTranslation === 'function'
+		? ReactI18Next.useTranslation
+		: () => ({
+				t: (key: string) => key,
+				i18n: { changeLanguage: () => {}, language: 'pt-BR' },
+			});
 
 /**
  * Hook customizado para traduções
