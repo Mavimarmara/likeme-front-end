@@ -249,6 +249,19 @@ class AnamnesisService {
     }
   }
 
+  /** Mapeamento de aliases para unificar keys em português e inglês. */
+  private static readonly KEY_PREFIX_ALIASES: Record<string, string[]> = {
+    'habits_movimento': ['habits_movimento', 'habits_activity'],
+    'habits_espiritualidade': ['habits_espiritualidade', 'habits_spirituality'],
+    'habits_sono': ['habits_sono', 'habits_sleep'],
+    'habits_nutricao': ['habits_nutricao', 'habits_nutrition'],
+    'habits_estresse': ['habits_estresse', 'habits_stress'],
+    'habits_autoestima': ['habits_autoestima', 'habits_self-esteem'],
+    'habits_relacionamentos': ['habits_relacionamentos', 'habits_connection'],
+    'habits_saude_bucal': ['habits_saude_bucal', 'habits_smile'],
+    'habits_proposito': ['habits_proposito', 'habits_purpose-vision'],
+  };
+
   /** Seções consideradas para anamnese completa (mesmo critério de useAnamnesisProgress). */
   private static readonly COMPLETION_SECTIONS: Array<{ prefix: string; name: string }> = [
     { prefix: 'mental', name: 'Mente' },
@@ -295,7 +308,11 @@ class AnamnesisService {
     }> = [];
 
     for (const { prefix, name } of AnamnesisService.COMPLETION_SECTIONS) {
-      const sectionQuestions = allQuestions.filter((q) => q.key.startsWith(prefix));
+      // Usa aliases para buscar tanto português quanto inglês
+      const prefixes = AnamnesisService.KEY_PREFIX_ALIASES[prefix] || [prefix];
+      const sectionQuestions = allQuestions.filter((q) =>
+        prefixes.some((p) => q.key.startsWith(p))
+      );
       const total = sectionQuestions.length;
       if (total === 0) continue;
       const answered = sectionQuestions.filter((q) => answeredIds.has(q.id)).length;

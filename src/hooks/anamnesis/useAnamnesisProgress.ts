@@ -3,6 +3,22 @@ import anamnesisService from '@/services/anamnesis/anamnesisService';
 import userService from '@/services/user/userService';
 import { logger } from '@/utils/logger';
 
+/**
+ * Mapeamento de aliases para unificar keys em português e inglês.
+ * Quando filtrar por um prefixo em português, também busca pelo equivalente em inglês.
+ */
+const KEY_PREFIX_ALIASES: Record<string, string[]> = {
+  'habits_movimento': ['habits_movimento', 'habits_activity'],
+  'habits_espiritualidade': ['habits_espiritualidade', 'habits_spirituality'],
+  'habits_sono': ['habits_sono', 'habits_sleep'],
+  'habits_nutricao': ['habits_nutricao', 'habits_nutrition'],
+  'habits_estresse': ['habits_estresse', 'habits_stress'],
+  'habits_autoestima': ['habits_autoestima', 'habits_self-esteem'],
+  'habits_relacionamentos': ['habits_relacionamentos', 'habits_connection'],
+  'habits_saude_bucal': ['habits_saude_bucal', 'habits_smile'],
+  'habits_proposito': ['habits_proposito', 'habits_purpose-vision'],
+};
+
 export interface CategoryProgress {
   category: string;
   total: number;
@@ -58,9 +74,11 @@ export const useAnamnesisProgress = () => {
       const userAnswers = userAnswersResponse.data || [];
       const answeredQuestionIds = new Set(userAnswers.map((a) => a.questionConceptId));
 
-      // Filtrar perguntas por categoria (no frontend)
-      const filterByPrefix = (prefix: string) =>
-        allQuestions.filter((q) => q.key.startsWith(prefix));
+      // Filtrar perguntas por categoria (no frontend), usando aliases para português/inglês
+      const filterByPrefix = (prefix: string) => {
+        const prefixes = KEY_PREFIX_ALIASES[prefix] || [prefix];
+        return allQuestions.filter((q) => prefixes.some((p) => q.key.startsWith(p)));
+      };
 
       const calculateCategoryProgress = (questions: any[], category: string): CategoryProgress => {
         const total = questions.length;
