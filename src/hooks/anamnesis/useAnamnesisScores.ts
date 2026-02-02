@@ -41,10 +41,14 @@ export const useAnamnesisScores = () => {
     fetchScores();
   }, [fetchScores]);
 
+  const refresh = useCallback(() => {
+    fetchScores(true);
+  }, [fetchScores]);
+
   return {
     scores,
     loading,
     error,
-    refresh: () => fetchScores(true),
+    refresh,
   };
 };

@@ -20,7 +20,9 @@ import { styles } from './styles';
 
 interface AvatarSectionProps {
   hasAnswers?: boolean;
+  /** Porcentagem 0–100 só para o avatar de mente (mental). Valor individual. */
   mindPercentage?: number;
+  /** Porcentagem 0–100 só para o avatar de corpo (physical). Valor individual. */
   bodyPercentage?: number;
   onSharePress?: () => void;
   onSeeMorePress?: () => void;
@@ -50,6 +52,7 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
     [hasAnyAnswers]
   );
 
+  // Tamanho de cada avatar é individual: mente usa só mindPercentage, corpo só bodyPercentage
   const mindSize = useMemo(() => getAvatarSizeFromPercentage(mindPercentage), [mindPercentage]);
   const bodySize = useMemo(() => getAvatarSizeFromPercentage(bodyPercentage), [bodyPercentage]);
 
