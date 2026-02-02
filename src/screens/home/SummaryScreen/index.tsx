@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, Share } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { FloatingMenu } from '@/components/ui/menu';
@@ -71,6 +71,20 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleAvatarSeeMore = () => {
     rootNavigation.navigate('AvatarProgress' as never);
+  };
+
+  const handleShareAvatar = async () => {
+    try {
+      const mindPct = anamnesisScores?.mentalPercentage || 0;
+      const bodyPct = anamnesisScores?.physicalPercentage || 0;
+      const message = t('avatar.shareMessage', { mindPercentage: mindPct, bodyPercentage: bodyPct });
+      await Share.share({
+        message,
+      });
+    } catch (error) {
+      // Usuário cancelou ou erro no compartilhamento
+      console.log('Share cancelled or failed:', error);
+    }
   };
 
   useEffect(() => {
@@ -422,6 +436,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
                 hasAnswers={hasAnyAnamnesisAnswers || hasCompletedAnamnesis}
                 mindPercentage={anamnesisScores?.mentalPercentage || 0}
                 bodyPercentage={anamnesisScores?.physicalPercentage || 0}
+                onSharePress={handleShareAvatar}
                 onSeeMorePress={handleAvatarSeeMore}
               />
             </View>

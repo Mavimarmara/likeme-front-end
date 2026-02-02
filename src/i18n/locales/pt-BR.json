@@ -176,7 +176,8 @@
 		"week": "Semana",
 		"mind": "MENTE",
 		"body": "CORPO",
-		"seeMore": "Ver mais"
+		"seeMore": "Ver mais",
+		"shareMessage": "🧠 Minha mente está em {mindPercentage}% e meu corpo em {bodyPercentage}%! Estou cuidando do meu bem-estar com o Like Me. Baixe o app e comece sua jornada também! 💚"
 	},
 	"marketplace": {
 		"searchPlaceholder": "Buscar",
