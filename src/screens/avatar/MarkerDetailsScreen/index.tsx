@@ -103,11 +103,9 @@ const MarkerDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
           <View style={styles.markerHeaderSection}>
             <TouchableOpacity
               style={styles.markerHeaderRow}
-              onPress={() => handleSeeMarker(marker)}
               activeOpacity={0.7}
             >
               <Text style={styles.markerName}>{markerName}</Text>
-              <Icon name="chevron-right" size={24} color={COLORS.TEXT} />
             </TouchableOpacity>
             <View style={styles.markerProgressContainer}>
               <ProgressBar
