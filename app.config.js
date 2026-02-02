@@ -234,7 +234,7 @@ module.exports = {
     ios: {
       bundleIdentifier: 'com.likeme.app',
       googleServicesFile: './GoogleService-Info.plist',
-      buildNumber: '1',
+      buildNumber: '7',
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
       },
