@@ -1,6 +1,5 @@
-import React, { useMemo } from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import React, { useMemo, useState } from 'react';
+import { View, Text, Image, TouchableOpacity, Alert } from 'react-native';
 import {
   MindAvatar,
   BodyAvatar,
@@ -26,7 +25,7 @@ interface AvatarSectionProps {
   bodyPercentage?: number;
   onSharePress?: () => void;
   onSeeMorePress?: () => void;
-  onWeekChange?: (week: string) => void;
+  onPeriodChange?: (period: 'week' | 'month') => void;
 }
 
 const AvatarSection: React.FC<AvatarSectionProps> = ({
@@ -35,9 +34,10 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
   bodyPercentage = 0,
   onSharePress,
   onSeeMorePress,
-  onWeekChange,
+  onPeriodChange,
 }) => {
   const { t } = useTranslation();
+  const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month'>('week');
   const hasAnyAnswers = useMemo(
     () => hasAnswers || mindPercentage > 0 || bodyPercentage > 0,
     [hasAnswers, mindPercentage, bodyPercentage]
@@ -59,6 +59,18 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
   const mindDimensions = useMemo(() => getAvatarDimensions(mindSize), [mindSize]);
   const bodyDimensions = useMemo(() => getAvatarDimensions(bodySize), [bodySize]);
 
+  const handlePeriodPress = () => {
+    Alert.alert(
+      t('avatar.periodTitle'),
+      undefined,
+      [
+        { text: t('avatar.week'), onPress: () => { setSelectedPeriod('week'); onPeriodChange?.('week'); } },
+        { text: t('avatar.month'), onPress: () => { setSelectedPeriod('month'); onPeriodChange?.('month'); } },
+        { text: t('common.cancel'), style: 'cancel' },
+      ]
+    );
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
@@ -66,9 +78,17 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
       </View>
       <View style={[styles.avatarsContainer, hasAnyAnswers && styles.avatarsContainerActive]}>
         {hasAnyAnswers && (
-          <TouchableOpacity style={styles.weekDropdown} activeOpacity={0.7}>
-            <Text style={styles.weekText}>{t('avatar.week')}</Text>
-            <Icon name="keyboard-arrow-down" size={20} color={COLORS.SECONDARY.LIGHT} />
+          <TouchableOpacity style={styles.weekDropdown} onPress={handlePeriodPress} activeOpacity={0.7}>
+            <Text style={styles.weekText}>{t(selectedPeriod === 'week' ? 'avatar.week' : 'avatar.month')}</Text>
+            <IconButton
+              icon="keyboard-arrow-down"
+              iconSize={20}
+              iconColor={COLORS.SECONDARY.LIGHT}
+              onPress={handlePeriodPress}
+              showBackground={false}
+              containerStyle={styles.periodIconContainer}
+              iconContainerStyle={styles.periodIconBackground}
+            />
           </TouchableOpacity>
         )}
         <View style={styles.avatarsContent}>
