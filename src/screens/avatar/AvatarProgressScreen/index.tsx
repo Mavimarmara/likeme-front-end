@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { View, ScrollView, Text, TouchableOpacity, ImageBackground, StatusBar } from 'react-native';
+import { View, ScrollView, Text, TouchableOpacity, ImageBackground, StatusBar, Share } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header, Background, ProgressHeaderLogo } from '@/components/ui/layout';
@@ -9,7 +9,7 @@ import { PeriodSelector } from '@/components/ui/inputs';
 import { CTACard } from '@/components/ui/cards';
 import ProgressBar from '@/components/ui/feedback/ProgressBar';
 import { BackgroundIconButton } from '@/assets';
-import { useMenuItems, useCommunities, useSuggestedProducts } from '@/hooks';
+import { useMenuItems, useCommunities, useSuggestedProducts, useAnamnesisScores } from '@/hooks';
 import { mapChannelsToEvents } from '@/utils';
 import { communityService, anamnesisService, userService } from '@/services';
 import type { UserMarker } from '@/types/anamnesis';
@@ -47,6 +47,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
   const [loadingProviders, setLoadingProviders] = useState(false);
   const [loadingMarkers, setLoadingMarkers] = useState(true);
   const menuItems = useMenuItems(navigation);
+  const { scores: anamnesisScores } = useAnamnesisScores();
 
   // Debug: log markers state changes
   useEffect(() => {
@@ -208,8 +209,15 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
     rootNavigation.goBack();
   };
 
-  const handleSharePress = () => {
-    console.log('Share progress');
+  const handleSharePress = async () => {
+    try {
+      const mindPct = anamnesisScores?.mentalPercentage ?? 0;
+      const bodyPct = anamnesisScores?.physicalPercentage ?? 0;
+      const message = t('avatar.shareMessage', { mindPercentage: mindPct, bodyPercentage: bodyPct });
+      await Share.share({ message });
+    } catch (error) {
+      // Usuário cancelou ou erro no compartilhamento
+    }
   };
 
   const handleSeeMarker = (marker?: UserMarker) => {
@@ -275,41 +283,34 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
           setMarkers(markersResponse.data);
         } else {
           console.error('Error loading markers:', markersResponse.message || 'Unknown error');
-          // Fallback para markers padrão se não houver dados
-          setMarkers([
-            { id: 'activity', name: 'Activity', trend: 'stable' as const, percentage: 0 },
-            { id: 'connection', name: 'Connection', trend: 'stable' as const, percentage: 0 },
-            { id: 'environment', name: 'Environment', trend: 'stable' as const, percentage: 0 },
-            { id: 'nutrition', name: 'Nutrition', trend: 'stable' as const, percentage: 0 },
-            { id: 'purpose-vision', name: 'Purpose & vision', trend: 'stable' as const, percentage: 0 },
-            { id: 'self-esteem', name: 'Self-esteem', trend: 'stable' as const, percentage: 0 },
-            { id: 'sleep', name: 'Sleep', trend: 'stable' as const, percentage: 0 },
-            { id: 'smile', name: 'Smile', trend: 'stable' as const, percentage: 0 },
-            { id: 'spirituality', name: 'Spirituality', trend: 'stable' as const, percentage: 0 },
-            { id: 'stress', name: 'Stress', trend: 'stable' as const, percentage: 0 },
-          ]);
+          const fallbackIds = ['activity', 'connection', 'environment', 'nutrition', 'purpose-vision', 'self-esteem', 'sleep', 'smile', 'spirituality', 'stress'] as const;
+          setMarkers(
+            fallbackIds.map((id) => ({
+              id,
+              name: t(`avatar.marker_${id.replace(/-/g, '_')}`),
+              trend: 'stable' as const,
+              percentage: 0,
+            }))
+          );
         }
       } catch (error) {
         console.error('Error loading markers:', error);
-        // Fallback para markers padrão em caso de erro
-        setMarkers([
-          { id: 'activity', name: 'Activity', trend: 'stable' as const, percentage: 0 },
-          { id: 'connection', name: 'Connection', trend: 'stable' as const, percentage: 0 },
-          { id: 'environment', name: 'Environment', trend: 'stable' as const, percentage: 0 },
-          { id: 'nutrition', name: 'Nutrition', trend: 'stable' as const, percentage: 0 },
-          { id: 'purpose-vision', name: 'Purpose & vision', trend: 'stable' as const, percentage: 0 },
-          { id: 'self-esteem', name: 'Self-esteem', trend: 'stable' as const, percentage: 0 },
-          { id: 'sleep', name: 'Sleep', trend: 'stable' as const, percentage: 0 },
-          { id: 'smile', name: 'Smile', trend: 'stable' as const, percentage: 0 },
-          { id: 'spirituality', name: 'Spirituality', trend: 'stable' as const, percentage: 0 },
-          { id: 'stress', name: 'Stress', trend: 'stable' as const, percentage: 0 },
-        ]);
+        const fallbackIds = ['activity', 'connection', 'environment', 'nutrition', 'purpose-vision', 'self-esteem', 'sleep', 'smile', 'spirituality', 'stress'] as const;
+        setMarkers(
+          fallbackIds.map((id) => ({
+            id,
+            name: t(`avatar.marker_${id.replace(/-/g, '_')}`),
+            trend: 'stable' as const,
+            percentage: 0,
+          }))
+        );
       } finally {
         setLoadingMarkers(false);
       }
     };
 
     loadMarkers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- carrega marcadores apenas uma vez ao montar
   }, []);
 
   const biomarkerCards = useMemo(() => {
@@ -369,13 +370,13 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
             <View style={styles.markersListContainer}>
               {loadingMarkers ? (
                 <View style={{ padding: 20, alignItems: 'center' }}>
-                  <Text style={{ color: COLORS.TEXT_LIGHT }}>Carregando markers...</Text>
+                  <Text style={{ color: COLORS.TEXT_LIGHT }}>{t('avatar.loadingMarkers')}</Text>
                 </View>
               ) : markers.length === 0 ? (
                 <View style={{ padding: 20, alignItems: 'center' }}>
-                  <Text style={{ color: COLORS.TEXT_LIGHT }}>Nenhum marker encontrado</Text>
+                  <Text style={{ color: COLORS.TEXT_LIGHT }}>{t('avatar.noMarkersFound')}</Text>
                   <Text style={{ color: COLORS.TEXT_LIGHT, fontSize: 12, marginTop: 8 }}>
-                    Verifique se você respondeu as perguntas da anamnesis
+                    {t('avatar.checkAnamnesisMessage')}
                   </Text>
                 </View>
               ) : (
@@ -500,8 +501,8 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
           {recommendedProducts && recommendedProducts.length > 0 && (
             <View style={styles.productsSection}>
               <ProductsCarousel
-                title="Products recommended for your sleep journey by Dr. Peter Valasquez"
-                subtitle="Discover our options selected just for you"
+                title={t('home.productsRecommended')}
+                subtitle={t('home.discoverProducts')}
                 products={recommendedProducts}
                 onProductPress={handleProductPress}
                 onProductLike={handleProductLike}
@@ -516,7 +517,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
 
           <View style={styles.addWidgetsContainer}>
             <SecondaryButton
-              label="Add new widgets"
+              label={t('avatar.addWidgets')}
               onPress={() => console.log('Add new widgets')}
               size="large"
               style={styles.addWidgetsButton}

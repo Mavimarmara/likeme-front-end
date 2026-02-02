@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header, FloatingMenu, ChartBar, CTACard, PeriodSelector, ProgressHeaderLogo } from '@/components/ui';
 import ProgressBar from '@/components/ui/feedback/ProgressBar';
 import { useMenuItems } from '@/hooks';
+import { useTranslation } from '@/hooks/i18n';
 import { COLORS, SPACING, BORDER_RADIUS } from '@/constants';
 import { getMarkerColor, getMarkerGradient, MARKER_NAMES, hasMarkerGradient } from '@/constants/markers';
 import type { UserMarker } from '@/types/anamnesis';
@@ -25,27 +26,23 @@ type Period = 'day' | 'week' | 'month';
 
 const MarkerDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
   useAnalyticsScreen({ screenName: 'MarkerDetails', screenClass: 'MarkerDetailsScreen' });
+  const { t } = useTranslation();
   const rootNavigation = navigation.getParent() ?? navigation;
   const menuItems = useMenuItems(rootNavigation);
   
-  // Validação de parâmetros
-  console.log('[MarkerDetailsScreen] Route params:', route?.params);
   const marker = route?.params?.marker;
   
   if (!marker) {
-    console.warn('[MarkerDetailsScreen] Marker não encontrado nos params');
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.BACKGROUND }} edges={['top']}>
         <Header onBackPress={() => navigation.goBack()} showBackButton />
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
-          <Text style={{ fontSize: 16, color: COLORS.TEXT }}>Marker não encontrado</Text>
+          <Text style={{ fontSize: 16, color: COLORS.TEXT }}>{t('avatar.markerNotFound')}</Text>
         </View>
         <FloatingMenu items={menuItems} selectedId="activities" />
       </SafeAreaView>
     );
   }
-
-  console.log('[MarkerDetailsScreen] Rendering with marker:', marker);
 
   const [selectedPeriod, setSelectedPeriod] = useState<Period>('week');
 
@@ -83,11 +80,8 @@ const MarkerDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   const handleSeeMarker = (markerToShow: UserMarker) => {
-    // Navegar para detalhes do marker (pode ser usado para navegação entre markers)
     console.log('See marker:', markerToShow.id);
   };
-
-  console.log('[MarkerDetailsScreen] About to render, markerName:', markerName);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.BACKGROUND }} edges={['top']}>
@@ -134,33 +128,31 @@ const MarkerDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
             </Text>
 
             <View style={styles.insightsSection}>
-              <Text style={styles.insightsTitle}>You've improved a lot!</Text>
+              <Text style={styles.insightsTitle}>{t('avatar.youveImproved')}</Text>
               <Text style={styles.insightsText}>
-                Nice job taking care of your body!
+                {t('avatar.niceJobBody')}
                 {'\n'}
-                What about improving your state of mind?
+                {t('avatar.improveMind')}
               </Text>
             </View>
 
-            {/* Metrics Cards */}
             <View style={styles.metricsRow}>
               <View style={styles.metricCard}>
-                <Text style={styles.metricLabel}>{markerName} Quality</Text>
+                <Text style={styles.metricLabel}>{t('avatar.markerQuality', { marker: markerName })}</Text>
                 <Text style={styles.metricValue}>{metric1.toString().padStart(2, '0')}</Text>
               </View>
               <View style={styles.metricCard}>
-                <Text style={styles.metricLabel}>{markerName} Routine</Text>
+                <Text style={styles.metricLabel}>{t('avatar.markerRoutine', { marker: markerName })}</Text>
                 <Text style={styles.metricValue}>{metric2.toString().padStart(2, '0')}</Text>
               </View>
             </View>
           </View>
 
-          {/* Routine Section */}
           <CTACard
-            title={`${markerName.toUpperCase()} ROUTINE`}
-            highlightText={`Your average ${markerName.toLowerCase()} score this week was ${averageValue} points`}
+            title={t('avatar.routineTitle', { marker: markerName.toUpperCase() })}
+            highlightText={t('avatar.averageScore', { marker: markerName.toLowerCase(), score: averageValue })}
             description={[
-              `You've been maintaining a consistent routine. Continuing to focus on ${markerName.toLowerCase()} could further boost your overall well-being and energy levels`,
+              t('avatar.maintainingRoutine', { marker: markerName.toLowerCase() }),
             ]}
             backgroundColor={COLORS.PRIMARY.LIGHT}
             descriptionColor={COLORS.TEXT}
@@ -180,9 +172,8 @@ const MarkerDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
             ]}
           />
 
-          {/* History Section */}
           <View style={styles.historyCard}>
-            <Text style={styles.historyTitle}>Quality of {markerName} History</Text>
+            <Text style={styles.historyTitle}>{t('avatar.qualityHistory', { marker: markerName })}</Text>
 
             {/* Period Selector */}
             <PeriodSelector
