@@ -8,6 +8,7 @@ import { useAnamnesisQuestionnaire } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import type { BodySymptomLevel } from '@/hooks/anamnesis/anamnesisAnswerMappers';
 import { buildBodyAnswer, parseBodyAnswer } from '@/hooks/anamnesis/anamnesisAnswerMappers';
+import anamnesisService from '@/services/anamnesis/anamnesisService';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
@@ -48,6 +49,18 @@ const AnamnesisBodyScreen: React.FC<Props> = ({ navigation }) => {
     }
 
     try {
+      const status = await anamnesisService.getCompletionStatus();
+      if (!status.allSectionsComplete) {
+        const sections = status.incompleteSections
+          .map((s) => `${s.sectionName} (${s.answered}/${s.total})`)
+          .join(', ');
+        Alert.alert(
+          t('anamnesis.incompleteSectionsTitle'),
+          t('anamnesis.incompleteSectionsMessage', { sections }),
+          [{ text: t('common.ok') }]
+        );
+        return;
+      }
       await complete();
       navigation.navigate('AnamnesisCompletion');
     } catch (err) {

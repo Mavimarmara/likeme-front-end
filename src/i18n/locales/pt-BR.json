@@ -120,6 +120,8 @@
 		"loadingQuestions": "Carregando perguntas...",
 		"unansweredQuestions": "Perguntas não respondidas",
 		"unansweredQuestionsMessage": "Você ainda não respondeu {count} pergunta(s). Responda todas antes de finalizar.",
+		"incompleteSectionsTitle": "Seções incompletas",
+		"incompleteSectionsMessage": "Para finalizar a anamnese, responda todas as seções: Mente, Corpo e Hábitos. Seções pendentes: {sections}",
 		"finalizationError": "Não foi possível finalizar a anamnese. Tente novamente.",
 		"noQuestionsAvailable": "Nenhuma pergunta disponível no momento.",
 		"completionTitle": "TUDO CERTO!",

@@ -6,6 +6,7 @@ import { PrimaryButton } from '@/components/ui/buttons';
 import { NumberScale } from '@/components/ui/inputs';
 import { useAnamnesisQuestionnaire } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
+import anamnesisService from '@/services/anamnesis/anamnesisService';
 import { buildMindAnswer, parseMindAnswer } from '@/hooks/anamnesis/anamnesisAnswerMappers';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
@@ -47,6 +48,18 @@ const AnamnesisMindScreen: React.FC<Props> = ({ navigation }) => {
     }
 
     try {
+      const status = await anamnesisService.getCompletionStatus();
+      if (!status.allSectionsComplete) {
+        const sections = status.incompleteSections
+          .map((s) => `${s.sectionName} (${s.answered}/${s.total})`)
+          .join(', ');
+        Alert.alert(
+          t('anamnesis.incompleteSectionsTitle'),
+          t('anamnesis.incompleteSectionsMessage', { sections }),
+          [{ text: t('common.ok') }]
+        );
+        return;
+      }
       await complete();
       navigation.navigate('AnamnesisCompletion');
     } catch (err) {

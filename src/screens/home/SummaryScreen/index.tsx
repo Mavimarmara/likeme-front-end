@@ -94,8 +94,24 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
         if (!hasAnswers) {
           await storageService.setAnamnesisCompletedAt(null);
           setHasCompletedAnamnesis(false);
+        } else if (anamnesisCompletedAt) {
+          // Se tem flag de completado, validar se realmente todas as seções estão completas
+          try {
+            const completionStatus = await anamnesisService.getCompletionStatus();
+            if (completionStatus.allSectionsComplete) {
+              setHasCompletedAnamnesis(true);
+            } else {
+              // Tem respostas mas não completou todas as seções - limpar flag
+              await storageService.setAnamnesisCompletedAt(null);
+              setHasCompletedAnamnesis(false);
+            }
+          } catch (err) {
+            console.error('Error checking completion status:', err);
+            // Em caso de erro, manter o flag local
+            setHasCompletedAnamnesis(true);
+          }
         } else {
-          setHasCompletedAnamnesis(!!anamnesisCompletedAt);
+          setHasCompletedAnamnesis(false);
         }
       } catch (error) {
         console.error('Error checking anamnesis status:', error);
@@ -399,20 +415,22 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
       <Header showBackButton={false} showCartButton={true} onCartPress={handleCartPress} />
       <View style={styles.content}>
         <ScrollView showsVerticalScrollIndicator={false}>
-          {!hasCompletedAnamnesis && hasAnyAnamnesisAnswers && (
-            <>
-              <View style={styles.avatarContainer}>
-                <AvatarSection
-                  hasAnswers={hasAnyAnamnesisAnswers}
-                  mindPercentage={anamnesisScores?.mentalPercentage || 0}
-                  bodyPercentage={anamnesisScores?.physicalPercentage || 0}
-                  onSeeMorePress={handleAvatarSeeMore}
-                />
-              </View>
-              <View style={styles.anamnesisPromptContainer}>
-                <AnamnesisPromptCard onStartPress={handleStartAnamnesis} />
-              </View>
-            </>
+          {/* Avatar sempre aparece se tem respostas ou se completou */}
+          {(hasAnyAnamnesisAnswers || hasCompletedAnamnesis) && (
+            <View style={styles.avatarContainer}>
+              <AvatarSection
+                hasAnswers={hasAnyAnamnesisAnswers || hasCompletedAnamnesis}
+                mindPercentage={anamnesisScores?.mentalPercentage || 0}
+                bodyPercentage={anamnesisScores?.physicalPercentage || 0}
+                onSeeMorePress={handleAvatarSeeMore}
+              />
+            </View>
+          )}
+          {/* Card de prompt só aparece se não completou */}
+          {!hasCompletedAnamnesis && (
+            <View style={styles.anamnesisPromptContainer}>
+              <AnamnesisPromptCard onStartPress={handleStartAnamnesis} />
+            </View>
           )}
           {yourCommunity && (
             <View style={styles.yourCommunitiesContainer}>
@@ -423,20 +441,16 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
               />
             </View>
           )}
-          {!hasCompletedAnamnesis && !hasAnyAnamnesisAnswers && (
-            <>
-              <View style={styles.avatarContainer}>
-                <AvatarSection
-                  hasAnswers={false}
-                  mindPercentage={0}
-                  bodyPercentage={0}
-                  onSeeMorePress={handleAvatarSeeMore}
-                />
-              </View>
-              <View style={styles.anamnesisPromptContainer}>
-                <AnamnesisPromptCard onStartPress={handleStartAnamnesis} />
-              </View>
-            </>
+          {/* Avatar vazio só se não tem respostas e não completou */}
+          {!hasAnyAnamnesisAnswers && !hasCompletedAnamnesis && (
+            <View style={styles.avatarContainer}>
+              <AvatarSection
+                hasAnswers={false}
+                mindPercentage={0}
+                bodyPercentage={0}
+                onSeeMorePress={handleAvatarSeeMore}
+              />
+            </View>
           )}
           {events.length > 0 && (
             <View style={styles.eventsContainer}>
