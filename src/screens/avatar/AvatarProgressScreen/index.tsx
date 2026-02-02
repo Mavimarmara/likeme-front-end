@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { View, ScrollView, Text, TouchableOpacity, ImageBackground, StatusBar, Share } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -46,17 +46,16 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
   const [loadingEvents, setLoadingEvents] = useState(false);
   const [loadingProviders, setLoadingProviders] = useState(false);
   const [loadingMarkers, setLoadingMarkers] = useState(true);
+  const [markerRowWidth, setMarkerRowWidth] = useState(0);
   const menuItems = useMenuItems(navigation);
-  const { scores: anamnesisScores } = useAnamnesisScores();
 
-  // Debug: log markers state changes
-  useEffect(() => {
-    console.log('Markers state updated:', {
-      count: markers.length,
-      markers: markers,
-      loading: loadingMarkers,
-    });
-  }, [markers, loadingMarkers]);
+  const TREND_ICON_WIDTH = 34;
+
+  const onMarkerRowLayout = useCallback((e: { nativeEvent: { layout: { width: number } } }) => {
+    const { width } = e.nativeEvent.layout;
+    setMarkerRowWidth(width);
+  }, []);
+  const { scores: anamnesisScores } = useAnamnesisScores();
 
   const { products: recommendedProducts } = useSuggestedProducts({
     limit: 3,
@@ -216,12 +215,10 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
       const message = t('avatar.shareMessage', { mindPercentage: mindPct, bodyPercentage: bodyPct });
       await Share.share({ message });
     } catch (error) {
-      // Usuário cancelou ou erro no compartilhamento
     }
   };
 
   const handleSeeMarker = (marker?: UserMarker) => {
-    // Navegar para a tela de detalhes do marker
     const markerToShow = marker || (markers.length > 0 ? markers[0] : null);
     if (markerToShow) {
       navigation.navigate('MarkerDetails', {
@@ -263,26 +260,16 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
         const profileResponse = await userService.getProfile();
         const userId = profileResponse.success ? profileResponse.data?.id : null;
         
-        console.log('Loading markers for userId:', userId);
-        
         if (!userId) {
-          console.error('User not identified');
           setMarkers([]);
           return;
         }
 
         const markersResponse = await anamnesisService.getUserMarkers({ userId });
 
-        console.log('Markers response:', {
-          success: markersResponse.success,
-          data: markersResponse.data,
-        });
-
         if (markersResponse.success && markersResponse.data) {
-          console.log('Setting markers:', markersResponse.data);
           setMarkers(markersResponse.data);
         } else {
-          console.error('Error loading markers:', markersResponse.message || 'Unknown error');
           const fallbackIds = ['activity', 'connection', 'environment', 'nutrition', 'purpose-vision', 'self-esteem', 'sleep', 'smile', 'spirituality', 'stress'] as const;
           setMarkers(
             fallbackIds.map((id) => ({
@@ -310,14 +297,12 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
     };
 
     loadMarkers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- carrega marcadores apenas uma vez ao montar
   }, []);
 
   const biomarkerCards = useMemo(() => {
     const increasingMarkers = markers.filter((marker) => marker.trend === 'increasing');
     
     if (increasingMarkers.length === 0) {
-      // Se não houver marcadores com trend increasing, mostra todos os marcadores
       return markers.map((marker) => {
         const markerName = MARKER_NAMES[marker.id] || marker.name;
         const improvementPercentage = marker.percentage > 0 ? Math.round(marker.percentage / 10) : 0;
@@ -381,7 +366,6 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
                 </View>
               ) : (
                 markers.map((marker) => {
-                  console.log('Rendering marker:', marker);
                   return (
                     <View key={marker.id} style={styles.markerItem}>
                       <TouchableOpacity
@@ -392,8 +376,13 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
                         <Text style={styles.markerName}>{marker.name}</Text>
                         <Icon name="chevron-right" size={20} color={COLORS.TEXT} />
                       </TouchableOpacity>
-                      <View style={styles.markerContent}>
-                        <View style={styles.markerProgressContainer}>
+                      <View style={styles.markerContent} onLayout={onMarkerRowLayout}>
+                        <View
+                          style={[
+                            styles.markerProgressContainer,
+                            markerRowWidth > 0 && { flex: undefined },
+                          ]}
+                        >
                           <ProgressBar
                             current={Math.max(marker.percentage, 1)}
                             total={100}
@@ -405,6 +394,15 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
                             }
                             height={30}
                             showRemaining={false}
+                            containerWidth={
+                              markerRowWidth > 0
+                                ? Math.max(
+                                    8,
+                                    (markerRowWidth - TREND_ICON_WIDTH) *
+                                      (Math.max(marker.percentage, 1) / 100)
+                                  )
+                                : undefined
+                            }
                           />
                         </View>
                         <View style={styles.markerTrend}>
