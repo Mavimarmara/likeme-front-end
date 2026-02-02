@@ -1,47 +1,67 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ImageBackground, ViewStyle, TextStyle } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  ImageBackground,
+  ImageSourcePropType,
+  ImageStyle,
+  ViewStyle,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { BackgroundIconButton } from '@/assets';
 import { COLORS } from '@/constants';
 import { styles } from './styles';
 
 type Props = {
-  icon: string;
+  icon?: string;
   iconSize?: number;
   iconColor?: string;
+  iconImageSource?: ImageSourcePropType;
+  iconImageStyle?: ImageStyle;
   onPress: () => void;
   label?: string;
   showBackground?: boolean;
+  backgroundSource?: ImageSourcePropType;
   backgroundTintColor?: string;
+  backgroundImageStyle?: ImageStyle;
   containerStyle?: ViewStyle;
   iconContainerStyle?: ViewStyle;
-  labelStyle?: TextStyle;
-  disabled?: boolean;
 };
 
 const IconButton: React.FC<Props> = ({
   icon,
   iconSize = 24,
   iconColor = COLORS.TEXT,
+  iconImageSource,
+  iconImageStyle,
   onPress,
   label,
   showBackground = true,
+  backgroundSource,
   backgroundTintColor,
+  backgroundImageStyle,
   containerStyle,
   iconContainerStyle,
-  labelStyle,
-  disabled = false,
 }) => {
   const renderIcon = () => {
-    const iconElement = <Icon name={icon} size={iconSize} color={iconColor} />;
+    const iconElement =
+      iconImageSource != null ? (
+        <Image source={iconImageSource} style={[styles.iconImage, iconImageStyle]} resizeMode="contain" />
+      ) : icon != null ? (
+        <Icon name={icon} size={iconSize} color={iconColor} />
+      ) : null;
 
     if (showBackground) {
+      const source = backgroundSource ?? BackgroundIconButton;
       return (
         <ImageBackground
-          source={BackgroundIconButton}
+          source={source}
           style={[styles.iconBackground, iconContainerStyle]}
           imageStyle={[
             styles.iconBackgroundImage,
+            backgroundImageStyle,
             backgroundTintColor && { tintColor: backgroundTintColor },
           ]}
         >
@@ -57,11 +77,10 @@ const IconButton: React.FC<Props> = ({
     <TouchableOpacity
       style={[styles.container, containerStyle]}
       onPress={onPress}
-      disabled={disabled}
       activeOpacity={0.7}
     >
       {renderIcon()}
-      {label && <Text style={[styles.label, labelStyle]}>{label}</Text>}
+      {label && <Text style={styles.label}>{label}</Text>}
     </TouchableOpacity>
   );
 };

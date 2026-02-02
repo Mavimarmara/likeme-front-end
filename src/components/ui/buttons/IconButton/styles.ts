@@ -11,6 +11,10 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  iconImage: {
+    width: 24,
+    height: 24,
+  },
   iconBackground: {
     width: 53,
     height: 48,

@@ -29,22 +29,30 @@ export const styles = StyleSheet.create({
   },
   selectedPillWithLabel: {
     gap: -SPACING.SM,
+    backgroundColor: SOFT_BEIGE,
+  },
+  menuHomeButtonContainer: {
+    padding: 0,
+    margin: 0,
+    gap: 0,
   },
   selectedPillLabel: {
     fontFamily: 'DM Sans',
     fontSize: 14,
     fontWeight: '500',
     color: ACCENT_BLUE,
-    flexDirection: 'row',
+  },
+  selectedPillLabelTouchable: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: SOFT_BEIGE,
+    borderRadius: 28,
+    padding: SPACING.MD,
     shadowColor: '#0000000A',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.5,
     shadowRadius: 8,
     elevation: 2,
-    alignItems: 'center',
-    backgroundColor: SOFT_BEIGE,
-    borderRadius: 28,
-    padding: SPACING.MD,
   },
   selectedIconWrapper: {
     width: 56,
@@ -56,6 +64,10 @@ export const styles = StyleSheet.create({
   selectedIcon: {
     width: 62,
     height: 56,
+  },
+  menuHomeIconImage: {
+    width: 16,
+    height: 16,
   },
   selectedLabel: {
     fontFamily: 'DM Sans',

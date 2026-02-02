@@ -33,3 +33,4 @@ export const MindAvatar = require('../../assets/avatar/DisableMindAvatar.png');
 export const BodyAvatar = require('../../assets/avatar/DisableBodyAvatar.png');
 export const MindAvatarActive = require('../../assets/avatar/MindAvatar.png');
 export const BodyAvatarActive = require('../../assets/avatar/BodyAvatar.png');
+export const TwoDotsIcon = require('../../assets/icons/TwoDots.png');

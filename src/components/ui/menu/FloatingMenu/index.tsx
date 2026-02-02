@@ -1,8 +1,9 @@
-import React, { useMemo } from 'react';
-import { View, TouchableOpacity, Text, Image } from 'react-native';
+import React from 'react';
+import { View, TouchableOpacity, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { MenuButtonBackground } from '@/assets';
+import { IconButton } from '@/components/ui/buttons';
+import { TwoDotsIcon } from '@/assets';
 import { styles } from './styles';
 
 type MenuItem = {
@@ -30,18 +31,21 @@ const FloatingMenu: React.FC<Props> = ({ items, selectedId }) => {
   return (
     <View style={styles.container}>
       <View style={styles.menuWrapper}>
-        <TouchableOpacity
-          style={[styles.selectedPill, isHomeSelected && styles.selectedPillWithLabel]}
-          onPress={handleHomePress}
-          activeOpacity={0.8}
-          accessibilityRole="button"
-          accessibilityLabel="Ir para Home"
-        >
-          <View style={styles.selectedIconWrapper}>
-            <Image source={MenuButtonBackground} style={styles.selectedIcon} resizeMode="contain" />
-          </View>
-          {isHomeSelected && <Text style={styles.selectedPillLabel}>Home</Text>}
-        </TouchableOpacity>
+        <View style={[styles.selectedPill, isHomeSelected && styles.selectedPillWithLabel]}>
+          <IconButton
+            onPress={handleHomePress}
+            showBackground
+            backgroundTintColor="#0154F8CC"
+            iconImageSource={TwoDotsIcon}
+            iconImageStyle={styles.menuHomeIconImage}
+            containerStyle={styles.menuHomeButtonContainer}
+          />
+          {isHomeSelected && (
+            <TouchableOpacity onPress={handleHomePress} activeOpacity={0.8} style={styles.selectedPillLabelTouchable}>
+              <Text style={styles.selectedPillLabel}>Home</Text>
+            </TouchableOpacity>
+          )}
+        </View>
         <View style={styles.actionsPill}>
           {items.map((item) => {
             const isSelected = item.id === selectedId;
