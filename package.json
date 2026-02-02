@@ -36,6 +36,7 @@
     "prebuild:clean": "expo prebuild --clean",
     "build:android": "eas build --platform android",
     "build:android:local": "./build-android-local.sh",
+    "sync:eas-secrets": "node scripts/sync-env-to-eas-secrets.js",
     "build:android:gradle": "npx expo prebuild --platform android && cd android && ./gradlew assembleRelease && cd ..",
     "build:android:production": "./build-android-production.sh",
     "build:android:apk": "./build-android-apk.sh",

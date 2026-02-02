@@ -19,6 +19,12 @@
       "autoIncrement": true,
       "env": {
         "EXPO_PUBLIC_BACKEND_URL": "https://likeme-back-end-git-staging-pixel-pulse-labs.vercel.app",
+        "EXPO_PUBLIC_AUTH0_DOMAIN": "likeme.us.auth0.com",
+        "EXPO_PUBLIC_USE_AUTH_PROXY": "true",
+        "EXPO_PUBLIC_AUTH_SCHEME": "likeme",
+        "EXPO_PUBLIC_AUTH_PROXY_URL": "https://auth.expo.dev/@pixelpulselab/likeme-front-end",
+        "EXPO_PUBLIC_AUTH_PROXY_PROJECT": "@pixelpulselab/likeme-front-end",
+        "EXPO_PUBLIC_AUTH_REDIRECT_PATH": "auth",
         "EXPO_USE_HERMES": "true"
       },
       "ios": {
@@ -34,6 +40,16 @@
     "production": {
       "distribution": "store",
       "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_BACKEND_URL": "https://likeme-back-end-one.vercel.app",
+        "EXPO_PUBLIC_AUTH0_DOMAIN": "likeme.us.auth0.com",
+        "EXPO_PUBLIC_USE_AUTH_PROXY": "true",
+        "EXPO_PUBLIC_AUTH_SCHEME": "likeme",
+        "EXPO_PUBLIC_AUTH_PROXY_URL": "https://auth.expo.dev/@pixelpulselab/likeme-front-end",
+        "EXPO_PUBLIC_AUTH_PROXY_PROJECT": "@pixelpulselab/likeme-front-end",
+        "EXPO_PUBLIC_AUTH_REDIRECT_PATH": "auth",
+        "EXPO_USE_HERMES": "true"
+      },
       "ios": {
         "buildConfiguration": "Release"
       },

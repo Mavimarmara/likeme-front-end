@@ -19,28 +19,19 @@ class AuthService {
     return `https://${AUTH0_CONFIG.domain}/userinfo`;
   }
 
+  /**
+   * Retorna sempre a mesma URL de callback para o Auth0, para que você não precise
+   * atualizar Allowed Callback/Logout URLs no Auth0 a cada deploy.
+   * - Com proxy: https://auth.expo.dev/@pixelpulselab/likeme-front-end (fixo)
+   * - Sem proxy: likeme://auth (fixo, scheme + path do app)
+   */
   private getRedirectUri(): string {
-    const projectNameForProxy = this.getProjectNameForProxy();
-
-    if (AUTH_CONFIG.useAuthProxy) {
-      const proxyOptions: AuthSession.AuthSessionRedirectUriOptions & {
-        useProxy?: boolean;
-        projectNameForProxy?: string;
-      } = {
-        useProxy: true,
-      };
-
-      if (projectNameForProxy) {
-        proxyOptions.projectNameForProxy = projectNameForProxy;
-      }
-
-      return AuthSession.makeRedirectUri(proxyOptions as any);
+    if (AUTH_CONFIG.useAuthProxy && AUTH_CONFIG.proxyUrl) {
+      return AUTH_CONFIG.proxyUrl.trim().replace(/\/$/, '');
     }
-
-    return AuthSession.makeRedirectUri({
-      scheme: AUTH_CONFIG.scheme,
-      path: AUTH_CONFIG.redirectPath,
-    });
+    const scheme = AUTH_CONFIG.scheme || 'likeme';
+    const path = AUTH_CONFIG.redirectPath || 'auth';
+    return `${scheme}://${path}`;
   }
 
   async login(): Promise<AuthResult> {
@@ -77,12 +68,8 @@ class AuthService {
       console.log('Discovery successful');
 
       const redirectUri = this.getRedirectUri();
-      const projectNameForProxy = this.getProjectNameForProxy();
       console.log('Auth config useAuthProxy:', AUTH_CONFIG.useAuthProxy);
-      console.log('Auth redirect URI resolved:', redirectUri);
-      if (projectNameForProxy) {
-        console.log('Auth project name for proxy:', projectNameForProxy);
-      }
+      console.log('Auth redirect URI (fixo, não muda entre deploys):', redirectUri);
 
       const request = new AuthSession.AuthRequest({
         clientId: AUTH0_CONFIG.clientId,
