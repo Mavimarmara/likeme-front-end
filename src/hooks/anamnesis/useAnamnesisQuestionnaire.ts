@@ -111,13 +111,19 @@ export function useAnamnesisQuestionnaire<T>(
   );
 
   const complete = useCallback(async () => {
+    const unanswered = questions.filter((q) => answers[q.id] === undefined).length;
+    if (unanswered > 0) {
+      throw new Error(
+        `Responda todas as perguntas antes de finalizar (${unanswered} sem resposta).`
+      );
+    }
     setCompleting(true);
     try {
       await storageService.setAnamnesisCompletedAt(new Date().toISOString());
     } finally {
       setCompleting(false);
     }
-  }, []);
+  }, [questions, answers]);
 
   return {
     userId,

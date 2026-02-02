@@ -37,28 +37,24 @@ const AnamnesisMindScreen: React.FC<Props> = ({ navigation }) => {
   }, [error, navigation, t]);
 
   const handleFinish = async () => {
-    const finalize = async () => {
-      try {
-        await complete();
-        navigation.navigate('AnamnesisCompletion');
-      } catch {
-        Alert.alert(t('errors.error'), t('anamnesis.finalizationError'));
-      }
-    };
-
     if (unansweredCount > 0) {
       Alert.alert(
         t('anamnesis.unansweredQuestions'),
         t('anamnesis.unansweredQuestionsMessage', { count: unansweredCount }),
-        [
-          { text: t('common.cancel'), style: 'cancel' },
-          { text: t('common.finalize'), onPress: finalize },
-        ]
+        [{ text: t('common.ok') }]
       );
       return;
     }
 
-    await finalize();
+    try {
+      await complete();
+      navigation.navigate('AnamnesisCompletion');
+    } catch (err) {
+      Alert.alert(
+        t('errors.error'),
+        err instanceof Error ? err.message : t('anamnesis.finalizationError')
+      );
+    }
   };
 
   if (loading) {

@@ -52,7 +52,7 @@ const AnamnesisHabitsScreen: React.FC<Props> = ({ navigation, route }) => {
   const { title, keyPrefix } = route.params;
   const [stepIndex, setStepIndex] = useState(0);
 
-  const { questions, answers, loading, completing, error, setAnswer, complete } =
+  const { questions, answers, loading, completing, error, unansweredCount, setAnswer, complete } =
     useAnamnesisQuestionnaire<string>({
       locale: 'pt-BR',
       keyPrefix,
@@ -112,11 +112,23 @@ const AnamnesisHabitsScreen: React.FC<Props> = ({ navigation, route }) => {
       return;
     }
 
+    if (unansweredCount > 0) {
+      Alert.alert(
+        t('anamnesis.unansweredQuestions'),
+        t('anamnesis.unansweredQuestionsMessage', { count: unansweredCount }),
+        [{ text: t('common.ok') }]
+      );
+      return;
+    }
+
     try {
       await complete();
       navigation.navigate('AnamnesisCompletion');
-    } catch {
-      Alert.alert(t('errors.error'), t('anamnesis.finalizationError'));
+    } catch (err) {
+      Alert.alert(
+        t('errors.error'),
+        err instanceof Error ? err.message : t('anamnesis.finalizationError')
+      );
     }
   };
 

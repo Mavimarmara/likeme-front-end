@@ -119,7 +119,7 @@
 		"habitsDescription": "Responda pensando no que mais se aproxima do seu dia a dia na última semana.",
 		"loadingQuestions": "Carregando perguntas...",
 		"unansweredQuestions": "Perguntas não respondidas",
-		"unansweredQuestionsMessage": "Você ainda não respondeu {count} pergunta(s). Deseja finalizar mesmo assim?",
+		"unansweredQuestionsMessage": "Você ainda não respondeu {count} pergunta(s). Responda todas antes de finalizar.",
 		"finalizationError": "Não foi possível finalizar a anamnese. Tente novamente.",
 		"noQuestionsAvailable": "Nenhuma pergunta disponível no momento.",
 		"completionTitle": "TUDO CERTO!",
