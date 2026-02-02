@@ -1,6 +1,7 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { View, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import { FloatingMenu } from '@/components/ui/menu';
 import { Header, Background } from '@/components/ui/layout';
 import {
@@ -52,7 +53,13 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   const [hasCompletedAnamnesis, setHasCompletedAnamnesis] = useState<boolean>(false);
   const [hasAnyAnamnesisAnswers, setHasAnyAnamnesisAnswers] = useState<boolean>(false);
   const { progress: anamnesisProgress } = useAnamnesisProgress();
-  const { scores: anamnesisScores } = useAnamnesisScores();
+  const { scores: anamnesisScores, refresh: refreshAnamnesisScores } = useAnamnesisScores();
+
+  useFocusEffect(
+    useCallback(() => {
+      refreshAnamnesisScores();
+    }, [refreshAnamnesisScores])
+  );
 
   const handleCartPress = () => {
     rootNavigation.navigate('Cart' as never);
@@ -69,19 +76,26 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     const checkAnamnesisStatus = async () => {
       try {
-        const anamnesisCompletedAt = await storageService.getAnamnesisCompletedAt();
-        setHasCompletedAnamnesis(!!anamnesisCompletedAt);
-
-        // Verificar se há respostas na anamnese
         const profileResponse = await userService.getProfile();
         const userId = profileResponse.success ? profileResponse.data?.id : null;
 
+        let hasAnswers = false;
         if (userId) {
           const answersResponse = await anamnesisService.getUserAnswers({ userId });
-          const hasAnswers = answersResponse.success && (answersResponse.data?.length || 0) > 0;
+          hasAnswers = answersResponse.success && (answersResponse.data?.length || 0) > 0;
           setHasAnyAnamnesisAnswers(hasAnswers);
         } else {
           setHasAnyAnamnesisAnswers(false);
+        }
+
+        const anamnesisCompletedAt = await storageService.getAnamnesisCompletedAt();
+        // Se o backend não tem respostas, considerar não concluído e limpar o flag local
+        // (ex.: respostas foram removidas no banco; usuário pode refazer a anamnese)
+        if (!hasAnswers) {
+          await storageService.setAnamnesisCompletedAt(null);
+          setHasCompletedAnamnesis(false);
+        } else {
+          setHasCompletedAnamnesis(!!anamnesisCompletedAt);
         }
       } catch (error) {
         console.error('Error checking anamnesis status:', error);
