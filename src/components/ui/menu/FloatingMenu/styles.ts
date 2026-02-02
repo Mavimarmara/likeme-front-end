@@ -87,7 +87,7 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 8,
     elevation: 4,
-    height: 56,
+    height: 50,
   },
   iconButton: {
     minWidth: 48,
