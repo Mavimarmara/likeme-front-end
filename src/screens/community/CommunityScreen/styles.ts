@@ -5,11 +5,13 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
     position: 'relative',
+    backgroundColor: 'transparent',
   },
   content: {
     flex: 1,
     zIndex: 1,
     paddingBottom: SPACING.XL,
+    backgroundColor: 'transparent',
   },
   toggleContainer: {
     paddingHorizontal: SPACING.MD,

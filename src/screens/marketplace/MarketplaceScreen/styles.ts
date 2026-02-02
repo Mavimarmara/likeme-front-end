@@ -7,11 +7,13 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
     position: 'relative',
+    backgroundColor: 'transparent',
   },
   content: {
     flex: 1,
     zIndex: 1,
     paddingBottom: SPACING.XXL,
+    backgroundColor: 'transparent',
   },
   customHeader: {
     paddingTop: SPACING.MD,
@@ -23,6 +25,9 @@ export const styles = StyleSheet.create({
   },
   filterMenuContainer: {
     marginBottom: SPACING.SM,
+  },
+  scrollView: {
+    backgroundColor: 'transparent',
   },
   scrollContent: {
     paddingBottom: SPACING.XXL,

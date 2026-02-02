@@ -11,11 +11,13 @@ export const styles = StyleSheet.create({
     bottom: SPACING.XL,
     zIndex: 1000,
     width: '100%',
+    backgroundColor: 'transparent',
   },
   menuWrapper: {
     flexDirection: 'row',
     gap: SPACING.SM,
     width: '100%',
+    backgroundColor: 'transparent',
   },
   selectedPill: {
     flexDirection: 'row',

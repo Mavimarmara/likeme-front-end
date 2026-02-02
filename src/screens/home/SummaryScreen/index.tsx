@@ -428,7 +428,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
       <Background />
       <Header showBackButton={false} showCartButton={true} onCartPress={handleCartPress} />
       <View style={styles.content}>
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
           {/* Avatar sempre aparece se tem respostas ou se completou */}
           {(hasAnyAnamnesisAnswers || hasCompletedAnamnesis) && (
             <View style={styles.avatarContainer}>
