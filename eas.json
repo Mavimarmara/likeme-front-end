@@ -25,7 +25,8 @@
         "EXPO_PUBLIC_AUTH_PROXY_URL": "https://auth.expo.dev/@pixelpulselab/likeme-front-end",
         "EXPO_PUBLIC_AUTH_PROXY_PROJECT": "@pixelpulselab/likeme-front-end",
         "EXPO_PUBLIC_AUTH_REDIRECT_PATH": "auth",
-        "EXPO_USE_HERMES": "true"
+        "EXPO_USE_HERMES": "true",
+        "SKIP_IOS_POD_INSTALL": "true"
       },
       "ios": {
         "buildConfiguration": "Release"
@@ -48,7 +49,8 @@
         "EXPO_PUBLIC_AUTH_PROXY_URL": "https://auth.expo.dev/@pixelpulselab/likeme-front-end",
         "EXPO_PUBLIC_AUTH_PROXY_PROJECT": "@pixelpulselab/likeme-front-end",
         "EXPO_PUBLIC_AUTH_REDIRECT_PATH": "auth",
-        "EXPO_USE_HERMES": "true"
+        "EXPO_USE_HERMES": "true",
+        "SKIP_IOS_POD_INSTALL": "true"
       },
       "ios": {
         "buildConfiguration": "Release"
@@ -61,12 +63,37 @@
         },
         "gradleCommand": ":app:bundleRelease"
       }
+    },
+    "production-apk": {
+      "distribution": "store",
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_BACKEND_URL": "https://likeme-back-end-one.vercel.app",
+        "EXPO_PUBLIC_AUTH0_DOMAIN": "likeme.us.auth0.com",
+        "EXPO_PUBLIC_USE_AUTH_PROXY": "true",
+        "EXPO_PUBLIC_AUTH_SCHEME": "likeme",
+        "EXPO_PUBLIC_AUTH_PROXY_URL": "https://auth.expo.dev/@pixelpulselab/likeme-front-end",
+        "EXPO_PUBLIC_AUTH_PROXY_PROJECT": "@pixelpulselab/likeme-front-end",
+        "EXPO_PUBLIC_AUTH_REDIRECT_PATH": "auth",
+        "EXPO_USE_HERMES": "true",
+        "SKIP_IOS_POD_INSTALL": "true"
+      },
+      "ios": {
+        "buildConfiguration": "Release"
+      },
+      "android": {
+        "buildType": "apk",
+        "env": {
+          "EXPO_USE_HERMES": "true",
+          "SKIP_IOS_POD_INSTALL": "true"
+        }
+      }
     }
   },
   "submit": {
     "staging": {
       "ios": {
-        "appleId": "6757706434",
+        "appleId": "eduarda.s.weber@gmail.com",
         "ascAppId": "6757706434",
         "appleTeamId": "VS752K4DT8"
       },
@@ -76,7 +103,7 @@
     },
     "production": {
       "ios": {
-        "appleId": "6757706434",
+        "appleId": "eduarda.s.weber@gmail.com",
         "ascAppId": "6757706434",
         "appleTeamId": "VS752K4DT8"
       },

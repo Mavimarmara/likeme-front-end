@@ -66,7 +66,7 @@ echo "2) Dispositivo físico (requer USB debugging habilitado)"
 echo "3) APK de release (para testes/distribuição direta)"
 echo "4) AAB de release (para Google Play Store)"
 echo "5) EAS Build local (staging - APK)"
-echo "6) EAS Build local (production - AAB)"
+echo "6) EAS Build local (production - APK)"
 echo "7) EAS Build na nuvem (staging)"
 echo "8) EAS Build na nuvem (production)"
 read -p "Escolha (1-8): " build_type
@@ -291,8 +291,8 @@ case $build_type in
     ;;
   6)
     echo ""
-    echo "🚀 Iniciando EAS Build local (production - AAB)..."
-    echo "📦 Isso criará um AAB usando EAS Build localmente"
+    echo "🚀 Iniciando EAS Build local (production - APK)..."
+    echo "📦 Isso criará um APK de produção (backend production) usando EAS Build localmente"
     echo ""
     
     # Auto-confirmar se não for interativo
@@ -306,7 +306,7 @@ case $build_type in
       echo "✅ Modo não-interativo: continuando automaticamente..."
     fi
     
-    eas build --local --platform android --profile production
+    eas build --local --platform android --profile production-apk
     ;;
   7)
     echo ""
