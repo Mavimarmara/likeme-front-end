@@ -21,7 +21,7 @@ Este guia explica como configurar e publicar o app LikeMe no TestFlight.
 5. Preencha:
    - **Description**: `LikeMe App`
    - **Bundle ID**: Selecione **Explicit**
-   - **Bundle ID**: Digite `com.likeme.app` (deve ser EXATAMENTE igual ao `app.json`)
+   - **Bundle ID**: Digite `app.likeme.com` (iOS; deve ser EXATAMENTE igual ao `app.json`)
 6. Selecione as **Capabilities** necessárias (Push Notifications, etc.)
 7. Clique em **Continue** → **Register**
 
@@ -35,7 +35,7 @@ Este guia explica como configurar e publicar o app LikeMe no TestFlight.
    - **Platform**: iOS
    - **Name**: LikeMe
    - **Primary Language**: Portuguese (Brazil) ou English
-   - **Bundle ID**: Selecione `com.likeme.app` (já registrado no Passo 1)
+   - **Bundle ID**: Selecione `app.likeme.com` (já registrado no Passo 1)
    - **SKU**: `likeme-ios` (identificador único)
 4. Anote o **App ID** (será usado no `eas.json`)
 
@@ -236,7 +236,7 @@ eas credentials
 
 - [ ] Conta Apple Developer ativa
 - [ ] App criado no App Store Connect
-- [ ] Bundle ID registrado (`com.likeme.app`)
+- [ ] Bundle ID registrado (`app.likeme.com` para iOS)
 - [ ] `eas.json` configurado com credenciais
 - [ ] Credenciais configuradas no EAS
 - [ ] Build criado com sucesso

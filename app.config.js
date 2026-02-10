@@ -192,7 +192,7 @@ module.exports = {
   expo: {
     name: 'LikeMe',
     slug: 'likeme-front-end',
-    version: '1.0.0',
+    version: '1.0.1',
     orientation: 'portrait',
     userInterfaceStyle: 'light',
     platforms: ['ios', 'android', 'web'],
@@ -207,12 +207,13 @@ module.exports = {
         },
       ],
       '@react-native-firebase/app',
+      './plugins/withPodfileModularHeaders.js',
     ],
     scheme: 'likeme',
     android: {
       package: 'com.likeme.app',
       googleServicesFile: './google-services.json',
-      versionCode: 1,
+      versionCode: 2,
       adaptiveIcon: {
         foregroundImage: './assets/Logo2.png',
         backgroundColor: '#FFFFFF',
@@ -232,9 +233,9 @@ module.exports = {
       ],
     },
     ios: {
-      bundleIdentifier: 'com.likeme.app',
+      bundleIdentifier: 'app.likeme.com',
       googleServicesFile: './GoogleService-Info.plist',
-      buildNumber: '7',
+      buildNumber: '8',
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
       },

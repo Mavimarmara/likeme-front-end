@@ -43,6 +43,32 @@ Os testes usam `openLink` com a URL do Expo (formato `exp://IP:PORT`).
 - `personal-objectives.yaml` - Testa a seleção de objetivos pessoais
 - `onboarding-flow.yaml` - Testa o fluxo completo de onboarding
 - `complete-user-journey.yaml` - Testa a jornada completa do usuário
+- `export-screenshots.yaml` - Exporta telas de auth como screenshots (PNG)
+- `export-screenshots-app.yaml` - Exporta telas do app autenticado (requer login prévio)
+
+## Exportar Screenshots das Telas
+
+Para exportar todas as telas do app como imagens PNG:
+
+**Telas de auth (sem login):**
+```bash
+npm run export:screenshots
+```
+
+**Telas do app autenticado (Summary, Atividades, Marketplace, etc.):**
+1. Execute o app e faça login manualmente
+2. Complete o onboarding
+3. Feche o app e execute:
+```bash
+npm run export:screenshots:app
+```
+
+Os screenshots são salvos em `.maestro/screenshots/`. Para converter para JPG:
+
+```bash
+cd .maestro/screenshots/screens
+for f in *.png; do sips -s format jpeg "$f" --out "${f%.png}.jpg"; done
+```
 
 ## Executando os Testes
 

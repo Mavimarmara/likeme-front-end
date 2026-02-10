@@ -6,13 +6,13 @@ O **Bundle ID** (ou **Bundle Identifier**) é um identificador único e reverso 
 
 **Formato**: `com.empresa.app` (formato reverso de domínio)
 
-**Exemplo atual do projeto**: `com.likeme.app`
+**Exemplo atual do projeto**: iOS `app.likeme.com`, Android `com.likeme.app`
 
 ## 📋 Configuração Atual do Projeto
 
 Seu projeto já está configurado com:
 
-- **Bundle ID**: `com.likeme.app`
+- **Bundle ID (iOS)**: `app.likeme.com`
 - **Android Package**: `com.likeme.app`
 
 Arquivos onde está configurado:
@@ -44,7 +44,7 @@ Arquivos onde está configurado:
 
    - **Description**: `LikeMe App` (nome descritivo)
    - **Bundle ID**: Selecione **Explicit**
-   - **Bundle ID**: Digite `com.likeme.app`
+   - **Bundle ID**: Digite `app.likeme.com` (iOS)
    - ⚠️ **IMPORTANTE**: Deve ser EXATAMENTE igual ao configurado no `app.json`
 
 5. **Selecionar Capabilities (Recursos)**
@@ -104,7 +104,7 @@ Após registrar o Bundle ID, você precisa criar o app no App Store Connect:
    **Bundle ID**:
 
    - Clique em **Select** ou **Register a new Bundle ID**
-   - Se já registrou: Selecione `com.likeme.app` da lista
+   - Se já registrou: Selecione `app.likeme.com` da lista
    - Se não registrou: Clique em **Register a new Bundle ID** e siga o Passo 1
 
    **SKU** (Stock Keeping Unit):
@@ -137,7 +137,7 @@ Após registrar o Bundle ID, você precisa criar o app no App Store Connect:
 {
   "expo": {
     "ios": {
-      "bundleIdentifier": "com.likeme.app" // ✅ Deve estar assim
+      "bundleIdentifier": "app.likeme.com" // ✅ iOS
     }
   }
 }
@@ -147,7 +147,7 @@ Após registrar o Bundle ID, você precisa criar o app no App Store Connect:
 
 ```javascript
 ios: {
-  bundleIdentifier: 'com.likeme.app',  // ✅ Deve estar assim
+  bundleIdentifier: 'app.likeme.com',  // ✅ iOS
   buildNumber: '1',
 }
 ```
@@ -204,9 +204,9 @@ com.[empresa].[app]
 
 ### Exemplos
 
-- ✅ `com.likeme.app` - Correto
-- ✅ `com.likeme.app.staging` - Para versão staging
-- ✅ `com.likeme.app.production` - Para versão production
+- ✅ `app.likeme.com` - iOS produção
+- ✅ `com.likeme.app` - Android
+- ✅ `app.likeme.com.staging` - iOS staging (se usar)
 - ❌ `likeme.app` - Incorreto (falta `com.`)
 - ❌ `com.likeme` - Incorreto (muito genérico)
 
@@ -214,15 +214,15 @@ com.[empresa].[app]
 
 Se você tiver múltiplos apps ou ambientes:
 
-- **Produção**: `com.likeme.app`
-- **Staging**: `com.likeme.app.staging`
-- **Desenvolvimento**: `com.likeme.app.dev`
+- **iOS Produção**: `app.likeme.com`
+- **Android**: `com.likeme.app`
+- **Staging/Dev**: variantes conforme necessário
 
 ⚠️ **IMPORTANTE**: Cada Bundle ID precisa ser registrado separadamente no Apple Developer.
 
 ## ✅ Checklist
 
-- [ ] Bundle ID definido no projeto (`com.likeme.app`)
+- [ ] Bundle ID iOS no projeto (`app.likeme.com`), Android (`com.likeme.app`)
 - [ ] Bundle ID registrado no Apple Developer Portal
 - [ ] App criado no App Store Connect
 - [ ] Apple ID do app anotado (para `ascAppId`)

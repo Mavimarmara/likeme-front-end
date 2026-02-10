@@ -15,7 +15,7 @@ Camada centralizada de **Google Analytics 4 (GA4)** para o app React Native (Exp
 **Já configurado no projeto:**
 - Pacotes `@react-native-firebase/app` e `@react-native-firebase/analytics` instalados.
 - Plugins do Firebase no `app.config.js`.
-- **iOS:** `GoogleService-Info.plist` na raiz do projeto; `ios.bundleIdentifier` = `com.likeme.app`; Analytics habilitado no plist.
+- **iOS:** `GoogleService-Info.plist` na raiz do projeto; `ios.bundleIdentifier` = `app.likeme.com`; Analytics habilitado no plist.
 
 **O que falta (se quiser GA4 no Android):**
 
