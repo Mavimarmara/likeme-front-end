@@ -1,7 +1,5 @@
-import { ImageStyle, StyleSheet, Dimensions } from 'react-native';
+import { ImageStyle, StyleSheet } from 'react-native';
 import { COLORS, SPACING } from '@/constants';
-
-const { width } = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
   safeArea: {
@@ -65,11 +63,11 @@ export const styles = StyleSheet.create({
   },
   infoSection: {
     width: '100%',
-    alignItems: 'flex-start',
+    alignItems: 'stretch',
     display: 'flex',
     flexDirection: 'column',
     gap: 16,
-    paddingHorizontal: SPACING.XS,
+    paddingHorizontal: 0,
   },
   infoText: {
     color: 'rgba(0, 17, 55, 1)',
@@ -81,10 +79,14 @@ export const styles = StyleSheet.create({
   },
   fieldsContainer: {
     width: '100%',
-    alignItems: 'flex-start',
+    alignItems: 'stretch',
     display: 'flex',
     flexDirection: 'column',
     gap: 16,
+  },
+  fieldRow: {
+    width: '100%',
+    alignSelf: 'stretch',
   },
   footer: {
     position: 'absolute',
@@ -102,5 +104,94 @@ export const styles = StyleSheet.create({
     bottom: 0,
     paddingBottom: 0,
     paddingTop: 0,
+  },
+  scrollContentInner: {
+    flexGrow: 1,
+    width: '100%',
+  },
+  genderLabel: {
+    color: 'rgba(0, 17, 55, 1)',
+    fontFamily: 'DM Sans',
+    fontSize: 14,
+    fontWeight: '400',
+    letterSpacing: 0.2,
+    lineHeight: 22,
+    marginBottom: 8,
+  },
+  genderTouchable: {
+    alignSelf: 'stretch',
+    backgroundColor: '#fdfbee',
+    borderRadius: 18,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 16,
+    elevation: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    minHeight: 42,
+  },
+  genderTouchableText: {
+    color: '#001137',
+    fontFamily: 'DM Sans',
+    fontSize: 14,
+    fontWeight: '400',
+    letterSpacing: 0.2,
+    lineHeight: 20,
+    flex: 1,
+  },
+  genderPlaceholder: {
+    color: 'rgba(110, 106, 106, 1)',
+  },
+  genderModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  genderModalContent: {
+    backgroundColor: COLORS.BACKGROUND,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingHorizontal: SPACING.MD,
+    paddingTop: SPACING.MD,
+    paddingBottom: SPACING.XXL + 24,
+  },
+  genderModalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: SPACING.LG,
+  },
+  genderModalTitle: {
+    color: COLORS.NEUTRAL.LOW.PURE,
+    fontFamily: 'DM Sans',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  genderOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: SPACING.MD,
+    paddingHorizontal: SPACING.SM,
+    borderRadius: 12,
+    marginBottom: SPACING.XS,
+  },
+  genderOptionSelected: {
+    backgroundColor: 'rgba(1, 84, 248, 0.08)',
+  },
+  genderOptionText: {
+    color: COLORS.NEUTRAL.LOW.PURE,
+    fontFamily: 'DM Sans',
+    fontSize: 16,
+    fontWeight: '400',
+    flex: 1,
+  },
+  genderOptionTextSelected: {
+    fontWeight: '600',
+    color: COLORS.PRIMARY.PURE,
   },
 });
