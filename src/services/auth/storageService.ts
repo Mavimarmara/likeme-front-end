@@ -6,6 +6,7 @@ const TOKEN_KEY = '@likeme:auth_token';
 const USER_KEY = '@likeme:user';
 const REGISTER_COMPLETED_AT_KEY = '@likeme:register_completed_at';
 const OBJECTIVES_SELECTED_AT_KEY = '@likeme:objectives_selected_at';
+const SELECTED_OBJECTIVES_IDS_KEY = '@likeme:selected_objectives_ids';
 const ANAMNESIS_COMPLETED_AT_KEY = '@likeme:anamnesis_completed_at';
 const CART_ITEMS_KEY = '@likeme:cart_items';
 
@@ -107,6 +108,28 @@ class StorageService {
     }
   }
 
+  async setSelectedObjectivesIds(ids: string[]): Promise<void> {
+    try {
+      await AsyncStorage.setItem(SELECTED_OBJECTIVES_IDS_KEY, JSON.stringify(ids));
+    } catch (error) {
+      logger.error('Error saving selected objectives ids:', error);
+    }
+  }
+
+  async getSelectedObjectivesIds(): Promise<string[]> {
+    try {
+      const raw = await AsyncStorage.getItem(SELECTED_OBJECTIVES_IDS_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as string[];
+        return Array.isArray(parsed) ? parsed : [];
+      }
+      return [];
+    } catch (error) {
+      logger.error('Error getting selected objectives ids:', error);
+      return [];
+    }
+  }
+
   async setAnamnesisCompletedAt(date: string | null): Promise<void> {
     try {
       if (date) {
@@ -192,6 +215,7 @@ class StorageService {
       await this.removeUser();
       await AsyncStorage.removeItem(REGISTER_COMPLETED_AT_KEY);
       await AsyncStorage.removeItem(OBJECTIVES_SELECTED_AT_KEY);
+      await AsyncStorage.removeItem(SELECTED_OBJECTIVES_IDS_KEY);
       await AsyncStorage.removeItem(ANAMNESIS_COMPLETED_AT_KEY);
       await this.clearCart();
     } catch (error) {

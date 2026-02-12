@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { View, Text, ScrollView, Image, useWindowDimensions } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { View, Text, ScrollView, Image, useWindowDimensions, Alert } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import type { StackScreenProps } from '@react-navigation/stack';
 import {
   Header,
   Title,
@@ -8,25 +9,27 @@ import {
   PrimaryButton,
   SecondaryButton,
   ButtonGroup,
-  Loading,
 } from '@/components/ui';
 import { GradientSplash6 } from '@/assets';
-import { personalObjectivesService, storageService } from '@/services';
+import { storageService } from '@/services';
 import { useTranslation } from '@/hooks/i18n';
-import { PersonalObjective } from '@/types';
-import { showError } from '@/utils';
-import { useAnalyticsScreen } from '@/analytics';
+import { useAnalyticsScreen, logEvent } from '@/analytics';
+import { CUSTOM_EVENTS, ANALYTICS_PARAMS } from '@/analytics/constants';
+import { COLORS, SPACING } from '@/constants';
+import type { RootStackParamList } from '@/types/navigation';
+import { useObjectives } from './useObjectives';
 import { styles } from './styles';
 
-type Props = { navigation: any; route: any };
+type Props = StackScreenProps<RootStackParamList, 'PersonalObjectives'>;
 
 const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
   useAnalyticsScreen({ screenName: 'PersonalObjectives', screenClass: 'PersonalObjectivesScreen' });
+  const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const userName = route.params?.userName || 'Usuário';
-  const [objectives, setObjectives] = useState<PersonalObjective[]>([]);
+  const { objectives } = useObjectives();
   const [selectedObjectives, setSelectedObjectives] = useState<Set<string>>(new Set());
-  const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { width: windowWidth } = useWindowDimensions();
   const adornmentStyle = useMemo(() => {
     const size = windowWidth * 0.45;
@@ -39,48 +42,50 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
   }, [windowWidth]);
 
   useEffect(() => {
-    loadObjectives();
+    const loadSavedSelection = async () => {
+      try {
+        const ids = await storageService.getSelectedObjectivesIds();
+        if (ids.length > 0) setSelectedObjectives(new Set(ids));
+      } catch {
+        // Ignora falha ao carregar seleção anterior
+      }
+    };
+    loadSavedSelection();
   }, []);
 
-  const loadObjectives = async () => {
+  const toggleObjective = useCallback((objectiveId: string) => {
+    setSelectedObjectives((prev) => {
+      const next = new Set(prev);
+      if (next.has(objectiveId)) next.delete(objectiveId);
+      else next.add(objectiveId);
+      return next;
+    });
+  }, []);
+
+  const handleSubmit = useCallback(async () => {
+    if (selectedObjectives.size === 0) {
+      Alert.alert(t('auth.requiredField'), t('auth.objectivesSelectAtLeastOne'));
+      return;
+    }
     try {
-      setLoading(true);
-      const response = await personalObjectivesService.getPersonalObjectives({
-        page: 1,
-        limit: 100,
+      setIsSubmitting(true);
+      const now = new Date().toISOString();
+      await storageService.setSelectedObjectivesIds(Array.from(selectedObjectives));
+      await storageService.setObjectivesSelectedAt(now);
+      logEvent(CUSTOM_EVENTS.OBJECTIVES_SUBMITTED, {
+        [ANALYTICS_PARAMS.SCREEN_NAME]: 'personal_objectives',
+        [ANALYTICS_PARAMS.VALUE]: selectedObjectives.size,
       });
-      setObjectives(response.data.objectives);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : t('auth.loadingObjectives');
-      showError(navigation, errorMessage, () => {
-        loadObjectives();
-      });
+      navigation.navigate('Home');
+    } catch {
+      Alert.alert(t('common.error'), t('auth.objectivesSaveError'));
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
-  };
+  }, [selectedObjectives, navigation, t]);
 
-  const toggleObjective = (objectiveId: string) => {
-    const newSelected = new Set(selectedObjectives);
-    if (newSelected.has(objectiveId)) {
-      newSelected.delete(objectiveId);
-    } else {
-      newSelected.add(objectiveId);
-    }
-    setSelectedObjectives(newSelected);
-  };
-
-  const handleNext = async () => {
-    const now = new Date().toISOString();
-    await storageService.setObjectivesSelectedAt(now);
-    navigation.navigate('Home' as never);
-  };
-
-  const handleSkip = async () => {
-    const now = new Date().toISOString();
-    await storageService.setObjectivesSelectedAt(now);
-    navigation.navigate('Home' as never);
-  };
+  const handleNext = useCallback(() => handleSubmit(), [handleSubmit]);
+  const handleSkip = useCallback(() => handleSubmit(), [handleSubmit]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -103,27 +108,40 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
 
           <Text style={styles.question}>{t('auth.personalObjectivesQuestion')}</Text>
 
-          {loading ? (
-            <Loading message={t('auth.loadingObjectives')} />
-          ) : (
-            <View style={styles.chipsContainer}>
-              {objectives.map((objective) => (
+          <View style={styles.chipsContainer}>
+            {objectives.map((objective) => {
+              const label = t(objective.i18nKey);
+              const selected = selectedObjectives.has(objective.id);
+              return (
                 <Chip
                   key={objective.id}
-                  label={objective.name}
-                  selected={selectedObjectives.has(objective.id)}
+                  label={label}
+                  selected={selected}
                   onPress={() => toggleObjective(objective.id)}
+                  selectedBackgroundColor={COLORS.HIGHLIGHT.LIGHT}
+                  selectedTextColor={COLORS.NEUTRAL.LOW.PURE}
+                  accessibilityLabel={label}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected }}
                 />
-              ))}
-            </View>
-          )}
+              );
+            })}
+          </View>
         </View>
       </ScrollView>
 
-      <View style={styles.footer}>
+      <View style={[styles.footer, { paddingBottom: SPACING.XL + insets.bottom }]}>
         <ButtonGroup style={styles.buttonGroup}>
-          <PrimaryButton label={t('common.next')} onPress={handleNext} />
-          <SecondaryButton label={t('common.skipInformation')} onPress={handleSkip} />
+          <PrimaryButton
+            label={t('common.next')}
+            onPress={handleNext}
+            disabled={isSubmitting}
+          />
+          <SecondaryButton
+            label={t('common.skipInformation')}
+            onPress={handleSkip}
+            disabled={isSubmitting}
+          />
         </ButtonGroup>
       </View>
     </SafeAreaView>

@@ -1,7 +1,5 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { COLORS, SPACING } from '@/constants';
-
-const { width } = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
   container: {
@@ -34,7 +32,7 @@ export const styles = StyleSheet.create({
     position: 'absolute',
   },
   question: {
-    color: 'rgba(0, 17, 55, 1)',
+    color: COLORS.TEXT,
     fontFamily: 'DM Sans',
     fontSize: 16,
     fontWeight: '400',

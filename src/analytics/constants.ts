@@ -65,6 +65,8 @@ export const CUSTOM_EVENTS = {
   RELATED_PRODUCT_CLICK: 'related_product_click',
   /** Plano clicado */
   PLAN_CLICK: 'plan_click',
+  /** Objetivos pessoais submetidos (onboarding) */
+  OBJECTIVES_SUBMITTED: 'objectives_submitted',
 } as const;
 
 export const ANALYTICS_EVENTS = { ...GA4_EVENTS, ...CUSTOM_EVENTS } as const;
