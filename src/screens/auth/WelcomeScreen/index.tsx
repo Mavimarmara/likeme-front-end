@@ -24,10 +24,14 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
   const inputRef = useRef<RNTextInput>(null);
 
   useEffect(() => {
-    const markWelcomeAccessed = async () => {
+    const init = async () => {
       await storageService.setWelcomeScreenAccessedAt(new Date().toISOString());
+      const user = await storageService.getUser();
+      if (user?.name || user?.nickname || user?.email) {
+        setName(user.name || user.nickname || user.email || '');
+      }
     };
-    markWelcomeAccessed();
+    init();
   }, []);
 
   useEffect(() => {

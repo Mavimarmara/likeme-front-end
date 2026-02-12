@@ -3,7 +3,6 @@ import { View, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header, Title, ButtonGroup, PrimaryButton, SecondaryButton } from '@/components/ui';
 import { GradientSplash4 } from '@/assets';
-import { useAuthLogin } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
@@ -14,14 +13,13 @@ const IntroScreen: React.FC<Props> = ({ navigation, route }) => {
   useAnalyticsScreen({ screenName: 'Intro', screenClass: 'IntroScreen' });
   const { t } = useTranslation();
   const userName = route.params?.userName || 'Usuário';
-  const { handleLogin, isLoading } = useAuthLogin(navigation);
 
   const handleShowPresentation = () => {
-    navigation.navigate('AppPresentation' as never);
+    navigation.navigate('AppPresentation', { userName });
   };
 
-  const handleGoToApp = () => {
-    handleLogin();
+  const handleSkipToRegister = () => {
+    navigation.navigate('Register', { userName });
   };
 
   return (
@@ -47,12 +45,10 @@ const IntroScreen: React.FC<Props> = ({ navigation, route }) => {
             <PrimaryButton
               label={t('auth.yesSure')}
               onPress={handleShowPresentation}
-              disabled={isLoading}
             />
             <SecondaryButton
               label={t('auth.noStraightToApp')}
-              onPress={handleGoToApp}
-              loading={isLoading}
+              onPress={handleSkipToRegister}
             />
           </ButtonGroup>
         </View>

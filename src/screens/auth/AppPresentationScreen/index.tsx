@@ -3,20 +3,19 @@ import { View, Text, Image, TouchableOpacity, ScrollView, Dimensions } from 'rea
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '@/components/ui';
 import { PRESENTATION_PAGES } from '@/constants/presentation';
-import { useAuthLogin } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
 const { width } = Dimensions.get('window');
 
-type Props = { navigation: any };
+type Props = { navigation: any; route: any };
 
-const AppPresentationScreen: React.FC<Props> = ({ navigation }) => {
+const AppPresentationScreen: React.FC<Props> = ({ navigation, route }) => {
   useAnalyticsScreen({ screenName: 'AppPresentation', screenClass: 'AppPresentationScreen' });
   const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState(0);
-  const { handleLogin, isLoading } = useAuthLogin(navigation);
+  const userName = route.params?.userName || 'Usuário';
 
   const pages = useMemo(() => {
     return PRESENTATION_PAGES.map((page, index) => ({
@@ -26,16 +25,20 @@ const AppPresentationScreen: React.FC<Props> = ({ navigation }) => {
     }));
   }, [t]);
 
+  const goToRegister = () => {
+    navigation.navigate('Register', { userName });
+  };
+
   const handleNext = () => {
     if (currentPage < pages.length - 1) {
       setCurrentPage(currentPage + 1);
     } else {
-      handleLogin();
+      goToRegister();
     }
   };
 
   const handleSkip = () => {
-    handleLogin();
+    goToRegister();
   };
 
   const handleBack = () => {
@@ -78,16 +81,14 @@ const AppPresentationScreen: React.FC<Props> = ({ navigation }) => {
       <View style={styles.footer}>
         <View style={styles.footerActions}>
           <TouchableOpacity
-            style={[styles.skipButton, isLoading && styles.skipButtonDisabled]}
+            style={styles.skipButton}
             onPress={handleSkip}
-            disabled={isLoading}
           >
             <Text style={styles.skipText}>{t('common.skip')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.nextButton, isLoading && styles.nextButtonDisabled]}
+            style={styles.nextButton}
             onPress={handleNext}
-            disabled={isLoading}
           >
             <Text style={styles.nextButtonText}>›</Text>
           </TouchableOpacity>
