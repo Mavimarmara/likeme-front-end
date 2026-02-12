@@ -1,7 +1,39 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
+import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import RegisterScreen from './index';
+
+const t = (key: string, opts?: Record<string, string>) => {
+  const map: Record<string, string> = {
+    'auth.registerTitle': 'Vamos começar!',
+    'common.next': 'Próximo',
+    'common.skipInformation': 'Pular Informação',
+    'auth.fullName': 'Nome completo',
+    'auth.fullNamePlaceholder': 'Nome completo',
+    'auth.age': 'Idade',
+    'auth.agePlaceholder': 'Idade',
+    'auth.requiredField': 'Campo obrigatório',
+    'auth.fillFullName': 'Por favor, preencha o nome completo.',
+    'auth.validationInvalidNumber': 'Informe um número válido.',
+    'auth.validationOutOfRange': `Deve estar entre ${opts?.min ?? ''} e ${opts?.max ?? ''}.`,
+    'auth.gender': 'Gênero',
+    'auth.genderPlaceholder': 'Selecione',
+    'auth.registerInvitationQuestion': 'Convite?',
+    'auth.registerEnterCode': 'Código',
+    'auth.registerCodePlaceholder': 'Código',
+    'auth.registerInfoMessage': 'Info',
+    'auth.weight': 'Peso',
+    'auth.weightPlaceholder': 'Peso',
+    'auth.height': 'Altura',
+    'auth.heightPlaceholder': 'Altura',
+    'auth.insurance': 'Convênio',
+    'auth.insurancePlaceholder': 'Convênio',
+    'common.close': 'Fechar',
+    'common.error': 'Erro',
+    'auth.registerError': 'Não foi possível salvar. Tente novamente.',
+  };
+  return map[key] ?? key;
+};
 
 jest.mock('react-native-safe-area-context', () => {
   const ReactNative = require('react-native');
@@ -11,8 +43,25 @@ jest.mock('react-native-safe-area-context', () => {
   };
 });
 
+jest.mock('@/hooks/i18n', () => ({
+  useTranslation: () => ({ t }),
+}));
+
+jest.mock('@/analytics', () => ({
+  useAnalyticsScreen: () => {},
+}));
+
 jest.mock('@/assets', () => ({
-  GradientSplash3: 'GradientSplash3',
+  GradientSplash5: 'GradientSplash5',
+}));
+
+jest.mock('@/services', () => ({
+  storageService: {
+    setRegisterCompletedAt: jest.fn().mockResolvedValue(undefined),
+  },
+  personsService: {
+    createOrUpdatePerson: jest.fn().mockResolvedValue(undefined),
+  },
 }));
 
 jest.mock('@/components/ui', () => {
@@ -53,152 +102,147 @@ jest.mock('@/components/ui', () => {
   };
 });
 
+const getServices = () => require('@/services');
+
 describe('RegisterScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    getServices().personsService.createOrUpdatePerson.mockResolvedValue(undefined);
+    getServices().storageService.setRegisterCompletedAt.mockResolvedValue(undefined);
   });
 
   it('renders correctly', () => {
-    const mockNavigation = {
-      navigate: jest.fn(),
-      goBack: jest.fn(),
-    };
-    const mockRoute = {
-      params: {},
-    };
+    const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
+    const mockRoute = { params: {} };
 
     const { getByText } = render(<RegisterScreen navigation={mockNavigation} route={mockRoute} />);
 
-    expect(getByText("Let's start,")).toBeTruthy();
-    expect(getByText('Next')).toBeTruthy();
-    expect(getByText('Skip information')).toBeTruthy();
+    expect(getByText('Vamos começar!')).toBeTruthy();
+    expect(getByText('Próximo')).toBeTruthy();
+    expect(getByText('Pular Informação')).toBeTruthy();
   });
 
-  it('navigates to PersonalObjectives when Next button is pressed', () => {
-    const mockNavigation = {
-      navigate: jest.fn(),
-      goBack: jest.fn(),
-    };
-    const mockRoute = {
-      params: {
-        userName: 'John',
-      },
-    };
-
-    const { getByText } = render(<RegisterScreen navigation={mockNavigation} route={mockRoute} />);
-
-    const nextButton = getByText('Next');
-    fireEvent.press(nextButton);
-
-    expect(mockNavigation.navigate).toHaveBeenCalledWith('PersonalObjectives', {
-      userName: 'John',
-    });
-  });
-
-  it('navigates to PersonalObjectives with fullName when Next button is pressed and fullName is set', () => {
-    const mockNavigation = {
-      navigate: jest.fn(),
-      goBack: jest.fn(),
-    };
-    const mockRoute = {
-      params: {
-        userName: 'John',
-      },
-    };
+  it('navigates to PersonalObjectives when Next button is pressed', async () => {
+    const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
+    const mockRoute = { params: { userName: 'John' } };
 
     const { getByText, getByTestId } = render(
       <RegisterScreen navigation={mockNavigation} route={mockRoute} />
     );
 
-    const fullNameInput = getByTestId('input-Full Name');
-    fireEvent.changeText(fullNameInput, 'John Doe');
+    fireEvent.changeText(getByTestId('input-Nome completo'), 'John');
+    fireEvent.press(getByText('Próximo'));
 
-    const nextButton = getByText('Next');
-    fireEvent.press(nextButton);
-
-    expect(mockNavigation.navigate).toHaveBeenCalledWith('PersonalObjectives', {
-      userName: 'John Doe',
+    await waitFor(() => {
+      expect(getServices().personsService.createOrUpdatePerson).toHaveBeenCalled();
+      expect(mockNavigation.navigate).toHaveBeenCalledWith('PersonalObjectives', {
+        userName: 'John',
+      });
     });
   });
 
-  it('navigates to PersonalObjectives when Skip button is pressed', () => {
-    const mockNavigation = {
-      navigate: jest.fn(),
-      goBack: jest.fn(),
-    };
-    const mockRoute = {
-      params: {
-        userName: 'John',
-      },
-    };
+  it('sends personData with optional fields when set', async () => {
+    const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
+    const mockRoute = { params: {} };
+
+    const { getByText, getByTestId } = render(
+      <RegisterScreen navigation={mockNavigation} route={mockRoute} />
+    );
+
+    fireEvent.changeText(getByTestId('input-Nome completo'), 'Maria Silva');
+    fireEvent.press(getByText('Próximo'));
+
+    await expect(getServices().personsService.createOrUpdatePerson).toHaveBeenCalledWith(
+      expect.objectContaining({
+        firstName: 'Maria',
+        lastName: 'Silva',
+      })
+    );
+  });
+
+  it('navigates to PersonalObjectives with fullName when Next is pressed and fullName is set', async () => {
+    const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
+    const mockRoute = { params: { userName: 'John' } };
+
+    const { getByText, getByTestId } = render(
+      <RegisterScreen navigation={mockNavigation} route={mockRoute} />
+    );
+
+    fireEvent.changeText(getByTestId('input-Nome completo'), 'John Doe');
+    fireEvent.press(getByText('Próximo'));
+
+    await waitFor(() => {
+      expect(getServices().personsService.createOrUpdatePerson).toHaveBeenCalled();
+      expect(mockNavigation.navigate).toHaveBeenCalledWith('PersonalObjectives', {
+        userName: 'John Doe',
+      });
+    });
+  });
+
+  it('navigates to PersonalObjectives when Skip button is pressed', async () => {
+    const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
+    const mockRoute = { params: { userName: 'John' } };
 
     const { getByText } = render(<RegisterScreen navigation={mockNavigation} route={mockRoute} />);
 
-    const skipButton = getByText('Skip information');
-    fireEvent.press(skipButton);
+    fireEvent.press(getByText('Pular Informação'));
 
+    await expect(getServices().storageService.setRegisterCompletedAt).toHaveBeenCalled();
     expect(mockNavigation.navigate).toHaveBeenCalledWith('PersonalObjectives', {
       userName: 'John',
     });
   });
 
-  it('shows alert when Next button is pressed without fullName', () => {
-    const mockNavigation = {
-      navigate: jest.fn(),
-      goBack: jest.fn(),
-    };
-    const mockRoute = {
-      params: {},
-    };
-
+  it('shows alert when Next is pressed without fullName', () => {
+    const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
+    const mockRoute = { params: {} };
     const alertSpy = jest.spyOn(Alert, 'alert');
 
     const { getByText, getByTestId } = render(
       <RegisterScreen navigation={mockNavigation} route={mockRoute} />
     );
 
-    const fullNameInput = getByTestId('input-Full Name');
-    fireEvent.changeText(fullNameInput, '');
+    fireEvent.changeText(getByTestId('input-Nome completo'), '');
+    fireEvent.press(getByText('Próximo'));
 
-    const nextButton = getByText('Next');
-    fireEvent.press(nextButton);
-
-    expect(alertSpy).toHaveBeenCalledWith(
-      'Campo obrigatório',
-      'Por favor, preencha o nome completo.'
-    );
+    expect(alertSpy).toHaveBeenCalledWith('Campo obrigatório', 'Por favor, preencha o nome completo.');
     expect(mockNavigation.navigate).not.toHaveBeenCalled();
+    expect(getServices().personsService.createOrUpdatePerson).not.toHaveBeenCalled();
 
     alertSpy.mockRestore();
   });
 
-  it('shows alert when Next button is pressed with only whitespace in fullName', () => {
-    const mockNavigation = {
-      navigate: jest.fn(),
-      goBack: jest.fn(),
-    };
-    const mockRoute = {
-      params: {},
-    };
-
+  it('shows alert when Next is pressed with only whitespace in fullName', () => {
+    const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
+    const mockRoute = { params: {} };
     const alertSpy = jest.spyOn(Alert, 'alert');
 
     const { getByText, getByTestId } = render(
       <RegisterScreen navigation={mockNavigation} route={mockRoute} />
     );
 
-    const fullNameInput = getByTestId('input-Full Name');
-    fireEvent.changeText(fullNameInput, '   ');
+    fireEvent.changeText(getByTestId('input-Nome completo'), '   ');
+    fireEvent.press(getByText('Próximo'));
 
-    const nextButton = getByText('Next');
-    fireEvent.press(nextButton);
-
-    expect(alertSpy).toHaveBeenCalledWith(
-      'Campo obrigatório',
-      'Por favor, preencha o nome completo.'
-    );
+    expect(alertSpy).toHaveBeenCalledWith('Campo obrigatório', 'Por favor, preencha o nome completo.');
     expect(mockNavigation.navigate).not.toHaveBeenCalled();
 
     alertSpy.mockRestore();
+  });
+
+  it('does not navigate when age is out of range and sets field error', async () => {
+    const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
+    const mockRoute = { params: {} };
+
+    const { getByText, getByTestId } = render(
+      <RegisterScreen navigation={mockNavigation} route={mockRoute} />
+    );
+
+    fireEvent.changeText(getByTestId('input-Nome completo'), 'João');
+    fireEvent.changeText(getByTestId('input-Idade'), '200');
+    fireEvent.press(getByText('Próximo'));
+
+    expect(getServices().personsService.createOrUpdatePerson).not.toHaveBeenCalled();
+    expect(mockNavigation.navigate).not.toHaveBeenCalled();
   });
 });

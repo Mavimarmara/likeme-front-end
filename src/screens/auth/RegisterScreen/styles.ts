@@ -54,7 +54,7 @@ export const styles = StyleSheet.create({
     gap: 8,
   },
   invitationQuestion: {
-    color: 'rgba(0, 17, 55, 1)',
+    color: COLORS.NEUTRAL.LOW.PURE,
     fontFamily: 'DM Sans',
     fontSize: 16,
     fontWeight: '400',
@@ -70,7 +70,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 0,
   },
   infoText: {
-    color: 'rgba(0, 17, 55, 1)',
+    color: COLORS.NEUTRAL.LOW.PURE,
     fontFamily: 'DM Sans',
     fontSize: 16,
     fontWeight: '400',
@@ -110,7 +110,7 @@ export const styles = StyleSheet.create({
     width: '100%',
   },
   genderLabel: {
-    color: 'rgba(0, 17, 55, 1)',
+    color: COLORS.NEUTRAL.LOW.PURE,
     fontFamily: 'DM Sans',
     fontSize: 14,
     fontWeight: '400',
@@ -120,7 +120,7 @@ export const styles = StyleSheet.create({
   },
   genderTouchable: {
     alignSelf: 'stretch',
-    backgroundColor: '#fdfbee',
+    backgroundColor: COLORS.SECONDARY.LIGHT,
     borderRadius: 18,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -135,7 +135,7 @@ export const styles = StyleSheet.create({
     minHeight: 42,
   },
   genderTouchableText: {
-    color: '#001137',
+    color: COLORS.TEXT,
     fontFamily: 'DM Sans',
     fontSize: 14,
     fontWeight: '400',
@@ -144,11 +144,11 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   genderPlaceholder: {
-    color: 'rgba(110, 106, 106, 1)',
+    color: COLORS.TEXT_LIGHT,
   },
   genderModalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: COLORS.BLACK + '80',
     justifyContent: 'flex-end',
   },
   genderModalContent: {

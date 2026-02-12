@@ -12,8 +12,8 @@ import {
   Keyboard,
   Modal,
   TouchableOpacity,
-  findNodeHandle,
   TextInput as RNTextInput,
+  LayoutChangeEvent,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { StackScreenProps } from '@react-navigation/stack';
@@ -55,6 +55,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const { width: windowWidth } = useWindowDimensions();
+  // Código de convite: coletado na UI; enviar à API quando o backend suportar.
   const [invitationCode, setInvitationCode] = useState('');
   const [fullName, setFullName] = useState(route.params?.userName || '');
   const [age, setAge] = useState('');
@@ -63,11 +64,16 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
   const [height, setHeight] = useState('');
   const [insurance, setInsurance] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isSkipLoading, setIsSkipLoading] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const [genderModalVisible, setGenderModalVisible] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<{ age?: string; weight?: string; height?: string }>({});
 
   const scrollViewRef = useRef<ScrollView>(null);
   const scrollContentRef = useRef<View>(null);
+  const contentYRef = useRef(0);
+  const containerYRef = useRef(0);
+  const fieldYRef = useRef<Record<string, number>>({});
   const fullNameRowRef = useRef<View>(null);
   const ageRowRef = useRef<View>(null);
   const weightRowRef = useRef<View>(null);
@@ -94,25 +100,26 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
     };
   }, []);
 
-  const scrollToFocusedField = useCallback(
-    (rowRef: React.RefObject<View | null>) => {
-      const row = rowRef.current;
-      const content = scrollContentRef.current;
-      const scrollView = scrollViewRef.current;
-      if (!row || !content || !scrollView) return;
-      const contentNode = findNodeHandle(content);
-      if (contentNode == null) return;
-      row.measureLayout(
-        contentNode,
-        (_x, y) => {
-          const offsetY = Math.max(0, y - SCROLL_FOCUS_OFFSET_PX);
-          scrollView.scrollTo({ y: offsetY, animated: true });
-        },
-        () => {}
-      );
-    },
-    []
-  );
+  const scrollToFocusedField = useCallback((fieldKey: string) => {
+    const scrollView = scrollViewRef.current;
+    const y = fieldYRef.current[fieldKey];
+    if (scrollView == null || typeof y !== 'number') return;
+    const offsetY = Math.max(0, y - SCROLL_FOCUS_OFFSET_PX);
+    scrollView.scrollTo({ y: offsetY, animated: true });
+  }, []);
+
+  const handleContentLayout = useCallback((e: LayoutChangeEvent) => {
+    contentYRef.current = e.nativeEvent.layout.y;
+  }, []);
+
+  const handleContainerLayout = useCallback((e: LayoutChangeEvent) => {
+    containerYRef.current = e.nativeEvent.layout.y;
+  }, []);
+
+  const handleFieldLayout = useCallback((fieldKey: string) => (e: LayoutChangeEvent) => {
+    fieldYRef.current[fieldKey] =
+      contentYRef.current + containerYRef.current + e.nativeEvent.layout.y;
+  }, []);
 
   const topSectionStyle = useMemo(
     () => [
@@ -124,12 +131,38 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
     [insets.top]
   );
 
+  const validateNumericField = useCallback(
+    (value: string, min: number, max: number): string | undefined => {
+      if (!value.trim()) return undefined;
+      const n = Number(value.trim());
+      if (Number.isNaN(n)) return t('auth.validationInvalidNumber');
+      if (n < min || n > max) return t('auth.validationOutOfRange', { min: String(min), max: String(max) });
+      return undefined;
+    },
+    [t]
+  );
+
   const handleNext = useCallback(async () => {
     try {
       setIsLoading(true);
+      setFieldErrors({});
 
       if (!fullName.trim()) {
         Alert.alert(t('auth.requiredField'), t('auth.fillFullName'));
+        setIsLoading(false);
+        return;
+      }
+
+      const errors: { age?: string; weight?: string; height?: string } = {};
+      const ageError = validateNumericField(age, 1, 120);
+      if (ageError) errors.age = ageError;
+      const weightError = validateNumericField(weight, 1, 499);
+      if (weightError) errors.weight = weightError;
+      const heightError = validateNumericField(height, 30, 299);
+      if (heightError) errors.height = heightError;
+
+      if (Object.keys(errors).length > 0) {
+        setFieldErrors(errors);
         setIsLoading(false);
         return;
       }
@@ -163,10 +196,11 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [fullName, gender, age, weight, height, insurance, navigation, route.params?.userName, t]);
+  }, [fullName, gender, age, weight, height, insurance, navigation, route.params?.userName, t, validateNumericField]);
 
   const handleSkip = useCallback(async () => {
     try {
+      setIsSkipLoading(true);
       const now = new Date().toISOString();
       await storageService.setRegisterCompletedAt(now);
       navigation.navigate('PersonalObjectives', {
@@ -176,6 +210,8 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
       const message = error instanceof Error ? error.message : t('auth.registerError');
       console.error('Erro ao pular registro:', error);
       Alert.alert(t('common.error'), message);
+    } finally {
+      setIsSkipLoading(false);
     }
   }, [fullName, navigation, route.params?.userName, t]);
 
@@ -257,45 +293,49 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
                 </View>
               </View>
 
-              <View style={styles.content}>
+              <View style={styles.content} onLayout={handleContentLayout}>
                 <View style={styles.infoSection}>
                   <Text style={styles.infoText}>
                     {t('auth.registerInfoMessage')}
                   </Text>
 
-                  <View style={styles.fieldsContainer}>
-                    <View ref={fullNameRowRef} collapsable={false} style={styles.fieldRow}>
+                  <View style={styles.fieldsContainer} onLayout={handleContainerLayout}>
+                    <View ref={fullNameRowRef} collapsable={false} style={styles.fieldRow} onLayout={handleFieldLayout('fullName')}>
                       <TextInput
                         ref={fullNameInputRef}
                         label={t('auth.fullName')}
                         value={fullName}
                         onChangeText={setFullName}
                         placeholder={t('auth.fullNamePlaceholder')}
-                        onFocus={() => scrollToFocusedField(fullNameRowRef)}
+                        onFocus={() => scrollToFocusedField('fullName')}
                         returnKeyType="next"
                         onSubmitEditing={() => ageInputRef.current?.focus()}
                         blurOnSubmit={false}
                       />
                     </View>
 
-                    <View ref={ageRowRef} collapsable={false} style={styles.fieldRow}>
+                    <View ref={ageRowRef} collapsable={false} style={styles.fieldRow} onLayout={handleFieldLayout('age')}>
                       <TextInput
                         ref={ageInputRef}
                         label={t('auth.age')}
                         value={age}
-                        onChangeText={setAge}
+                        onChangeText={(v) => { setAge(v); setFieldErrors((e) => (e.age ? { ...e, age: undefined } : e)); }}
                         placeholder={t('auth.agePlaceholder')}
                         keyboardType={Platform.OS === 'ios' ? 'number-pad' : 'numeric'}
-                        onFocus={() => scrollToFocusedField(ageRowRef)}
+                        onFocus={() => scrollToFocusedField('age')}
+                        error={fieldErrors.age}
                       />
                     </View>
 
-                    <View collapsable={false} style={styles.fieldRow}>
+                    <View collapsable={false} style={styles.fieldRow} onLayout={handleFieldLayout('gender')}>
                       <Text style={styles.genderLabel}>{t('auth.gender')}</Text>
                       <TouchableOpacity
                         style={styles.genderTouchable}
-                        onPress={() => setGenderModalVisible(true)}
+                        onPress={() => { Keyboard.dismiss(); setGenderModalVisible(true); }}
                         activeOpacity={0.7}
+                        accessibilityLabel={genderLabel ? `${t('auth.gender')}: ${genderLabel}` : t('auth.genderPlaceholder')}
+                        accessibilityRole="button"
+                        accessibilityHint={t('auth.genderPlaceholder')}
                       >
                         <Text
                           style={[
@@ -310,38 +350,40 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
                       </TouchableOpacity>
                     </View>
 
-                    <View ref={weightRowRef} collapsable={false} style={styles.fieldRow}>
+                    <View ref={weightRowRef} collapsable={false} style={styles.fieldRow} onLayout={handleFieldLayout('weight')}>
                       <TextInput
                         ref={weightInputRef}
                         label={t('auth.weight')}
                         value={weight}
-                        onChangeText={setWeight}
+                        onChangeText={(v) => { setWeight(v); setFieldErrors((e) => (e.weight ? { ...e, weight: undefined } : e)); }}
                         placeholder={t('auth.weightPlaceholder')}
                         keyboardType={Platform.OS === 'ios' ? 'number-pad' : 'numeric'}
-                        onFocus={() => scrollToFocusedField(weightRowRef)}
+                        onFocus={() => scrollToFocusedField('weight')}
+                        error={fieldErrors.weight}
                       />
                     </View>
 
-                    <View ref={heightRowRef} collapsable={false} style={styles.fieldRow}>
+                    <View ref={heightRowRef} collapsable={false} style={styles.fieldRow} onLayout={handleFieldLayout('height')}>
                       <TextInput
                         ref={heightInputRef}
                         label={t('auth.height')}
                         value={height}
-                        onChangeText={setHeight}
+                        onChangeText={(v) => { setHeight(v); setFieldErrors((e) => (e.height ? { ...e, height: undefined } : e)); }}
                         placeholder={t('auth.heightPlaceholder')}
                         keyboardType={Platform.OS === 'ios' ? 'number-pad' : 'numeric'}
-                        onFocus={() => scrollToFocusedField(heightRowRef)}
+                        onFocus={() => scrollToFocusedField('height')}
+                        error={fieldErrors.height}
                       />
                     </View>
 
-                    <View ref={insuranceRowRef} collapsable={false} style={styles.fieldRow}>
+                    <View ref={insuranceRowRef} collapsable={false} style={styles.fieldRow} onLayout={handleFieldLayout('insurance')}>
                       <TextInput
                         ref={insuranceInputRef}
                         label={t('auth.insurance')}
                         value={insurance}
                         onChangeText={setInsurance}
                         placeholder={t('auth.insurancePlaceholder')}
-                        onFocus={() => scrollToFocusedField(insuranceRowRef)}
+                        onFocus={() => scrollToFocusedField('insurance')}
                         returnKeyType="done"
                         onSubmitEditing={() => Keyboard.dismiss()}
                       />
@@ -357,9 +399,13 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
               <PrimaryButton
                 label={isLoading ? t('common.saving') : t('common.next')}
                 onPress={handleNext}
-                disabled={isLoading}
+                disabled={isLoading || isSkipLoading}
               />
-              <SecondaryButton label={t('common.skipInformation')} onPress={handleSkip} disabled={isLoading} />
+              <SecondaryButton
+                label={t('common.skipInformation')}
+                onPress={handleSkip}
+                disabled={isLoading || isSkipLoading}
+              />
             </ButtonGroup>
           </View>
         </KeyboardAvoidingView>
@@ -370,11 +416,14 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
         transparent
         animationType="fade"
         onRequestClose={() => setGenderModalVisible(false)}
+        accessibilityLabel={t('auth.gender')}
       >
         <TouchableOpacity
           style={styles.genderModalOverlay}
           activeOpacity={1}
           onPress={() => setGenderModalVisible(false)}
+          accessibilityLabel={t('common.close')}
+          accessibilityRole="button"
         >
           <View
             style={styles.genderModalContent}
@@ -382,7 +431,12 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
           >
             <View style={styles.genderModalHeader}>
               <Text style={styles.genderModalTitle}>{t('auth.gender')}</Text>
-              <TouchableOpacity onPress={() => setGenderModalVisible(false)} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
+              <TouchableOpacity
+                onPress={() => setGenderModalVisible(false)}
+                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                accessibilityLabel={t('common.close')}
+                accessibilityRole="button"
+              >
                 <Icon name="close" size={24} color={COLORS.NEUTRAL.LOW.PURE} />
               </TouchableOpacity>
             </View>
@@ -395,6 +449,9 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
                   setGenderModalVisible(false);
                 }}
                 activeOpacity={0.7}
+                accessibilityLabel={t(opt.i18nKey)}
+                accessibilityRole="button"
+                accessibilityState={{ selected: gender === opt.value }}
               >
                 <Text style={[styles.genderOptionText, gender === opt.value && styles.genderOptionTextSelected]}>
                   {t(opt.i18nKey)}

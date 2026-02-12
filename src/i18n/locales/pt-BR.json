@@ -64,6 +64,8 @@
 		"requiredField": "Campo obrigatório",
 		"fillFullName": "Por favor, preencha o nome completo.",
 		"registerError": "Não foi possível salvar. Tente novamente.",
+		"validationInvalidNumber": "Informe um número válido.",
+		"validationOutOfRange": "Deve estar entre {{min}} e {{max}}.",
 		"personalObjectivesTitle": "{userName},",
 		"personalObjectivesQuestion": "Quais são os principais pontos onde podemos te ajudar?",
 		"loadingObjectives": "Carregando objetivos...",
