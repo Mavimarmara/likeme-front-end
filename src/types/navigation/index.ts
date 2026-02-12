@@ -1,5 +1,7 @@
 export type RootStackParamList = {
   Unauthenticated: undefined;
+  Authenticated: undefined;
+  Welcome: undefined;
   Register: { userName?: string };
   PersonalObjectives: { userName?: string };
   Anamnesis: undefined;

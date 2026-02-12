@@ -12,6 +12,7 @@ import { Header, Title, TextInput } from '@/components/ui';
 import { GradientSplash3 } from '@/assets';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen, logButtonClick, logFormSubmit, logNavigation } from '@/analytics';
+import { storageService } from '@/services';
 import { styles } from './styles';
 
 type Props = { navigation: any };
@@ -21,6 +22,13 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
   const { t } = useTranslation();
   const [name, setName] = useState('');
   const inputRef = useRef<RNTextInput>(null);
+
+  useEffect(() => {
+    const markWelcomeAccessed = async () => {
+      await storageService.setWelcomeScreenAccessedAt(new Date().toISOString());
+    };
+    markWelcomeAccessed();
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {

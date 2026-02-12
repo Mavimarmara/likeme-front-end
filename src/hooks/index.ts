@@ -1,6 +1,7 @@
 // Auth hooks
 export { useAuthLogin } from './auth/useAuthLogin';
 export { useLogout } from './auth/useLogout';
+export { useOnboardingRedirect } from './auth/useOnboardingRedirect';
 
 // Community hooks
 export { useUserFeed } from './community/useUserFeed';

@@ -5,6 +5,7 @@ import type { StoredUser } from '@/types/auth';
 const TOKEN_KEY = '@likeme:auth_token';
 const USER_KEY = '@likeme:user';
 const REGISTER_COMPLETED_AT_KEY = '@likeme:register_completed_at';
+const WELCOME_SCREEN_ACCESSED_AT_KEY = '@likeme:welcome_screen_accessed_at';
 const OBJECTIVES_SELECTED_AT_KEY = '@likeme:objectives_selected_at';
 const SELECTED_OBJECTIVES_IDS_KEY = '@likeme:selected_objectives_ids';
 const ANAMNESIS_COMPLETED_AT_KEY = '@likeme:anamnesis_completed_at';
@@ -84,6 +85,27 @@ class StorageService {
     } catch (error) {
       logger.error('Error getting register completed at:', error);
       return null;
+    }
+  }
+
+  async getWelcomeScreenAccessedAt(): Promise<string | null> {
+    try {
+      return await AsyncStorage.getItem(WELCOME_SCREEN_ACCESSED_AT_KEY);
+    } catch (error) {
+      logger.error('Error getting welcome screen accessed at:', error);
+      return null;
+    }
+  }
+
+  async setWelcomeScreenAccessedAt(date: string | null): Promise<void> {
+    try {
+      if (date) {
+        await AsyncStorage.setItem(WELCOME_SCREEN_ACCESSED_AT_KEY, date);
+      } else {
+        await AsyncStorage.removeItem(WELCOME_SCREEN_ACCESSED_AT_KEY);
+      }
+    } catch (error) {
+      logger.error('Error saving welcome screen accessed at:', error);
     }
   }
 
@@ -214,6 +236,7 @@ class StorageService {
       await this.removeToken();
       await this.removeUser();
       await AsyncStorage.removeItem(REGISTER_COMPLETED_AT_KEY);
+      await AsyncStorage.removeItem(WELCOME_SCREEN_ACCESSED_AT_KEY);
       await AsyncStorage.removeItem(OBJECTIVES_SELECTED_AT_KEY);
       await AsyncStorage.removeItem(SELECTED_OBJECTIVES_IDS_KEY);
       await AsyncStorage.removeItem(ANAMNESIS_COMPLETED_AT_KEY);
