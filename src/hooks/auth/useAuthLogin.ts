@@ -16,12 +16,7 @@ export const useAuthLogin = (navigation: any) => {
       const authResult = await AuthService.login();
       await AuthService.validateToken(authResult);
 
-      navigation.navigate(
-        'Register' as never,
-        {
-          userName: authResult.user.name || authResult.user.email,
-        } as never
-      );
+      navigation.navigate('Authenticated' as never);
     } catch (error) {
       logger.error('Login error:', error);
       if (error instanceof Error) {

@@ -22,16 +22,21 @@ const UnauthenticatedScreen: React.FC<Props> = ({ navigation }) => {
     });
     logNavigation({
       source_screen: 'unauthenticated',
-      destination_screen: 'welcome',
+      destination_screen: 'authenticated',
       action_name: 'next',
     });
-    navigation.navigate('Welcome' as never);
+    authLogin();
   };
 
   const handleLogin = () => {
     logButtonClick({
       screen_name: 'unauthenticated',
       button_label: 'login',
+      action_name: 'login',
+    });
+    logNavigation({
+      source_screen: 'unauthenticated',
+      destination_screen: 'authenticated',
       action_name: 'login',
     });
     authLogin();
