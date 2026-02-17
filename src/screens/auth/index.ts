@@ -5,5 +5,6 @@ export { default as WelcomeScreen } from './WelcomeScreen';
 export { default as IntroScreen } from './IntroScreen';
 export { default as AppPresentationScreen } from './AppPresentationScreen';
 export { default as RegisterScreen } from './RegisterScreen';
+export { default as PlansScreen } from './PlansScreen';
 export { default as PersonalObjectivesScreen } from './PersonalObjectivesScreen';
 export { default as SelfAwarenessIntroScreen } from './SelfAwarenessIntroScreen';

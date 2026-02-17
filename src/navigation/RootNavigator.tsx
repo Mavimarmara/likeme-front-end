@@ -10,6 +10,7 @@ import {
   IntroScreen,
   AppPresentationScreen,
   RegisterScreen,
+  PlansScreen,
   PersonalObjectivesScreen,
   SelfAwarenessIntroScreen,
 } from '@/screens/auth';
@@ -66,6 +67,7 @@ const RootNavigator: React.FC = () => {
         <Stack.Screen name='Intro' component={IntroScreen} options={{ title: 'Introdução' }} />
         <Stack.Screen name='AppPresentation' component={AppPresentationScreen} options={{ title: 'Apresentação' }} />
         <Stack.Screen name='Register' component={RegisterScreen} options={{ title: 'Cadastro' }} />
+        <Stack.Screen name='Plans' component={PlansScreen} options={{ title: 'Planos' }} />
         <Stack.Screen name='Anamnesis' component={AnamnesisStartScreen} options={{ title: 'Anamnesis' }} />
         <Stack.Screen name='AnamnesisHome' component={AnamnesisHomeScreen} options={{ title: 'Anamnesis Home' }} />
         <Stack.Screen name='AnamnesisBody' component={AnamnesisBodyScreen} options={{ title: 'Anamnesis Body' }} />

@@ -185,7 +185,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
       const now = new Date().toISOString();
       await storageService.setRegisterCompletedAt(now);
 
-      navigation.navigate('PersonalObjectives', {
+      navigation.navigate('Plans', {
         userName: fullName || route.params?.userName || 'Usuário',
       });
     } catch (error: unknown) {
@@ -202,7 +202,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
       setIsSkipLoading(true);
       const now = new Date().toISOString();
       await storageService.setRegisterCompletedAt(now);
-      navigation.navigate('PersonalObjectives', {
+      navigation.navigate('Plans', {
         userName: fullName || route.params?.userName || 'Usuário',
       });
     } catch (error: unknown) {
