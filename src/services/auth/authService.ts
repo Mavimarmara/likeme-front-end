@@ -287,7 +287,7 @@ class AuthService {
       try {
         const tokenParts = authResult.idToken.split('.');
         if (tokenParts.length >= 2) {
-          const header = JSON.parse(atob(tokenParts[0]));
+          const header = JSON.parse((globalThis as typeof globalThis & { atob: (s: string) => string }).atob(tokenParts[0]));
           console.log('Token header:', JSON.stringify(header));
           console.log('Token has kid?', !!header.kid);
         }

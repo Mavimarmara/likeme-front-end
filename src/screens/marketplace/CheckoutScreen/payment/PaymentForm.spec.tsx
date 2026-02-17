@@ -45,6 +45,10 @@ jest.mock('@/components/ui/inputs/TextInput', () => {
   );
 });
 
+jest.mock('@/hooks/i18n', () => ({
+  useTranslation: () => ({ t: (key: string) => key }),
+}));
+
 describe('PaymentForm', () => {
   const mockProps = {
     paymentMethod: 'credit_card' as const,
@@ -52,6 +56,8 @@ describe('PaymentForm', () => {
     cardNumber: '',
     expiryDate: '',
     cvv: '',
+    cpf: '',
+    phone: '',
     saveCardDetails: false,
     couponCode: '',
     onPaymentMethodChange: jest.fn(),
@@ -59,6 +65,8 @@ describe('PaymentForm', () => {
     onCardNumberChange: jest.fn(),
     onExpiryDateChange: jest.fn(),
     onCvvChange: jest.fn(),
+    onCpfChange: jest.fn(),
+    onPhoneChange: jest.fn(),
     onSaveCardDetailsChange: jest.fn(),
     onCouponCodeChange: jest.fn(),
     onApplyCoupon: jest.fn(),

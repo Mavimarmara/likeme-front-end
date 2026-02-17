@@ -76,7 +76,7 @@ const mockProduct = {
   image: 'https://example.com/image.jpg',
   category: 'physical product',
   quantity: 10,
-  status: 'active',
+  status: 'active' as const,
   createdAt: '2023-01-01',
   updatedAt: '2023-01-01',
 };
@@ -89,7 +89,7 @@ const mockAmazonProduct = {
   image: 'https://example.com/amazon.jpg',
   category: 'amazon product',
   quantity: 5,
-  status: 'active',
+  status: 'active' as const,
   createdAt: '2023-01-01',
   updatedAt: '2023-01-01',
 };

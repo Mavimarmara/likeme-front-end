@@ -8,6 +8,7 @@ import {
   ImageBackground,
   Dimensions,
   Image,
+  type ImageStyle,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -199,7 +200,8 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   };
 
   const handleSeeProviderProfile = () => {
-    const provider = route.params?.product?.provider || product?.provider;
+    const productWithProvider = product as { provider?: { name?: string; avatar?: string } };
+    const provider = route.params?.product?.provider || productWithProvider?.provider;
     logButtonClick({
       screen_name: 'product_details',
       button_label: 'see_provider_profile',
@@ -214,7 +216,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       title: 'Therapist & Wellness Coach',
       description:
         'Specialized in mental health and wellness coaching with over 10 years of experience.',
-      rating: route.params?.product?.rating || product?.rating || 4.8,
+      rating: route.params?.product?.rating ?? (product as { rating?: number })?.rating ?? 4.8,
       specialties: ['Mental Health', 'Wellness Coaching', 'Therapy'],
     };
 
@@ -334,7 +336,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
         <View style={styles.heroSection}>
           <Image
             source={{ uri: backgroundImage }}
-            style={styles.backgroundImage}
+            style={styles.backgroundImage as ImageStyle}
             resizeMode="cover"
           />
           <View style={styles.heroOverlay}>
@@ -410,7 +412,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                   <View style={styles.productImageContainer}>
                     <Image
                       source={{ uri: backgroundImage }}
-                      style={styles.productImage}
+                      style={styles.productImage as ImageStyle}
                       resizeMode="contain"
                     />
                   </View>
@@ -464,7 +466,8 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   }
 
   function renderAddToCartButton() {
-    const provider = route.params?.product?.provider || product?.provider;
+    const productWithProvider = product as { provider?: { avatar?: string } };
+    const provider = route.params?.product?.provider || productWithProvider?.provider;
     const providerAvatar =
       provider?.avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200';
 
@@ -472,7 +475,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       <View style={styles.floatingButtonContainer}>
         {!displayData.isOutOfStock && (
           <View style={styles.floatingButtonRow}>
-            <Image source={{ uri: providerAvatar }} style={styles.providerAvatarInButton} />
+            <Image source={{ uri: providerAvatar }} style={styles.providerAvatarInButton as ImageStyle} />
             <TouchableOpacity
               style={styles.floatingAddToCartButton}
               onPress={() => {

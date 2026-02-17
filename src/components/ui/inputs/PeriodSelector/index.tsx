@@ -1,5 +1,5 @@
 import React from 'react';
-import { ViewStyle } from 'react-native';
+import { StyleSheet, ViewStyle } from 'react-native';
 import { ButtonGroup, SecondaryButton } from '@/components/ui/buttons';
 import { COLORS, BORDER_RADIUS, SPACING } from '@/constants';
 import { styles } from './styles';
@@ -21,8 +21,9 @@ const PeriodSelector: React.FC<Props> = ({
 	activeColor = COLORS.PRIMARY.PURE,
 	style,
 }) => {
+	const flattenedStyle = style ? StyleSheet.flatten([styles.container, style]) : styles.container;
 	return (
-		<ButtonGroup style={[styles.container, style]} direction="horizontal">
+		<ButtonGroup style={flattenedStyle} direction="horizontal">
 			{options.map((option) => {
 				const isActive = selectedPeriod === option;
 				return (

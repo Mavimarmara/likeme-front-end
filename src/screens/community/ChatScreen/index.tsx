@@ -34,7 +34,7 @@ interface ChatConversation {
   id: string;
   name: string;
   avatar?: string;
-  lastMessage: string;
+  lastMessage: string | Error;
   timestamp: string;
   unreadCount?: number;
   isProvider?: boolean;

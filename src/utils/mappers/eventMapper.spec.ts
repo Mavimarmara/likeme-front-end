@@ -14,6 +14,7 @@ describe('eventMapper', () => {
     channelId: 'channel-1',
     displayName: 'Test Channel',
     avatarFileId: 'avatar-1',
+    channelType: 'community',
     metadata: {
       title: 'Test Event',
       date: '25 Dec',

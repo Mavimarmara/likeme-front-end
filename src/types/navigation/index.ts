@@ -81,7 +81,7 @@ import type { Post } from '@/types';
 export type CommunityStackParamList = {
   CommunityList: undefined;
   PostDetails: { post: Post };
-  ChatScreen: { chat?: import('@/components/ui/community').ProviderChat };
+  ChatScreen: { chat?: import('@/components/sections/community').ProviderChat };
 };
 
 export interface ScreenProps<T extends keyof RootStackParamList> {

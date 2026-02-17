@@ -407,7 +407,7 @@ describe('CheckoutScreen', () => {
       // O PaymentForm mockado preenche os dados usando useLayoutEffect (síncrono)
       // Mas precisamos aguardar que o React processe as atualizações de estado
       await act(async () => {
-        await new Promise((resolve) => setTimeout(resolve, 10));
+        await new Promise<void>((resolve) => setTimeout(() => resolve(), 10));
       });
 
       // Avançar para order step (que vai tentar criar o pedido)

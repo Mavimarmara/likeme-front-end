@@ -48,8 +48,12 @@ describe('UnauthenticatedScreen', () => {
     jest.clearAllMocks();
   });
 
+  const mockRoute = { key: 'Unauthenticated', name: 'Unauthenticated' as const, params: {} };
+
   it('renders correctly', () => {
-    const { getByText } = render(<UnauthenticatedScreen />);
+    const { getByText } = render(
+      <UnauthenticatedScreen navigation={mockNavigation} route={mockRoute} />
+    );
 
     expect(getByText('LIKE YOUR LIFE')).toBeTruthy();
     expect(getByText('Next')).toBeTruthy();
@@ -57,7 +61,9 @@ describe('UnauthenticatedScreen', () => {
   });
 
   it('handles next button press', () => {
-    const { getByText } = render(<UnauthenticatedScreen />);
+    const { getByText } = render(
+      <UnauthenticatedScreen navigation={mockNavigation} route={mockRoute} />
+    );
 
     const nextButton = getByText('Next');
     fireEvent.press(nextButton);
@@ -66,7 +72,9 @@ describe('UnauthenticatedScreen', () => {
   });
 
   it('handles login button press', () => {
-    const { getByText } = render(<UnauthenticatedScreen />);
+    const { getByText } = render(
+      <UnauthenticatedScreen navigation={mockNavigation} route={mockRoute} />
+    );
 
     const loginButton = getByText('Login');
     fireEvent.press(loginButton);

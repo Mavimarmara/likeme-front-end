@@ -104,7 +104,14 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
         }
 
         setCurrentPage(page);
-        setPaging(pagingData);
+        setPaging(
+          pagingData
+            ? {
+                next: pagingData.next ?? null,
+                previous: pagingData.previous ?? null,
+              }
+            : null
+        );
 
         // Determina se há mais páginas baseado no paging.next ou pagination
         const hasMorePages = pagingData?.next !== null && pagingData?.next !== undefined;

@@ -40,6 +40,7 @@ const getOrderOptions = (t: (key: string) => string): ButtonCarouselOption<strin
 
 type MarketplaceScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'Marketplace'>;
+  route?: any;
 };
 
 const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => {

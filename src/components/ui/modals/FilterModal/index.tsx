@@ -3,7 +3,7 @@ import { View, Text, ScrollView, TextInput as RNTextInput } from 'react-native';
 import { ModalBase, SelectButton, SubmitButton } from '../shared';
 import { styles } from './styles';
 import { SPACING } from '@/constants';
-import type { CommunityFeedFilters } from '@/types/community/filters';
+import type { CommunityFeedFilters, PublicationDateFilter, SortByFilter } from '@/types/community/filters';
 
 const COLORS = {
   TEXT_DARK: '#001137',
@@ -56,8 +56,8 @@ const FilterModal: React.FC<Props> = ({ visible, onClose, onSave, selectedFilter
   const [selectedPostTypes, setSelectedPostTypes] = useState<string[]>(
     selectedFilters.postType || []
   );
-  const [selectedSortBy, setSelectedSortBy] = useState<string>(selectedFilters.sortBy || '');
-  const [selectedDate, setSelectedDate] = useState<string>(selectedFilters.publicationDate || '');
+  const [selectedSortBy, setSelectedSortBy] = useState<SortByFilter | ''>(selectedFilters.sortBy || '');
+  const [selectedDate, setSelectedDate] = useState<PublicationDateFilter | ''>(selectedFilters.publicationDate || '');
   const [selectedAuthor, setSelectedAuthor] = useState<string>(selectedFilters.author || '');
 
   const handlePostTypeToggle = (id: string) => {
@@ -69,8 +69,8 @@ const FilterModal: React.FC<Props> = ({ visible, onClose, onSave, selectedFilter
   const handleSave = () => {
     onSave({
       postType: selectedPostTypes.length > 0 ? selectedPostTypes : undefined,
-      publicationDate: selectedDate || undefined,
-      sortBy: selectedSortBy || undefined,
+      publicationDate: (selectedDate || undefined) as PublicationDateFilter | undefined,
+      sortBy: (selectedSortBy || undefined) as SortByFilter | undefined,
       author: selectedAuthor || undefined,
     });
     onClose();
@@ -118,9 +118,21 @@ const FilterModal: React.FC<Props> = ({ visible, onClose, onSave, selectedFilter
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {renderSection('Tipo de post', POST_TYPES, selectedPostTypes, handlePostTypeToggle, true)}
 
-        {renderSection('Data de publicação', DATE_OPTIONS, selectedDate, setSelectedDate, false)}
+        {renderSection(
+          'Data de publicação',
+          DATE_OPTIONS,
+          selectedDate,
+          (id) => setSelectedDate(id as PublicationDateFilter | ''),
+          false
+        )}
 
-        {renderSection('Ordenação', SORT_OPTIONS, selectedSortBy, setSelectedSortBy, false)}
+        {renderSection(
+          'Ordenação',
+          SORT_OPTIONS,
+          selectedSortBy,
+          (id) => setSelectedSortBy(id as SortByFilter | ''),
+          false
+        )}
 
         {/* Autor */}
         <View style={styles.section}>

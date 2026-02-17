@@ -7,7 +7,7 @@ export * from './personalObjectives';
 export * from './event';
 export * from './program';
 export * from './product';
-export * from './ad';
+export type { ListAdsParams, ListAdsApiResponse, GetAdApiResponse, CreateAdData, UpdateAdData } from './ad';
 export * from './activity';
 export * from './order';
 
@@ -86,10 +86,11 @@ export interface Poll {
 
 export interface Post {
   id: string;
-  userId: string;
+  userId?: string;
   content: string;
   image?: string;
-  likes: number;
+  likes?: number;
+  reactionsCount?: number;
   comments: Comment[];
   commentsCount?: number;
   createdAt: Date;

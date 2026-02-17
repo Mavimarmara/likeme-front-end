@@ -42,6 +42,7 @@ interface CartItem {
 
 type CartScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'Cart'>;
+  route?: any;
 };
 
 const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {

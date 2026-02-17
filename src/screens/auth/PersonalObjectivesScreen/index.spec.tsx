@@ -163,7 +163,7 @@ describe('PersonalObjectivesScreen', () => {
     };
 
     const { getByText } = render(
-      <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute} />
+      <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />
     );
 
     await waitFor(() => {
@@ -186,7 +186,7 @@ describe('PersonalObjectivesScreen', () => {
     };
 
     const { getByText, getByTestId } = render(
-      <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute} />
+      <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />
     );
 
     await waitFor(() => {
@@ -215,7 +215,7 @@ describe('PersonalObjectivesScreen', () => {
     };
 
     const { getByText, getByTestId } = render(
-      <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute} />
+      <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />
     );
 
     await waitFor(() => {
@@ -244,7 +244,7 @@ describe('PersonalObjectivesScreen', () => {
     };
 
     const { getByText } = render(
-      <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute} />
+      <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />
     );
 
     await waitFor(() => {
@@ -265,7 +265,7 @@ describe('PersonalObjectivesScreen', () => {
     };
 
     const { getByTestId } = render(
-      <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute} />
+      <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />
     );
 
     await waitFor(() => {
@@ -285,7 +285,7 @@ describe('PersonalObjectivesScreen', () => {
     const alertSpy = jest.spyOn(require('react-native').Alert, 'alert');
 
     const { getByText } = render(
-      <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute} />
+      <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />
     );
 
     await waitFor(() => expect(getByText('Próximo')).toBeTruthy());
@@ -308,7 +308,7 @@ describe('PersonalObjectivesScreen', () => {
     getServices().storageService.setSelectedObjectivesIds.mockRejectedValue(new Error('Storage error'));
 
     const { getByText, getByTestId } = render(
-      <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute} />
+      <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />
     );
 
     await waitFor(() => expect(getByText('Próximo')).toBeTruthy());
@@ -332,7 +332,7 @@ describe('PersonalObjectivesScreen', () => {
     const mockRoute = { params: { userName: 'John' } };
 
     const { getByText, getByTestId } = render(
-      <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute} />
+      <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />
     );
 
     await waitFor(() => expect(getByText('Próximo')).toBeTruthy());
