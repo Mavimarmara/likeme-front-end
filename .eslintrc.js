@@ -2,7 +2,6 @@ module.exports = {
   root: true,
   extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'prettier', '@react-native/eslint-config'],
   rules: {
-    'comma-dangle': ['warn', 'always-multiline'],
     curly: ['warn', 'multi-line'],
     'react-hooks/exhaustive-deps': 'warn',
   },
