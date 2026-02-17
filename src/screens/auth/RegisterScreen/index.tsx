@@ -24,6 +24,7 @@ import { storageService, personsService } from '@/services';
 import { useTranslation } from '@/hooks/i18n';
 import type { PersonData } from '@/types/person';
 import type { RootStackParamList } from '@/types/navigation';
+import { getNextOnboardingScreen } from '@/utils';
 import { styles } from './styles';
 import { COLORS, SPACING } from '@/constants';
 import { useAnalyticsScreen } from '@/analytics';
@@ -185,9 +186,10 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
       const now = new Date().toISOString();
       await storageService.setRegisterCompletedAt(now);
 
-      navigation.navigate('Plans', {
-        userName: fullName || route.params?.userName || 'Usuário',
-      });
+      const userName = fullName || route.params?.userName || 'Usuário';
+      const nextScreen = getNextOnboardingScreen('Register');
+      const params = { userName };
+      navigation.navigate(nextScreen as never, params as never);
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : t('auth.registerError');
       console.error('Erro ao salvar dados da pessoa:', error);
@@ -202,9 +204,10 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
       setIsSkipLoading(true);
       const now = new Date().toISOString();
       await storageService.setRegisterCompletedAt(now);
-      navigation.navigate('Plans', {
-        userName: fullName || route.params?.userName || 'Usuário',
-      });
+      const userName = fullName || route.params?.userName || 'Usuário';
+      const nextScreen = getNextOnboardingScreen('Register');
+      const params = { userName };
+      navigation.navigate(nextScreen as never, params as never);
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : t('auth.registerError');
       console.error('Erro ao pular registro:', error);

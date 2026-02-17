@@ -5,6 +5,7 @@ import { Header, Title, TextInput, PrimaryButton } from '@/components/ui';
 import { GradientSplash3 } from '@/assets';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen, logButtonClick, logFormSubmit, logNavigation } from '@/analytics';
+import { getNextOnboardingScreen } from '@/utils';
 import { storageService } from '@/services';
 import { styles } from './styles';
 
@@ -51,12 +52,14 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
       form_name: 'welcome_name',
       success: true,
     });
+    const nextScreen = getNextOnboardingScreen('Welcome');
+    const params = { userName: name.trim() };
     logNavigation({
       source_screen: 'welcome',
-      destination_screen: 'intro',
+      destination_screen: nextScreen.toLowerCase(),
       action_name: 'continue',
     });
-    navigation.navigate('Intro' as never, { userName: name.trim() });
+    navigation.navigate(nextScreen as never, params as never);
   };
 
   return (

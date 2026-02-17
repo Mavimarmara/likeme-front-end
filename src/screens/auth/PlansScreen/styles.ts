@@ -50,35 +50,7 @@ export const styles = StyleSheet.create({
   },
 
   tabsRow: {
-    flexDirection: 'row',
-    backgroundColor: COLORS.NEUTRAL.HIGH.PURE,
-    borderRadius: BORDER_RADIUS.MD,
-    padding: 4,
     marginBottom: SPACING.LG,
-  },
-
-  tab: {
-    flex: 1,
-    paddingVertical: SPACING.SM,
-    paddingHorizontal: SPACING.SM,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: BORDER_RADIUS.SM,
-  },
-
-  tabSelected: {
-    backgroundColor: COLORS.TEXT,
-  },
-
-  tabLabel: {
-    color: COLORS.NEUTRAL.LOW.DARK,
-    fontFamily: 'DM Sans',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-
-  tabLabelSelected: {
-    color: COLORS.WHITE,
   },
 
   planCard: {
@@ -166,5 +138,64 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '400',
     lineHeight: 22,
+  },
+
+  compareTable: {
+    backgroundColor: COLORS.TEXT,
+    borderRadius: BORDER_RADIUS.LG,
+    overflow: 'hidden',
+    marginBottom: SPACING.XXL,
+  },
+
+  compareHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: SPACING.MD,
+    paddingHorizontal: SPACING.SM,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.2)',
+  },
+
+  compareFeatureCol: {
+    width: '40%',
+  },
+
+  compareHeaderCell: {
+    flex: 1,
+    color: COLORS.WHITE,
+    fontFamily: 'DM Sans',
+    fontSize: 14,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+
+  compareRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: SPACING.SM,
+    paddingHorizontal: SPACING.SM,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+  },
+
+  compareFeatureCell: {
+    width: '40%',
+    color: COLORS.WHITE,
+    fontFamily: 'DM Sans',
+    fontSize: 14,
+    fontWeight: '400',
+  },
+
+  compareCell: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  compareCellText: {
+    color: COLORS.WHITE,
+    fontFamily: 'DM Sans',
+    fontSize: 14,
+    fontWeight: '400',
   },
 });

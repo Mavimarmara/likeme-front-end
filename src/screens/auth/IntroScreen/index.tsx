@@ -3,6 +3,7 @@ import { View, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header, Title, ButtonGroup, PrimaryButton, SecondaryButton } from '@/components/ui';
 import { GradientSplash4 } from '@/assets';
+import { getNextOnboardingScreen } from '@/utils';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
@@ -15,7 +16,9 @@ const IntroScreen: React.FC<Props> = ({ navigation, route }) => {
   const userName = route.params?.userName || 'Usuário';
 
   const handleShowPresentation = () => {
-    navigation.navigate('AppPresentation', { userName });
+    const nextScreen = getNextOnboardingScreen('Intro');
+    const params = { userName };
+    navigation.navigate(nextScreen as never, params as never);
   };
 
   const handleSkipToPrivacyPolicies = () => {

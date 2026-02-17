@@ -88,3 +88,6 @@ export const PAGINATION = {
   DEFAULT_PAGE_SIZE: 10,
   MAX_PAGE_SIZE: 100,
 } as const;
+
+export { AUTH_ONBOARDING_SCREENS_ORDER } from './authOnboarding';
+export type { AuthOnboardingScreenName } from './authOnboarding';

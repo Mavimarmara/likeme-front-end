@@ -102,10 +102,6 @@ jest.mock('@/services', () => ({
 
 const getServices = () => require('@/services');
 
-jest.mock('@/utils', () => ({
-  showError: jest.fn(),
-}));
-
 jest.mock('./useMarkers', () => {
   const actual = jest.requireActual<typeof import('./useMarkers')>('./useMarkers');
   return {

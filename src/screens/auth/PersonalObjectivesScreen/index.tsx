@@ -10,6 +10,7 @@ import { useAnalyticsScreen, logEvent } from '@/analytics';
 import { CUSTOM_EVENTS, ANALYTICS_PARAMS } from '@/analytics/constants';
 import { SPACING } from '@/constants';
 import type { RootStackParamList } from '@/types/navigation';
+import { getNextOnboardingScreen } from '@/utils';
 import { useMarkers, objectiveNameToMarkerId } from './useMarkers';
 import { styles } from './styles';
 import { getMarkerGradient } from '@/constants/markers';
@@ -77,7 +78,8 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
         [ANALYTICS_PARAMS.SCREEN_NAME]: 'personal_objectives',
         [ANALYTICS_PARAMS.VALUE]: selectedMarkers.size,
       });
-      navigation.navigate('Home');
+      const nextScreen = getNextOnboardingScreen('PersonalObjectives');
+      navigation.navigate(nextScreen as never);
     } catch {
       Alert.alert(t('common.error'), t('auth.objectivesSaveError'));
     } finally {
@@ -86,7 +88,8 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
   }, [selectedMarkers, navigation, t]);
 
   const handleSkip = useCallback(() => {
-    navigation.navigate('Home');
+    const nextScreen = getNextOnboardingScreen('PersonalObjectives');
+    navigation.navigate(nextScreen as never);
   }, [navigation]);
 
   return (

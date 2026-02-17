@@ -12,7 +12,6 @@ import {
   RegisterScreen,
   PlansScreen,
   PersonalObjectivesScreen,
-  SelfAwarenessIntroScreen,
 } from '@/screens/auth';
 import {
   AnamnesisStartScreen,
@@ -86,11 +85,6 @@ const RootNavigator: React.FC = () => {
           name='PersonalObjectives'
           component={PersonalObjectivesScreen}
           options={{ title: 'Objetivos Pessoais' }}
-        />
-        <Stack.Screen
-          name='SelfAwarenessIntro'
-          component={SelfAwarenessIntroScreen}
-          options={{ title: 'Jornada de Autoconsciência' }}
         />
         <Stack.Screen name='Error' component={ErrorScreen} options={{ title: 'Erro' }} />
         <Stack.Screen name='AppLoading' component={AppLoadingScreen} options={{ title: 'Carregando' }} />

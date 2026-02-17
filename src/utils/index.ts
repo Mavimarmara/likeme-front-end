@@ -127,7 +127,8 @@ export const storageUtils = {
 
 // Core utilities
 export * from './logger';
-export * from './navigation';
+export * from './navigation/productNavigation';
+export * from './auth/navigation';
 
 // Formatters
 export * from './formatters/priceFormatter';
