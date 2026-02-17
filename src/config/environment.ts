@@ -84,9 +84,9 @@ export const AUTH_CONFIG = {
 };
 
 export const getApiUrl = (endpoint: string) => {
-  // Se o endpoint já começa com /api, não adicionar versão
+  const base = (BACKEND_CONFIG.baseUrl || '').replace(/\/+$/, '');
   if (endpoint.startsWith('/api')) {
-    return `${BACKEND_CONFIG.baseUrl}${endpoint}`;
+    return `${base}${endpoint}`;
   }
-  return `${BACKEND_CONFIG.baseUrl}/api/${BACKEND_CONFIG.apiVersion}${endpoint}`;
+  return `${base}/api/${BACKEND_CONFIG.apiVersion}${endpoint}`;
 };

@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header, PrimaryButton } from '@/components/ui';
@@ -105,14 +105,16 @@ const PrivacyPoliciesScreen: React.FC<Props> = ({ navigation, route }) => {
     try {
       setIsSubmitting(true);
       await AuthService.acceptPrivacyPolicy();
-      navigation.navigate('Register', { userName });
     } catch (error) {
-      const message = error instanceof Error ? error.message : t('common.error');
-      Alert.alert(t('common.error'), message);
+      // Endpoint pode não existir ainda no backend (404); não bloqueia o fluxo.
+      if (__DEV__ && error instanceof Error) {
+        console.warn('[PrivacyPolicies] acceptPrivacyPolicy:', error.message);
+      }
     } finally {
       setIsSubmitting(false);
+      navigation.navigate('Register', { userName });
     }
-  }, [navigation, userName, t, isSubmitting]);
+  }, [navigation, userName, isSubmitting]);
 
   const items = getItems();
 
