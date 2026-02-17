@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { StackScreenProps } from '@react-navigation/stack';
 import { View, Text, ScrollView, Image, useWindowDimensions, Alert } from 'react-native';
-import { Header, PrimaryButton, SelectionButtonQuiz } from '@/components/ui';
+import { Header, IconSilhouette, PrimaryButton, SelectionButtonQuiz } from '@/components/ui';
 import { GradientSplash6 } from '@/assets';
 import { storageService } from '@/services';
 import { useTranslation } from '@/hooks/i18n';
@@ -10,8 +10,9 @@ import { useAnalyticsScreen, logEvent } from '@/analytics';
 import { CUSTOM_EVENTS, ANALYTICS_PARAMS } from '@/analytics/constants';
 import { SPACING } from '@/constants';
 import type { RootStackParamList } from '@/types/navigation';
-import { useObjectives } from './useObjectives';
+import { useMarkers } from './useMarkers';
 import { styles } from './styles';
+import { getMarkerGradient } from '@/constants/markers';
 
 type Props = StackScreenProps<RootStackParamList, 'PersonalObjectives'>;
 
@@ -20,8 +21,8 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const userName = route.params?.userName || 'Usuário';
-  const { objectives } = useObjectives();
-  const [selectedObjectives, setSelectedObjectives] = useState<Set<string>>(new Set());
+  const { markers } = useMarkers();
+  const [selectedMarkers, setSelectedMarkers] = useState<Set<string>>(new Set());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { width: windowWidth } = useWindowDimensions();
 
@@ -39,36 +40,35 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
     const loadSavedSelection = async () => {
       try {
         const ids = await storageService.getSelectedObjectivesIds();
-        if (ids.length > 0) setSelectedObjectives(new Set(ids));
+        if (ids.length > 0) setSelectedMarkers(new Set(ids));
       } catch {
-        // Ignora falha ao carregar seleção anterior
       }
     };
     loadSavedSelection();
   }, []);
 
-  const toggleObjective = useCallback((objectiveId: string) => {
-    setSelectedObjectives((prev) => {
+  const toggleMarker = useCallback((markerId: string) => {
+    setSelectedMarkers((prev) => {
       const next = new Set(prev);
-      if (next.has(objectiveId)) next.delete(objectiveId);
-      else next.add(objectiveId);
+      if (next.has(markerId)) next.delete(markerId);
+      else next.add(markerId);
       return next;
     });
   }, []);
 
   const handleSubmit = useCallback(async () => {
-    if (selectedObjectives.size === 0) {
+    if (selectedMarkers.size === 0) {
       Alert.alert(t('auth.requiredField'), t('auth.objectivesSelectAtLeastOne'));
       return;
     }
     try {
       setIsSubmitting(true);
       const now = new Date().toISOString();
-      await storageService.setSelectedObjectivesIds(Array.from(selectedObjectives));
+      await storageService.setSelectedObjectivesIds(Array.from(selectedMarkers));
       await storageService.setObjectivesSelectedAt(now);
       logEvent(CUSTOM_EVENTS.OBJECTIVES_SUBMITTED, {
         [ANALYTICS_PARAMS.SCREEN_NAME]: 'personal_objectives',
-        [ANALYTICS_PARAMS.VALUE]: selectedObjectives.size,
+        [ANALYTICS_PARAMS.VALUE]: selectedMarkers.size,
       });
       navigation.navigate('Home');
     } catch {
@@ -76,7 +76,7 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
     } finally {
       setIsSubmitting(false);
     }
-  }, [selectedObjectives, navigation, t]);
+  }, [selectedMarkers, navigation, t]);
 
   const handleSkip = useCallback(() => {
     navigation.navigate('Home');
@@ -96,18 +96,20 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
           <Text style={styles.greeting}>{userName},</Text>
           <Text style={styles.question}>{t('auth.personalObjectivesQuestion')}</Text>
 
-          <View style={styles.objectivesList}>
-            {objectives.map((objective) => {
-              const label = t(objective.i18nKey);
-              const selected = selectedObjectives.has(objective.id);
+          <View style={styles.markersList}>
+            {markers.map((marker) => {
+              const label = t(marker.i18nKey);
+              const selected = selectedMarkers.has(marker.id);
+              const gradient = getMarkerGradient(marker.id);
               return (
                 <SelectionButtonQuiz
-                  key={objective.id}
+                  key={marker.id}
                   label={label}
                   selected={selected}
                   size='small'
-                  onPress={() => toggleObjective(objective.id)}
-                  style={styles.objectiveButton}
+                  onPress={() => toggleMarker(marker.id)}
+                  style={styles.markerButton}
+                  iconRight={<IconSilhouette tintColor={gradient} size='small' />}
                 />
               );
             })}

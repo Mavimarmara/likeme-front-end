@@ -70,6 +70,7 @@ jest.mock('@/components/ui', () => {
         )}
       </View>
     ),
+    IconSilhouette: () => <View testID="icon-silhouette" />,
     PrimaryButton: ({ label, onPress, disabled }: { label: string; onPress: () => void; disabled?: boolean }) => (
       <TouchableOpacity
         onPress={onPress}
@@ -93,9 +94,9 @@ jest.mock('@/services', () => ({
     getPersonalObjectives: jest.fn(),
   },
   storageService: {
-    setObjectivesSelectedAt: jest.fn().mockResolvedValue(undefined),
-    setSelectedObjectivesIds: jest.fn().mockResolvedValue(undefined),
-    getSelectedObjectivesIds: jest.fn().mockResolvedValue([]),
+    setMarkersSelectedAt: jest.fn().mockResolvedValue(undefined),
+    setSelectedMarkerIds: jest.fn().mockResolvedValue(undefined),
+    getSelectedMarkerIds: jest.fn().mockResolvedValue([]),
   },
 }));
 
@@ -105,16 +106,20 @@ jest.mock('@/utils', () => ({
   showError: jest.fn(),
 }));
 
-jest.mock('./useObjectives', () => ({
-  useObjectives: () => ({
-    objectives: [
-      { id: '1', i18nKey: 'auth.objectiveSleep' },
-      { id: '2', i18nKey: 'auth.objectiveMovement' },
-    ],
-    isLoading: false,
-    error: null,
-  }),
-}));
+jest.mock('./useMarkers', () => {
+  const actual = jest.requireActual<typeof import('./useMarkers')>('./useMarkers');
+  return {
+    ...actual,
+    useMarkers: () => ({
+      markers: [
+        { id: 'sleep', i18nKey: 'auth.objectiveSleep' },
+        { id: 'activity', i18nKey: 'auth.objectiveMovement' },
+      ],
+      isLoading: false,
+      error: null,
+    }),
+  };
+});
 
 describe('PersonalObjectivesScreen', () => {
   beforeEach(() => {
@@ -130,7 +135,7 @@ describe('PersonalObjectivesScreen', () => {
         },
       },
     });
-    getServices().storageService.getSelectedObjectivesIds.mockResolvedValue([]);
+    getServices().storageService.getSelectedMarkerIds.mockResolvedValue([]);
   });
 
   it('renders correctly', async () => {
@@ -177,8 +182,8 @@ describe('PersonalObjectivesScreen', () => {
     fireEvent.press(getByText('Salvar'));
 
     await waitFor(() => {
-      expect(getServices().storageService.setSelectedObjectivesIds).toHaveBeenCalledWith(['1']);
-      expect(getServices().storageService.setObjectivesSelectedAt).toHaveBeenCalled();
+      expect(getServices().storageService.setSelectedMarkerIds).toHaveBeenCalledWith(['sleep']);
+      expect(getServices().storageService.setMarkersSelectedAt).toHaveBeenCalled();
       expect(mockNavigation.navigate).toHaveBeenCalledWith('Home');
     });
   });
@@ -206,11 +211,11 @@ describe('PersonalObjectivesScreen', () => {
 
     await waitFor(() => {
       expect(mockNavigation.navigate).toHaveBeenCalledWith('Home');
-      expect(getServices().storageService.setSelectedObjectivesIds).not.toHaveBeenCalled();
+      expect(getServices().storageService.setSelectedMarkerIds).not.toHaveBeenCalled();
     });
   });
 
-  it('renders objectives in Portuguese after loading', async () => {
+  it('renders markers in Portuguese after loading', async () => {
     const mockNavigation = {
       navigate: jest.fn(),
       goBack: jest.fn(),
@@ -229,7 +234,7 @@ describe('PersonalObjectivesScreen', () => {
     });
   });
 
-  it('toggles objective selection when row is pressed', async () => {
+  it('toggles marker selection when row is pressed', async () => {
     const mockNavigation = {
       navigate: jest.fn(),
       goBack: jest.fn(),
@@ -253,7 +258,7 @@ describe('PersonalObjectivesScreen', () => {
     expect(row).toBeTruthy();
   });
 
-  it('shows alert when Salvar is pressed without selecting any objective', async () => {
+  it('shows alert when Salvar is pressed without selecting any marker', async () => {
     const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
     const mockRoute = { params: { userName: 'John' } };
     const alertSpy = jest.spyOn(require('react-native').Alert, 'alert');
@@ -264,7 +269,7 @@ describe('PersonalObjectivesScreen', () => {
     fireEvent.press(getByText('Salvar'));
 
     expect(alertSpy).toHaveBeenCalledWith('Campo obrigatório', 'Selecione ao menos um objetivo para continuar.');
-    expect(getServices().storageService.setSelectedObjectivesIds).not.toHaveBeenCalled();
+    expect(getServices().storageService.setSelectedMarkerIds).not.toHaveBeenCalled();
     expect(mockNavigation.navigate).not.toHaveBeenCalled();
 
     alertSpy.mockRestore();
@@ -274,7 +279,7 @@ describe('PersonalObjectivesScreen', () => {
     const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
     const mockRoute = { params: { userName: 'John' } };
     const alertSpy = jest.spyOn(require('react-native').Alert, 'alert');
-    getServices().storageService.setSelectedObjectivesIds.mockRejectedValue(new Error('Storage error'));
+    getServices().storageService.setSelectedMarkerIds.mockRejectedValue(new Error('Storage error'));
 
     const { getByText } = render(
       <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />,
@@ -296,8 +301,8 @@ describe('PersonalObjectivesScreen', () => {
     const submitPromise = new Promise<void>(() => {
       /* noop */
     });
-    getServices().storageService.setSelectedObjectivesIds.mockReturnValue(submitPromise);
-    getServices().storageService.setObjectivesSelectedAt.mockReturnValue(submitPromise);
+    getServices().storageService.setSelectedMarkerIds.mockReturnValue(submitPromise);
+    getServices().storageService.setMarkersSelectedAt.mockReturnValue(submitPromise);
 
     const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
     const mockRoute = { params: { userName: 'John' } };
@@ -312,7 +317,7 @@ describe('PersonalObjectivesScreen', () => {
     fireEvent.press(getByText('Salvar'));
 
     await waitFor(() => {
-      expect(getServices().storageService.setSelectedObjectivesIds).toHaveBeenCalledTimes(1);
+      expect(getServices().storageService.setSelectedMarkerIds).toHaveBeenCalledTimes(1);
     });
     expect(mockNavigation.navigate).not.toHaveBeenCalled();
   });

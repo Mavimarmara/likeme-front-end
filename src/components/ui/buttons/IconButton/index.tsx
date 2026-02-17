@@ -1,17 +1,8 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-  ImageBackground,
-  ImageSourcePropType,
-  ImageStyle,
-  ViewStyle,
-} from 'react-native';
+import { View, Text, TouchableOpacity, Image, ImageSourcePropType, ImageStyle, ViewStyle } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { BackgroundIconButton } from '@/assets';
 import { COLORS } from '@/constants';
+import { IconSilhouette } from '@/components/ui/layout';
 import { styles } from './styles';
 
 type Props = {
@@ -24,8 +15,7 @@ type Props = {
   label?: string;
   showBackground?: boolean;
   backgroundSource?: ImageSourcePropType;
-  backgroundTintColor?: string;
-  backgroundImageStyle?: ImageStyle;
+  backgroundTintColor?: string | readonly string[];
   containerStyle?: ViewStyle;
   iconContainerStyle?: ViewStyle;
 };
@@ -41,7 +31,6 @@ const IconButton: React.FC<Props> = ({
   showBackground = true,
   backgroundSource,
   backgroundTintColor,
-  backgroundImageStyle,
   containerStyle,
   iconContainerStyle,
 }) => {
@@ -54,19 +43,15 @@ const IconButton: React.FC<Props> = ({
       ) : null;
 
     if (showBackground) {
-      const source = backgroundSource ?? BackgroundIconButton;
       return (
-        <ImageBackground
-          source={source}
-          style={[styles.iconBackground, iconContainerStyle]}
-          imageStyle={[
-            styles.iconBackgroundImage,
-            backgroundImageStyle,
-            backgroundTintColor && { tintColor: backgroundTintColor },
-          ]}
+        <IconSilhouette
+          source={backgroundSource}
+          tintColor={backgroundTintColor ?? undefined}
+          size='medium'
+          style={iconContainerStyle}
         >
           {iconElement}
-        </ImageBackground>
+        </IconSilhouette>
       );
     }
 

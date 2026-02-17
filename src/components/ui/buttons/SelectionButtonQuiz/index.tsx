@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { Text, TouchableOpacity, GestureResponderEvent, ViewStyle, TextStyle, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { COLORS } from '@/constants';
@@ -13,6 +13,7 @@ export type SelectionButtonQuizProps = {
   size?: SelectionButtonQuizSize;
   icon?: string;
   iconSize?: number;
+  iconRight?: ReactNode;
   style?: ViewStyle | ViewStyle[];
   labelStyle?: TextStyle | TextStyle[];
   disabled?: boolean;
@@ -25,6 +26,7 @@ const SelectionButtonQuiz: React.FC<SelectionButtonQuizProps> = ({
   size = 'medium',
   icon,
   iconSize = 24,
+  iconRight,
   style,
   labelStyle,
   disabled = false,
@@ -44,13 +46,16 @@ const SelectionButtonQuiz: React.FC<SelectionButtonQuizProps> = ({
       accessibilityLabel={label}
     >
       <View style={styles.buttonContent}>
-        {icon != null && <Icon name={icon} size={iconSize} color={iconColor} style={styles.iconLeft} />}
-        <Text
-          style={[styles.label, labelSizeStyle, selected ? styles.labelSelected : styles.labelDefault, labelStyle]}
-          numberOfLines={2}
-        >
-          {label}
-        </Text>
+        <View style={styles.buttonContentLeft}>
+          {icon != null && <Icon name={icon} size={iconSize} color={iconColor} style={styles.iconLeft} />}
+          <Text
+            style={[styles.label, labelSizeStyle, selected ? styles.labelSelected : styles.labelDefault, labelStyle]}
+            numberOfLines={2}
+          >
+            {label}
+          </Text>
+        </View>
+        {iconRight != null && <View style={styles.iconRight}>{iconRight}</View>}
       </View>
     </TouchableOpacity>
   );

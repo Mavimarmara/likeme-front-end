@@ -39,13 +39,22 @@ export const styles = StyleSheet.create({
   buttonContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
     flex: 1,
+  },
+
+  buttonContentLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    marginRight: SPACING.SM,
   },
 
   iconLeft: {
     marginRight: SPACING.SM,
   },
+
+  iconRight: {},
 
   label: {
     fontFamily: 'DM Sans',

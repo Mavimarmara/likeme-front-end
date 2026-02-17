@@ -46,12 +46,12 @@ export const styles = StyleSheet.create({
     width: '100%',
   },
 
-  objectivesList: {
+  markersList: {
     width: '100%',
     gap: SPACING.SM,
   },
 
-  objectiveButton: {
+  markerButton: {
     width: '100%',
   },
 
