@@ -135,4 +135,17 @@ export const styles = StyleSheet.create({
     height: 36,
     resizeMode: 'cover',
   },
+  rightLabelButton: {
+    position: 'absolute',
+    right: SPACING.MD,
+    paddingVertical: SPACING.SM,
+    paddingHorizontal: SPACING.XS,
+    zIndex: 1,
+  },
+  rightLabelText: {
+    color: COLORS.NEUTRAL.LOW.PURE,
+    fontFamily: 'DM Sans',
+    fontSize: 16,
+    fontWeight: '600',
+  },
 });

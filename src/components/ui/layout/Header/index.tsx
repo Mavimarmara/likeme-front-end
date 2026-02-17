@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { View, TouchableOpacity, ImageBackground } from 'react-native';
+import { View, Text, TouchableOpacity, ImageBackground } from 'react-native';
 import { LogoMini, BackgroundIconButton } from '@/assets';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { styles } from './styles';
@@ -16,6 +16,9 @@ interface HeaderProps {
   onRatingPress?: () => void;
   showRating?: boolean;
   customLogo?: ReactNode;
+  /** Texto do botão à direita (ex. "Pular"). Quando definido, exibe em vez dos botões de ícone. */
+  rightLabel?: string;
+  onRightPress?: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -30,7 +33,10 @@ const Header: React.FC<HeaderProps> = ({
   onRatingPress,
   showRating = false,
   customLogo,
+  rightLabel,
+  onRightPress,
 }) => {
+  const hasRightLabel = Boolean(rightLabel && onRightPress);
   return (
     <View style={styles.header}>
       {showBackButton && (
@@ -45,7 +51,17 @@ const Header: React.FC<HeaderProps> = ({
         </TouchableOpacity>
       )}
       {customLogo || <LogoMini width={87} height={16} />}
-      {showBellButton && (
+      {hasRightLabel && (
+        <TouchableOpacity
+          style={styles.rightLabelButton}
+          onPress={onRightPress}
+          activeOpacity={0.7}
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+        >
+          <Text style={styles.rightLabelText}>{rightLabel}</Text>
+        </TouchableOpacity>
+      )}
+      {!hasRightLabel && showBellButton && (
         <TouchableOpacity style={styles.bellButton} onPress={onBellPress} activeOpacity={0.7}>
           <ImageBackground
             source={BackgroundIconButton}
@@ -56,7 +72,7 @@ const Header: React.FC<HeaderProps> = ({
           </ImageBackground>
         </TouchableOpacity>
       )}
-      {showCartButton && onCartPress && (
+      {!hasRightLabel && showCartButton && onCartPress && (
         <TouchableOpacity style={styles.cartButton} onPress={onCartPress} activeOpacity={0.7}>
           <ImageBackground
             source={BackgroundIconButton}
@@ -67,7 +83,7 @@ const Header: React.FC<HeaderProps> = ({
           </ImageBackground>
         </TouchableOpacity>
       )}
-      {showLogoutButton && onLogoutPress && (
+      {!hasRightLabel && showLogoutButton && onLogoutPress && (
         <TouchableOpacity style={styles.logoutButton} onPress={onLogoutPress} activeOpacity={0.7}>
           <ImageBackground
             source={BackgroundIconButton}
@@ -78,7 +94,7 @@ const Header: React.FC<HeaderProps> = ({
           </ImageBackground>
         </TouchableOpacity>
       )}
-      {showRating && (
+      {!hasRightLabel && showRating && (
         <TouchableOpacity style={styles.ratingButton} onPress={onRatingPress} activeOpacity={0.7}>
           <ImageBackground
             source={BackgroundIconButton}

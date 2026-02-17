@@ -6,46 +6,55 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.BACKGROUND,
   },
+
   scrollView: {
     flex: 1,
   },
+
   scrollContent: {
     paddingBottom: 120,
-  },
-  content: {
-    alignItems: 'flex-start',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 24,
-    position: 'relative',
-    width: '100%',
-    paddingTop: 60,
     paddingHorizontal: SPACING.MD,
   },
-  headerContainer: {
-    width: '100%',
+
+  content: {
+    paddingTop: SPACING.LG,
     position: 'relative',
-    paddingRight: SPACING.LG,
-    paddingBottom: SPACING.SM,
+    width: '100%',
   },
+
   titleAdornment: {
     position: 'absolute',
+    right: -40,
+    top: -60,
   },
+
+  greeting: {
+    color: COLORS.TEXT,
+    fontFamily: 'DM Sans',
+    fontSize: 28,
+    fontWeight: '700',
+    marginBottom: SPACING.SM,
+  },
+
   question: {
     color: COLORS.TEXT,
     fontFamily: 'DM Sans',
     fontSize: 16,
     fontWeight: '400',
-    lineHeight: 20,
+    lineHeight: 22,
+    marginBottom: SPACING.LG,
     width: '100%',
   },
-  chipsContainer: {
+
+  objectivesList: {
     width: '100%',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-    marginTop: 8,
+    gap: SPACING.SM,
   },
+
+  objectiveButton: {
+    width: '100%',
+  },
+
   footer: {
     position: 'absolute',
     bottom: 0,
@@ -56,12 +65,8 @@ export const styles = StyleSheet.create({
     paddingTop: SPACING.MD,
     paddingBottom: SPACING.XL,
   },
-  buttonGroup: {
-    position: 'relative',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    paddingBottom: 0,
-    paddingTop: 0,
+
+  saveButton: {
+    width: '100%',
   },
 });

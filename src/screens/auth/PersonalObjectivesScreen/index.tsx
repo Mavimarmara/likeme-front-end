@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { View, Text, ScrollView, Image, useWindowDimensions, Alert } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { StackScreenProps } from '@react-navigation/stack';
-import { Header, Title, Chip, PrimaryButton, SecondaryButton, ButtonGroup } from '@/components/ui';
+import { View, Text, ScrollView, Image, useWindowDimensions, Alert } from 'react-native';
+import { Header, PrimaryButton, SelectionButtonQuiz } from '@/components/ui';
 import { GradientSplash6 } from '@/assets';
 import { storageService } from '@/services';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen, logEvent } from '@/analytics';
 import { CUSTOM_EVENTS, ANALYTICS_PARAMS } from '@/analytics/constants';
-import { COLORS, SPACING } from '@/constants';
+import { SPACING } from '@/constants';
 import type { RootStackParamList } from '@/types/navigation';
 import { useObjectives } from './useObjectives';
 import { styles } from './styles';
@@ -24,6 +24,7 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
   const [selectedObjectives, setSelectedObjectives] = useState<Set<string>>(new Set());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { width: windowWidth } = useWindowDimensions();
+
   const adornmentStyle = useMemo(() => {
     const size = windowWidth * 0.45;
     return {
@@ -77,12 +78,13 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
     }
   }, [selectedObjectives, navigation, t]);
 
-  const handleNext = useCallback(() => handleSubmit(), [handleSubmit]);
-  const handleSkip = useCallback(() => handleSubmit(), [handleSubmit]);
+  const handleSkip = useCallback(() => {
+    navigation.navigate('Home');
+  }, [navigation]);
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header onBackPress={() => navigation.goBack()} />
+      <Header onBackPress={() => navigation.goBack()} rightLabel={t('common.skip')} onRightPress={handleSkip} />
 
       <ScrollView
         style={styles.scrollView}
@@ -90,28 +92,22 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
         contentContainerStyle={styles.scrollContent}
       >
         <View style={styles.content}>
-          <View style={styles.headerContainer}>
-            <Image source={GradientSplash6} style={[styles.titleAdornment, adornmentStyle]} resizeMode='contain' />
-            <Title title={t('auth.personalObjectivesTitle', { userName })} variant='large' />
-          </View>
-
+          <Image source={GradientSplash6} style={[styles.titleAdornment, adornmentStyle]} resizeMode='contain' />
+          <Text style={styles.greeting}>{userName},</Text>
           <Text style={styles.question}>{t('auth.personalObjectivesQuestion')}</Text>
 
-          <View style={styles.chipsContainer}>
+          <View style={styles.objectivesList}>
             {objectives.map((objective) => {
               const label = t(objective.i18nKey);
               const selected = selectedObjectives.has(objective.id);
               return (
-                <Chip
+                <SelectionButtonQuiz
                   key={objective.id}
                   label={label}
                   selected={selected}
+                  size='small'
                   onPress={() => toggleObjective(objective.id)}
-                  selectedBackgroundColor={COLORS.HIGHLIGHT.LIGHT}
-                  selectedTextColor={COLORS.NEUTRAL.LOW.PURE}
-                  accessibilityLabel={label}
-                  accessibilityRole='button'
-                  accessibilityState={{ selected }}
+                  style={styles.objectiveButton}
                 />
               );
             })}
@@ -120,10 +116,14 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
       </ScrollView>
 
       <View style={[styles.footer, { paddingBottom: SPACING.XL + insets.bottom }]}>
-        <ButtonGroup style={styles.buttonGroup}>
-          <PrimaryButton label={t('common.next')} onPress={handleNext} disabled={isSubmitting} />
-          <SecondaryButton label={t('common.skipInformation')} onPress={handleSkip} disabled={isSubmitting} />
-        </ButtonGroup>
+        <PrimaryButton
+          label={t('common.save')}
+          onPress={handleSubmit}
+          disabled={isSubmitting}
+          loading={isSubmitting}
+          style={styles.saveButton}
+          size='large'
+        />
       </View>
     </SafeAreaView>
   );

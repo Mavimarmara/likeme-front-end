@@ -19,6 +19,8 @@ const t = (key: string, opts?: Record<string, string>) => {
     'auth.objectiveSpirituality': 'Espiritualidade',
     'auth.objectiveEnvironment': 'Ambiente',
     'common.next': 'Próximo',
+    'common.save': 'Salvar',
+    'common.skip': 'Pular',
     'common.error': 'Erro',
     'common.skipInformation': 'Pular Informação',
     'auth.loadingObjectives': 'Carregando objetivos...',
@@ -45,19 +47,28 @@ jest.mock('@/analytics', () => ({
   logEvent: jest.fn(),
 }));
 
-jest.mock('@/assets', () => ({
-  GradientSplash6: 'GradientSplash6',
-}));
+jest.mock('@/assets', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  return {
+    GradientSplash6: 'GradientSplash6',
+    LogoMini: () => React.createElement(View),
+    BackgroundIconButton: 'BackgroundIconButton',
+  };
+});
 
 jest.mock('@/components/ui', () => {
   const { View, Text, TouchableOpacity } = require('react-native');
   return {
-    Header: () => null,
-    Title: ({ title }: { title: string }) => <Text>{title}</Text>,
-    Chip: ({ label, onPress, selected }: { label: string; onPress: () => void; selected: boolean }) => (
-      <TouchableOpacity onPress={onPress} testID={`chip-${label}`}>
-        <Text>{label}</Text>
-      </TouchableOpacity>
+    Header: ({ rightLabel, onRightPress, onBackPress }: { rightLabel?: string; onRightPress?: () => void; onBackPress?: () => void }) => (
+      <View>
+        <TouchableOpacity onPress={onBackPress}><Text>Back</Text></TouchableOpacity>
+        {rightLabel != null && (
+          <TouchableOpacity onPress={onRightPress}>
+            <Text testID="header-right-label">{rightLabel}</Text>
+          </TouchableOpacity>
+        )}
+      </View>
     ),
     PrimaryButton: ({ label, onPress, disabled }: { label: string; onPress: () => void; disabled?: boolean }) => (
       <TouchableOpacity
@@ -68,16 +79,11 @@ jest.mock('@/components/ui', () => {
         <Text>{label}</Text>
       </TouchableOpacity>
     ),
-    SecondaryButton: ({ label, onPress, disabled }: { label: string; onPress: () => void; disabled?: boolean }) => (
-      <TouchableOpacity
-        onPress={onPress}
-        disabled={disabled}
-        testID={`button-${label.toLowerCase().replace(/\s+/g, '-')}`}
-      >
+    SelectionButtonQuiz: ({ label, onPress }: { label: string; onPress: () => void }) => (
+      <TouchableOpacity onPress={onPress}>
         <Text>{label}</Text>
       </TouchableOpacity>
     ),
-    ButtonGroup: ({ children }: { children: React.ReactNode }) => <View>{children}</View>,
     Loading: ({ message }: { message: string }) => <Text>{message}</Text>,
   };
 });
@@ -143,12 +149,12 @@ describe('PersonalObjectivesScreen', () => {
     await waitFor(() => {
       expect(getByText('John,')).toBeTruthy();
       expect(getByText('Quais são os principais pontos onde podemos te ajudar?')).toBeTruthy();
-      expect(getByText('Próximo')).toBeTruthy();
-      expect(getByText('Pular Informação')).toBeTruthy();
+      expect(getByText('Salvar')).toBeTruthy();
+      expect(getByText('Pular')).toBeTruthy();
     });
   });
 
-  it('navigates to Home when Next button is pressed with at least one objective selected', async () => {
+  it('navigates to Home when Salvar button is pressed with at least one objective selected', async () => {
     const mockNavigation = {
       navigate: jest.fn(),
       goBack: jest.fn(),
@@ -159,16 +165,16 @@ describe('PersonalObjectivesScreen', () => {
       },
     };
 
-    const { getByText, getByTestId } = render(
+    const { getByText } = render(
       <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />,
     );
 
     await waitFor(() => {
-      expect(getByText('Próximo')).toBeTruthy();
+      expect(getByText('Salvar')).toBeTruthy();
     });
 
-    fireEvent.press(getByTestId('chip-Sono'));
-    fireEvent.press(getByText('Próximo'));
+    fireEvent.press(getByText('Sono'));
+    fireEvent.press(getByText('Salvar'));
 
     await waitFor(() => {
       expect(getServices().storageService.setSelectedObjectivesIds).toHaveBeenCalledWith(['1']);
@@ -177,7 +183,7 @@ describe('PersonalObjectivesScreen', () => {
     });
   });
 
-  it('navigates to Home when Skip information button is pressed with at least one objective selected', async () => {
+  it('navigates to Home when Pular is pressed without saving', async () => {
     const mockNavigation = {
       navigate: jest.fn(),
       goBack: jest.fn(),
@@ -188,25 +194,23 @@ describe('PersonalObjectivesScreen', () => {
       },
     };
 
-    const { getByText, getByTestId } = render(
+    const { getByText } = render(
       <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />,
     );
 
     await waitFor(() => {
-      expect(getByText('Pular Informação')).toBeTruthy();
+      expect(getByText('Pular')).toBeTruthy();
     });
 
-    fireEvent.press(getByTestId('chip-Sono'));
-    fireEvent.press(getByText('Pular Informação'));
+    fireEvent.press(getByText('Pular'));
 
     await waitFor(() => {
-      expect(getServices().storageService.setSelectedObjectivesIds).toHaveBeenCalledWith(['1']);
-      expect(getServices().storageService.setObjectivesSelectedAt).toHaveBeenCalled();
       expect(mockNavigation.navigate).toHaveBeenCalledWith('Home');
+      expect(getServices().storageService.setSelectedObjectivesIds).not.toHaveBeenCalled();
     });
   });
 
-  it('renders objectives in Portuguese as chips after loading', async () => {
+  it('renders objectives in Portuguese after loading', async () => {
     const mockNavigation = {
       navigate: jest.fn(),
       goBack: jest.fn(),
@@ -225,7 +229,7 @@ describe('PersonalObjectivesScreen', () => {
     });
   });
 
-  it('toggles objective selection when chip is pressed', async () => {
+  it('toggles objective selection when row is pressed', async () => {
     const mockNavigation = {
       navigate: jest.fn(),
       goBack: jest.fn(),
@@ -236,28 +240,28 @@ describe('PersonalObjectivesScreen', () => {
       },
     };
 
-    const { getByTestId } = render(<PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />);
+    const { getByText } = render(<PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />);
 
     await waitFor(() => {
-      expect(getByTestId('chip-Sono')).toBeTruthy();
+      expect(getByText('Sono')).toBeTruthy();
     });
 
-    const chip = getByTestId('chip-Sono');
-    fireEvent.press(chip);
-    fireEvent.press(chip); // Toggle again
+    const row = getByText('Sono');
+    fireEvent.press(row);
+    fireEvent.press(row); // Toggle again
 
-    expect(chip).toBeTruthy();
+    expect(row).toBeTruthy();
   });
 
-  it('shows alert when Next is pressed without selecting any objective', async () => {
+  it('shows alert when Salvar is pressed without selecting any objective', async () => {
     const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
     const mockRoute = { params: { userName: 'John' } };
     const alertSpy = jest.spyOn(require('react-native').Alert, 'alert');
 
     const { getByText } = render(<PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />);
 
-    await waitFor(() => expect(getByText('Próximo')).toBeTruthy());
-    fireEvent.press(getByText('Próximo'));
+    await waitFor(() => expect(getByText('Salvar')).toBeTruthy());
+    fireEvent.press(getByText('Salvar'));
 
     expect(alertSpy).toHaveBeenCalledWith('Campo obrigatório', 'Selecione ao menos um objetivo para continuar.');
     expect(getServices().storageService.setSelectedObjectivesIds).not.toHaveBeenCalled();
@@ -272,13 +276,13 @@ describe('PersonalObjectivesScreen', () => {
     const alertSpy = jest.spyOn(require('react-native').Alert, 'alert');
     getServices().storageService.setSelectedObjectivesIds.mockRejectedValue(new Error('Storage error'));
 
-    const { getByText, getByTestId } = render(
+    const { getByText } = render(
       <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />,
     );
 
-    await waitFor(() => expect(getByText('Próximo')).toBeTruthy());
-    fireEvent.press(getByTestId('chip-Sono'));
-    fireEvent.press(getByText('Próximo'));
+    await waitFor(() => expect(getByText('Salvar')).toBeTruthy());
+    fireEvent.press(getByText('Sono'));
+    fireEvent.press(getByText('Salvar'));
 
     await waitFor(() => {
       expect(alertSpy).toHaveBeenCalledWith('Erro', 'Não foi possível salvar os objetivos. Tente novamente.');
@@ -288,7 +292,7 @@ describe('PersonalObjectivesScreen', () => {
     alertSpy.mockRestore();
   });
 
-  it('does not double-submit when Next is pressed twice while submit is in progress', async () => {
+  it('does not double-submit when Salvar is pressed twice while submit is in progress', async () => {
     const submitPromise = new Promise<void>(() => {
       /* noop */
     });
@@ -298,14 +302,14 @@ describe('PersonalObjectivesScreen', () => {
     const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
     const mockRoute = { params: { userName: 'John' } };
 
-    const { getByText, getByTestId } = render(
+    const { getByText } = render(
       <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />,
     );
 
-    await waitFor(() => expect(getByText('Próximo')).toBeTruthy());
-    fireEvent.press(getByTestId('chip-Sono'));
-    fireEvent.press(getByText('Próximo'));
-    fireEvent.press(getByText('Próximo'));
+    await waitFor(() => expect(getByText('Salvar')).toBeTruthy());
+    fireEvent.press(getByText('Sono'));
+    fireEvent.press(getByText('Salvar'));
+    fireEvent.press(getByText('Salvar'));
 
     await waitFor(() => {
       expect(getServices().storageService.setSelectedObjectivesIds).toHaveBeenCalledTimes(1);
