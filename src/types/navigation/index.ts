@@ -45,6 +45,7 @@ export type RootStackParamList = {
     };
   };
   Profile: undefined;
+  PrivacyPolicies: { userName?: string };
   Home: undefined;
   Summary: undefined;
   AvatarProgress: undefined;

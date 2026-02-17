@@ -25,20 +25,20 @@ const AppPresentationScreen: React.FC<Props> = ({ navigation, route }) => {
     }));
   }, [t]);
 
-  const goToRegister = () => {
-    navigation.navigate('Register', { userName });
+  const goToPrivacyPolicies = () => {
+    navigation.navigate('PrivacyPolicies', { userName });
   };
 
   const handleNext = () => {
     if (currentPage < pages.length - 1) {
       setCurrentPage(currentPage + 1);
     } else {
-      goToRegister();
+      goToPrivacyPolicies();
     }
   };
 
   const handleSkip = () => {
-    goToRegister();
+    goToPrivacyPolicies();
   };
 
   const handleBack = () => {

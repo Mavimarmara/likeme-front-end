@@ -18,8 +18,8 @@ const IntroScreen: React.FC<Props> = ({ navigation, route }) => {
     navigation.navigate('AppPresentation', { userName });
   };
 
-  const handleSkipToRegister = () => {
-    navigation.navigate('Register', { userName });
+  const handleSkipToPrivacyPolicies = () => {
+    navigation.navigate('PrivacyPolicies', { userName });
   };
 
   return (
@@ -48,7 +48,7 @@ const IntroScreen: React.FC<Props> = ({ navigation, route }) => {
             />
             <SecondaryButton
               label={t('auth.noStraightToApp')}
-              onPress={handleSkipToRegister}
+              onPress={handleSkipToPrivacyPolicies}
             />
           </ButtonGroup>
         </View>

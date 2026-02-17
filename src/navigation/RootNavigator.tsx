@@ -35,6 +35,7 @@ import {
   ProviderProfileScreen,
 } from '@/screens/marketplace';
 import { ProfileScreen } from '@/screens/profile';
+import { PrivacyPoliciesScreen } from '@/screens/policies';
 import { HomeScreen, SummaryScreen } from '@/screens/home';
 import { AvatarProgressScreen, MarkerDetailsScreen } from '@/screens/avatar';
 
@@ -153,6 +154,11 @@ const RootNavigator: React.FC = () => {
           options={{ title: 'Provider Profile' }}
         />
         <Stack.Screen name="Profile" component={ProfileScreen} options={{ title: 'Perfil' }} />
+        <Stack.Screen
+          name="PrivacyPolicies"
+          component={PrivacyPoliciesScreen}
+          options={{ title: 'Política de Privacidade' }}
+        />
         <Stack.Screen
           name="Home"
           component={HomeScreen}

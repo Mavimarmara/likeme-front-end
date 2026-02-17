@@ -397,6 +397,27 @@ class AuthService {
   async logoutFromBackend(): Promise<void> {
     return this.logout();
   }
+
+  /**
+   * Registra o aceite da política de privacidade no backend (atualiza privacyPolicyAcceptedAt do usuário).
+   */
+  async acceptPrivacyPolicy(): Promise<void> {
+    const token = await storageService.getToken();
+    if (!token) {
+      throw new Error('Usuário não autenticado');
+    }
+    const response = await fetch(getApiUrl('/api/auth/accept-privacy-policy'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error(data.message || 'Não foi possível registrar o aceite da política de privacidade.');
+    }
+  }
 }
 
 export default new AuthService();
