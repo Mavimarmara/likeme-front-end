@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Image, TouchableOpacity, ImageBackground, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, Image, TouchableOpacity, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -9,9 +9,8 @@ import { SearchBar } from '@/components/ui';
 import { Background } from '@/components/ui/layout';
 import { useTranslation } from '@/hooks/i18n';
 import { BackgroundIconButton, LogoMini } from '@/assets';
-import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '@/constants';
+import { COLORS } from '@/constants';
 import type { CommunityStackParamList } from '@/types/navigation';
-import type { ProviderChat } from '@/components/sections/community';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
@@ -36,7 +35,7 @@ interface ChatConversation {
 const ChatScreen: React.FC<Props> = () => {
   useAnalyticsScreen({ screenName: 'ChatScreen', screenClass: 'ChatScreen' });
   const { t } = useTranslation();
-  const route = useRoute<ChatScreenRouteProp>();
+  useRoute<ChatScreenRouteProp>();
   const navigation = useNavigation<ChatScreenNavigationProp>();
   const [searchQuery, setSearchQuery] = useState('');
 

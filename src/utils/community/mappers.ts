@@ -23,9 +23,6 @@ const mapCommunityCommentToComment = (
   const user = users?.find((u) => u.userId === communityComment.userId);
 
   const reactionsObj = communityComment.reactions || {};
-  const upvotes = reactionsObj.like || reactionsObj.upvote || reactionsObj['👍'] || 0;
-  const downvotes = reactionsObj.dislike || reactionsObj.downvote || reactionsObj['👎'] || 0;
-
   const reactionsArray: Array<{ id: string; userId: string; type: string }> = [];
   if (Object.keys(reactionsObj).length > 0) {
     Object.entries(reactionsObj).forEach(([type, count]) => {
@@ -53,7 +50,7 @@ const mapCommunityCommentToComment = (
   };
 };
 
-const mapCommunityPostToPoll = (communityPost: CommunityPost, postChildren?: CommunityPost[]): Poll | undefined => {
+const mapCommunityPostToPoll = (communityPost: CommunityPost, _postChildren?: CommunityPost[]): Poll | undefined => {
   if (communityPost.structureType !== 'poll') {
     return undefined;
   }

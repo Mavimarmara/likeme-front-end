@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import AffiliateProductScreen from './index';
 import { adService, productService } from '@/services';
@@ -12,7 +11,6 @@ jest.mock('react-native-safe-area-context', () => {
 });
 
 jest.mock('expo-linear-gradient', () => {
-  const React = require('react');
   const { View } = require('react-native');
   return {
     LinearGradient: ({ children, ...props }: any) => <View {...props}>{children}</View>,
@@ -20,7 +18,6 @@ jest.mock('expo-linear-gradient', () => {
 });
 
 jest.mock('@/components/ui/layout', () => {
-  const React = require('react');
   const { View, TouchableOpacity, Text } = require('react-native');
   return {
     Header: ({ onBackPress }: any) => (

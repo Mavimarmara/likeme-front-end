@@ -21,6 +21,10 @@ module.exports = {
     'build/',
     'plugins/',
     'index.js',
+    '**/*.spec.ts',
+    '**/*.spec.tsx',
+    '**/*.test.ts',
+    '**/*.test.tsx',
   ],
   overrides: [
     {
@@ -29,8 +33,6 @@ module.exports = {
         'scripts/**/*.js',
         'src/assets/index.ts',
         'src/config/environment.ts',
-        '**/*.spec.ts',
-        '**/*.spec.tsx',
       ],
       rules: {
         '@typescript-eslint/no-var-requires': 'off',

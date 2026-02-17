@@ -1,7 +1,7 @@
 import { BACKEND_CONFIG, getApiUrl } from '@/config';
 import storageService from '../auth/storageService';
 import { logger } from '@/utils/logger';
-import type { ApiResponse, ApiError } from '@/types/infrastructure';
+import type { ApiError } from '@/types/infrastructure';
 
 class ApiClient {
   private baseUrl: string;

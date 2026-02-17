@@ -1,7 +1,6 @@
-import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import CheckoutScreen from './index';
-import { storageService, orderService, paymentService } from '@/services';
+import { storageService } from '@/services';
 
 jest.mock('react-native-safe-area-context', () => {
   const ReactNative = require('react-native');
@@ -12,7 +11,6 @@ jest.mock('react-native-safe-area-context', () => {
 });
 
 jest.mock('@/components/ui/layout', () => {
-  const React = require('react');
   const { View, TouchableOpacity, Text } = require('react-native');
   return {
     Header: ({ onBackPress }: any) => (
@@ -27,8 +25,7 @@ jest.mock('@/components/ui/layout', () => {
 });
 
 jest.mock('@/components/ui/buttons', () => {
-  const React = require('react');
-  const { View, TouchableOpacity, Text } = require('react-native');
+  const { TouchableOpacity, Text } = require('react-native');
   return {
     PrimaryButton: ({ label, onPress }: any) => (
       <TouchableOpacity onPress={onPress} testID={`button-${label}`}>
@@ -289,7 +286,7 @@ describe('CheckoutScreen', () => {
   });
 
   it('navigates back when Continue is pressed from order step', async () => {
-    const { getByText, getByTestId, queryByTestId } = render(
+    const { getByText, getByTestId } = render(
       <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />,
     );
 

@@ -7,7 +7,6 @@
 
 import { mapChannelsToEvents } from './eventMapper';
 import type { Channel } from '@/types/community';
-import type { Event } from '@/types/event';
 
 describe('eventMapper', () => {
   const mockChannel: Channel = {

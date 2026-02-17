@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image, StyleSheet, TextInput } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -7,7 +7,6 @@ import { LogoMini } from '@/assets';
 import { Background } from '@/components/ui/layout';
 import { BackgroundIconButton } from '@/assets';
 import { ImageBackground } from 'react-native';
-import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES } from '@/constants';
 import type { RootStackParamList } from '@/types/navigation';
 import storageService from '@/services/auth/storageService';
 import productService from '@/services/product/productService';

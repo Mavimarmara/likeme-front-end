@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import PersonalObjectivesScreen from './index';
 
@@ -51,7 +50,6 @@ jest.mock('@/assets', () => ({
 }));
 
 jest.mock('@/components/ui', () => {
-  const React = require('react');
   const { View, Text, TouchableOpacity } = require('react-native');
   return {
     Header: () => null,

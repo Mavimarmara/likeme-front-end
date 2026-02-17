@@ -1,7 +1,5 @@
-import React from 'react';
 import { render, waitFor, fireEvent } from '@testing-library/react-native';
 import CommunityPreviewScreen from './index';
-import { communityService } from '@/services';
 
 jest.mock('react-native-safe-area-context', () => {
   const ReactNative = require('react-native');
@@ -12,7 +10,6 @@ jest.mock('react-native-safe-area-context', () => {
 });
 
 jest.mock('@/components/ui/layout', () => {
-  const React = require('react');
   const { View, TouchableOpacity, Text } = require('react-native');
   return {
     Header: ({ onBackPress }: any) => (
@@ -27,7 +24,6 @@ jest.mock('@/components/ui/layout', () => {
 });
 
 jest.mock('@/components/ui/community', () => {
-  const React = require('react');
   const { View, Text } = require('react-native');
   return {
     PostCard: ({ post }: any) => (
@@ -97,7 +93,7 @@ describe('CommunityPreviewScreen', () => {
   });
 
   it('displays empty message when no posts', async () => {
-    const { getByText, getByTestId } = render(<CommunityPreviewScreen navigation={mockNavigation} route={mockRoute} />);
+    const { getByTestId } = render(<CommunityPreviewScreen navigation={mockNavigation} route={mockRoute} />);
 
     // The component has mock posts, so we need to check if empty state would show
     // In a real scenario, we'd mock the service to return empty array

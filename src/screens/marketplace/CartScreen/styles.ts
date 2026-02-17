@@ -1,7 +1,5 @@
-import { StyleSheet, Dimensions } from 'react-native';
-import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES } from '@/constants';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+import { StyleSheet } from 'react-native';
+import { COLORS, SPACING, FONT_SIZES } from '@/constants';
 const CART_ITEM_WIDTH = 363;
 const CART_ITEM_HEIGHT = 140;
 const CART_IMAGE_WIDTH = 108;

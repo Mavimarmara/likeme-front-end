@@ -1,5 +1,5 @@
 import { StyleSheet, Dimensions } from 'react-native';
-import { BORDER_RADIUS, COLORS, SPACING } from '@/constants';
+import { SPACING } from '@/constants';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 

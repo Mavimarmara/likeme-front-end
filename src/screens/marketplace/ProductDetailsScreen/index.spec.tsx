@@ -1,7 +1,5 @@
-import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { render, waitFor } from '@testing-library/react-native';
 import ProductDetailsScreen from './index';
-import { productService, adService } from '@/services';
 import { useProductDetails } from '@/hooks';
 
 jest.mock('react-native-safe-area-context', () => {
@@ -16,17 +14,12 @@ jest.mock('@/assets', () => ({
   LogoMini: () => null,
 }));
 
-jest.mock('@/components/ui/layout', () => {
-  const React = require('react');
-  const { View } = require('react-native');
-  return {
-    Header: () => null,
-    Background: () => null,
-  };
-});
+jest.mock('@/components/ui/layout', () => ({
+  Header: () => null,
+  Background: () => null,
+}));
 
 jest.mock('@/components/ui/carousel', () => {
-  const React = require('react');
   const { View, Text } = require('react-native');
   return {
     ProductsCarousel: () => (
@@ -38,8 +31,7 @@ jest.mock('@/components/ui/carousel', () => {
 });
 
 jest.mock('@/components/marketplace', () => {
-  const React = require('react');
-  const { View, Text } = require('react-native');
+  const { View } = require('react-native');
   return {
     ProductHeroSection: () => <View testID='product-hero-section' />,
     ProductInfoTabs: () => <View testID='product-info-tabs' />,
@@ -76,19 +68,6 @@ const mockProduct = {
   image: 'https://example.com/image.jpg',
   category: 'physical product',
   quantity: 10,
-  status: 'active' as const,
-  createdAt: '2023-01-01',
-  updatedAt: '2023-01-01',
-};
-
-const mockAmazonProduct = {
-  id: 'product-2',
-  name: 'Amazon Product',
-  description: 'Amazon description',
-  price: 19.99,
-  image: 'https://example.com/amazon.jpg',
-  category: 'amazon product',
-  quantity: 5,
   status: 'active' as const,
   createdAt: '2023-01-01',
   updatedAt: '2023-01-01',
@@ -192,9 +171,7 @@ describe('ProductDetailsScreen', () => {
       },
     };
 
-    const { getByTestId } = render(
-      <ProductDetailsScreen navigation={mockNavigation as any} route={mockRoute as any} />,
-    );
+    render(<ProductDetailsScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     // Assuming there's a back button with testID
     // This would need to be adjusted based on actual implementation

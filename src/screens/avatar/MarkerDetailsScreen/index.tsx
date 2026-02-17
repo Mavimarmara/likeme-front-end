@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { View, ScrollView, Text, TouchableOpacity, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header, FloatingMenu, ChartBar, CTACard, PeriodSelector, ProgressHeaderLogo } from '@/components/ui';
 import ProgressBar from '@/components/ui/feedback/ProgressBar';
 import { useMenuItems } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
-import { COLORS, SPACING, BORDER_RADIUS } from '@/constants';
+import { COLORS, SPACING } from '@/constants';
 import { getMarkerColor, getMarkerGradient, MARKER_NAMES, hasMarkerGradient } from '@/constants/markers';
 import type { UserMarker } from '@/types/anamnesis';
 import { useAnalyticsScreen } from '@/analytics';
@@ -71,15 +70,6 @@ const MarkerDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const handleBack = () => {
     navigation.goBack();
-  };
-
-  const handleShare = () => {
-    console.log('Share marker details');
-    // TODO: Implementar compartilhamento
-  };
-
-  const handleSeeMarker = (markerToShow: UserMarker) => {
-    console.log('See marker:', markerToShow.id);
   };
 
   return (

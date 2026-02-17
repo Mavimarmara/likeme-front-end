@@ -5,8 +5,6 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
-  ImageBackground,
-  Dimensions,
   Image,
   type ImageStyle,
 } from 'react-native';
@@ -17,13 +15,12 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header } from '@/components/ui/layout';
 import { Toggle } from '@/components/ui';
 import { SecondaryButton } from '@/components/ui/buttons';
-import { LogoMini } from '@/assets';
-import { ProductsCarousel, PlansCarousel, type Product, type Plan } from '@/components/sections/product';
+import { PlansCarousel, type Plan } from '@/components/sections/product';
 import { PostCard } from '@/components/sections/community';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
 import { useProductDetails } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
-import { formatPrice, mapApiProductToCarouselProduct, mapApiProductToNavigationParams } from '@/utils';
+import { formatPrice } from '@/utils';
 import { useUserFeed } from '@/hooks';
 import {
   useAnalyticsScreen,
@@ -33,7 +30,6 @@ import {
   logSelectContent,
   logError,
 } from '@/analytics';
-import type { Post } from '@/types';
 import type { RootStackParamList } from '@/types/navigation';
 import { styles } from './styles';
 
@@ -91,8 +87,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   const [activeInfoTab, setActiveInfoTab] = useState<'about' | 'objectives' | 'communities'>('about');
   const [activeProductTab, setActiveProductTab] = useState<'goal' | 'description' | 'composition' | 'review'>('goal');
 
-  const { product, ad, relatedProducts, loading, isFavorite, setIsFavorite, handleAddToCart, loadAd } =
-    useProductDetails({
+  const { product, ad, loading, handleAddToCart } = useProductDetails({
       productId: route.params?.productId,
       fallbackProduct: route.params?.product,
       navigation,
@@ -112,13 +107,6 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       isOutOfStock: product.status === 'out_of_stock' || product.quantity === 0,
     };
   }, [product, ad]);
-
-  const recommendedProducts: Product[] = useMemo(() => {
-    if (!relatedProducts || !Array.isArray(relatedProducts)) {
-      return [];
-    }
-    return relatedProducts.map(mapApiProductToCarouselProduct);
-  }, [relatedProducts]);
 
   const infoTabOptions: ButtonCarouselOption<'about' | 'objectives' | 'communities'>[] = useMemo(
     () => [
@@ -151,27 +139,6 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       action_name: 'go_back',
     });
     navigation.goBack();
-  };
-
-  const handleSeeProvider = () => {
-    const provider = route.params?.product?.provider;
-    if (!provider) return;
-    logSelectContent({
-      content_type: 'provider_profile',
-      item_id: route.params?.productId,
-      screen_name: 'product_details',
-    });
-    navigation.navigate('ProviderProfile', {
-      providerId: route.params?.productId,
-      provider: {
-        name: provider.name,
-        avatar: provider.avatar,
-        title: 'Therapist & Wellness Coach',
-        description: 'Specialized in mental health and wellness coaching with over 10 years of experience.',
-        rating: route.params?.product?.rating || 4.8,
-        specialties: ['Mental Health', 'Wellness Coaching', 'Therapy'],
-      },
-    });
   };
 
   const handleSeeProviderProfile = () => {
@@ -214,29 +181,6 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       loadCommunityPosts(1);
     }
   }, [activeTab, loadCommunityPosts]);
-
-  const handleProductPress = (recommendedProduct: Product) => {
-    const relatedProduct = relatedProducts.find((rp) => rp.id === recommendedProduct.id);
-    if (!relatedProduct) return;
-    logSelectContent({
-      content_type: 'related_product',
-      item_id: recommendedProduct.id,
-      item_name: recommendedProduct.title,
-      screen_name: 'product_details',
-    });
-    navigation.navigate('ProductDetails', {
-      productId: relatedProduct.id,
-      product: mapApiProductToNavigationParams(relatedProduct),
-    });
-  };
-
-  const handleProductLike = (recommendedProduct: Product) => {
-    logSelectContent({
-      content_type: 'product_like',
-      item_id: recommendedProduct.id,
-      screen_name: 'product_details',
-    });
-  };
 
   const handlePlanPress = (plan: Plan) => {
     logSelectContent({
@@ -405,22 +349,6 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       {renderAddToCartButton()}
     </SafeAreaView>
   );
-
-  function renderCustomHeader() {
-    return (
-      <View style={styles.customHeader}>
-        <TouchableOpacity style={styles.backButton} onPress={handleBackPress} activeOpacity={0.7}>
-          <Icon name='arrow-back' size={24} color='#001137' />
-        </TouchableOpacity>
-        <View style={styles.logoContainer}>
-          <LogoMini width={87} height={16} />
-        </View>
-        <TouchableOpacity style={styles.favoriteButton} onPress={() => setIsFavorite(!isFavorite)} activeOpacity={0.7}>
-          <Icon name={isFavorite ? 'star' : 'star-border'} size={24} color='#001137' />
-        </TouchableOpacity>
-      </View>
-    );
-  }
 
   function renderAddToCartButton() {
     const productWithProvider = product as { provider?: { avatar?: string } };

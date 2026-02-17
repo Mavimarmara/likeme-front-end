@@ -1,5 +1,5 @@
-import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image, Dimensions, ActivityIndicator } from 'react-native';
+import React, { useMemo, useState, useEffect } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -14,10 +14,7 @@ import { useTranslation } from '@/hooks/i18n';
 import type { Ad } from '@/types/ad';
 import type { RootStackParamList } from '@/types/navigation';
 import { styles } from './styles';
-import { logger } from '@/utils/logger';
 import { useAnalyticsScreen } from '@/analytics';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const getCategoryOptions = (t: (key: string) => string): ButtonCarouselOption<string>[] => [
   { id: 'all', label: t('marketplace.allCategory') },

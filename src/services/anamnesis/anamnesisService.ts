@@ -2,9 +2,7 @@ import apiClient from '../infrastructure/apiClient';
 import userService from '../user/userService';
 import { logger } from '@/utils/logger';
 import type {
-  AnamnesisQuestion,
   CreateUserAnswerData,
-  UserAnswer,
   GetAnamnesisQuestionsResponse,
   GetAnamnesisQuestionResponse,
   GetCompleteAnamnesisResponse,

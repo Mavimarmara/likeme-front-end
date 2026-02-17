@@ -7,7 +7,6 @@
 
 import { mapApiProductToCarouselProduct, mapApiProductToNavigationParams } from './productMapper';
 import type { Product as ApiProduct } from '@/types/product';
-import type { Product } from '@/components/sections/product';
 
 jest.mock('@/utils/formatters', () => ({
   formatPrice: jest.fn((price) => {

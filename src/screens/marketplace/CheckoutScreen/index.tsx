@@ -3,7 +3,7 @@ import { View, Text, ScrollView, SafeAreaView, Alert } from 'react-native';
 import { Header } from '@/components/ui/layout';
 import { Background } from '@/components/ui/layout';
 import { SecondaryButton } from '@/components/ui/buttons';
-import { storageService, orderService, paymentService } from '@/services';
+import { storageService, orderService } from '@/services';
 import { formatPrice, formatAddress, formatBillingAddress } from '@/utils';
 import { useFormattedInput } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
@@ -12,7 +12,7 @@ import { styles } from './styles';
 import AddressForm, { AddressData } from './address';
 import PaymentForm from './payment';
 import { CartItemList, OrderSummary, OrderScreen } from './order';
-import type { CreateOrderData, BillingAddress, CardData } from '@/types/order';
+import type { CreateOrderData, CardData } from '@/types/order';
 import { useAnalyticsScreen } from '@/analytics';
 
 interface CartItem {
@@ -58,8 +58,8 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
   const [saveCardDetails, setSaveCardDetails] = useState(false);
   const [couponCode, setCouponCode] = useState('');
   const [subtotal, setSubtotal] = useState(0);
-  const [shipping, setShipping] = useState(0);
-  const [total, setTotal] = useState(0);
+  const [shipping, _setShipping] = useState(0);
+  const [_total, setTotal] = useState(0);
   const [orderId, setOrderId] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
 

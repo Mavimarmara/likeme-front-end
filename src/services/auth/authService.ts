@@ -1,16 +1,10 @@
 import * as AuthSession from 'expo-auth-session';
-import * as Crypto from 'expo-crypto';
-import { Alert } from 'react-native';
 import { AUTH0_CONFIG, AUTH_CONFIG, getApiUrl } from '@/config';
 import storageService from './storageService';
 import { logger } from '@/utils/logger';
-import type { AuthResult, RegisterCredentials } from '@/types/auth';
+import type { AuthResult } from '@/types/auth';
 
 class AuthService {
-  private getAuthUrl(): string {
-    return `https://${AUTH0_CONFIG.domain}/authorize`;
-  }
-
   private getTokenUrl(): string {
     return `https://${AUTH0_CONFIG.domain}/oauth/token`;
   }
@@ -27,6 +21,7 @@ class AuthService {
    */
   private getRedirectUri(): string {
     if (AUTH_CONFIG.useAuthProxy && AUTH_CONFIG.proxyUrl) {
+      void this._getProjectNameForProxy(); // usado para resolver project name quando necessário
       return AUTH_CONFIG.proxyUrl.trim().replace(/\/$/, '');
     }
     const scheme = AUTH_CONFIG.scheme || 'likeme';
@@ -207,7 +202,7 @@ class AuthService {
     }
   }
 
-  private getProjectNameForProxy(): string | undefined {
+  private _getProjectNameForProxy(): string | undefined {
     if (AUTH_CONFIG.projectNameForProxy) {
       return AUTH_CONFIG.projectNameForProxy;
     }

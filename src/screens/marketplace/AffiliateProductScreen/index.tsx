@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image, Linking, Dimensions, ImageBackground } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Linking, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -12,8 +12,6 @@ import type { Product as ApiProduct } from '@/types/product';
 import type { RootStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
-
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 type AffiliateProductScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'AffiliateProduct'>;
@@ -43,7 +41,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
   const [product, setProduct] = useState<ApiProduct | null>(null);
   const [ad, setAd] = useState<Ad | null>(null);
   const [loading, setLoading] = useState(true);
-  const [otherOptions, setOtherOptions] = useState<ApiProduct[]>([]);
+  const [_otherOptions, setOtherOptions] = useState<ApiProduct[]>([]);
 
   const productId = route.params?.productId;
   const adId = route.params?.adId;

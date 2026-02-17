@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   ImageBackground,
   Image,
-  Dimensions,
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -17,18 +16,16 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header } from '@/components/ui/layout';
 import { Toggle } from '@/components/ui';
 import { SecondaryButton } from '@/components/ui/buttons';
-import { ProductsCarousel, type Product } from '@/components/sections/product';
+import { type Product } from '@/components/sections/product';
 import { PostCard, NextEventsSection, type ProviderChat } from '@/components/sections/community';
 import { useUserFeed } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import { formatPrice } from '@/utils';
-import type { Post } from '@/types';
 import type { Event } from '@/types/event';
 import type { RootStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 type ProviderProfileScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'ProviderProfile'>;
@@ -77,7 +74,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
   const { t } = useTranslation();
   const { providerId, provider } = route.params;
   const [activeTab, setActiveTab] = useState<'about' | 'communities'>('about');
-  const [isFavorite, setIsFavorite] = useState(false);
+  const [_isFavorite, _setIsFavorite] = useState(false);
   const [isAboutExpanded, setIsAboutExpanded] = useState(true);
   const [isAcademicExpanded, setIsAcademicExpanded] = useState(true);
 
@@ -155,10 +152,6 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
 
   const handleProductPress = (product: Product) => {
     console.log('Product pressed:', product.id);
-  };
-
-  const handleProductLike = (product: Product) => {
-    console.log('Like product:', product.id);
   };
 
   // Mock events data

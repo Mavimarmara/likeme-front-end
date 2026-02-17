@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import MarketplaceScreen from './index';
 import { adService, storageService } from '@/services';
@@ -17,7 +16,6 @@ jest.mock('@/assets', () => ({
 }));
 
 jest.mock('@/components/ui/layout', () => {
-  const React = require('react');
   const { View, Text, TouchableOpacity } = require('react-native');
   return {
     Header: ({ onCartPress, showCartButton }: any) => (
@@ -34,7 +32,6 @@ jest.mock('@/components/ui/layout', () => {
 });
 
 jest.mock('@/components/ui/inputs', () => {
-  const React = require('react');
   const { View, Text, TextInput: RNTextInput } = require('react-native');
   return {
     SearchBar: ({ value, onChangeText, placeholder }: any) => (
@@ -47,7 +44,6 @@ jest.mock('@/components/ui/inputs', () => {
 });
 
 jest.mock('@/components/ui/menu', () => {
-  const React = require('react');
   const { View } = require('react-native');
   return {
     FloatingMenu: () => <View testID='floating-menu' />,
@@ -213,7 +209,7 @@ describe('MarketplaceScreen', () => {
   it('adds product to cart and navigates to cart when add button is pressed', async () => {
     (storageService.addToCart as jest.Mock).mockResolvedValue(undefined);
 
-    const { getByText, getAllByTestId } = render(
+    const { getByText } = render(
       <MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />,
     );
 

@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import WelcomeScreen from './index';
@@ -16,7 +15,7 @@ jest.mock('@/assets', () => ({
 
 jest.mock('@/components/ui', () => {
   const React = require('react');
-  const { View, Text, TouchableOpacity } = require('react-native');
+  const { View, Text } = require('react-native');
   const RNTextInput = require('react-native').TextInput;
   return {
     Header: () => null,

@@ -4,12 +4,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { Toggle, Header } from '@/components/ui';
 import { SocialList, ProgramsList, LiveBannerData, ProviderChat } from '@/components/sections/community';
-import { ProductsCarousel, Product, PlansCarousel, Plan } from '@/components/sections/product';
+import { Product, Plan } from '@/components/sections/product';
 import { Background } from '@/components/ui/layout';
 import { FloatingMenu } from '@/components/ui/menu';
-import type { Post, Event } from '@/types';
+import type { Event } from '@/types';
 import type { Program, ProgramDetail } from '@/types/program';
-import type { CommunityCategory, Channel, CommunityFeedData } from '@/types/community';
+import type { CommunityCategory } from '@/types/community';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
 import { useUserFeed, useCommunities, useSuggestedProducts, useMenuItems } from '@/hooks';
@@ -158,12 +158,12 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   const {
     communities: rawCommunities,
     categories,
-    loading: communitiesLoading,
-    loadingMore: communitiesLoadingMore,
-    error: communitiesError,
-    hasMore: communitiesHasMore,
-    loadMore: loadMoreCommunities,
-    refresh: refreshCommunities,
+    loading: _communitiesLoading,
+    loadingMore: _communitiesLoadingMore,
+    error: _communitiesError,
+    hasMore: _communitiesHasMore,
+    loadMore: _loadMoreCommunities,
+    refresh: _refreshCommunities,
   } = useCommunities({
     enabled: true,
     pageSize: 10,
@@ -185,7 +185,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
 
   const feedFilterParams = useMemo(() => mapFiltersToFeedParams(selectedFilters), [selectedFilters]);
 
-  const { posts, loading, loadingMore, error, hasMore, loadMore, search } = useUserFeed({
+  const { posts, loading, loadingMore, error, hasMore: _hasMore, loadMore, search } = useUserFeed({
     enabled: selectedMode === 'Social',
     searchQuery,
     params: feedFilterParams,
@@ -290,8 +290,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   }, []);
 
   const menuItems = useMenuItems(navigation);
-
-  const MARKER_ID = '__MARKER__';
 
   const handleProgramPress = (program: Program | null) => {
     if (program === null) {

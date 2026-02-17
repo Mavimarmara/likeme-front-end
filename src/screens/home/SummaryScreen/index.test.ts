@@ -105,7 +105,6 @@ describe('SummaryScreen - Avatar and Card Display Logic', () => {
     });
 
     it('deve considerar NÃO COMPLETO se tem flag mas seções incompletas', () => {
-      const hasAnswers = true;
       const anamnesisCompletedAt = '2024-01-01T00:00:00.000Z'; // Flag existe
       const allSectionsComplete = false; // getCompletionStatus retornou false
 
@@ -118,8 +117,6 @@ describe('SummaryScreen - Avatar and Card Display Logic', () => {
     });
 
     it('deve considerar COMPLETO se tem flag E todas as seções estão completas', () => {
-      const hasAnswers = true;
-      const anamnesisCompletedAt = '2024-01-01T00:00:00.000Z'; // Flag existe
       const allSectionsComplete = true; // getCompletionStatus retornou true
 
       // Lógica: se tem flag e todas as seções completas, mantém como completado
@@ -131,7 +128,6 @@ describe('SummaryScreen - Avatar and Card Display Logic', () => {
     });
 
     it('deve considerar NÃO COMPLETO se não tem flag no AsyncStorage', () => {
-      const hasAnswers = true;
       const anamnesisCompletedAt = null; // Flag não existe
 
       const hasCompletedAnamnesis = !!anamnesisCompletedAt;

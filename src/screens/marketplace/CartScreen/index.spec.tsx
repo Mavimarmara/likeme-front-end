@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import CartScreen from './index';
 import { storageService } from '@/services';
@@ -17,7 +16,6 @@ jest.mock('@/assets', () => ({
 }));
 
 jest.mock('@/components/ui/layout', () => {
-  const React = require('react');
   const { View, TouchableOpacity, Text } = require('react-native');
   return {
     Header: ({ onBackPress }: any) => (
@@ -32,8 +30,7 @@ jest.mock('@/components/ui/layout', () => {
 });
 
 jest.mock('@/components/ui/buttons', () => {
-  const React = require('react');
-  const { View, TouchableOpacity, Text } = require('react-native');
+  const { TouchableOpacity, Text } = require('react-native');
   return {
     PrimaryButton: ({ label, onPress }: any) => (
       <TouchableOpacity onPress={onPress} testID={`button-${label}`}>

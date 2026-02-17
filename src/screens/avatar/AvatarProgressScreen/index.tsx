@@ -1,14 +1,13 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { View, ScrollView, Text, TouchableOpacity, ImageBackground, StatusBar, Share } from 'react-native';
+import { View, ScrollView, Text, TouchableOpacity, StatusBar, Share } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Header, Background, ProgressHeaderLogo } from '@/components/ui/layout';
+import { Header, ProgressHeaderLogo } from '@/components/ui/layout';
 import { FloatingMenu } from '@/components/ui/menu';
-import { PrimaryButton, SecondaryButton, ButtonGroup, IconButton } from '@/components/ui/buttons';
+import { SecondaryButton, IconButton } from '@/components/ui/buttons';
 import { PeriodSelector } from '@/components/ui/inputs';
 import { CTACard } from '@/components/ui/cards';
 import ProgressBar from '@/components/ui/feedback/ProgressBar';
-import { BackgroundIconButton } from '@/assets';
 import { useMenuItems, useCommunities, useSuggestedProducts, useAnamnesisScores } from '@/hooks';
 import { mapChannelsToEvents } from '@/utils';
 import { communityService, anamnesisService, userService } from '@/services';
@@ -16,7 +15,6 @@ import type { UserMarker } from '@/types/anamnesis';
 import { getMarkerColor, getMarkerGradient, hasMarkerGradient, MARKER_NAMES } from '@/constants/markers';
 import { COLORS } from '@/constants';
 import { useTranslation } from '@/hooks/i18n';
-import type { Channel } from '@/types/community';
 import type { Event } from '@/types/event';
 import {
   NextEventsSection,
@@ -43,8 +41,8 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
   const [events, setEvents] = useState<Event[]>([]);
   const [popularProviders, setPopularProviders] = useState<Provider[]>([]);
   const [markers, setMarkers] = useState<UserMarker[]>([]);
-  const [loadingEvents, setLoadingEvents] = useState(false);
-  const [loadingProviders, setLoadingProviders] = useState(false);
+  const [_loadingEvents, setLoadingEvents] = useState(false);
+  const [_loadingProviders, setLoadingProviders] = useState(false);
   const [loadingMarkers, setLoadingMarkers] = useState(true);
   const [markerRowWidth, setMarkerRowWidth] = useState(0);
   const menuItems = useMenuItems(navigation);

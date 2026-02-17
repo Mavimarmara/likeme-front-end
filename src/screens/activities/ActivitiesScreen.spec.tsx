@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import ActivitiesScreen from './ActivitiesScreen';
@@ -18,7 +17,7 @@ jest.mock('react-native-safe-area-context', () => {
 
 // Mock components
 jest.mock('@/components/ui/layout', () => {
-  const React = require('react');
+  require('react');
   return {
     Header: () => null,
     Background: () => null,
@@ -26,7 +25,6 @@ jest.mock('@/components/ui/layout', () => {
 });
 
 jest.mock('@/components/ui/menu', () => {
-  const React = require('react');
   const { View } = require('react-native');
   return {
     FloatingMenu: () => <View testID='floating-menu' />,
@@ -52,7 +50,6 @@ jest.mock('@/components/ui/menu', () => {
 });
 
 jest.mock('@/components/ui', () => {
-  const React = require('react');
   const { View, Text, TouchableOpacity } = require('react-native');
   return {
     Toggle: ({ options, selected, onSelect }: any) => (
@@ -78,7 +75,6 @@ jest.mock('@/components/ui', () => {
 });
 
 jest.mock('@/components/sections/activity', () => {
-  const React = require('react');
   const { View, Text, TouchableOpacity, TextInput } = require('react-native');
   return {
     CreateActivityModal: ({ visible, onClose, onSave, activityId, initialData }: any) => {
@@ -116,7 +112,6 @@ jest.mock('@/components/sections/activity', () => {
 });
 
 jest.mock('@/components/sections/product', () => {
-  const React = require('react');
   const { View } = require('react-native');
   return {
     ProductsCarousel: () => <View testID='products-carousel' />,
@@ -480,7 +475,7 @@ describe('ActivitiesScreen', () => {
       await waitFor(() => {
         // Find the more-vert icon (it's rendered as Icon component)
         // We'll need to find the TouchableOpacity that contains it
-        const touchables = getAllByTestId(/.*/);
+        getAllByTestId(/.*/);
         // This is a simplified test - in a real scenario we'd need to add testIDs
       });
     });
@@ -497,7 +492,7 @@ describe('ActivitiesScreen', () => {
 
     it('shows delete confirmation when Delete is selected', async () => {
       // Mock Alert.alert to capture calls
-      const alertSpy = jest.spyOn(Alert, 'alert');
+      jest.spyOn(Alert, 'alert');
 
       render(<ActivitiesScreen navigation={mockNavigation} />);
 
@@ -546,7 +541,7 @@ describe('ActivitiesScreen', () => {
 
       await waitFor(() => {
         // View button should not be visible in history tab
-        const viewButtons = queryByText('View');
+        queryByText('View');
         // This might still find text in other contexts, but the button should not be clickable
       });
     });

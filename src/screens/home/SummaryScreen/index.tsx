@@ -14,8 +14,6 @@ import {
   sortByDateObject,
 } from '@/utils';
 import { communityService, storageService, anamnesisService, userService } from '@/services';
-import type { Channel } from '@/types/community';
-import type { CommunityFeedData } from '@/types/community';
 import {
   NextEventsSection,
   RecommendedCommunitiesSection,
@@ -30,6 +28,7 @@ import {
 import { ProductsCarousel, type Product } from '@/components/sections/product';
 import { AnamnesisPromptCard } from '@/components/sections/anamnesis';
 import { AvatarSection } from '@/components/sections/avatar';
+import type { CommunityFeedData } from '@/types/community';
 import type { Event } from '@/types/event';
 import type { Post } from '@/types';
 import { useAnalyticsScreen } from '@/analytics';
@@ -46,7 +45,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   const rootNavigation = navigation.getParent() ?? navigation;
   const [hasCompletedAnamnesis, setHasCompletedAnamnesis] = useState<boolean>(false);
   const [hasAnyAnamnesisAnswers, setHasAnyAnamnesisAnswers] = useState<boolean>(false);
-  const { progress: anamnesisProgress } = useAnamnesisProgress();
+  const { progress: _anamnesisProgress } = useAnamnesisProgress();
   const { scores: anamnesisScores, refresh: refreshAnamnesisScores } = useAnamnesisScores();
 
   useFocusEffect(
@@ -137,7 +136,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   const {
     communities: rawCommunities,
     categories,
-    loading: communitiesLoading,
+    loading: _communitiesLoading,
   } = useCommunities({
     enabled: true,
     pageSize: 20,
@@ -150,9 +149,9 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   const firstCommunity = rawCommunities.length > 0 ? rawCommunities[0] : null;
 
   const [communityPosts, setCommunityPosts] = useState<Post[]>([]);
-  const [loadingCommunityPosts, setLoadingCommunityPosts] = useState(false);
+  const [_loadingCommunityPosts, setLoadingCommunityPosts] = useState(false);
   const [popularProviders, setPopularProviders] = useState<Provider[]>([]);
-  const [loadingProviders, setLoadingProviders] = useState(false);
+  const [_loadingProviders, setLoadingProviders] = useState(false);
   const [events, setEvents] = useState<Event[]>([]);
 
   const { products: recommendedProducts } = useSuggestedProducts({

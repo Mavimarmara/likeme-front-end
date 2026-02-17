@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import ProviderProfileScreen from './index';
 
@@ -11,7 +10,6 @@ jest.mock('react-native-safe-area-context', () => {
 });
 
 jest.mock('@/components/ui/layout', () => {
-  const React = require('react');
   const { View, TouchableOpacity, Text } = require('react-native');
   return {
     Header: ({ onBackPress }: any) => (

@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image, Dimensions } from 'react-native';
+import React from 'react';
+import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header, Background } from '@/components/ui/layout';
 import { useTranslation } from '@/hooks/i18n';
 import { PostCard } from '@/components/sections/community';
@@ -10,8 +9,6 @@ import type { Post } from '@/types';
 import type { RootStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 type CommunityPreviewScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'CommunityPreview'>;
@@ -26,7 +23,7 @@ type CommunityPreviewScreenProps = {
 const CommunityPreviewScreen: React.FC<CommunityPreviewScreenProps> = ({ navigation, route }) => {
   useAnalyticsScreen({ screenName: 'CommunityPreview', screenClass: 'CommunityPreviewScreen' });
   const { t } = useTranslation();
-  const { productId, productName } = route.params;
+  const { productId: _productId, productName } = route.params;
 
   // Mock data - será substituído por dados reais do backend
   const posts: Post[] = [

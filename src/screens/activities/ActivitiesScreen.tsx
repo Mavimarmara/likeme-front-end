@@ -5,8 +5,6 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
-  ImageBackground,
-  Dimensions,
   Modal,
   Alert,
   Linking,
@@ -18,8 +16,8 @@ import { FloatingMenu, FilterMenu, type ButtonCarouselOption } from '@/component
 import { Header, Background } from '@/components/ui/layout';
 import { Toggle, PrimaryButton, Badge } from '@/components/ui';
 import { CreateActivityModal } from '@/components/sections/activity';
-import { BackgroundIconButton, DoneIcon, CloseIcon } from '@/assets';
-import { ProductsCarousel, PlansCarousel, type Product, type Plan } from '@/components/sections/product';
+import { DoneIcon, CloseIcon } from '@/assets';
+import { ProductsCarousel, PlansCarousel, type Plan } from '@/components/sections/product';
 import { EventReminder } from '@/components/ui/cards';
 import { orderService, activityService } from '@/services';
 import { storageService } from '@/services';
@@ -32,8 +30,6 @@ import type { Order } from '@/types/order';
 import type { RootStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 type ActivitiesScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'Activities'>;
@@ -65,7 +61,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
   const {
     activities,
     rawActivities,
-    loading: isLoadingActivities,
+    loading: _isLoadingActivities,
     historyActivities,
     activeActivities,
     loadActivities,

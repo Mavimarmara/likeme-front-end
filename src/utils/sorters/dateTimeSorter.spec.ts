@@ -5,7 +5,7 @@
  * por data e hora, incluindo diferentes formatos e casos extremos.
  */
 
-import { sortByDateTime, sortByDateField, sortByDateObject, SortOrder } from './dateTimeSorter';
+import { sortByDateTime, sortByDateField, sortByDateObject } from './dateTimeSorter';
 
 describe('dateTimeSorter', () => {
   describe('sortByDateTime', () => {

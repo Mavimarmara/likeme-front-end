@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import UnauthenticatedScreen from './index';
 
@@ -25,8 +24,7 @@ jest.mock('@/assets', () => ({
 }));
 
 jest.mock('@/components/ui', () => {
-  const React = require('react');
-  const { View, Text, TouchableOpacity } = require('react-native');
+  const { Text, TouchableOpacity } = require('react-native');
   return {
     Header: () => null,
     Title: ({ title }: { title: string }) => <Text>{title}</Text>,
