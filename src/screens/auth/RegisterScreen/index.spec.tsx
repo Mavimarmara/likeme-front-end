@@ -48,7 +48,9 @@ jest.mock('@/hooks/i18n', () => ({
 }));
 
 jest.mock('@/analytics', () => ({
-  useAnalyticsScreen: () => {},
+  useAnalyticsScreen: () => {
+    /* noop */
+  },
 }));
 
 jest.mock('@/assets', () => ({

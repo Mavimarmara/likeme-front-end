@@ -24,6 +24,19 @@ module.exports = {
   ],
   overrides: [
     {
+      files: [
+        'App.tsx',
+        'scripts/**/*.js',
+        'src/assets/index.ts',
+        'src/config/environment.ts',
+        '**/*.spec.ts',
+        '**/*.spec.tsx',
+      ],
+      rules: {
+        '@typescript-eslint/no-var-requires': 'off',
+      },
+    },
+    {
       files: ['*.ts', '*.tsx'],
       parser: '@typescript-eslint/parser',
       parserOptions: {

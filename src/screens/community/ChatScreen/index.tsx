@@ -172,8 +172,12 @@ const ChatScreen: React.FC<Props> = () => {
           placeholder={t('common.search')}
           value={searchQuery}
           onChangeText={setSearchQuery}
-          onSearchPress={() => {}}
-          onFilterPress={() => {}}
+          onSearchPress={() => {
+            /* noop */
+          }}
+          onFilterPress={() => {
+            /* noop */
+          }}
           showFilterButton={true}
         />
       </View>

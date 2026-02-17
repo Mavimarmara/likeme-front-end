@@ -19,6 +19,7 @@ function getFirebaseAnalytics(): FirebaseAnalyticsModule | null {
   }
   initialized = true;
   try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires -- optional dependency
     const analytics = require('@react-native-firebase/analytics').default as FirebaseAnalyticsModule;
     firebaseAnalytics = analytics;
     return firebaseAnalytics;
@@ -44,7 +45,7 @@ export function logScreenView(screenName: string, screenClass?: string): void {
   try {
     analytics().logEvent(GA4_EVENTS.SCREEN_VIEW, params);
   } catch (e) {
-    __DEV__ && console.warn('[Analytics] logScreenView error:', e);
+    if (__DEV__) console.warn('[Analytics] logScreenView error:', e);
   }
 }
 
@@ -61,7 +62,7 @@ export function logEvent(eventName: string, params?: AnalyticsEventParams): void
   try {
     analytics().logEvent(eventName, safeParams);
   } catch (e) {
-    __DEV__ && console.warn('[Analytics] logEvent error:', e);
+    if (__DEV__) console.warn('[Analytics] logEvent error:', e);
   }
 }
 

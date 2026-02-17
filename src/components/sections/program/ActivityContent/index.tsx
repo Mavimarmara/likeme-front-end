@@ -33,7 +33,13 @@ const ActivityContent: React.FC<Props> = ({ activity }) => {
       <View style={styles.content}>
         <View style={styles.questionContainer}>
           <View style={styles.questionHeader}>
-            <SecondaryButton label={t('activities.edit')} onPress={() => {}} style={styles.editButton} />
+            <SecondaryButton
+              label={t('activities.edit')}
+              onPress={() => {
+                /* noop */
+              }}
+              style={styles.editButton}
+            />
           </View>
           <Text style={styles.question}>{activity.question}</Text>
         </View>
@@ -58,7 +64,9 @@ const ActivityContent: React.FC<Props> = ({ activity }) => {
         <View style={styles.submitButtonContainer}>
           <PrimaryButton
             label={activity.isSubmitted ? t('activities.submitted') : t('activities.submit')}
-            onPress={() => {}}
+            onPress={() => {
+              /* noop */
+            }}
             style={styles.submitButton}
           />
         </View>

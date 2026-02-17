@@ -214,6 +214,7 @@ class AuthService {
 
     // Lazy import do Constants para evitar problemas durante a inicialização
     try {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires -- dynamic optional dependency
       const Constants = require('expo-constants').default;
       const expoConfig = Constants?.expoConfig;
       if (!expoConfig) {
@@ -371,7 +372,9 @@ class AuthService {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
-          }).catch(() => {});
+          }).catch(() => {
+            /* noop */
+          });
         }
       } catch (error) {
         logger.warn('Erro ao fazer logout no backend:', error);

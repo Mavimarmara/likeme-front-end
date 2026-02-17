@@ -107,7 +107,12 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
               icon='share'
               iconSize={24}
               iconColor={COLORS.TEXT}
-              onPress={onSharePress || (() => {})}
+              onPress={
+                onSharePress ||
+                (() => {
+                  /* noop */
+                })
+              }
               label={t('avatar.share')}
               showBackground={false}
             />
@@ -115,7 +120,12 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
               icon='add'
               iconSize={24}
               iconColor={COLORS.SECONDARY.LIGHT}
-              onPress={onSeeMorePress || (() => {})}
+              onPress={
+                onSeeMorePress ||
+                (() => {
+                  /* noop */
+                })
+              }
               label={t('avatar.seeMore')}
               backgroundTintColor={COLORS.TEXT}
             />

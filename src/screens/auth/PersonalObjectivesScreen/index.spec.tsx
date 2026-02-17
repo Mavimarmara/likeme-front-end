@@ -40,7 +40,9 @@ jest.mock('react-native-safe-area-context', () => {
 });
 
 jest.mock('@/analytics', () => ({
-  useAnalyticsScreen: () => {},
+  useAnalyticsScreen: () => {
+    /* noop */
+  },
   logEvent: jest.fn(),
 }));
 
@@ -289,7 +291,9 @@ describe('PersonalObjectivesScreen', () => {
   });
 
   it('does not double-submit when Next is pressed twice while submit is in progress', async () => {
-    const submitPromise = new Promise<void>(() => {});
+    const submitPromise = new Promise<void>(() => {
+      /* noop */
+    });
     getServices().storageService.setSelectedObjectivesIds.mockReturnValue(submitPromise);
     getServices().storageService.setObjectivesSelectedAt.mockReturnValue(submitPromise);
 

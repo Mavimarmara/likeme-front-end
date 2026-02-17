@@ -116,9 +116,13 @@ export const storageUtils = {
     return null;
   },
 
-  setItem: async (key: string, value: string): Promise<void> => {},
+  setItem: async (_key: string, _value: string): Promise<void> => {
+    /* noop */
+  },
 
-  removeItem: async (key: string): Promise<void> => {},
+  removeItem: async (_key: string): Promise<void> => {
+    /* noop */
+  },
 };
 
 // Core utilities

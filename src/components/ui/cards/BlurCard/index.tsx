@@ -1,14 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { View, Image, TouchableOpacity, LayoutChangeEvent, ViewStyle, StyleProp } from 'react-native';
 import { BlurView } from 'expo-blur';
-import {
-  styles,
-  getBlurStyle,
-  getFooterSectionStyle,
-  extractBorderRadius,
-  BLUR_INTENSITY,
-  BLUR_TINT,
-} from './styles';
+import { styles, getBlurStyle, getFooterSectionStyle, extractBorderRadius, BLUR_INTENSITY, BLUR_TINT } from './styles';
 
 type FooterSection = {
   component: React.ReactNode;

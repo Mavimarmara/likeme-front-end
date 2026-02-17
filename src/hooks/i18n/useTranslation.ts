@@ -5,7 +5,12 @@ const useI18nTranslation =
     ? ReactI18Next.useTranslation
     : () => ({
         t: (key: string) => key,
-        i18n: { changeLanguage: () => {}, language: 'pt-BR' },
+        i18n: {
+          changeLanguage: () => {
+            /* noop */
+          },
+          language: 'pt-BR',
+        },
       });
 
 /**
