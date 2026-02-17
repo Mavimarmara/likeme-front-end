@@ -41,8 +41,7 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
       try {
         const ids = await storageService.getSelectedObjectivesIds();
         if (ids.length > 0) setSelectedMarkers(new Set(ids));
-      } catch {
-      }
+      } catch {}
     };
     loadSavedSelection();
   }, []);

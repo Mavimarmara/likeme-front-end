@@ -26,7 +26,6 @@ export const BackgroundWithGradient2 = require('../../assets/BackgroundWithGradi
 export const BackgroundWithGradient3 = require('../../assets/BackgroundWithGradient3.png');
 export const BackgroundWithGradient4 = require('../../assets/BackgroundWithGradient4.png');
 export const BackgroundWithGradient5 = require('../../assets/BackgroundWithGradient5.png');
-export const MenuButtonBackground = require('../../assets/Menu.png');
 export const DoneIcon = require('../../assets/Done.png');
 export const CloseIcon = require('../../assets/Close.png');
 export const MindAvatar = require('../../assets/avatar/DisableMindAvatar.png');

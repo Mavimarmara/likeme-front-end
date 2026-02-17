@@ -13,21 +13,15 @@ export type IconSilhouetteProps = {
   children?: ReactNode;
 };
 
-const IconSilhouette: React.FC<IconSilhouetteProps> = ({
-  tintColor,
-  source,
-  size = 'medium',
-  style,
-  children,
-}) => {
+const IconSilhouette: React.FC<IconSilhouetteProps> = ({ tintColor, source, size = 'medium', style, children }) => {
   const containerSize = size === 'small' ? styles.containerSmall : styles.containerMedium;
   const imageSize = size === 'small' ? styles.imageSmall : styles.imageMedium;
   const singleTint =
     typeof tintColor === 'string'
       ? tintColor
       : Array.isArray(tintColor) && tintColor.length > 0
-        ? tintColor[0]
-        : undefined;
+      ? tintColor[0]
+      : undefined;
 
   return (
     <ImageBackground
