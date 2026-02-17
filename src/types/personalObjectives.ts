@@ -28,3 +28,18 @@ export interface PersonalObjectivesParams {
   page?: number;
   limit?: number;
 }
+
+export interface UserPersonalObjective {
+  userId: string;
+  objectiveId: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  objective: PersonalObjective;
+}
+
+export interface MyObjectivesResponse {
+  success: boolean;
+  message: string;
+  data: UserPersonalObjective[];
+}

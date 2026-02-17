@@ -15,6 +15,25 @@ export const PERSONAL_MARKERS_FALLBACK: MarkerItem[] = [
   { id: 'environment', i18nKey: 'auth.objectiveEnvironment' },
 ];
 
+const VALID_MARKER_IDS = new Set(PERSONAL_MARKERS_FALLBACK.map((m) => m.id));
+
+const OBJECTIVE_NAME_TO_MARKER_ID: Record<string, MarkerId> = {
+  'Improve my sleep': 'sleep',
+  'Move more': 'activity',
+  'Find a comunity': 'connection',
+  'Eat better': 'nutrition',
+  'Get to know me better': 'purpose-vision',
+  'Improve my habits': 'self-esteem',
+  'Track my mood': 'spirituality',
+  'Find wellbeing programs': 'environment',
+};
+
+export function objectiveNameToMarkerId(name: string): string | null {
+  const markerId = OBJECTIVE_NAME_TO_MARKER_ID[name];
+  if (markerId != null && VALID_MARKER_IDS.has(markerId)) return markerId;
+  return null;
+}
+
 type UseMarkersResult = {
   markers: MarkerItem[];
   isLoading: boolean;

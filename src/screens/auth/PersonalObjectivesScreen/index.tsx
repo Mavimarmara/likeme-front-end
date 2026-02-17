@@ -4,13 +4,13 @@ import type { StackScreenProps } from '@react-navigation/stack';
 import { View, Text, ScrollView, Image, useWindowDimensions, Alert } from 'react-native';
 import { Header, IconSilhouette, PrimaryButton, SelectionButtonQuiz } from '@/components/ui';
 import { GradientSplash6 } from '@/assets';
-import { storageService } from '@/services';
+import { personalObjectivesService, storageService } from '@/services';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen, logEvent } from '@/analytics';
 import { CUSTOM_EVENTS, ANALYTICS_PARAMS } from '@/analytics/constants';
 import { SPACING } from '@/constants';
 import type { RootStackParamList } from '@/types/navigation';
-import { useMarkers } from './useMarkers';
+import { useMarkers, objectiveNameToMarkerId } from './useMarkers';
 import { styles } from './styles';
 import { getMarkerGradient } from '@/constants/markers';
 
@@ -37,13 +37,23 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
   }, [windowWidth]);
 
   useEffect(() => {
-    const loadSavedSelection = async () => {
+    const loadSelection = async () => {
+      try {
+        const objectives = await personalObjectivesService.getMySelectedObjectives();
+        const ids = objectives
+          .map((obj) => objectiveNameToMarkerId(obj.name))
+          .filter((id): id is string => id != null);
+        if (ids.length > 0) {
+          setSelectedMarkers(new Set(ids));
+          return;
+        }
+      } catch {}
       try {
         const ids = await storageService.getSelectedObjectivesIds();
         if (ids.length > 0) setSelectedMarkers(new Set(ids));
       } catch {}
     };
-    loadSavedSelection();
+    loadSelection();
   }, []);
 
   const toggleMarker = useCallback((markerId: string) => {
