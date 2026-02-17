@@ -6,6 +6,7 @@ export { default as RightArrow } from '../../assets/RightArrow.svg';
 export { default as LogoMini } from '../../assets/LogoMini.svg';
 export { default as LogoPartialMini } from '../../assets/LogoPartialMini.svg';
 export { default as GradientSplash } from '../../assets/GradientSplash.svg';
+export { default as BackgroundIcon } from '../../assets/icons/BackgroundIcon.svg';
 
 // Para imagens PNG, vamos usar require direto
 //export const GradientSplash = require('../../assets/GradientSplash.png');

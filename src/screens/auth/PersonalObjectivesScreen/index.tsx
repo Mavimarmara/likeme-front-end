@@ -40,9 +40,7 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
     const loadSelection = async () => {
       try {
         const objectives = await personalObjectivesService.getMySelectedObjectives();
-        const ids = objectives
-          .map((obj) => objectiveNameToMarkerId(obj.name))
-          .filter((id): id is string => id != null);
+        const ids = objectives.map((obj) => objectiveNameToMarkerId(obj.name)).filter((id): id is string => id != null);
         if (ids.length > 0) {
           setSelectedMarkers(new Set(ids));
           return;
