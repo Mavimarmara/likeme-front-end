@@ -10,15 +10,21 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
 
+  main: {
+    flex: 1,
+    width: 362,
+    alignSelf: 'center',
+    paddingTop: 60,
+    justifyContent: 'space-between',
+  },
+
   content: {
     alignItems: 'flex-start',
     display: 'flex',
     flexDirection: 'column',
     gap: 40,
     position: 'relative',
-    width: 362,
-    alignSelf: 'center',
-    paddingTop: 60,
+    width: '100%',
   },
 
   titleAdornment: {
@@ -38,5 +44,14 @@ export const styles = StyleSheet.create({
     position: 'relative',
     width: '100%',
     justifyContent: 'center',
+  },
+
+  footer: {
+    width: '100%',
+    paddingBottom: 24,
+  },
+
+  primaryButton: {
+    width: '100%',
   },
 });

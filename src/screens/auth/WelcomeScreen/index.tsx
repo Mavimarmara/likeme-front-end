@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, KeyboardAvoidingView, Platform, Alert, TextInput as RNTextInput, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Header, Title, TextInput } from '@/components/ui';
+import { Header, Title, TextInput, PrimaryButton } from '@/components/ui';
 import { GradientSplash3 } from '@/assets';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen, logButtonClick, logFormSubmit, logNavigation } from '@/analytics';
@@ -78,25 +78,31 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
           }}
         />
 
-        <View style={styles.content}>
-          <Title
-            title={t('auth.welcomeTitle')}
-            subtitle={t('auth.welcomeSubtitle')}
-            variant='large'
-            rightAdornment={<Image source={GradientSplash3} style={styles.titleAdornment} resizeMode='cover' />}
-          />
-
-          <View style={styles.inputContainer}>
-            <TextInput
-              ref={inputRef}
-              value={name}
-              onChangeText={setName}
-              placeholder={t('auth.yourNamePlaceholder')}
-              autoFocus
-              returnKeyType='next'
-              onSubmitEditing={handleContinue}
-              onPressIn={() => inputRef.current?.focus()}
+        <View style={styles.main}>
+          <View style={styles.content}>
+            <Title
+              title={t('auth.welcomeTitle')}
+              subtitle={t('auth.welcomeSubtitle')}
+              variant='large'
+              rightAdornment={<Image source={GradientSplash3} style={styles.titleAdornment} resizeMode='cover' />}
             />
+
+            <View style={styles.inputContainer}>
+              <TextInput
+                ref={inputRef}
+                value={name}
+                onChangeText={setName}
+                placeholder={t('auth.yourNamePlaceholder')}
+                autoFocus
+                returnKeyType='next'
+                onSubmitEditing={handleContinue}
+                onPressIn={() => inputRef.current?.focus()}
+              />
+            </View>
+          </View>
+
+          <View style={styles.footer}>
+            <PrimaryButton label='Próximo' onPress={handleContinue} style={styles.primaryButton} size='large' />
           </View>
         </View>
       </KeyboardAvoidingView>
