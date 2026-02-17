@@ -185,7 +185,15 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
 
   const feedFilterParams = useMemo(() => mapFiltersToFeedParams(selectedFilters), [selectedFilters]);
 
-  const { posts, loading, loadingMore, error, hasMore: _hasMore, loadMore, search } = useUserFeed({
+  const {
+    posts,
+    loading,
+    loadingMore,
+    error,
+    hasMore: _hasMore,
+    loadMore,
+    search,
+  } = useUserFeed({
     enabled: selectedMode === 'Social',
     searchQuery,
     params: feedFilterParams,

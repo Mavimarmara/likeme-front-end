@@ -1,14 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  Image,
-  Modal,
-  Alert,
-  Linking,
-} from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image, Modal, Alert, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';

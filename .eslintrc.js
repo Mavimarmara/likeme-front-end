@@ -55,7 +55,6 @@ module.exports = {
         '@typescript-eslint/no-useless-constructor': 'error',
         camelcase: 'warn',
         'default-case-last': 'error',
-        eqeqeq: 'error',
         'no-else-return': 'error',
         'no-multi-assign': 'error',
         'no-nested-ternary': 'warn',

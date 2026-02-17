@@ -1,13 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  ImageBackground,
-  Image,
-  ActivityIndicator,
-} from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ImageBackground, Image, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { CommonActions } from '@react-navigation/native';
@@ -25,7 +17,6 @@ import type { Event } from '@/types/event';
 import type { RootStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
-
 
 type ProviderProfileScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'ProviderProfile'>;

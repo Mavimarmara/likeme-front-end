@@ -1,13 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  ActivityIndicator,
-  Image,
-  type ImageStyle,
-} from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Image, type ImageStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -88,10 +80,10 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   const [activeProductTab, setActiveProductTab] = useState<'goal' | 'description' | 'composition' | 'review'>('goal');
 
   const { product, ad, loading, handleAddToCart } = useProductDetails({
-      productId: route.params?.productId,
-      fallbackProduct: route.params?.product,
-      navigation,
-    });
+    productId: route.params?.productId,
+    fallbackProduct: route.params?.product,
+    navigation,
+  });
 
   const displayData = useMemo(() => {
     if (!product) {
