@@ -2,7 +2,7 @@ import { TouchableOpacity, Text, View } from 'react-native';
 import { styles } from './styles';
 
 type Props<T extends string> = {
-  options: readonly [T, T];
+  options: readonly T[];
   selected: T;
   onSelect: (option: T) => void;
 };

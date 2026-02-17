@@ -3,7 +3,7 @@ import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackScreenProps } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Header, PrimaryButton, Tabs } from '@/components/ui';
+import { Header, PrimaryButton, Toggle } from '@/components/ui';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen, logButtonClick } from '@/analytics';
 import type { RootStackParamList } from '@/types/navigation';
@@ -39,7 +39,7 @@ const PlansScreen: React.FC<Props> = ({ navigation, route }) => {
       action_name: 'start_plan',
     });
     const nextScreen = getNextOnboardingScreen('Plans');
-    const params = nextScreen !== 'Home' ? { userName } : undefined;
+    const params = { userName };
     navigation.navigate(nextScreen as never, params as never);
   }, [navigation, userName]);
 
@@ -49,6 +49,16 @@ const PlansScreen: React.FC<Props> = ({ navigation, route }) => {
     { id: 'premium', label: t('plans.tabPremium') },
     { id: 'compare', label: t('plans.tabCompare') },
   ];
+
+  const tabLabels = tabItems.map((tab) => tab.label);
+  const selectedLabel = tabItems.find((tab) => tab.id === selectedTab)?.label ?? tabItems[0].label;
+  const handleTabSelect = useCallback(
+    (label: string) => {
+      const tab = tabItems.find((t) => t.label === label);
+      if (tab) setSelectedTab(tab.id);
+    },
+    [tabItems],
+  );
 
   const freeIncludes = [
     t('plans.includeCommunity'),
@@ -144,7 +154,13 @@ const PlansScreen: React.FC<Props> = ({ navigation, route }) => {
           <Text style={[styles.betaText, { marginBottom: 0 }]}>{t('plans.betaParagraph4')}</Text>
         </View>
 
-        <Tabs<PlanTabId> items={tabItems} selectedId={selectedTab} onSelect={setSelectedTab} style={styles.tabsRow} />
+        <View style={styles.tabsRow}>
+          <Toggle
+            options={tabLabels}
+            selected={selectedLabel}
+            onSelect={handleTabSelect}
+          />
+        </View>
 
         {selectedTab === 'free' &&
           renderPlanCard(

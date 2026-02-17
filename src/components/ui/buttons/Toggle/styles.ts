@@ -19,11 +19,12 @@ export const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 4,
     marginVertical: SPACING.MD,
+    height: 48,
   },
   option: {
     flex: 1,
     paddingVertical: 12,
-    paddingHorizontal: SPACING.MD,
+    paddingHorizontal: SPACING.SM,
     borderRadius: 24,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,

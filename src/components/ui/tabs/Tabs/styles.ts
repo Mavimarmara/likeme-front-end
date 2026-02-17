@@ -1,36 +1,62 @@
 import { StyleSheet, ViewStyle } from 'react-native';
-import { COLORS, SPACING, BORDER_RADIUS } from '@/constants';
+import { SPACING } from '@/constants';
 
 export const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    backgroundColor: COLORS.NEUTRAL.HIGH.PURE,
-    borderRadius: BORDER_RADIUS.MD,
-    padding: 4,
+    backgroundColor: 'rgba(253, 251, 238, 0.8)',
+    borderRadius: 24,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    borderBottomLeftRadius: 22,
+    borderBottomRightRadius: 22,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 4,
+    marginVertical: SPACING.MD,
   },
 
   tab: {
     flex: 1,
-    paddingVertical: SPACING.SM,
-    paddingHorizontal: SPACING.SM,
+    paddingVertical: 12,
+    paddingHorizontal: SPACING.MD,
+    borderRadius: 24,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    borderBottomLeftRadius: 22,
+    borderBottomRightRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: BORDER_RADIUS.SM,
+    minHeight: 48,
   },
 
   tabSelected: {
-    backgroundColor: COLORS.TEXT,
+    backgroundColor: '#fbf7e5',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 4,
   },
 
   tabLabel: {
-    color: COLORS.NEUTRAL.LOW.DARK,
-    fontFamily: 'DM Sans',
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '500',
+    color: '#6e6a6a',
+    textAlign: 'center',
   },
 
   tabLabelSelected: {
-    color: COLORS.WHITE,
+    color: '#001137',
+    fontWeight: '500',
   },
 });
 

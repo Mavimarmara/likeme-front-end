@@ -1,7 +1,4 @@
-import {
-  AUTH_ONBOARDING_SCREENS_ORDER,
-  type AuthOnboardingScreenName,
-} from '@/constants/authOnboarding';
+import { AUTH_ONBOARDING_SCREENS_ORDER, type AuthOnboardingScreenName } from '@/constants/authOnboarding';
 
 const DEFAULT_USER_NAME = 'Usuário';
 
@@ -9,9 +6,7 @@ const DEFAULT_USER_NAME = 'Usuário';
  * Retorna a próxima tela na ordem de onboarding.
  * Se a tela atual for a última, retorna 'Home'.
  */
-export function getNextOnboardingScreen(
-  current: AuthOnboardingScreenName,
-): AuthOnboardingScreenName | 'Home' {
+export function getNextOnboardingScreen(current: AuthOnboardingScreenName): AuthOnboardingScreenName | 'Home' {
   const idx = AUTH_ONBOARDING_SCREENS_ORDER.indexOf(current);
   if (idx < 0 || idx === AUTH_ONBOARDING_SCREENS_ORDER.length - 1) {
     return 'Home';
