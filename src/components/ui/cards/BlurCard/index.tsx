@@ -6,7 +6,6 @@ import {
   getBlurStyle,
   getFooterSectionStyle,
   extractBorderRadius,
-  normalizeStyle,
   BLUR_INTENSITY,
   BLUR_TINT,
 } from './styles';

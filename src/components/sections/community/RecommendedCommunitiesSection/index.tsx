@@ -5,8 +5,6 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { BackgroundIconButton } from '@/assets';
 import { useTranslation } from '@/hooks/i18n';
 import { styles } from './styles';
-import type { Community } from '@/types/community';
-
 type Props = {
   communities: RecommendedCommunity[];
   onCommunityPress?: (community: RecommendedCommunity) => void;

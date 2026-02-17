@@ -54,14 +54,6 @@ const VALUE_TO_BODY_LEVEL: Record<number, BodySymptomLevel> = {
   4: 'plena',
 };
 
-const BODY_LEVEL_TO_VALUE: Record<BodySymptomLevel, number> = {
-  sem: 0,
-  leve: 1,
-  moderado: 2,
-  grave: 3,
-  plena: 4,
-};
-
 const BODY_LEVEL_TO_OPTION_KEY: Record<BodySymptomLevel, string> = {
   grave: 'graves_sintomas',
   moderado: 'moderados_sintomas',

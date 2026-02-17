@@ -5,7 +5,6 @@ import { Header } from '@/components/ui';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import { useTranslation } from '@/hooks/i18n';
 import { BackgroundWithGradient2, BackgroundWithGradient3 } from '@/assets';
-import { SPACING, COLORS, FONT_SIZES } from '@/constants';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 

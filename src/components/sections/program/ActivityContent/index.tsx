@@ -1,6 +1,5 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import { styles } from './styles';
 import type { ProgramActivity } from '@/types/program';
 import { SecondaryButton, PrimaryButton } from '@/components/ui/buttons';

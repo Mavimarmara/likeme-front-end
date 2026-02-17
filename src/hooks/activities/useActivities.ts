@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { activityService } from '@/services';
-import type { UserActivity, ListActivitiesApiResponse } from '@/types/activity';
+import type { UserActivity } from '@/types/activity';
 import type { ActivityItem, UseActivitiesOptions, UseActivitiesReturn } from '@/types/activity/hooks';
 import { logger } from '@/utils/logger';
 

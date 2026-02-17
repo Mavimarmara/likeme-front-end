@@ -58,17 +58,6 @@ const CommentCard: React.FC<Props> = ({
     setDownvotes(comment.downvotes || 0);
   }, [comment]);
 
-  const formatTimeAgo = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-    if (diffInSeconds < 60) return 'agora';
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutos atrás`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} horas atrás`;
-    return `${Math.floor(diffInSeconds / 86400)} dias atrás`;
-  };
-
   const handleUpvotePress = async () => {
     if (reactionLoading) return;
 

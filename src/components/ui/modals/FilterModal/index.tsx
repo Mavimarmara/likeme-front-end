@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, TextInput as RNTextInput } from 'react-native';
 import { ModalBase, SelectButton, SubmitButton } from '../shared';
 import { styles } from './styles';
-import { SPACING } from '@/constants';
 import type { CommunityFeedFilters, PublicationDateFilter, SortByFilter } from '@/types/community/filters';
 
 const COLORS = {

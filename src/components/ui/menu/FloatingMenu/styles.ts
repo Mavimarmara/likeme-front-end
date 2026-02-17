@@ -2,7 +2,6 @@ import { StyleSheet } from 'react-native';
 import { SPACING } from '@/constants';
 
 const SOFT_BEIGE = '#FBF7E5';
-const DARK_BLUE = '#001137';
 const ACCENT_BLUE = '#0154F8';
 
 export const styles = StyleSheet.create({

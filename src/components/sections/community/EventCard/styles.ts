@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { SPACING, BORDER_RADIUS } from '@/constants';
+import { SPACING } from '@/constants';
 
 export const styles = StyleSheet.create({
   cardContainer: {

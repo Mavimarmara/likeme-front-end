@@ -4,7 +4,6 @@ import { SearchBar } from '@/components/ui';
 import FilterModal, { type FilterType } from '@/components/ui/modals/FilterModal';
 import { PostCard } from '@/components/sections/community';
 import type { Post } from '@/types';
-import { logger } from '@/utils/logger';
 import { styles } from './styles';
 
 type Props = {

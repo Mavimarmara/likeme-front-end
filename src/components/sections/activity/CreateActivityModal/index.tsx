@@ -4,7 +4,6 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ModalBase } from '@/components/ui/modals/shared';
 import { SecondaryButton, PrimaryButton } from '@/components/ui/buttons';
-import { Badge } from '@/components/ui';
 import { useTranslation } from '@/hooks/i18n';
 import { styles } from './styles';
 

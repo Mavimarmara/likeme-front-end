@@ -1,6 +1,5 @@
 import { StyleSheet } from 'react-native';
 import { COLORS, FONT_SIZES, SPACING } from '@/constants';
-import { transparent } from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
 
 export const styles = StyleSheet.create({
   container: {

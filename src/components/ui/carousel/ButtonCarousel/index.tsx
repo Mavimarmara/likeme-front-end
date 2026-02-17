@@ -1,5 +1,4 @@
-import React from 'react';
-import { ScrollView, ViewStyle, TextStyle } from 'react-native';
+import { ScrollView, ViewStyle } from 'react-native';
 import { PrimaryButton } from '@/components/ui/buttons';
 import { styles } from './styles';
 

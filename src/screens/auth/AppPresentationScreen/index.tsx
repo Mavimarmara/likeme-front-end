@@ -1,13 +1,11 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '@/components/ui';
 import { PRESENTATION_PAGES } from '@/constants/presentation';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
-
-const { width } = Dimensions.get('window');
 
 type Props = { navigation: any; route: any };
 

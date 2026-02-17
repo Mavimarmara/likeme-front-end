@@ -3,7 +3,7 @@
  * Parâmetros: apenas valores não sensíveis (evitar PII).
  */
 
-import type { AnalyticsEventName, AnalyticsParamName } from './constants';
+import type { AnalyticsEventName } from './constants';
 
 /** Parâmetros de evento: chave = AnalyticsParamName ou string, valor = string | number | boolean */
 export type AnalyticsEventParams = Record<string, string | number | boolean>;

@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 import { TextInput as RNTextInput, TextInputProps as RNTextInputProps, View, Text, ViewStyle } from 'react-native';
 import { styles, PLACEHOLDER_TEXT_COLOR } from './styles';
 

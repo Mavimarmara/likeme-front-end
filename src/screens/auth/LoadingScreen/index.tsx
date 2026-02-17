@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { View, Text, Animated, Dimensions, Image, ImageStyle } from 'react-native';
+import { View, Text, Animated, Image, ImageStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PartialLogo, GradientSplash7, GradientSplash8, GradientSplash9 } from '@/assets';
 import { styles, GRADIENT_STRIP_HEIGHT, GRADIENT_STRIP_WIDTH } from './styles';
@@ -9,8 +9,6 @@ import { useAnalyticsScreen } from '@/analytics';
 import { getApiUrl } from '@/config';
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 const GRADIENT_SOURCES = [GradientSplash7, GradientSplash8, GradientSplash9];
-
-const { height } = Dimensions.get('window');
 
 type Props = { navigation: any };
 

@@ -1,4 +1,4 @@
-import { StyleSheet, Platform } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '@/constants';
 
 export const styles = StyleSheet.create({

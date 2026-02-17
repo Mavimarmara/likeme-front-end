@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, ViewStyle, TextStyle } from 'react-native';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
-import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '@/constants';
+import { COLORS } from '@/constants';
 import { styles } from './styles';
 
 type Props = {

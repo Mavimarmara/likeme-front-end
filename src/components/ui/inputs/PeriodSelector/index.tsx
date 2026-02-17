@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, ViewStyle } from 'react-native';
 import { ButtonGroup, SecondaryButton } from '@/components/ui/buttons';
-import { COLORS, BORDER_RADIUS, SPACING } from '@/constants';
+import { COLORS } from '@/constants';
 import { styles } from './styles';
 
 type PeriodOption = 'day' | 'week' | 'month';
