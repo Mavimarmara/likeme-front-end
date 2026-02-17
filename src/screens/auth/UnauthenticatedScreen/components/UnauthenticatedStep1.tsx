@@ -11,11 +11,7 @@ interface UnauthenticatedStep1Props {
   isLoading?: boolean;
 }
 
-const UnauthenticatedStep1: React.FC<UnauthenticatedStep1Props> = ({
-  onNext,
-  onLogin,
-  isLoading = false,
-}) => {
+const UnauthenticatedStep1: React.FC<UnauthenticatedStep1Props> = ({ onNext, onLogin, isLoading = false }) => {
   const { t } = useTranslation();
   const { width } = Dimensions.get('window');
   const slideLeft = useRef(new Animated.Value(0)).current;

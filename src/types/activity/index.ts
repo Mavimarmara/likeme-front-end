@@ -29,18 +29,17 @@ export interface ListActivitiesParams {
   includeDeleted?: boolean;
 }
 
-export interface ListActivitiesApiResponse
-  extends ApiResponse<{
-    activities: UserActivity[];
-    pagination: {
-      page: number;
-      limit: number;
-      total: number;
-      totalPages: number;
-    };
-  }> {}
+export type ListActivitiesApiResponse = ApiResponse<{
+  activities: UserActivity[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}>;
 
-export interface GetActivityApiResponse extends ApiResponse<UserActivity> {}
+export type GetActivityApiResponse = ApiResponse<UserActivity>;
 
 export interface CreateActivityData {
   name: string;

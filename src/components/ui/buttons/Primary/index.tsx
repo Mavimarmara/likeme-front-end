@@ -74,7 +74,7 @@ const PrimaryButton: React.FC<Props> = ({
       activeOpacity={0.7}
     >
       {loading ? (
-        <ActivityIndicator size="small" color={indicatorColor} />
+        <ActivityIndicator size='small' color={indicatorColor} />
       ) : (
         <View style={styles.buttonContent}>
           {iconPosition === 'left' && renderIcon()}

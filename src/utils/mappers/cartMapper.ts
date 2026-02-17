@@ -15,9 +15,7 @@ interface CartItem {
 
 export const mapProductToCartItem = (product: ApiProduct): CartItem => {
   const price =
-    typeof product.price === 'number'
-      ? product.price
-      : parseFloat(String(product.price).replace(/[^0-9.-]/g, '')) || 0;
+    typeof product.price === 'number' ? product.price : parseFloat(String(product.price).replace(/[^0-9.-]/g, '')) || 0;
 
   return {
     id: product.id,

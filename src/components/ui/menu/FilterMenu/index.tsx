@@ -35,18 +35,14 @@ const FilterMenu = <T extends string | number = string>({
         <FilterButton
           label={filterButtonLabel}
           icon={filterButtonIcon}
-          iconPosition="right"
+          iconPosition='right'
           modalTitle={filterModalTitle}
           modalContent={filterModalContent}
           onPress={onFilterButtonPress}
           onModalClose={onFilterModalClose}
         />
       )}
-      <ButtonCarousel
-        options={carouselOptions}
-        selectedId={selectedCarouselId}
-        onSelect={onCarouselSelect}
-      />
+      <ButtonCarousel options={carouselOptions} selectedId={selectedCarouselId} onSelect={onCarouselSelect} />
     </View>
   );
 };

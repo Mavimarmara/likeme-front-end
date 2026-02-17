@@ -23,7 +23,7 @@ jest.mock('@/components/ui/layout', () => {
     Header: ({ onCartPress, showCartButton }: any) => (
       <View>
         {showCartButton && onCartPress && (
-          <TouchableOpacity onPress={onCartPress} testID="cart-button">
+          <TouchableOpacity onPress={onCartPress} testID='cart-button'>
             <Text>Cart</Text>
           </TouchableOpacity>
         )}
@@ -40,7 +40,7 @@ jest.mock('@/components/ui/inputs', () => {
     SearchBar: ({ value, onChangeText, placeholder }: any) => (
       <View>
         <Text>{placeholder}</Text>
-        <RNTextInput value={value} onChangeText={onChangeText} testID="search-input" />
+        <RNTextInput value={value} onChangeText={onChangeText} testID='search-input' />
       </View>
     ),
   };
@@ -50,7 +50,7 @@ jest.mock('@/components/ui/menu', () => {
   const React = require('react');
   const { View } = require('react-native');
   return {
-    FloatingMenu: () => <View testID="floating-menu" />,
+    FloatingMenu: () => <View testID='floating-menu' />,
   };
 });
 
@@ -138,9 +138,7 @@ describe('MarketplaceScreen', () => {
   });
 
   it('renders correctly', async () => {
-    const { getByText } = render(
-      <MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />,
-    );
+    const { getByText } = render(<MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(getByText('Week highlights')).toBeTruthy();
@@ -161,9 +159,7 @@ describe('MarketplaceScreen', () => {
   });
 
   it('navigates to cart when cart button is pressed', () => {
-    const { getByTestId } = render(
-      <MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />,
-    );
+    const { getByTestId } = render(<MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     const cartButton = getByTestId('cart-button');
     fireEvent.press(cartButton);
@@ -172,9 +168,7 @@ describe('MarketplaceScreen', () => {
   });
 
   it('navigates to ProductDetails when clicking on a regular product', async () => {
-    const { getByText } = render(
-      <MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />,
-    );
+    const { getByText } = render(<MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(getByText('Test Product')).toBeTruthy();
@@ -195,9 +189,7 @@ describe('MarketplaceScreen', () => {
   });
 
   it('navigates to AffiliateProduct when clicking on an Amazon product', async () => {
-    const { getByText } = render(
-      <MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />,
-    );
+    const { getByText } = render(<MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(getByText('Amazon Product')).toBeTruthy();
@@ -237,9 +229,7 @@ describe('MarketplaceScreen', () => {
   });
 
   it('filters ads by category when category pill is pressed', async () => {
-    const { getByText } = render(
-      <MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />,
-    );
+    const { getByText } = render(<MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(getByText('Week highlights')).toBeTruthy();

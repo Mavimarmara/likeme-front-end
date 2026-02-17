@@ -31,7 +31,7 @@ const AddressView: React.FC<AddressViewProps> = ({ address, onEditPress }) => {
       <View style={styles.addressCardHeader}>
         <Text style={styles.addressCardTitle}>{t('checkout.deliveryAddress')}</Text>
         <TouchableOpacity onPress={onEditPress} activeOpacity={0.7}>
-          <Icon name="edit" size={24} color="#001137" />
+          <Icon name='edit' size={24} color='#001137' />
         </TouchableOpacity>
       </View>
       <View style={styles.addressCardContent}>

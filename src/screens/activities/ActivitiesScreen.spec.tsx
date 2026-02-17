@@ -29,7 +29,7 @@ jest.mock('@/components/ui/menu', () => {
   const React = require('react');
   const { View } = require('react-native');
   return {
-    FloatingMenu: () => <View testID="floating-menu" />,
+    FloatingMenu: () => <View testID='floating-menu' />,
     FilterMenu: ({
       filterButtonLabel,
       onFilterButtonPress,
@@ -37,16 +37,12 @@ jest.mock('@/components/ui/menu', () => {
       selectedCarouselId,
       onCarouselSelect,
     }: any) => (
-      <View testID="filter-menu">
-        <View testID="filter-button" onTouchEnd={onFilterButtonPress}>
+      <View testID='filter-menu'>
+        <View testID='filter-button' onTouchEnd={onFilterButtonPress}>
           {filterButtonLabel}
         </View>
         {carouselOptions.map((option: any) => (
-          <View
-            key={option.id}
-            testID={`filter-option-${option.id}`}
-            onTouchEnd={() => onCarouselSelect(option.id)}
-          >
+          <View key={option.id} testID={`filter-option-${option.id}`} onTouchEnd={() => onCarouselSelect(option.id)}>
             {option.label}
           </View>
         ))}
@@ -60,13 +56,9 @@ jest.mock('@/components/ui', () => {
   const { View, Text, TouchableOpacity } = require('react-native');
   return {
     Toggle: ({ options, selected, onSelect }: any) => (
-      <View testID="toggle">
+      <View testID='toggle'>
         {options.map((option: string) => (
-          <TouchableOpacity
-            key={option}
-            testID={`toggle-${option}`}
-            onPress={() => onSelect(option)}
-          >
+          <TouchableOpacity key={option} testID={`toggle-${option}`} onPress={() => onSelect(option)}>
             <Text>{option}</Text>
           </TouchableOpacity>
         ))}
@@ -92,15 +84,11 @@ jest.mock('@/components/sections/activity', () => {
     CreateActivityModal: ({ visible, onClose, onSave, activityId, initialData }: any) => {
       if (!visible) return null;
       return (
-        <View testID="create-activity-modal">
-          <Text testID="modal-title">{activityId ? 'Edit Activity' : 'Create Activity'}</Text>
-          <TextInput
-            testID="activity-name-input"
-            defaultValue={initialData?.name || ''}
-            placeholder="Activity name"
-          />
+        <View testID='create-activity-modal'>
+          <Text testID='modal-title'>{activityId ? 'Edit Activity' : 'Create Activity'}</Text>
+          <TextInput testID='activity-name-input' defaultValue={initialData?.name || ''} placeholder='Activity name' />
           <TouchableOpacity
-            testID="save-activity-button"
+            testID='save-activity-button'
             onPress={() => {
               onSave(
                 {
@@ -112,13 +100,13 @@ jest.mock('@/components/sections/activity', () => {
                   reminderEnabled: false,
                   reminderMinutes: 5,
                 },
-                activityId
+                activityId,
               );
             }}
           >
             <Text>Save</Text>
           </TouchableOpacity>
-          <TouchableOpacity testID="close-modal-button" onPress={onClose}>
+          <TouchableOpacity testID='close-modal-button' onPress={onClose}>
             <Text>Close</Text>
           </TouchableOpacity>
         </View>
@@ -131,8 +119,8 @@ jest.mock('@/components/sections/product', () => {
   const React = require('react');
   const { View } = require('react-native');
   return {
-    ProductsCarousel: () => <View testID="products-carousel" />,
-    PlansCarousel: () => <View testID="plans-carousel" />,
+    ProductsCarousel: () => <View testID='products-carousel' />,
+    PlansCarousel: () => <View testID='plans-carousel' />,
   };
 });
 
@@ -465,9 +453,7 @@ describe('ActivitiesScreen', () => {
     });
 
     it('closes modal when close button is pressed', async () => {
-      const { getByText, getByTestId, queryByTestId } = render(
-        <ActivitiesScreen navigation={mockNavigation} />
-      );
+      const { getByText, getByTestId, queryByTestId } = render(<ActivitiesScreen navigation={mockNavigation} />);
 
       await waitFor(() => {
         const createButton = getByText('Create activities +');
@@ -593,9 +579,7 @@ describe('ActivitiesScreen', () => {
 
   describe('Error Handling', () => {
     it('handles error when loading activities fails', async () => {
-      (activityService.listActivities as jest.Mock).mockRejectedValue(
-        new Error('Failed to load activities')
-      );
+      (activityService.listActivities as jest.Mock).mockRejectedValue(new Error('Failed to load activities'));
 
       render(<ActivitiesScreen navigation={mockNavigation} />);
 
@@ -605,9 +589,7 @@ describe('ActivitiesScreen', () => {
     });
 
     it('handles error when creating activity fails', async () => {
-      (activityService.createActivity as jest.Mock).mockRejectedValue(
-        new Error('Failed to create activity')
-      );
+      (activityService.createActivity as jest.Mock).mockRejectedValue(new Error('Failed to create activity'));
 
       const { getByText, getByTestId } = render(<ActivitiesScreen navigation={mockNavigation} />);
 
@@ -627,9 +609,7 @@ describe('ActivitiesScreen', () => {
     });
 
     it('handles error when deleting activity fails', async () => {
-      (activityService.deleteActivity as jest.Mock).mockRejectedValue(
-        new Error('Failed to delete activity')
-      );
+      (activityService.deleteActivity as jest.Mock).mockRejectedValue(new Error('Failed to delete activity'));
 
       // This would be tested when the delete action is triggered
       // For now, we verify the error handling structure exists

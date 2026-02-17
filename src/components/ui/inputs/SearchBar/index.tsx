@@ -30,24 +30,20 @@ const SearchBar: React.FC<SearchBarProps> = ({
       <View style={styles.searchBarContainer}>
         <RNTextInput
           placeholder={placeholder}
-          placeholderTextColor="rgba(0,0,0,0.48)"
+          placeholderTextColor='rgba(0,0,0,0.48)'
           value={value}
           onChangeText={onChangeText}
           onSubmitEditing={handleSearchPress}
-          returnKeyType="search"
+          returnKeyType='search'
           style={styles.searchInput}
         />
-        <TouchableOpacity
-          style={styles.searchButtonInside}
-          activeOpacity={0.7}
-          onPress={handleSearchPress}
-        >
+        <TouchableOpacity style={styles.searchButtonInside} activeOpacity={0.7} onPress={handleSearchPress}>
           <ImageBackground
             source={BackgroundIconButton}
             style={styles.searchButtonBackground}
             imageStyle={styles.searchButtonImage}
           >
-            <Icon name="search" size={15.5} color="#001137" />
+            <Icon name='search' size={15.5} color='#001137' />
           </ImageBackground>
         </TouchableOpacity>
       </View>
@@ -58,7 +54,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
             style={styles.filterButtonBackground}
             imageStyle={styles.filterButtonImage}
           >
-            <Icon name="tune" size={15} color="#001137" />
+            <Icon name='tune' size={15} color='#001137' />
           </ImageBackground>
         </TouchableOpacity>
       )}

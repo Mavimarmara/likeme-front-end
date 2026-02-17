@@ -81,10 +81,7 @@ export const normalizeStyle = (style: StyleProp<ViewStyle>): ViewStyle => {
   return style as ViewStyle;
 };
 
-export const getBlurStyle = (
-  footerHeight: number,
-  borderRadius: ViewStyle['borderRadius']
-): ViewStyle => {
+export const getBlurStyle = (footerHeight: number, borderRadius: ViewStyle['borderRadius']): ViewStyle => {
   const radius = normalizeBorderRadius(borderRadius);
 
   return {

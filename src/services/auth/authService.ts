@@ -36,10 +36,7 @@ class AuthService {
 
   async login(): Promise<AuthResult> {
     try {
-      if (
-        AUTH0_CONFIG.domain === 'your-auth0-domain.auth0.com' ||
-        AUTH0_CONFIG.clientId === 'your-auth0-client-id'
-      ) {
+      if (AUTH0_CONFIG.domain === 'your-auth0-domain.auth0.com' || AUTH0_CONFIG.clientId === 'your-auth0-client-id') {
         throw new Error(
           'Configuração do Auth0 não encontrada. Verifique as variáveis de ambiente EXPO_PUBLIC_AUTH0_DOMAIN, EXPO_PUBLIC_AUTH0_CLIENT_ID e EXPO_PUBLIC_AUTH0_AUDIENCE.',
         );
@@ -54,9 +51,7 @@ class AuthService {
       } catch (error) {
         logger.error('Discovery error:', error);
         if (error instanceof Error && error.message.includes('JSON')) {
-          throw new Error(
-            `Erro ao conectar com Auth0. Verifique se o domínio ${AUTH0_CONFIG.domain} está correto.`,
-          );
+          throw new Error(`Erro ao conectar com Auth0. Verifique se o domínio ${AUTH0_CONFIG.domain} está correto.`);
         }
         throw error;
       }
@@ -100,10 +95,7 @@ class AuthService {
             error?.description || error?.error_description || error?.message || 'Erro desconhecido';
           logger.error('Auth error details:', errorDescription);
 
-          if (
-            errorDescription.includes('Service not found') ||
-            errorDescription.includes('your-api-identifier')
-          ) {
+          if (errorDescription.includes('Service not found') || errorDescription.includes('your-api-identifier')) {
             throw new Error(
               'Configuração do Auth0 Audience incorreta. Verifique a variável EXPO_PUBLIC_AUTH0_AUDIENCE no arquivo .env e configure com o identifier da sua API no Auth0 Dashboard.',
             );
@@ -122,9 +114,7 @@ class AuthService {
 
         const codeVerifier = (request as any).codeVerifier;
         if (!codeVerifier) {
-          throw new Error(
-            'code_verifier não encontrado no request. O PKCE pode não ter sido gerado corretamente.',
-          );
+          throw new Error('code_verifier não encontrado no request. O PKCE pode não ter sido gerado corretamente.');
         }
         console.log('Code verifier found:', codeVerifier ? 'Yes' : 'No');
 
@@ -149,9 +139,7 @@ class AuthService {
             );
           }
           if (error.message.includes('JSON')) {
-            throw new Error(
-              'Erro ao processar resposta do Auth0. Verifique a configuração do cliente e do audience.',
-            );
+            throw new Error('Erro ao processar resposta do Auth0. Verifique a configuração do cliente e do audience.');
           }
           throw new Error(`Erro ao trocar código por token: ${error.message}`);
         }
@@ -287,7 +275,9 @@ class AuthService {
       try {
         const tokenParts = authResult.idToken.split('.');
         if (tokenParts.length >= 2) {
-          const header = JSON.parse((globalThis as typeof globalThis & { atob: (s: string) => string }).atob(tokenParts[0]));
+          const header = JSON.parse(
+            (globalThis as typeof globalThis & { atob: (s: string) => string }).atob(tokenParts[0]),
+          );
           console.log('Token header:', JSON.stringify(header));
           console.log('Token has kid?', !!header.kid);
         }

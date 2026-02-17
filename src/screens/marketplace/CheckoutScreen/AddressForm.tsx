@@ -78,58 +78,56 @@ const AddressForm: React.FC<AddressFormProps> = ({
           <Text style={styles.addressCardTitle}>Endereço de entrega</Text>
           {!isEditing && (
             <TouchableOpacity onPress={handleEditPress} activeOpacity={0.7}>
-              <Icon name="edit" size={24} color="#001137" />
+              <Icon name='edit' size={24} color='#001137' />
             </TouchableOpacity>
           )}
         </View>
 
         {!isEditing && (
           <View style={styles.addressCardContent}>
-            <Text style={styles.addressText}>
-              {formatAddressText(addressData || defaultAddress)}
-            </Text>
+            <Text style={styles.addressText}>{formatAddressText(addressData || defaultAddress)}</Text>
           </View>
         )}
 
         {isEditing && (
           <View style={styles.editAddressContainer}>
             <TextInput
-              label="Full name"
-              placeholder="Full name"
+              label='Full name'
+              placeholder='Full name'
               value={editData.fullName}
               onChangeText={(text) => setEditData({ ...editData, fullName: text })}
             />
             <TextInput
-              label="Address line 1"
-              placeholder="Street name and number"
+              label='Address line 1'
+              placeholder='Street name and number'
               value={editData.addressLine1}
               onChangeText={(text) => setEditData({ ...editData, addressLine1: text })}
             />
             <TextInput
-              label="Address line 2"
-              placeholder="Apartment, suite, etc. (optional)"
+              label='Address line 2'
+              placeholder='Apartment, suite, etc. (optional)'
               value={editData.addressLine2}
               onChangeText={(text) => setEditData({ ...editData, addressLine2: text })}
             />
             <TextInput
-              label="Neighborhood"
-              placeholder="Neighborhood"
+              label='Neighborhood'
+              placeholder='Neighborhood'
               value={editData.neighborhood}
               onChangeText={(text) => setEditData({ ...editData, neighborhood: text })}
             />
             <View style={styles.addressRow}>
               <View style={styles.addressFieldHalf}>
                 <TextInput
-                  label="City"
-                  placeholder="City"
+                  label='City'
+                  placeholder='City'
                   value={editData.city}
                   onChangeText={(text) => setEditData({ ...editData, city: text })}
                 />
               </View>
               <View style={styles.addressFieldHalf}>
                 <TextInput
-                  label="State"
-                  placeholder="State"
+                  label='State'
+                  placeholder='State'
                   value={editData.state}
                   onChangeText={(text) => setEditData({ ...editData, state: text })}
                 />
@@ -138,20 +136,20 @@ const AddressForm: React.FC<AddressFormProps> = ({
             <View style={styles.addressRow}>
               <View style={styles.addressFieldHalf}>
                 <TextInput
-                  label="ZIP code"
-                  placeholder="00000-000"
+                  label='ZIP code'
+                  placeholder='00000-000'
                   value={editData.zipCode}
                   onChangeText={(text) => setEditData({ ...editData, zipCode: text })}
-                  keyboardType="numeric"
+                  keyboardType='numeric'
                 />
               </View>
               <View style={styles.addressFieldHalf}>
                 <TextInput
-                  label="Phone"
-                  placeholder="+55 11 97979-2016"
+                  label='Phone'
+                  placeholder='+55 11 97979-2016'
                   value={editData.phone}
                   onChangeText={(text) => setEditData({ ...editData, phone: text })}
-                  keyboardType="phone-pad"
+                  keyboardType='phone-pad'
                 />
               </View>
             </View>
@@ -162,15 +160,13 @@ const AddressForm: React.FC<AddressFormProps> = ({
                 activeOpacity={0.7}
               >
                 <View style={[styles.checkbox, sameBillingAddress && styles.checkboxChecked]}>
-                  {sameBillingAddress && <Icon name="check" size={14} color="#0154f8" />}
+                  {sameBillingAddress && <Icon name='check' size={14} color='#0154f8' />}
                 </View>
-                <Text style={styles.checkboxLabel}>
-                  Endereço de cobrança será o mesmo de entrega
-                </Text>
+                <Text style={styles.checkboxLabel}>Endereço de cobrança será o mesmo de entrega</Text>
               </TouchableOpacity>
             )}
             <View style={styles.editAddressActions}>
-              <SecondaryButton label="Save" onPress={handleSave} />
+              <SecondaryButton label='Save' onPress={handleSave} />
             </View>
           </View>
         )}

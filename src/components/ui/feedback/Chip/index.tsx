@@ -20,7 +20,11 @@ const Chip: React.FC<ChipProps> = ({
   ...props
 }) => {
   const selectedStyle: ViewStyle | undefined =
-    selected && selectedBackgroundColor ? { backgroundColor: selectedBackgroundColor } : selected ? styles.chipSelected : undefined;
+    selected && selectedBackgroundColor
+      ? { backgroundColor: selectedBackgroundColor }
+      : selected
+      ? styles.chipSelected
+      : undefined;
   const selectedTextStyle: TextStyle | undefined =
     selected && selectedTextColor ? { color: selectedTextColor } : selected ? styles.chipTextSelected : undefined;
   return (

@@ -13,11 +13,7 @@ export interface ErrorNavigationParams {
  * @param errorMessage - Mensagem de erro a ser exibida
  * @param onRetry - Função opcional para tentar novamente
  */
-export const navigateToError = (
-  navigation: any,
-  errorMessage?: string | Error | unknown,
-  onRetry?: () => void,
-) => {
+export const navigateToError = (navigation: any, errorMessage?: string | Error | unknown, onRetry?: () => void) => {
   // Garante que errorMessage seja sempre uma string válida
   let message = 'Algo deu errado';
   if (errorMessage) {
@@ -49,11 +45,7 @@ export const navigateToError = (
 /**
  * Alternativa mais simples usando navigate
  */
-export const showError = (
-  navigation: any,
-  errorMessage?: string | Error | unknown,
-  onRetry?: () => void,
-) => {
+export const showError = (navigation: any, errorMessage?: string | Error | unknown, onRetry?: () => void) => {
   // Garante que errorMessage seja sempre uma string válida
   let message = 'Algo deu errado';
   if (errorMessage) {

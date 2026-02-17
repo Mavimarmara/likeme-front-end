@@ -85,13 +85,11 @@ const SecondaryButton: React.FC<Props> = ({
       activeOpacity={0.7}
     >
       {loading ? (
-        <ActivityIndicator size="small" color={getTextColor()} />
+        <ActivityIndicator size='small' color={getTextColor()} />
       ) : (
         <View style={styles.buttonContent}>
           {iconPosition === 'left' && renderIcon()}
-          <Text style={[styles.label, variant === 'dark' && styles.labelDark, labelStyle]}>
-            {label}
-          </Text>
+          <Text style={[styles.label, variant === 'dark' && styles.labelDark, labelStyle]}>{label}</Text>
           {iconPosition === 'right' && renderIcon()}
         </View>
       )}

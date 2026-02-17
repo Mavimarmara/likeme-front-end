@@ -59,18 +59,17 @@ export interface ListProductsParams {
   search?: string;
 }
 
-export interface ListProductsApiResponse
-  extends ApiResponse<{
-    products: Product[];
-    pagination: {
-      page: number;
-      limit: number;
-      total: number;
-      totalPages: number;
-    };
-  }> {}
+export type ListProductsApiResponse = ApiResponse<{
+  products: Product[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}>;
 
-export interface GetProductApiResponse extends ApiResponse<Product> {}
+export type GetProductApiResponse = ApiResponse<Product>;
 
 export interface CreateProductData {
   name: string;
@@ -91,7 +90,7 @@ export interface CreateProductData {
   externalUrl?: string; // External URL for the product (e.g., Amazon product link)
 }
 
-export interface UpdateProductData extends Partial<CreateProductData> {}
+export type UpdateProductData = Partial<CreateProductData>;
 
 export interface UpdateStockData {
   quantity: number;

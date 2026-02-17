@@ -13,7 +13,10 @@ type Props = { navigation: any };
 const IMAGE_DECORATIVE = 'https://www.figma.com/api/mcp/asset/e6ee3d5c-e9d8-4bf5-bf75-48f53768bafe';
 
 const AnamnesisCompletionScreen: React.FC<Props> = ({ navigation }) => {
-  useAnalyticsScreen({ screenName: 'AnamnesisCompletion', screenClass: 'AnamnesisCompletionScreen' });
+  useAnalyticsScreen({
+    screenName: 'AnamnesisCompletion',
+    screenClass: 'AnamnesisCompletionScreen',
+  });
   const { t } = useTranslation();
   useEffect(() => {
     // Auto-redirecionar para home após 3 segundos
@@ -27,10 +30,10 @@ const AnamnesisCompletionScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       {/* Background superior */}
-      <Image source={BackgroundWithGradient4} style={styles.backgroundTop} resizeMode="cover" />
+      <Image source={BackgroundWithGradient4} style={styles.backgroundTop} resizeMode='cover' />
 
       {/* Background inferior */}
-      <Image source={BackgroundWithGradient5} style={styles.backgroundBottom} resizeMode="cover" />
+      <Image source={BackgroundWithGradient5} style={styles.backgroundBottom} resizeMode='cover' />
 
       <Header
         showBackButton={true}
@@ -45,11 +48,7 @@ const AnamnesisCompletionScreen: React.FC<Props> = ({ navigation }) => {
         {/* Imagem decorativa rotacionada 270 graus e centralizada */}
         <View style={styles.decorativeImageContainer}>
           <View style={styles.decorativeImageWrapper}>
-            <Image
-              source={{ uri: IMAGE_DECORATIVE }}
-              style={styles.decorativeImage}
-              resizeMode="contain"
-            />
+            <Image source={{ uri: IMAGE_DECORATIVE }} style={styles.decorativeImage} resizeMode='contain' />
           </View>
         </View>
 

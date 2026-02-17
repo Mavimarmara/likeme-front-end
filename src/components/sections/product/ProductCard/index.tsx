@@ -25,19 +25,15 @@ const ProductCard: React.FC<Props> = ({ product, onPress, onLike }) => {
     <View style={styles.container}>
       <View style={styles.imageContainer}>
         <Image source={{ uri: product.image }} style={styles.image} />
-        <BlurView intensity={10} tint="dark" style={styles.imageOverlay} />
+        <BlurView intensity={10} tint='dark' style={styles.imageOverlay} />
         <View style={styles.contentOverlay}>
           <View style={styles.tagBadge}>
             <Text style={styles.tagText}>{product.tag}</Text>
           </View>
           <View style={styles.bottomInfo}>
             <Text style={styles.price}>{formatPrice(product.price)}</Text>
-            <TouchableOpacity
-              style={styles.likeButton}
-              onPress={() => onLike?.(product)}
-              activeOpacity={0.7}
-            >
-              <Icon name="favorite-border" size={20} color="#f6cffb" />
+            <TouchableOpacity style={styles.likeButton} onPress={() => onLike?.(product)} activeOpacity={0.7}>
+              <Icon name='favorite-border' size={20} color='#f6cffb' />
               <Text style={styles.likesCount}>{product.likes}</Text>
             </TouchableOpacity>
           </View>
@@ -47,12 +43,8 @@ const ProductCard: React.FC<Props> = ({ product, onPress, onLike }) => {
         <Text style={styles.title} numberOfLines={1}>
           {product.title}
         </Text>
-        <TouchableOpacity
-          style={styles.arrowButton}
-          onPress={() => onPress?.(product)}
-          activeOpacity={0.7}
-        >
-          <Icon name="chevron-right" size={24} color="#001137" />
+        <TouchableOpacity style={styles.arrowButton} onPress={() => onPress?.(product)} activeOpacity={0.7}>
+          <Icon name='chevron-right' size={24} color='#001137' />
         </TouchableOpacity>
       </View>
     </View>

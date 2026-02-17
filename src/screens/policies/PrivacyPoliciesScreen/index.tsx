@@ -18,21 +18,57 @@ type AccordionItem = {
 };
 
 const DATA_ITEMS: AccordionItem[] = [
-  { id: 'data-security', titleKey: 'privacyPolicies.policyDataSecurity', contentKey: 'privacyPolicies.policyDataSecurityContent' },
-  { id: 'privacy-usage', titleKey: 'privacyPolicies.policyPrivacyUsage', contentKey: 'privacyPolicies.policyPrivacyUsageContent' },
-  { id: 'health-data', titleKey: 'privacyPolicies.policyHealthData', contentKey: 'privacyPolicies.policyHealthDataContent' },
+  {
+    id: 'data-security',
+    titleKey: 'privacyPolicies.policyDataSecurity',
+    contentKey: 'privacyPolicies.policyDataSecurityContent',
+  },
+  {
+    id: 'privacy-usage',
+    titleKey: 'privacyPolicies.policyPrivacyUsage',
+    contentKey: 'privacyPolicies.policyPrivacyUsageContent',
+  },
+  {
+    id: 'health-data',
+    titleKey: 'privacyPolicies.policyHealthData',
+    contentKey: 'privacyPolicies.policyHealthDataContent',
+  },
 ];
 
 const COMMUNICATION_ITEMS: AccordionItem[] = [
-  { id: 'channels', titleKey: 'privacyPolicies.policyCommunicationChannels', contentKey: 'privacyPolicies.policyCommunicationChannelsContent' },
-  { id: 'marketing', titleKey: 'privacyPolicies.policyMarketing', contentKey: 'privacyPolicies.policyMarketingContent' },
-  { id: 'support', titleKey: 'privacyPolicies.policySupport', contentKey: 'privacyPolicies.policySupportContent' },
+  {
+    id: 'channels',
+    titleKey: 'privacyPolicies.policyCommunicationChannels',
+    contentKey: 'privacyPolicies.policyCommunicationChannelsContent',
+  },
+  {
+    id: 'marketing',
+    titleKey: 'privacyPolicies.policyMarketing',
+    contentKey: 'privacyPolicies.policyMarketingContent',
+  },
+  {
+    id: 'support',
+    titleKey: 'privacyPolicies.policySupport',
+    contentKey: 'privacyPolicies.policySupportContent',
+  },
 ];
 
 const NOTIFICATION_ITEMS: AccordionItem[] = [
-  { id: 'types', titleKey: 'privacyPolicies.policyNotificationTypes', contentKey: 'privacyPolicies.policyNotificationTypesContent' },
-  { id: 'preferences', titleKey: 'privacyPolicies.policyNotificationPreferences', contentKey: 'privacyPolicies.policyNotificationPreferencesContent' },
-  { id: 'push', titleKey: 'privacyPolicies.policyPushSettings', contentKey: 'privacyPolicies.policyPushSettingsContent' },
+  {
+    id: 'types',
+    titleKey: 'privacyPolicies.policyNotificationTypes',
+    contentKey: 'privacyPolicies.policyNotificationTypesContent',
+  },
+  {
+    id: 'preferences',
+    titleKey: 'privacyPolicies.policyNotificationPreferences',
+    contentKey: 'privacyPolicies.policyNotificationPreferencesContent',
+  },
+  {
+    id: 'push',
+    titleKey: 'privacyPolicies.policyPushSettings',
+    contentKey: 'privacyPolicies.policyPushSettingsContent',
+  },
 ];
 
 const TAB_ITEMS: { key: PolicyTab; labelKey: string }[] = [
@@ -102,9 +138,7 @@ const PrivacyPoliciesScreen: React.FC<Props> = ({ navigation, route }) => {
                 onPress={() => setActiveTab(key)}
                 activeOpacity={0.7}
               >
-                <Text style={[styles.tabText, activeTab === key && styles.tabTextActive]}>
-                  {t(labelKey)}
-                </Text>
+                <Text style={[styles.tabText, activeTab === key && styles.tabTextActive]}>{t(labelKey)}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -119,11 +153,7 @@ const PrivacyPoliciesScreen: React.FC<Props> = ({ navigation, route }) => {
                   activeOpacity={0.7}
                 >
                   <Text style={styles.accordionTitle}>{t(item.titleKey)}</Text>
-                  <Icon
-                    name={isExpanded ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
-                    size={24}
-                    color={COLORS.TEXT}
-                  />
+                  <Icon name={isExpanded ? 'keyboard-arrow-up' : 'keyboard-arrow-down'} size={24} color={COLORS.TEXT} />
                 </TouchableOpacity>
                 {isExpanded && (
                   <View style={styles.accordionContent}>

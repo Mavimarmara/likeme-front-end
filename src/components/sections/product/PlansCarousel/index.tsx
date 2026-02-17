@@ -34,7 +34,7 @@ const PlansCarousel: React.FC<Props> = ({ title, subtitle, plans, onPlanPress, o
           itemWidth={170}
           gap={10}
           showPagination={true}
-          paginationSize="Large"
+          paginationSize='Large'
         />
       </View>
     </View>

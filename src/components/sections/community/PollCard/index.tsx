@@ -17,20 +17,7 @@ const PollCard: React.FC<Props> = ({ poll, onVote, disabled = false }) => {
     setSelectedOptionId(preselected ?? null);
   }, [poll]);
   const formatDate = (date: Date): string => {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const day = date.getDate();
     const month = months[date.getMonth()];
     const year = date.getFullYear();
@@ -61,13 +48,9 @@ const PollCard: React.FC<Props> = ({ poll, onVote, disabled = false }) => {
                   <View style={[styles.radioButton, isSelected && styles.radioButtonSelected]}>
                     {isSelected && <View style={styles.radioButtonInner} />}
                   </View>
-                  <Text style={[styles.optionText, isSelected && styles.optionTextSelected]}>
-                    {option.text}
-                  </Text>
+                  <Text style={[styles.optionText, isSelected && styles.optionTextSelected]}>{option.text}</Text>
                 </View>
-                <Text style={[styles.percentage, isSelected && styles.percentageSelected]}>
-                  {option.percentage}%
-                </Text>
+                <Text style={[styles.percentage, isSelected && styles.percentageSelected]}>{option.percentage}%</Text>
               </View>
               <View style={styles.progressContainer}>
                 <View style={styles.progressBarBackground} />

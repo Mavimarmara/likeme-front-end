@@ -52,11 +52,7 @@ class PaymentService {
    */
   async processPayment(data: ProcessPaymentRequest): Promise<ApiResponse<ProcessPaymentResponse>> {
     try {
-      const response = await apiClient.post<ApiResponse<ProcessPaymentResponse>>(
-        '/api/payment/process',
-        data,
-        true,
-      );
+      const response = await apiClient.post<ApiResponse<ProcessPaymentResponse>>('/api/payment/process', data, true);
 
       logger.debug('Payment processed:', {
         orderId: data.orderId,
@@ -74,9 +70,7 @@ class PaymentService {
   /**
    * Get payment transaction status
    */
-  async getTransactionStatus(
-    transactionId: string,
-  ): Promise<ApiResponse<TransactionStatusResponse>> {
+  async getTransactionStatus(transactionId: string): Promise<ApiResponse<TransactionStatusResponse>> {
     try {
       if (!transactionId || transactionId.trim() === '') {
         throw new Error('Transaction ID is required');

@@ -15,12 +15,8 @@ export const formatCpf = (text: string): string => {
     return `${numbers.slice(0, 3)}.${numbers.slice(3)}`;
   } else if (numbers.length <= 9) {
     return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6)}`;
-  } else {
-    return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6, 9)}-${numbers.slice(
-      9,
-      11,
-    )}`;
   }
+  return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6, 9)}-${numbers.slice(9, 11)}`;
 };
 
 export const formatExpiryDate = (text: string): string => {
@@ -38,7 +34,6 @@ export const formatPhone = (text: string): string => {
     return numbers.length > 0 ? `(${numbers}` : numbers;
   } else if (numbers.length <= 7) {
     return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
-  } else {
-    return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7, 11)}`;
   }
+  return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7, 11)}`;
 };

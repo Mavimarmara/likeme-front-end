@@ -46,15 +46,9 @@ const CommentReactions: React.FC<Props> = ({
           activeOpacity={0.7}
           disabled={isDisabled}
         >
-          <Icon
-            name="keyboard-arrow-up"
-            size={18}
-            color={isLikeSelected ? COLORS.WHITE : '#001137'}
-          />
+          <Icon name='keyboard-arrow-up' size={18} color={isLikeSelected ? COLORS.WHITE : '#001137'} />
           {displayUpvotes > 0 && (
-            <Text style={[styles.reactionCount, isLikeSelected && styles.reactionCountSelected]}>
-              {displayUpvotes}
-            </Text>
+            <Text style={[styles.reactionCount, isLikeSelected && styles.reactionCountSelected]}>{displayUpvotes}</Text>
           )}
         </TouchableOpacity>
 
@@ -68,11 +62,7 @@ const CommentReactions: React.FC<Props> = ({
           activeOpacity={0.7}
           disabled={isDisabled}
         >
-          <Icon
-            name="keyboard-arrow-down"
-            size={18}
-            color={isDislikeSelected ? COLORS.WHITE : '#001137'}
-          />
+          <Icon name='keyboard-arrow-down' size={18} color={isDislikeSelected ? COLORS.WHITE : '#001137'} />
           {displayDownvotes > 0 && (
             <Text style={[styles.reactionCount, isDislikeSelected && styles.reactionCountSelected]}>
               {displayDownvotes}
@@ -84,14 +74,14 @@ const CommentReactions: React.FC<Props> = ({
       <View style={styles.rightSection}>
         {commentsCount > 0 && (
           <TouchableOpacity style={styles.commentButton} onPress={onReply} activeOpacity={0.7}>
-            <Icon name="chat-bubble-outline" size={24} color="#001137" />
+            <Icon name='chat-bubble-outline' size={24} color='#001137' />
             <Text style={styles.commentCount}>{commentsCount}</Text>
           </TouchableOpacity>
         )}
 
         {onToggle && (
           <TouchableOpacity style={styles.toggleButton} onPress={onToggle} activeOpacity={0.7}>
-            <Icon name="keyboard-arrow-up" size={24} color="#0154f8" />
+            <Icon name='keyboard-arrow-up' size={24} color='#0154f8' />
           </TouchableOpacity>
         )}
       </View>

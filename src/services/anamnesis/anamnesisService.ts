@@ -59,9 +59,7 @@ class AnamnesisService {
     }
   }
 
-  async getQuestionByKey(
-    params: GetAnamnesisQuestionParams,
-  ): Promise<GetAnamnesisQuestionResponse> {
+  async getQuestionByKey(params: GetAnamnesisQuestionParams): Promise<GetAnamnesisQuestionResponse> {
     try {
       if (!params.key || !params.locale) {
         throw new Error('Key and locale are required');
@@ -87,9 +85,7 @@ class AnamnesisService {
     }
   }
 
-  async getCompleteAnamnesis(
-    params: GetCompleteAnamnesisParams,
-  ): Promise<GetCompleteAnamnesisResponse> {
+  async getCompleteAnamnesis(params: GetCompleteAnamnesisParams): Promise<GetCompleteAnamnesisResponse> {
     try {
       if (!params.locale) {
         throw new Error('Locale is required');
@@ -121,11 +117,7 @@ class AnamnesisService {
         throw new Error('userId and questionConceptId are required');
       }
 
-      const response = await apiClient.post<CreateUserAnswerResponse>(
-        `${this.anamnesisEndpoint}/answers`,
-        data,
-        true,
-      );
+      const response = await apiClient.post<CreateUserAnswerResponse>(`${this.anamnesisEndpoint}/answers`, data, true);
 
       logger.debug('User answer created/updated:', {
         userId: data.userId,
@@ -251,15 +243,15 @@ class AnamnesisService {
 
   /** Mapeamento de aliases para unificar keys em português e inglês. */
   private static readonly KEY_PREFIX_ALIASES: Record<string, string[]> = {
-    'habits_movimento': ['habits_movimento', 'habits_activity'],
-    'habits_espiritualidade': ['habits_espiritualidade', 'habits_spirituality'],
-    'habits_sono': ['habits_sono', 'habits_sleep'],
-    'habits_nutricao': ['habits_nutricao', 'habits_nutrition'],
-    'habits_estresse': ['habits_estresse', 'habits_stress'],
-    'habits_autoestima': ['habits_autoestima', 'habits_self-esteem'],
-    'habits_relacionamentos': ['habits_relacionamentos', 'habits_connection'],
-    'habits_saude_bucal': ['habits_saude_bucal', 'habits_smile'],
-    'habits_proposito': ['habits_proposito', 'habits_purpose-vision'],
+    habits_movimento: ['habits_movimento', 'habits_activity'],
+    habits_espiritualidade: ['habits_espiritualidade', 'habits_spirituality'],
+    habits_sono: ['habits_sono', 'habits_sleep'],
+    habits_nutricao: ['habits_nutricao', 'habits_nutrition'],
+    habits_estresse: ['habits_estresse', 'habits_stress'],
+    habits_autoestima: ['habits_autoestima', 'habits_self-esteem'],
+    habits_relacionamentos: ['habits_relacionamentos', 'habits_connection'],
+    habits_saude_bucal: ['habits_saude_bucal', 'habits_smile'],
+    habits_proposito: ['habits_proposito', 'habits_purpose-vision'],
   };
 
   /** Seções consideradas para anamnese completa (mesmo critério de useAnamnesisProgress). */
@@ -283,7 +275,12 @@ class AnamnesisService {
    */
   async getCompletionStatus(): Promise<{
     allSectionsComplete: boolean;
-    incompleteSections: Array<{ sectionKey: string; sectionName: string; total: number; answered: number }>;
+    incompleteSections: Array<{
+      sectionKey: string;
+      sectionName: string;
+      total: number;
+      answered: number;
+    }>;
   }> {
     const profileResponse = await userService.getProfile();
     const userId = profileResponse.success ? profileResponse.data?.id : null;
@@ -310,11 +307,11 @@ class AnamnesisService {
     for (const { prefix, name } of AnamnesisService.COMPLETION_SECTIONS) {
       // Usa aliases para buscar tanto português quanto inglês
       const prefixes = AnamnesisService.KEY_PREFIX_ALIASES[prefix] || [prefix];
-      const sectionQuestions = allQuestions.filter((q) =>
-        prefixes.some((p) => q.key.startsWith(p)),
-      );
+      const sectionQuestions = allQuestions.filter((q) => prefixes.some((p) => q.key.startsWith(p)));
       const total = sectionQuestions.length;
-      if (total === 0) {continue;}
+      if (total === 0) {
+        continue;
+      }
       const answered = sectionQuestions.filter((q) => answeredIds.has(q.id)).length;
       if (answered < total) {
         incompleteSections.push({

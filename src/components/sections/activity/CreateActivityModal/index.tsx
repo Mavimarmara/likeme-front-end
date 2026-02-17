@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Switch,
-  TextInput as RNTextInput,
-  Platform,
-  Modal,
-} from 'react-native';
+import { View, Text, TouchableOpacity, Switch, TextInput as RNTextInput, Platform, Modal } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ModalBase } from '@/components/ui/modals/shared';
@@ -34,7 +26,7 @@ type Props = {
       reminderEnabled: boolean;
       reminderMinutes?: number;
     },
-    activityId?: string
+    activityId?: string,
   ) => void;
   activityId?: string;
   initialData?: {
@@ -51,13 +43,7 @@ type Props = {
   };
 };
 
-const CreateActivityModal: React.FC<Props> = ({
-  visible,
-  onClose,
-  onSave,
-  activityId,
-  initialData,
-}) => {
+const CreateActivityModal: React.FC<Props> = ({ visible, onClose, onSave, activityId, initialData }) => {
   const { t } = useTranslation();
   const [name, setName] = useState(initialData?.name || '');
   const [type, setType] = useState<ActivityType>(initialData?.type || 'event');
@@ -67,9 +53,7 @@ const CreateActivityModal: React.FC<Props> = ({
   const [startTimeValue, setStartTimeValue] = useState(
     initialData?.startTime ? parseTimeToDate(initialData.startTime) : new Date(),
   );
-  const [endDateValue, setEndDateValue] = useState(
-    initialData?.endDate ? new Date(initialData.endDate) : new Date(),
-  );
+  const [endDateValue, setEndDateValue] = useState(initialData?.endDate ? new Date(initialData.endDate) : new Date());
   const [endTimeValue, setEndTimeValue] = useState(
     initialData?.endTime ? parseTimeToDate(initialData.endTime) : new Date(),
   );
@@ -84,8 +68,12 @@ const CreateActivityModal: React.FC<Props> = ({
     const [time, period] = timeString.split(' ');
     const [hours, minutes] = time.split(':');
     let hour = parseInt(hours, 10);
-    if (period === 'pm' && hour !== 12) {hour += 12;}
-    if (period === 'am' && hour === 12) {hour = 0;}
+    if (period === 'pm' && hour !== 12) {
+      hour += 12;
+    }
+    if (period === 'am' && hour === 12) {
+      hour = 0;
+    }
     date.setHours(hour, parseInt(minutes, 10), 0, 0);
     return date;
   }
@@ -97,9 +85,7 @@ const CreateActivityModal: React.FC<Props> = ({
         setName(initialData.name || '');
         setType(initialData.type || 'event');
         setStartDateValue(initialData.startDate ? new Date(initialData.startDate) : new Date());
-        setStartTimeValue(
-          initialData.startTime ? parseTimeToDate(initialData.startTime) : new Date(),
-        );
+        setStartTimeValue(initialData.startTime ? parseTimeToDate(initialData.startTime) : new Date());
         setEndDateValue(initialData.endDate ? new Date(initialData.endDate) : new Date());
         setEndTimeValue(initialData.endTime ? parseTimeToDate(initialData.endTime) : new Date());
         setLocation(initialData.location || '');
@@ -244,12 +230,7 @@ const CreateActivityModal: React.FC<Props> = ({
       header={
         <View style={styles.header}>
           <SecondaryButton label={t('common.cancel')} onPress={handleCancel} />
-          <PrimaryButton
-            label={t('common.save')}
-            onPress={handleSave}
-            icon="arrow-upward"
-            iconPosition="right"
-          />
+          <PrimaryButton label={t('common.save')} onPress={handleSave} icon='arrow-upward' iconPosition='right' />
         </View>
       }
     >
@@ -259,7 +240,7 @@ const CreateActivityModal: React.FC<Props> = ({
             value={name}
             onChangeText={setName}
             placeholder={t('activities.activityName')}
-            placeholderTextColor="#999"
+            placeholderTextColor='#999'
             style={styles.nameInput}
           />
         </View>
@@ -285,7 +266,7 @@ const CreateActivityModal: React.FC<Props> = ({
                 value={description}
                 onChangeText={setDescription}
                 placeholder={t('activities.description')}
-                placeholderTextColor="#999"
+                placeholderTextColor='#999'
                 style={styles.descriptionInput}
                 multiline
                 numberOfLines={3}
@@ -300,9 +281,9 @@ const CreateActivityModal: React.FC<Props> = ({
             <SecondaryButton
               label={startDate}
               onPress={() => setShowStartDatePicker(true)}
-              variant="dark"
-              icon="calendar-today"
-              iconPosition="left"
+              variant='dark'
+              icon='calendar-today'
+              iconPosition='left'
               iconSize={16}
             />
             {showStartDatePicker && (
@@ -311,7 +292,7 @@ const CreateActivityModal: React.FC<Props> = ({
                   <Modal
                     transparent
                     visible={showStartDatePicker}
-                    animationType="slide"
+                    animationType='slide'
                     onRequestClose={() => setShowStartDatePicker(false)}
                   >
                     <TouchableOpacity
@@ -322,8 +303,8 @@ const CreateActivityModal: React.FC<Props> = ({
                       <View style={styles.pickerContent}>
                         <DateTimePicker
                           value={startDateValue}
-                          mode="date"
-                          display="spinner"
+                          mode='date'
+                          display='spinner'
                           onChange={handleStartDateChange}
                           style={styles.picker}
                         />
@@ -333,8 +314,8 @@ const CreateActivityModal: React.FC<Props> = ({
                 ) : (
                   <DateTimePicker
                     value={startDateValue}
-                    mode="date"
-                    display="default"
+                    mode='date'
+                    display='default'
                     onChange={handleStartDateChange}
                   />
                 )}
@@ -345,7 +326,7 @@ const CreateActivityModal: React.FC<Props> = ({
             <SecondaryButton
               label={t('activities.startsAt', { time: startTime })}
               onPress={() => setShowStartTimePicker(true)}
-              variant="dark"
+              variant='dark'
             />
             {showStartTimePicker && (
               <View style={styles.pickerContainer}>
@@ -353,7 +334,7 @@ const CreateActivityModal: React.FC<Props> = ({
                   <Modal
                     transparent
                     visible={showStartTimePicker}
-                    animationType="slide"
+                    animationType='slide'
                     onRequestClose={() => setShowStartTimePicker(false)}
                   >
                     <TouchableOpacity
@@ -364,8 +345,8 @@ const CreateActivityModal: React.FC<Props> = ({
                       <View style={styles.pickerContent}>
                         <DateTimePicker
                           value={startTimeValue}
-                          mode="time"
-                          display="spinner"
+                          mode='time'
+                          display='spinner'
                           onChange={handleStartTimeChange}
                           style={styles.picker}
                         />
@@ -375,8 +356,8 @@ const CreateActivityModal: React.FC<Props> = ({
                 ) : (
                   <DateTimePicker
                     value={startTimeValue}
-                    mode="time"
-                    display="default"
+                    mode='time'
+                    display='default'
                     onChange={handleStartTimeChange}
                   />
                 )}
@@ -390,9 +371,9 @@ const CreateActivityModal: React.FC<Props> = ({
             <SecondaryButton
               label={endDate}
               onPress={() => setShowEndDatePicker(true)}
-              variant="dark"
-              icon="calendar-today"
-              iconPosition="left"
+              variant='dark'
+              icon='calendar-today'
+              iconPosition='left'
               iconSize={16}
             />
             {showEndDatePicker && (
@@ -401,7 +382,7 @@ const CreateActivityModal: React.FC<Props> = ({
                   <Modal
                     transparent
                     visible={showEndDatePicker}
-                    animationType="slide"
+                    animationType='slide'
                     onRequestClose={() => setShowEndDatePicker(false)}
                   >
                     <TouchableOpacity
@@ -412,8 +393,8 @@ const CreateActivityModal: React.FC<Props> = ({
                       <View style={styles.pickerContent}>
                         <DateTimePicker
                           value={endDateValue}
-                          mode="date"
-                          display="spinner"
+                          mode='date'
+                          display='spinner'
                           onChange={handleEndDateChange}
                           style={styles.picker}
                         />
@@ -421,12 +402,7 @@ const CreateActivityModal: React.FC<Props> = ({
                     </TouchableOpacity>
                   </Modal>
                 ) : (
-                  <DateTimePicker
-                    value={endDateValue}
-                    mode="date"
-                    display="default"
-                    onChange={handleEndDateChange}
-                  />
+                  <DateTimePicker value={endDateValue} mode='date' display='default' onChange={handleEndDateChange} />
                 )}
               </View>
             )}
@@ -435,7 +411,7 @@ const CreateActivityModal: React.FC<Props> = ({
             <SecondaryButton
               label={t('activities.endsAt', { time: endTime })}
               onPress={() => setShowEndTimePicker(true)}
-              variant="dark"
+              variant='dark'
             />
             {showEndTimePicker && (
               <View style={styles.pickerContainer}>
@@ -443,7 +419,7 @@ const CreateActivityModal: React.FC<Props> = ({
                   <Modal
                     transparent
                     visible={showEndTimePicker}
-                    animationType="slide"
+                    animationType='slide'
                     onRequestClose={() => setShowEndTimePicker(false)}
                   >
                     <TouchableOpacity
@@ -454,8 +430,8 @@ const CreateActivityModal: React.FC<Props> = ({
                       <View style={styles.pickerContent}>
                         <DateTimePicker
                           value={endTimeValue}
-                          mode="time"
-                          display="spinner"
+                          mode='time'
+                          display='spinner'
                           onChange={handleEndTimeChange}
                           style={styles.picker}
                         />
@@ -463,12 +439,7 @@ const CreateActivityModal: React.FC<Props> = ({
                     </TouchableOpacity>
                   </Modal>
                 ) : (
-                  <DateTimePicker
-                    value={endTimeValue}
-                    mode="time"
-                    display="default"
-                    onChange={handleEndTimeChange}
-                  />
+                  <DateTimePicker value={endTimeValue} mode='time' display='default' onChange={handleEndTimeChange} />
                 )}
               </View>
             )}
@@ -476,15 +447,15 @@ const CreateActivityModal: React.FC<Props> = ({
         </View>
 
         <View style={styles.locationContainer}>
-          <Icon name="place" size={16} color="#6E6A6A" style={styles.locationIcon} />
+          <Icon name='place' size={16} color='#6E6A6A' style={styles.locationIcon} />
           <RNTextInput
             value={location}
             onChangeText={setLocation}
             placeholder={t('activities.addressOrMeetUrl')}
-            placeholderTextColor="#999"
+            placeholderTextColor='#999'
             style={styles.locationInput}
             multiline={false}
-            autoCapitalize="none"
+            autoCapitalize='none'
             autoCorrect={false}
           />
         </View>
@@ -492,7 +463,7 @@ const CreateActivityModal: React.FC<Props> = ({
 
         <View style={styles.reminderContainer}>
           <View style={styles.reminderContent}>
-            <Icon name="notifications" size={20} color="#001137" />
+            <Icon name='notifications' size={20} color='#001137' />
             <Text style={styles.reminderText}>{t('activities.reminderMinutes', { minutes: reminderMinutes })}</Text>
           </View>
           <View style={styles.switchContainer}>
@@ -500,7 +471,7 @@ const CreateActivityModal: React.FC<Props> = ({
               value={reminderEnabled}
               onValueChange={setReminderEnabled}
               trackColor={{ false: '#E0E0E0', true: '#0154f8' }}
-              thumbColor="#FFFFFF"
+              thumbColor='#FFFFFF'
             />
             <Text style={styles.switchLabel}>{reminderEnabled ? t('activities.on') : t('activities.off')}</Text>
           </View>

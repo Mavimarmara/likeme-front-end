@@ -19,6 +19,7 @@ ANDROID_KEYSTORE_STORE_FILE=likeme-release.keystore
 ```
 
 **Exemplo:**
+
 ```bash
 ANDROID_KEYSTORE_STORE_PASSWORD=H#FDG.634EW83!
 ANDROID_KEYSTORE_KEY_PASSWORD=H#FDG.634EW83!
@@ -55,6 +56,7 @@ O sistema usa a seguinte prioridade:
 ## 🔒 Segurança
 
 **IMPORTANTE:**
+
 - ⚠️ NÃO commite o arquivo `.env` com as senhas reais
 - ⚠️ Adicione `.env` ao `.gitignore` (já está adicionado)
 - ⚠️ Use um arquivo `.env.example` para documentar as variáveis necessárias (sem as senhas reais)

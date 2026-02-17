@@ -279,9 +279,7 @@ describe('dateTimeSorter', () => {
     });
 
     it('deve lidar com array com um único item', () => {
-      const items: TestItem[] = [
-        { id: '1', createdAt: new Date('2023-01-01T10:00:00Z'), name: 'Only' },
-      ];
+      const items: TestItem[] = [{ id: '1', createdAt: new Date('2023-01-01T10:00:00Z'), name: 'Only' }];
 
       const sorted = sortByDateObject(items, 'createdAt');
       expect(sorted).toEqual(items);

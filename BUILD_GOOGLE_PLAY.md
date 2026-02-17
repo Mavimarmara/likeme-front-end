@@ -22,11 +22,13 @@ eas credentials
 ```
 
 Selecione:
+
 - **Platform**: Android
 - **Project**: likeme-front-end
 - **Action**: Set up Google Play credentials
 
 Você precisará:
+
 - **Service Account JSON**: Baixe o arquivo JSON da Google Play Console
   - Vá em: Google Play Console → Setup → API access
   - Crie um Service Account
@@ -36,6 +38,7 @@ Você precisará:
 ### 2. Verificar Configuração do App
 
 O app já está configurado com:
+
 - **Package Name**: `com.likeme.app`
 - **Version Code**: Auto-incrementado pelo EAS
 - **Build Type**: `app-bundle` (formato necessário para Google Play)
@@ -53,6 +56,7 @@ eas build --platform android --profile production
 ```
 
 O EAS irá:
+
 1. ✅ Gerar o keystore automaticamente (na primeira vez)
 2. ✅ Compilar o app-bundle
 3. ✅ Fazer upload para o EAS
@@ -77,13 +81,15 @@ npm run submit:android
 ```
 
 Na **primeira vez** o EAS vai pedir o **Google Service Account (JSON)**:
-- Se ainda não configurou: rode `eas credentials` → Android → *Set up Google Play credentials* → informe o caminho do JSON.
+
+- Se ainda não configurou: rode `eas credentials` → Android → _Set up Google Play credentials_ → informe o caminho do JSON.
 - Guia do Google: [Expo - Creating Google Service Account](https://expo.fyi/creating-google-service-account)  
   Resumo: Google Play Console → **Setup** → **API access** → criar Service Account → baixar JSON.
 
 Depois de configurado, `npm run submit:android` envia o build mais recente direto para a track **production**.
 
 O EAS irá:
+
 1. ✅ Pegar o build mais recente
 2. ✅ Fazer upload para a Google Play Console
 3. ✅ Publicar na track de produção (ou internal, conforme configurado)
@@ -146,6 +152,7 @@ Para mudar a track, edite o `eas.json`:
 ## 🔄 Versionamento
 
 O EAS gerencia automaticamente o `versionCode`:
+
 - Cada build incrementa automaticamente
 - Não precisa editar manualmente
 
@@ -238,7 +245,7 @@ eas submit:list --platform android
 ## 📞 Suporte
 
 Se encontrar problemas:
+
 1. Verifique os logs no EAS Dashboard
 2. Consulte a [documentação do Expo](https://docs.expo.dev)
 3. Verifique os [fóruns do Expo](https://forums.expo.dev)
-

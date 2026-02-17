@@ -76,10 +76,7 @@ const CommunityPreviewScreen: React.FC<CommunityPreviewScreenProps> = ({ navigat
           {productName && <Text style={styles.screenSubtitle}>{productName}</Text>}
         </View>
 
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
+        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
           {posts.length === 0 ? (
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>{t('marketplace.noCommunityPostsFound')}</Text>

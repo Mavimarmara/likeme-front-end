@@ -1,8 +1,4 @@
-import type {
-  CommunityFeedFilters,
-  PublicationDateFilter,
-  SortByFilter,
-} from '@/types/community/filters';
+import type { CommunityFeedFilters, PublicationDateFilter, SortByFilter } from '@/types/community/filters';
 import type { UserFeedParams } from '@/types/community';
 
 type FeedQueryParams = Partial<Omit<UserFeedParams, 'page' | 'limit' | 'search'>>;

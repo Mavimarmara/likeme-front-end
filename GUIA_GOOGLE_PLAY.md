@@ -12,6 +12,7 @@
 O Gradle não está configurando o projeto `:app`. Isso precisa ser resolvido antes de gerar o AAB.
 
 **Possíveis soluções:**
+
 - Verificar se há problemas com o autolinking do Expo
 - Tentar executar o build sem o script: `cd android && ./gradlew bundleRelease`
 - Verificar se há erros no `build.gradle`
@@ -54,6 +55,7 @@ cd android
 ```
 
 O AAB será gerado em:
+
 ```
 android/app/build/outputs/bundle/release/app-release.aab
 ```
@@ -106,12 +108,15 @@ eas submit --platform android --profile production
 **Sintoma**: O build para após executar apenas tarefas dos plugins, sem configurar o projeto `:app`.
 
 **Possíveis causas:**
+
 - Problema com o autolinking do Expo
 - Erro silencioso na fase de configuração
 - Problema com a configuração do React Native/Expo SDK 54
 
 **Soluções a tentar:**
+
 1. Limpar cache do Gradle:
+
    ```bash
    cd android
    ./gradlew clean
@@ -119,6 +124,7 @@ eas submit --platform android --profile production
    ```
 
 2. Verificar se há erros no `build.gradle`:
+
    ```bash
    cd android
    ./gradlew :app:help --stacktrace

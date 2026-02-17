@@ -10,12 +10,7 @@ interface WeekHighlightCardProps {
   onPress: () => void;
 }
 
-export const WeekHighlightCard: React.FC<WeekHighlightCardProps> = ({
-  title,
-  image,
-  price,
-  onPress,
-}) => {
+export const WeekHighlightCard: React.FC<WeekHighlightCardProps> = ({ title, image, price, onPress }) => {
   return (
     <TouchableOpacity style={styles.weekHighlightCard} onPress={onPress} activeOpacity={0.9}>
       <Image source={{ uri: image }} style={styles.weekHighlightImage} />

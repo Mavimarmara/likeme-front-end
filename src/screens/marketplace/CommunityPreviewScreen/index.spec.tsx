@@ -17,7 +17,7 @@ jest.mock('@/components/ui/layout', () => {
   return {
     Header: ({ onBackPress }: any) => (
       <View>
-        <TouchableOpacity onPress={onBackPress} testID="back-button">
+        <TouchableOpacity onPress={onBackPress} testID='back-button'>
           <Text>Back</Text>
         </TouchableOpacity>
       </View>
@@ -65,9 +65,7 @@ describe('CommunityPreviewScreen', () => {
   });
 
   it('renders correctly with product name', () => {
-    const { getByText } = render(
-      <CommunityPreviewScreen navigation={mockNavigation} route={mockRoute} />,
-    );
+    const { getByText } = render(<CommunityPreviewScreen navigation={mockNavigation} route={mockRoute} />);
 
     expect(getByText('Community Preview')).toBeTruthy();
     expect(getByText('Test Product')).toBeTruthy();
@@ -89,9 +87,7 @@ describe('CommunityPreviewScreen', () => {
   });
 
   it('displays posts when available', async () => {
-    const { getByTestId } = render(
-      <CommunityPreviewScreen navigation={mockNavigation} route={mockRoute} />,
-    );
+    const { getByTestId } = render(<CommunityPreviewScreen navigation={mockNavigation} route={mockRoute} />);
 
     await waitFor(() => {
       expect(getByTestId('post-1')).toBeTruthy();
@@ -101,9 +97,7 @@ describe('CommunityPreviewScreen', () => {
   });
 
   it('displays empty message when no posts', async () => {
-    const { getByText, getByTestId } = render(
-      <CommunityPreviewScreen navigation={mockNavigation} route={mockRoute} />,
-    );
+    const { getByText, getByTestId } = render(<CommunityPreviewScreen navigation={mockNavigation} route={mockRoute} />);
 
     // The component has mock posts, so we need to check if empty state would show
     // In a real scenario, we'd mock the service to return empty array
@@ -114,9 +108,7 @@ describe('CommunityPreviewScreen', () => {
   });
 
   it('calls goBack when back button is pressed', () => {
-    const { getByTestId } = render(
-      <CommunityPreviewScreen navigation={mockNavigation} route={mockRoute} />,
-    );
+    const { getByTestId } = render(<CommunityPreviewScreen navigation={mockNavigation} route={mockRoute} />);
 
     const backButton = getByTestId('back-button');
     fireEvent.press(backButton);

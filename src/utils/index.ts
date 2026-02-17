@@ -57,7 +57,7 @@ export const stringUtils = {
 };
 
 export const numberUtils = {
-  formatCurrency: (amount: number, currency: string = 'BRL'): string => {
+  formatCurrency: (amount: number, currency = 'BRL'): string => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency,
@@ -68,7 +68,7 @@ export const numberUtils = {
     return new Intl.NumberFormat('pt-BR').format(num);
   },
 
-  roundToDecimals: (num: number, decimals: number = 2): number => {
+  roundToDecimals: (num: number, decimals = 2): number => {
     return Math.round(num * Math.pow(10, decimals)) / Math.pow(10, decimals);
   },
 };

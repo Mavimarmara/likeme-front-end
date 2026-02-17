@@ -74,7 +74,7 @@ O arquivo será salvo em `~/likeme-google-play-key.json`. Depois, siga o **passo
 7. Clique em **Conceder acesso** / **Grant access** (ou equivalente).
 8. Na tela de permissões, marque ao menos:
    - **“Lançar em produção, excluir dispositivos e usar Play App Signing”**  
-     ou  
+     ou
    - **“Liberar apps em produção, dispositivos de teste e trilhas de teste”**
    - Se existir **“Admin (todas as permissões)”** ou **“Release Manager”**, pode usar para simplificar.
 9. Salve/Concluir.
@@ -99,7 +99,7 @@ npm run submit:android
 
 Exemplo de caminho do arquivo:
 
-- `~/likeme-google-play-key.json`, ou  
+- `~/likeme-google-play-key.json`, ou
 - `/Users/weber/Projetos/likeme/likeme-google-play-key.json`  
   (desde que o arquivo **não** esteja dentro da pasta do projeto, para não ir para o Git).
 
@@ -107,11 +107,11 @@ Exemplo de caminho do arquivo:
 
 ## Resumo rápido
 
-| Onde                | O que fazer                                                                 |
-|---------------------|-----------------------------------------------------------------------------|
-| **Google Cloud**    | Ativar “Google Play Android Developer API”; criar conta de serviço; gerar chave JSON. |
-| **Play Console**    | Configuração → Acesso à API → Vincular essa conta e dar permissão de release. |
-| **EAS / terminal**  | `eas credentials` ou `npm run submit:android` e informar o caminho do `.json`. |
+| Onde               | O que fazer                                                                           |
+| ------------------ | ------------------------------------------------------------------------------------- |
+| **Google Cloud**   | Ativar “Google Play Android Developer API”; criar conta de serviço; gerar chave JSON. |
+| **Play Console**   | Configuração → Acesso à API → Vincular essa conta e dar permissão de release.         |
+| **EAS / terminal** | `eas credentials` ou `npm run submit:android` e informar o caminho do `.json`.        |
 
 ---
 

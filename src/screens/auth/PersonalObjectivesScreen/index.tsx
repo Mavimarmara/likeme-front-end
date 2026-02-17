@@ -2,14 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { View, Text, ScrollView, Image, useWindowDimensions, Alert } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { StackScreenProps } from '@react-navigation/stack';
-import {
-  Header,
-  Title,
-  Chip,
-  PrimaryButton,
-  SecondaryButton,
-  ButtonGroup,
-} from '@/components/ui';
+import { Header, Title, Chip, PrimaryButton, SecondaryButton, ButtonGroup } from '@/components/ui';
 import { GradientSplash6 } from '@/assets';
 import { storageService } from '@/services';
 import { useTranslation } from '@/hooks/i18n';
@@ -98,12 +91,8 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
       >
         <View style={styles.content}>
           <View style={styles.headerContainer}>
-            <Image
-              source={GradientSplash6}
-              style={[styles.titleAdornment, adornmentStyle]}
-              resizeMode="contain"
-            />
-            <Title title={t('auth.personalObjectivesTitle', { userName })} variant="large" />
+            <Image source={GradientSplash6} style={[styles.titleAdornment, adornmentStyle]} resizeMode='contain' />
+            <Title title={t('auth.personalObjectivesTitle', { userName })} variant='large' />
           </View>
 
           <Text style={styles.question}>{t('auth.personalObjectivesQuestion')}</Text>
@@ -121,7 +110,7 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
                   selectedBackgroundColor={COLORS.HIGHLIGHT.LIGHT}
                   selectedTextColor={COLORS.NEUTRAL.LOW.PURE}
                   accessibilityLabel={label}
-                  accessibilityRole="button"
+                  accessibilityRole='button'
                   accessibilityState={{ selected }}
                 />
               );
@@ -132,16 +121,8 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
 
       <View style={[styles.footer, { paddingBottom: SPACING.XL + insets.bottom }]}>
         <ButtonGroup style={styles.buttonGroup}>
-          <PrimaryButton
-            label={t('common.next')}
-            onPress={handleNext}
-            disabled={isSubmitting}
-          />
-          <SecondaryButton
-            label={t('common.skipInformation')}
-            onPress={handleSkip}
-            disabled={isSubmitting}
-          />
+          <PrimaryButton label={t('common.next')} onPress={handleNext} disabled={isSubmitting} />
+          <SecondaryButton label={t('common.skipInformation')} onPress={handleSkip} disabled={isSubmitting} />
         </ButtonGroup>
       </View>
     </SafeAreaView>

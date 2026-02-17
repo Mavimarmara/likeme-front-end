@@ -93,15 +93,14 @@ export interface ListOrdersParams {
   paymentStatus?: string;
 }
 
-export interface ListOrdersApiResponse
-  extends ApiResponse<{
-    orders: Order[];
-    pagination: {
-      page: number;
-      limit: number;
-      total: number;
-      totalPages: number;
-    };
-  }> {}
+export type ListOrdersApiResponse = ApiResponse<{
+  orders: Order[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}>;
 
-export interface GetOrderApiResponse extends ApiResponse<Order> {}
+export type GetOrderApiResponse = ApiResponse<Order>;

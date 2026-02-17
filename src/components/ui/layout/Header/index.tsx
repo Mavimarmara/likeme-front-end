@@ -40,7 +40,7 @@ const Header: React.FC<HeaderProps> = ({
             style={styles.backButtonBackground}
             imageStyle={styles.backButtonImage}
           >
-            <Icon name="chevron-left" size={18} color="#0F1B33" />
+            <Icon name='chevron-left' size={18} color='#0F1B33' />
           </ImageBackground>
         </TouchableOpacity>
       )}
@@ -52,7 +52,7 @@ const Header: React.FC<HeaderProps> = ({
             style={styles.bellButtonBackground}
             imageStyle={styles.bellButtonImage}
           >
-            <Icon name="notifications" size={18} color="#0F1B33" />
+            <Icon name='notifications' size={18} color='#0F1B33' />
           </ImageBackground>
         </TouchableOpacity>
       )}
@@ -63,7 +63,7 @@ const Header: React.FC<HeaderProps> = ({
             style={styles.cartButtonBackground}
             imageStyle={styles.cartButtonImage}
           >
-            <Icon name="shopping-cart" size={18} color="#0F1B33" />
+            <Icon name='shopping-cart' size={18} color='#0F1B33' />
           </ImageBackground>
         </TouchableOpacity>
       )}
@@ -74,7 +74,7 @@ const Header: React.FC<HeaderProps> = ({
             style={styles.logoutButtonBackground}
             imageStyle={styles.logoutButtonImage}
           >
-            <Icon name="logout" size={18} color="#0F1B33" />
+            <Icon name='logout' size={18} color='#0F1B33' />
           </ImageBackground>
         </TouchableOpacity>
       )}
@@ -85,7 +85,7 @@ const Header: React.FC<HeaderProps> = ({
             style={styles.ratingButtonBackground}
             imageStyle={styles.ratingButtonImage}
           >
-            <Icon name="star" size={18} color="#0F1B33" />
+            <Icon name='star' size={18} color='#0F1B33' />
           </ImageBackground>
         </TouchableOpacity>
       )}

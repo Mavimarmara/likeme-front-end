@@ -1,19 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, Alert } from 'react-native';
-import {
-  MindAvatar,
-  BodyAvatar,
-  MindAvatarActive,
-  BodyAvatarActive,
-  BackgroundIconButton,
-} from '@/assets';
+import { MindAvatar, BodyAvatar, MindAvatarActive, BodyAvatarActive, BackgroundIconButton } from '@/assets';
 import { IconButton } from '@/components/ui/buttons';
 import { COLORS } from '@/constants';
-import {
-  getAvatarSizeFromPercentage,
-  getAvatarDimensions,
-  type AvatarSize,
-} from '@/utils/anamnesis/avatarSizeMapper';
+import { getAvatarSizeFromPercentage, getAvatarDimensions, type AvatarSize } from '@/utils/anamnesis/avatarSizeMapper';
 import { useTranslation } from '@/hooks/i18n';
 import { styles } from './styles';
 
@@ -43,14 +33,8 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
     [hasAnswers, mindPercentage, bodyPercentage],
   );
 
-  const mindAvatarSource = useMemo(
-    () => (hasAnyAnswers ? MindAvatarActive : MindAvatar),
-    [hasAnyAnswers],
-  );
-  const bodyAvatarSource = useMemo(
-    () => (hasAnyAnswers ? BodyAvatarActive : BodyAvatar),
-    [hasAnyAnswers],
-  );
+  const mindAvatarSource = useMemo(() => (hasAnyAnswers ? MindAvatarActive : MindAvatar), [hasAnyAnswers]);
+  const bodyAvatarSource = useMemo(() => (hasAnyAnswers ? BodyAvatarActive : BodyAvatar), [hasAnyAnswers]);
 
   // Tamanho de cada avatar é individual: mente usa só mindPercentage, corpo só bodyPercentage
   const mindSize = useMemo(() => getAvatarSizeFromPercentage(mindPercentage), [mindPercentage]);
@@ -60,15 +44,23 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
   const bodyDimensions = useMemo(() => getAvatarDimensions(bodySize), [bodySize]);
 
   const handlePeriodPress = () => {
-    Alert.alert(
-      t('avatar.periodTitle'),
-      undefined,
-      [
-        { text: t('avatar.week'), onPress: () => { setSelectedPeriod('week'); onPeriodChange?.('week'); } },
-        { text: t('avatar.month'), onPress: () => { setSelectedPeriod('month'); onPeriodChange?.('month'); } },
-        { text: t('common.cancel'), style: 'cancel' },
-      ],
-    );
+    Alert.alert(t('avatar.periodTitle'), undefined, [
+      {
+        text: t('avatar.week'),
+        onPress: () => {
+          setSelectedPeriod('week');
+          onPeriodChange?.('week');
+        },
+      },
+      {
+        text: t('avatar.month'),
+        onPress: () => {
+          setSelectedPeriod('month');
+          onPeriodChange?.('month');
+        },
+      },
+      { text: t('common.cancel'), style: 'cancel' },
+    ]);
   };
 
   return (
@@ -81,7 +73,7 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
           <TouchableOpacity style={styles.weekDropdown} onPress={handlePeriodPress} activeOpacity={0.7}>
             <Text style={styles.weekText}>{t(selectedPeriod === 'week' ? 'avatar.week' : 'avatar.month')}</Text>
             <IconButton
-              icon="keyboard-arrow-down"
+              icon='keyboard-arrow-down'
               iconSize={20}
               iconColor={COLORS.SECONDARY.LIGHT}
               onPress={handlePeriodPress}
@@ -96,21 +88,15 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
             <Text style={styles.avatarLabel}>{t('avatar.mind')}</Text>
             <Image
               source={mindAvatarSource}
-              style={[
-                styles.mindAvatar,
-                { width: mindDimensions.width, height: mindDimensions.height },
-              ]}
-              resizeMode="cover"
+              style={[styles.mindAvatar, { width: mindDimensions.width, height: mindDimensions.height }]}
+              resizeMode='cover'
             />
           </View>
           <View style={styles.avatarItem}>
             <Image
               source={bodyAvatarSource}
-              style={[
-                styles.bodyAvatar,
-                { width: bodyDimensions.width, height: bodyDimensions.height },
-              ]}
-              resizeMode="cover"
+              style={[styles.bodyAvatar, { width: bodyDimensions.width, height: bodyDimensions.height }]}
+              resizeMode='cover'
             />
             <Text style={styles.avatarLabel}>{t('avatar.body')}</Text>
           </View>
@@ -118,7 +104,7 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
         {hasAnyAnswers && (
           <View style={styles.actionsContainer}>
             <IconButton
-              icon="share"
+              icon='share'
               iconSize={24}
               iconColor={COLORS.TEXT}
               onPress={onSharePress || (() => {})}
@@ -126,7 +112,7 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
               showBackground={false}
             />
             <IconButton
-              icon="add"
+              icon='add'
               iconSize={24}
               iconColor={COLORS.SECONDARY.LIGHT}
               onPress={onSeeMorePress || (() => {})}

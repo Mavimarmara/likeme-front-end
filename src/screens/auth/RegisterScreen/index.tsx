@@ -18,14 +18,7 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { StackScreenProps } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {
-  Header,
-  Title,
-  TextInput,
-  PrimaryButton,
-  SecondaryButton,
-  ButtonGroup,
-} from '@/components/ui';
+import { Header, Title, TextInput, PrimaryButton, SecondaryButton, ButtonGroup } from '@/components/ui';
 import { GradientSplash5 } from '@/assets';
 import { storageService, personsService } from '@/services';
 import { useTranslation } from '@/hooks/i18n';
@@ -67,7 +60,11 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
   const [isSkipLoading, setIsSkipLoading] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const [genderModalVisible, setGenderModalVisible] = useState(false);
-  const [fieldErrors, setFieldErrors] = useState<{ age?: string; weight?: string; height?: string }>({});
+  const [fieldErrors, setFieldErrors] = useState<{
+    age?: string;
+    weight?: string;
+    height?: string;
+  }>({});
 
   const scrollViewRef = useRef<ScrollView>(null);
   const scrollContentRef = useRef<View>(null);
@@ -86,13 +83,11 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
   const insuranceInputRef = useRef<RNTextInput>(null);
 
   useEffect(() => {
-    const showSub = Keyboard.addListener(
-      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
-      (e) => setKeyboardHeight(e.endCoordinates.height)
+    const showSub = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', (e) =>
+      setKeyboardHeight(e.endCoordinates.height),
     );
-    const hideSub = Keyboard.addListener(
-      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
-      () => setKeyboardHeight(0)
+    const hideSub = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', () =>
+      setKeyboardHeight(0),
     );
     return () => {
       showSub.remove();
@@ -116,10 +111,12 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
     containerYRef.current = e.nativeEvent.layout.y;
   }, []);
 
-  const handleFieldLayout = useCallback((fieldKey: string) => (e: LayoutChangeEvent) => {
-    fieldYRef.current[fieldKey] =
-      contentYRef.current + containerYRef.current + e.nativeEvent.layout.y;
-  }, []);
+  const handleFieldLayout = useCallback(
+    (fieldKey: string) => (e: LayoutChangeEvent) => {
+      fieldYRef.current[fieldKey] = contentYRef.current + containerYRef.current + e.nativeEvent.layout.y;
+    },
+    [],
+  );
 
   const topSectionStyle = useMemo(
     () => [
@@ -128,7 +125,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
         paddingTop: Math.max(insets.top, Platform.OS === 'android' ? 16 : 0),
       },
     ],
-    [insets.top]
+    [insets.top],
   );
 
   const validateNumericField = useCallback(
@@ -136,10 +133,12 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
       if (!value.trim()) return undefined;
       const n = Number(value.trim());
       if (Number.isNaN(n)) return t('auth.validationInvalidNumber');
-      if (n < min || n > max) return t('auth.validationOutOfRange', { min: String(min), max: String(max) });
+      if (n < min || n > max) {
+        return t('auth.validationOutOfRange', { min: String(min), max: String(max) });
+      }
       return undefined;
     },
-    [t]
+    [t],
   );
 
   const handleNext = useCallback(async () => {
@@ -228,18 +227,15 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
       styles.footer,
       {
         bottom: keyboardHeight > 0 ? keyboardHeight + KEYBOARD_RESPIRATION : 0,
-        paddingBottom:
-          keyboardHeight > 0
-            ? 0
-            : Math.max(insets.bottom, SPACING.MD),
+        paddingBottom: keyboardHeight > 0 ? 0 : Math.max(insets.bottom, SPACING.MD),
       },
     ],
-    [keyboardHeight, insets.bottom]
+    [keyboardHeight, insets.bottom],
   );
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['bottom', 'left', 'right']}>
-      <StatusBar barStyle="dark-content" backgroundColor={COLORS.BACKGROUND_SECONDARY} />
+      <StatusBar barStyle='dark-content' backgroundColor={COLORS.BACKGROUND_SECONDARY} />
 
       <View style={styles.container}>
         <KeyboardAvoidingView
@@ -257,7 +253,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
                 paddingBottom: keyboardHeight + SCROLL_PADDING_WHEN_KEYBOARD_OPEN,
               },
             ]}
-            keyboardShouldPersistTaps="handled"
+            keyboardShouldPersistTaps='handled'
           >
             <View ref={scrollContentRef} collapsable={false} style={styles.scrollContentInner}>
               <View style={topSectionStyle}>
@@ -275,14 +271,12 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
                         top: -adornmentSize * 0.36,
                       },
                     ]}
-                    resizeMode="contain"
+                    resizeMode='contain'
                   />
-                  <Title title={t('auth.registerTitle')} variant="large" />
+                  <Title title={t('auth.registerTitle')} variant='large' />
 
                   <View style={styles.invitationSection}>
-                    <Text style={styles.invitationQuestion}>
-                      {t('auth.registerInvitationQuestion')}
-                    </Text>
+                    <Text style={styles.invitationQuestion}>{t('auth.registerInvitationQuestion')}</Text>
                     <TextInput
                       label={t('auth.registerEnterCode')}
                       value={invitationCode}
@@ -295,12 +289,15 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
 
               <View style={styles.content} onLayout={handleContentLayout}>
                 <View style={styles.infoSection}>
-                  <Text style={styles.infoText}>
-                    {t('auth.registerInfoMessage')}
-                  </Text>
+                  <Text style={styles.infoText}>{t('auth.registerInfoMessage')}</Text>
 
                   <View style={styles.fieldsContainer} onLayout={handleContainerLayout}>
-                    <View ref={fullNameRowRef} collapsable={false} style={styles.fieldRow} onLayout={handleFieldLayout('fullName')}>
+                    <View
+                      ref={fullNameRowRef}
+                      collapsable={false}
+                      style={styles.fieldRow}
+                      onLayout={handleFieldLayout('fullName')}
+                    >
                       <TextInput
                         ref={fullNameInputRef}
                         label={t('auth.fullName')}
@@ -308,18 +305,26 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
                         onChangeText={setFullName}
                         placeholder={t('auth.fullNamePlaceholder')}
                         onFocus={() => scrollToFocusedField('fullName')}
-                        returnKeyType="next"
+                        returnKeyType='next'
                         onSubmitEditing={() => ageInputRef.current?.focus()}
                         blurOnSubmit={false}
                       />
                     </View>
 
-                    <View ref={ageRowRef} collapsable={false} style={styles.fieldRow} onLayout={handleFieldLayout('age')}>
+                    <View
+                      ref={ageRowRef}
+                      collapsable={false}
+                      style={styles.fieldRow}
+                      onLayout={handleFieldLayout('age')}
+                    >
                       <TextInput
                         ref={ageInputRef}
                         label={t('auth.age')}
                         value={age}
-                        onChangeText={(v) => { setAge(v); setFieldErrors((e) => (e.age ? { ...e, age: undefined } : e)); }}
+                        onChangeText={(v) => {
+                          setAge(v);
+                          setFieldErrors((e) => (e.age ? { ...e, age: undefined } : e));
+                        }}
                         placeholder={t('auth.agePlaceholder')}
                         keyboardType={Platform.OS === 'ios' ? 'number-pad' : 'numeric'}
                         onFocus={() => scrollToFocusedField('age')}
@@ -331,31 +336,41 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
                       <Text style={styles.genderLabel}>{t('auth.gender')}</Text>
                       <TouchableOpacity
                         style={styles.genderTouchable}
-                        onPress={() => { Keyboard.dismiss(); setGenderModalVisible(true); }}
+                        onPress={() => {
+                          Keyboard.dismiss();
+                          setGenderModalVisible(true);
+                        }}
                         activeOpacity={0.7}
-                        accessibilityLabel={genderLabel ? `${t('auth.gender')}: ${genderLabel}` : t('auth.genderPlaceholder')}
-                        accessibilityRole="button"
+                        accessibilityLabel={
+                          genderLabel ? `${t('auth.gender')}: ${genderLabel}` : t('auth.genderPlaceholder')
+                        }
+                        accessibilityRole='button'
                         accessibilityHint={t('auth.genderPlaceholder')}
                       >
                         <Text
-                          style={[
-                            styles.genderTouchableText,
-                            !genderLabel && styles.genderPlaceholder,
-                          ]}
+                          style={[styles.genderTouchableText, !genderLabel && styles.genderPlaceholder]}
                           numberOfLines={1}
                         >
                           {genderLabel || t('auth.genderPlaceholder')}
                         </Text>
-                        <Icon name="keyboard-arrow-down" size={24} color={COLORS.NEUTRAL.LOW.DARK} />
+                        <Icon name='keyboard-arrow-down' size={24} color={COLORS.NEUTRAL.LOW.DARK} />
                       </TouchableOpacity>
                     </View>
 
-                    <View ref={weightRowRef} collapsable={false} style={styles.fieldRow} onLayout={handleFieldLayout('weight')}>
+                    <View
+                      ref={weightRowRef}
+                      collapsable={false}
+                      style={styles.fieldRow}
+                      onLayout={handleFieldLayout('weight')}
+                    >
                       <TextInput
                         ref={weightInputRef}
                         label={t('auth.weight')}
                         value={weight}
-                        onChangeText={(v) => { setWeight(v); setFieldErrors((e) => (e.weight ? { ...e, weight: undefined } : e)); }}
+                        onChangeText={(v) => {
+                          setWeight(v);
+                          setFieldErrors((e) => (e.weight ? { ...e, weight: undefined } : e));
+                        }}
                         placeholder={t('auth.weightPlaceholder')}
                         keyboardType={Platform.OS === 'ios' ? 'number-pad' : 'numeric'}
                         onFocus={() => scrollToFocusedField('weight')}
@@ -363,12 +378,20 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
                       />
                     </View>
 
-                    <View ref={heightRowRef} collapsable={false} style={styles.fieldRow} onLayout={handleFieldLayout('height')}>
+                    <View
+                      ref={heightRowRef}
+                      collapsable={false}
+                      style={styles.fieldRow}
+                      onLayout={handleFieldLayout('height')}
+                    >
                       <TextInput
                         ref={heightInputRef}
                         label={t('auth.height')}
                         value={height}
-                        onChangeText={(v) => { setHeight(v); setFieldErrors((e) => (e.height ? { ...e, height: undefined } : e)); }}
+                        onChangeText={(v) => {
+                          setHeight(v);
+                          setFieldErrors((e) => (e.height ? { ...e, height: undefined } : e));
+                        }}
                         placeholder={t('auth.heightPlaceholder')}
                         keyboardType={Platform.OS === 'ios' ? 'number-pad' : 'numeric'}
                         onFocus={() => scrollToFocusedField('height')}
@@ -376,7 +399,12 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
                       />
                     </View>
 
-                    <View ref={insuranceRowRef} collapsable={false} style={styles.fieldRow} onLayout={handleFieldLayout('insurance')}>
+                    <View
+                      ref={insuranceRowRef}
+                      collapsable={false}
+                      style={styles.fieldRow}
+                      onLayout={handleFieldLayout('insurance')}
+                    >
                       <TextInput
                         ref={insuranceInputRef}
                         label={t('auth.insurance')}
@@ -384,7 +412,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
                         onChangeText={setInsurance}
                         placeholder={t('auth.insurancePlaceholder')}
                         onFocus={() => scrollToFocusedField('insurance')}
-                        returnKeyType="done"
+                        returnKeyType='done'
                         onSubmitEditing={() => Keyboard.dismiss()}
                       />
                     </View>
@@ -414,7 +442,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
       <Modal
         visible={genderModalVisible}
         transparent
-        animationType="fade"
+        animationType='fade'
         onRequestClose={() => setGenderModalVisible(false)}
         accessibilityLabel={t('auth.gender')}
       >
@@ -423,21 +451,18 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
           activeOpacity={1}
           onPress={() => setGenderModalVisible(false)}
           accessibilityLabel={t('common.close')}
-          accessibilityRole="button"
+          accessibilityRole='button'
         >
-          <View
-            style={styles.genderModalContent}
-            onStartShouldSetResponder={() => true}
-          >
+          <View style={styles.genderModalContent} onStartShouldSetResponder={() => true}>
             <View style={styles.genderModalHeader}>
               <Text style={styles.genderModalTitle}>{t('auth.gender')}</Text>
               <TouchableOpacity
                 onPress={() => setGenderModalVisible(false)}
                 hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
                 accessibilityLabel={t('common.close')}
-                accessibilityRole="button"
+                accessibilityRole='button'
               >
-                <Icon name="close" size={24} color={COLORS.NEUTRAL.LOW.PURE} />
+                <Icon name='close' size={24} color={COLORS.NEUTRAL.LOW.PURE} />
               </TouchableOpacity>
             </View>
             {GENDER_OPTIONS.map((opt) => (
@@ -450,15 +475,13 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
                 }}
                 activeOpacity={0.7}
                 accessibilityLabel={t(opt.i18nKey)}
-                accessibilityRole="button"
+                accessibilityRole='button'
                 accessibilityState={{ selected: gender === opt.value }}
               >
                 <Text style={[styles.genderOptionText, gender === opt.value && styles.genderOptionTextSelected]}>
                   {t(opt.i18nKey)}
                 </Text>
-                {gender === opt.value && (
-                  <Icon name="check" size={22} color={COLORS.PRIMARY.PURE} />
-                )}
+                {gender === opt.value && <Icon name='check' size={22} color={COLORS.PRIMARY.PURE} />}
               </TouchableOpacity>
             ))}
           </View>

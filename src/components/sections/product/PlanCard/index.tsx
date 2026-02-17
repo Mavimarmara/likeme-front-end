@@ -38,19 +38,15 @@ const PlanCard: React.FC<Props> = ({ plan, onPress, onLike }) => {
     <View style={styles.container}>
       <View style={styles.imageContainer}>
         <Image source={{ uri: plan.image }} style={styles.image} />
-        <BlurView intensity={10} tint="dark" style={styles.imageOverlay} />
+        <BlurView intensity={10} tint='dark' style={styles.imageOverlay} />
         <View style={styles.contentOverlay}>
           <View style={[styles.tagBadge, { backgroundColor: 'rgba(0, 17, 55, 0.64)' }]}>
             <Text style={[styles.tagText, { color: getTagColor() }]}>{plan.tag}</Text>
           </View>
           <View style={styles.bottomInfo}>
             <Text style={styles.price}>{formatPrice(plan.price, plan.currency || 'BRL')}</Text>
-            <TouchableOpacity
-              style={styles.likeButton}
-              onPress={() => onLike?.(plan)}
-              activeOpacity={0.7}
-            >
-              <Icon name="favorite-border" size={20} color="#f6cffb" />
+            <TouchableOpacity style={styles.likeButton} onPress={() => onLike?.(plan)} activeOpacity={0.7}>
+              <Icon name='favorite-border' size={20} color='#f6cffb' />
               <Text style={styles.likesCount}>{plan.likes}</Text>
             </TouchableOpacity>
           </View>
@@ -60,12 +56,8 @@ const PlanCard: React.FC<Props> = ({ plan, onPress, onLike }) => {
         <Text style={styles.title} numberOfLines={2}>
           {plan.title}
         </Text>
-        <TouchableOpacity
-          style={styles.arrowButton}
-          onPress={() => onPress?.(plan)}
-          activeOpacity={0.7}
-        >
-          <Icon name="chevron-right" size={24} color="#001137" />
+        <TouchableOpacity style={styles.arrowButton} onPress={() => onPress?.(plan)} activeOpacity={0.7}>
+          <Icon name='chevron-right' size={24} color='#001137' />
         </TouchableOpacity>
       </View>
     </View>

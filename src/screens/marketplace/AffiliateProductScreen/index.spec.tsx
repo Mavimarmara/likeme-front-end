@@ -25,7 +25,7 @@ jest.mock('@/components/ui/layout', () => {
   return {
     Header: ({ onBackPress }: any) => (
       <View>
-        <TouchableOpacity onPress={onBackPress} testID="back-button">
+        <TouchableOpacity onPress={onBackPress} testID='back-button'>
           <Text>Back</Text>
         </TouchableOpacity>
       </View>

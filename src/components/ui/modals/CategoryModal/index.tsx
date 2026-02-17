@@ -44,13 +44,7 @@ type Props = {
   selectedCategoryId?: string;
 };
 
-const CategoryModal: React.FC<Props> = ({
-  visible,
-  onClose,
-  categories,
-  onSelectCategory,
-  selectedCategoryId,
-}) => {
+const CategoryModal: React.FC<Props> = ({ visible, onClose, categories, onSelectCategory, selectedCategoryId }) => {
   const handleCategoryPress = (category: CommunityCategory) => {
     onSelectCategory?.(category);
   };
@@ -64,7 +58,7 @@ const CategoryModal: React.FC<Props> = ({
       visible={visible}
       onClose={onClose}
       showTitle={false}
-      footer={<SubmitButton label="Save" onPress={handleSave} />}
+      footer={<SubmitButton label='Save' onPress={handleSave} />}
     >
       <View style={styles.optionsGrid}>
         {categories.length === 0 ? (

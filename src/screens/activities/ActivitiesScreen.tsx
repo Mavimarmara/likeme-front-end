@@ -19,22 +19,11 @@ import { Header, Background } from '@/components/ui/layout';
 import { Toggle, PrimaryButton, Badge } from '@/components/ui';
 import { CreateActivityModal } from '@/components/sections/activity';
 import { BackgroundIconButton, DoneIcon, CloseIcon } from '@/assets';
-import {
-  ProductsCarousel,
-  PlansCarousel,
-  type Product,
-  type Plan,
-} from '@/components/sections/product';
+import { ProductsCarousel, PlansCarousel, type Product, type Plan } from '@/components/sections/product';
 import { EventReminder } from '@/components/ui/cards';
 import { orderService, activityService } from '@/services';
 import { storageService } from '@/services';
-import {
-  formatPrice,
-  getDateFromDatetime,
-  getTimeFromDatetime,
-  sortByDateTime,
-  sortByDateField,
-} from '@/utils';
+import { formatPrice, getDateFromDatetime, getTimeFromDatetime, sortByDateTime, sortByDateField } from '@/utils';
 import { COLORS } from '@/constants';
 import { useActivities, useSuggestedProducts, useMenuItems } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
@@ -257,9 +246,8 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
       } else if (diffMinutes > -60) {
         // Se passou há menos de 1 hora, ainda mostrar
         return t('activities.eventReminderNow', { name: activity.name });
-      } else {
-        return t('activities.eventReminderToday', { name: activity.name });
       }
+      return t('activities.eventReminderToday', { name: activity.name });
     } catch (error) {
       console.error('Error calculating reminder message:', error);
       return t('activities.eventReminderToday', { name: activity.name });
@@ -366,13 +354,10 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
     // Abrir modal de edição
     setEditingActivityData({
       name: activity.title,
-      type:
-        activity.type === 'personal' ? 'task' : activity.type === 'appointment' ? 'event' : 'event',
+      type: activity.type === 'personal' ? 'task' : activity.type === 'appointment' ? 'event' : 'event',
       startDate: activity.dateTime ? getDateFromDatetime(activity.dateTime) : undefined,
       startTime: activity.dateTime ? getTimeFromDatetime(activity.dateTime) : undefined,
-      location: activity.providerName
-        ? `Meet with ${activity.providerName}`
-        : activity.description || '',
+      location: activity.providerName ? `Meet with ${activity.providerName}` : activity.description || '',
       description: activity.description,
       reminderEnabled: false,
       reminderMinutes: 5,
@@ -550,17 +535,20 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
       <View key={`order-${order.id}`} style={styles.activityCard}>
         <View style={styles.cardContent}>
           <View style={styles.cardHeader}>
-            <Badge label={t('activities.order')} color="orange" />
+            <Badge label={t('activities.order')} color='orange' />
           </View>
 
           <View>
-            <Text style={styles.cardTitle}>{t('activities.order')} #{order.id.slice(0, 8).toUpperCase()}</Text>
+            <Text style={styles.cardTitle}>
+              {t('activities.order')} #{order.id.slice(0, 8).toUpperCase()}
+            </Text>
             <Text style={styles.cardDescription}>
-              {itemsCount} {itemsCount === 1 ? t('activities.item') : t('activities.items')} • {formatPrice(order.total)}
+              {itemsCount} {itemsCount === 1 ? t('activities.item') : t('activities.items')} •{' '}
+              {formatPrice(order.total)}
             </Text>
             {order.createdAt && (
               <View style={styles.dateTimeContainer}>
-                <Icon name="event" size={16} color={COLORS.TEXT} />
+                <Icon name='event' size={16} color={COLORS.TEXT} />
                 <Text style={styles.dateTimeText}>{orderDate}</Text>
               </View>
             )}
@@ -568,15 +556,12 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
 
           <View style={styles.cardActions}>
             <View style={[styles.actionButton, styles.doneButton]}>
-              <Icon name="check" size={16} color={COLORS.TEXT} />
+              <Icon name='check' size={16} color={COLORS.TEXT} />
               <Text style={styles.doneButtonText}>{getStatusText()}</Text>
             </View>
 
             {activeTab === 'actives' && (
-              <TouchableOpacity
-                onPress={() => console.log('View order:', order.id)}
-                activeOpacity={0.7}
-              >
+              <TouchableOpacity onPress={() => console.log('View order:', order.id)} activeOpacity={0.7}>
                 <Text style={styles.viewLink}>{t('common.view')}</Text>
               </TouchableOpacity>
             )}
@@ -599,19 +584,16 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
         <View key={activity.id} style={[styles.activityCard, styles.appointmentCard]}>
           <View style={styles.cardContent}>
             <View style={styles.cardHeader}>
-              <Badge label={typeLabels[activity.type]} color="orange" />
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={(e) => handleMenuPress(activity.id, e)}
-              >
-                <Icon name="more-vert" size={20} color={COLORS.TEXT} />
+              <Badge label={typeLabels[activity.type]} color='orange' />
+              <TouchableOpacity activeOpacity={0.7} onPress={(e) => handleMenuPress(activity.id, e)}>
+                <Icon name='more-vert' size={20} color={COLORS.TEXT} />
               </TouchableOpacity>
             </View>
 
             <View>
               {activity.dateTime && (
                 <View style={styles.appointmentDateTimeRow}>
-                  <Icon name="event" size={16} color={COLORS.TEXT} />
+                  <Icon name='event' size={16} color={COLORS.TEXT} />
                   <Text style={styles.appointmentDateTimeText}>{activity.dateTime}</Text>
                 </View>
               )}
@@ -639,10 +621,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
               )}
 
               {activeTab === 'actives' && (
-                <TouchableOpacity
-                  onPress={() => handleSkipAppointment(activity.id)}
-                  activeOpacity={0.7}
-                >
+                <TouchableOpacity onPress={() => handleSkipAppointment(activity.id)} activeOpacity={0.7}>
                   <Text style={styles.viewLink}>{t('activities.skip')}</Text>
                 </TouchableOpacity>
               )}
@@ -657,17 +636,15 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
       <View key={activity.id} style={styles.activityCard}>
         <View style={styles.cardContent}>
           <View style={styles.cardHeader}>
-            <Badge label={typeLabels[activity.type]} color="orange" />
+            <Badge label={typeLabels[activity.type]} color='orange' />
             <TouchableOpacity activeOpacity={0.7} onPress={(e) => handleMenuPress(activity.id, e)}>
-              <Icon name="more-vert" size={20} color={COLORS.TEXT} />
+              <Icon name='more-vert' size={20} color={COLORS.TEXT} />
             </TouchableOpacity>
           </View>
 
           <View>
             <View style={styles.cardTitleRow}>
-              {activity.isFavorite && (
-                <Icon name="star" size={20} color={COLORS.TEXT} style={styles.starIcon} />
-              )}
+              {activity.isFavorite && <Icon name='star' size={20} color={COLORS.TEXT} style={styles.starIcon} />}
               <Text style={styles.cardTitle}>{activity.title}</Text>
             </View>
             <Text style={styles.cardDescription}>{activity.description}</Text>
@@ -676,11 +653,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
           <View style={styles.cardActions}>
             {activeTab === 'history' ? (
               <View style={[styles.actionButton]}>
-                <Image
-                  source={activity.declined ? CloseIcon : DoneIcon}
-                  style={styles.statusIcon}
-                  resizeMode="cover"
-                />
+                <Image source={activity.declined ? CloseIcon : DoneIcon} style={styles.statusIcon} resizeMode='cover' />
               </View>
             ) : (
               <TouchableOpacity
@@ -736,14 +709,9 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
         {renderFilters()}
         {renderEventReminder()}
 
-        {activeTab === 'actives' && (
-          <Text style={styles.sectionLabel}>{t('activities.markAsDoneLabel')}</Text>
-        )}
+        {activeTab === 'actives' && <Text style={styles.sectionLabel}>{t('activities.markAsDoneLabel')}</Text>}
 
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
+        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
           {activeTab === 'history' ? (
             <>
               {selectedFilter === 'all' && (
@@ -823,7 +791,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
           )}
         </ScrollView>
       </View>
-      <FloatingMenu items={menuItems} selectedId="activities" />
+      <FloatingMenu items={menuItems} selectedId='activities' />
       <CreateActivityModal
         visible={isCreateActivityModalVisible}
         onClose={() => {
@@ -875,11 +843,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
             }
           } catch (error: any) {
             console.error('Error saving activity:', error);
-            Alert.alert(
-              t('errors.error'),
-              error?.message || t('activities.saveError'),
-              [{ text: t('common.ok') }]
-            );
+            Alert.alert(t('errors.error'), error?.message || t('activities.saveError'), [{ text: t('common.ok') }]);
           }
         }}
         activityId={editingActivityId || undefined}
@@ -890,14 +854,10 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
       <Modal
         visible={menuVisibleForId !== null}
         transparent
-        animationType="fade"
+        animationType='fade'
         onRequestClose={() => setMenuVisibleForId(null)}
       >
-        <TouchableOpacity
-          style={styles.menuOverlay}
-          activeOpacity={1}
-          onPress={() => setMenuVisibleForId(null)}
-        >
+        <TouchableOpacity style={styles.menuOverlay} activeOpacity={1} onPress={() => setMenuVisibleForId(null)}>
           {menuPosition && (
             <View style={[styles.menuContainer, { top: menuPosition.y, left: menuPosition.x }]}>
               {menuVisibleForId && !menuVisibleForId.startsWith('order-') && (
@@ -911,7 +871,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
                       }
                     }}
                   >
-                    <Icon name="edit" size={20} color={COLORS.TEXT} />
+                    <Icon name='edit' size={20} color={COLORS.TEXT} />
                     <Text style={styles.menuItemText}>{t('activities.edit')}</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
@@ -922,7 +882,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
                       }
                     }}
                   >
-                    <Icon name="delete" size={20} color="#F44336" />
+                    <Icon name='delete' size={20} color='#F44336' />
                     <Text style={[styles.menuItemText, styles.menuItemTextDanger]}>{t('activities.delete')}</Text>
                   </TouchableOpacity>
                 </>

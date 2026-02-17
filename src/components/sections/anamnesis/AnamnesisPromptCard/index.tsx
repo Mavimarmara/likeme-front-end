@@ -5,25 +5,25 @@ import { useTranslation } from '@/hooks/i18n';
 import { styles } from './styles';
 
 interface AnamnesisPromptCardProps {
-	onStartPress: () => void;
+  onStartPress: () => void;
 }
 
 const AnamnesisPromptCard: React.FC<AnamnesisPromptCardProps> = ({ onStartPress }) => {
-	const { t } = useTranslation();
+  const { t } = useTranslation();
 
-	return (
-		<CTACard
-			title={t('anamnesis.promptCardTitle')}
-			description={t('anamnesis.promptCardDescription')}
-			primaryButtonLabel={t('anamnesis.startAnamnesis')}
-			primaryButtonOnPress={onStartPress}
-			primaryButtonIcon="chevron-right"
-			primaryButtonIconPosition="right"
-			backgroundColor={COLORS.HIGHLIGHT.LIGHT}
-			descriptionColor={COLORS.TEXT}
-			style={styles.card}
-		/>
-	);
+  return (
+    <CTACard
+      title={t('anamnesis.promptCardTitle')}
+      description={t('anamnesis.promptCardDescription')}
+      primaryButtonLabel={t('anamnesis.startAnamnesis')}
+      primaryButtonOnPress={onStartPress}
+      primaryButtonIcon='chevron-right'
+      primaryButtonIconPosition='right'
+      backgroundColor={COLORS.HIGHLIGHT.LIGHT}
+      descriptionColor={COLORS.TEXT}
+      style={styles.card}
+    />
+  );
 };
 
 export default AnamnesisPromptCard;

@@ -29,10 +29,12 @@ O workflow precisa de um token do Expo para fazer builds via EAS.
 Quando há push na branch `main`:
 
 1. **Test & Lint** (job `test`)
+
    - Roda o linter (`npm run lint`)
    - Executa os testes (`npm test`)
 
 2. **Build Android** (job `build-android`)
+
    - Gera APK de produção via EAS Build
    - Perfil: `production-apk`
    - Backend: produção (`https://likeme-back-end-one.vercel.app`)
@@ -45,6 +47,7 @@ Quando há push na branch `main`:
 ## 📦 Resultados
 
 Os builds ficam disponíveis em:
+
 - [expo.dev](https://expo.dev/accounts/pixelpulselab/projects/likeme-front-end/builds)
 - Você receberá notificação por email quando os builds concluírem
 
@@ -53,5 +56,6 @@ Os builds ficam disponíveis em:
 Para enviar automaticamente para TestFlight/Google Play após o build, você pode adicionar jobs de submit no workflow. Isso requer credenciais adicionais (Apple ID, Google Service Account JSON).
 
 Por enquanto, os builds são gerados mas não enviados automaticamente. Use:
+
 - `./submit-to-testflight.sh` para iOS
 - `eas submit --platform android --latest --profile production` para Android

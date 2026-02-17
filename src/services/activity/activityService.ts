@@ -72,12 +72,7 @@ class ActivityService {
 
       const endpoint = `${this.activitiesEndpoint}/${activityId.trim()}`;
 
-      const response = await apiClient.get<GetActivityApiResponse>(
-        endpoint,
-        undefined,
-        true,
-        false,
-      );
+      const response = await apiClient.get<GetActivityApiResponse>(endpoint, undefined, true, false);
 
       logger.debug('Activity detail response:', {
         activityId,
@@ -94,11 +89,7 @@ class ActivityService {
 
   async createActivity(data: CreateActivityData): Promise<ApiResponse<UserActivity>> {
     try {
-      const response = await apiClient.post<ApiResponse<UserActivity>>(
-        this.activitiesEndpoint,
-        data,
-        true,
-      );
+      const response = await apiClient.post<ApiResponse<UserActivity>>(this.activitiesEndpoint, data, true);
 
       logger.debug('Activity created:', {
         activityId: response.data?.id,
@@ -112,10 +103,7 @@ class ActivityService {
     }
   }
 
-  async updateActivity(
-    activityId: string,
-    data: UpdateActivityData,
-  ): Promise<ApiResponse<UserActivity>> {
+  async updateActivity(activityId: string, data: UpdateActivityData): Promise<ApiResponse<UserActivity>> {
     try {
       if (!activityId || activityId.trim() === '') {
         throw new Error('Activity ID is required');

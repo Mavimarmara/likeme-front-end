@@ -30,9 +30,7 @@ import { useTranslation } from '@/hooks/i18n';
 const MyComponent = () => {
   const { t } = useTranslation();
 
-  return (
-    <Text>{t('common.save')}</Text>
-  );
+  return <Text>{t('common.save')}</Text>;
 };
 ```
 
@@ -123,4 +121,3 @@ grep -r "common.save" src/
 
 - [react-i18next](https://react.i18next.com/)
 - [i18next](https://www.i18next.com/)
-

@@ -13,6 +13,7 @@ Camada centralizada de **Google Analytics 4 (GA4)** para o app React Native (Exp
 ## Configuração do Firebase (GA4)
 
 **Já configurado no projeto:**
+
 - Pacotes `@react-native-firebase/app` e `@react-native-firebase/analytics` instalados.
 - Plugins do Firebase no `app.config.js`.
 - **iOS:** `GoogleService-Info.plist` na raiz do projeto; `ios.bundleIdentifier` = `app.likeme.com`; Analytics habilitado no plist.
@@ -59,7 +60,11 @@ logButtonClick({
   button_label: 'back',
   action_name: 'go_back',
 });
-logNavigation({ source_screen: 'welcome', destination_screen: 'unauthenticated', action_name: 'go_back' });
+logNavigation({
+  source_screen: 'welcome',
+  destination_screen: 'unauthenticated',
+  action_name: 'go_back',
+});
 navigation.goBack();
 ```
 
@@ -159,9 +164,9 @@ logEvent('custom_event_name', {
 3. **Helpers reutilizáveis**  
    Se o mesmo tipo de ação aparecer em várias telas, criar uma função em `AnalyticsService.ts` (ex: `logShare`, `logSearch`) e exportar no `index.ts`.
 
-4. **Nova tela**  
-   - Registrar o `screen_name` em `SCREEN_NAMES` em `constants.ts` (se a rota ainda não existir).  
-   - Na tela, chamar `useAnalyticsScreen({ screenName: 'NomeDaRota', screenClass: 'NomeDaTelaScreen' })`.  
+4. **Nova tela**
+   - Registrar o `screen_name` em `SCREEN_NAMES` em `constants.ts` (se a rota ainda não existir).
+   - Na tela, chamar `useAnalyticsScreen({ screenName: 'NomeDaRota', screenClass: 'NomeDaTelaScreen' })`.
    - Instrumentar botões, formulários, abas e erros com os helpers acima.
 
 ## Boas práticas

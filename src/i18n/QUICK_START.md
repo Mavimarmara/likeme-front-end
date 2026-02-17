@@ -3,11 +3,13 @@
 ## ✅ O que foi criado
 
 1. **Estrutura de pastas**:
+
    - `src/i18n/` - Configuração do i18n
    - `src/i18n/locales/pt-BR.json` - Todas as traduções em português
    - `src/hooks/i18n/` - Hook customizado para usar traduções
 
 2. **Arquivos de configuração**:
+
    - `src/i18n/index.ts` - Configuração do react-i18next
    - `App.tsx` - Já inicializa o i18n automaticamente
 
@@ -31,7 +33,7 @@ import { useTranslation } from '@/hooks/i18n';
 
 const MyComponent = () => {
   const { t } = useTranslation();
-  
+
   return <Text>{t('common.save')}</Text>;
 };
 ```
@@ -42,11 +44,11 @@ Substitua textos hardcoded por chaves de tradução:
 
 ```typescript
 // ❌ Antes
-<Text>Salvar</Text>
+<Text>Salvar</Text>;
 
 // ✅ Depois
 const { t } = useTranslation();
-<Text>{t('common.save')}</Text>
+<Text>{t('common.save')}</Text>;
 ```
 
 ## 🔍 Estrutura das Chaves
@@ -73,4 +75,3 @@ const { t } = useTranslation();
 - O i18n já está inicializado no `App.tsx`
 - Todas as traduções estão em `pt-BR.json`
 - Use sempre o hook `useTranslation` para acessar traduções
-

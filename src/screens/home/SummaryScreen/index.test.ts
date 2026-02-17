@@ -207,7 +207,7 @@ describe('SummaryScreen - Avatar and Card Display Logic', () => {
       expect(sections).toHaveLength(11);
       expect(sections).toContain('mental');
       expect(sections).toContain('physical');
-      expect(sections.filter(s => s.startsWith('habits_'))).toHaveLength(9);
+      expect(sections.filter((s) => s.startsWith('habits_'))).toHaveLength(9);
     });
   });
 });

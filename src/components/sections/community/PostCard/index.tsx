@@ -80,9 +80,7 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
     if (!post.tags) return null;
 
     if (Array.isArray(post.tags)) {
-      const validTag = post.tags.find(
-        (tag) => tag && typeof tag === 'string' && tag.toLowerCase() !== 'tags'
-      );
+      const validTag = post.tags.find((tag) => tag && typeof tag === 'string' && tag.toLowerCase() !== 'tags');
       return validTag || null;
     }
 
@@ -97,8 +95,7 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
   const title = getTitle();
   const content = getContent();
   // Usar commentsCount do post se disponível, senão usar o tamanho do array de comentários
-  const commentsCount =
-    post.commentsCount !== undefined ? post.commentsCount : post.comments?.length || 0;
+  const commentsCount = post.commentsCount !== undefined ? post.commentsCount : post.comments?.length || 0;
 
   const handleCommentsPress = () => {
     setIsCommentsOpen(!isCommentsOpen);
@@ -153,12 +150,10 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
               <Image source={{ uri: post.userAvatar }} style={styles.avatar} />
             ) : (
               <View style={styles.avatarPlaceholder}>
-                <Icon name="person" size={12} color={COLORS.TEXT_LIGHT} />
+                <Icon name='person' size={12} color={COLORS.TEXT_LIGHT} />
               </View>
             )}
-            {post.userName && (
-              <Text style={styles.authorName}>{capitalizeWords(post.userName)}</Text>
-            )}
+            {post.userName && <Text style={styles.authorName}>{capitalizeWords(post.userName)}</Text>}
           </View>
 
           {title ? (
@@ -179,11 +174,7 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
 
       <View style={styles.footer}>
         {content && (
-          <TouchableOpacity
-            style={styles.seeMoreButton}
-            onPress={handleSeeMorePress}
-            activeOpacity={0.7}
-          >
+          <TouchableOpacity style={styles.seeMoreButton} onPress={handleSeeMorePress} activeOpacity={0.7}>
             <Text style={styles.seeMoreButtonText}>
               {isContentExpanded ? t('common.seeLess') : t('avatar.seeMore')}
             </Text>
@@ -192,12 +183,8 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
 
         {/* Não mostrar botão de comentários quando for uma enquete */}
         {!post.poll && (
-          <TouchableOpacity
-            style={styles.commentsInfo}
-            onPress={handleCommentsPress}
-            activeOpacity={0.7}
-          >
-            <Icon name="chat-bubble-outline" size={24} color="#0154f8" />
+          <TouchableOpacity style={styles.commentsInfo} onPress={handleCommentsPress} activeOpacity={0.7}>
+            <Icon name='chat-bubble-outline' size={24} color='#0154f8' />
             <Text style={styles.commentsCount}>{commentsCount}</Text>
           </TouchableOpacity>
         )}
@@ -219,13 +206,11 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
                 },
                 content: comment.content,
                 upvotes:
-                  comment.reactions?.filter(
-                    (r) => r.type === 'like' || r.type === 'upvote' || r.type === '👍'
-                  ).length || 0,
+                  comment.reactions?.filter((r) => r.type === 'like' || r.type === 'upvote' || r.type === '👍')
+                    .length || 0,
                 downvotes:
-                  comment.reactions?.filter(
-                    (r) => r.type === 'dislike' || r.type === 'downvote' || r.type === '👎'
-                  ).length || 0,
+                  comment.reactions?.filter((r) => r.type === 'dislike' || r.type === 'downvote' || r.type === '👎')
+                    .length || 0,
                 reactionsCount: comment.reactionsCount,
                 commentsCount: comment.commentsCount,
                 createdAt:

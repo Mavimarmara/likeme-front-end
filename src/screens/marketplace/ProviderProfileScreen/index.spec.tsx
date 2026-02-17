@@ -16,7 +16,7 @@ jest.mock('@/components/ui/layout', () => {
   return {
     Header: ({ onBackPress }: any) => (
       <View>
-        <TouchableOpacity onPress={onBackPress} testID="back-button">
+        <TouchableOpacity onPress={onBackPress} testID='back-button'>
           <Text>Back</Text>
         </TouchableOpacity>
       </View>
@@ -64,9 +64,7 @@ describe('ProviderProfileScreen', () => {
   });
 
   it('renders correctly with provider data', () => {
-    const { getByText } = render(
-      <ProviderProfileScreen navigation={mockNavigation} route={mockRouteWithProvider} />,
-    );
+    const { getByText } = render(<ProviderProfileScreen navigation={mockNavigation} route={mockRouteWithProvider} />);
 
     expect(getByText('Dr. Avery Parker')).toBeTruthy();
     expect(getByText('Therapist & Wellness Coach')).toBeTruthy();
@@ -87,9 +85,7 @@ describe('ProviderProfileScreen', () => {
   });
 
   it('calls goBack when back button is pressed', () => {
-    const { getByTestId } = render(
-      <ProviderProfileScreen navigation={mockNavigation} route={mockRouteWithProvider} />,
-    );
+    const { getByTestId } = render(<ProviderProfileScreen navigation={mockNavigation} route={mockRouteWithProvider} />);
 
     const backButton = getByTestId('back-button');
     fireEvent.press(backButton);
@@ -98,9 +94,7 @@ describe('ProviderProfileScreen', () => {
   });
 
   it('handles Book Appointment button press', () => {
-    const { getByText } = render(
-      <ProviderProfileScreen navigation={mockNavigation} route={mockRouteWithProvider} />,
-    );
+    const { getByText } = render(<ProviderProfileScreen navigation={mockNavigation} route={mockRouteWithProvider} />);
 
     const bookButton = getByText('Book Appointment');
     fireEvent.press(bookButton);
@@ -109,9 +103,7 @@ describe('ProviderProfileScreen', () => {
   });
 
   it('handles Send Message button press', () => {
-    const { getByText } = render(
-      <ProviderProfileScreen navigation={mockNavigation} route={mockRouteWithProvider} />,
-    );
+    const { getByText } = render(<ProviderProfileScreen navigation={mockNavigation} route={mockRouteWithProvider} />);
 
     const messageButton = getByText('Send Message');
     fireEvent.press(messageButton);
@@ -130,9 +122,7 @@ describe('ProviderProfileScreen', () => {
       },
     } as any;
 
-    const { getByText } = render(
-      <ProviderProfileScreen navigation={mockNavigation} route={routeWithoutAvatar} />,
-    );
+    const { getByText } = render(<ProviderProfileScreen navigation={mockNavigation} route={routeWithoutAvatar} />);
 
     // Should render the first letter of the name
     expect(getByText('D')).toBeTruthy();

@@ -1,13 +1,6 @@
 import apiClient from '../infrastructure/apiClient';
 import { logger } from '@/utils/logger';
-import type {
-  Ad,
-  ListAdsParams,
-  ListAdsApiResponse,
-  GetAdApiResponse,
-  CreateAdData,
-  UpdateAdData,
-} from '@/types/ad';
+import type { Ad, ListAdsParams, ListAdsApiResponse, GetAdApiResponse, CreateAdData, UpdateAdData } from '@/types/ad';
 import type { ApiResponse } from '@/types/infrastructure';
 
 class AdService {
@@ -45,12 +38,7 @@ class AdService {
         queryParams.activeOnly = String(params.activeOnly);
       }
 
-      const response = await apiClient.get<ListAdsApiResponse>(
-        this.adsEndpoint,
-        queryParams,
-        true,
-        false,
-      );
+      const response = await apiClient.get<ListAdsApiResponse>(this.adsEndpoint, queryParams, true, false);
 
       logger.debug('Ads list response:', {
         page: params.page,

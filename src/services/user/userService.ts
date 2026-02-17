@@ -15,7 +15,7 @@ export interface User {
   personId?: string;
 }
 
-export interface GetProfileResponse extends ApiResponse<User> {}
+export type GetProfileResponse = ApiResponse<User>;
 
 class UserService {
   /**
@@ -23,12 +23,7 @@ class UserService {
    */
   async getProfile(): Promise<GetProfileResponse> {
     try {
-      const response = await apiClient.get<GetProfileResponse>(
-        '/api/auth/profile',
-        undefined,
-        true,
-        false,
-      );
+      const response = await apiClient.get<GetProfileResponse>('/api/auth/profile', undefined, true, false);
 
       logger.debug('User profile response:', {
         success: response.success,

@@ -19,13 +19,36 @@ interface SymptomSliderProps {
 const SymptomSlider: React.FC<SymptomSliderProps> = ({ selectedValue, onValueChange }) => {
   const { t } = useTranslation();
 
-  const SYMPTOM_OPTIONS: SymptomOption[] = useMemo(() => [
-    { value: 'grave', label: t('anamnesis.symptomLevelGrave'), sublabel: t('anamnesis.symptomsSublabel') },
-    { value: 'moderado', label: t('anamnesis.symptomLevelModerado'), sublabel: t('anamnesis.symptomsSublabel') },
-    { value: 'leve', label: t('anamnesis.symptomLevelLeve'), sublabel: t('anamnesis.symptomsSublabel') },
-    { value: 'sem', label: t('anamnesis.symptomLevelSem'), sublabel: t('anamnesis.symptomsSublabel') },
-    { value: 'plena', label: t('anamnesis.symptomLevelPlena'), sublabel: t('anamnesis.healthSublabel') },
-  ], [t]);
+  const SYMPTOM_OPTIONS: SymptomOption[] = useMemo(
+    () => [
+      {
+        value: 'grave',
+        label: t('anamnesis.symptomLevelGrave'),
+        sublabel: t('anamnesis.symptomsSublabel'),
+      },
+      {
+        value: 'moderado',
+        label: t('anamnesis.symptomLevelModerado'),
+        sublabel: t('anamnesis.symptomsSublabel'),
+      },
+      {
+        value: 'leve',
+        label: t('anamnesis.symptomLevelLeve'),
+        sublabel: t('anamnesis.symptomsSublabel'),
+      },
+      {
+        value: 'sem',
+        label: t('anamnesis.symptomLevelSem'),
+        sublabel: t('anamnesis.symptomsSublabel'),
+      },
+      {
+        value: 'plena',
+        label: t('anamnesis.symptomLevelPlena'),
+        sublabel: t('anamnesis.healthSublabel'),
+      },
+    ],
+    [t],
+  );
 
   return (
     <View style={styles.container}>

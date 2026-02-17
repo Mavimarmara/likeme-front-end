@@ -89,7 +89,7 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
       <SafeAreaView style={styles.container}>
         <Header showBackButton={true} onBackPress={() => navigation.goBack()} />
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <ActivityIndicator size="large" color={COLORS.PRIMARY.PURE} />
+          <ActivityIndicator size='large' color={COLORS.PRIMARY.PURE} />
           <Text style={{ marginTop: 16, color: '#666' }}>{t('anamnesis.loadingProgress')}</Text>
         </View>
       </SafeAreaView>
@@ -111,10 +111,10 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       {/* Background superior */}
-      <Image source={BackgroundWithGradient3} style={styles.backgroundTop} resizeMode="cover" />
+      <Image source={BackgroundWithGradient3} style={styles.backgroundTop} resizeMode='cover' />
 
       {/* Background inferior */}
-      <Image source={BackgroundWithGradient2} style={styles.backgroundBottom} resizeMode="cover" />
+      <Image source={BackgroundWithGradient2} style={styles.backgroundBottom} resizeMode='cover' />
 
       <Header showBackButton={true} onBackPress={() => navigation.goBack()} />
 
@@ -137,7 +137,7 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
             <ProgressBar
               current={progress?.physical.answered || 0}
               total={progress?.physical.total || 0}
-              label="Corpo"
+              label='Corpo'
               color={COLORS.PRIMARY.PURE}
             />
 
@@ -150,7 +150,7 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
                   : 'Continuar'
               }
               onPress={handleContinueBody}
-              size="medium"
+              size='medium'
             />
           </View>
         </View>
@@ -159,16 +159,14 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>{t('anamnesis.yourMind')}</Text>
           <Text style={styles.cardSubtitle}>{t('anamnesis.yourMindSubtitle')}</Text>
-          <Text style={styles.cardDescription}>
-            {t('anamnesis.yourMindDescription')}
-          </Text>
+          <Text style={styles.cardDescription}>{t('anamnesis.yourMindDescription')}</Text>
 
           <View style={styles.cardContent}>
             <ProgressBar
               current={progress?.mental.answered || 0}
               total={progress?.mental.total || 0}
               label={t('anamnesis.mind')}
-              color="#D794FF"
+              color='#D794FF'
             />
 
             <SecondaryButton
@@ -180,7 +178,7 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
                   : t('anamnesis.continue')
               }
               onPress={handleContinueMind}
-              size="medium"
+              size='medium'
             />
           </View>
         </View>
@@ -189,9 +187,7 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>{t('anamnesis.yourHabits')}</Text>
           <Text style={styles.cardSubtitle}>{t('anamnesis.yourHabitsSubtitle')}</Text>
-          <Text style={styles.cardDescription}>
-            {t('anamnesis.yourHabitsDescription')}
-          </Text>
+          <Text style={styles.cardDescription}>{t('anamnesis.yourHabitsDescription')}</Text>
 
           <View style={styles.habitsContainer}>
             {/* Movimento */}
@@ -212,7 +208,7 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
                     : t('anamnesis.continue')
                 }
                 onPress={handleUpdateMovement}
-                size="medium"
+                size='medium'
               />
               <View style={styles.habitDivider} />
             </View>
@@ -228,15 +224,14 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
               />
               <SecondaryButton
                 label={
-                  progress?.habits.espiritualidade.answered ===
-                  progress?.habits.espiritualidade.total
+                  progress?.habits.espiritualidade.answered === progress?.habits.espiritualidade.total
                     ? t('anamnesis.update')
                     : progress?.habits.espiritualidade.answered === 0
                     ? t('anamnesis.start')
                     : t('anamnesis.continue')
                 }
                 onPress={handleStartSpirituality}
-                size="medium"
+                size='medium'
               />
               <View style={styles.habitDivider} />
             </View>
@@ -248,7 +243,7 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
                 current={progress?.habits.sono.answered || 0}
                 total={progress?.habits.sono.total || 0}
                 label={t('anamnesis.sleep')}
-                color="#9B51E0"
+                color='#9B51E0'
               />
               <SecondaryButton
                 label={
@@ -259,7 +254,7 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
                     : t('anamnesis.continue')
                 }
                 onPress={handleContinueSleep}
-                size="medium"
+                size='medium'
               />
               <View style={styles.habitDivider} />
             </View>
@@ -271,7 +266,7 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
                 current={progress?.habits.nutricao.answered || 0}
                 total={progress?.habits.nutricao.total || 0}
                 label={t('anamnesis.nutrition')}
-                color="#6FCF97"
+                color='#6FCF97'
               />
               <SecondaryButton
                 label={
@@ -282,7 +277,7 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
                     : t('anamnesis.continue')
                 }
                 onPress={handleContinueNutrition}
-                size="medium"
+                size='medium'
               />
               <View style={styles.habitDivider} />
             </View>
@@ -294,7 +289,7 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
                 current={progress?.habits.estresse.answered || 0}
                 total={progress?.habits.estresse.total || 0}
                 label={t('anamnesis.stress')}
-                color="#F2994A"
+                color='#F2994A'
               />
               <SecondaryButton
                 label={
@@ -305,7 +300,7 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
                     : t('anamnesis.continue')
                 }
                 onPress={handleContinueStress}
-                size="medium"
+                size='medium'
               />
               <View style={styles.habitDivider} />
             </View>

@@ -53,7 +53,7 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
   const hasErrorRef = useRef(false);
 
   const loadCommunities = useCallback(
-    async (page: number, append: boolean = false) => {
+    async (page: number, append = false) => {
       if (isLoadingRef.current) {
         return;
       }

@@ -24,13 +24,13 @@ export const EventReminder: React.FC<EventReminderProps> = ({
     <View style={styles.container}>
       {onClose && (
         <TouchableOpacity style={styles.closeButton} onPress={onClose} activeOpacity={0.7}>
-          <Icon name="close" size={16} color="#001137" />
+          <Icon name='close' size={16} color='#001137' />
         </TouchableOpacity>
       )}
       <View style={styles.content}>
         <View style={styles.messageRow}>
           <View style={styles.iconButton}>
-            <Icon name="notifications" size={24} color="#001137" />
+            <Icon name='notifications' size={24} color='#001137' />
           </View>
           <Text style={styles.message}>{message}</Text>
         </View>

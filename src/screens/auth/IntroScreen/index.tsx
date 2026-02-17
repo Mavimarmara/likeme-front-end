@@ -31,25 +31,15 @@ const IntroScreen: React.FC<Props> = ({ navigation, route }) => {
           <Title
             title={t('auth.introGreeting', { userName })}
             subtitle={t('auth.introWelcome')}
-            variant="large"
-            rightAdornment={
-              <Image source={GradientSplash4} style={styles.titleAdornment} resizeMode="cover" />
-            }
+            variant='large'
+            rightAdornment={<Image source={GradientSplash4} style={styles.titleAdornment} resizeMode='cover' />}
           />
         </View>
 
         <View style={styles.buttonContainer}>
-          <ButtonGroup
-            style={{ position: 'relative', left: 0, right: 0, bottom: 0, paddingBottom: 0 }}
-          >
-            <PrimaryButton
-              label={t('auth.yesSure')}
-              onPress={handleShowPresentation}
-            />
-            <SecondaryButton
-              label={t('auth.noStraightToApp')}
-              onPress={handleSkipToPrivacyPolicies}
-            />
+          <ButtonGroup style={{ position: 'relative', left: 0, right: 0, bottom: 0, paddingBottom: 0 }}>
+            <PrimaryButton label={t('auth.yesSure')} onPress={handleShowPresentation} />
+            <SecondaryButton label={t('auth.noStraightToApp')} onPress={handleSkipToPrivacyPolicies} />
           </ButtonGroup>
         </View>
       </View>

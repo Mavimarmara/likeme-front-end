@@ -1,12 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  View,
-  KeyboardAvoidingView,
-  Platform,
-  Alert,
-  TextInput as RNTextInput,
-  Image,
-} from 'react-native';
+import { View, KeyboardAvoidingView, Platform, Alert, TextInput as RNTextInput, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header, Title, TextInput } from '@/components/ui';
 import { GradientSplash3 } from '@/assets';
@@ -68,10 +61,7 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        style={styles.keyboardAvoidingView}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      >
+      <KeyboardAvoidingView style={styles.keyboardAvoidingView} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <Header
           onBackPress={() => {
             logButtonClick({
@@ -79,7 +69,11 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
               button_label: 'back',
               action_name: 'go_back',
             });
-            logNavigation({ source_screen: 'welcome', destination_screen: 'unauthenticated', action_name: 'go_back' });
+            logNavigation({
+              source_screen: 'welcome',
+              destination_screen: 'unauthenticated',
+              action_name: 'go_back',
+            });
             navigation.goBack();
           }}
         />
@@ -88,10 +82,8 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
           <Title
             title={t('auth.welcomeTitle')}
             subtitle={t('auth.welcomeSubtitle')}
-            variant="large"
-            rightAdornment={
-              <Image source={GradientSplash3} style={styles.titleAdornment} resizeMode="cover" />
-            }
+            variant='large'
+            rightAdornment={<Image source={GradientSplash3} style={styles.titleAdornment} resizeMode='cover' />}
           />
 
           <View style={styles.inputContainer}>
@@ -101,7 +93,7 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
               onChangeText={setName}
               placeholder={t('auth.yourNamePlaceholder')}
               autoFocus
-              returnKeyType="next"
+              returnKeyType='next'
               onSubmitEditing={handleContinue}
               onPressIn={() => inputRef.current?.focus()}
             />

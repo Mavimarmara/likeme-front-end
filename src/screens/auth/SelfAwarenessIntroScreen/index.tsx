@@ -26,9 +26,7 @@ const SelfAwarenessIntroScreen: React.FC<Props> = ({ navigation }) => {
       <View style={styles.content}>
         <View style={styles.textContainer}>
           <Text style={styles.title}>{t('auth.selfAwarenessTitle')}</Text>
-          <Text style={styles.subtitle}>
-            {t('auth.selfAwarenessSubtitle')}
-          </Text>
+          <Text style={styles.subtitle}>{t('auth.selfAwarenessSubtitle')}</Text>
         </View>
 
         <View style={styles.footer}>

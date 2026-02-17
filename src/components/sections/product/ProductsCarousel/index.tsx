@@ -12,13 +12,7 @@ type Props = {
   onProductLike?: (product: Product) => void;
 };
 
-const ProductsCarousel: React.FC<Props> = ({
-  title,
-  subtitle,
-  products,
-  onProductPress,
-  onProductLike,
-}) => {
+const ProductsCarousel: React.FC<Props> = ({ title, subtitle, products, onProductPress, onProductLike }) => {
   if (!products || products.length === 0) {
     return null;
   }
@@ -35,14 +29,12 @@ const ProductsCarousel: React.FC<Props> = ({
       <View style={styles.carouselContainer}>
         <Carousel
           data={products}
-          renderItem={(product) => (
-            <ProductCard product={product} onPress={onProductPress} onLike={onProductLike} />
-          )}
+          renderItem={(product) => <ProductCard product={product} onPress={onProductPress} onLike={onProductLike} />}
           keyExtractor={(product) => product.id}
           itemWidth={170}
           gap={10}
           showPagination={true}
-          paginationSize="Large"
+          paginationSize='Large'
         />
       </View>
     </View>

@@ -42,12 +42,7 @@ const FilterButton: React.FC<Props> = ({
 
   return (
     <>
-      <SecondaryButton
-        label={label}
-        onPress={handlePress}
-        icon={icon}
-        iconPosition={iconPosition}
-      />
+      <SecondaryButton label={label} onPress={handlePress} icon={icon} iconPosition={iconPosition} />
       {hasModal && (
         <ModalBase visible={isModalVisible} onClose={handleClose} title={modalTitle}>
           {modalContent}

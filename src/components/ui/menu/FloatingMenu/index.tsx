@@ -35,7 +35,7 @@ const FloatingMenu: React.FC<Props> = ({ items, selectedId }) => {
           <IconButton
             onPress={handleHomePress}
             showBackground
-            backgroundTintColor="#0154F8CC"
+            backgroundTintColor='#0154F8CC'
             iconImageSource={TwoDotsIcon}
             iconImageStyle={styles.menuHomeIconImage}
             containerStyle={styles.menuHomeButtonContainer}
@@ -55,13 +55,11 @@ const FloatingMenu: React.FC<Props> = ({ items, selectedId }) => {
                 style={[styles.iconButton, isSelected && styles.iconButtonSelected]}
                 onPress={item.onPress}
                 activeOpacity={0.8}
-                accessibilityRole="button"
+                accessibilityRole='button'
                 accessibilityLabel={item.fullLabel || item.label}
               >
                 <Icon name={item.icon} size={20} color={isSelected ? '#0154F8' : '#001137'} />
-                {isSelected && (
-                  <Text style={styles.selectedLabel}>{item.fullLabel || item.label}</Text>
-                )}
+                {isSelected && <Text style={styles.selectedLabel}>{item.fullLabel || item.label}</Text>}
               </TouchableOpacity>
             );
           })}

@@ -20,7 +20,7 @@ export interface SortableByDateTime {
 export function sortByDateTime<T extends SortableByDateTime>(
   items: T[],
   order: SortOrder = 'desc',
-  dateTimeExtractor?: (item: T) => string | null | undefined
+  dateTimeExtractor?: (item: T) => string | null | undefined,
 ): T[] {
   const sorted = [...items].sort((a, b) => {
     const dateA = parseDateTime(a, dateTimeExtractor);
@@ -39,7 +39,7 @@ export function sortByDateTime<T extends SortableByDateTime>(
  */
 function parseDateTime<T extends SortableByDateTime>(
   item: T,
-  extractor?: (item: T) => string | null | undefined
+  extractor?: (item: T) => string | null | undefined,
 ): number {
   const dateTime = extractor ? extractor(item) : item.dateTime;
   if (!dateTime) {
@@ -62,13 +62,9 @@ function parseDateTime<T extends SortableByDateTime>(
 export function sortByDateField<T extends Record<string, any>>(
   items: T[],
   dateField: keyof T,
-  order: SortOrder = 'desc'
+  order: SortOrder = 'desc',
 ): T[] {
-  return sortByDateTime(
-    items as T[],
-    order,
-    (item) => item[dateField] as string | null | undefined
-  );
+  return sortByDateTime(items as T[], order, (item) => item[dateField] as string | null | undefined);
 }
 
 /**
@@ -81,7 +77,7 @@ export function sortByDateField<T extends Record<string, any>>(
 export function sortByDateObject<T extends Record<string, any>>(
   items: T[],
   dateField: keyof T,
-  order: SortOrder = 'desc'
+  order: SortOrder = 'desc',
 ): T[] {
   const sorted = [...items].sort((a, b) => {
     const dateA = a[dateField] as Date | null | undefined;

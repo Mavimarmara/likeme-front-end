@@ -228,8 +228,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
     } catch (error: any) {
       console.error('Error completing order:', error);
       // Extrair mensagem de erro (pode estar em error.message ou error.error)
-      const errorMessage =
-        error?.message || error?.error || t('checkout.orderError');
+      const errorMessage = error?.message || error?.error || t('checkout.orderError');
       Alert.alert(t('errors.error'), errorMessage);
     } finally {
       setIsProcessing(false);
@@ -301,11 +300,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
         {/* Stepper - Address, Payment, Order */}
         <View style={styles.stepperContainer}>
           <View style={styles.stepperItem}>
-            <Text
-              style={[
-                currentStep === 'address' ? styles.stepperLabelActive : styles.stepperLabelInactive,
-              ]}
-            >
+            <Text style={[currentStep === 'address' ? styles.stepperLabelActive : styles.stepperLabelInactive]}>
               {t('checkout.address')}
             </Text>
             <View
@@ -316,11 +311,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
             />
           </View>
           <View style={styles.stepperItem}>
-            <Text
-              style={[
-                currentStep === 'payment' ? styles.stepperLabelActive : styles.stepperLabelInactive,
-              ]}
-            >
+            <Text style={[currentStep === 'payment' ? styles.stepperLabelActive : styles.stepperLabelInactive]}>
               {t('checkout.payment')}
             </Text>
             <View
@@ -331,11 +322,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
             />
           </View>
           <View style={styles.stepperItem}>
-            <Text
-              style={[
-                currentStep === 'order' ? styles.stepperLabelActive : styles.stepperLabelInactive,
-              ]}
-            >
+            <Text style={[currentStep === 'order' ? styles.stepperLabelActive : styles.stepperLabelInactive]}>
               {t('checkout.order')}
             </Text>
             <View
@@ -417,7 +404,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
             label={t('common.continue')}
             onPress={handleContinue}
             style={styles.completeButton}
-            size="large"
+            size='large'
             loading={isProcessing}
             disabled={isProcessing}
           />
@@ -430,7 +417,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
             label={t('common.home')}
             onPress={handleHomePress}
             style={styles.completeButton}
-            size="large"
+            size='large'
           />
         </View>
       )}

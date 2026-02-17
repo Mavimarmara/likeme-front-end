@@ -83,18 +83,12 @@ jest.mock('@/components/ui', () => {
       </View>
     )),
     PrimaryButton: ({ label, onPress }: { label: string; onPress: () => void }) => (
-      <TouchableOpacity
-        onPress={onPress}
-        testID={`button-${label.toLowerCase().replace(/\s+/g, '-')}`}
-      >
+      <TouchableOpacity onPress={onPress} testID={`button-${label.toLowerCase().replace(/\s+/g, '-')}`}>
         <Text>{label}</Text>
       </TouchableOpacity>
     ),
     SecondaryButton: ({ label, onPress }: { label: string; onPress: () => void }) => (
-      <TouchableOpacity
-        onPress={onPress}
-        testID={`button-${label.toLowerCase().replace(/\s+/g, '-')}`}
-      >
+      <TouchableOpacity onPress={onPress} testID={`button-${label.toLowerCase().replace(/\s+/g, '-')}`}>
         <Text>{label}</Text>
       </TouchableOpacity>
     ),
@@ -126,9 +120,7 @@ describe('RegisterScreen', () => {
     const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
     const mockRoute = { params: { userName: 'John' } };
 
-    const { getByText, getByTestId } = render(
-      <RegisterScreen navigation={mockNavigation} route={mockRoute as any} />,
-    );
+    const { getByText, getByTestId } = render(<RegisterScreen navigation={mockNavigation} route={mockRoute as any} />);
 
     fireEvent.changeText(getByTestId('input-Nome completo'), 'John');
     fireEvent.press(getByText('Próximo'));
@@ -145,9 +137,7 @@ describe('RegisterScreen', () => {
     const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
     const mockRoute = { params: {} };
 
-    const { getByText, getByTestId } = render(
-      <RegisterScreen navigation={mockNavigation} route={mockRoute as any} />,
-    );
+    const { getByText, getByTestId } = render(<RegisterScreen navigation={mockNavigation} route={mockRoute as any} />);
 
     fireEvent.changeText(getByTestId('input-Nome completo'), 'Maria Silva');
     fireEvent.press(getByText('Próximo'));
@@ -164,9 +154,7 @@ describe('RegisterScreen', () => {
     const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
     const mockRoute = { params: { userName: 'John' } };
 
-    const { getByText, getByTestId } = render(
-      <RegisterScreen navigation={mockNavigation} route={mockRoute as any} />,
-    );
+    const { getByText, getByTestId } = render(<RegisterScreen navigation={mockNavigation} route={mockRoute as any} />);
 
     fireEvent.changeText(getByTestId('input-Nome completo'), 'John Doe');
     fireEvent.press(getByText('Próximo'));
@@ -198,9 +186,7 @@ describe('RegisterScreen', () => {
     const mockRoute = { params: {} };
     const alertSpy = jest.spyOn(Alert, 'alert');
 
-    const { getByText, getByTestId } = render(
-      <RegisterScreen navigation={mockNavigation} route={mockRoute as any} />,
-    );
+    const { getByText, getByTestId } = render(<RegisterScreen navigation={mockNavigation} route={mockRoute as any} />);
 
     fireEvent.changeText(getByTestId('input-Nome completo'), '');
     fireEvent.press(getByText('Próximo'));
@@ -217,9 +203,7 @@ describe('RegisterScreen', () => {
     const mockRoute = { params: {} };
     const alertSpy = jest.spyOn(Alert, 'alert');
 
-    const { getByText, getByTestId } = render(
-      <RegisterScreen navigation={mockNavigation} route={mockRoute as any} />,
-    );
+    const { getByText, getByTestId } = render(<RegisterScreen navigation={mockNavigation} route={mockRoute as any} />);
 
     fireEvent.changeText(getByTestId('input-Nome completo'), '   ');
     fireEvent.press(getByText('Próximo'));
@@ -234,9 +218,7 @@ describe('RegisterScreen', () => {
     const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
     const mockRoute = { params: {} };
 
-    const { getByText, getByTestId } = render(
-      <RegisterScreen navigation={mockNavigation} route={mockRoute as any} />,
-    );
+    const { getByText, getByTestId } = render(<RegisterScreen navigation={mockNavigation} route={mockRoute as any} />);
 
     fireEvent.changeText(getByTestId('input-Nome completo'), 'João');
     fireEvent.changeText(getByTestId('input-Idade'), '200');

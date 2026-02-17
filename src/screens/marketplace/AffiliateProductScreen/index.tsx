@@ -1,14 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  Image,
-  Linking,
-  Dimensions,
-  ImageBackground,
-} from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image, Linking, Dimensions, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -311,8 +302,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
 
       // Carregar outras opções relacionadas
       // Prioridade: ad.product > product carregado > params.product
-      const category =
-        ad?.product?.category || product?.category || route.params?.product?.category;
+      const category = ad?.product?.category || product?.category || route.params?.product?.category;
       if (category) {
         try {
           const relatedResponse = await productService.listProducts({
@@ -340,8 +330,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
 
   const handleBuyOnAmazon = () => {
     // Prioridade: ad.product > product carregado > product dos params
-    const externalUrl =
-      ad?.product?.externalUrl || product?.externalUrl || route.params?.product?.externalUrl;
+    const externalUrl = ad?.product?.externalUrl || product?.externalUrl || route.params?.product?.externalUrl;
     if (externalUrl) {
       Linking.openURL(externalUrl);
     }
@@ -350,8 +339,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
   // Prioridade: ad.product > product carregado > params.product
   const paramsProduct = route.params?.product;
   const displayTitle = ad?.product?.name || product?.name || paramsProduct?.title || 'Product';
-  const displayDescription =
-    ad?.product?.description || product?.description || paramsProduct?.description || '';
+  const displayDescription = ad?.product?.description || product?.description || paramsProduct?.description || '';
   const displayImage =
     ad?.product?.image ||
     product?.image ||
@@ -363,10 +351,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
   const productImages = useMemo(() => {
     const images: string[] = [];
     // Adicionar imagem principal se existir e não for placeholder
-    if (
-      displayImage &&
-      displayImage !== 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400'
-    ) {
+    if (displayImage && displayImage !== 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400') {
       images.push(displayImage);
     }
     // Se no futuro houver um campo images[] no produto, adicionar aqui:
@@ -376,8 +361,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
     return images;
   }, [displayImage]);
 
-  const productCategory =
-    ad?.product?.category || product?.category || paramsProduct?.category || 'Product';
+  const productCategory = ad?.product?.category || product?.category || paramsProduct?.category || 'Product';
 
   const tabs = useMemo(
     () => [
@@ -397,9 +381,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
           onPress={() => setActiveTab(tab.id)}
           activeOpacity={0.7}
         >
-          <Text style={[styles.tabText, activeTab === tab.id && styles.tabTextActive]}>
-            {tab.label}
-          </Text>
+          <Text style={[styles.tabText, activeTab === tab.id && styles.tabTextActive]}>{tab.label}</Text>
         </TouchableOpacity>
       ))}
     </View>
@@ -452,11 +434,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Hero Section with Image */}
         <View style={styles.heroSection}>
-          <ImageBackground
-            source={{ uri: displayImage }}
-            style={styles.heroImage}
-            imageStyle={styles.heroImageStyle}
-          >
+          <ImageBackground source={{ uri: displayImage }} style={styles.heroImage} imageStyle={styles.heroImageStyle}>
             <View style={styles.heroOverlay}>
               <LinearGradient
                 colors={['rgba(48, 48, 48, 0)', 'rgba(41, 41, 41, 1)']}
@@ -484,10 +462,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
         {productImages.length > 1 && (
           <View style={styles.paginationContainer}>
             {productImages.map((_, index) => (
-              <View
-                key={index}
-                style={[styles.paginationDot, index === 0 && styles.paginationDotActive]}
-              />
+              <View key={index} style={[styles.paginationDot, index === 0 && styles.paginationDotActive]} />
             ))}
           </View>
         )}
@@ -523,17 +498,12 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
 
           {/* Buy on Amazon Button */}
           <View style={styles.buySection}>
-            <TouchableOpacity
-              style={styles.buyButton}
-              onPress={handleBuyOnAmazon}
-              activeOpacity={0.7}
-            >
+            <TouchableOpacity style={styles.buyButton} onPress={handleBuyOnAmazon} activeOpacity={0.7}>
               <Text style={styles.buyButtonText}>{t('marketplace.buyOnAmazon')}</Text>
-              <Icon name="shopping-cart" size={24} color="#001137" />
+              <Icon name='shopping-cart' size={24} color='#001137' />
             </TouchableOpacity>
             <Text style={styles.disclaimerText}>
-              {t('marketplace.amazonDisclaimer')}{' '}
-              <Text style={styles.learnMoreLink}>{t('marketplace.learnMore')}</Text>
+              {t('marketplace.amazonDisclaimer')} <Text style={styles.learnMoreLink}>{t('marketplace.learnMore')}</Text>
             </Text>
           </View>
         </View>

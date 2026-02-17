@@ -24,10 +24,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
 
   const TAGLINES = [t('auth.taglineRhythm'), t('auth.taglineJourney'), t('auth.taglineRoutine')];
 
-  const gradientAssets = useMemo(
-    () => GRADIENT_SOURCES.map((source) => Image.resolveAssetSource(source)),
-    [],
-  );
+  const gradientAssets = useMemo(() => GRADIENT_SOURCES.map((source) => Image.resolveAssetSource(source)), []);
 
   const gradientHeights = useMemo(
     () =>
@@ -61,9 +58,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
     const run = async () => {
       const timing = (anim: Animated.Value, toValue: number, duration: number) =>
         new Promise<void>((resolve) => {
-          Animated.timing(anim, { toValue, duration, useNativeDriver: true }).start(() =>
-            resolve(),
-          );
+          Animated.timing(anim, { toValue, duration, useNativeDriver: true }).start(() => resolve());
         });
       const delay = (ms: number) => new Promise<void>((r) => setTimeout(() => r(), ms));
       const fadeTagToStep = (next: number, fadeOutMs = 180, fadeInMs = 900) =>
@@ -149,26 +144,18 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
               const asset = Image.resolveAssetSource(source);
               const scale = asset.width ? GRADIENT_STRIP_WIDTH / asset.width : 1;
               const heightScaled =
-                gradientHeights[index] ??
-                (asset.height ? asset.height * scale : GRADIENT_STRIP_HEIGHT);
+                gradientHeights[index] ?? (asset.height ? asset.height * scale : GRADIENT_STRIP_HEIGHT);
               const combinedStyle: ImageStyle = {
                 width: GRADIENT_STRIP_WIDTH,
                 height: heightScaled,
               };
-              return (
-                <AnimatedImage
-                  key={index}
-                  source={source}
-                  style={combinedStyle}
-                  resizeMode="cover"
-                />
-              );
+              return <AnimatedImage key={index} source={source} style={combinedStyle} resizeMode='cover' />;
             })}
           </Animated.View>
         </View>
 
         <View style={styles.like}>
-          <PartialLogo width="100%" height="100%" />
+          <PartialLogo width='100%' height='100%' />
         </View>
 
         <Animated.View style={[styles.taglineContainer, { opacity: taglineOpacity }]}>

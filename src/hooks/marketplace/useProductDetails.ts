@@ -70,21 +70,14 @@ export const useProductDetails = ({
     }
   }, [productId, navigation]);
 
-  const handleAmazonProductRedirect = async (
-    productData: ApiProduct,
-    productId: string,
-    nav: any
-  ) => {
+  const handleAmazonProductRedirect = async (productData: ApiProduct, productId: string, nav: any) => {
     const adsResponse = await adService.listAds({
       productId,
       activeOnly: true,
       limit: 1,
     });
 
-    const adId =
-      adsResponse.success && adsResponse.data?.ads.length > 0
-        ? adsResponse.data.ads[0].id
-        : undefined;
+    const adId = adsResponse.success && adsResponse.data?.ads.length > 0 ? adsResponse.data.ads[0].id : undefined;
 
     nav.replace('AffiliateProduct', {
       productId,
@@ -93,8 +86,7 @@ export const useProductDetails = ({
         id: productData.id,
         title: productData.name,
         price: formatPrice(productData.price),
-        image:
-          productData.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
+        image: productData.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
         category: productData.category,
         description: productData.description,
       },

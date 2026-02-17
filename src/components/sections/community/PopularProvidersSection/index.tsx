@@ -38,7 +38,7 @@ const PopularProvidersSection: React.FC<Props> = ({ providers, onProviderPress }
           >
             <View style={styles.avatarContainer}>
               {provider.avatar ? (
-                <Image source={{ uri: provider.avatar }} style={styles.avatar} resizeMode="cover" />
+                <Image source={{ uri: provider.avatar }} style={styles.avatar} resizeMode='cover' />
               ) : (
                 <View style={styles.avatarPlaceholder}>
                   <Text style={styles.avatarInitials}>

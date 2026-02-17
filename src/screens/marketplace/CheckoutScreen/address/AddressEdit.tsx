@@ -86,7 +86,7 @@ const AddressEdit: React.FC<AddressEditProps> = ({
               placeholder={t('cart.zipCodePlaceholder')}
               value={editData.zipCode}
               onChangeText={(text) => setEditData({ ...editData, zipCode: text })}
-              keyboardType="numeric"
+              keyboardType='numeric'
             />
           </View>
           <View style={styles.addressFieldHalf}>
@@ -95,7 +95,7 @@ const AddressEdit: React.FC<AddressEditProps> = ({
               placeholder={t('checkout.phonePlaceholder')}
               value={editData.phone}
               onChangeText={(text) => setEditData({ ...editData, phone: text })}
-              keyboardType="phone-pad"
+              keyboardType='phone-pad'
             />
           </View>
         </View>

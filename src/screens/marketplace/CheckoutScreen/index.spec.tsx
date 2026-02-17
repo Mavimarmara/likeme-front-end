@@ -17,7 +17,7 @@ jest.mock('@/components/ui/layout', () => {
   return {
     Header: ({ onBackPress }: any) => (
       <View>
-        <TouchableOpacity onPress={onBackPress} testID="back-button">
+        <TouchableOpacity onPress={onBackPress} testID='back-button'>
           <Text>Back</Text>
         </TouchableOpacity>
       </View>
@@ -62,11 +62,7 @@ jest.mock('./address', () => {
   const { View, Text } = require('react-native');
 
   function AddressForm(props: any) {
-    return React.createElement(
-      View,
-      { testID: 'address-form' },
-      React.createElement(Text, null, 'Address Form')
-    );
+    return React.createElement(View, { testID: 'address-form' }, React.createElement(Text, null, 'Address Form'));
   }
 
   return AddressForm;
@@ -89,11 +85,7 @@ jest.mock('./payment', () => {
       }
     });
 
-    return React.createElement(
-      View,
-      { testID: 'payment-form' },
-      React.createElement(Text, null, 'Payment Form')
-    );
+    return React.createElement(View, { testID: 'payment-form' }, React.createElement(Text, null, 'Payment Form'));
   }
 
   return PaymentForm;
@@ -104,25 +96,13 @@ jest.mock('./order', () => {
   const { View, Text } = require('react-native');
 
   const CartItemList = (props: any) =>
-    React.createElement(
-      View,
-      { testID: 'cart-item-list' },
-      React.createElement(Text, null, 'Cart Items')
-    );
+    React.createElement(View, { testID: 'cart-item-list' }, React.createElement(Text, null, 'Cart Items'));
 
   const OrderSummary = (props: any) =>
-    React.createElement(
-      View,
-      { testID: 'order-summary' },
-      React.createElement(Text, null, 'Order Summary')
-    );
+    React.createElement(View, { testID: 'order-summary' }, React.createElement(Text, null, 'Order Summary'));
 
   const OrderScreen = (props: any) =>
-    React.createElement(
-      View,
-      { testID: 'order-screen' },
-      React.createElement(Text, null, 'Order Screen')
-    );
+    React.createElement(View, { testID: 'order-screen' }, React.createElement(Text, null, 'Order Screen'));
 
   return {
     CartItemList,
@@ -217,9 +197,7 @@ describe('CheckoutScreen', () => {
   });
 
   it('renders correctly', async () => {
-    const { getByTestId } = render(
-      <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />
-    );
+    const { getByTestId } = render(<CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(getByTestId('address-form')).toBeTruthy();
@@ -235,9 +213,7 @@ describe('CheckoutScreen', () => {
   });
 
   it('shows address form on initial render', async () => {
-    const { getByTestId } = render(
-      <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />
-    );
+    const { getByTestId } = render(<CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(getByTestId('address-form')).toBeTruthy();
@@ -245,9 +221,7 @@ describe('CheckoutScreen', () => {
   });
 
   it('handles back button press', async () => {
-    const { getByTestId } = render(
-      <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />
-    );
+    const { getByTestId } = render(<CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(getByTestId('back-button')).toBeTruthy();
@@ -261,7 +235,7 @@ describe('CheckoutScreen', () => {
 
   it('advances to payment step when Continue is pressed from address step', async () => {
     const { getByText, getByTestId } = render(
-      <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />
+      <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />,
     );
 
     await waitFor(() => {
@@ -278,7 +252,7 @@ describe('CheckoutScreen', () => {
 
   it('advances to order step when Continue is pressed from payment step', async () => {
     const { getByText, getByTestId, queryByTestId } = render(
-      <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />
+      <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />,
     );
 
     await waitFor(() => {
@@ -298,7 +272,7 @@ describe('CheckoutScreen', () => {
       () => {
         // Aguardar que o createOrder seja chamado (indicando que os dados foram preenchidos)
       },
-      { timeout: 2000 }
+      { timeout: 2000 },
     );
 
     // Depois avança para order
@@ -310,13 +284,13 @@ describe('CheckoutScreen', () => {
         expect(queryByTestId('payment-form')).toBeNull();
         expect(queryByTestId('address-form')).toBeNull();
       },
-      { timeout: 3000 }
+      { timeout: 3000 },
     );
   });
 
   it('navigates back when Continue is pressed from order step', async () => {
     const { getByText, getByTestId, queryByTestId } = render(
-      <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />
+      <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />,
     );
 
     await waitFor(() => {
@@ -336,7 +310,7 @@ describe('CheckoutScreen', () => {
       () => {
         expect(mockOrderService.createOrder).toHaveBeenCalled();
       },
-      { timeout: 3000 }
+      { timeout: 3000 },
     );
 
     // Na etapa order, Continue deve navegar para Home (não goBack)
@@ -346,9 +320,7 @@ describe('CheckoutScreen', () => {
   });
 
   it('saves address when AddressForm calls onSaveAddress', async () => {
-    const { getByTestId } = render(
-      <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />
-    );
+    const { getByTestId } = render(<CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(getByTestId('address-form')).toBeTruthy();
@@ -372,9 +344,7 @@ describe('CheckoutScreen', () => {
 
     mockStorageService.getCartItems.mockResolvedValue(itemsWithHigherPrice);
 
-    const { getByTestId } = render(
-      <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />
-    );
+    const { getByTestId } = render(<CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(getByTestId('address-form')).toBeTruthy();
@@ -388,7 +358,7 @@ describe('CheckoutScreen', () => {
   describe('Order creation with credit card', () => {
     it('creates order with cardData and structured billingAddress when payment method is credit_card', async () => {
       const { getByText, getByTestId } = render(
-        <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />
+        <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />,
       );
 
       await waitFor(() => {
@@ -418,7 +388,7 @@ describe('CheckoutScreen', () => {
           // Verificar se createOrder foi chamado
           expect(mockOrderService.createOrder).toHaveBeenCalled();
         },
-        { timeout: 3000 }
+        { timeout: 3000 },
       );
 
       // Verificar o formato dos dados enviados
@@ -438,7 +408,7 @@ describe('CheckoutScreen', () => {
 
     it('validates card data before creating order', async () => {
       const { getByText, getByTestId } = render(
-        <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />
+        <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />,
       );
 
       await waitFor(() => {
@@ -466,7 +436,7 @@ describe('CheckoutScreen', () => {
 
     it('clears cart after successful order creation', async () => {
       const { getByText, getByTestId } = render(
-        <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />
+        <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />,
       );
 
       await waitFor(() => {
@@ -489,7 +459,7 @@ describe('CheckoutScreen', () => {
           expect(mockOrderService.createOrder).toHaveBeenCalled();
           expect(mockStorageService.clearCart).toHaveBeenCalled();
         },
-        { timeout: 3000 }
+        { timeout: 3000 },
       );
     });
 
@@ -497,7 +467,7 @@ describe('CheckoutScreen', () => {
       mockOrderService.createOrder.mockRejectedValue(new Error('Failed to create order'));
 
       const { getByText, getByTestId } = render(
-        <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />
+        <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />,
       );
 
       await waitFor(() => {
@@ -519,13 +489,13 @@ describe('CheckoutScreen', () => {
         () => {
           expect(mockAlert).toHaveBeenCalled();
         },
-        { timeout: 3000 }
+        { timeout: 3000 },
       );
     });
 
     it('validates expiry date format (MMYY)', async () => {
       const { getByText, getByTestId } = render(
-        <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />
+        <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />,
       );
 
       await waitFor(() => {
@@ -553,7 +523,7 @@ describe('CheckoutScreen', () => {
   describe('Address formatting', () => {
     it('formats billing address correctly for credit card payments', async () => {
       const { getByText, getByTestId } = render(
-        <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />
+        <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />,
       );
 
       await waitFor(() => {
@@ -575,7 +545,7 @@ describe('CheckoutScreen', () => {
         () => {
           expect(mockOrderService.createOrder).toHaveBeenCalled();
         },
-        { timeout: 3000 }
+        { timeout: 3000 },
       );
 
       const orderData = mockOrderService.createOrder.mock.calls[0][0];
@@ -596,7 +566,7 @@ describe('CheckoutScreen', () => {
     it('extracts street number from address line correctly', async () => {
       // Teste indireto através da criação de pedido
       const { getByText, getByTestId } = render(
-        <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />
+        <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />,
       );
 
       await waitFor(() => {
@@ -618,7 +588,7 @@ describe('CheckoutScreen', () => {
         () => {
           expect(mockOrderService.createOrder).toHaveBeenCalled();
         },
-        { timeout: 3000 }
+        { timeout: 3000 },
       );
 
       const orderData = mockOrderService.createOrder.mock.calls[0][0];
@@ -633,7 +603,7 @@ describe('CheckoutScreen', () => {
 
     it('extracts complement from address line correctly', async () => {
       const { getByText, getByTestId } = render(
-        <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />
+        <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />,
       );
 
       await waitFor(() => {
@@ -655,7 +625,7 @@ describe('CheckoutScreen', () => {
         () => {
           expect(mockOrderService.createOrder).toHaveBeenCalled();
         },
-        { timeout: 3000 }
+        { timeout: 3000 },
       );
 
       const orderData = mockOrderService.createOrder.mock.calls[0][0];
@@ -672,7 +642,7 @@ describe('CheckoutScreen', () => {
   describe('Card data formatting', () => {
     it('formats card data correctly for credit card payments', async () => {
       const { getByText, getByTestId } = render(
-        <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />
+        <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />,
       );
 
       await waitFor(() => {
@@ -694,7 +664,7 @@ describe('CheckoutScreen', () => {
         () => {
           expect(mockOrderService.createOrder).toHaveBeenCalled();
         },
-        { timeout: 3000 }
+        { timeout: 3000 },
       );
 
       const orderData = mockOrderService.createOrder.mock.calls[0][0];
@@ -712,7 +682,7 @@ describe('CheckoutScreen', () => {
 
     it('removes spaces from card number', async () => {
       const { getByText, getByTestId } = render(
-        <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />
+        <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />,
       );
 
       await waitFor(() => {
@@ -734,7 +704,7 @@ describe('CheckoutScreen', () => {
         () => {
           expect(mockOrderService.createOrder).toHaveBeenCalled();
         },
-        { timeout: 3000 }
+        { timeout: 3000 },
       );
 
       const orderData = mockOrderService.createOrder.mock.calls[0][0];
@@ -751,7 +721,7 @@ describe('CheckoutScreen', () => {
       mockStorageService.getCartItems.mockResolvedValue([]);
 
       const { getByText, getByTestId } = render(
-        <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />
+        <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />,
       );
 
       await waitFor(() => {
@@ -773,7 +743,7 @@ describe('CheckoutScreen', () => {
         () => {
           expect(mockAlert).toHaveBeenCalledWith('Erro', 'Seu carrinho está vazio');
         },
-        { timeout: 3000 }
+        { timeout: 3000 },
       );
     });
 
@@ -784,7 +754,7 @@ describe('CheckoutScreen', () => {
       });
 
       const { getByText, getByTestId } = render(
-        <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />
+        <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />,
       );
 
       await waitFor(() => {
@@ -806,7 +776,7 @@ describe('CheckoutScreen', () => {
         () => {
           expect(mockAlert).toHaveBeenCalled();
         },
-        { timeout: 3000 }
+        { timeout: 3000 },
       );
     });
   });

@@ -212,10 +212,12 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
     try {
       const mindPct = anamnesisScores?.mentalPercentage ?? 0;
       const bodyPct = anamnesisScores?.physicalPercentage ?? 0;
-      const message = t('avatar.shareMessage', { mindPercentage: mindPct, bodyPercentage: bodyPct });
+      const message = t('avatar.shareMessage', {
+        mindPercentage: mindPct,
+        bodyPercentage: bodyPct,
+      });
       await Share.share({ message });
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const handleSeeMarker = (marker?: UserMarker) => {
@@ -270,7 +272,18 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
         if (markersResponse.success && markersResponse.data) {
           setMarkers(markersResponse.data);
         } else {
-          const fallbackIds = ['activity', 'connection', 'environment', 'nutrition', 'purpose-vision', 'self-esteem', 'sleep', 'smile', 'spirituality', 'stress'] as const;
+          const fallbackIds = [
+            'activity',
+            'connection',
+            'environment',
+            'nutrition',
+            'purpose-vision',
+            'self-esteem',
+            'sleep',
+            'smile',
+            'spirituality',
+            'stress',
+          ] as const;
           setMarkers(
             fallbackIds.map((id) => ({
               id,
@@ -282,7 +295,18 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
         }
       } catch (error) {
         console.error('Error loading markers:', error);
-        const fallbackIds = ['activity', 'connection', 'environment', 'nutrition', 'purpose-vision', 'self-esteem', 'sleep', 'smile', 'spirituality', 'stress'] as const;
+        const fallbackIds = [
+          'activity',
+          'connection',
+          'environment',
+          'nutrition',
+          'purpose-vision',
+          'self-esteem',
+          'sleep',
+          'smile',
+          'spirituality',
+          'stress',
+        ] as const;
         setMarkers(
           fallbackIds.map((id) => ({
             id,
@@ -335,12 +359,8 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor={COLORS.BACKGROUND} />
-      <Header
-        showBackButton={true}
-        onBackPress={handleBackPress}
-        customLogo={<ProgressHeaderLogo />}
-      />
+      <StatusBar barStyle='dark-content' backgroundColor={COLORS.BACKGROUND} />
+      <Header showBackButton={true} onBackPress={handleBackPress} customLogo={<ProgressHeaderLogo />} />
       <View style={styles.content}>
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.topSection}>
@@ -374,23 +394,16 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
                         activeOpacity={0.7}
                       >
                         <Text style={styles.markerName}>{marker.name}</Text>
-                        <Icon name="chevron-right" size={20} color={COLORS.TEXT} />
+                        <Icon name='chevron-right' size={20} color={COLORS.TEXT} />
                       </TouchableOpacity>
                       <View style={styles.markerContent} onLayout={onMarkerRowLayout}>
-                        <View
-                          style={[
-                            styles.markerProgressContainer,
-                            markerRowWidth > 0 && { flex: undefined },
-                          ]}
-                        >
+                        <View style={[styles.markerProgressContainer, markerRowWidth > 0 && { flex: undefined }]}>
                           <ProgressBar
                             current={Math.max(marker.percentage, 1)}
                             total={100}
                             color={getMarkerColor(marker.id)}
                             gradientColors={
-                              hasMarkerGradient(marker.id)
-                                ? getMarkerGradient(marker.id) || undefined
-                                : undefined
+                              hasMarkerGradient(marker.id) ? getMarkerGradient(marker.id) || undefined : undefined
                             }
                             height={30}
                             showRemaining={false}
@@ -398,8 +411,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
                               markerRowWidth > 0
                                 ? Math.max(
                                     8,
-                                    (markerRowWidth - TREND_ICON_WIDTH) *
-                                      (Math.max(marker.percentage, 1) / 100),
+                                    (markerRowWidth - TREND_ICON_WIDTH) * (Math.max(marker.percentage, 1) / 100),
                                   )
                                 : undefined
                             }
@@ -411,8 +423,8 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
                               marker.trend === 'increasing'
                                 ? 'trending-up'
                                 : marker.trend === 'decreasing'
-                                  ? 'trending-down'
-                                  : 'remove'
+                                ? 'trending-down'
+                                : 'remove'
                             }
                             size={20}
                             color={COLORS.TEXT_LIGHT}
@@ -427,7 +439,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
 
             <View style={styles.shareButtonContainer}>
               <IconButton
-                icon="share"
+                icon='share'
                 onPress={handleSharePress}
                 label={t('avatar.share')}
                 backgroundTintColor={COLORS.SECONDARY.PURE}
@@ -438,15 +450,12 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
           <CTACard
             title={t('avatar.insights')}
             highlightText={t('avatar.didYouRunMarathon')}
-            description={[
-              t('avatar.greatForBody'),
-              t('avatar.regenerativeTraining'),
-            ]}
+            description={[t('avatar.greatForBody'), t('avatar.regenerativeTraining')]}
             primaryButtonLabel={t('avatar.seeMarker')}
             primaryButtonOnPress={() => handleSeeMarker(markers[0])}
             secondaryButtonLabel={t('avatar.share')}
             secondaryButtonOnPress={handleSharePress}
-            secondaryButtonIcon="share"
+            secondaryButtonIcon='share'
             backgroundColor={COLORS.SECONDARY.PURE}
           />
 
@@ -466,9 +475,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
                         total={100}
                         color={getMarkerColor(card.markerId)}
                         gradientColors={
-                          hasMarkerGradient(card.markerId)
-                            ? getMarkerGradient(card.markerId) || undefined
-                            : undefined
+                          hasMarkerGradient(card.markerId) ? getMarkerGradient(card.markerId) || undefined : undefined
                         }
                         height={30}
                         showRemaining={false}
@@ -480,21 +487,14 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
                 itemWidth={307}
                 gap={8}
                 showPagination={true}
-                paginationSize="Large"
+                paginationSize='Large'
               />
             </View>
           )}
 
-          <NextEventsSection
-            events={events}
-            onEventPress={handleEventPress}
-            onEventSave={handleEventSave}
-          />
+          <NextEventsSection events={events} onEventPress={handleEventPress} onEventSave={handleEventSave} />
 
-          <PopularProvidersSection
-            providers={popularProviders}
-            onProviderPress={handleProviderPress}
-          />
+          <PopularProvidersSection providers={popularProviders} onProviderPress={handleProviderPress} />
 
           {recommendedProducts && recommendedProducts.length > 0 && (
             <View style={styles.productsSection}>
@@ -517,13 +517,13 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
             <SecondaryButton
               label={t('avatar.addWidgets')}
               onPress={() => console.log('Add new widgets')}
-              size="large"
+              size='large'
               style={styles.addWidgetsButton}
             />
           </View>
         </ScrollView>
       </View>
-      <FloatingMenu items={menuItems} selectedId="home" />
+      <FloatingMenu items={menuItems} selectedId='home' />
     </SafeAreaView>
   );
 };

@@ -15,10 +15,7 @@ interface UseMarketplaceAdsReturn {
   loadAds: () => Promise<void>;
 }
 
-export const useMarketplaceAds = ({
-  selectedCategory,
-  page,
-}: UseMarketplaceAdsParams): UseMarketplaceAdsReturn => {
+export const useMarketplaceAds = ({ selectedCategory, page }: UseMarketplaceAdsParams): UseMarketplaceAdsReturn => {
   const [ads, setAds] = useState<Ad[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);

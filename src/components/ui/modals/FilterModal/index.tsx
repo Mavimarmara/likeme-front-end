@@ -53,17 +53,13 @@ const DATE_OPTIONS: FilterOption[] = [
 ];
 
 const FilterModal: React.FC<Props> = ({ visible, onClose, onSave, selectedFilters = {} }) => {
-  const [selectedPostTypes, setSelectedPostTypes] = useState<string[]>(
-    selectedFilters.postType || [],
-  );
+  const [selectedPostTypes, setSelectedPostTypes] = useState<string[]>(selectedFilters.postType || []);
   const [selectedSortBy, setSelectedSortBy] = useState<SortByFilter | ''>(selectedFilters.sortBy || '');
   const [selectedDate, setSelectedDate] = useState<PublicationDateFilter | ''>(selectedFilters.publicationDate || '');
   const [selectedAuthor, setSelectedAuthor] = useState<string>(selectedFilters.author || '');
 
   const handlePostTypeToggle = (id: string) => {
-    setSelectedPostTypes((prev) =>
-      prev.includes(id) ? prev.filter((type) => type !== id) : [...prev, id],
-    );
+    setSelectedPostTypes((prev) => (prev.includes(id) ? prev.filter((type) => type !== id) : [...prev, id]));
   };
 
   const handleSave = () => {
@@ -81,15 +77,13 @@ const FilterModal: React.FC<Props> = ({ visible, onClose, onSave, selectedFilter
     options: FilterOption[],
     selected: string | string[],
     onSelect: (id: string) => void,
-    multiSelect: boolean = false,
+    multiSelect = false,
   ) => (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>{title}</Text>
       <View style={styles.optionsGrid}>
         {options.map((option) => {
-          const isSelected = multiSelect
-            ? (selected as string[]).includes(option.id)
-            : selected === option.id;
+          const isSelected = multiSelect ? (selected as string[]).includes(option.id) : selected === option.id;
 
           return (
             <SelectButton
@@ -105,15 +99,14 @@ const FilterModal: React.FC<Props> = ({ visible, onClose, onSave, selectedFilter
     </View>
   );
 
-  const isSaveDisabled =
-    selectedPostTypes.length === 0 && !selectedSortBy && !selectedDate && !selectedAuthor;
+  const isSaveDisabled = selectedPostTypes.length === 0 && !selectedSortBy && !selectedDate && !selectedAuthor;
 
   return (
     <ModalBase
       visible={visible}
       onClose={onClose}
-      title="Filter"
-      footer={<SubmitButton label="Save" onPress={handleSave} disabled={isSaveDisabled} />}
+      title='Filter'
+      footer={<SubmitButton label='Save' onPress={handleSave} disabled={isSaveDisabled} />}
     >
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {renderSection('Tipo de post', POST_TYPES, selectedPostTypes, handlePostTypeToggle, true)}
@@ -139,7 +132,7 @@ const FilterModal: React.FC<Props> = ({ visible, onClose, onSave, selectedFilter
           <Text style={styles.sectionTitle}>Autor</Text>
           <RNTextInput
             style={styles.authorInput}
-            placeholder="Digite o nome do autor"
+            placeholder='Digite o nome do autor'
             placeholderTextColor={COLORS.TEXT_LIGHT}
             value={selectedAuthor}
             onChangeText={setSelectedAuthor}

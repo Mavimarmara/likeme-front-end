@@ -1,14 +1,8 @@
 import apiClient from '../infrastructure/apiClient';
-import {
-  PersonalObjectivesResponse,
-  PersonalObjectivesParams,
-  PersonalObjective,
-} from '@/types/personalObjectives';
+import { PersonalObjectivesResponse, PersonalObjectivesParams, PersonalObjective } from '@/types/personalObjectives';
 
 class PersonalObjectivesService {
-  async getPersonalObjectives(
-    params: PersonalObjectivesParams = {},
-  ): Promise<PersonalObjectivesResponse> {
+  async getPersonalObjectives(params: PersonalObjectivesParams = {}): Promise<PersonalObjectivesResponse> {
     const { page = 1, limit = 10 } = params;
 
     return apiClient.get<PersonalObjectivesResponse>('/api/personal-objectives', { page, limit });

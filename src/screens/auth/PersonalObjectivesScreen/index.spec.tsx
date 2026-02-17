@@ -54,28 +54,12 @@ jest.mock('@/components/ui', () => {
   return {
     Header: () => null,
     Title: ({ title }: { title: string }) => <Text>{title}</Text>,
-    Chip: ({
-      label,
-      onPress,
-      selected,
-    }: {
-      label: string;
-      onPress: () => void;
-      selected: boolean;
-    }) => (
+    Chip: ({ label, onPress, selected }: { label: string; onPress: () => void; selected: boolean }) => (
       <TouchableOpacity onPress={onPress} testID={`chip-${label}`}>
         <Text>{label}</Text>
       </TouchableOpacity>
     ),
-    PrimaryButton: ({
-      label,
-      onPress,
-      disabled,
-    }: {
-      label: string;
-      onPress: () => void;
-      disabled?: boolean;
-    }) => (
+    PrimaryButton: ({ label, onPress, disabled }: { label: string; onPress: () => void; disabled?: boolean }) => (
       <TouchableOpacity
         onPress={onPress}
         disabled={disabled}
@@ -84,15 +68,7 @@ jest.mock('@/components/ui', () => {
         <Text>{label}</Text>
       </TouchableOpacity>
     ),
-    SecondaryButton: ({
-      label,
-      onPress,
-      disabled,
-    }: {
-      label: string;
-      onPress: () => void;
-      disabled?: boolean;
-    }) => (
+    SecondaryButton: ({ label, onPress, disabled }: { label: string; onPress: () => void; disabled?: boolean }) => (
       <TouchableOpacity
         onPress={onPress}
         disabled={disabled}
@@ -162,9 +138,7 @@ describe('PersonalObjectivesScreen', () => {
       },
     };
 
-    const { getByText } = render(
-      <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />,
-    );
+    const { getByText } = render(<PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(getByText('John,')).toBeTruthy();
@@ -243,9 +217,7 @@ describe('PersonalObjectivesScreen', () => {
       },
     };
 
-    const { getByText } = render(
-      <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />,
-    );
+    const { getByText } = render(<PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(getByText('Sono')).toBeTruthy();
@@ -264,9 +236,7 @@ describe('PersonalObjectivesScreen', () => {
       },
     };
 
-    const { getByTestId } = render(
-      <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />,
-    );
+    const { getByTestId } = render(<PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(getByTestId('chip-Sono')).toBeTruthy();
@@ -284,17 +254,12 @@ describe('PersonalObjectivesScreen', () => {
     const mockRoute = { params: { userName: 'John' } };
     const alertSpy = jest.spyOn(require('react-native').Alert, 'alert');
 
-    const { getByText } = render(
-      <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />,
-    );
+    const { getByText } = render(<PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />);
 
     await waitFor(() => expect(getByText('Próximo')).toBeTruthy());
     fireEvent.press(getByText('Próximo'));
 
-    expect(alertSpy).toHaveBeenCalledWith(
-      'Campo obrigatório',
-      'Selecione ao menos um objetivo para continuar.',
-    );
+    expect(alertSpy).toHaveBeenCalledWith('Campo obrigatório', 'Selecione ao menos um objetivo para continuar.');
     expect(getServices().storageService.setSelectedObjectivesIds).not.toHaveBeenCalled();
     expect(mockNavigation.navigate).not.toHaveBeenCalled();
 

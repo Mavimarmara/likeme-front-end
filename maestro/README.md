@@ -51,14 +51,17 @@ Os testes usam `openLink` com a URL do Expo (formato `exp://IP:PORT`).
 Para exportar todas as telas do app como imagens PNG:
 
 **Telas de auth (sem login):**
+
 ```bash
 npm run export:screenshots
 ```
 
 **Telas do app autenticado (Summary, Atividades, Marketplace, etc.):**
+
 1. Execute o app e faça login manualmente
 2. Complete o onboarding
 3. Feche o app e execute:
+
 ```bash
 npm run export:screenshots:app
 ```

@@ -3,12 +3,14 @@
 ## ⚠️ Quando Você PRECISA de Keystore de Produção
 
 **SIM, você precisa de keystore de produção para:**
+
 - ✅ **Internal Testing** na Google Play
 - ✅ **Alpha/Beta Testing** na Google Play
 - ✅ **Production** na Google Play
 - ✅ Qualquer upload na Google Play Console
 
 **NÃO precisa de keystore de produção para:**
+
 - ❌ Testes locais (instalar APK diretamente no dispositivo)
 - ❌ Desenvolvimento local
 - ❌ Testes com emulador
@@ -41,6 +43,7 @@ keytool -genkeypair -v -storetype PKCS12 -keystore likeme-release.keystore \
 ```
 
 **Exemplo com senha real:**
+
 ```bash
 keytool -genkeypair -v -storetype PKCS12 -keystore likeme-release.keystore \
   -alias likeme-key-alias \
@@ -61,6 +64,7 @@ O comando vai pedir algumas informações:
 - **Código do país**: Código de 2 letras (ex: "BR")
 
 **Exemplo de respostas:**
+
 ```
 Nome e sobrenome: LikeMe App
 Unidade organizacional: Development
@@ -132,6 +136,7 @@ npm run build:android:production
 ```
 
 Se o build funcionar, o AAB será gerado em:
+
 ```
 android/app/build/outputs/bundle/release/app-release.aab
 ```
@@ -141,6 +146,7 @@ android/app/build/outputs/bundle/release/app-release.aab
 ### Erro: "keytool: command not found"
 
 Certifique-se de que o Java está instalado e no PATH:
+
 ```bash
 export JAVA_HOME=$(/usr/libexec/java_home -v 17)
 export PATH="$JAVA_HOME/bin:$PATH"

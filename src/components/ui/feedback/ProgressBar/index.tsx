@@ -33,10 +33,7 @@ const ProgressBar: React.FC<Props> = ({
   }, [current, total]);
 
   const showLabel = useMemo(() => label.trim().length > 0, [label]);
-  const useGradient = useMemo(
-    () => gradientColors !== undefined && gradientColors.length > 0,
-    [gradientColors]
-  );
+  const useGradient = useMemo(() => gradientColors !== undefined && gradientColors.length > 0, [gradientColors]);
 
   const useFixedWidth = containerWidth !== undefined && containerWidth > 0;
   const fillStyle = useMemo(
@@ -44,12 +41,12 @@ const ProgressBar: React.FC<Props> = ({
       width: useFixedWidth ? ('100%' as const) : (`${percentage}%` as const),
       height,
     }),
-    [percentage, height, useFixedWidth]
+    [percentage, height, useFixedWidth],
   );
 
   const containerStyle = useMemo(
     () => (useFixedWidth ? { width: containerWidth } : undefined),
-    [useFixedWidth, containerWidth]
+    [useFixedWidth, containerWidth],
   );
 
   const renderProgressFill = () => {
@@ -76,9 +73,7 @@ const ProgressBar: React.FC<Props> = ({
       )}
       <View style={[styles.progressContainer, { height }, containerStyle]}>
         {showRemaining ? (
-          <View style={[styles.progressBackground, { height, backgroundColor }]}>
-            {renderProgressFill()}
-          </View>
+          <View style={[styles.progressBackground, { height, backgroundColor }]}>{renderProgressFill()}</View>
         ) : (
           renderProgressFill()
         )}

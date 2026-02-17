@@ -1,10 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { anamnesisService, storageService, userService } from '@/services';
 import type { AnamnesisQuestion } from '@/types/anamnesis';
-import type {
-  UseAnamnesisQuestionnaireParams,
-  UseAnamnesisQuestionnaireReturn,
-} from '@/types/anamnesis';
+import type { UseAnamnesisQuestionnaireParams, UseAnamnesisQuestionnaireReturn } from '@/types/anamnesis';
 
 export function useAnamnesisQuestionnaire<T>(
   params: UseAnamnesisQuestionnaireParams<T>,
@@ -113,9 +110,7 @@ export function useAnamnesisQuestionnaire<T>(
   const complete = useCallback(async () => {
     const unanswered = questions.filter((q) => answers[q.id] === undefined).length;
     if (unanswered > 0) {
-      throw new Error(
-        `Responda todas as perguntas antes de finalizar (${unanswered} sem resposta).`,
-      );
+      throw new Error(`Responda todas as perguntas antes de finalizar (${unanswered} sem resposta).`);
     }
     setCompleting(true);
     try {

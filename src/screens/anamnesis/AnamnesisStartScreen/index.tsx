@@ -28,10 +28,10 @@ const AnamnesisStartScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       {/* Background superior */}
-      <Image source={BackgroundWithGradient3} style={styles.backgroundTop} resizeMode="cover" />
+      <Image source={BackgroundWithGradient3} style={styles.backgroundTop} resizeMode='cover' />
 
       {/* Background inferior */}
-      <Image source={BackgroundWithGradient2} style={styles.backgroundBottom} resizeMode="cover" />
+      <Image source={BackgroundWithGradient2} style={styles.backgroundBottom} resizeMode='cover' />
 
       <Header showBackButton={true} onBackPress={() => navigation.goBack()} />
 
@@ -39,11 +39,7 @@ const AnamnesisStartScreen: React.FC<Props> = ({ navigation }) => {
         {/* Imagem decorativa rotacionada 270 graus e centralizada */}
         <View style={styles.decorativeImageContainer}>
           <View style={styles.decorativeImageWrapper}>
-            <Image
-              source={{ uri: IMAGE_DECORATIVE }}
-              style={styles.decorativeImage}
-              resizeMode="contain"
-            />
+            <Image source={{ uri: IMAGE_DECORATIVE }} style={styles.decorativeImage} resizeMode='contain' />
           </View>
         </View>
 
@@ -51,9 +47,7 @@ const AnamnesisStartScreen: React.FC<Props> = ({ navigation }) => {
         <View style={styles.mainContent}>
           <View style={styles.textContainer}>
             <Text style={styles.title}>{t('anamnesis.startTitle')}</Text>
-            <Text style={styles.description}>
-              {t('anamnesis.startDescription')}
-            </Text>
+            <Text style={styles.description}>{t('anamnesis.startDescription')}</Text>
           </View>
 
           {/* Botões */}
@@ -61,13 +55,13 @@ const AnamnesisStartScreen: React.FC<Props> = ({ navigation }) => {
             <PrimaryButton
               label={t('anamnesis.startButton')}
               onPress={handleStartAnamnesis}
-              size="large"
+              size='large'
               style={styles.primaryButton}
             />
             <SecondaryButton
               label={t('common.skip')}
               onPress={handleSkip}
-              size="large"
+              size='large'
               style={styles.secondaryButton}
             />
           </View>

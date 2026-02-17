@@ -53,7 +53,7 @@ const PostsSection: React.FC<Props> = ({
     if (!loadingMore) return null;
     return (
       <View style={styles.loadingFooter}>
-        <ActivityIndicator size="small" color="#4CAF50" />
+        <ActivityIndicator size='small' color='#4CAF50' />
       </View>
     );
   };
@@ -61,11 +61,7 @@ const PostsSection: React.FC<Props> = ({
   const renderEmpty = () => {
     if (loading) return null;
 
-    const emptyMessage = error
-      ? `Erro: ${error}`
-      : posts.length === 0
-      ? 'Nenhum post encontrado'
-      : null;
+    const emptyMessage = error ? `Erro: ${error}` : posts.length === 0 ? 'Nenhum post encontrado' : null;
 
     if (!emptyMessage) return null;
 
@@ -83,7 +79,7 @@ const PostsSection: React.FC<Props> = ({
       </View>
       <View style={styles.searchBarContainer}>
         <SearchBar
-          placeholder="Search"
+          placeholder='Search'
           value={searchQuery}
           onChangeText={onSearchChange}
           onSearchPress={onSearchPress}
@@ -98,7 +94,7 @@ const PostsSection: React.FC<Props> = ({
     return (
       <View style={styles.container}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#4CAF50" />
+          <ActivityIndicator size='large' color='#4CAF50' />
         </View>
       </View>
     );

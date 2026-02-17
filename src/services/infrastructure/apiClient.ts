@@ -43,8 +43,7 @@ class ApiClient {
 
       const errorData = await response.json().catch(() => ({}));
       // Extrair mensagem de erro do backend (pode estar em errorData.message ou errorData.error)
-      const errorMessage =
-        errorData.message || errorData.error || `HTTP error! status: ${response.status}`;
+      const errorMessage = errorData.message || errorData.error || `HTTP error! status: ${response.status}`;
       const error: ApiError = {
         message: errorMessage,
         status: response.status,
@@ -75,8 +74,7 @@ class ApiClient {
       }
 
       const data = await response.json().catch(() => null);
-      const newToken =
-        data?.data?.token || data?.token || data?.data?.accessToken || data?.accessToken;
+      const newToken = data?.data?.token || data?.token || data?.data?.accessToken || data?.accessToken;
 
       if (!newToken) {
         return false;
@@ -96,10 +94,7 @@ class ApiClient {
     }
   }
 
-  private async requestWithRefresh(
-    execute: () => Promise<Response>,
-    includeAuth: boolean,
-  ): Promise<Response> {
+  private async requestWithRefresh(execute: () => Promise<Response>, includeAuth: boolean): Promise<Response> {
     // Medida paliativa: sempre tentar renovar o token antes de fazer requisições autenticadas
     if (includeAuth) {
       await this.refreshBackendToken();
@@ -123,12 +118,7 @@ class ApiClient {
     return response;
   }
 
-  async get<T>(
-    endpoint: string,
-    params?: Record<string, any>,
-    includeAuth = true,
-    useVersion = false,
-  ): Promise<T> {
+  async get<T>(endpoint: string, params?: Record<string, any>, includeAuth = true, useVersion = false): Promise<T> {
     try {
       let url = `${this.baseUrl}${endpoint}`;
 

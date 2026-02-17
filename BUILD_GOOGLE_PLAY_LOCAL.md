@@ -117,7 +117,7 @@ O arquivo `android/app/build.gradle.patch` contém as instruções. Aplique manu
 
 1. Abra `android/app/build.gradle`
 2. Adicione o código de carregamento do keystore antes de `signingConfigs`
-3. Adicione o `signingConfigs.release` 
+3. Adicione o `signingConfigs.release`
 4. Mude `signingConfig signingConfigs.debug` para `signingConfig signingConfigs.release` no `buildTypes.release`
 
 Ou use o script que já aplica automaticamente (se o patch estiver configurado).
@@ -183,7 +183,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     // ... outras configurações ...
-    
+
     signingConfigs {
         debug {
             storeFile file('debug.keystore')
@@ -200,7 +200,7 @@ android {
             }
         }
     }
-    
+
     buildTypes {
         release {
             signingConfig signingConfigs.release
@@ -215,6 +215,7 @@ android {
 Para atualizar a versão:
 
 1. Edite `app.config.js`:
+
    ```javascript
    version: '1.0.1',  // Versão do app
    ```
@@ -250,6 +251,7 @@ Verifique se as senhas no `keystore.properties` estão corretas
 ### Erro: "Java version mismatch"
 
 Certifique-se de usar Java 17:
+
 ```bash
 export JAVA_HOME=$(/usr/libexec/java_home -v 17)
 ```
@@ -257,6 +259,7 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 17)
 ### Build muito lento
 
 Adicione ao `android/gradle.properties`:
+
 ```properties
 org.gradle.daemon=true
 org.gradle.parallel=true
@@ -282,15 +285,16 @@ jarsigner -verify -verbose -certs android/app/build/outputs/apk/release/app-rele
 ## 🔒 Segurança
 
 **NUNCA commite**:
+
 - `keystore.properties`
 - `likeme-release.keystore`
 - Qualquer arquivo com senhas
 
 Adicione ao `.gitignore`:
+
 ```
 android/keystore.properties
 android/app/*.keystore
 android/app/*.jks
 !android/app/debug.keystore
 ```
-

@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-  ImageBackground,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, ScrollView, Image, TouchableOpacity, ImageBackground, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -115,7 +107,7 @@ const ChatScreen: React.FC<Props> = () => {
 
     return (
       <View style={styles.avatarPlaceholder}>
-        <Icon name="person" size={32} color={COLORS.TEXT_LIGHT} />
+        <Icon name='person' size={32} color={COLORS.TEXT_LIGHT} />
       </View>
     );
   };
@@ -127,18 +119,14 @@ const ChatScreen: React.FC<Props> = () => {
       <View style={styles.headerContainer}>
         <View style={styles.header}>
           {/* Hamburger Menu with Avatar */}
-          <TouchableOpacity
-            style={styles.menuButton}
-            onPress={() => navigation.goBack()}
-            activeOpacity={0.7}
-          >
+          <TouchableOpacity style={styles.menuButton} onPress={() => navigation.goBack()} activeOpacity={0.7}>
             <ImageBackground
               source={BackgroundIconButton}
               style={styles.menuButtonBackground}
               imageStyle={styles.menuButtonImage}
             >
               <View style={styles.menuContent}>
-                <Icon name="menu" size={16} color="#001137" style={styles.menuIcon} />
+                <Icon name='menu' size={16} color='#001137' style={styles.menuIcon} />
                 <View style={styles.menuAvatar}>
                   <Image
                     source={{
@@ -164,7 +152,7 @@ const ChatScreen: React.FC<Props> = () => {
                 style={styles.iconButtonBackground}
                 imageStyle={styles.iconButtonImage}
               >
-                <Icon name="notifications" size={20} color="#001137" />
+                <Icon name='notifications' size={20} color='#001137' />
               </ImageBackground>
             </TouchableOpacity>
             <TouchableOpacity style={styles.iconButton} activeOpacity={0.7}>
@@ -173,7 +161,7 @@ const ChatScreen: React.FC<Props> = () => {
                 style={styles.iconButtonBackground}
                 imageStyle={styles.iconButtonImage}
               >
-                <Icon name="shopping-cart" size={20} color="#001137" />
+                <Icon name='shopping-cart' size={20} color='#001137' />
               </ImageBackground>
             </TouchableOpacity>
           </View>
@@ -204,10 +192,7 @@ const ChatScreen: React.FC<Props> = () => {
           {conversations.map((conversation, index) => (
             <TouchableOpacity
               key={conversation.id}
-              style={[
-                styles.conversationItem,
-                index < conversations.length - 1 && styles.conversationItemBorder,
-              ]}
+              style={[styles.conversationItem, index < conversations.length - 1 && styles.conversationItemBorder]}
               onPress={() => handleConversationPress(conversation)}
               activeOpacity={0.7}
             >
@@ -233,9 +218,7 @@ const ChatScreen: React.FC<Props> = () => {
                     <Text
                       style={[
                         styles.conversationMessage,
-                        conversation.unreadCount &&
-                          conversation.unreadCount > 0 &&
-                          styles.conversationMessageUnread,
+                        conversation.unreadCount && conversation.unreadCount > 0 && styles.conversationMessageUnread,
                       ]}
                       numberOfLines={2}
                     >

@@ -5,10 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header } from '@/components/ui';
 import { PrimaryButton } from '@/components/ui/buttons';
 import { useAnamnesisQuestionnaire, useTranslation } from '@/hooks';
-import {
-  buildSingleChoiceAnswerKey,
-  parseSingleChoiceAnswerKey,
-} from '@/hooks/anamnesis/anamnesisAnswerMappers';
+import { buildSingleChoiceAnswerKey, parseSingleChoiceAnswerKey } from '@/hooks/anamnesis/anamnesisAnswerMappers';
 import anamnesisService from '@/services/anamnesis/anamnesisService';
 import { COLORS } from '@/constants';
 import { useAnalyticsScreen } from '@/analytics';
@@ -125,23 +122,16 @@ const AnamnesisHabitsScreen: React.FC<Props> = ({ navigation, route }) => {
     try {
       const status = await anamnesisService.getCompletionStatus();
       if (!status.allSectionsComplete) {
-        const sections = status.incompleteSections
-          .map((s) => `${s.sectionName} (${s.answered}/${s.total})`)
-          .join(', ');
-        Alert.alert(
-          t('anamnesis.incompleteSectionsTitle'),
-          t('anamnesis.incompleteSectionsMessage', { sections }),
-          [{ text: t('common.ok') }],
-        );
+        const sections = status.incompleteSections.map((s) => `${s.sectionName} (${s.answered}/${s.total})`).join(', ');
+        Alert.alert(t('anamnesis.incompleteSectionsTitle'), t('anamnesis.incompleteSectionsMessage', { sections }), [
+          { text: t('common.ok') },
+        ]);
         return;
       }
       await complete();
       navigation.navigate('AnamnesisCompletion');
     } catch (err) {
-      Alert.alert(
-        t('errors.error'),
-        err instanceof Error ? err.message : t('anamnesis.finalizationError'),
-      );
+      Alert.alert(t('errors.error'), err instanceof Error ? err.message : t('anamnesis.finalizationError'));
     }
   };
 
@@ -156,12 +146,8 @@ const AnamnesisHabitsScreen: React.FC<Props> = ({ navigation, route }) => {
       >
         <View style={styles.headerText}>
           <Text style={styles.screenTitle}>{t('anamnesis.habitsTitle')}</Text>
-          <Text style={styles.screenSubtitle}>
-            {t('anamnesis.habitsSubtitle')}
-          </Text>
-          <Text style={styles.screenDescription}>
-            {t('anamnesis.habitsDescription')}
-          </Text>
+          <Text style={styles.screenSubtitle}>{t('anamnesis.habitsSubtitle')}</Text>
+          <Text style={styles.screenDescription}>{t('anamnesis.habitsDescription')}</Text>
         </View>
 
         <View style={styles.card}>
@@ -169,22 +155,16 @@ const AnamnesisHabitsScreen: React.FC<Props> = ({ navigation, route }) => {
             <Text style={styles.cardTopicTitle}>{title}</Text>
             <View style={styles.cardTopRow}>
               <Text style={styles.cardProgress}>{progressText}</Text>
-              <TouchableOpacity
-                onPress={handleClose}
-                activeOpacity={0.7}
-                style={styles.closeButton}
-              >
-                <Icon name="close" size={18} color={COLORS.TEXT} />
+              <TouchableOpacity onPress={handleClose} activeOpacity={0.7} style={styles.closeButton}>
+                <Icon name='close' size={18} color={COLORS.TEXT} />
               </TouchableOpacity>
             </View>
-            <Text style={styles.cardQuestionText}>
-              {getQuestionBodyText(currentQuestion?.text ?? null, title)}
-            </Text>
+            <Text style={styles.cardQuestionText}>{getQuestionBodyText(currentQuestion?.text ?? null, title)}</Text>
           </View>
 
           {loading ? (
             <View style={styles.loadingCard}>
-              <ActivityIndicator size="large" color={COLORS.TEXT} />
+              <ActivityIndicator size='large' color={COLORS.TEXT} />
             </View>
           ) : totalSteps === 0 ? (
             <View style={styles.emptyState}>
@@ -214,18 +194,22 @@ const AnamnesisHabitsScreen: React.FC<Props> = ({ navigation, route }) => {
             <PrimaryButton
               label={t('common.back')}
               onPress={handleBack}
-              variant="light"
-              icon="chevron-left"
-              iconPosition="left"
+              variant='light'
+              icon='chevron-left'
+              iconPosition='left'
               style={styles.backButton}
             />
             <PrimaryButton
               label={
-                totalSteps === 0 ? t('common.close') : stepIndex === totalSteps - 1 ? t('common.finalize') : t('common.next')
+                totalSteps === 0
+                  ? t('common.close')
+                  : stepIndex === totalSteps - 1
+                  ? t('common.finalize')
+                  : t('common.next')
               }
               onPress={handleNext}
-              icon="chevron-right"
-              iconPosition="right"
+              icon='chevron-right'
+              iconPosition='right'
               disabled={completing}
               style={styles.nextButton}
             />

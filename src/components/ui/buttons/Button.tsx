@@ -17,13 +17,7 @@ const Button: React.FC<ButtonProps> = ({
   style,
   ...props
 }) => {
-  const buttonStyle = [
-    styles.base,
-    styles[variant],
-    styles[size],
-    fullWidth && styles.fullWidth,
-    style,
-  ];
+  const buttonStyle = [styles.base, styles[variant], styles[size], fullWidth && styles.fullWidth, style];
 
   const textStyle = [styles.text, styles[`${variant}Text`], styles[`${size}Text`]];
 

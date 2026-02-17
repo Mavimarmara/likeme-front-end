@@ -38,12 +38,7 @@ class ProductService {
         queryParams.search = params.search;
       }
 
-      const response = await apiClient.get<ListProductsApiResponse>(
-        this.productsEndpoint,
-        queryParams,
-        true,
-        false,
-      );
+      const response = await apiClient.get<ListProductsApiResponse>(this.productsEndpoint, queryParams, true, false);
 
       logger.debug('Products list response:', {
         page: params.page,
@@ -84,11 +79,7 @@ class ProductService {
 
   async createProduct(data: CreateProductData): Promise<ApiResponse<Product>> {
     try {
-      const response = await apiClient.post<ApiResponse<Product>>(
-        this.productsEndpoint,
-        data,
-        true,
-      );
+      const response = await apiClient.post<ApiResponse<Product>>(this.productsEndpoint, data, true);
 
       logger.debug('Product created:', {
         productId: response.data?.id,

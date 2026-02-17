@@ -8,15 +8,15 @@ import { logger } from '@/utils/logger';
  * Quando filtrar por um prefixo em português, também busca pelo equivalente em inglês.
  */
 const KEY_PREFIX_ALIASES: Record<string, string[]> = {
-  'habits_movimento': ['habits_movimento', 'habits_activity'],
-  'habits_espiritualidade': ['habits_espiritualidade', 'habits_spirituality'],
-  'habits_sono': ['habits_sono', 'habits_sleep'],
-  'habits_nutricao': ['habits_nutricao', 'habits_nutrition'],
-  'habits_estresse': ['habits_estresse', 'habits_stress'],
-  'habits_autoestima': ['habits_autoestima', 'habits_self-esteem'],
-  'habits_relacionamentos': ['habits_relacionamentos', 'habits_connection'],
-  'habits_saude_bucal': ['habits_saude_bucal', 'habits_smile'],
-  'habits_proposito': ['habits_proposito', 'habits_purpose-vision'],
+  habits_movimento: ['habits_movimento', 'habits_activity'],
+  habits_espiritualidade: ['habits_espiritualidade', 'habits_spirituality'],
+  habits_sono: ['habits_sono', 'habits_sleep'],
+  habits_nutricao: ['habits_nutricao', 'habits_nutrition'],
+  habits_estresse: ['habits_estresse', 'habits_stress'],
+  habits_autoestima: ['habits_autoestima', 'habits_self-esteem'],
+  habits_relacionamentos: ['habits_relacionamentos', 'habits_connection'],
+  habits_saude_bucal: ['habits_saude_bucal', 'habits_smile'],
+  habits_proposito: ['habits_proposito', 'habits_purpose-vision'],
 };
 
 export interface CategoryProgress {
@@ -99,18 +99,12 @@ export const useAnamnesisProgress = () => {
 
       const habitsProgress = {
         movimento: calculateCategoryProgress(filterByPrefix('habits_movimento'), 'movimento'),
-        espiritualidade: calculateCategoryProgress(
-          filterByPrefix('habits_espiritualidade'),
-          'espiritualidade',
-        ),
+        espiritualidade: calculateCategoryProgress(filterByPrefix('habits_espiritualidade'), 'espiritualidade'),
         sono: calculateCategoryProgress(filterByPrefix('habits_sono'), 'sono'),
         nutricao: calculateCategoryProgress(filterByPrefix('habits_nutricao'), 'nutricao'),
         estresse: calculateCategoryProgress(filterByPrefix('habits_estresse'), 'estresse'),
         autoestima: calculateCategoryProgress(filterByPrefix('habits_autoestima'), 'autoestima'),
-        relacionamentos: calculateCategoryProgress(
-          filterByPrefix('habits_relacionamentos'),
-          'relacionamentos',
-        ),
+        relacionamentos: calculateCategoryProgress(filterByPrefix('habits_relacionamentos'), 'relacionamentos'),
         saude_bucal: calculateCategoryProgress(filterByPrefix('habits_saude_bucal'), 'saude_bucal'),
         proposito: calculateCategoryProgress(filterByPrefix('habits_proposito'), 'proposito'),
       };

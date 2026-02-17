@@ -24,18 +24,14 @@ const ModuleAccordion: React.FC<Props> = ({ module, onToggle }) => {
         <View style={styles.headerLeft}>
           <View style={styles.checkContainer}>
             {module.isCompleted ? (
-              <Icon name="check-circle" size={26} color="#b2b2b2" />
+              <Icon name='check-circle' size={26} color='#b2b2b2' />
             ) : (
               <View style={styles.checkCircle} />
             )}
           </View>
           <Text style={styles.moduleTitle}>{module.title}</Text>
         </View>
-        <Icon
-          name={isExpanded ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
-          size={28}
-          color="#001137"
-        />
+        <Icon name={isExpanded ? 'keyboard-arrow-up' : 'keyboard-arrow-down'} size={28} color='#001137' />
       </TouchableOpacity>
 
       {isExpanded && (

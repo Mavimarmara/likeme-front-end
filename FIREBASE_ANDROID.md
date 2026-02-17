@@ -9,15 +9,18 @@ O **iOS** já está configurado com `GoogleService-Info.plist`. O **Android** es
 2. Na visão geral do projeto, clique em **Adicionar app** (ícone Android) ou em **Project settings** → **Your apps** e depois **Add app** → **Android**.
 
 3. Preencha:
-   - **Android package name:** `com.likeme.app`  
+
+   - **Android package name:** `com.likeme.app`
    - (Nome do app e SHA-1 são opcionais para só Analytics.)
 
 4. Clique em **Register app** e na próxima tela em **Download google-services.json**.
 
 5. Salve o arquivo baixado na **raiz** do projeto `likeme-front-end`, com o nome exato:
+
    ```
    google-services.json
    ```
+
    Ou seja, no mesmo nível de `GoogleService-Info.plist` e `app.config.js`.
 
 6. Rode de novo o prebuild para o plugin copiar o arquivo para o projeto Android:

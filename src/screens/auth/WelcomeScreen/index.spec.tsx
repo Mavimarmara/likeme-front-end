@@ -26,18 +26,16 @@ jest.mock('@/components/ui', () => {
         {subtitle && <Text>{subtitle}</Text>}
       </View>
     ),
-    TextInput: React.forwardRef(
-      ({ placeholder, onChangeText, value, onSubmitEditing }: any, ref: any) => (
-        <RNTextInput
-          ref={ref}
-          placeholder={placeholder}
-          onChangeText={onChangeText}
-          value={value}
-          onSubmitEditing={onSubmitEditing}
-          testID={`input-${placeholder}`}
-        />
-      ),
-    ),
+    TextInput: React.forwardRef(({ placeholder, onChangeText, value, onSubmitEditing }: any, ref: any) => (
+      <RNTextInput
+        ref={ref}
+        placeholder={placeholder}
+        onChangeText={onChangeText}
+        value={value}
+        onSubmitEditing={onSubmitEditing}
+        testID={`input-${placeholder}`}
+      />
+    )),
   };
 });
 
@@ -52,9 +50,7 @@ describe('WelcomeScreen', () => {
       goBack: jest.fn(),
     };
 
-    const { getByText, getByPlaceholderText } = render(
-      <WelcomeScreen navigation={mockNavigation} />,
-    );
+    const { getByText, getByPlaceholderText } = render(<WelcomeScreen navigation={mockNavigation} />);
 
     expect(getByText('Welcome!')).toBeTruthy();
     expect(getByText('How can I call you?')).toBeTruthy();
@@ -90,10 +86,7 @@ describe('WelcomeScreen', () => {
     fireEvent.changeText(input, '');
     fireEvent(input, 'submitEditing');
 
-    expect(alertSpy).toHaveBeenCalledWith(
-      'Nome obrigatório',
-      'Por favor, digite seu nome para continuar.',
-    );
+    expect(alertSpy).toHaveBeenCalledWith('Nome obrigatório', 'Por favor, digite seu nome para continuar.');
     expect(mockNavigation.navigate).not.toHaveBeenCalled();
 
     alertSpy.mockRestore();
@@ -113,10 +106,7 @@ describe('WelcomeScreen', () => {
     fireEvent.changeText(input, '   ');
     fireEvent(input, 'submitEditing');
 
-    expect(alertSpy).toHaveBeenCalledWith(
-      'Nome obrigatório',
-      'Por favor, digite seu nome para continuar.',
-    );
+    expect(alertSpy).toHaveBeenCalledWith('Nome obrigatório', 'Por favor, digite seu nome para continuar.');
     expect(mockNavigation.navigate).not.toHaveBeenCalled();
 
     alertSpy.mockRestore();

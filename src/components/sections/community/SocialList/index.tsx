@@ -181,18 +181,12 @@ const SocialList: React.FC<Props> = ({
         />
 
         {loadingMore && (
-          <View style={styles.loadingFooter}>
-            {/* Loading indicator será renderizado aqui se necessário */}
-          </View>
+          <View style={styles.loadingFooter}>{/* Loading indicator será renderizado aqui se necessário */}</View>
         )}
 
         {events && events.length > 0 && (
           <View style={styles.sectionContainer}>
-            <NextEventsSection
-              events={events}
-              onEventPress={onEventPress}
-              onEventSave={onEventSave}
-            />
+            <NextEventsSection events={events} onEventPress={onEventPress} onEventSave={onEventSave} />
           </View>
         )}
 

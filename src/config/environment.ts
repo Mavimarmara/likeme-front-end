@@ -25,9 +25,7 @@ const getEnvVar = (key: string, defaultValue?: string): string => {
   if (!defaultValue || defaultValue.includes('your-')) {
     // Usa console.warn apenas se console estiver disponível
     if (typeof console !== 'undefined' && console.warn) {
-      console.warn(
-        `[ENV] ⚠️ Variável ${key} não encontrada. Usando default: ${defaultValue || 'vazio'}`,
-      );
+      console.warn(`[ENV] ⚠️ Variável ${key} não encontrada. Usando default: ${defaultValue || 'vazio'}`);
     }
   }
 

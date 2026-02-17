@@ -19,17 +19,12 @@ const EventCard: React.FC<Props> = ({ event, onPress, onSave }) => {
     return (
       <View style={styles.avatarsContainer}>
         {visibleParticipants.map((participant, index) => (
-          <View
-            key={participant.id}
-            style={[styles.avatarWrapper, index > 0 && styles.avatarOverlap]}
-          >
+          <View key={participant.id} style={[styles.avatarWrapper, index > 0 && styles.avatarOverlap]}>
             {participant.avatar ? (
               <Image source={{ uri: participant.avatar }} style={styles.avatar} />
             ) : (
               <View style={[styles.avatar, styles.avatarPlaceholder]}>
-                <Text style={styles.avatarInitial}>
-                  {participant.name?.charAt(0).toUpperCase() || 'A'}
-                </Text>
+                <Text style={styles.avatarInitial}>{participant.name?.charAt(0).toUpperCase() || 'A'}</Text>
               </View>
             )}
           </View>
@@ -53,12 +48,8 @@ const EventCard: React.FC<Props> = ({ event, onPress, onSave }) => {
     <View style={styles.topSectionContent}>
       {renderAvatars()}
 
-      <TouchableOpacity
-        style={styles.saveButton}
-        onPress={() => onSave?.(event)}
-        activeOpacity={0.7}
-      >
-        <Icon name="bookmark-border" size={18} color="#001137" />
+      <TouchableOpacity style={styles.saveButton} onPress={() => onSave?.(event)} activeOpacity={0.7}>
+        <Icon name='bookmark-border' size={18} color='#001137' />
         <Text style={styles.saveButtonText}>Save</Text>
       </TouchableOpacity>
     </View>

@@ -49,7 +49,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
-          <Title title={t('profile.title')} variant="large" />
+          <Title title={t('profile.title')} variant='large' />
 
           {user && (
             <View style={styles.userInfo}>
@@ -82,7 +82,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
           )}
         </View>
       </ScrollView>
-      <FloatingMenu items={menuItems} selectedId="profile" />
+      <FloatingMenu items={menuItems} selectedId='profile' />
     </SafeAreaView>
   );
 };

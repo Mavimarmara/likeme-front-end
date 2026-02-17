@@ -3,12 +3,7 @@ import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { Toggle, Header } from '@/components/ui';
-import {
-  SocialList,
-  ProgramsList,
-  LiveBannerData,
-  ProviderChat,
-} from '@/components/sections/community';
+import { SocialList, ProgramsList, LiveBannerData, ProviderChat } from '@/components/sections/community';
 import { ProductsCarousel, Product, PlansCarousel, Plan } from '@/components/sections/product';
 import { Background } from '@/components/ui/layout';
 import { FloatingMenu } from '@/components/ui/menu';
@@ -25,10 +20,8 @@ import { useAnalyticsScreen } from '@/analytics';
 
 type CommunityMode = 'Social' | 'Programs';
 
-const getToggleOptions = (t: (key: string) => string): readonly [CommunityMode, CommunityMode] => [
-  t('community.social') as CommunityMode,
-  t('community.programs') as CommunityMode,
-] as const;
+const getToggleOptions = (t: (key: string) => string): readonly [CommunityMode, CommunityMode] =>
+  [t('community.social') as CommunityMode, t('community.programs') as CommunityMode] as const;
 
 const mockProgramDetails: ProgramDetail = {
   id: '1',
@@ -57,12 +50,7 @@ const mockProgramDetails: ProgramDetail = {
           type: 'survey',
           title: '1.2 Activity',
           question: 'What motivated you to purchase this protocol?',
-          options: [
-            'Bad sleep Habits',
-            'Insomnia',
-            'Medical Recommendation',
-            "I'd like to learn more about sleep",
-          ],
+          options: ['Bad sleep Habits', 'Insomnia', 'Medical Recommendation', "I'd like to learn more about sleep"],
           isSubmitted: true,
         },
       ],
@@ -91,12 +79,7 @@ const mockProgramDetails: ProgramDetail = {
           type: 'survey',
           title: '1.2 Activity',
           question: 'What motivated you to purchase this protocol?',
-          options: [
-            'Bad sleep Habits',
-            'Insomnia',
-            'Medical Recommendation',
-            "I'd like to learn more about sleep",
-          ],
+          options: ['Bad sleep Habits', 'Insomnia', 'Medical Recommendation', "I'd like to learn more about sleep"],
           isSubmitted: false,
         },
       ],
@@ -200,10 +183,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     }
   }, [selectedMode, programs, selectedProgramId]);
 
-  const feedFilterParams = useMemo(
-    () => mapFiltersToFeedParams(selectedFilters),
-    [selectedFilters],
-  );
+  const feedFilterParams = useMemo(() => mapFiltersToFeedParams(selectedFilters), [selectedFilters]);
 
   const { posts, loading, loadingMore, error, hasMore, loadMore, search } = useUserFeed({
     enabled: selectedMode === 'Social',
@@ -245,10 +225,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
           communityService.getChannels({ types: 'community' }),
         ]);
 
-        if (
-          liveAndBroadcastChannelsResponse.success &&
-          liveAndBroadcastChannelsResponse.data?.channels
-        ) {
+        if (liveAndBroadcastChannelsResponse.success && liveAndBroadcastChannelsResponse.data?.channels) {
           const liveAndBroadcastChannels = liveAndBroadcastChannelsResponse.data.channels;
 
           // Map channels to events
@@ -290,8 +267,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
 
             setProviderChat({
               id: firstCommunityChannel.channelId,
-              providerName:
-                firstCommunityChannel.displayName || (metadata.displayName as string) || 'Provider',
+              providerName: firstCommunityChannel.displayName || (metadata.displayName as string) || 'Provider',
               providerAvatar: avatarUrl,
               lastMessage: (metadata.lastMessage as string) || 'Hello! How can I help you today?',
               timestamp: (metadata.timestamp as string) || 'Now',
@@ -386,11 +362,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
       <Header showBackButton={false} showCartButton={true} onCartPress={handleCartPress} />
       <View style={styles.content}>
         <View style={styles.toggleContainer}>
-          <Toggle<CommunityMode>
-            options={toggleOptions}
-            selected={selectedMode}
-            onSelect={handleModeSelect}
-          />
+          <Toggle<CommunityMode> options={toggleOptions} selected={selectedMode} onSelect={handleModeSelect} />
         </View>
 
         {selectedMode === 'Social' ? (
@@ -435,7 +407,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
           />
         )}
       </View>
-      <FloatingMenu items={menuItems} selectedId="community" />
+      <FloatingMenu items={menuItems} selectedId='community' />
     </SafeAreaView>
   );
 };

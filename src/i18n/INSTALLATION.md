@@ -34,7 +34,7 @@ import { useTranslation } from '@/hooks/i18n';
 
 const TestTranslation = () => {
   const { t } = useTranslation();
-  
+
   return (
     <View>
       <Text>{t('common.save')}</Text>
@@ -47,12 +47,14 @@ const TestTranslation = () => {
 ## 4. Exemplo de Migração
 
 ### Antes:
+
 ```typescript
 <Text>Salvar</Text>
 <Button label="Cancelar" />
 ```
 
 ### Depois:
+
 ```typescript
 const { t } = useTranslation();
 
@@ -66,4 +68,3 @@ const { t } = useTranslation();
 - [ ] i18n inicializado no App
 - [ ] Hook `useTranslation` funcionando
 - [ ] Primeira tradução testada
-

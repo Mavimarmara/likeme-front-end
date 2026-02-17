@@ -3,7 +3,7 @@ import { Image, StyleSheet } from 'react-native';
 import { BackgroundWithGradient } from '@/assets';
 
 const Background: React.FC = () => {
-  return <Image source={BackgroundWithGradient} style={styles.background} resizeMode="cover" />;
+  return <Image source={BackgroundWithGradient} style={styles.background} resizeMode='cover' />;
 };
 
 const styles = StyleSheet.create({

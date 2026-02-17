@@ -26,9 +26,7 @@ export const ProductInfoTabs: React.FC<ProductInfoTabsProps> = ({ activeTab, onT
           onPress={() => onTabChange(tab)}
           activeOpacity={0.7}
         >
-          <Text style={[styles.infoTabText, activeTab === tab && styles.infoTabTextActive]}>
-            {tabLabels[tab]}
-          </Text>
+          <Text style={[styles.infoTabText, activeTab === tab && styles.infoTabTextActive]}>{tabLabels[tab]}</Text>
         </TouchableOpacity>
       ))}
     </View>

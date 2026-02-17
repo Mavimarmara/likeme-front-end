@@ -56,13 +56,13 @@ Não é necessário Google Cloud, Service Account nem JSON para esse fluxo.
 
 ## Quem pode fazer o upload?
 
-| Função no Play Console | Pode fazer upload / criar release? |
-|------------------------|------------------------------------|
-| **Admin**              | Sim                                |
-| **Gerente de lançamento** / Release manager | Sim                    |
-| **Desenvolvedor**      | Em geral **não** (só em algumas trilhas de teste) |
+| Função no Play Console                      | Pode fazer upload / criar release?                |
+| ------------------------------------------- | ------------------------------------------------- |
+| **Admin**                                   | Sim                                               |
+| **Gerente de lançamento** / Release manager | Sim                                               |
+| **Desenvolvedor**                           | Em geral **não** (só em algumas trilhas de teste) |
 
-Se você for **apenas desenvolvedor****:
+Se você for **apenas desenvolvedor\*\***:
 
 - **Você:** gera o build com EAS, baixa o `.aab` e envia o arquivo (link, e-mail, Drive, etc.) para o Admin ou Release manager.
 - **Admin/Release manager:** faz o upload manual do `.aab` no Play Console, como no passo 3.

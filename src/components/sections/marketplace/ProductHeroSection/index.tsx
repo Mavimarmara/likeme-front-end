@@ -43,12 +43,8 @@ export const ProductHeroSection: React.FC<ProductHeroSectionProps> = ({
         <View style={styles.heroCardPriceRow}>
           <Text style={styles.heroCardPrice}>{formatPrice(price)}</Text>
           {!isOutOfStock && (
-            <TouchableOpacity
-              style={styles.heroCardCartButton}
-              onPress={onAddToCart}
-              activeOpacity={0.7}
-            >
-              <Icon name="shopping-cart" size={20} color="#001137" />
+            <TouchableOpacity style={styles.heroCardCartButton} onPress={onAddToCart} activeOpacity={0.7}>
+              <Icon name='shopping-cart' size={20} color='#001137' />
             </TouchableOpacity>
           )}
         </View>

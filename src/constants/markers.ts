@@ -31,9 +31,7 @@ export const getMarkerColor = (markerId: string): string => {
   return MARKER_COLORS[normalizedId] || '#001137';
 };
 
-export const getMarkerGradient = (
-  markerId: string,
-): readonly [string, string, ...string[]] | null => {
+export const getMarkerGradient = (markerId: string): readonly [string, string, ...string[]] | null => {
   const normalizedId = markerId.toLowerCase().replace(/\s+/g, '-');
   return MARKER_GRADIENTS[normalizedId] || null;
 };

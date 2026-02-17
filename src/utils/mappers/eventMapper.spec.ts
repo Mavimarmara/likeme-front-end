@@ -117,9 +117,7 @@ describe('eventMapper', () => {
       };
       const result = mapChannelsToEvents([channelWithoutThumbnail]);
 
-      expect(result[0].thumbnail).toBe(
-        'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400',
-      );
+      expect(result[0].thumbnail).toBe('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400');
     });
 
     it('deve usar participantsCount quando disponível', () => {

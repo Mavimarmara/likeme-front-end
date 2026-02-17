@@ -58,12 +58,8 @@ const CartItemList: React.FC<CartItemListProps> = ({
             ))}
         </View>
         {onRemoveItem && (
-          <TouchableOpacity
-            style={cartStyles.deleteButton}
-            onPress={() => onRemoveItem(item.id)}
-            activeOpacity={0.7}
-          >
-            <Icon name="delete" size={24} color="#001137" />
+          <TouchableOpacity style={cartStyles.deleteButton} onPress={() => onRemoveItem(item.id)} activeOpacity={0.7}>
+            <Icon name='delete' size={24} color='#001137' />
           </TouchableOpacity>
         )}
       </View>
@@ -71,23 +67,29 @@ const CartItemList: React.FC<CartItemListProps> = ({
       {/* Conteúdo principal - título, subtitle/date e rating */}
       <View style={cartStyles.itemHeaderContainer}>
         <View style={cartStyles.itemInfo}>
-          <Text style={cartStyles.itemTitle} numberOfLines={2} ellipsizeMode="tail">
+          <Text style={cartStyles.itemTitle} numberOfLines={2} ellipsizeMode='tail'>
             {item.title}
           </Text>
           {item.subtitle && (
-            <Text style={cartStyles.itemSubtitle} numberOfLines={1} ellipsizeMode="tail">
+            <Text style={cartStyles.itemSubtitle} numberOfLines={1} ellipsizeMode='tail'>
               {item.subtitle}
             </Text>
           )}
           {!item.subtitle && item.date && (
-            <Text style={cartStyles.itemDate}>{t('cart.date')}: {item.date}</Text>
+            <Text style={cartStyles.itemDate}>
+              {t('cart.date')}: {item.date}
+            </Text>
           )}
-          {item.subtitle && item.date && <Text style={cartStyles.itemDate}>{t('cart.date')}: {item.date}</Text>}
+          {item.subtitle && item.date && (
+            <Text style={cartStyles.itemDate}>
+              {t('cart.date')}: {item.date}
+            </Text>
+          )}
         </View>
         {item.rating !== undefined && item.rating !== null && (
           <View style={cartStyles.ratingContainer}>
             <Text style={cartStyles.ratingText}>{formatRating(item.rating)}</Text>
-            <Icon name="star" size={18} color="#001137" />
+            <Icon name='star' size={18} color='#001137' />
           </View>
         )}
       </View>
@@ -102,7 +104,7 @@ const CartItemList: React.FC<CartItemListProps> = ({
               onPress={() => onDecreaseQuantity(item.id)}
               activeOpacity={0.7}
             >
-              <Icon name="remove-circle-outline" size={24} color="#001137" />
+              <Icon name='remove-circle-outline' size={24} color='#001137' />
             </TouchableOpacity>
             <Text style={cartStyles.quantityText}>{String(item.quantity).padStart(2, '0')}</Text>
             <TouchableOpacity
@@ -110,7 +112,7 @@ const CartItemList: React.FC<CartItemListProps> = ({
               onPress={() => onIncreaseQuantity(item.id)}
               activeOpacity={0.7}
             >
-              <Icon name="add-circle-outline" size={24} color="#001137" />
+              <Icon name='add-circle-outline' size={24} color='#001137' />
             </TouchableOpacity>
           </View>
         )}

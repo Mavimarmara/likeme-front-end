@@ -40,7 +40,7 @@ const MarkerDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
           <Text style={{ fontSize: 16, color: COLORS.TEXT }}>{t('avatar.markerNotFound')}</Text>
         </View>
-        <FloatingMenu items={menuItems} selectedId="activities" />
+        <FloatingMenu items={menuItems} selectedId='activities' />
       </SafeAreaView>
     );
   }
@@ -84,13 +84,9 @@ const MarkerDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.BACKGROUND }} edges={['top']}>
-    <Background/>
-    <StatusBar backgroundColor={COLORS.BACKGROUND} barStyle="dark-content" />
-            <Header
-              onBackPress={handleBack}
-              showBackButton
-              customLogo={<ProgressHeaderLogo />}
-            />
+      <Background />
+      <StatusBar backgroundColor={COLORS.BACKGROUND} barStyle='dark-content' />
+      <Header onBackPress={handleBack} showBackButton customLogo={<ProgressHeaderLogo />} />
 
       <View style={styles.content}>
         <ScrollView
@@ -100,10 +96,7 @@ const MarkerDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
         >
           {/* Marker Header Section */}
           <View style={styles.markerHeaderSection}>
-            <TouchableOpacity
-              style={styles.markerHeaderRow}
-              activeOpacity={0.7}
-            >
+            <TouchableOpacity style={styles.markerHeaderRow} activeOpacity={0.7}>
               <Text style={styles.markerName}>{markerName}</Text>
             </TouchableOpacity>
             <View style={styles.markerProgressContainer}>
@@ -147,10 +140,11 @@ const MarkerDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
 
           <CTACard
             title={t('avatar.routineTitle', { marker: markerName.toUpperCase() })}
-            highlightText={t('avatar.averageScore', { marker: markerName.toLowerCase(), score: averageValue })}
-            description={[
-              t('avatar.maintainingRoutine', { marker: markerName.toLowerCase() }),
-            ]}
+            highlightText={t('avatar.averageScore', {
+              marker: markerName.toLowerCase(),
+              score: averageValue,
+            })}
+            description={[t('avatar.maintainingRoutine', { marker: markerName.toLowerCase() })]}
             backgroundColor={COLORS.PRIMARY.LIGHT}
             descriptionColor={COLORS.TEXT}
             titleStyle={styles.routineTitle}
@@ -200,10 +194,9 @@ const MarkerDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
           </View>
         </ScrollView>
       </View>
-      <FloatingMenu items={menuItems} selectedId="home" />
+      <FloatingMenu items={menuItems} selectedId='home' />
     </SafeAreaView>
   );
 };
 
 export default MarkerDetailsScreen;
-

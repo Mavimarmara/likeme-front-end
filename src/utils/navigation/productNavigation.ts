@@ -26,8 +26,7 @@ export const navigateToAmazonProduct = (ad: Ad, navigation: Navigation): boolean
         id: ad.product.id,
         title: ad.product.name,
         price: formatPrice(ad.product.price),
-        image:
-          ad.product.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
+        image: ad.product.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
         category: ad.product.category,
         description: ad.product.description,
       }
@@ -59,8 +58,7 @@ export const navigateToExternalProduct = (ad: Ad, navigation: Navigation): boole
       id: ad.product.id,
       title: ad.product.name,
       price: formatPrice(ad.product.price),
-      image:
-        ad.product.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
+      image: ad.product.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
       category: ad.product.category,
       description: ad.product.description,
       externalUrl: ad.product.externalUrl,
@@ -81,8 +79,7 @@ export const navigateToProductDetails = (ad: Ad, navigation: Navigation): boolea
       id: ad.product.id,
       title: ad.product.name,
       price: formatPrice(ad.product.price),
-      image:
-        ad.product.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
+      image: ad.product.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
       category: ad.product.category,
       description: ad.product.description,
     },

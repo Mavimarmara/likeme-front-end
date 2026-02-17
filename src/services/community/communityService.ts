@@ -67,12 +67,7 @@ class CommunityService {
         queryParams.order = params.order;
       }
 
-      const userFeedResponse = await apiClient.get<UserFeedApiResponse>(
-        this.userFeeEndpoint,
-        queryParams,
-        true,
-        false,
-      );
+      const userFeedResponse = await apiClient.get<UserFeedApiResponse>(this.userFeeEndpoint, queryParams, true, false);
       console.log('userFeedResponse', JSON.stringify(userFeedResponse));
       return userFeedResponse;
     } catch (error) {
@@ -140,10 +135,7 @@ class CommunityService {
     }
   }
 
-  async addCommentReaction(
-    commentId: string,
-    reactionName: 'like' | 'dislike' = 'like',
-  ): Promise<boolean> {
+  async addCommentReaction(commentId: string, reactionName: 'like' | 'dislike' = 'like'): Promise<boolean> {
     try {
       if (!commentId || commentId.trim() === '') {
         throw new Error('Comment ID is required');
@@ -167,10 +159,7 @@ class CommunityService {
     }
   }
 
-  async removeCommentReaction(
-    commentId: string,
-    reactionName: 'like' | 'dislike' = 'like',
-  ): Promise<boolean> {
+  async removeCommentReaction(commentId: string, reactionName: 'like' | 'dislike' = 'like'): Promise<boolean> {
     try {
       if (!commentId || commentId.trim() === '') {
         throw new Error('Comment ID is required');

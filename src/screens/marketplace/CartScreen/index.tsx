@@ -1,13 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  Image,
-  StyleSheet,
-  TextInput,
-} from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image, StyleSheet, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -120,10 +112,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
         await storageService.setCartItems(validatedItems);
 
         if (removedItems.length > 0) {
-          Alert.alert(
-            t('cart.cartUpdated'),
-            `${t('cart.productsRemoved')}\n\n${removedItems.join('\n')}`,
-          );
+          Alert.alert(t('cart.cartUpdated'), `${t('cart.productsRemoved')}\n\n${removedItems.join('\n')}`);
         }
       }
 
@@ -210,18 +199,13 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
 
   const renderHeader = () => (
     <View style={styles.headerContainer}>
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={handleBackPress}
-        activeOpacity={0.7}
-        testID="back-button"
-      >
+      <TouchableOpacity style={styles.backButton} onPress={handleBackPress} activeOpacity={0.7} testID='back-button'>
         <ImageBackground
           source={BackgroundIconButton}
           style={styles.iconButtonBackground}
           imageStyle={styles.iconButtonImage}
         >
-          <Icon name="arrow-back" size={20} color="#001137" />
+          <Icon name='arrow-back' size={20} color='#001137' />
         </ImageBackground>
       </TouchableOpacity>
       <View style={styles.logoContainer}>
@@ -233,9 +217,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
 
   const renderWarningBanner = () => (
     <View style={styles.warningBanner}>
-      <Text style={styles.warningText}>
-        {t('cart.warningMessage')}
-      </Text>
+      <Text style={styles.warningText}>{t('cart.warningMessage')}</Text>
     </View>
   );
 
@@ -249,13 +231,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
         <View style={styles.tagsContainer}>
           {item.tags.map((tag, index) => (
             <View key={index} style={styles.tagBadge}>
-              <Text
-                style={[
-                  styles.tagText,
-                  index === 0 && styles.tagTextOrange,
-                  index === 1 && styles.tagTextGreen,
-                ]}
-              >
+              <Text style={[styles.tagText, index === 0 && styles.tagTextOrange, index === 1 && styles.tagTextGreen]}>
                 {tag}
               </Text>
             </View>
@@ -267,28 +243,36 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
           activeOpacity={0.7}
           testID={`delete-item-${item.id}`}
         >
-          <Icon name="delete" size={24} color="#001137" />
+          <Icon name='delete' size={24} color='#001137' />
         </TouchableOpacity>
       </View>
 
       {/* Conteúdo principal - título, subtitle/date e rating */}
       <View style={styles.itemHeaderContainer}>
         <View style={styles.itemInfo}>
-          <Text style={styles.itemTitle} numberOfLines={2} ellipsizeMode="tail">
+          <Text style={styles.itemTitle} numberOfLines={2} ellipsizeMode='tail'>
             {item.title}
           </Text>
           {item.subtitle && (
-            <Text style={styles.itemSubtitle} numberOfLines={1} ellipsizeMode="tail">
+            <Text style={styles.itemSubtitle} numberOfLines={1} ellipsizeMode='tail'>
               {item.subtitle}
             </Text>
           )}
-          {!item.subtitle && item.date && <Text style={styles.itemDate}>{t('cart.date')}: {item.date}</Text>}
-          {item.subtitle && item.date && <Text style={styles.itemDate}>{t('cart.date')}: {item.date}</Text>}
+          {!item.subtitle && item.date && (
+            <Text style={styles.itemDate}>
+              {t('cart.date')}: {item.date}
+            </Text>
+          )}
+          {item.subtitle && item.date && (
+            <Text style={styles.itemDate}>
+              {t('cart.date')}: {item.date}
+            </Text>
+          )}
         </View>
         {item.rating !== undefined && item.rating !== null && (
           <View style={styles.ratingContainer}>
             <Text style={styles.ratingText}>{formatRating(item.rating)}</Text>
-            <Icon name="star" size={18} color="#001137" />
+            <Icon name='star' size={18} color='#001137' />
           </View>
         )}
       </View>
@@ -303,7 +287,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
             activeOpacity={0.7}
             testID={`decrease-quantity-${item.id}`}
           >
-            <Icon name="remove-circle-outline" size={24} color="#001137" />
+            <Icon name='remove-circle-outline' size={24} color='#001137' />
           </TouchableOpacity>
           <Text style={styles.quantityText}>{String(item.quantity).padStart(2, '0')}</Text>
           <TouchableOpacity
@@ -312,7 +296,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
             activeOpacity={0.7}
             testID={`increase-quantity-${item.id}`}
           >
-            <Icon name="add-circle-outline" size={24} color="#001137" />
+            <Icon name='add-circle-outline' size={24} color='#001137' />
           </TouchableOpacity>
         </View>
       </View>
@@ -328,13 +312,9 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
           value={zipCode}
           onChangeText={setZipCode}
           placeholder={t('cart.zipCodePlaceholder')}
-          placeholderTextColor="#6e6a6a"
+          placeholderTextColor='#6e6a6a'
         />
-        <TouchableOpacity
-          style={styles.applyButton}
-          onPress={handleApplyShipping}
-          activeOpacity={0.8}
-        >
+        <TouchableOpacity style={styles.applyButton} onPress={handleApplyShipping} activeOpacity={0.8}>
           <Text style={styles.applyButtonText}>{t('common.apply')}</Text>
         </TouchableOpacity>
       </View>
@@ -386,17 +366,10 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
         ) : cartItems.length > 0 ? (
           <>
             <Text style={styles.productsTitle}>{t('cart.yourProducts')}</Text>
-            <View style={styles.cartItemsList}>
-              {cartItems.map((item) => renderCartItem(item))}
-            </View>
+            <View style={styles.cartItemsList}>{cartItems.map((item) => renderCartItem(item))}</View>
             {renderShippingSection()}
             {renderOrderSummary()}
-            <SecondaryButton
-              label={t('common.buy')}
-              onPress={handleBuy}
-              style={styles.buyButton}
-              size="large"
-            />
+            <SecondaryButton label={t('common.buy')} onPress={handleBuy} style={styles.buyButton} size='large' />
           </>
         ) : (
           <View style={styles.emptyCartContainer}>

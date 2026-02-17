@@ -5,13 +5,7 @@
  * do formatter de datas, demonstrando diferentes formatos de saída.
  */
 
-import {
-  DateFormatter,
-  formatDate,
-  formatDateTime,
-  getDateFromDatetime,
-  getTimeFromDatetime,
-} from './dateFormatter';
+import { DateFormatter, formatDate, formatDateTime, getDateFromDatetime, getTimeFromDatetime } from './dateFormatter';
 
 describe('DateFormatter', () => {
   const testDate = new Date('2023-12-25T14:30:00');

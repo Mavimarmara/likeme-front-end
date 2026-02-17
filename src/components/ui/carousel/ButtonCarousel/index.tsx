@@ -39,7 +39,7 @@ const ButtonCarousel = <T extends string | number = string>({
             key={String(option.id)}
             label={option.label}
             onPress={() => onSelect(option.id)}
-            variant="light"
+            variant='light'
             style={isSelected ? styles.buttonSelected : styles.buttonUnselected}
             labelStyle={isSelected ? styles.buttonSelectedText : undefined}
           />

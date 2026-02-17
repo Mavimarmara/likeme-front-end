@@ -10,7 +10,7 @@ import { Text } from 'react-native';
 
 const MyComponent = () => {
   const { t } = useTranslation();
-  
+
   return <Text>{t('common.save')}</Text>;
 };
 ```
@@ -21,7 +21,7 @@ const MyComponent = () => {
 const { t } = useTranslation();
 const userName = 'João';
 
-<Text>{t('auth.introGreeting', { userName })}</Text>
+<Text>{t('auth.introGreeting', { userName })}</Text>;
 // Resultado: "Oi, João!"
 ```
 
@@ -33,13 +33,8 @@ import { useTranslation } from '@/hooks/i18n';
 
 const MyScreen = () => {
   const { t } = useTranslation();
-  
-  return (
-    <PrimaryButton
-      label={t('common.save')}
-      onPress={handleSave}
-    />
-  );
+
+  return <PrimaryButton label={t('common.save')} onPress={handleSave} />;
 };
 ```
 
@@ -51,12 +46,8 @@ import { useTranslation } from '@/hooks/i18n';
 
 const MyForm = () => {
   const { t } = useTranslation();
-  
-  return (
-    <TextInput
-      placeholder={t('auth.yourNamePlaceholder')}
-    />
-  );
+
+  return <TextInput placeholder={t('auth.yourNamePlaceholder')} />;
 };
 ```
 
@@ -68,11 +59,8 @@ import { useTranslation } from '@/hooks/i18n';
 
 const showError = () => {
   const { t } = useTranslation();
-  
-  Alert.alert(
-    t('errors.error'),
-    t('errors.loadProductError')
-  );
+
+  Alert.alert(t('errors.error'), t('errors.loadProductError'));
 };
 ```
 
@@ -82,9 +70,7 @@ const showError = () => {
 const { t } = useTranslation();
 const unansweredCount = 5;
 
-<Text>
-  {t('anamnesis.unansweredQuestionsMessage', { count: unansweredCount })}
-</Text>
+<Text>{t('anamnesis.unansweredQuestionsMessage', { count: unansweredCount })}</Text>;
 // Resultado: "Você ainda não respondeu 5 pergunta(s). Deseja finalizar mesmo assim?"
 ```
 
@@ -96,12 +82,8 @@ import { useTranslation } from '@/hooks/i18n';
 
 const AnamnesisScreen = () => {
   const { t } = useTranslation();
-  
-  return (
-    <Header
-      title={t('anamnesis.homeTitle')}
-    />
-  );
+
+  return <Header title={t('anamnesis.homeTitle')} />;
 };
 ```
 
@@ -113,7 +95,7 @@ import { useTranslation } from '@/hooks/i18n';
 
 const PromptCard = () => {
   const { t } = useTranslation();
-  
+
   return (
     <CTACard
       title={t('anamnesis.promptCardTitle')}
@@ -144,15 +126,15 @@ import { useTranslation } from '@/hooks/i18n';
 const validateForm = (values: FormValues) => {
   const { t } = useTranslation();
   const errors: Record<string, string> = {};
-  
+
   if (!values.email) {
     errors.email = t('validation.requiredField');
   }
-  
+
   if (!values.name) {
     errors.name = t('auth.fillFullName');
   }
-  
+
   return errors;
 };
 ```
@@ -160,6 +142,7 @@ const validateForm = (values: FormValues) => {
 ## Migração de Código Existente
 
 ### Antes:
+
 ```typescript
 <Text>Salvar</Text>
 <Button label="Cancelar" />
@@ -167,6 +150,7 @@ const validateForm = (values: FormValues) => {
 ```
 
 ### Depois:
+
 ```typescript
 const { t } = useTranslation();
 
@@ -181,4 +165,3 @@ const { t } = useTranslation();
 2. **Organize as chaves por contexto** (common, auth, anamnesis, etc.)
 3. **Use TypeScript para autocompletar** (se configurado)
 4. **Mantenha consistência** nas chaves usadas
-

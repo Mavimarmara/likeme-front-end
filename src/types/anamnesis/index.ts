@@ -70,32 +70,32 @@ export interface UserAnswer {
 /**
  * Resposta da API para lista de perguntas
  */
-export interface GetAnamnesisQuestionsResponse extends ApiResponse<AnamnesisQuestion[]> {}
+export type GetAnamnesisQuestionsResponse = ApiResponse<AnamnesisQuestion[]>;
 
 /**
  * Resposta da API para uma pergunta específica
  */
-export interface GetAnamnesisQuestionResponse extends ApiResponse<AnamnesisQuestion> {}
+export type GetAnamnesisQuestionResponse = ApiResponse<AnamnesisQuestion>;
 
 /**
  * Resposta da API para anamnesis completa
  */
-export interface GetCompleteAnamnesisResponse extends ApiResponse<any[]> {}
+export type GetCompleteAnamnesisResponse = ApiResponse<any[]>;
 
 /**
  * Resposta da API para criar/atualizar resposta
  */
-export interface CreateUserAnswerResponse extends ApiResponse<any> {}
+export type CreateUserAnswerResponse = ApiResponse<any>;
 
 /**
  * Resposta da API para lista de respostas do usuário
  */
-export interface GetUserAnswersResponse extends ApiResponse<UserAnswer[]> {}
+export type GetUserAnswersResponse = ApiResponse<UserAnswer[]>;
 
 /**
  * Resposta da API para uma resposta específica
  */
-export interface GetUserAnswerResponse extends ApiResponse<UserAnswer> {}
+export type GetUserAnswerResponse = ApiResponse<UserAnswer>;
 
 /**
  * Parâmetros para buscar perguntas
@@ -151,7 +151,7 @@ export interface UserScores {
 /**
  * Resposta da API para scores do usuário
  */
-export interface GetUserScoresResponse extends ApiResponse<UserScores> {}
+export type GetUserScoresResponse = ApiResponse<UserScores>;
 
 /**
  * Parâmetros para buscar scores do usuário
@@ -173,7 +173,7 @@ export interface UserMarker {
 /**
  * Resposta da API para markers do usuário
  */
-export interface GetUserMarkersResponse extends ApiResponse<UserMarker[]> {}
+export type GetUserMarkersResponse = ApiResponse<UserMarker[]>;
 
 /**
  * Parâmetros para buscar markers do usuário
@@ -182,8 +182,4 @@ export interface GetUserMarkersParams {
   userId: string;
 }
 
-export type {
-  BuildAnswerResult,
-  UseAnamnesisQuestionnaireParams,
-  UseAnamnesisQuestionnaireReturn,
-} from './hooks';
+export type { BuildAnswerResult, UseAnamnesisQuestionnaireParams, UseAnamnesisQuestionnaireReturn } from './hooks';

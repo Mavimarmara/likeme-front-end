@@ -59,12 +59,7 @@ describe('PaymentService', () => {
 
       const result = await paymentService.getTransactionStatus('trans-123');
 
-      expect(apiClient.get).toHaveBeenCalledWith(
-        '/api/payment/status/trans-123',
-        undefined,
-        true,
-        false,
-      );
+      expect(apiClient.get).toHaveBeenCalledWith('/api/payment/status/trans-123', undefined, true, false);
       expect(result).toEqual(mockResponse);
     });
   });
@@ -83,11 +78,7 @@ describe('PaymentService', () => {
 
       const result = await paymentService.captureTransaction('trans-123', { amount: 50.0 });
 
-      expect(apiClient.post).toHaveBeenCalledWith(
-        '/api/payment/capture/trans-123',
-        { amount: 50.0 },
-        true,
-      );
+      expect(apiClient.post).toHaveBeenCalledWith('/api/payment/capture/trans-123', { amount: 50.0 }, true);
       expect(result).toEqual(mockResponse);
     });
 
@@ -104,11 +95,7 @@ describe('PaymentService', () => {
 
       const result = await paymentService.captureTransaction('trans-123');
 
-      expect(apiClient.post).toHaveBeenCalledWith(
-        '/api/payment/capture/trans-123',
-        undefined,
-        true,
-      );
+      expect(apiClient.post).toHaveBeenCalledWith('/api/payment/capture/trans-123', undefined, true);
       expect(result).toEqual(mockResponse);
     });
   });
@@ -127,11 +114,7 @@ describe('PaymentService', () => {
 
       const result = await paymentService.refundTransaction('trans-123', { amount: 50.0 });
 
-      expect(apiClient.post).toHaveBeenCalledWith(
-        '/api/payment/refund/trans-123',
-        { amount: 50.0 },
-        true,
-      );
+      expect(apiClient.post).toHaveBeenCalledWith('/api/payment/refund/trans-123', { amount: 50.0 }, true);
       expect(result).toEqual(mockResponse);
     });
 

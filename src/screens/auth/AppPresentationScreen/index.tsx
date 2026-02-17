@@ -61,13 +61,10 @@ const AppPresentationScreen: React.FC<Props> = ({ navigation, route }) => {
         contentContainerStyle={styles.scrollContent}
       >
         <View style={styles.imageContainer}>
-          <Image source={currentPageData.image} style={styles.image} resizeMode="cover" />
+          <Image source={currentPageData.image} style={styles.image} resizeMode='cover' />
           <View style={[styles.pagination, styles.paginationAligned]}>
             {pages.map((_, index) => (
-              <View
-                key={index}
-                style={[styles.dot, index === currentPage ? styles.activeDot : styles.inactiveDot]}
-              />
+              <View key={index} style={[styles.dot, index === currentPage ? styles.activeDot : styles.inactiveDot]} />
             ))}
           </View>
         </View>
@@ -80,16 +77,10 @@ const AppPresentationScreen: React.FC<Props> = ({ navigation, route }) => {
 
       <View style={styles.footer}>
         <View style={styles.footerActions}>
-          <TouchableOpacity
-            style={styles.skipButton}
-            onPress={handleSkip}
-          >
+          <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
             <Text style={styles.skipText}>{t('common.skip')}</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.nextButton}
-            onPress={handleNext}
-          >
+          <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
             <Text style={styles.nextButtonText}>›</Text>
           </TouchableOpacity>
         </View>

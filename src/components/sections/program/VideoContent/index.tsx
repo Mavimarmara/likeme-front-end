@@ -19,12 +19,10 @@ const VideoContent: React.FC<Props> = ({ content }) => {
       </View>
 
       <View style={styles.videoCard}>
-        {content.thumbnail && (
-          <Image source={{ uri: content.thumbnail }} style={styles.thumbnail} resizeMode="cover" />
-        )}
+        {content.thumbnail && <Image source={{ uri: content.thumbnail }} style={styles.thumbnail} resizeMode='cover' />}
         <View style={styles.overlay}>
           <View style={styles.playButton}>
-            <Icon name="play-arrow" size={48} color="#fbf7e5" />
+            <Icon name='play-arrow' size={48} color='#fbf7e5' />
           </View>
         </View>
 

@@ -30,7 +30,7 @@ jest.mock('@/components/ui/carousel', () => {
   const { View, Text } = require('react-native');
   return {
     ProductsCarousel: () => (
-      <View testID="products-carousel">
+      <View testID='products-carousel'>
         <Text>Related Products</Text>
       </View>
     ),
@@ -41,8 +41,8 @@ jest.mock('@/components/marketplace', () => {
   const React = require('react');
   const { View, Text } = require('react-native');
   return {
-    ProductHeroSection: () => <View testID="product-hero-section" />,
-    ProductInfoTabs: () => <View testID="product-info-tabs" />,
+    ProductHeroSection: () => <View testID='product-hero-section' />,
+    ProductInfoTabs: () => <View testID='product-info-tabs' />,
   };
 });
 

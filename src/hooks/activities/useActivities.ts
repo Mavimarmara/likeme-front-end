@@ -1,11 +1,7 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { activityService } from '@/services';
 import type { UserActivity, ListActivitiesApiResponse } from '@/types/activity';
-import type {
-  ActivityItem,
-  UseActivitiesOptions,
-  UseActivitiesReturn,
-} from '@/types/activity/hooks';
+import type { ActivityItem, UseActivitiesOptions, UseActivitiesReturn } from '@/types/activity/hooks';
 import { logger } from '@/utils/logger';
 
 /**
@@ -14,11 +10,7 @@ import { logger } from '@/utils/logger';
  * @returns Objeto com activities, estados e funções auxiliares
  */
 export const useActivities = (options: UseActivitiesOptions = {}): UseActivitiesReturn => {
-  const {
-    enabled = true,
-    includeDeleted: defaultIncludeDeleted = false,
-    autoLoad = true,
-  } = options;
+  const { enabled = true, includeDeleted: defaultIncludeDeleted = false, autoLoad = true } = options;
 
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [rawActivities, setRawActivities] = useState<UserActivity[]>([]);
@@ -120,12 +112,7 @@ export const useActivities = (options: UseActivitiesOptions = {}): UseActivities
 
       return {
         id: activity.id,
-        type:
-          activity.type === 'task'
-            ? 'personal'
-            : activity.type === 'event'
-            ? 'appointment'
-            : 'program',
+        type: activity.type === 'task' ? 'personal' : activity.type === 'event' ? 'appointment' : 'program',
         title: activity.name,
         description: description.replace(/^\[COMPLETED\]/, ''), // Remover marcador da descrição exibida
         dateTime,
@@ -137,7 +124,7 @@ export const useActivities = (options: UseActivitiesOptions = {}): UseActivities
         meetUrl,
       };
     },
-    [formatDate]
+    [formatDate],
   );
 
   /**
@@ -191,7 +178,7 @@ export const useActivities = (options: UseActivitiesOptions = {}): UseActivities
         setLoading(false);
       }
     },
-    [enabled, defaultIncludeDeleted, convertActivityToItem]
+    [enabled, defaultIncludeDeleted, convertActivityToItem],
   );
 
   /**

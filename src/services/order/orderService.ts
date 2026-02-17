@@ -53,12 +53,7 @@ class OrderService {
         queryParams.paymentStatus = params.paymentStatus;
       }
 
-      const response = await apiClient.get<ListOrdersApiResponse>(
-        this.ordersEndpoint,
-        queryParams,
-        true,
-        false,
-      );
+      const response = await apiClient.get<ListOrdersApiResponse>(this.ordersEndpoint, queryParams, true, false);
 
       logger.debug('Orders list response:', {
         page: params.page,

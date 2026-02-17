@@ -22,7 +22,7 @@ jest.mock('@/components/ui/layout', () => {
   return {
     Header: ({ onBackPress }: any) => (
       <View>
-        <TouchableOpacity onPress={onBackPress} testID="back-button">
+        <TouchableOpacity onPress={onBackPress} testID='back-button'>
           <Text>Back</Text>
         </TouchableOpacity>
       </View>
@@ -136,9 +136,7 @@ describe('CartScreen', () => {
   it('renders empty state when cart is empty', async () => {
     (storageService.getCartItems as jest.Mock).mockResolvedValue([]);
 
-    const { getByText } = render(
-      <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />,
-    );
+    const { getByText } = render(<CartScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(getByText('Your cart is empty')).toBeTruthy();
@@ -308,9 +306,7 @@ describe('CartScreen', () => {
   it('navigates to Marketplace when Start Shopping is pressed in empty cart', async () => {
     (storageService.getCartItems as jest.Mock).mockResolvedValue([]);
 
-    const { getByText } = render(
-      <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />,
-    );
+    const { getByText } = render(<CartScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(getByText('Your cart is empty')).toBeTruthy();

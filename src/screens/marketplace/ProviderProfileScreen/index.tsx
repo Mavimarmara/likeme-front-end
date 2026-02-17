@@ -96,9 +96,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
 
   // Imagem do provider para background e hero section
   const backgroundImage = useMemo(() => {
-    return (
-      providerData.avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400'
-    );
+    return providerData.avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400';
   }, [providerData.avatar]);
 
   // Carregar posts quando a aba communities estiver ativa
@@ -241,19 +239,15 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
                 <View style={styles.heroFooter}>
                   <View style={styles.heroStats}>
                     <View style={styles.statItem}>
-                      <Icon name="star" size={16} color="#FFFFFF" />
+                      <Icon name='star' size={16} color='#FFFFFF' />
                       <Text style={styles.statText}>{providerData.rating || 5}</Text>
                     </View>
                     <View style={styles.statItem}>
-                      <Icon name="people" size={16} color="#FFFFFF" />
+                      <Icon name='people' size={16} color='#FFFFFF' />
                       <Text style={styles.statText}>{providerData.followers || 2846}</Text>
                     </View>
                   </View>
-                  <TouchableOpacity
-                    style={styles.followButton}
-                    onPress={handleFollow}
-                    activeOpacity={0.7}
-                  >
+                  <TouchableOpacity style={styles.followButton} onPress={handleFollow} activeOpacity={0.7}>
                     <Text style={styles.followButtonText}>Follow</Text>
                   </TouchableOpacity>
                 </View>
@@ -285,16 +279,16 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
                   onPress={() => setIsAboutExpanded(!isAboutExpanded)}
                   activeOpacity={0.7}
                 >
-                  <Text style={styles.sectionTitle}>{t('marketplace.about')} {providerData.name}</Text>
+                  <Text style={styles.sectionTitle}>
+                    {t('marketplace.about')} {providerData.name}
+                  </Text>
                   <Icon
                     name={isAboutExpanded ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
                     size={24}
-                    color="#001137"
+                    color='#001137'
                   />
                 </TouchableOpacity>
-                {isAboutExpanded && (
-                  <Text style={styles.descriptionText}>{providerData.description}</Text>
-                )}
+                {isAboutExpanded && <Text style={styles.descriptionText}>{providerData.description}</Text>}
               </View>
 
               <View style={styles.aboutSection}>
@@ -307,14 +301,14 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
                   <Icon
                     name={isAcademicExpanded ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
                     size={24}
-                    color="#001137"
+                    color='#001137'
                   />
                 </TouchableOpacity>
                 {isAcademicExpanded && (
                   <Text style={styles.descriptionText}>
-                    I am trained in Yoga with specializations in meditation, mindful breathing, and
-                    restorative practices. I've been teaching and supporting students for over 10
-                    years working with people in different stages of their journey.
+                    I am trained in Yoga with specializations in meditation, mindful breathing, and restorative
+                    practices. I've been teaching and supporting students for over 10 years working with people in
+                    different stages of their journey.
                   </Text>
                 )}
               </View>
@@ -359,7 +353,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
                           handleProductPress(product);
                         }}
                       >
-                        <Icon name="add" size={24} color="#000" />
+                        <Icon name='add' size={24} color='#000' />
                       </TouchableOpacity>
                     </TouchableOpacity>
                   ))}
@@ -368,10 +362,10 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
 
               <View style={styles.talkButtonContainer}>
                 <SecondaryButton
-                  label="Talk to Marcela"
+                  label='Talk to Marcela'
                   onPress={handleTalkToProvider}
-                  icon="arrow-forward"
-                  iconPosition="right"
+                  icon='arrow-forward'
+                  iconPosition='right'
                   style={styles.talkButton}
                 />
               </View>
@@ -384,7 +378,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
             <View style={styles.communityPreviewContainer}>
               {loadingPosts ? (
                 <View style={styles.loadingContainer}>
-                  <ActivityIndicator size="large" color="#001137" />
+                  <ActivityIndicator size='large' color='#001137' />
                 </View>
               ) : !communityPosts || communityPosts.length === 0 ? (
                 <View style={styles.emptyContainer}>
@@ -407,7 +401,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
           <Text style={styles.feedbackTitle}>{t('marketplace.userFeedback')}</Text>
           <View style={styles.feedbackRating}>
             <Text style={styles.feedbackRatingText}>5</Text>
-            <Icon name="star" size={16} color="#FFB800" />
+            <Icon name='star' size={16} color='#FFB800' />
           </View>
         </View>
         <View style={styles.reviewsList}>
@@ -419,7 +413,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
                 <Text style={styles.reviewDate}>{review.date}</Text>
                 <View style={styles.reviewRating}>
                   <Text style={styles.reviewRatingText}>{review.rating}</Text>
-                  <Icon name="star" size={14} color="#FFB800" />
+                  <Icon name='star' size={14} color='#FFB800' />
                 </View>
               </View>
             </View>

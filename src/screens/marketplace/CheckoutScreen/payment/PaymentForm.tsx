@@ -73,12 +73,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
             onPress={() => onPaymentMethodChange('credit_card')}
             activeOpacity={0.7}
           >
-            <View
-              style={[
-                styles.radioButton,
-                paymentMethod === 'credit_card' && styles.radioButtonSelected,
-              ]}
-            >
+            <View style={[styles.radioButton, paymentMethod === 'credit_card' && styles.radioButtonSelected]}>
               {paymentMethod === 'credit_card' && <View style={styles.radioButtonInner} />}
             </View>
             <Text style={styles.paymentMethodLabel}>{t('checkout.creditCard')}</Text>
@@ -88,9 +83,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
             onPress={() => onPaymentMethodChange('pix')}
             activeOpacity={0.7}
           >
-            <View
-              style={[styles.radioButton, paymentMethod === 'pix' && styles.radioButtonSelected]}
-            >
+            <View style={[styles.radioButton, paymentMethod === 'pix' && styles.radioButtonSelected]}>
               {paymentMethod === 'pix' && <View style={styles.radioButtonInner} />}
             </View>
             <Text style={styles.paymentMethodLabel}>{t('checkout.pix')}</Text>
@@ -112,7 +105,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
             placeholder={t('checkout.cardNumberPlaceholder')}
             value={cardNumber}
             onChangeText={handleCardNumberChange}
-            keyboardType="numeric"
+            keyboardType='numeric'
           />
           <View style={styles.cardRow}>
             <View style={styles.cardFieldHalf}>
@@ -121,7 +114,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                 placeholder={t('checkout.expiryDatePlaceholder')}
                 value={expiryDate}
                 onChangeText={handleExpiryDateChange}
-                keyboardType="numeric"
+                keyboardType='numeric'
               />
             </View>
             <View style={styles.cardFieldHalf}>
@@ -130,7 +123,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                 placeholder={t('checkout.cvvPlaceholder')}
                 value={cvv}
                 onChangeText={onCvvChange}
-                keyboardType="numeric"
+                keyboardType='numeric'
                 secureTextEntry
               />
             </View>
@@ -140,14 +133,14 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
             placeholder={t('checkout.cpfPlaceholder')}
             value={cpf}
             onChangeText={onCpfChange}
-            keyboardType="numeric"
+            keyboardType='numeric'
           />
           <TextInput
             label={t('checkout.phone')}
             placeholder={t('checkout.phonePlaceholder')}
             value={phone}
             onChangeText={onPhoneChange}
-            keyboardType="numeric"
+            keyboardType='numeric'
           />
           <TouchableOpacity
             style={styles.checkboxContainer}
@@ -155,7 +148,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
             activeOpacity={0.7}
           >
             <View style={[styles.checkbox, saveCardDetails && styles.checkboxChecked]}>
-              {saveCardDetails && <Icon name="check" size={14} color="#0154f8" />}
+              {saveCardDetails && <Icon name='check' size={14} color='#0154f8' />}
             </View>
             <Text style={styles.checkboxLabel}>{t('checkout.saveCardDetails')}</Text>
           </TouchableOpacity>

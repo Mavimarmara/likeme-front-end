@@ -34,11 +34,7 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({ onPress, label = 'Log out',
       disabled={isLoading}
       activeOpacity={0.7}
     >
-      {isLoading ? (
-        <ActivityIndicator size="small" color="#FFFFFF" />
-      ) : (
-        <Text style={styles.label}>{label}</Text>
-      )}
+      {isLoading ? <ActivityIndicator size='small' color='#FFFFFF' /> : <Text style={styles.label}>{label}</Text>}
     </TouchableOpacity>
   );
 };

@@ -48,7 +48,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
   const hasErrorRef = useRef(false);
 
   const loadPosts = useCallback(
-    async (page: number, search?: string, append: boolean = false) => {
+    async (page: number, search?: string, append = false) => {
       if (isLoadingRef.current) {
         return;
       }
@@ -107,9 +107,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
         );
 
         const mappedPostsResults = await Promise.all(mappedPostsPromises);
-        const mappedPosts: Post[] = mappedPostsResults.filter(
-          (post): post is Post => post !== null,
-        );
+        const mappedPosts: Post[] = mappedPostsResults.filter((post): post is Post => post !== null);
 
         if (append) {
           setPosts((prev) => [...prev, ...mappedPosts]);
@@ -119,9 +117,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
 
         setCurrentPage(page);
 
-        const hasMorePages = pagination
-          ? page < pagination.totalPages
-          : feedData.paging?.next !== undefined;
+        const hasMorePages = pagination ? page < pagination.totalPages : feedData.paging?.next !== undefined;
         setHasMore(hasMorePages);
       } catch (err) {
         hasErrorRef.current = true;

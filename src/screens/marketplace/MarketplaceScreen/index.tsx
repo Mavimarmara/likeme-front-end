@@ -1,13 +1,5 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  Image,
-  Dimensions,
-  ActivityIndicator,
-} from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image, Dimensions, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -147,10 +139,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
         <Text style={styles.sectionTitle}>{t('marketplace.weekHighlights')}</Text>
         <WeekHighlightCard
           title={highlight.product.name || t('marketplace.product')}
-          image={
-            highlight.product.image ||
-            'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400'
-          }
+          image={highlight.product.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400'}
           price={highlight.product.price}
           onPress={() => handleAdPress(highlight)}
         />
@@ -162,7 +151,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     if (loading && page === 1) {
       return (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#2196F3" />
+          <ActivityIndicator size='large' color='#2196F3' />
           <Text style={styles.loadingText}>{t('marketplace.loadingAds')}</Text>
         </View>
       );
@@ -199,8 +188,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
               const product = ad.product;
               const displayTitle = product?.name || t('marketplace.product');
               const displayImage =
-                product?.image ||
-                'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
+                product?.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
               const displayCategory = product?.category;
               const productPrice = product?.price;
 
@@ -237,7 +225,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
                         handleAddToCart(ad, e);
                       }}
                     >
-                      <Icon name="add" size={24} color="#000" />
+                      <Icon name='add' size={24} color='#000' />
                     </TouchableOpacity>
                   )}
                 </TouchableOpacity>
@@ -246,7 +234,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
           )}
           {loading && page > 1 && (
             <View style={styles.loadingMoreContainer}>
-              <ActivityIndicator size="small" color="#2196F3" />
+              <ActivityIndicator size='small' color='#2196F3' />
             </View>
           )}
           {hasMore && !loading && (
@@ -280,7 +268,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
           {renderAllAds()}
         </ScrollView>
       </View>
-      <FloatingMenu items={menuItems} selectedId="marketplace" />
+      <FloatingMenu items={menuItems} selectedId='marketplace' />
     </SafeAreaView>
   );
 };

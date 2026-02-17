@@ -39,13 +39,11 @@ const PostDetailsHeader: React.FC<Props> = ({ post }) => {
           <Image source={{ uri: post.userAvatar }} style={styles.avatar} />
         ) : (
           <View style={styles.avatarPlaceholder}>
-            <Icon name="person" size={20} color="#666" />
+            <Icon name='person' size={20} color='#666' />
           </View>
         )}
         <View style={styles.authorInfo}>
-          <Text style={styles.authorName}>
-            {post.userName || `Usuário ${post.userId.slice(0, 8)}`}
-          </Text>
+          <Text style={styles.authorName}>{post.userName || `Usuário ${post.userId.slice(0, 8)}`}</Text>
           <Text style={styles.timeAgo}>{formatTimeAgo(post.createdAt)}</Text>
         </View>
       </View>
@@ -55,7 +53,7 @@ const PostDetailsHeader: React.FC<Props> = ({ post }) => {
       {displayDescription && <Text style={styles.description}>{displayDescription}</Text>}
 
       <View style={styles.commentsInfo}>
-        <Icon name="chat-bubble-outline" size={20} color="#000" />
+        <Icon name='chat-bubble-outline' size={20} color='#000' />
         <Text style={styles.commentsCount}>{commentsCount} comentários</Text>
       </View>
     </View>

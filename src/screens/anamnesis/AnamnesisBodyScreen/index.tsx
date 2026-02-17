@@ -51,23 +51,16 @@ const AnamnesisBodyScreen: React.FC<Props> = ({ navigation }) => {
     try {
       const status = await anamnesisService.getCompletionStatus();
       if (!status.allSectionsComplete) {
-        const sections = status.incompleteSections
-          .map((s) => `${s.sectionName} (${s.answered}/${s.total})`)
-          .join(', ');
-        Alert.alert(
-          t('anamnesis.incompleteSectionsTitle'),
-          t('anamnesis.incompleteSectionsMessage', { sections }),
-          [{ text: t('common.ok') }],
-        );
+        const sections = status.incompleteSections.map((s) => `${s.sectionName} (${s.answered}/${s.total})`).join(', ');
+        Alert.alert(t('anamnesis.incompleteSectionsTitle'), t('anamnesis.incompleteSectionsMessage', { sections }), [
+          { text: t('common.ok') },
+        ]);
         return;
       }
       await complete();
       navigation.navigate('AnamnesisCompletion');
     } catch (err) {
-      Alert.alert(
-        t('errors.error'),
-        err instanceof Error ? err.message : t('anamnesis.finalizationError'),
-      );
+      Alert.alert(t('errors.error'), err instanceof Error ? err.message : t('anamnesis.finalizationError'));
     }
   };
 
@@ -76,7 +69,7 @@ const AnamnesisBodyScreen: React.FC<Props> = ({ navigation }) => {
       <SafeAreaView style={styles.container}>
         <Header onBackPress={() => navigation.goBack()} />
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#007AFF" />
+          <ActivityIndicator size='large' color='#007AFF' />
           <Text style={styles.loadingText}>{t('anamnesis.loadingQuestions')}</Text>
         </View>
       </SafeAreaView>
@@ -96,9 +89,7 @@ const AnamnesisBodyScreen: React.FC<Props> = ({ navigation }) => {
           <View style={styles.headerSection}>
             <Text style={styles.title}>{t('anamnesis.bodyTitle')}</Text>
             <Text style={styles.subtitle}>{t('anamnesis.bodySubtitle')}</Text>
-            <Text style={styles.introText}>
-              {t('anamnesis.bodyIntro')}
-            </Text>
+            <Text style={styles.introText}>{t('anamnesis.bodyIntro')}</Text>
           </View>
 
           <View style={styles.questionsContainer}>

@@ -12,12 +12,7 @@ type Props = {
   selectedProgramId?: string;
 };
 
-const ProgramsList: React.FC<Props> = ({
-  programs,
-  programDetails,
-  onProgramPress,
-  selectedProgramId,
-}) => {
+const ProgramsList: React.FC<Props> = ({ programs, programDetails, onProgramPress, selectedProgramId }) => {
   const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
 
   const handleModuleToggle = (moduleId: string) => {

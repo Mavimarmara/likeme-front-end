@@ -1,11 +1,5 @@
 import React, { forwardRef } from 'react';
-import {
-  TextInput as RNTextInput,
-  TextInputProps as RNTextInputProps,
-  View,
-  Text,
-  ViewStyle,
-} from 'react-native';
+import { TextInput as RNTextInput, TextInputProps as RNTextInputProps, View, Text, ViewStyle } from 'react-native';
 import { styles, PLACEHOLDER_TEXT_COLOR } from './styles';
 
 interface TextInputProps extends Omit<RNTextInputProps, 'onChangeText'> {

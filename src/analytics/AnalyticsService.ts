@@ -125,11 +125,7 @@ export function logFormSubmit(params: {
   });
 }
 
-export function logTabSelect(params: {
-  screen_name: string;
-  tab_id: string;
-  item_name?: string;
-}): void {
+export function logTabSelect(params: { screen_name: string; tab_id: string; item_name?: string }): void {
   logEvent('tab_select', {
     [ANALYTICS_PARAMS.SCREEN_NAME]: params.screen_name,
     [ANALYTICS_PARAMS.TAB_ID]: params.tab_id,
@@ -172,11 +168,7 @@ export function logError(params: { screen_name?: string; error_type: string }): 
   });
 }
 
-export function logActionSuccess(params: {
-  screen_name: string;
-  action_name: string;
-  item_id?: string;
-}): void {
+export function logActionSuccess(params: { screen_name: string; action_name: string; item_id?: string }): void {
   logEvent('action_success', {
     [ANALYTICS_PARAMS.SCREEN_NAME]: params.screen_name,
     [ANALYTICS_PARAMS.ACTION_NAME]: params.action_name,
@@ -185,11 +177,7 @@ export function logActionSuccess(params: {
   });
 }
 
-export function logActionFailure(params: {
-  screen_name: string;
-  action_name: string;
-  error_type: string;
-}): void {
+export function logActionFailure(params: { screen_name: string; action_name: string; error_type: string }): void {
   logEvent('action_failure', {
     [ANALYTICS_PARAMS.SCREEN_NAME]: params.screen_name,
     [ANALYTICS_PARAMS.ACTION_NAME]: params.action_name,

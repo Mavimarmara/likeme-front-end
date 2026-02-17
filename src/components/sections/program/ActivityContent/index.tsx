@@ -50,9 +50,7 @@ const ActivityContent: React.FC<Props> = ({ activity }) => {
                   onPress={() => handleOptionPress(option)}
                   activeOpacity={0.7}
                 >
-                  <Text style={[styles.optionText, isSelected && styles.optionTextSelected]}>
-                    {option}
-                  </Text>
+                  <Text style={[styles.optionText, isSelected && styles.optionTextSelected]}>{option}</Text>
                 </TouchableOpacity>
               );
             })}

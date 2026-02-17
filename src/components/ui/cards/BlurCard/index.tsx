@@ -1,12 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import {
-  View,
-  Image,
-  TouchableOpacity,
-  LayoutChangeEvent,
-  ViewStyle,
-  StyleProp,
-} from 'react-native';
+import { View, Image, TouchableOpacity, LayoutChangeEvent, ViewStyle, StyleProp } from 'react-native';
 import { BlurView } from 'expo-blur';
 import {
   styles,
@@ -30,13 +23,7 @@ type Props = {
   style?: StyleProp<ViewStyle>;
 };
 
-const BlurCard: React.FC<Props> = ({
-  backgroundImage,
-  topSection,
-  footerSection,
-  onPress,
-  style,
-}) => {
+const BlurCard: React.FC<Props> = ({ backgroundImage, topSection, footerSection, onPress, style }) => {
   const [footerHeight, setFooterHeight] = useState(0);
 
   const handleFooterLayout = (event: LayoutChangeEvent) => {
@@ -48,13 +35,12 @@ const BlurCard: React.FC<Props> = ({
 
   const borderRadius = useMemo(() => extractBorderRadius(style), [style]);
 
-  const blurStyle = useMemo(
-    () => getBlurStyle(footerHeight, borderRadius),
-    [footerHeight, borderRadius],
-  );
+  const blurStyle = useMemo(() => getBlurStyle(footerHeight, borderRadius), [footerHeight, borderRadius]);
 
   const containerStyle = useMemo(() => {
-    if (!style) {return styles.container;}
+    if (!style) {
+      return styles.container;
+    }
     return [styles.container, style];
   }, [style]);
 
@@ -62,7 +48,7 @@ const BlurCard: React.FC<Props> = ({
 
   const content = (
     <View style={containerStyle}>
-      <Image source={{ uri: backgroundImage }} style={styles.backgroundImage} resizeMode="cover" />
+      <Image source={{ uri: backgroundImage }} style={styles.backgroundImage} resizeMode='cover' />
 
       <View style={styles.content}>
         {topSection && <View style={styles.topSection}>{topSection}</View>}

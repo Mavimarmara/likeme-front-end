@@ -33,9 +33,6 @@ export class PriceFormatter {
   }
 }
 
-export const formatPrice = (
-  price: number | null | undefined,
-  currency: 'USD' | 'BRL' = 'USD',
-): string => {
+export const formatPrice = (price: number | null | undefined, currency: 'USD' | 'BRL' = 'USD'): string => {
   return new PriceFormatter(price).format(currency);
 };

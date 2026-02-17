@@ -19,8 +19,7 @@ type Props = {
 
 const ProviderChatCard: React.FC<Props> = ({ chat, onPress }) => {
   // Garante que lastMessage seja sempre uma string válida
-  const lastMessage =
-    typeof chat.lastMessage === 'string' && chat.lastMessage.trim() !== '' ? chat.lastMessage : '';
+  const lastMessage = typeof chat.lastMessage === 'string' && chat.lastMessage.trim() !== '' ? chat.lastMessage : '';
 
   return (
     <View style={styles.container}>
@@ -31,7 +30,7 @@ const ProviderChatCard: React.FC<Props> = ({ chat, onPress }) => {
             <Image source={{ uri: chat.providerAvatar }} style={styles.avatar} />
           ) : (
             <View style={styles.avatarPlaceholder}>
-              <Icon name="person" size={32} color="#6e6a6a" />
+              <Icon name='person' size={32} color='#6e6a6a' />
             </View>
           )}
 

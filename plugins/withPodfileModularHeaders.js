@@ -23,18 +23,12 @@ function withPodfileModularHeaders(config) {
       if (platformMatch) {
         const insertAfter = platformMatch[0];
         const indent = insertAfter.match(/^(\s*)/)[1] || '  ';
-        contents = contents.replace(
-          insertAfter,
-          insertAfter + indent + "use_modular_headers!\n"
-        );
+        contents = contents.replace(insertAfter, insertAfter + indent + 'use_modular_headers!\n');
       } else {
         // Fallback: inserir após require (início do arquivo)
         const requireMatch = contents.match(/(require\s+['\"][^'\"]+['\"]\s*\n)/);
         if (requireMatch) {
-          contents = contents.replace(
-            requireMatch[0],
-            requireMatch[0] + "\nuse_modular_headers!\n"
-          );
+          contents = contents.replace(requireMatch[0], requireMatch[0] + '\nuse_modular_headers!\n');
         } else {
           contents = 'use_modular_headers!\n\n' + contents;
         }

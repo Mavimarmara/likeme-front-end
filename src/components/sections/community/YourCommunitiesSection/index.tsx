@@ -27,7 +27,9 @@ const YourCommunitiesSection: React.FC<Props> = ({ community, onCommunityPress, 
     return null;
   }
   const getPostTitle = (post: Post): string => {
-    if (post.title) {return post.title;}
+    if (post.title) {
+      return post.title;
+    }
     if (post.content) {
       return post.content.length > 50 ? post.content.substring(0, 50) + '...' : post.content;
     }
@@ -45,11 +47,7 @@ const YourCommunitiesSection: React.FC<Props> = ({ community, onCommunityPress, 
     <View style={styles.container}>
       <Text style={styles.sectionTitle}>{t('home.yourCommunities')}</Text>
 
-      <TouchableOpacity
-        style={styles.communityCard}
-        activeOpacity={0.9}
-        onPress={() => onCommunityPress?.(community)}
-      >
+      <TouchableOpacity style={styles.communityCard} activeOpacity={0.9} onPress={() => onCommunityPress?.(community)}>
         <View style={styles.cardHeader}>
           <View style={styles.membersBadge}>
             <View style={styles.avatarGroup}>
@@ -74,11 +72,7 @@ const YourCommunitiesSection: React.FC<Props> = ({ community, onCommunityPress, 
 
           <Text style={styles.postsSectionTitle}>{t('community.newestPosts')}</Text>
 
-          <ScrollView
-            style={styles.postsScrollView}
-            showsVerticalScrollIndicator={false}
-            nestedScrollEnabled
-          >
+          <ScrollView style={styles.postsScrollView} showsVerticalScrollIndicator={false} nestedScrollEnabled>
             {community.posts.map((post, index) => (
               <TouchableOpacity
                 key={post.id || `post-${index}`}
@@ -91,7 +85,7 @@ const YourCommunitiesSection: React.FC<Props> = ({ community, onCommunityPress, 
                     <Image source={{ uri: post.userAvatar }} style={styles.postAvatar} />
                   ) : (
                     <View style={styles.postAvatarPlaceholder}>
-                      <Icon name="person" size={12} color="#6e6a6a" />
+                      <Icon name='person' size={12} color='#6e6a6a' />
                     </View>
                   )}
                   {post.userName && <Text style={styles.postAuthorName}>{post.userName}</Text>}
@@ -109,7 +103,7 @@ const YourCommunitiesSection: React.FC<Props> = ({ community, onCommunityPress, 
 
                 <View style={styles.postFooter}>
                   <View style={styles.postAction}>
-                    <Icon name="chat-bubble-outline" size={20} color="#0154f8" />
+                    <Icon name='chat-bubble-outline' size={20} color='#0154f8' />
                     <Text style={styles.postActionText}>{post.commentsCount || 0}</Text>
                   </View>
                 </View>

@@ -67,7 +67,7 @@ const OtherCommunitiesSection: React.FC<Props> = ({
             activeOpacity={0.8}
             onPress={() => onCommunityPress?.(community)}
           >
-            <Image source={{ uri: community.image }} style={styles.cardImage} resizeMode="cover" />
+            <Image source={{ uri: community.image }} style={styles.cardImage} resizeMode='cover' />
             <View style={styles.cardContent}>
               <View style={styles.cardHeader}>
                 <View style={styles.badge}>
@@ -75,7 +75,7 @@ const OtherCommunitiesSection: React.FC<Props> = ({
                 </View>
                 <View style={styles.ratingContainer}>
                   <Text style={styles.ratingText}>{community.rating}</Text>
-                  <Icon name="star" size={18} color="#001137" />
+                  <Icon name='star' size={18} color='#001137' />
                 </View>
               </View>
               <View style={styles.cardBottom}>
@@ -95,7 +95,7 @@ const OtherCommunitiesSection: React.FC<Props> = ({
                     style={styles.buttonBackground}
                     imageStyle={styles.buttonImage}
                   >
-                    <Icon name="chevron-right" size={30} color="#001137" />
+                    <Icon name='chevron-right' size={30} color='#001137' />
                   </ImageBackground>
                 </TouchableOpacity>
               </View>

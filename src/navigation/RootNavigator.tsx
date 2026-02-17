@@ -45,136 +45,88 @@ const RootNavigator: React.FC = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Loading"
+        initialRouteName='Loading'
         screenOptions={{
           headerShown: false,
           animationEnabled: false,
         }}
       >
-        <Stack.Screen name="Loading" component={LoadingScreen} options={{ title: 'Carregando' }} />
-              <Stack.Screen
-                name="Unauthenticated"
-                component={UnauthenticatedScreen}
-                options={{ title: 'Tela Deslogada', animationEnabled: false }}
-              />
-              <Stack.Screen
-                name="Authenticated"
-                component={AuthenticatedScreen}
-                options={{ title: 'Tela Autenticada', animationEnabled: false }}
-              />
-        <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ title: 'Boas-vindas' }} />
-        <Stack.Screen name="Intro" component={IntroScreen} options={{ title: 'Introdução' }} />
+        <Stack.Screen name='Loading' component={LoadingScreen} options={{ title: 'Carregando' }} />
         <Stack.Screen
-          name="AppPresentation"
-          component={AppPresentationScreen}
-          options={{ title: 'Apresentação' }}
-        />
-        <Stack.Screen name="Register" component={RegisterScreen} options={{ title: 'Cadastro' }} />
-               <Stack.Screen
-                 name="Anamnesis"
-                 component={AnamnesisStartScreen}
-                 options={{ title: 'Anamnesis' }}
-               />
-               <Stack.Screen
-                 name="AnamnesisHome"
-                 component={AnamnesisHomeScreen}
-                 options={{ title: 'Anamnesis Home' }}
-               />
-               <Stack.Screen
-                 name="AnamnesisBody"
-                 component={AnamnesisBodyScreen}
-                 options={{ title: 'Anamnesis Body' }}
-               />
-               <Stack.Screen
-                 name="AnamnesisMind"
-                 component={AnamnesisMindScreen}
-                 options={{ title: 'Anamnesis Mind' }}
-               />
-               <Stack.Screen
-                 name="AnamnesisHabits"
-                 component={AnamnesisHabitsScreen}
-                 options={{ title: 'Anamnesis Habits' }}
-               />
-               <Stack.Screen
-                 name="AnamnesisCompletion"
-                 component={AnamnesisCompletionScreen}
-                 options={{ title: 'Anamnesis Conclusão' }}
-               />
-               <Stack.Screen
-                 name="PersonalObjectives"
-                 component={PersonalObjectivesScreen}
-                 options={{ title: 'Objetivos Pessoais' }}
-               />
-               <Stack.Screen
-                 name="SelfAwarenessIntro"
-                 component={SelfAwarenessIntroScreen}
-                 options={{ title: 'Jornada de Autoconsciência' }}
-               />
-        <Stack.Screen name="Error" component={ErrorScreen} options={{ title: 'Erro' }} />
-        <Stack.Screen
-          name="AppLoading"
-          component={AppLoadingScreen}
-          options={{ title: 'Carregando' }}
+          name='Unauthenticated'
+          component={UnauthenticatedScreen}
+          options={{ title: 'Tela Deslogada', animationEnabled: false }}
         />
         <Stack.Screen
-          name="Community"
-          component={CommunityStackNavigator}
-          options={{ title: 'Comunidade' }}
+          name='Authenticated'
+          component={AuthenticatedScreen}
+          options={{ title: 'Tela Autenticada', animationEnabled: false }}
+        />
+        <Stack.Screen name='Welcome' component={WelcomeScreen} options={{ title: 'Boas-vindas' }} />
+        <Stack.Screen name='Intro' component={IntroScreen} options={{ title: 'Introdução' }} />
+        <Stack.Screen name='AppPresentation' component={AppPresentationScreen} options={{ title: 'Apresentação' }} />
+        <Stack.Screen name='Register' component={RegisterScreen} options={{ title: 'Cadastro' }} />
+        <Stack.Screen name='Anamnesis' component={AnamnesisStartScreen} options={{ title: 'Anamnesis' }} />
+        <Stack.Screen name='AnamnesisHome' component={AnamnesisHomeScreen} options={{ title: 'Anamnesis Home' }} />
+        <Stack.Screen name='AnamnesisBody' component={AnamnesisBodyScreen} options={{ title: 'Anamnesis Body' }} />
+        <Stack.Screen name='AnamnesisMind' component={AnamnesisMindScreen} options={{ title: 'Anamnesis Mind' }} />
+        <Stack.Screen
+          name='AnamnesisHabits'
+          component={AnamnesisHabitsScreen}
+          options={{ title: 'Anamnesis Habits' }}
         />
         <Stack.Screen
-          name="Activities"
-          component={ActivitiesScreen}
-          options={{ title: 'Atividades' }}
+          name='AnamnesisCompletion'
+          component={AnamnesisCompletionScreen}
+          options={{ title: 'Anamnesis Conclusão' }}
         />
         <Stack.Screen
-          name="Marketplace"
-          component={MarketplaceScreen}
-          options={{ title: 'Marketplace' }}
+          name='PersonalObjectives'
+          component={PersonalObjectivesScreen}
+          options={{ title: 'Objetivos Pessoais' }}
         />
         <Stack.Screen
-          name="ProductDetails"
+          name='SelfAwarenessIntro'
+          component={SelfAwarenessIntroScreen}
+          options={{ title: 'Jornada de Autoconsciência' }}
+        />
+        <Stack.Screen name='Error' component={ErrorScreen} options={{ title: 'Erro' }} />
+        <Stack.Screen name='AppLoading' component={AppLoadingScreen} options={{ title: 'Carregando' }} />
+        <Stack.Screen name='Community' component={CommunityStackNavigator} options={{ title: 'Comunidade' }} />
+        <Stack.Screen name='Activities' component={ActivitiesScreen} options={{ title: 'Atividades' }} />
+        <Stack.Screen name='Marketplace' component={MarketplaceScreen} options={{ title: 'Marketplace' }} />
+        <Stack.Screen
+          name='ProductDetails'
           component={ProductDetailsScreen}
           options={{ title: 'Detalhes do Produto' }}
         />
         <Stack.Screen
-          name="AffiliateProduct"
+          name='AffiliateProduct'
           component={AffiliateProductScreen}
           options={{ title: 'Produto Afiliado' }}
         />
-        <Stack.Screen name="Cart" component={CartScreen} options={{ title: 'Carrinho' }} />
-        <Stack.Screen name="Checkout" component={CheckoutScreen} options={{ title: 'Checkout' }} />
+        <Stack.Screen name='Cart' component={CartScreen} options={{ title: 'Carrinho' }} />
+        <Stack.Screen name='Checkout' component={CheckoutScreen} options={{ title: 'Checkout' }} />
         <Stack.Screen
-          name="CommunityPreview"
+          name='CommunityPreview'
           component={CommunityPreviewScreen}
           options={{ title: 'Community Preview' }}
         />
         <Stack.Screen
-          name="ProviderProfile"
+          name='ProviderProfile'
           component={ProviderProfileScreen}
           options={{ title: 'Provider Profile' }}
         />
-        <Stack.Screen name="Profile" component={ProfileScreen} options={{ title: 'Perfil' }} />
+        <Stack.Screen name='Profile' component={ProfileScreen} options={{ title: 'Perfil' }} />
         <Stack.Screen
-          name="PrivacyPolicies"
+          name='PrivacyPolicies'
           component={PrivacyPoliciesScreen}
           options={{ title: 'Política de Privacidade' }}
         />
-        <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{ title: 'Home', animationEnabled: false }}
-        />
-        <Stack.Screen name="Summary" component={SummaryScreen} options={{ title: 'Resumo' }} />
-        <Stack.Screen
-          name="AvatarProgress"
-          component={AvatarProgressScreen}
-          options={{ title: 'Seu Progresso' }}
-        />
-        <Stack.Screen
-          name="MarkerDetails"
-          component={MarkerDetailsScreen}
-          options={{ title: 'Detalhes do Marker' }}
-        />
+        <Stack.Screen name='Home' component={HomeScreen} options={{ title: 'Home', animationEnabled: false }} />
+        <Stack.Screen name='Summary' component={SummaryScreen} options={{ title: 'Resumo' }} />
+        <Stack.Screen name='AvatarProgress' component={AvatarProgressScreen} options={{ title: 'Seu Progresso' }} />
+        <Stack.Screen name='MarkerDetails' component={MarkerDetailsScreen} options={{ title: 'Detalhes do Marker' }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

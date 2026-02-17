@@ -39,18 +39,17 @@ export interface ListAdsParams {
   activeOnly?: boolean;
 }
 
-export interface ListAdsApiResponse
-  extends ApiResponse<{
-    ads: Ad[];
-    pagination: {
-      page: number;
-      limit: number;
-      total: number;
-      totalPages: number;
-    };
-  }> {}
+export type ListAdsApiResponse = ApiResponse<{
+  ads: Ad[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}>;
 
-export interface GetAdApiResponse extends ApiResponse<Ad> {}
+export type GetAdApiResponse = ApiResponse<Ad>;
 
 export interface CreateAdData {
   advertiserId?: string;
@@ -71,4 +70,4 @@ export interface CreateAdData {
   targetAudience?: string;
 }
 
-export interface UpdateAdData extends Partial<CreateAdData> {}
+export type UpdateAdData = Partial<CreateAdData>;

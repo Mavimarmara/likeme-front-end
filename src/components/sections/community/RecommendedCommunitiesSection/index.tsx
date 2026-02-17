@@ -36,7 +36,7 @@ const RecommendedCommunitiesSection: React.FC<Props> = ({ communities, onCommuni
             activeOpacity={0.8}
             onPress={() => onCommunityPress?.(community)}
           >
-            <Image source={{ uri: community.image }} style={styles.cardImage} resizeMode="cover" />
+            <Image source={{ uri: community.image }} style={styles.cardImage} resizeMode='cover' />
             <LinearGradient
               colors={['rgba(48, 48, 48, 0)', 'rgba(41, 41, 41, 0.69)']}
               locations={[0.5, 0.69]}
@@ -62,7 +62,7 @@ const RecommendedCommunitiesSection: React.FC<Props> = ({ communities, onCommuni
                     style={styles.buttonBackground}
                     imageStyle={styles.buttonImage}
                   >
-                    <Icon name="chevron-right" size={30} color="#001137" />
+                    <Icon name='chevron-right' size={30} color='#001137' />
                   </ImageBackground>
                 </TouchableOpacity>
               </View>

@@ -31,8 +31,4 @@ export { useMenuItems } from './navigation/useMenuItems';
 export { useTranslation } from './i18n';
 
 // Types
-export type {
-  ActivityItem,
-  UseActivitiesOptions,
-  UseActivitiesReturn,
-} from '@/types/activity/hooks';
+export type { ActivityItem, UseActivitiesOptions, UseActivitiesReturn } from '@/types/activity/hooks';

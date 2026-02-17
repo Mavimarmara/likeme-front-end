@@ -18,21 +18,12 @@ import { Header } from '@/components/ui/layout';
 import { Toggle } from '@/components/ui';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { LogoMini } from '@/assets';
-import {
-  ProductsCarousel,
-  PlansCarousel,
-  type Product,
-  type Plan,
-} from '@/components/sections/product';
+import { ProductsCarousel, PlansCarousel, type Product, type Plan } from '@/components/sections/product';
 import { PostCard } from '@/components/sections/community';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
 import { useProductDetails } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
-import {
-  formatPrice,
-  mapApiProductToCarouselProduct,
-  mapApiProductToNavigationParams,
-} from '@/utils';
+import { formatPrice, mapApiProductToCarouselProduct, mapApiProductToNavigationParams } from '@/utils';
 import { useUserFeed } from '@/hooks';
 import {
   useAnalyticsScreen,
@@ -97,27 +88,15 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   useAnalyticsScreen({ screenName: 'ProductDetails', screenClass: 'ProductDetailsScreen' });
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'info' | 'preview'>('info');
-  const [activeInfoTab, setActiveInfoTab] = useState<'about' | 'objectives' | 'communities'>(
-    'about'
-  );
-  const [activeProductTab, setActiveProductTab] = useState<
-    'goal' | 'description' | 'composition' | 'review'
-  >('goal');
+  const [activeInfoTab, setActiveInfoTab] = useState<'about' | 'objectives' | 'communities'>('about');
+  const [activeProductTab, setActiveProductTab] = useState<'goal' | 'description' | 'composition' | 'review'>('goal');
 
-  const {
-    product,
-    ad,
-    relatedProducts,
-    loading,
-    isFavorite,
-    setIsFavorite,
-    handleAddToCart,
-    loadAd,
-  } = useProductDetails({
-    productId: route.params?.productId,
-    fallbackProduct: route.params?.product,
-    navigation,
-  });
+  const { product, ad, relatedProducts, loading, isFavorite, setIsFavorite, handleAddToCart, loadAd } =
+    useProductDetails({
+      productId: route.params?.productId,
+      fallbackProduct: route.params?.product,
+      navigation,
+    });
 
   const displayData = useMemo(() => {
     if (!product) {
@@ -147,24 +126,21 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       { id: 'objectives', label: t('marketplace.objectives') },
       { id: 'communities', label: t('marketplace.communities') },
     ],
-    [t]
+    [t],
   );
 
-  const productTabOptions: ButtonCarouselOption<
-    'goal' | 'description' | 'composition' | 'review'
-  >[] = useMemo(
+  const productTabOptions: ButtonCarouselOption<'goal' | 'description' | 'composition' | 'review'>[] = useMemo(
     () => [
       { id: 'goal', label: t('marketplace.goal') },
       { id: 'description', label: t('marketplace.description') },
       { id: 'composition', label: t('marketplace.composition') },
       { id: 'review', label: t('marketplace.review') },
     ],
-    [t]
+    [t],
   );
 
   // Categoria do produto para badges
-  const productCategory =
-    displayData?.tags?.[0] || product?.category || route.params?.product?.category || 'Product';
+  const productCategory = displayData?.tags?.[0] || product?.category || route.params?.product?.category || 'Product';
 
   const isProductType = productCategory == 'Product';
 
@@ -191,8 +167,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
         name: provider.name,
         avatar: provider.avatar,
         title: 'Therapist & Wellness Coach',
-        description:
-          'Specialized in mental health and wellness coaching with over 10 years of experience.',
+        description: 'Specialized in mental health and wellness coaching with over 10 years of experience.',
         rating: route.params?.product?.rating || 4.8,
         specialties: ['Mental Health', 'Wellness Coaching', 'Therapy'],
       },
@@ -211,11 +186,9 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     // Dados mockados quando não há provider disponível
     const mockProvider = {
       name: provider?.name || 'Dr. Avery Parker',
-      avatar:
-        provider?.avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200',
+      avatar: provider?.avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200',
       title: 'Therapist & Wellness Coach',
-      description:
-        'Specialized in mental health and wellness coaching with over 10 years of experience.',
+      description: 'Specialized in mental health and wellness coaching with over 10 years of experience.',
       rating: route.params?.product?.rating ?? (product as { rating?: number })?.rating ?? 4.8,
       specialties: ['Mental Health', 'Wellness Coaching', 'Therapy'],
     };
@@ -294,10 +267,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   // Array de imagens do produto (por enquanto apenas uma)
   const productImages = useMemo(() => {
     const images: string[] = [];
-    if (
-      backgroundImage &&
-      backgroundImage !== 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400'
-    ) {
+    if (backgroundImage && backgroundImage !== 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400') {
       images.push(backgroundImage);
     }
     return images;
@@ -307,7 +277,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#2196F3" />
+          <ActivityIndicator size='large' color='#2196F3' />
           <Text style={styles.loadingText}>{t('marketplace.loadingProduct')}</Text>
         </View>
       </SafeAreaView>
@@ -334,11 +304,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Hero Section with Image */}
         <View style={styles.heroSection}>
-          <Image
-            source={{ uri: backgroundImage }}
-            style={styles.backgroundImage as ImageStyle}
-            resizeMode="cover"
-          />
+          <Image source={{ uri: backgroundImage }} style={styles.backgroundImage as ImageStyle} resizeMode='cover' />
           <View style={styles.heroOverlay}>
             <LinearGradient
               colors={['rgba(48, 48, 48, 0)', 'rgba(41, 41, 41, 1)']}
@@ -357,9 +323,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                 )}
               </View>
               <Text style={styles.heroTitle}>{displayData.title}</Text>
-              {displayData.price && (
-                <Text style={styles.heroPrice}>{formatPrice(displayData.price)}</Text>
-              )}
+              {displayData.price && <Text style={styles.heroPrice}>{formatPrice(displayData.price)}</Text>}
             </View>
           </View>
         </View>
@@ -368,10 +332,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
         {productImages && productImages.length > 1 && (
           <View style={styles.paginationContainer}>
             {productImages.map((_, index) => (
-              <View
-                key={index}
-                style={[styles.paginationDot, index === 0 && styles.paginationDotActive]}
-              />
+              <View key={index} style={[styles.paginationDot, index === 0 && styles.paginationDotActive]} />
             ))}
           </View>
         )}
@@ -413,7 +374,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                     <Image
                       source={{ uri: backgroundImage }}
                       style={styles.productImage as ImageStyle}
-                      resizeMode="contain"
+                      resizeMode='contain'
                     />
                   </View>
                   {renderInfoSection()}
@@ -426,7 +387,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                 <View style={styles.communityPreviewContainer}>
                   {loadingPosts ? (
                     <View style={styles.loadingContainer}>
-                      <ActivityIndicator size="large" color="#001137" />
+                      <ActivityIndicator size='large' color='#001137' />
                     </View>
                   ) : !communityPosts || communityPosts.length === 0 ? (
                     <View style={styles.emptyContainer}>
@@ -449,17 +410,13 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     return (
       <View style={styles.customHeader}>
         <TouchableOpacity style={styles.backButton} onPress={handleBackPress} activeOpacity={0.7}>
-          <Icon name="arrow-back" size={24} color="#001137" />
+          <Icon name='arrow-back' size={24} color='#001137' />
         </TouchableOpacity>
         <View style={styles.logoContainer}>
           <LogoMini width={87} height={16} />
         </View>
-        <TouchableOpacity
-          style={styles.favoriteButton}
-          onPress={() => setIsFavorite(!isFavorite)}
-          activeOpacity={0.7}
-        >
-          <Icon name={isFavorite ? 'star' : 'star-border'} size={24} color="#001137" />
+        <TouchableOpacity style={styles.favoriteButton} onPress={() => setIsFavorite(!isFavorite)} activeOpacity={0.7}>
+          <Icon name={isFavorite ? 'star' : 'star-border'} size={24} color='#001137' />
         </TouchableOpacity>
       </View>
     );
@@ -468,8 +425,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   function renderAddToCartButton() {
     const productWithProvider = product as { provider?: { avatar?: string } };
     const provider = route.params?.product?.provider || productWithProvider?.provider;
-    const providerAvatar =
-      provider?.avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200';
+    const providerAvatar = provider?.avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200';
 
     return (
       <View style={styles.floatingButtonContainer}>
@@ -490,7 +446,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
             >
               <Text style={styles.floatingAddToCartText}>{t('marketplace.addToCart')}</Text>
               <View style={styles.floatingCartIconContainer}>
-                <Icon name="shopping-cart" size={20} color="#FFFFFF" />
+                <Icon name='shopping-cart' size={20} color='#FFFFFF' />
               </View>
             </TouchableOpacity>
           </View>
@@ -500,7 +456,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
             label={t('marketplace.seeProviderProfile')}
             onPress={handleSeeProviderProfile}
             style={styles.providerProfileButton}
-            size="large"
+            size='large'
           />
         </View>
       </View>
@@ -540,7 +496,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
           <Text style={styles.feedbackTitle}>{t('marketplace.userFeedback')}</Text>
           <View style={styles.feedbackRating}>
             <Text style={styles.feedbackRatingText}>5</Text>
-            <Icon name="star" size={16} color="#FFB800" />
+            <Icon name='star' size={16} color='#FFB800' />
           </View>
         </View>
         <View style={styles.reviewsList}>
@@ -552,7 +508,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                 <Text style={styles.reviewDate}>{review.date}</Text>
                 <View style={styles.reviewRating}>
                   <Text style={styles.reviewRatingText}>{review.rating}</Text>
-                  <Icon name="star" size={14} color="#FFB800" />
+                  <Icon name='star' size={14} color='#FFB800' />
                 </View>
               </View>
             </View>
@@ -605,7 +561,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       <View style={styles.plansSection}>
         <PlansCarousel
           title={t('marketplace.recommendedPlans')}
-          subtitle="Discover programs tailored for you"
+          subtitle='Discover programs tailored for you'
           plans={plans}
           onPlanPress={handlePlanPress}
           onPlanLike={handlePlanLike}
@@ -616,9 +572,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
 
   function renderProductTabContent() {
     const description = displayData?.description || product?.description || '';
-    const descriptionLines = description
-      ? description.split('\n').filter((line) => line.trim().length > 0)
-      : [];
+    const descriptionLines = description ? description.split('\n').filter((line) => line.trim().length > 0) : [];
 
     const renderDescriptionWithBullets = () => {
       if (descriptionLines.length === 0) {

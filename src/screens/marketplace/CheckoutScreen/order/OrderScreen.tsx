@@ -51,7 +51,7 @@ const OrderScreen: React.FC<OrderScreenProps> = ({
     return Number(rating).toFixed(3);
   };
 
-  const formatDateDisplay = (dateString?: string, includeYear: boolean = false): string => {
+  const formatDateDisplay = (dateString?: string, includeYear = false): string => {
     if (!dateString) return '';
     try {
       const date = new Date(dateString);
@@ -108,7 +108,7 @@ const OrderScreen: React.FC<OrderScreenProps> = ({
           {item.rating !== undefined && item.rating !== null && (
             <View style={styles.orderItemRating}>
               <Text style={styles.orderItemRatingText}>{formatRating(item.rating)}</Text>
-              <Icon name="star" size={16} color="#001137" />
+              <Icon name='star' size={16} color='#001137' />
             </View>
           )}
         </View>
@@ -118,21 +118,22 @@ const OrderScreen: React.FC<OrderScreenProps> = ({
         </Text>
 
         {item.date && (
-          <Text style={styles.orderItemDate}>{t('cart.date')}: {formatDateDisplay(item.date)}</Text>
+          <Text style={styles.orderItemDate}>
+            {t('cart.date')}: {formatDateDisplay(item.date)}
+          </Text>
         )}
 
         {item.deliveryForecast && (
           <Text style={styles.orderItemDeliveryForecast}>
-            {t('checkout.deliveryForecast')}{'\n'}
+            {t('checkout.deliveryForecast')}
+            {'\n'}
             {formatDateDisplay(item.deliveryForecast, true)}
           </Text>
         )}
 
         <View style={styles.orderItemFooter}>
           <Text style={styles.orderItemPrice}>{formatPrice(item.price)}</Text>
-          <Text style={styles.orderItemQuantity}>
-            QTD: {String(item.quantity).padStart(2, '0')}
-          </Text>
+          <Text style={styles.orderItemQuantity}>QTD: {String(item.quantity).padStart(2, '0')}</Text>
         </View>
 
         {getItemActionButton(item)}
@@ -161,9 +162,7 @@ const OrderScreen: React.FC<OrderScreenProps> = ({
           </View>
           <View style={styles.summaryRow}>
             <Text style={[styles.summaryLabel, styles.summaryTotalLabel]}>{t('cart.total')}</Text>
-            <Text style={[styles.summaryValue, styles.summaryTotalValue]}>
-              {formatPrice(total)}
-            </Text>
+            <Text style={[styles.summaryValue, styles.summaryTotalValue]}>{formatPrice(total)}</Text>
           </View>
         </View>
       </View>

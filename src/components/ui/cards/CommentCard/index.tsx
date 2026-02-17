@@ -47,9 +47,7 @@ const CommentCard: React.FC<Props> = ({
   const [isExpanded, setIsExpanded] = useState(true);
   const hasReplies = comment.replies && comment.replies.length > 0;
   const isAvatarUri = comment.author.avatar && typeof comment.author.avatar === 'string';
-  const [currentReaction, setCurrentReaction] = useState<'like' | 'dislike' | null>(
-    comment.userReaction || null
-  );
+  const [currentReaction, setCurrentReaction] = useState<'like' | 'dislike' | null>(comment.userReaction || null);
   const [upvotes, setUpvotes] = useState(comment.upvotes || 0);
   const [downvotes, setDownvotes] = useState(comment.downvotes || 0);
   const [reactionLoading, setReactionLoading] = useState(false);
@@ -164,7 +162,7 @@ const CommentCard: React.FC<Props> = ({
           )
         ) : (
           <View style={styles.avatarPlaceholder}>
-            <Icon name="person" size={16} color="#666" />
+            <Icon name='person' size={16} color='#666' />
           </View>
         )}
         <Text style={styles.authorName}>{capitalizeWords(comment.author.name)}</Text>
@@ -185,11 +183,7 @@ const CommentCard: React.FC<Props> = ({
       />
 
       {hasReplies && (
-        <TouchableOpacity
-          style={styles.hideButton}
-          onPress={handleToggleReplies}
-          activeOpacity={0.7}
-        >
+        <TouchableOpacity style={styles.hideButton} onPress={handleToggleReplies} activeOpacity={0.7}>
           <Text style={styles.hideText}>{isExpanded ? 'hide' : 'show'}</Text>
         </TouchableOpacity>
       )}

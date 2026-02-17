@@ -9,12 +9,7 @@ interface NumberScaleProps {
   max?: number;
 }
 
-const NumberScale: React.FC<NumberScaleProps> = ({
-  selectedValue,
-  onValueChange,
-  min = 0,
-  max = 10,
-}) => {
+const NumberScale: React.FC<NumberScaleProps> = ({ selectedValue, onValueChange, min = 0, max = 10 }) => {
   const { t } = useTranslation();
   const numbers = Array.from({ length: max - min + 1 }, (_, i) => min + i);
   const [sliderWidth, setSliderWidth] = useState(0);
@@ -82,20 +77,22 @@ const NumberScale: React.FC<NumberScaleProps> = ({
 
           return (
             <View key={number} style={styles.item}>
-              <Text style={[styles.numberText, isSelected && styles.numberTextSelected]}>
-                {number}
-              </Text>
+              <Text style={[styles.numberText, isSelected && styles.numberTextSelected]}>{number}</Text>
 
               {isEdgeValue ? (
                 <View style={styles.edgeLabelContainer}>
                   {number === min ? (
                     <>
-                      <Text style={styles.edgeLabelLine}>{t('anamnesis.scaleMin').split(' ')[0]} {t('anamnesis.scaleMin').split(' ')[1]}</Text>
+                      <Text style={styles.edgeLabelLine}>
+                        {t('anamnesis.scaleMin').split(' ')[0]} {t('anamnesis.scaleMin').split(' ')[1]}
+                      </Text>
                       <Text style={styles.edgeLabelLine}>{t('anamnesis.scaleMin').split(' ').slice(2).join(' ')}</Text>
                     </>
                   ) : (
                     <>
-                      <Text style={styles.edgeLabelLine}>{t('anamnesis.scaleMax').split(' ')[0]} {t('anamnesis.scaleMax').split(' ')[1]}</Text>
+                      <Text style={styles.edgeLabelLine}>
+                        {t('anamnesis.scaleMax').split(' ')[0]} {t('anamnesis.scaleMax').split(' ')[1]}
+                      </Text>
                       <Text style={styles.edgeLabelLine}>{t('anamnesis.scaleMax').split(' ').slice(2).join(' ')}</Text>
                     </>
                   )}

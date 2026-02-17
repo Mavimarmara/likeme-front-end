@@ -47,18 +47,13 @@ const mapCommunityCommentToComment = (
     content,
     createdAt: new Date(communityComment.createdAt),
     userName: user?.displayName,
-    userAvatar: user?.avatarFileId
-      ? files?.find((f) => f.fileId === user.avatarFileId)?.fileUrl
-      : undefined,
+    userAvatar: user?.avatarFileId ? files?.find((f) => f.fileId === user.avatarFileId)?.fileUrl : undefined,
     reactionsCount: communityComment.reactionsCount,
     reactions,
   };
 };
 
-const mapCommunityPostToPoll = (
-  communityPost: CommunityPost,
-  postChildren?: CommunityPost[],
-): Poll | undefined => {
+const mapCommunityPostToPoll = (communityPost: CommunityPost, postChildren?: CommunityPost[]): Poll | undefined => {
   if (communityPost.structureType !== 'poll') {
     return undefined;
   }
@@ -178,9 +173,7 @@ export const mapCommunityPostToPost = (
 
   const user = users?.find((u) => u.userId === userId);
   const userName = user?.displayName || undefined;
-  const userAvatar = user?.avatarFileId
-    ? files?.find((f) => f.fileId === user.avatarFileId)?.fileUrl
-    : undefined;
+  const userAvatar = user?.avatarFileId ? files?.find((f) => f.fileId === user.avatarFileId)?.fileUrl : undefined;
 
   const likes = communityPost.reactionsCount || 0;
 
@@ -228,9 +221,7 @@ export const mapCommunityPostToPost = (
 
   if (rawTags) {
     if (Array.isArray(rawTags)) {
-      tags = rawTags.filter(
-        (tag) => tag && typeof tag === 'string' && tag.toLowerCase() !== 'tags',
-      );
+      tags = rawTags.filter((tag) => tag && typeof tag === 'string' && tag.toLowerCase() !== 'tags');
     } else if (typeof rawTags === 'string' && rawTags.toLowerCase() !== 'tags') {
       tags = rawTags;
     } else if (typeof rawTags === 'object') {
@@ -243,8 +234,7 @@ export const mapCommunityPostToPost = (
     }
   }
 
-  const commentsCount =
-    communityPost.commentsCount !== undefined ? communityPost.commentsCount : postComments.length;
+  const commentsCount = communityPost.commentsCount !== undefined ? communityPost.commentsCount : postComments.length;
 
   const post: Post = {
     id: postId,

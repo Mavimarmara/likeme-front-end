@@ -4,13 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { FloatingMenu } from '@/components/ui/menu';
 import { Header, Background } from '@/components/ui/layout';
-import {
-  useCommunities,
-  useSuggestedProducts,
-  useMenuItems,
-  useAnamnesisProgress,
-  useAnamnesisScores,
-} from '@/hooks';
+import { useCommunities, useSuggestedProducts, useMenuItems, useAnamnesisProgress, useAnamnesisScores } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import {
   mapCommunityToRecommendedCommunity,
@@ -77,7 +71,10 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
     try {
       const mindPct = anamnesisScores?.mentalPercentage || 0;
       const bodyPct = anamnesisScores?.physicalPercentage || 0;
-      const message = t('avatar.shareMessage', { mindPercentage: mindPct, bodyPercentage: bodyPct });
+      const message = t('avatar.shareMessage', {
+        mindPercentage: mindPct,
+        bodyPercentage: bodyPct,
+      });
       await Share.share({
         message,
       });
@@ -196,10 +193,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
         }
 
         const filteredCommunityPosts = (feedData.posts || []).filter((communityPost) => {
-          return (
-            communityPost.targetId === firstCommunity.communityId &&
-            communityPost.targetType === 'community'
-          );
+          return communityPost.targetId === firstCommunity.communityId && communityPost.targetType === 'community';
         });
 
         const mappedPostsPromises = filteredCommunityPosts.map((communityPost) =>
@@ -207,9 +201,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
         );
 
         const mappedPostsResults = await Promise.all(mappedPostsPromises);
-        const mappedPosts: Post[] = mappedPostsResults.filter(
-          (post): post is Post => post !== null,
-        );
+        const mappedPosts: Post[] = mappedPostsResults.filter((post): post is Post => post !== null);
 
         const sortedPosts = sortByDateObject(mappedPosts, 'createdAt', 'desc');
 
@@ -469,19 +461,12 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
           )}
           {events.length > 0 && (
             <View style={styles.eventsContainer}>
-              <NextEventsSection
-                events={events}
-                onEventPress={handleEventPress}
-                onEventSave={handleEventSave}
-              />
+              <NextEventsSection events={events} onEventPress={handleEventPress} onEventSave={handleEventSave} />
             </View>
           )}
           {popularProviders.length > 0 && (
             <View style={styles.providersContainer}>
-              <PopularProvidersSection
-                providers={popularProviders}
-                onProviderPress={handleProviderPress}
-              />
+              <PopularProvidersSection providers={popularProviders} onProviderPress={handleProviderPress} />
             </View>
           )}
           {recommendedProducts.length > 0 && (
@@ -512,7 +497,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
           </View>
         </ScrollView>
       </View>
-      <FloatingMenu items={menuItems} selectedId="home" />
+      <FloatingMenu items={menuItems} selectedId='home' />
     </SafeAreaView>
   );
 };

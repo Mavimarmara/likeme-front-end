@@ -15,9 +15,7 @@ interface UseSuggestedProductsReturn {
   refresh: () => Promise<void>;
 }
 
-export const useSuggestedProducts = (
-  options: UseSuggestedProductsOptions = {},
-): UseSuggestedProductsReturn => {
+export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}): UseSuggestedProductsReturn => {
   const { limit = 4, status = 'active', enabled = true } = options;
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
