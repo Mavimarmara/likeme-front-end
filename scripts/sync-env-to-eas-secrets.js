@@ -23,9 +23,9 @@ const envContent = fs.readFileSync(envPath, 'utf8');
 const env = {};
 envContent.split('\n').forEach((line) => {
   const trimmed = line.trim();
-  if (!trimmed || trimmed.startsWith('#')) return;
+  if (!trimmed || trimmed.startsWith('#')) {return;}
   const eq = trimmed.indexOf('=');
-  if (eq === -1) return;
+  if (eq === -1) {return;}
   const key = trimmed.slice(0, eq).trim();
   let value = trimmed.slice(eq + 1).trim();
   if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
@@ -48,7 +48,7 @@ let failed = 0;
 
 for (const key of expoPublicKeys) {
   const value = env[key];
-  if (value === undefined || value === '') continue;
+  if (value === undefined || value === '') {continue;}
   try {
     const result = spawnSync(
       'eas',

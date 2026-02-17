@@ -42,6 +42,6 @@ export const useMenuItems = (navigation: any): MenuItem[] => {
         onPress: () => rootNavigation.navigate('Profile' as never),
       },
     ],
-    [rootNavigation]
+    [rootNavigation],
   );
 };

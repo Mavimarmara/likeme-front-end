@@ -122,7 +122,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
         if (removedItems.length > 0) {
           Alert.alert(
             t('cart.cartUpdated'),
-            `${t('cart.productsRemoved')}\n\n${removedItems.join('\n')}`
+            `${t('cart.productsRemoved')}\n\n${removedItems.join('\n')}`,
           );
         }
       }

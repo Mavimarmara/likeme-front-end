@@ -11,7 +11,7 @@ class ApiClient {
   }
 
   private logAuthHeader(method: string, endpoint: string, headers: Record<string, string>) {
-    const authorization = headers['Authorization'];
+    const authorization = headers.Authorization;
     if (authorization) {
       console.log(`[Auth] ${method.toUpperCase()} ${endpoint} usando token: ${authorization}`);
     } else {
@@ -28,7 +28,7 @@ class ApiClient {
     if (includeAuth) {
       const token = await storageService.getToken();
       if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
+        headers.Authorization = `Bearer ${token}`;
       }
     }
 
@@ -98,7 +98,7 @@ class ApiClient {
 
   private async requestWithRefresh(
     execute: () => Promise<Response>,
-    includeAuth: boolean
+    includeAuth: boolean,
   ): Promise<Response> {
     // Medida paliativa: sempre tentar renovar o token antes de fazer requisições autenticadas
     if (includeAuth) {
@@ -127,7 +127,7 @@ class ApiClient {
     endpoint: string,
     params?: Record<string, any>,
     includeAuth = true,
-    useVersion = false
+    useVersion = false,
   ): Promise<T> {
     try {
       let url = `${this.baseUrl}${endpoint}`;
@@ -143,7 +143,7 @@ class ApiClient {
               acc[key] = String(value);
             }
             return acc;
-          }, {} as Record<string, string>)
+          }, {} as Record<string, string>),
         ).toString();
 
         if (queryString) {

@@ -40,16 +40,16 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month'>('week');
   const hasAnyAnswers = useMemo(
     () => hasAnswers || mindPercentage > 0 || bodyPercentage > 0,
-    [hasAnswers, mindPercentage, bodyPercentage]
+    [hasAnswers, mindPercentage, bodyPercentage],
   );
 
   const mindAvatarSource = useMemo(
     () => (hasAnyAnswers ? MindAvatarActive : MindAvatar),
-    [hasAnyAnswers]
+    [hasAnyAnswers],
   );
   const bodyAvatarSource = useMemo(
     () => (hasAnyAnswers ? BodyAvatarActive : BodyAvatar),
-    [hasAnyAnswers]
+    [hasAnyAnswers],
   );
 
   // Tamanho de cada avatar é individual: mente usa só mindPercentage, corpo só bodyPercentage
@@ -67,7 +67,7 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
         { text: t('avatar.week'), onPress: () => { setSelectedPeriod('week'); onPeriodChange?.('week'); } },
         { text: t('avatar.month'), onPress: () => { setSelectedPeriod('month'); onPeriodChange?.('month'); } },
         { text: t('common.cancel'), style: 'cancel' },
-      ]
+      ],
     );
   };
 

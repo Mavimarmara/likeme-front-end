@@ -45,7 +45,7 @@ class ActivityService {
         this.activitiesEndpoint,
         queryParams,
         true,
-        false
+        false,
       );
 
       logger.debug('Activities list response:', {
@@ -76,7 +76,7 @@ class ActivityService {
         endpoint,
         undefined,
         true,
-        false
+        false,
       );
 
       logger.debug('Activity detail response:', {
@@ -97,7 +97,7 @@ class ActivityService {
       const response = await apiClient.post<ApiResponse<UserActivity>>(
         this.activitiesEndpoint,
         data,
-        true
+        true,
       );
 
       logger.debug('Activity created:', {
@@ -114,7 +114,7 @@ class ActivityService {
 
   async updateActivity(
     activityId: string,
-    data: UpdateActivityData
+    data: UpdateActivityData,
   ): Promise<ApiResponse<UserActivity>> {
     try {
       if (!activityId || activityId.trim() === '') {

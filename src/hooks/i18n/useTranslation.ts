@@ -35,7 +35,7 @@ export const useTranslation = () => {
 					const value = options[optionKey];
 					result = result.replace(
 						new RegExp(`\\{\\{?${optionKey}\\}?\\}`, 'g'),
-						String(value)
+						String(value),
 					);
 				});
 			}

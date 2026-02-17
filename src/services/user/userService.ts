@@ -27,7 +27,7 @@ class UserService {
         '/api/auth/profile',
         undefined,
         true,
-        false
+        false,
       );
 
       logger.debug('User profile response:', {

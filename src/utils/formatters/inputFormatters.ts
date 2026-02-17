@@ -18,7 +18,7 @@ export const formatCpf = (text: string): string => {
   } else {
     return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6, 9)}-${numbers.slice(
       9,
-      11
+      11,
     )}`;
   }
 };

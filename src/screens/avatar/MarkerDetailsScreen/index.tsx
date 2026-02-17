@@ -29,9 +29,10 @@ const MarkerDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
   const { t } = useTranslation();
   const rootNavigation = navigation.getParent() ?? navigation;
   const menuItems = useMenuItems(rootNavigation);
-  
+  const [selectedPeriod, setSelectedPeriod] = useState<Period>('week');
+
   const marker = route?.params?.marker;
-  
+
   if (!marker) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.BACKGROUND }} edges={['top']}>
@@ -43,8 +44,6 @@ const MarkerDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
       </SafeAreaView>
     );
   }
-
-  const [selectedPeriod, setSelectedPeriod] = useState<Period>('week');
 
   const markerColor = getMarkerColor(marker.id);
   const markerGradient = getMarkerGradient(marker.id);
@@ -92,7 +91,7 @@ const MarkerDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
               showBackButton
               customLogo={<ProgressHeaderLogo />}
             />
-      
+
       <View style={styles.content}>
         <ScrollView
           style={styles.scrollView}

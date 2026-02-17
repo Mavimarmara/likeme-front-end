@@ -110,7 +110,7 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
                 next: pagingData.next ?? null,
                 previous: pagingData.previous ?? null,
               }
-            : null
+            : null,
         );
 
         // Determina se há mais páginas baseado no paging.next ou pagination
@@ -136,7 +136,7 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
         isLoadingRef.current = false;
       }
     },
-    [pageSize, memoizedParams]
+    [pageSize, memoizedParams],
   );
 
   const loadMore = useCallback(() => {

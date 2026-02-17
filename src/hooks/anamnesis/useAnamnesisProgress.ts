@@ -101,7 +101,7 @@ export const useAnamnesisProgress = () => {
         movimento: calculateCategoryProgress(filterByPrefix('habits_movimento'), 'movimento'),
         espiritualidade: calculateCategoryProgress(
           filterByPrefix('habits_espiritualidade'),
-          'espiritualidade'
+          'espiritualidade',
         ),
         sono: calculateCategoryProgress(filterByPrefix('habits_sono'), 'sono'),
         nutricao: calculateCategoryProgress(filterByPrefix('habits_nutricao'), 'nutricao'),
@@ -109,7 +109,7 @@ export const useAnamnesisProgress = () => {
         autoestima: calculateCategoryProgress(filterByPrefix('habits_autoestima'), 'autoestima'),
         relacionamentos: calculateCategoryProgress(
           filterByPrefix('habits_relacionamentos'),
-          'relacionamentos'
+          'relacionamentos',
         ),
         saude_bucal: calculateCategoryProgress(filterByPrefix('habits_saude_bucal'), 'saude_bucal'),
         proposito: calculateCategoryProgress(filterByPrefix('habits_proposito'), 'proposito'),

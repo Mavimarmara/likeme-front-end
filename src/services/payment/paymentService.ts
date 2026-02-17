@@ -55,7 +55,7 @@ class PaymentService {
       const response = await apiClient.post<ApiResponse<ProcessPaymentResponse>>(
         '/api/payment/process',
         data,
-        true
+        true,
       );
 
       logger.debug('Payment processed:', {
@@ -75,7 +75,7 @@ class PaymentService {
    * Get payment transaction status
    */
   async getTransactionStatus(
-    transactionId: string
+    transactionId: string,
   ): Promise<ApiResponse<TransactionStatusResponse>> {
     try {
       if (!transactionId || transactionId.trim() === '') {
@@ -86,7 +86,7 @@ class PaymentService {
         `/api/payment/status/${transactionId.trim()}`,
         undefined,
         true,
-        false
+        false,
       );
 
       logger.debug('Transaction status retrieved:', {
@@ -107,7 +107,7 @@ class PaymentService {
    */
   async captureTransaction(
     transactionId: string,
-    data?: CapturePaymentRequest
+    data?: CapturePaymentRequest,
   ): Promise<ApiResponse<{ id: string; status: string }>> {
     try {
       if (!transactionId || transactionId.trim() === '') {
@@ -117,7 +117,7 @@ class PaymentService {
       const response = await apiClient.post<ApiResponse<{ id: string; status: string }>>(
         `/api/payment/capture/${transactionId.trim()}`,
         data,
-        true
+        true,
       );
 
       logger.debug('Transaction captured:', {
@@ -138,7 +138,7 @@ class PaymentService {
    */
   async refundTransaction(
     transactionId: string,
-    data?: RefundPaymentRequest
+    data?: RefundPaymentRequest,
   ): Promise<ApiResponse<{ id: string; status: string }>> {
     try {
       if (!transactionId || transactionId.trim() === '') {
@@ -148,7 +148,7 @@ class PaymentService {
       const response = await apiClient.post<ApiResponse<{ id: string; status: string }>>(
         `/api/payment/refund/${transactionId.trim()}`,
         data,
-        true
+        true,
       );
 
       logger.debug('Transaction refunded:', {

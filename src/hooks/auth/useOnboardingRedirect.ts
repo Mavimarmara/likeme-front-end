@@ -13,7 +13,7 @@ type OnboardingDestination =
 function getNextOnboardingDestination(
   welcomeScreenAccessedAt: string | null,
   registerCompletedAt: string | null,
-  objectivesSelectedAt: string | null
+  objectivesSelectedAt: string | null,
 ): OnboardingDestination {
   if (!welcomeScreenAccessedAt) {
     return { screen: 'Welcome' };
@@ -38,7 +38,7 @@ export function useOnboardingRedirect(navigationReplace: NavigationReplace): voi
         const destination = getNextOnboardingDestination(
           welcomeScreenAccessedAt,
           registerCompletedAt,
-          objectivesSelectedAt
+          objectivesSelectedAt,
         );
         navigationReplace(destination.screen, destination.params);
       } catch (error) {

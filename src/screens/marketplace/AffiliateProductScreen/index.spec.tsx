@@ -121,7 +121,7 @@ describe('AffiliateProductScreen', () => {
     };
 
     const { getByText } = render(
-      <AffiliateProductScreen navigation={mockNavigation as any} route={mockRoute as any} />
+      <AffiliateProductScreen navigation={mockNavigation as any} route={mockRoute as any} />,
     );
 
     await waitFor(() => {
@@ -167,7 +167,7 @@ describe('AffiliateProductScreen', () => {
     };
 
     const { getByTestId } = render(
-      <AffiliateProductScreen navigation={mockNavigation as any} route={mockRoute as any} />
+      <AffiliateProductScreen navigation={mockNavigation as any} route={mockRoute as any} />,
     );
 
     await waitFor(() => {
@@ -192,7 +192,7 @@ describe('AffiliateProductScreen', () => {
     const mockOpenURL = jest.spyOn(Linking, 'openURL').mockImplementation(() => Promise.resolve());
 
     const { getByText } = render(
-      <AffiliateProductScreen navigation={mockNavigation as any} route={mockRoute as any} />
+      <AffiliateProductScreen navigation={mockNavigation as any} route={mockRoute as any} />,
     );
 
     await waitFor(() => {
@@ -259,7 +259,7 @@ describe('AffiliateProductScreen', () => {
     };
 
     const { queryByText } = render(
-      <AffiliateProductScreen navigation={mockNavigation as any} route={mockRoute as any} />
+      <AffiliateProductScreen navigation={mockNavigation as any} route={mockRoute as any} />,
     );
 
     // Aguarda o loading terminar - o componente deve renderizar mesmo que loadData não encontre nada
@@ -267,7 +267,7 @@ describe('AffiliateProductScreen', () => {
       () => {
         expect(queryByText('Loading product...')).toBeNull();
       },
-      { timeout: 3000 }
+      { timeout: 3000 },
     );
 
     // Verifica que o componente renderizou (não está em loading)

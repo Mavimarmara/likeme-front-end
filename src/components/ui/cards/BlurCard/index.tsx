@@ -50,11 +50,11 @@ const BlurCard: React.FC<Props> = ({
 
   const blurStyle = useMemo(
     () => getBlurStyle(footerHeight, borderRadius),
-    [footerHeight, borderRadius]
+    [footerHeight, borderRadius],
   );
 
   const containerStyle = useMemo(() => {
-    if (!style) return styles.container;
+    if (!style) {return styles.container;}
     return [styles.container, style];
   }, [style]);
 

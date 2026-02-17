@@ -32,11 +32,11 @@ const App: React.FC = () => {
           console.log('Constants.expoConfig:', 'existe');
           console.log(
             'Constants.expoConfig.extra:',
-            Constants.expoConfig?.extra ? 'existe' : 'não existe'
+            Constants.expoConfig?.extra ? 'existe' : 'não existe',
           );
           console.log(
             'Constants.expoConfig.extra.env:',
-            Constants.expoConfig?.extra?.env ? 'existe' : 'não existe'
+            Constants.expoConfig?.extra?.env ? 'existe' : 'não existe',
           );
           if (Constants.expoConfig?.extra?.env) {
             console.log('Variáveis em extra.env:', Object.keys(Constants.expoConfig.extra.env));

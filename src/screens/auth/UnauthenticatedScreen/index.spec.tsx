@@ -52,7 +52,7 @@ describe('UnauthenticatedScreen', () => {
 
   it('renders correctly', () => {
     const { getByText } = render(
-      <UnauthenticatedScreen navigation={mockNavigation} route={mockRoute} />
+      <UnauthenticatedScreen navigation={mockNavigation} route={mockRoute} />,
     );
 
     expect(getByText('LIKE YOUR LIFE')).toBeTruthy();
@@ -62,7 +62,7 @@ describe('UnauthenticatedScreen', () => {
 
   it('handles next button press', () => {
     const { getByText } = render(
-      <UnauthenticatedScreen navigation={mockNavigation} route={mockRoute} />
+      <UnauthenticatedScreen navigation={mockNavigation} route={mockRoute} />,
     );
 
     const nextButton = getByText('Next');
@@ -73,7 +73,7 @@ describe('UnauthenticatedScreen', () => {
 
   it('handles login button press', () => {
     const { getByText } = render(
-      <UnauthenticatedScreen navigation={mockNavigation} route={mockRoute} />
+      <UnauthenticatedScreen navigation={mockNavigation} route={mockRoute} />,
     );
 
     const loginButton = getByText('Login');

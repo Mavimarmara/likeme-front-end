@@ -54,7 +54,7 @@ const DATE_OPTIONS: FilterOption[] = [
 
 const FilterModal: React.FC<Props> = ({ visible, onClose, onSave, selectedFilters = {} }) => {
   const [selectedPostTypes, setSelectedPostTypes] = useState<string[]>(
-    selectedFilters.postType || []
+    selectedFilters.postType || [],
   );
   const [selectedSortBy, setSelectedSortBy] = useState<SortByFilter | ''>(selectedFilters.sortBy || '');
   const [selectedDate, setSelectedDate] = useState<PublicationDateFilter | ''>(selectedFilters.publicationDate || '');
@@ -62,7 +62,7 @@ const FilterModal: React.FC<Props> = ({ visible, onClose, onSave, selectedFilter
 
   const handlePostTypeToggle = (id: string) => {
     setSelectedPostTypes((prev) =>
-      prev.includes(id) ? prev.filter((type) => type !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((type) => type !== id) : [...prev, id],
     );
   };
 
@@ -81,7 +81,7 @@ const FilterModal: React.FC<Props> = ({ visible, onClose, onSave, selectedFilter
     options: FilterOption[],
     selected: string | string[],
     onSelect: (id: string) => void,
-    multiSelect: boolean = false
+    multiSelect: boolean = false,
   ) => (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>{title}</Text>
@@ -123,7 +123,7 @@ const FilterModal: React.FC<Props> = ({ visible, onClose, onSave, selectedFilter
           DATE_OPTIONS,
           selectedDate,
           (id) => setSelectedDate(id as PublicationDateFilter | ''),
-          false
+          false,
         )}
 
         {renderSection(
@@ -131,7 +131,7 @@ const FilterModal: React.FC<Props> = ({ visible, onClose, onSave, selectedFilter
           SORT_OPTIONS,
           selectedSortBy,
           (id) => setSelectedSortBy(id as SortByFilter | ''),
-          false
+          false,
         )}
 
         {/* Autor */}

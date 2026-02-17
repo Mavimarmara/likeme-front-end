@@ -24,7 +24,7 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
   useFocusEffect(
     React.useCallback(() => {
       refresh();
-    }, [])
+    }, []),
   );
   const handleContinueBody = () => {
     navigation.navigate('AnamnesisBody' as never);
@@ -40,7 +40,7 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
       {
         title: 'Movimento',
         keyPrefix: 'habits_movimento',
-      } as never
+      } as never,
     );
   };
 
@@ -50,7 +50,7 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
       {
         title: 'Espiritualidade',
         keyPrefix: 'habits_espiritualidade',
-      } as never
+      } as never,
     );
   };
 
@@ -60,7 +60,7 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
       {
         title: 'Sono',
         keyPrefix: 'habits_sono',
-      } as never
+      } as never,
     );
   };
 
@@ -70,7 +70,7 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
       {
         title: 'Alimentação',
         keyPrefix: 'habits_nutricao',
-      } as never
+      } as never,
     );
   };
 
@@ -80,7 +80,7 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
       {
         title: 'Estresse',
         keyPrefix: 'habits_estresse',
-      } as never
+      } as never,
     );
   };
 

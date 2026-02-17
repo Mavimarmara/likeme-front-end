@@ -129,7 +129,7 @@ describe('ProductDetailsScreen', () => {
     };
 
     const { getAllByText } = render(
-      <ProductDetailsScreen navigation={mockNavigation as any} route={mockRoute as any} />
+      <ProductDetailsScreen navigation={mockNavigation as any} route={mockRoute as any} />,
     );
 
     await waitFor(() => {
@@ -178,7 +178,7 @@ describe('ProductDetailsScreen', () => {
     };
 
     const { getAllByText } = render(
-      <ProductDetailsScreen navigation={mockNavigation as any} route={mockRoute as any} />
+      <ProductDetailsScreen navigation={mockNavigation as any} route={mockRoute as any} />,
     );
 
     const products = getAllByText('Fallback Product');
@@ -193,7 +193,7 @@ describe('ProductDetailsScreen', () => {
     };
 
     const { getByTestId } = render(
-      <ProductDetailsScreen navigation={mockNavigation as any} route={mockRoute as any} />
+      <ProductDetailsScreen navigation={mockNavigation as any} route={mockRoute as any} />,
     );
 
     // Assuming there's a back button with testID
@@ -239,7 +239,7 @@ describe('ProductDetailsScreen', () => {
       expect(mockUseProductDetails).toHaveBeenCalledWith(
         expect.objectContaining({
           productId: 'product-1',
-        })
+        }),
       );
     });
   });

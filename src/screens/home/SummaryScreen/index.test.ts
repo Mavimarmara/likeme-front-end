@@ -1,17 +1,17 @@
 /**
  * Testes para documentar e validar a lógica de exibição do Avatar e Card de Anamnese na SummaryScreen.
- * 
+ *
  * Regras de negócio:
- * 
+ *
  * 1. AVATAR:
  *    - Aparece quando: (hasAnyAnamnesisAnswers || hasCompletedAnamnesis)
  *    - Com scores: se tem respostas ou completou
  *    - Vazio: se não tem respostas e não completou
- * 
+ *
  * 2. CARD DE PROMPT (AnamnesisPromptCard):
  *    - Aparece quando: !hasCompletedAnamnesis
  *    - Desaparece quando: hasCompletedAnamnesis === true
- * 
+ *
  * 3. VALIDAÇÃO DE COMPLETUDE:
  *    - hasCompletedAnamnesis só é true se:
  *      a) Tem flag completedAt no AsyncStorage

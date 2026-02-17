@@ -26,7 +26,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
 
   const gradientAssets = useMemo(
     () => GRADIENT_SOURCES.map((source) => Image.resolveAssetSource(source)),
-    []
+    [],
   );
 
   const gradientHeights = useMemo(
@@ -39,7 +39,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
         const originalHeight = asset.height ?? GRADIENT_STRIP_HEIGHT;
         return originalHeight * scale;
       }),
-    [gradientAssets]
+    [gradientAssets],
   );
 
   const cumulativeOffsets = useMemo(() => {
@@ -54,7 +54,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
 
   const totalGradientHeight = useMemo(
     () => gradientHeights.reduce((acc, heightValue) => acc + heightValue, 0),
-    [gradientHeights]
+    [gradientHeights],
   );
 
   useEffect(() => {
@@ -62,7 +62,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
       const timing = (anim: Animated.Value, toValue: number, duration: number) =>
         new Promise<void>((resolve) => {
           Animated.timing(anim, { toValue, duration, useNativeDriver: true }).start(() =>
-            resolve()
+            resolve(),
           );
         });
       const delay = (ms: number) => new Promise<void>((r) => setTimeout(() => r(), ms));

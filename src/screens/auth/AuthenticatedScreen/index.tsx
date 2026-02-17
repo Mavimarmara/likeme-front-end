@@ -15,7 +15,7 @@ const AuthenticatedScreen: React.FC<Props> = ({ navigation }) => {
     (screen: string, params?: object) => {
       navigation.replace(screen as never, params as never);
     },
-    [navigation]
+    [navigation],
   );
   useOnboardingRedirect(replace);
 

@@ -259,7 +259,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
         setLoadingMarkers(true);
         const profileResponse = await userService.getProfile();
         const userId = profileResponse.success ? profileResponse.data?.id : null;
-        
+
         if (!userId) {
           setMarkers([]);
           return;
@@ -277,7 +277,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
               name: t(`avatar.marker_${id.replace(/-/g, '_')}`),
               trend: 'stable' as const,
               percentage: 0,
-            }))
+            })),
           );
         }
       } catch (error) {
@@ -289,7 +289,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
             name: t(`avatar.marker_${id.replace(/-/g, '_')}`),
             trend: 'stable' as const,
             percentage: 0,
-          }))
+          })),
         );
       } finally {
         setLoadingMarkers(false);
@@ -301,12 +301,12 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
 
   const biomarkerCards = useMemo(() => {
     const increasingMarkers = markers.filter((marker) => marker.trend === 'increasing');
-    
+
     if (increasingMarkers.length === 0) {
       return markers.map((marker) => {
         const markerName = MARKER_NAMES[marker.id] || marker.name;
         const improvementPercentage = marker.percentage > 0 ? Math.round(marker.percentage / 10) : 0;
-        
+
         return {
           id: marker.id,
           markerId: marker.id,
@@ -317,11 +317,11 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
         };
       });
     }
-    
+
     return increasingMarkers.map((marker) => {
       const markerName = MARKER_NAMES[marker.id] || marker.name;
       const improvementPercentage = marker.percentage > 0 ? Math.round(marker.percentage / 10) : 0;
-      
+
       return {
         id: marker.id,
         markerId: marker.id,
@@ -399,7 +399,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
                                 ? Math.max(
                                     8,
                                     (markerRowWidth - TREND_ICON_WIDTH) *
-                                      (Math.max(marker.percentage, 1) / 100)
+                                      (Math.max(marker.percentage, 1) / 100),
                                   )
                                 : undefined
                             }

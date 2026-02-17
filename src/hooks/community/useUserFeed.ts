@@ -103,12 +103,12 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
         });
 
         const mappedPostsPromises = (feedData.posts || []).map((communityPost) =>
-          mapCommunityPostToPost(communityPost, feedData.files, feedData.users, feedData.comments)
+          mapCommunityPostToPost(communityPost, feedData.files, feedData.users, feedData.comments),
         );
 
         const mappedPostsResults = await Promise.all(mappedPostsPromises);
         const mappedPosts: Post[] = mappedPostsResults.filter(
-          (post): post is Post => post !== null
+          (post): post is Post => post !== null,
         );
 
         if (append) {
@@ -138,7 +138,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
         isLoadingRef.current = false;
       }
     },
-    [pageSize, memoizedParams]
+    [pageSize, memoizedParams],
   );
 
   const loadMore = useCallback(() => {
@@ -163,7 +163,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
       setHasMore(true);
       loadPosts(1, query);
     },
-    [loadPosts]
+    [loadPosts],
   );
 
   useEffect(() => {

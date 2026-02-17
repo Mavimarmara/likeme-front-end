@@ -57,7 +57,7 @@ class OrderService {
         this.ordersEndpoint,
         queryParams,
         true,
-        false
+        false,
       );
 
       logger.debug('Orders list response:', {

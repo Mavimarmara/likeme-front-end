@@ -202,7 +202,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
 
   const feedFilterParams = useMemo(
     () => mapFiltersToFeedParams(selectedFilters),
-    [selectedFilters]
+    [selectedFilters],
   );
 
   const { posts, loading, loadingMore, error, hasMore, loadMore, search } = useUserFeed({

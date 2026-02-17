@@ -143,7 +143,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
           screen: 'ChatScreen',
           params: { chat },
         },
-      })
+      }),
     );
   };
 
@@ -185,7 +185,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
         participantsCount: 38,
       },
     ],
-    []
+    [],
   );
 
   // Mock products data
@@ -208,7 +208,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
         likes: 0,
       },
     ],
-    []
+    [],
   );
 
   return (

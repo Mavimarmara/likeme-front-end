@@ -43,7 +43,7 @@ class AnamnesisService {
         `${this.anamnesisEndpoint}/questions`,
         queryParams,
         true,
-        false
+        false,
       );
 
       logger.debug('Anamnesis questions response:', {
@@ -60,7 +60,7 @@ class AnamnesisService {
   }
 
   async getQuestionByKey(
-    params: GetAnamnesisQuestionParams
+    params: GetAnamnesisQuestionParams,
   ): Promise<GetAnamnesisQuestionResponse> {
     try {
       if (!params.key || !params.locale) {
@@ -71,7 +71,7 @@ class AnamnesisService {
         `${this.anamnesisEndpoint}/questions/${params.key}`,
         { locale: params.locale },
         true,
-        false
+        false,
       );
 
       logger.debug('Anamnesis question response:', {
@@ -88,7 +88,7 @@ class AnamnesisService {
   }
 
   async getCompleteAnamnesis(
-    params: GetCompleteAnamnesisParams
+    params: GetCompleteAnamnesisParams,
   ): Promise<GetCompleteAnamnesisResponse> {
     try {
       if (!params.locale) {
@@ -99,7 +99,7 @@ class AnamnesisService {
         `${this.anamnesisEndpoint}/complete`,
         { locale: params.locale },
         true,
-        false
+        false,
       );
 
       logger.debug('Complete anamnesis response:', {
@@ -124,7 +124,7 @@ class AnamnesisService {
       const response = await apiClient.post<CreateUserAnswerResponse>(
         `${this.anamnesisEndpoint}/answers`,
         data,
-        true
+        true,
       );
 
       logger.debug('User answer created/updated:', {
@@ -155,7 +155,7 @@ class AnamnesisService {
         `${this.anamnesisEndpoint}/answers/user/${params.userId}`,
         queryParams,
         true,
-        false
+        false,
       );
 
       logger.debug('User answers response:', {
@@ -182,7 +182,7 @@ class AnamnesisService {
         `${this.anamnesisEndpoint}/answers/user/${params.userId}/question/${params.questionConceptId}`,
         undefined,
         true,
-        false
+        false,
       );
 
       logger.debug('User answer response:', {
@@ -208,7 +208,7 @@ class AnamnesisService {
         `${this.anamnesisEndpoint}/scores/user/${params.userId}`,
         undefined,
         true,
-        false
+        false,
       );
 
       logger.debug('User scores response:', {
@@ -233,7 +233,7 @@ class AnamnesisService {
         `${this.anamnesisEndpoint}/markers/user/${params.userId}`,
         undefined,
         true,
-        false
+        false,
       );
 
       logger.debug('User markers response:', {
@@ -311,10 +311,10 @@ class AnamnesisService {
       // Usa aliases para buscar tanto português quanto inglês
       const prefixes = AnamnesisService.KEY_PREFIX_ALIASES[prefix] || [prefix];
       const sectionQuestions = allQuestions.filter((q) =>
-        prefixes.some((p) => q.key.startsWith(p))
+        prefixes.some((p) => q.key.startsWith(p)),
       );
       const total = sectionQuestions.length;
-      if (total === 0) continue;
+      if (total === 0) {continue;}
       const answered = sectionQuestions.filter((q) => answeredIds.has(q.id)).length;
       if (answered < total) {
         incompleteSections.push({

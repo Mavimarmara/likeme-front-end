@@ -16,7 +16,7 @@ export interface ErrorNavigationParams {
 export const navigateToError = (
   navigation: any,
   errorMessage?: string | Error | unknown,
-  onRetry?: () => void
+  onRetry?: () => void,
 ) => {
   // Garante que errorMessage seja sempre uma string válida
   let message = 'Algo deu errado';
@@ -42,7 +42,7 @@ export const navigateToError = (
           },
         },
       ],
-    })
+    }),
   );
 };
 
@@ -52,7 +52,7 @@ export const navigateToError = (
 export const showError = (
   navigation: any,
   errorMessage?: string | Error | unknown,
-  onRetry?: () => void
+  onRetry?: () => void,
 ) => {
   // Garante que errorMessage seja sempre uma string válida
   let message = 'Algo deu errado';
@@ -71,7 +71,7 @@ export const showError = (
     {
       errorMessage: message,
       onRetry,
-    } as never
+    } as never,
   );
 };
 
@@ -96,7 +96,7 @@ export const navigateToLoading = (navigation: any, loadingMessage?: string) => {
           },
         },
       ],
-    })
+    }),
   );
 };
 
@@ -108,6 +108,6 @@ export const showLoading = (navigation: any, loadingMessage?: string) => {
     'AppLoading' as never,
     {
       loadingMessage: loadingMessage || 'Carregando...',
-    } as never
+    } as never,
   );
 };

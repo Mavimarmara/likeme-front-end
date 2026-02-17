@@ -10,7 +10,7 @@ interface AnamnesisPromptCardProps {
 
 const AnamnesisPromptCard: React.FC<AnamnesisPromptCardProps> = ({ onStartPress }) => {
 	const { t } = useTranslation();
-	
+
 	return (
 		<CTACard
 			title={t('anamnesis.promptCardTitle')}

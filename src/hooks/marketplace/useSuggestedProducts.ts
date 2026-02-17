@@ -16,7 +16,7 @@ interface UseSuggestedProductsReturn {
 }
 
 export const useSuggestedProducts = (
-  options: UseSuggestedProductsOptions = {}
+  options: UseSuggestedProductsOptions = {},
 ): UseSuggestedProductsReturn => {
   const { limit = 4, status = 'active', enabled = true } = options;
   const [products, setProducts] = useState<Product[]>([]);

@@ -13,7 +13,7 @@ import { logger } from '@/utils/logger';
 const mapCommunityCommentToComment = (
   communityComment: CommunityComment,
   users?: CommunityUser[],
-  files?: CommunityFile[]
+  files?: CommunityFile[],
 ): Comment => {
   const content =
     communityComment.data?.text ||
@@ -23,8 +23,8 @@ const mapCommunityCommentToComment = (
   const user = users?.find((u) => u.userId === communityComment.userId);
 
   const reactionsObj = communityComment.reactions || {};
-  const upvotes = reactionsObj['like'] || reactionsObj['upvote'] || reactionsObj['👍'] || 0;
-  const downvotes = reactionsObj['dislike'] || reactionsObj['downvote'] || reactionsObj['👎'] || 0;
+  const upvotes = reactionsObj.like || reactionsObj.upvote || reactionsObj['👍'] || 0;
+  const downvotes = reactionsObj.dislike || reactionsObj.downvote || reactionsObj['👎'] || 0;
 
   const reactionsArray: Array<{ id: string; userId: string; type: string }> = [];
   if (Object.keys(reactionsObj).length > 0) {
@@ -57,7 +57,7 @@ const mapCommunityCommentToComment = (
 
 const mapCommunityPostToPoll = (
   communityPost: CommunityPost,
-  postChildren?: CommunityPost[]
+  postChildren?: CommunityPost[],
 ): Poll | undefined => {
   if (communityPost.structureType !== 'poll') {
     return undefined;
@@ -154,7 +154,7 @@ export const mapCommunityPostToPost = (
   files?: CommunityFile[],
   users?: CommunityUser[],
   comments?: CommunityComment[],
-  postChildren?: CommunityPost[]
+  postChildren?: CommunityPost[],
 ): Post | null => {
   const postId = communityPost.postId || communityPost._id || '';
   const userId = communityPost.postedUserId || communityPost.userId || '';
@@ -229,13 +229,13 @@ export const mapCommunityPostToPost = (
   if (rawTags) {
     if (Array.isArray(rawTags)) {
       tags = rawTags.filter(
-        (tag) => tag && typeof tag === 'string' && tag.toLowerCase() !== 'tags'
+        (tag) => tag && typeof tag === 'string' && tag.toLowerCase() !== 'tags',
       );
     } else if (typeof rawTags === 'string' && rawTags.toLowerCase() !== 'tags') {
       tags = rawTags;
     } else if (typeof rawTags === 'object') {
       const tagValues = Object.values(rawTags).filter(
-        (val) => val && typeof val === 'string' && val.toLowerCase() !== 'tags'
+        (val) => val && typeof val === 'string' && val.toLowerCase() !== 'tags',
       );
       if (tagValues.length > 0) {
         tags = tagValues.length === 1 ? (tagValues[0] as string) : (tagValues as string[]);
@@ -289,7 +289,7 @@ export const mapCommunityToProgram = (community: Community, files?: CommunityFil
 export const mapCommunityToRecommendedCommunity = (
   community: Community,
   category?: CommunityCategory,
-  files?: CommunityFile[]
+  files?: CommunityFile[],
 ): { id: string; title: string; badge: string; image: string } => {
   const badge = category?.name || 'Community';
 
@@ -309,7 +309,7 @@ export const mapCommunityToRecommendedCommunity = (
 export const mapCommunityToOtherCommunity = (
   community: Community,
   category?: CommunityCategory,
-  files?: CommunityFile[]
+  files?: CommunityFile[],
 ): { id: string; title: string; badge: string; image: string; rating: number; price: string } => {
   const badge = category?.name || 'Community';
 

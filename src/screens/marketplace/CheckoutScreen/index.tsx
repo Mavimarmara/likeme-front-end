@@ -171,8 +171,8 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
             total: item.price * item.quantity,
           })),
           null,
-          2
-        )
+          2,
+        ),
       );
 
       // Preparar billingAddress sempre como objeto estruturado (backend sempre exige)

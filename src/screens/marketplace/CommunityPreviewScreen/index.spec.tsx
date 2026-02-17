@@ -66,7 +66,7 @@ describe('CommunityPreviewScreen', () => {
 
   it('renders correctly with product name', () => {
     const { getByText } = render(
-      <CommunityPreviewScreen navigation={mockNavigation} route={mockRoute} />
+      <CommunityPreviewScreen navigation={mockNavigation} route={mockRoute} />,
     );
 
     expect(getByText('Community Preview')).toBeTruthy();
@@ -81,7 +81,7 @@ describe('CommunityPreviewScreen', () => {
     } as any;
 
     const { getByText, queryByText } = render(
-      <CommunityPreviewScreen navigation={mockNavigation} route={routeWithoutName} />
+      <CommunityPreviewScreen navigation={mockNavigation} route={routeWithoutName} />,
     );
 
     expect(getByText('Community Preview')).toBeTruthy();
@@ -90,7 +90,7 @@ describe('CommunityPreviewScreen', () => {
 
   it('displays posts when available', async () => {
     const { getByTestId } = render(
-      <CommunityPreviewScreen navigation={mockNavigation} route={mockRoute} />
+      <CommunityPreviewScreen navigation={mockNavigation} route={mockRoute} />,
     );
 
     await waitFor(() => {
@@ -102,7 +102,7 @@ describe('CommunityPreviewScreen', () => {
 
   it('displays empty message when no posts', async () => {
     const { getByText, getByTestId } = render(
-      <CommunityPreviewScreen navigation={mockNavigation} route={mockRoute} />
+      <CommunityPreviewScreen navigation={mockNavigation} route={mockRoute} />,
     );
 
     // The component has mock posts, so we need to check if empty state would show
@@ -115,7 +115,7 @@ describe('CommunityPreviewScreen', () => {
 
   it('calls goBack when back button is pressed', () => {
     const { getByTestId } = render(
-      <CommunityPreviewScreen navigation={mockNavigation} route={mockRoute} />
+      <CommunityPreviewScreen navigation={mockNavigation} route={mockRoute} />,
     );
 
     const backButton = getByTestId('back-button');

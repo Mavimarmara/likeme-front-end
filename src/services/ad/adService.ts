@@ -49,7 +49,7 @@ class AdService {
         this.adsEndpoint,
         queryParams,
         true,
-        false
+        false,
       );
 
       logger.debug('Ads list response:', {

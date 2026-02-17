@@ -71,7 +71,7 @@ class CommunityService {
         this.userFeeEndpoint,
         queryParams,
         true,
-        false
+        false,
       );
       console.log('userFeedResponse', JSON.stringify(userFeedResponse));
       return userFeedResponse;
@@ -124,7 +124,7 @@ class CommunityService {
           pollId: pollId.trim(),
           answerIds,
         },
-        true
+        true,
       );
 
       logger.debug('Poll vote response:', {
@@ -142,7 +142,7 @@ class CommunityService {
 
   async addCommentReaction(
     commentId: string,
-    reactionName: 'like' | 'dislike' = 'like'
+    reactionName: 'like' | 'dislike' = 'like',
   ): Promise<boolean> {
     try {
       if (!commentId || commentId.trim() === '') {
@@ -156,7 +156,7 @@ class CommunityService {
         {
           reactionName,
         },
-        true
+        true,
       );
 
       logger.debug('Comment reaction added:', { commentId, reactionName });
@@ -169,7 +169,7 @@ class CommunityService {
 
   async removeCommentReaction(
     commentId: string,
-    reactionName: 'like' | 'dislike' = 'like'
+    reactionName: 'like' | 'dislike' = 'like',
   ): Promise<boolean> {
     try {
       if (!commentId || commentId.trim() === '') {
@@ -183,7 +183,7 @@ class CommunityService {
         {
           reactionName,
         },
-        true
+        true,
       );
 
       logger.debug('Comment reaction removed:', { commentId, reactionName });
@@ -218,7 +218,7 @@ class CommunityService {
         this.communitiesEndpoint,
         queryParams,
         true,
-        false
+        false,
       );
 
       logger.debug('Communities list response:', {
@@ -251,7 +251,7 @@ class CommunityService {
         this.channelsEndpoint,
         queryParams,
         true,
-        false
+        false,
       );
 
       logger.debug('Channels response:', {

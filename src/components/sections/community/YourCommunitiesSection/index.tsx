@@ -21,13 +21,13 @@ type Props = {
 };
 
 const YourCommunitiesSection: React.FC<Props> = ({ community, onCommunityPress, onPostPress }) => {
+  const { t } = useTranslation();
+
   if (!community) {
     return null;
   }
-
-  const { t } = useTranslation();
   const getPostTitle = (post: Post): string => {
-    if (post.title) return post.title;
+    if (post.title) {return post.title;}
     if (post.content) {
       return post.content.length > 50 ? post.content.substring(0, 50) + '...' : post.content;
     }

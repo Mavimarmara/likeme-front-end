@@ -44,7 +44,7 @@ const TextInput = forwardRef<RNTextInput, TextInputProps>(
         )}
       </View>
     );
-  }
+  },
 );
 
 TextInput.displayName = 'TextInput';

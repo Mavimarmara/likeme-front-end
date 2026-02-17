@@ -63,7 +63,7 @@ describe('PaymentService', () => {
         '/api/payment/status/trans-123',
         undefined,
         true,
-        false
+        false,
       );
       expect(result).toEqual(mockResponse);
     });
@@ -86,7 +86,7 @@ describe('PaymentService', () => {
       expect(apiClient.post).toHaveBeenCalledWith(
         '/api/payment/capture/trans-123',
         { amount: 50.0 },
-        true
+        true,
       );
       expect(result).toEqual(mockResponse);
     });
@@ -107,7 +107,7 @@ describe('PaymentService', () => {
       expect(apiClient.post).toHaveBeenCalledWith(
         '/api/payment/capture/trans-123',
         undefined,
-        true
+        true,
       );
       expect(result).toEqual(mockResponse);
     });
@@ -130,7 +130,7 @@ describe('PaymentService', () => {
       expect(apiClient.post).toHaveBeenCalledWith(
         '/api/payment/refund/trans-123',
         { amount: 50.0 },
-        true
+        true,
       );
       expect(result).toEqual(mockResponse);
     });

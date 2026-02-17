@@ -50,7 +50,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedOrder, setSelectedOrder] = useState<string>('best-rated');
   const [page, setPage] = useState(1);
-  
+
   const categoryOptions = useMemo(() => getCategoryOptions(t), [t]);
   const orderOptions = useMemo(() => getOrderOptions(t), [t]);
 

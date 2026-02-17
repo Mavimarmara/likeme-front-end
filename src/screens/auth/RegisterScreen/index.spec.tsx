@@ -127,7 +127,7 @@ describe('RegisterScreen', () => {
     const mockRoute = { params: { userName: 'John' } };
 
     const { getByText, getByTestId } = render(
-      <RegisterScreen navigation={mockNavigation} route={mockRoute as any} />
+      <RegisterScreen navigation={mockNavigation} route={mockRoute as any} />,
     );
 
     fireEvent.changeText(getByTestId('input-Nome completo'), 'John');
@@ -146,7 +146,7 @@ describe('RegisterScreen', () => {
     const mockRoute = { params: {} };
 
     const { getByText, getByTestId } = render(
-      <RegisterScreen navigation={mockNavigation} route={mockRoute as any} />
+      <RegisterScreen navigation={mockNavigation} route={mockRoute as any} />,
     );
 
     fireEvent.changeText(getByTestId('input-Nome completo'), 'Maria Silva');
@@ -156,7 +156,7 @@ describe('RegisterScreen', () => {
       expect.objectContaining({
         firstName: 'Maria',
         lastName: 'Silva',
-      })
+      }),
     );
   });
 
@@ -165,7 +165,7 @@ describe('RegisterScreen', () => {
     const mockRoute = { params: { userName: 'John' } };
 
     const { getByText, getByTestId } = render(
-      <RegisterScreen navigation={mockNavigation} route={mockRoute as any} />
+      <RegisterScreen navigation={mockNavigation} route={mockRoute as any} />,
     );
 
     fireEvent.changeText(getByTestId('input-Nome completo'), 'John Doe');
@@ -199,7 +199,7 @@ describe('RegisterScreen', () => {
     const alertSpy = jest.spyOn(Alert, 'alert');
 
     const { getByText, getByTestId } = render(
-      <RegisterScreen navigation={mockNavigation} route={mockRoute as any} />
+      <RegisterScreen navigation={mockNavigation} route={mockRoute as any} />,
     );
 
     fireEvent.changeText(getByTestId('input-Nome completo'), '');
@@ -218,7 +218,7 @@ describe('RegisterScreen', () => {
     const alertSpy = jest.spyOn(Alert, 'alert');
 
     const { getByText, getByTestId } = render(
-      <RegisterScreen navigation={mockNavigation} route={mockRoute as any} />
+      <RegisterScreen navigation={mockNavigation} route={mockRoute as any} />,
     );
 
     fireEvent.changeText(getByTestId('input-Nome completo'), '   ');
@@ -235,7 +235,7 @@ describe('RegisterScreen', () => {
     const mockRoute = { params: {} };
 
     const { getByText, getByTestId } = render(
-      <RegisterScreen navigation={mockNavigation} route={mockRoute as any} />
+      <RegisterScreen navigation={mockNavigation} route={mockRoute as any} />,
     );
 
     fireEvent.changeText(getByTestId('input-Nome completo'), 'João');

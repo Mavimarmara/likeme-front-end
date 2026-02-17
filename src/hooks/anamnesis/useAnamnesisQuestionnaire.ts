@@ -7,7 +7,7 @@ import type {
 } from '@/types/anamnesis';
 
 export function useAnamnesisQuestionnaire<T>(
-  params: UseAnamnesisQuestionnaireParams<T>
+  params: UseAnamnesisQuestionnaireParams<T>,
 ): UseAnamnesisQuestionnaireReturn<T> {
   const [userId, setUserId] = useState<string | null>(null);
   const [questions, setQuestions] = useState<AnamnesisQuestion[]>([]);
@@ -107,14 +107,14 @@ export function useAnamnesisQuestionnaire<T>(
         setError(message);
       }
     },
-    [params, questionsById, userId]
+    [params, questionsById, userId],
   );
 
   const complete = useCallback(async () => {
     const unanswered = questions.filter((q) => answers[q.id] === undefined).length;
     if (unanswered > 0) {
       throw new Error(
-        `Responda todas as perguntas antes de finalizar (${unanswered} sem resposta).`
+        `Responda todas as perguntas antes de finalizar (${unanswered} sem resposta).`,
       );
     }
     setCompleting(true);

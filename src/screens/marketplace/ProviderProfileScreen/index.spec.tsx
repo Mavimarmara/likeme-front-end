@@ -65,7 +65,7 @@ describe('ProviderProfileScreen', () => {
 
   it('renders correctly with provider data', () => {
     const { getByText } = render(
-      <ProviderProfileScreen navigation={mockNavigation} route={mockRouteWithProvider} />
+      <ProviderProfileScreen navigation={mockNavigation} route={mockRouteWithProvider} />,
     );
 
     expect(getByText('Dr. Avery Parker')).toBeTruthy();
@@ -79,7 +79,7 @@ describe('ProviderProfileScreen', () => {
 
   it('renders correctly with default provider data when not provided', () => {
     const { getByText } = render(
-      <ProviderProfileScreen navigation={mockNavigation} route={mockRouteWithoutProvider} />
+      <ProviderProfileScreen navigation={mockNavigation} route={mockRouteWithoutProvider} />,
     );
 
     expect(getByText('Dr. Avery Parker')).toBeTruthy();
@@ -88,7 +88,7 @@ describe('ProviderProfileScreen', () => {
 
   it('calls goBack when back button is pressed', () => {
     const { getByTestId } = render(
-      <ProviderProfileScreen navigation={mockNavigation} route={mockRouteWithProvider} />
+      <ProviderProfileScreen navigation={mockNavigation} route={mockRouteWithProvider} />,
     );
 
     const backButton = getByTestId('back-button');
@@ -99,7 +99,7 @@ describe('ProviderProfileScreen', () => {
 
   it('handles Book Appointment button press', () => {
     const { getByText } = render(
-      <ProviderProfileScreen navigation={mockNavigation} route={mockRouteWithProvider} />
+      <ProviderProfileScreen navigation={mockNavigation} route={mockRouteWithProvider} />,
     );
 
     const bookButton = getByText('Book Appointment');
@@ -110,7 +110,7 @@ describe('ProviderProfileScreen', () => {
 
   it('handles Send Message button press', () => {
     const { getByText } = render(
-      <ProviderProfileScreen navigation={mockNavigation} route={mockRouteWithProvider} />
+      <ProviderProfileScreen navigation={mockNavigation} route={mockRouteWithProvider} />,
     );
 
     const messageButton = getByText('Send Message');
@@ -131,7 +131,7 @@ describe('ProviderProfileScreen', () => {
     } as any;
 
     const { getByText } = render(
-      <ProviderProfileScreen navigation={mockNavigation} route={routeWithoutAvatar} />
+      <ProviderProfileScreen navigation={mockNavigation} route={routeWithoutAvatar} />,
     );
 
     // Should render the first letter of the name

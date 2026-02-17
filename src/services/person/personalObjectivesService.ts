@@ -7,7 +7,7 @@ import {
 
 class PersonalObjectivesService {
   async getPersonalObjectives(
-    params: PersonalObjectivesParams = {}
+    params: PersonalObjectivesParams = {},
   ): Promise<PersonalObjectivesResponse> {
     const { page = 1, limit = 10 } = params;
 

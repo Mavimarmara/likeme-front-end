@@ -118,7 +118,7 @@ describe('CartScreen', () => {
 
   it('renders correctly with cart items', async () => {
     const { getByText, queryByText } = render(
-      <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />
+      <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />,
     );
 
     // Aguarda que o loading termine e os itens sejam carregados
@@ -129,7 +129,7 @@ describe('CartScreen', () => {
         // E que os produtos foram renderizados
         expect(getByText('Product 1')).toBeTruthy();
       },
-      { timeout: 3000 }
+      { timeout: 3000 },
     );
   });
 
@@ -137,7 +137,7 @@ describe('CartScreen', () => {
     (storageService.getCartItems as jest.Mock).mockResolvedValue([]);
 
     const { getByText } = render(
-      <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />
+      <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />,
     );
 
     await waitFor(() => {
@@ -153,13 +153,13 @@ describe('CartScreen', () => {
       () => {
         expect(storageService.getCartItems).toHaveBeenCalled();
       },
-      { timeout: 2000 }
+      { timeout: 2000 },
     );
   });
 
   it('navigates to checkout when Buy button is pressed', async () => {
     const { getByText, queryByText } = render(
-      <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />
+      <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />,
     );
 
     await waitFor(
@@ -167,7 +167,7 @@ describe('CartScreen', () => {
         expect(queryByText('Loading cart...')).toBeNull();
         expect(getByText('Buy')).toBeTruthy();
       },
-      { timeout: 3000 }
+      { timeout: 3000 },
     );
 
     const buyButton = getByText('Buy');
@@ -178,7 +178,7 @@ describe('CartScreen', () => {
 
   it('handles back button press', async () => {
     const { getByTestId, queryByText } = render(
-      <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />
+      <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />,
     );
 
     await waitFor(
@@ -186,7 +186,7 @@ describe('CartScreen', () => {
         expect(queryByText('Loading cart...')).toBeNull();
         expect(getByTestId('back-button')).toBeTruthy();
       },
-      { timeout: 3000 }
+      { timeout: 3000 },
     );
 
     const backButton = getByTestId('back-button');
@@ -197,7 +197,7 @@ describe('CartScreen', () => {
 
   it('calculates total correctly', async () => {
     const { getByText, queryByText } = render(
-      <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />
+      <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />,
     );
 
     await waitFor(
@@ -206,13 +206,13 @@ describe('CartScreen', () => {
         // Verifica se os produtos foram renderizados, o que indica que os cálculos foram feitos
         expect(getByText('Product 1')).toBeTruthy();
       },
-      { timeout: 3000 }
+      { timeout: 3000 },
     );
   });
 
   it('increases item quantity when plus button is pressed', async () => {
     const { getByText, getByTestId, queryByText } = render(
-      <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />
+      <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />,
     );
 
     await waitFor(
@@ -220,7 +220,7 @@ describe('CartScreen', () => {
         expect(queryByText('Loading cart...')).toBeNull();
         expect(getByText('Product 1')).toBeTruthy();
       },
-      { timeout: 3000 }
+      { timeout: 3000 },
     );
 
     const increaseButton = getByTestId('increase-quantity-1');
@@ -230,13 +230,13 @@ describe('CartScreen', () => {
       () => {
         expect(storageService.setCartItems).toHaveBeenCalled();
       },
-      { timeout: 2000 }
+      { timeout: 2000 },
     );
   });
 
   it('decreases item quantity when minus button is pressed', async () => {
     const { getByText, getByTestId, queryByText } = render(
-      <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />
+      <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />,
     );
 
     await waitFor(
@@ -244,7 +244,7 @@ describe('CartScreen', () => {
         expect(queryByText('Loading cart...')).toBeNull();
         expect(getByText('Product 1')).toBeTruthy();
       },
-      { timeout: 3000 }
+      { timeout: 3000 },
     );
 
     const decreaseButton = getByTestId('decrease-quantity-1');
@@ -254,13 +254,13 @@ describe('CartScreen', () => {
       () => {
         expect(storageService.setCartItems).toHaveBeenCalled();
       },
-      { timeout: 2000 }
+      { timeout: 2000 },
     );
   });
 
   it('removes item when delete button is pressed', async () => {
     const { getByText, getByTestId, queryByText } = render(
-      <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />
+      <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />,
     );
 
     await waitFor(
@@ -268,7 +268,7 @@ describe('CartScreen', () => {
         expect(queryByText('Loading cart...')).toBeNull();
         expect(getByText('Product 1')).toBeTruthy();
       },
-      { timeout: 3000 }
+      { timeout: 3000 },
     );
 
     const deleteButton = getByTestId('delete-item-1');
@@ -278,13 +278,13 @@ describe('CartScreen', () => {
       () => {
         expect(storageService.removeCartItem).toHaveBeenCalledWith('1');
       },
-      { timeout: 2000 }
+      { timeout: 2000 },
     );
   });
 
   it('applies shipping when apply button is pressed', async () => {
     const { getByText, getByPlaceholderText, queryByText } = render(
-      <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />
+      <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />,
     );
 
     await waitFor(
@@ -292,7 +292,7 @@ describe('CartScreen', () => {
         expect(queryByText('Loading cart...')).toBeNull();
         expect(getByText('Product 1')).toBeTruthy();
       },
-      { timeout: 3000 }
+      { timeout: 3000 },
     );
 
     const zipInput = getByPlaceholderText('00000-000');
@@ -309,7 +309,7 @@ describe('CartScreen', () => {
     (storageService.getCartItems as jest.Mock).mockResolvedValue([]);
 
     const { getByText } = render(
-      <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />
+      <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />,
     );
 
     await waitFor(() => {

@@ -43,7 +43,7 @@ const AnamnesisBodyScreen: React.FC<Props> = ({ navigation }) => {
       Alert.alert(
         t('anamnesis.unansweredQuestions'),
         t('anamnesis.unansweredQuestionsMessage', { count: unansweredCount }),
-        [{ text: t('common.ok') }]
+        [{ text: t('common.ok') }],
       );
       return;
     }
@@ -57,7 +57,7 @@ const AnamnesisBodyScreen: React.FC<Props> = ({ navigation }) => {
         Alert.alert(
           t('anamnesis.incompleteSectionsTitle'),
           t('anamnesis.incompleteSectionsMessage', { sections }),
-          [{ text: t('common.ok') }]
+          [{ text: t('common.ok') }],
         );
         return;
       }
@@ -66,7 +66,7 @@ const AnamnesisBodyScreen: React.FC<Props> = ({ navigation }) => {
     } catch (err) {
       Alert.alert(
         t('errors.error'),
-        err instanceof Error ? err.message : t('anamnesis.finalizationError')
+        err instanceof Error ? err.message : t('anamnesis.finalizationError'),
       );
     }
   };

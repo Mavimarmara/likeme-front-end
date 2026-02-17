@@ -36,7 +36,7 @@ jest.mock('@/components/ui', () => {
           onSubmitEditing={onSubmitEditing}
           testID={`input-${placeholder}`}
         />
-      )
+      ),
     ),
   };
 });
@@ -53,7 +53,7 @@ describe('WelcomeScreen', () => {
     };
 
     const { getByText, getByPlaceholderText } = render(
-      <WelcomeScreen navigation={mockNavigation} />
+      <WelcomeScreen navigation={mockNavigation} />,
     );
 
     expect(getByText('Welcome!')).toBeTruthy();
@@ -92,7 +92,7 @@ describe('WelcomeScreen', () => {
 
     expect(alertSpy).toHaveBeenCalledWith(
       'Nome obrigatório',
-      'Por favor, digite seu nome para continuar.'
+      'Por favor, digite seu nome para continuar.',
     );
     expect(mockNavigation.navigate).not.toHaveBeenCalled();
 
@@ -115,7 +115,7 @@ describe('WelcomeScreen', () => {
 
     expect(alertSpy).toHaveBeenCalledWith(
       'Nome obrigatório',
-      'Por favor, digite seu nome para continuar.'
+      'Por favor, digite seu nome para continuar.',
     );
     expect(mockNavigation.navigate).not.toHaveBeenCalled();
 

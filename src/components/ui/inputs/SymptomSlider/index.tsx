@@ -18,7 +18,7 @@ interface SymptomSliderProps {
 
 const SymptomSlider: React.FC<SymptomSliderProps> = ({ selectedValue, onValueChange }) => {
   const { t } = useTranslation();
-  
+
   const SYMPTOM_OPTIONS: SymptomOption[] = useMemo(() => [
     { value: 'grave', label: t('anamnesis.symptomLevelGrave'), sublabel: t('anamnesis.symptomsSublabel') },
     { value: 'moderado', label: t('anamnesis.symptomLevelModerado'), sublabel: t('anamnesis.symptomsSublabel') },

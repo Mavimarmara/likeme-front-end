@@ -62,16 +62,16 @@ const CreateActivityModal: React.FC<Props> = ({
   const [name, setName] = useState(initialData?.name || '');
   const [type, setType] = useState<ActivityType>(initialData?.type || 'event');
   const [startDateValue, setStartDateValue] = useState(
-    initialData?.startDate ? new Date(initialData.startDate) : new Date()
+    initialData?.startDate ? new Date(initialData.startDate) : new Date(),
   );
   const [startTimeValue, setStartTimeValue] = useState(
-    initialData?.startTime ? parseTimeToDate(initialData.startTime) : new Date()
+    initialData?.startTime ? parseTimeToDate(initialData.startTime) : new Date(),
   );
   const [endDateValue, setEndDateValue] = useState(
-    initialData?.endDate ? new Date(initialData.endDate) : new Date()
+    initialData?.endDate ? new Date(initialData.endDate) : new Date(),
   );
   const [endTimeValue, setEndTimeValue] = useState(
-    initialData?.endTime ? parseTimeToDate(initialData.endTime) : new Date()
+    initialData?.endTime ? parseTimeToDate(initialData.endTime) : new Date(),
   );
   const [location, setLocation] = useState(initialData?.location || '');
   const [description, setDescription] = useState(initialData?.description || '');
@@ -84,8 +84,8 @@ const CreateActivityModal: React.FC<Props> = ({
     const [time, period] = timeString.split(' ');
     const [hours, minutes] = time.split(':');
     let hour = parseInt(hours, 10);
-    if (period === 'pm' && hour !== 12) hour += 12;
-    if (period === 'am' && hour === 12) hour = 0;
+    if (period === 'pm' && hour !== 12) {hour += 12;}
+    if (period === 'am' && hour === 12) {hour = 0;}
     date.setHours(hour, parseInt(minutes, 10), 0, 0);
     return date;
   }
@@ -98,7 +98,7 @@ const CreateActivityModal: React.FC<Props> = ({
         setType(initialData.type || 'event');
         setStartDateValue(initialData.startDate ? new Date(initialData.startDate) : new Date());
         setStartTimeValue(
-          initialData.startTime ? parseTimeToDate(initialData.startTime) : new Date()
+          initialData.startTime ? parseTimeToDate(initialData.startTime) : new Date(),
         );
         setEndDateValue(initialData.endDate ? new Date(initialData.endDate) : new Date());
         setEndTimeValue(initialData.endTime ? parseTimeToDate(initialData.endTime) : new Date());
@@ -171,7 +171,7 @@ const CreateActivityModal: React.FC<Props> = ({
         reminderEnabled,
         reminderMinutes: reminderEnabled ? reminderMinutes : undefined,
       },
-      activityId
+      activityId,
     );
     onClose();
   };

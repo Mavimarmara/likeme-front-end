@@ -58,7 +58,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   useFocusEffect(
     useCallback(() => {
       refreshAnamnesisScores();
-    }, [refreshAnamnesisScores])
+    }, [refreshAnamnesisScores]),
   );
 
   const handleCartPress = () => {
@@ -203,12 +203,12 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
         });
 
         const mappedPostsPromises = filteredCommunityPosts.map((communityPost) =>
-          mapCommunityPostToPost(communityPost, feedData.files, feedData.users, feedData.comments)
+          mapCommunityPostToPost(communityPost, feedData.files, feedData.users, feedData.comments),
         );
 
         const mappedPostsResults = await Promise.all(mappedPostsPromises);
         const mappedPosts: Post[] = mappedPostsResults.filter(
-          (post): post is Post => post !== null
+          (post): post is Post => post !== null,
         );
 
         const sortedPosts = sortByDateObject(mappedPosts, 'createdAt', 'desc');

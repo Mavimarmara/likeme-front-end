@@ -139,7 +139,7 @@ describe('MarketplaceScreen', () => {
 
   it('renders correctly', async () => {
     const { getByText } = render(
-      <MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />
+      <MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />,
     );
 
     await waitFor(() => {
@@ -162,7 +162,7 @@ describe('MarketplaceScreen', () => {
 
   it('navigates to cart when cart button is pressed', () => {
     const { getByTestId } = render(
-      <MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />
+      <MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />,
     );
 
     const cartButton = getByTestId('cart-button');
@@ -173,7 +173,7 @@ describe('MarketplaceScreen', () => {
 
   it('navigates to ProductDetails when clicking on a regular product', async () => {
     const { getByText } = render(
-      <MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />
+      <MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />,
     );
 
     await waitFor(() => {
@@ -196,7 +196,7 @@ describe('MarketplaceScreen', () => {
 
   it('navigates to AffiliateProduct when clicking on an Amazon product', async () => {
     const { getByText } = render(
-      <MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />
+      <MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />,
     );
 
     await waitFor(() => {
@@ -222,7 +222,7 @@ describe('MarketplaceScreen', () => {
     (storageService.addToCart as jest.Mock).mockResolvedValue(undefined);
 
     const { getByText, getAllByTestId } = render(
-      <MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />
+      <MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />,
     );
 
     await waitFor(() => {
@@ -238,7 +238,7 @@ describe('MarketplaceScreen', () => {
 
   it('filters ads by category when category pill is pressed', async () => {
     const { getByText } = render(
-      <MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />
+      <MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />,
     );
 
     await waitFor(() => {

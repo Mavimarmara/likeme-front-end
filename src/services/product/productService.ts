@@ -42,7 +42,7 @@ class ProductService {
         this.productsEndpoint,
         queryParams,
         true,
-        false
+        false,
       );
 
       logger.debug('Products list response:', {
@@ -87,7 +87,7 @@ class ProductService {
       const response = await apiClient.post<ApiResponse<Product>>(
         this.productsEndpoint,
         data,
-        true
+        true,
       );
 
       logger.debug('Product created:', {

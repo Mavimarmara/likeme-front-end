@@ -37,7 +37,7 @@ export const useFormattedInput = ({ type, onChangeText }: UseFormattedInputOptio
 
       onChangeText(formattedText);
     },
-    [type, onChangeText]
+    [type, onChangeText],
   );
 
   return handleChange;

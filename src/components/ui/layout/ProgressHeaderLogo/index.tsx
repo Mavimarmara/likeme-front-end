@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
 
 const ProgressHeaderLogo: React.FC<Props> = ({ textStyle }) => {
 	const { t } = useTranslation();
-	
+
 	return (
 		<View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
 			<LogoPartialMini width={50} height={16} />

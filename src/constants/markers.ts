@@ -32,7 +32,7 @@ export const getMarkerColor = (markerId: string): string => {
 };
 
 export const getMarkerGradient = (
-  markerId: string
+  markerId: string,
 ): readonly [string, string, ...string[]] | null => {
   const normalizedId = markerId.toLowerCase().replace(/\s+/g, '-');
   return MARKER_GRADIENTS[normalizedId] || null;

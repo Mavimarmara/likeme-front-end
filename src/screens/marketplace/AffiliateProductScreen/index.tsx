@@ -385,7 +385,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
       { id: 'description' as TabType, label: t('marketplace.description') },
       { id: 'composition' as TabType, label: t('marketplace.composition') },
     ],
-    [t]
+    [t],
   );
 
   const renderTabs = () => (

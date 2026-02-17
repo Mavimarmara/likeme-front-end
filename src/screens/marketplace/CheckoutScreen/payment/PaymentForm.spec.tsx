@@ -41,7 +41,7 @@ jest.mock('@/components/ui/inputs/TextInput', () => {
           {...props}
         />
       </View>
-    )
+    ),
   );
 });
 
@@ -86,7 +86,7 @@ describe('PaymentForm', () => {
 
   it('should render credit card form when credit_card is selected', () => {
     const { getByText, getByPlaceholderText } = render(
-      <PaymentForm {...mockProps} paymentMethod="credit_card" />
+      <PaymentForm {...mockProps} paymentMethod="credit_card" />,
     );
 
     expect(getByText("Cardholder's name")).toBeTruthy();
@@ -99,7 +99,7 @@ describe('PaymentForm', () => {
 
   it('should not render credit card form when pix is selected', () => {
     const { queryByText, queryByPlaceholderText } = render(
-      <PaymentForm {...mockProps} paymentMethod="pix" />
+      <PaymentForm {...mockProps} paymentMethod="pix" />,
     );
 
     expect(queryByText("Cardholder's name")).toBeNull();
@@ -126,7 +126,7 @@ describe('PaymentForm', () => {
 
   it('should call onCardholderNameChange when cardholder name is changed', () => {
     const { getByPlaceholderText } = render(
-      <PaymentForm {...mockProps} paymentMethod="credit_card" />
+      <PaymentForm {...mockProps} paymentMethod="credit_card" />,
     );
 
     const input = getByPlaceholderText('Complete name');
@@ -137,7 +137,7 @@ describe('PaymentForm', () => {
 
   it('should call onCardNumberChange when card number is changed', () => {
     const { getByPlaceholderText } = render(
-      <PaymentForm {...mockProps} paymentMethod="credit_card" />
+      <PaymentForm {...mockProps} paymentMethod="credit_card" />,
     );
 
     const input = getByPlaceholderText('1234 5678 9101 1121');
@@ -148,7 +148,7 @@ describe('PaymentForm', () => {
 
   it('should call onExpiryDateChange when expiry date is changed', () => {
     const { getByPlaceholderText } = render(
-      <PaymentForm {...mockProps} paymentMethod="credit_card" />
+      <PaymentForm {...mockProps} paymentMethod="credit_card" />,
     );
 
     const input = getByPlaceholderText('mm/yy');
@@ -159,7 +159,7 @@ describe('PaymentForm', () => {
 
   it('should call onCvvChange when CVV is changed', () => {
     const { getByPlaceholderText } = render(
-      <PaymentForm {...mockProps} paymentMethod="credit_card" />
+      <PaymentForm {...mockProps} paymentMethod="credit_card" />,
     );
 
     const input = getByPlaceholderText('123');
@@ -170,7 +170,7 @@ describe('PaymentForm', () => {
 
   it('should call onSaveCardDetailsChange when checkbox is pressed', () => {
     const { getByText } = render(
-      <PaymentForm {...mockProps} paymentMethod="credit_card" saveCardDetails={false} />
+      <PaymentForm {...mockProps} paymentMethod="credit_card" saveCardDetails={false} />,
     );
 
     const checkbox = getByText('Save card datails').parent;
@@ -181,7 +181,7 @@ describe('PaymentForm', () => {
 
   it('should show checked state when saveCardDetails is true', () => {
     const { getByText } = render(
-      <PaymentForm {...mockProps} paymentMethod="credit_card" saveCardDetails={true} />
+      <PaymentForm {...mockProps} paymentMethod="credit_card" saveCardDetails={true} />,
     );
 
     expect(getByText('Save card datails')).toBeTruthy();
@@ -224,7 +224,7 @@ describe('PaymentForm', () => {
     };
 
     const { getByDisplayValue } = render(
-      <PaymentForm {...propsWithValues} paymentMethod="credit_card" />
+      <PaymentForm {...propsWithValues} paymentMethod="credit_card" />,
     );
 
     expect(getByDisplayValue('John Doe')).toBeTruthy();
@@ -236,7 +236,7 @@ describe('PaymentForm', () => {
 
   it('should render CVV field as secure text entry', () => {
     const { getByPlaceholderText } = render(
-      <PaymentForm {...mockProps} paymentMethod="credit_card" />
+      <PaymentForm {...mockProps} paymentMethod="credit_card" />,
     );
 
     const cvvInput = getByPlaceholderText('123');

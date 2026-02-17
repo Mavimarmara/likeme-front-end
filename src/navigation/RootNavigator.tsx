@@ -64,8 +64,8 @@ const RootNavigator: React.FC = () => {
               />
         <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ title: 'Boas-vindas' }} />
         <Stack.Screen name="Intro" component={IntroScreen} options={{ title: 'Introdução' }} />
-        <Stack.Screen 
-          name="AppPresentation" 
+        <Stack.Screen
+          name="AppPresentation"
           component={AppPresentationScreen}
           options={{ title: 'Apresentação' }}
         />
@@ -111,8 +111,8 @@ const RootNavigator: React.FC = () => {
                  options={{ title: 'Jornada de Autoconsciência' }}
                />
         <Stack.Screen name="Error" component={ErrorScreen} options={{ title: 'Erro' }} />
-        <Stack.Screen 
-          name="AppLoading" 
+        <Stack.Screen
+          name="AppLoading"
           component={AppLoadingScreen}
           options={{ title: 'Carregando' }}
         />
