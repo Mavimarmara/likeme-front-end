@@ -29,6 +29,7 @@
     "test:e2e:expo-go": "./maestro/run-expo-go-tests.sh",
     "export:screenshots": "~/.maestro/bin/maestro test maestro/export-screenshots.yaml --test-output-dir=.maestro/screenshots",
     "export:screenshots:app": "~/.maestro/bin/maestro test maestro/export-screenshots-app.yaml --test-output-dir=.maestro/screenshots",
+    "build": "npx tsc --noEmit && npm run lint",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
@@ -59,7 +60,8 @@
     "clean:android": "cd android && ./gradlew clean && cd ..",
     "clean:ios": "cd ios && rm -rf Pods Podfile.lock build && pod install && cd ..",
     "postinstall": "if [ -d ios ] && [ -f ios/Podfile ] && [ \"$SKIP_IOS_POD_INSTALL\" != \"true\" ]; then cd ios && pod install && cd ..; fi",
-    "run:emulator:ios": "open -a Simulator"
+    "run:emulator:ios": "open -a Simulator",
+    "prepare": "husky || true"
   },
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",
@@ -113,6 +115,7 @@
     "babel-plugin-module-resolver": "^5.0.2",
     "dotenv": "^17.2.3",
     "eslint": "^8.19.0",
+    "husky": "^9.1.7",
     "jest": "^29.2.1",
     "prettier": "^2.4.1",
     "react-test-renderer": "19.1.0",
