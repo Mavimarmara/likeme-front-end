@@ -263,23 +263,23 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
                 <Header onBackPress={() => navigation.goBack()} />
 
                 <View style={styles.headerContent}>
-                  <Image
-                    source={GradientSplash5}
-                    style={[
-                      styles.titleAdornment,
-                      {
-                        width: adornmentSize,
-                        height: adornmentSize,
-                        right: -adornmentSize * 0.25,
-                        top: -adornmentSize * 0.36,
-                      },
-                    ]}
-                    resizeMode='contain'
-                  />
                   <Title title={t('auth.registerTitle')} variant='large' />
 
                   <View style={styles.invitationSection}>
                     <Text style={styles.invitationQuestion}>{t('auth.registerInvitationQuestion')}</Text>
+                    <Image
+                      source={GradientSplash5}
+                      style={[
+                        styles.titleAdornment,
+                        {
+                          width: adornmentSize,
+                          height: adornmentSize,
+                          right: -adornmentSize * 0.1,
+                          top: -adornmentSize * 0.36,
+                        },
+                      ]}
+                      resizeMode='contain'
+                    />
                     <TextInput
                       label={t('auth.registerEnterCode')}
                       value={invitationCode}
@@ -293,6 +293,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
               <View style={styles.content} onLayout={handleContentLayout}>
                 <View style={styles.infoSection}>
                   <Text style={styles.infoText}>{t('auth.registerInfoMessage')}</Text>
+                  <Text style={styles.sectionLabel}>Dados Pessoais</Text>
 
                   <View style={styles.fieldsContainer} onLayout={handleContainerLayout}>
                     <View

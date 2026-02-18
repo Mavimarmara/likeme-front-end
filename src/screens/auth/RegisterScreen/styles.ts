@@ -29,7 +29,6 @@ export const styles = StyleSheet.create({
   headerContent: {
     width: '100%',
     paddingBottom: SPACING.XL,
-    paddingHorizontal: SPACING.MD,
     gap: 24,
     marginTop: 31,
   },
@@ -52,14 +51,16 @@ export const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     gap: 8,
+    paddingHorizontal: SPACING.MD,
   },
   invitationQuestion: {
     color: COLORS.NEUTRAL.LOW.PURE,
     fontFamily: 'DM Sans',
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: '400',
     lineHeight: 20,
     marginBottom: 8,
+    width: '60%',
   },
   infoSection: {
     width: '100%',
@@ -72,10 +73,17 @@ export const styles = StyleSheet.create({
   infoText: {
     color: COLORS.NEUTRAL.LOW.PURE,
     fontFamily: 'DM Sans',
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: '400',
     lineHeight: 24,
     textAlign: 'left',
+  },
+  sectionLabel: {
+    color: COLORS.NEUTRAL.LOW.PURE,
+    fontFamily: 'DM Sans',
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: SPACING.SM,
   },
   fieldsContainer: {
     width: '100%',

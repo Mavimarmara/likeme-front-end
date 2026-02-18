@@ -16,7 +16,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
     minHeight: 48,
-    maxWidth: '85%',
+    maxWidth: '100%',
   },
 
   adornmentWrapper: {
