@@ -49,7 +49,6 @@ const CTACard: React.FC<Props> = ({
   const hasPrimaryButton = primaryButtonLabel && primaryButtonOnPress;
   const hasSecondaryButton = secondaryButtonLabel && secondaryButtonOnPress;
   const hasSingleButton = (hasPrimaryButton && !hasSecondaryButton) || (!hasPrimaryButton && hasSecondaryButton);
-  const hasActions = hasPrimaryButton || hasSecondaryButton;
   const hasDefaultContent = title != null || description != null;
 
   const customBorderRadius = borderRadius
@@ -83,31 +82,29 @@ const CTACard: React.FC<Props> = ({
           </View>
         </>
       ) : null}
-      {hasActions && (
-        <View style={[styles.actions, hasSingleButton && styles.actionsSingle]}>
-          {hasSecondaryButton && (
-            <SecondaryButton
-              label={secondaryButtonLabel!}
-              icon={secondaryButtonIcon}
-              iconSize={24}
-              onPress={secondaryButtonOnPress!}
-              size='large'
-              style={hasSingleButton && styles.singleButton}
-            />
-          )}
-          {hasPrimaryButton && (
-            <PrimaryButton
-              label={primaryButtonLabel!}
-              icon={primaryButtonIcon}
-              iconSize={24}
-              iconPosition={primaryButtonIconPosition}
-              onPress={primaryButtonOnPress!}
-              size='large'
-              style={hasSingleButton && styles.singleButton}
-            />
-          )}
-        </View>
-      )}
+      <View style={[styles.actions, hasSingleButton && styles.actionsSingle]}>
+        {hasSecondaryButton && (
+          <SecondaryButton
+            label={secondaryButtonLabel!}
+            icon={secondaryButtonIcon}
+            iconSize={24}
+            onPress={secondaryButtonOnPress!}
+            size='large'
+            style={hasSingleButton && styles.singleButton}
+          />
+        )}
+        {hasPrimaryButton && (
+          <PrimaryButton
+            label={primaryButtonLabel!}
+            icon={primaryButtonIcon}
+            iconSize={24}
+            iconPosition={primaryButtonIconPosition}
+            onPress={primaryButtonOnPress!}
+            size='large'
+            style={hasSingleButton && styles.singleButton}
+          />
+        )}
+      </View>
     </View>
   );
 };
