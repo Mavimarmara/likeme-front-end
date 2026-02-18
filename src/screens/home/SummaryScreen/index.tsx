@@ -43,6 +43,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   useAnalyticsScreen({ screenName: 'Summary', screenClass: 'SummaryScreen' });
   const { t } = useTranslation();
   const rootNavigation = navigation.getParent() ?? navigation;
+  const [userAvatarUri, setUserAvatarUri] = useState<string | null>(null);
   const [hasCompletedAnamnesis, setHasCompletedAnamnesis] = useState<boolean>(false);
   const [hasAnyAnamnesisAnswers, setHasAnyAnamnesisAnswers] = useState<boolean>(false);
   const { progress: _anamnesisProgress } = useAnamnesisProgress();
@@ -54,8 +55,20 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
     }, [refreshAnamnesisScores]),
   );
 
+  useEffect(() => {
+    const loadUser = async () => {
+      const user = await storageService.getUser();
+      setUserAvatarUri(user?.picture ?? null);
+    };
+    loadUser();
+  }, []);
+
   const handleCartPress = () => {
     rootNavigation.navigate('Cart' as never);
+  };
+
+  const handleMenuPress = () => {
+    rootNavigation.navigate('Profile' as never);
   };
 
   const handleStartAnamnesis = () => {
@@ -417,7 +430,14 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <Background />
-      <Header showBackButton={false} showCartButton={true} onCartPress={handleCartPress} />
+      <Header
+        showBackButton={false}
+        showMenuWithAvatar
+        onMenuPress={handleMenuPress}
+        userAvatarUri={userAvatarUri}
+        showCartButton={true}
+        onCartPress={handleCartPress}
+      />
       <View style={styles.content}>
         <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
           {/* Avatar sempre aparece se tem respostas ou se completou */}

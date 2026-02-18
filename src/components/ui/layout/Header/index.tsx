@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { View, Text, TouchableOpacity, ImageBackground } from 'react-native';
+import { View, Text, TouchableOpacity, ImageBackground, Image } from 'react-native';
 import { LogoMini, BackgroundIconButton } from '@/assets';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { styles } from './styles';
@@ -19,6 +19,10 @@ interface HeaderProps {
   /** Texto do botão à direita (ex. "Pular"). Quando definido, exibe em vez dos botões de ícone. */
   rightLabel?: string;
   onRightPress?: () => void;
+  /** Menu + avatar à esquerda (home). Quando true, exibe pill com ícone de menu e foto do usuário. */
+  showMenuWithAvatar?: boolean;
+  onMenuPress?: () => void;
+  userAvatarUri?: string | null;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -35,11 +39,26 @@ const Header: React.FC<HeaderProps> = ({
   customLogo,
   rightLabel,
   onRightPress,
+  showMenuWithAvatar = false,
+  onMenuPress,
+  userAvatarUri,
 }) => {
   const hasRightLabel = Boolean(rightLabel && onRightPress);
   return (
     <View style={styles.header}>
-      {showBackButton && (
+      {showMenuWithAvatar && onMenuPress && (
+        <TouchableOpacity style={styles.menuWithAvatarPill} onPress={onMenuPress} activeOpacity={0.7}>
+          <Icon name='menu' size={22} color='#0F1B33' style={styles.menuIcon} />
+          {userAvatarUri ? (
+            <Image source={{ uri: userAvatarUri }} style={styles.headerAvatar} />
+          ) : (
+            <View style={styles.headerAvatarPlaceholder}>
+              <Icon name='person' size={18} color='#0F1B33' />
+            </View>
+          )}
+        </TouchableOpacity>
+      )}
+      {!showMenuWithAvatar && showBackButton && (
         <TouchableOpacity style={styles.backButton} onPress={onBackPress} activeOpacity={0.7}>
           <ImageBackground
             source={BackgroundIconButton}
