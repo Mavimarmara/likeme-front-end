@@ -112,7 +112,6 @@ export const SCREEN_NAMES = {
   Unauthenticated: 'unauthenticated',
   Authenticated: 'authenticated',
   Welcome: 'welcome',
-  Intro: 'intro',
   AppPresentation: 'app_presentation',
   Register: 'register',
   Anamnesis: 'anamnesis_start',

@@ -38,6 +38,9 @@ const GENDER_OPTIONS = [
   { value: 'prefer_not_to_say', i18nKey: 'auth.genderPreferNotToSay' },
 ] as const;
 
+const BENEFIT_IDS = ['gympass', 'totalpass', 'flash'] as const;
+const HEALTH_PLAN_OPTIONS = ['Unimed', 'Bradesco Saúde', 'SulAmérica', 'Amil', 'Outro'];
+
 const KEYBOARD_RESPIRATION = 24;
 const SCROLL_FOCUS_OFFSET_PX = 80;
 const SCROLL_PADDING_WHEN_KEYBOARD_OPEN = 120;
@@ -56,11 +59,14 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
   const [gender, setGender] = useState('');
   const [weight, setWeight] = useState('');
   const [height, setHeight] = useState('');
-  const [insurance, setInsurance] = useState('');
+  const [healthPlan, setHealthPlan] = useState('');
+  const [healthPlanCard, setHealthPlanCard] = useState('');
+  const [selectedBenefits, setSelectedBenefits] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSkipLoading, setIsSkipLoading] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const [genderModalVisible, setGenderModalVisible] = useState(false);
+  const [healthPlanModalVisible, setHealthPlanModalVisible] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<{
     age?: string;
     weight?: string;
@@ -76,12 +82,10 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
   const ageRowRef = useRef<View>(null);
   const weightRowRef = useRef<View>(null);
   const heightRowRef = useRef<View>(null);
-  const insuranceRowRef = useRef<View>(null);
   const fullNameInputRef = useRef<RNTextInput>(null);
   const ageInputRef = useRef<RNTextInput>(null);
   const weightInputRef = useRef<RNTextInput>(null);
   const heightInputRef = useRef<RNTextInput>(null);
-  const insuranceInputRef = useRef<RNTextInput>(null);
 
   useEffect(() => {
     const showSub = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', (e) =>
@@ -178,7 +182,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
         ...(age.trim() && { age: age.trim() }),
         ...(weight.trim() && { weight: weight.trim() }),
         ...(height.trim() && { height: height.trim() }),
-        ...(insurance.trim() && { insurance: insurance.trim() }),
+        ...(healthPlan.trim() && { insurance: healthPlan.trim() }),
       };
 
       await personsService.createOrUpdatePerson(personData);
@@ -197,7 +201,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [fullName, gender, age, weight, height, insurance, navigation, route.params?.userName, t, validateNumericField]);
+  }, [fullName, gender, age, weight, height, healthPlan, navigation, route.params?.userName, t, validateNumericField]);
 
   const handleSkip = useCallback(async () => {
     try {
@@ -263,7 +267,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
                 <Header onBackPress={() => navigation.goBack()} />
 
                 <View style={styles.headerContent}>
-                  <Title title={t('auth.registerTitle')} variant='large' />
+                  <Title title={t('auth.registerTitle')} />
 
                   <View style={styles.invitationSection}>
                     <Text style={styles.invitationQuestion}>{t('auth.registerInvitationQuestion')}</Text>
@@ -274,7 +278,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
                         {
                           width: adornmentSize,
                           height: adornmentSize,
-                          right: -adornmentSize * 0.1,
+                          right: -adornmentSize * 0.2,
                           top: -adornmentSize * 0.36,
                         },
                       ]}
@@ -402,23 +406,75 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
                         error={fieldErrors.height}
                       />
                     </View>
+                  </View>
 
-                    <View
-                      ref={insuranceRowRef}
-                      collapsable={false}
-                      style={styles.fieldRow}
-                      onLayout={handleFieldLayout('insurance')}
-                    >
+                  <View style={styles.sectionBlock}>
+                    <View style={styles.sectionTitleRow}>
+                      <Text style={styles.sectionLabel}>{t('auth.healthPlanSectionTitle')}</Text>
+                      <Text style={styles.sectionOptional}>({t('auth.optional')})</Text>
+                    </View>
+                    <Text style={styles.sectionInfoText}>{t('auth.healthPlanInfo')}</Text>
+                    <View style={styles.fieldRow}>
+                      <Text style={styles.inputLabel}>{t('auth.healthPlanLabel')}</Text>
+                      <TouchableOpacity
+                        style={styles.healthPlanTouchable}
+                        onPress={() => setHealthPlanModalVisible(true)}
+                        activeOpacity={0.7}
+                      >
+                        <Text
+                          style={[styles.healthPlanTouchableText, !healthPlan && styles.healthPlanPlaceholder]}
+                          numberOfLines={1}
+                        >
+                          {healthPlan || t('auth.healthPlanPlaceholder')}
+                        </Text>
+                        <Icon name='keyboard-arrow-down' size={24} color={COLORS.NEUTRAL.LOW.DARK} />
+                      </TouchableOpacity>
+                    </View>
+                    <View style={styles.fieldRow}>
                       <TextInput
-                        ref={insuranceInputRef}
-                        label={t('auth.insurance')}
-                        value={insurance}
-                        onChangeText={setInsurance}
-                        placeholder={t('auth.insurancePlaceholder')}
-                        onFocus={() => scrollToFocusedField('insurance')}
+                        label={t('auth.healthPlanCardLabel')}
+                        value={healthPlanCard}
+                        onChangeText={setHealthPlanCard}
+                        placeholder={t('auth.healthPlanCardPlaceholder')}
                         returnKeyType='done'
                         onSubmitEditing={() => Keyboard.dismiss()}
                       />
+                    </View>
+                  </View>
+
+                  <View style={styles.sectionBlock}>
+                    <View style={styles.sectionTitleRow}>
+                      <Text style={styles.sectionLabel}>{t('auth.benefitsSectionTitle')}</Text>
+                      <Text style={styles.sectionOptional}>({t('auth.optional')})</Text>
+                    </View>
+                    <Text style={styles.sectionInfoText}>{t('auth.benefitsSubtitle')}</Text>
+                    <Text style={styles.benefitsHint}>{t('auth.benefitsHint')}</Text>
+                    <View style={styles.benefitsRow}>
+                      {BENEFIT_IDS.map((id) => {
+                        const isSelected = selectedBenefits.includes(id);
+                        const labelKey =
+                          id === 'gympass'
+                            ? 'auth.benefitGympass'
+                            : id === 'totalpass'
+                            ? 'auth.benefitTotalpass'
+                            : 'auth.benefitFlash';
+                        return (
+                          <TouchableOpacity
+                            key={id}
+                            style={[styles.benefitChip, isSelected && styles.benefitChipSelected]}
+                            onPress={() => {
+                              setSelectedBenefits((prev) =>
+                                prev.includes(id) ? prev.filter((b) => b !== id) : [...prev, id],
+                              );
+                            }}
+                            activeOpacity={0.7}
+                          >
+                            <Text style={[styles.benefitChipText, isSelected && styles.benefitChipTextSelected]}>
+                              {t(labelKey)}
+                            </Text>
+                          </TouchableOpacity>
+                        );
+                      })}
                     </View>
                   </View>
                 </View>
@@ -442,6 +498,55 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
           </View>
         </KeyboardAvoidingView>
       </View>
+
+      <Modal
+        visible={healthPlanModalVisible}
+        transparent
+        animationType='fade'
+        onRequestClose={() => setHealthPlanModalVisible(false)}
+        accessibilityLabel={t('auth.healthPlanLabel')}
+      >
+        <TouchableOpacity
+          style={styles.genderModalOverlay}
+          activeOpacity={1}
+          onPress={() => setHealthPlanModalVisible(false)}
+          accessibilityLabel={t('common.close')}
+          accessibilityRole='button'
+        >
+          <View style={styles.genderModalContent} onStartShouldSetResponder={() => true}>
+            <View style={styles.genderModalHeader}>
+              <Text style={styles.genderModalTitle}>{t('auth.healthPlanLabel')}</Text>
+              <TouchableOpacity
+                onPress={() => setHealthPlanModalVisible(false)}
+                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                accessibilityLabel={t('common.close')}
+                accessibilityRole='button'
+              >
+                <Icon name='close' size={24} color={COLORS.NEUTRAL.LOW.PURE} />
+              </TouchableOpacity>
+            </View>
+            {HEALTH_PLAN_OPTIONS.map((option) => (
+              <TouchableOpacity
+                key={option}
+                style={[styles.genderOption, healthPlan === option && styles.genderOptionSelected]}
+                onPress={() => {
+                  setHealthPlan(option);
+                  setHealthPlanModalVisible(false);
+                }}
+                activeOpacity={0.7}
+                accessibilityLabel={option}
+                accessibilityRole='button'
+                accessibilityState={{ selected: healthPlan === option }}
+              >
+                <Text style={[styles.genderOptionText, healthPlan === option && styles.genderOptionTextSelected]}>
+                  {option}
+                </Text>
+                {healthPlan === option && <Icon name='check' size={22} color={COLORS.PRIMARY.PURE} />}
+              </TouchableOpacity>
+            ))}
+          </View>
+        </TouchableOpacity>
+      </Modal>
 
       <Modal
         visible={genderModalVisible}

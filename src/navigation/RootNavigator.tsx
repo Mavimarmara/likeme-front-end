@@ -7,7 +7,6 @@ import {
   AuthenticatedScreen,
   LoadingScreen,
   WelcomeScreen,
-  IntroScreen,
   AppPresentationScreen,
   RegisterScreen,
   PersonalObjectivesScreen,
@@ -63,7 +62,6 @@ const RootNavigator: React.FC = () => {
           options={{ title: 'Tela Autenticada', animationEnabled: false }}
         />
         <Stack.Screen name='Welcome' component={WelcomeScreen} options={{ title: 'Boas-vindas' }} />
-        <Stack.Screen name='Intro' component={IntroScreen} options={{ title: 'Introdução' }} />
         <Stack.Screen name='AppPresentation' component={AppPresentationScreen} options={{ title: 'Apresentação' }} />
         <Stack.Screen name='Register' component={RegisterScreen} options={{ title: 'Cadastro' }} />
         <Stack.Screen name='Plans' component={PlansScreen} options={{ title: 'Planos' }} />

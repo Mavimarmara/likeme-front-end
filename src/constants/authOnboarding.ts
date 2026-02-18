@@ -5,7 +5,6 @@
  */
 export const AUTH_ONBOARDING_SCREENS_ORDER = [
   'Welcome',
-  'Intro',
   'AppPresentation',
   'Register',
   'Plans',

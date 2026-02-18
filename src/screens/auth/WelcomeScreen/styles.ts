@@ -1,4 +1,4 @@
-import { COLORS } from '@/constants';
+import { COLORS, SPACING } from '@/constants';
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
@@ -25,6 +25,48 @@ export const styles = StyleSheet.create({
     gap: 40,
     position: 'relative',
     width: '100%',
+  },
+
+  welcomeTitleBlock: {
+    width: '100%',
+  },
+
+  welcomeTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    flexWrap: 'nowrap',
+  },
+
+  welcomeTitleText: {
+    color: 'rgba(0, 17, 55, 1)',
+    fontFamily: 'Bricolage Grotesque',
+    fontWeight: '700',
+    letterSpacing: -2,
+    textAlign: 'left',
+    transform: [{ scaleX: 0.92 }],
+    marginLeft: -SPACING.MD,
+  },
+
+  welcomeTitleLarge: {
+    fontSize: 48,
+    lineHeight: 48,
+  },
+
+  welcomeTitleImage: {
+    height: 100,
+    width: 200,
+    position: 'relative',
+    marginHorizontal: -55,
+    marginRight: -20,
+    marginVertical: -20,
+  },
+
+  welcomeSubtitle: {
+    color: 'rgba(0, 17, 55, 1)',
+    fontFamily: 'DM Sans',
+    fontSize: 20,
+    fontWeight: '400',
+    lineHeight: 25,
   },
 
   titleAdornment: {

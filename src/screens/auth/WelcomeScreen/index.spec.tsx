@@ -56,7 +56,7 @@ describe('WelcomeScreen', () => {
     expect(getByPlaceholderText('Your name')).toBeTruthy();
   });
 
-  it('navega para Intro ao pressionar Enter em qualquer teclado', () => {
+  it('navega para AppPresentation ao pressionar Enter em qualquer teclado', () => {
     const mockNavigation = {
       navigate: jest.fn(),
       goBack: jest.fn(),
@@ -68,7 +68,7 @@ describe('WelcomeScreen', () => {
     fireEvent.changeText(input, 'John');
     fireEvent(input, 'submitEditing');
 
-    expect(mockNavigation.navigate).toHaveBeenCalledWith('Intro', { userName: 'John' });
+    expect(mockNavigation.navigate).toHaveBeenCalledWith('AppPresentation', { userName: 'John' });
   });
 
   it('shows alert when trying to continue with empty name', () => {

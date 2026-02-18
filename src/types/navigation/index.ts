@@ -2,7 +2,6 @@ export type RootStackParamList = {
   Unauthenticated: undefined;
   Authenticated: undefined;
   Welcome: undefined;
-  Intro: { userName?: string };
   AppPresentation: { userName?: string };
   Register: { userName?: string };
   Plans: { userName?: string };

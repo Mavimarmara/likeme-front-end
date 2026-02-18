@@ -49,7 +49,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
-          <Title title={t('profile.title')} variant='large' />
+          <Title title={t('profile.title')} />
 
           {user && (
             <View style={styles.userInfo}>

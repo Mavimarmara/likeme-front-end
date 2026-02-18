@@ -31,6 +31,7 @@ export const styles = StyleSheet.create({
     paddingBottom: SPACING.XL,
     gap: 24,
     marginTop: 31,
+    paddingHorizontal: SPACING.MD,
   },
   titleAdornment: {
     position: 'absolute',
@@ -51,7 +52,6 @@ export const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     gap: 8,
-    paddingHorizontal: SPACING.MD,
   },
   invitationQuestion: {
     color: COLORS.NEUTRAL.LOW.PURE,
@@ -201,5 +201,91 @@ export const styles = StyleSheet.create({
   genderOptionTextSelected: {
     fontWeight: '600',
     color: COLORS.PRIMARY.PURE,
+  },
+  sectionBlock: {
+    marginTop: SPACING.XL,
+    width: '100%',
+  },
+  sectionTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.SM,
+    marginBottom: SPACING.SM,
+  },
+  sectionOptional: {
+    color: COLORS.TEXT_LIGHT,
+    fontFamily: 'DM Sans',
+    fontSize: 14,
+    fontWeight: '400',
+  },
+  sectionInfoText: {
+    color: COLORS.NEUTRAL.LOW.PURE,
+    fontFamily: 'DM Sans',
+    fontSize: 14,
+    fontWeight: '400',
+    lineHeight: 22,
+    marginBottom: SPACING.MD,
+  },
+  inputLabel: {
+    color: COLORS.NEUTRAL.LOW.PURE,
+    fontFamily: 'DM Sans',
+    fontSize: 14,
+    fontWeight: '400',
+    marginBottom: 8,
+  },
+  healthPlanTouchable: {
+    alignSelf: 'stretch',
+    backgroundColor: COLORS.SECONDARY.LIGHT,
+    borderRadius: 18,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    minHeight: 42,
+  },
+  healthPlanTouchableText: {
+    color: COLORS.NEUTRAL.LOW.PURE,
+    fontFamily: 'DM Sans',
+    fontSize: 14,
+    fontWeight: '400',
+    flex: 1,
+  },
+  healthPlanPlaceholder: {
+    color: COLORS.TEXT_LIGHT,
+  },
+  benefitsHint: {
+    color: COLORS.TEXT_LIGHT,
+    fontFamily: 'DM Sans',
+    fontSize: 12,
+    fontWeight: '400',
+    marginBottom: SPACING.MD,
+  },
+  benefitsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: SPACING.SM,
+  },
+  benefitChip: {
+    paddingVertical: SPACING.SM,
+    paddingHorizontal: SPACING.MD,
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: COLORS.NEUTRAL.LOW.PURE,
+    backgroundColor: 'transparent',
+  },
+  benefitChipSelected: {
+    backgroundColor: COLORS.PRIMARY.PURE,
+    borderColor: COLORS.PRIMARY.PURE,
+  },
+  benefitChipText: {
+    color: COLORS.NEUTRAL.LOW.PURE,
+    fontFamily: 'DM Sans',
+    fontSize: 14,
+    fontWeight: '400',
+  },
+  benefitChipTextSelected: {
+    color: COLORS.WHITE,
+    fontWeight: '600',
   },
 });

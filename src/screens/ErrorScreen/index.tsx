@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Title, PrimaryButton } from '@/components/ui';
 import { useTranslation } from '@/hooks/i18n';
@@ -44,7 +44,8 @@ const ErrorScreen: React.FC<Props> = ({ navigation, route }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        <Title title={t('errors.oops')} subtitle={errorMessage} variant='large' />
+        <Title title={t('errors.oops')} />
+        <Text>{errorMessage}</Text>
 
         <View style={styles.actions}>
           {onRetry && <PrimaryButton label={t('common.retry')} onPress={handleRetry} />}

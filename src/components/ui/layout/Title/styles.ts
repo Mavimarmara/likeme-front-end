@@ -1,42 +1,19 @@
+import { SPACING } from '@/constants';
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
   container: {
-    alignItems: 'flex-start',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 16,
-    position: 'relative',
     width: '100%',
-  },
-
-  titleRow: {
-    alignSelf: 'stretch',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    minHeight: 48,
-    maxWidth: '100%',
-  },
-
-  adornmentWrapper: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: 48,
-    width: 90,
-    overflow: 'hidden',
+    marginLeft: -SPACING.MD,
   },
 
   title: {
-    alignItems: 'center',
-    alignSelf: 'auto',
+    alignSelf: 'flex-start',
     color: 'rgba(0, 17, 55, 1)',
-    display: 'flex',
     fontFamily: 'Bricolage Grotesque',
     fontWeight: '700',
-    justifyContent: 'center',
     letterSpacing: -2,
-    position: 'relative',
+    textAlign: 'left',
     transform: [{ scaleX: 0.92 }],
   },
 
@@ -53,19 +30,5 @@ export const styles = StyleSheet.create({
   small: {
     fontSize: 24,
     lineHeight: 24,
-  },
-
-  subtitle: {
-    alignItems: 'center',
-    alignSelf: 'stretch',
-    color: 'rgba(0, 17, 55, 1)',
-    display: 'flex',
-    fontFamily: 'DM Sans',
-    fontSize: 20,
-    fontWeight: '400',
-    justifyContent: 'center',
-    letterSpacing: 0,
-    lineHeight: 25,
-    position: 'relative',
   },
 });

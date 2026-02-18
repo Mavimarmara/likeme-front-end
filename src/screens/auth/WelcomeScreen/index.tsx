@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, KeyboardAvoidingView, Platform, Alert, TextInput as RNTextInput, Image } from 'react-native';
+import { View, KeyboardAvoidingView, Platform, Alert, TextInput as RNTextInput, Image, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Header, Title, TextInput, PrimaryButton } from '@/components/ui';
-import { GradientSplash3 } from '@/assets';
+import { Header, TextInput, PrimaryButton } from '@/components/ui';
+import { GradientSplash4 } from '@/assets';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen, logButtonClick, logFormSubmit, logNavigation } from '@/analytics';
 import { getNextOnboardingScreen } from '@/utils';
@@ -83,13 +83,15 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
 
         <View style={styles.main}>
           <View style={styles.content}>
-            <Title
-              title={t('auth.welcomeTitle')}
-              subtitle={t('auth.welcomeSubtitle')}
-              variant='large'
-              rightAdornment={<Image source={GradientSplash3} style={styles.titleAdornment} resizeMode='cover' />}
-            />
-
+            <View style={styles.welcomeTitleBlock}>
+              <View style={styles.welcomeTitleRow}>
+                <Text style={[styles.welcomeTitleText, styles.welcomeTitleLarge]}>{t('auth.welcomeTitleStart')}</Text>
+                <Image source={GradientSplash4} style={styles.welcomeTitleImage} resizeMode='cover' />
+                <Text style={[styles.welcomeTitleText, styles.welcomeTitleLarge]}>{t('auth.welcomeTitleLine1End')}</Text>
+              </View>
+              <Text style={[styles.welcomeTitleText, styles.welcomeTitleLarge]}>{t('auth.welcomeTitleLine2')}</Text>
+            </View>
+            <Text style={styles.welcomeSubtitle}>{t('auth.welcomeSubtitle')}</Text>
             <View style={styles.inputContainer}>
               <TextInput
                 ref={inputRef}
