@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { LogBox } from 'react-native';
+import { useFonts } from 'expo-font';
 import { RootNavigator } from './src/navigation';
 import { AUTH0_CONFIG } from './src/config/environment';
 // Importar i18n antes de qualquer componente que use useTranslation
@@ -9,6 +10,10 @@ import './src/i18n';
 LogBox.ignoreAllLogs(true);
 
 const App: React.FC = () => {
+  const [fontsLoaded, fontError] = useFonts({
+    'Bricolage Grotesque': require('./assets/fonts/BricolageGrotesque-Regular.ttf'),
+  });
+
   useEffect(() => {
     // Debug: Log das variáveis de ambiente carregadas
     // Usa try-catch para evitar erros se o runtime não estiver pronto
@@ -44,6 +49,10 @@ const App: React.FC = () => {
       console.warn('[App] Erro ao acessar Constants:', error);
     }
   }, []);
+
+  if (!fontsLoaded && !fontError) {
+    return null;
+  }
 
   return <RootNavigator />;
 };

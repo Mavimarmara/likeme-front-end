@@ -35,8 +35,9 @@ export const styles = StyleSheet.create({
     fontFamily: 'Bricolage Grotesque',
     fontWeight: '700',
     justifyContent: 'center',
-    letterSpacing: 0,
+    letterSpacing: -2,
     position: 'relative',
+    transform: [{ scaleX: 0.92 }],
   },
 
   large: {
