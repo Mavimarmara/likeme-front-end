@@ -7,6 +7,27 @@ import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
+/** Parse "text **bold** more" into segments for rendering bold in React Native Text */
+function parseBoldSegments(str: string): { text: string; bold: boolean }[] {
+  const segments: { text: string; bold: boolean }[] = [];
+  let remaining = str;
+  let bold = false;
+  while (remaining.length > 0) {
+    const marker = '**';
+    const idx = remaining.indexOf(marker);
+    if (idx === -1) {
+      segments.push({ text: remaining, bold });
+      break;
+    }
+    if (idx > 0) {
+      segments.push({ text: remaining.slice(0, idx), bold });
+    }
+    bold = !bold;
+    remaining = remaining.slice(idx + marker.length);
+  }
+  return segments;
+}
+
 type Props = { navigation: any; route: any };
 
 const AppPresentationScreen: React.FC<Props> = ({ navigation, route }) => {
@@ -51,7 +72,7 @@ const AppPresentationScreen: React.FC<Props> = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header onBackPress={handleBack} />
+      <Header onBackPress={handleBack} rightLabel={t('common.skip')} onRightPress={handleSkip} />
 
       <ScrollView
         style={styles.scrollView}
@@ -60,28 +81,24 @@ const AppPresentationScreen: React.FC<Props> = ({ navigation, route }) => {
       >
         <View style={styles.imageContainer}>
           <Image source={currentPageData.image} style={styles.image} resizeMode='cover' />
-          <View style={[styles.pagination, styles.paginationAligned]}>
-            {pages.map((_, index) => (
-              <View key={index} style={[styles.dot, index === currentPage ? styles.activeDot : styles.inactiveDot]} />
-            ))}
-          </View>
         </View>
 
         <View style={styles.content}>
           <Text style={styles.title}>{currentPageData.title}</Text>
-          <Text style={styles.description}>{currentPageData.description}</Text>
+          <Text style={styles.description}>
+            {parseBoldSegments(currentPageData.description).map((segment, i) => (
+              <Text key={i} style={segment.bold ? styles.descriptionBold : undefined}>
+                {segment.text}
+              </Text>
+            ))}
+          </Text>
         </View>
       </ScrollView>
 
       <View style={styles.footer}>
-        <View style={styles.footerActions}>
-          <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
-            <Text style={styles.skipText}>{t('common.skip')}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-            <Text style={styles.nextButtonText}>›</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
+          <Text style={styles.nextButtonText}>›</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );

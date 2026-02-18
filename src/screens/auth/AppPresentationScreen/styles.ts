@@ -29,33 +29,6 @@ export const styles = StyleSheet.create({
     marginBottom: SPACING.XS,
   },
 
-  pagination: {
-    position: 'absolute',
-    top: 0,
-    left: SPACING.MD,
-    right: SPACING.MD,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: SPACING.XS,
-    pointerEvents: 'none',
-  },
-  paginationAligned: {
-    height: height * 1.12,
-  },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginHorizontal: 4,
-  },
-  activeDot: {
-    backgroundColor: '#4CAF50',
-  },
-  inactiveDot: {
-    backgroundColor: '#CCCCCC',
-  },
-
   content: {
     paddingHorizontal: SPACING.MD,
     paddingVertical: SPACING.MD,
@@ -76,6 +49,9 @@ export const styles = StyleSheet.create({
     textAlign: 'left',
     lineHeight: 24,
   },
+  descriptionBold: {
+    fontWeight: '700',
+  },
 
   footer: {
     flexDirection: 'row',
@@ -83,23 +59,6 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: SPACING.MD,
     paddingVertical: SPACING.MD,
-  },
-  footerActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    columnGap: 12,
-  },
-  skipButton: {
-    paddingVertical: SPACING.SM,
-    paddingHorizontal: SPACING.MD,
-  },
-  skipButtonDisabled: {
-    opacity: 0.5,
-  },
-  skipText: {
-    fontSize: FONT_SIZES.MD,
-    color: COLORS.TEXT,
-    textDecorationLine: 'underline',
   },
   nextButton: {
     width: 50,

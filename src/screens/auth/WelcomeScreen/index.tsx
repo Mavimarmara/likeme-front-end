@@ -87,7 +87,9 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
               <View style={styles.welcomeTitleRow}>
                 <Text style={[styles.welcomeTitleText, styles.welcomeTitleLarge]}>{t('auth.welcomeTitleStart')}</Text>
                 <Image source={GradientSplash4} style={styles.welcomeTitleImage} resizeMode='cover' />
-                <Text style={[styles.welcomeTitleText, styles.welcomeTitleLarge]}>{t('auth.welcomeTitleLine1End')}</Text>
+                <Text style={[styles.welcomeTitleText, styles.welcomeTitleLarge]}>
+                  {t('auth.welcomeTitleLine1End')}
+                </Text>
               </View>
               <Text style={[styles.welcomeTitleText, styles.welcomeTitleLarge]}>{t('auth.welcomeTitleLine2')}</Text>
             </View>
