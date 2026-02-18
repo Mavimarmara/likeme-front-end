@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { View, Text, Image, TouchableOpacity, Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { BlurView } from 'expo-blur';
 import { formatPrice } from '@/utils';
@@ -22,7 +22,12 @@ type Props = {
 
 const ProductCard: React.FC<Props> = ({ product, onPress, onLike }) => {
   return (
-    <View style={styles.container}>
+    <Pressable
+      style={styles.container}
+      onPress={() => onPress?.(product)}
+      disabled={!onPress}
+      accessibilityRole='button'
+    >
       <View style={styles.imageContainer}>
         <Image source={{ uri: product.image }} style={styles.image} />
         <BlurView intensity={10} tint='dark' style={styles.imageOverlay} />
@@ -43,11 +48,11 @@ const ProductCard: React.FC<Props> = ({ product, onPress, onLike }) => {
         <Text style={styles.title} numberOfLines={1}>
           {product.title}
         </Text>
-        <TouchableOpacity style={styles.arrowButton} onPress={() => onPress?.(product)} activeOpacity={0.7}>
+        <View style={styles.arrowButton}>
           <Icon name='chevron-right' size={24} color='#001137' />
-        </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </Pressable>
   );
 };
 
