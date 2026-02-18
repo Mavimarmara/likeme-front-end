@@ -7,8 +7,6 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   containerSmall: {
-    width: 40,
-    height: 36,
     borderRadius: BORDER_RADIUS.MD,
     shadowColor: COLORS.BLACK,
     shadowOffset: { width: 0, height: 4 },
@@ -30,8 +28,8 @@ export const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   imageSmall: {
-    width: 40,
-    height: 36,
+    width: 30,
+    height: 26,
   },
   imageMedium: {
     width: 53,

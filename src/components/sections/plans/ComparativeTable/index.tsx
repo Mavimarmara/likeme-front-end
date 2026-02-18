@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, ViewStyle } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { IconButton } from '@/components/ui/buttons';
 import { COLORS } from '@/constants';
 import { styles } from './styles';
 
@@ -20,9 +20,25 @@ export type ComparativeTableProps = {
 };
 
 const ComparativeTable: React.FC<ComparativeTableProps> = ({ columnHeaders, rows, noLabel, unlimitedLabel, style }) => {
+  // Largura de cada coluna de valores proporcional ao tamanho do título
+  const columnFlex = columnHeaders.map((h) => Math.max(h.length, 1));
+
   const renderCell = (value: CompareCellValue) => {
     if (value === 'yes') {
-      return <Icon name='check' size={20} color={COLORS.WHITE} />;
+      return (
+        <View style={styles.iconWrapper}>
+          <IconButton
+            icon='check'
+            iconSize={18}
+            iconColor={COLORS.NEUTRAL.LOW.PURE}
+            backgroundTintColor={COLORS.NEUTRAL.HIGH.PURE}
+            backgroundSize='small'
+            onPress={() => undefined}
+            containerStyle={styles.iconButtonContainer}
+            iconContainerStyle={styles.iconButtonBackground}
+          />
+        </View>
+      );
     }
     if (value === 'unlimited') {
       return <Text style={styles.cellText}>{unlimitedLabel}</Text>;
@@ -35,7 +51,7 @@ const ComparativeTable: React.FC<ComparativeTableProps> = ({ columnHeaders, rows
       <View style={styles.headerRow}>
         <View style={styles.featureCol} />
         {columnHeaders.map((header, index) => (
-          <Text key={index} style={styles.headerCell}>
+          <Text key={index} style={[styles.headerCell, { flex: columnFlex[index] }]}>
             {header}
           </Text>
         ))}
@@ -46,7 +62,7 @@ const ComparativeTable: React.FC<ComparativeTableProps> = ({ columnHeaders, rows
             {row.feature}
           </Text>
           {row.values.map((value, cellIndex) => (
-            <View key={cellIndex} style={styles.cell}>
+            <View key={cellIndex} style={[styles.cell, { flex: columnFlex[cellIndex] }]}>
               {renderCell(value)}
             </View>
           ))}

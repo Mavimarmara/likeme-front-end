@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Image, ImageSourcePropType, ImageStyle, V
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { COLORS } from '@/constants';
 import { IconSilhouette } from '@/components/ui/layout';
+import type { IconSilhouetteSize } from '@/components/ui/layout/IconSilhouette';
 import { styles } from './styles';
 
 type Props = {
@@ -14,6 +15,7 @@ type Props = {
   onPress: () => void;
   label?: string;
   showBackground?: boolean;
+  backgroundSize?: IconSilhouetteSize;
   backgroundSource?: ImageSourcePropType;
   backgroundTintColor?: string | readonly string[];
   containerStyle?: ViewStyle;
@@ -29,6 +31,7 @@ const IconButton: React.FC<Props> = ({
   onPress,
   label,
   showBackground = true,
+  backgroundSize = 'medium',
   backgroundSource,
   backgroundTintColor,
   containerStyle,
@@ -47,7 +50,7 @@ const IconButton: React.FC<Props> = ({
         <IconSilhouette
           source={backgroundSource}
           tintColor={backgroundTintColor ?? undefined}
-          size='medium'
+          size={backgroundSize}
           style={iconContainerStyle}
         >
           {iconElement}
