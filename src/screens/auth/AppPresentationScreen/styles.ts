@@ -55,10 +55,20 @@ export const styles = StyleSheet.create({
 
   footer: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: SPACING.MD,
     paddingVertical: SPACING.MD,
+  },
+  stepIndicatorSpacer: {
+    width: 50,
+  },
+  stepIndicator: {
+    flex: 1,
+    fontSize: FONT_SIZES.MD,
+    fontWeight: '700',
+    color: COLORS.TEXT,
+    textAlign: 'center',
   },
   nextButton: {
     width: 50,

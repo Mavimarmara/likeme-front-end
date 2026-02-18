@@ -170,10 +170,12 @@
   "presentation": {
     "page1Title": "Seu bem-estar em dados",
     "page1Description": "Aqui você reúne sua rotina de **bem-estar**, seus **dados de saúde**, **biomarcadores** e quem cuida de você.\n\nDescubra **novas soluções**, conecte-se com **comunidades** e amplie seu **autocuidado**.\n\nEstamos em Beta, portanto você encontrará apenas 1 comunidade, logo iremos convidá-lo para outros grupos.",
-    "page2Title": "Aqui, você é protagonista, então começamos conhecendo o seu estilo de vida!",
-    "page2Description": "Seu corpo e sua mente têm marcadores únicos. Cada dado compartilhado ou questão respondida nos ajuda a te guiar na direção do que vem a seguir.",
-    "page3Title": "Sem pressão. Não existe fórmula mágica. Existe você.",
-    "page3Description": "A gente acompanha seus hábitos, sugere programas de autocuidado, te ajuda a encontrar o refil dos seus produtos favoritos e muito mais... Aqui, você dá o tom."
+    "page2Title": "Comunidades como você",
+    "page2Description": "Bem estar não é uma jornada solitária.\n\nParticipe de comunidades de especialistas, marcas e influenciadores, engaje-se e inspire-se com pessoas que compartilham seus interesses de bem-estar.\n\nEstamos em Beta, portanto você encontrará apenas 1 comunidade, logo iremos convidá-lo para outros grupos.",
+    "page3Title": "Tudo para seu autocuidado",
+    "page3Description": "Encontre produtos, serviços, profissionais e protocolos para um cuidado integrativo.\n\nDescubra novas possibilidades e amplie sua rotina de autocuidado de forma prática.\n\nEstamos em Beta, portanto essa funcionalidade ainda não estará disponível. Logo iremos convidá-lo para aproveitar.",
+    "page4Title": "Personalize seu bem-estar",
+    "page4Description": "Veja como seus hábitos e a qualidade do seu corpo e mente impactam seu bem-estar.\n\nCom o avatar do Like:Me, você organiza e enriquece as suas informações de saúde.\n\nEstamos em Beta, portanto essa funcionalidade ainda não estará disponível. Logo iremos convidá-lo para aproveitar."
   },
   "anamnesis": {
     "homeTitle": "Minha anaminese",

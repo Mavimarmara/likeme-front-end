@@ -1,5 +1,5 @@
 import { ImageSourcePropType } from 'react-native';
-import { Presentation1, Presentation2, Presentation3 } from '@/assets';
+import { Presentation1, Presentation2, Presentation3, Presentation4 } from '@/assets';
 
 export interface PresentationPage {
   id: string;
@@ -33,5 +33,13 @@ export const PRESENTATION_PAGES: PresentationPage[] = [
     description:
       'We can track your habits, suggest self care programs, help you with health products refill and so much more... here, you call the shots.',
     order: 3,
+  },
+  {
+    id: '4',
+    image: Presentation4,
+    title: 'Personalize seu bem-estar',
+    description:
+      'Veja como seus hábitos e a qualidade do seu corpo e mente impactam seu bem-estar.',
+    order: 4,
   },
 ];

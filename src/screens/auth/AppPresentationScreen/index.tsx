@@ -96,6 +96,10 @@ const AppPresentationScreen: React.FC<Props> = ({ navigation, route }) => {
       </ScrollView>
 
       <View style={styles.footer}>
+        <View style={styles.stepIndicatorSpacer} />
+        <Text style={styles.stepIndicator}>
+          {currentPage + 1}/{pages.length}
+        </Text>
         <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
           <Text style={styles.nextButtonText}>›</Text>
         </TouchableOpacity>
