@@ -10,9 +10,9 @@ import {
   IntroScreen,
   AppPresentationScreen,
   RegisterScreen,
-  PlansScreen,
   PersonalObjectivesScreen,
 } from '@/screens/auth';
+import PlansScreen from '@/screens/plans/PlansScreen';
 import {
   AnamnesisStartScreen,
   AnamnesisBodyScreen,
