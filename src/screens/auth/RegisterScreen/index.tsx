@@ -160,9 +160,11 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
       const errors: { age?: string; weight?: string; height?: string } = {};
       const ageError = validateNumericField(age, 1, 120);
       if (ageError) errors.age = ageError;
-      const weightError = validateNumericField(weight, 1, 499);
+      const weightNormalized = weight.trim().replace(/,/g, '.');
+      const weightError = validateNumericField(weightNormalized, 1, 499);
       if (weightError) errors.weight = weightError;
-      const heightError = validateNumericField(height, 30, 299);
+      const heightNormalized = height.trim().replace(/,/g, '.');
+      const heightError = validateNumericField(heightNormalized, 1, 499);
       if (heightError) errors.height = heightError;
 
       if (Object.keys(errors).length > 0) {
@@ -180,8 +182,8 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
         lastName,
         ...(gender.trim() && { gender: gender.trim() }),
         ...(age.trim() && { age: age.trim() }),
-        ...(weight.trim() && { weight: weight.trim() }),
-        ...(height.trim() && { height: height.trim() }),
+        ...(weight.trim() && { weight: weight.trim().replace(/,/g, '.') }),
+        ...(height.trim() && { height: height.trim().replace(/,/g, '.') }),
         ...(healthPlan.trim() && { insurance: healthPlan.trim() }),
       };
 
@@ -380,7 +382,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
                           setFieldErrors((e) => (e.weight ? { ...e, weight: undefined } : e));
                         }}
                         placeholder={t('auth.weightPlaceholder')}
-                        keyboardType={Platform.OS === 'ios' ? 'number-pad' : 'numeric'}
+                        keyboardType='decimal-pad'
                         onFocus={() => scrollToFocusedField('weight')}
                         error={fieldErrors.weight}
                       />
@@ -401,7 +403,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
                           setFieldErrors((e) => (e.height ? { ...e, height: undefined } : e));
                         }}
                         placeholder={t('auth.heightPlaceholder')}
-                        keyboardType={Platform.OS === 'ios' ? 'number-pad' : 'numeric'}
+                        keyboardType='decimal-pad'
                         onFocus={() => scrollToFocusedField('height')}
                         error={fieldErrors.height}
                       />

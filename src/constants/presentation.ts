@@ -38,8 +38,7 @@ export const PRESENTATION_PAGES: PresentationPage[] = [
     id: '4',
     image: Presentation4,
     title: 'Personalize seu bem-estar',
-    description:
-      'Veja como seus hábitos e a qualidade do seu corpo e mente impactam seu bem-estar.',
+    description: 'Veja como seus hábitos e a qualidade do seu corpo e mente impactam seu bem-estar.',
     order: 4,
   },
 ];
