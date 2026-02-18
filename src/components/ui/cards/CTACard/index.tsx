@@ -5,9 +5,10 @@ import { COLORS } from '@/constants';
 import { styles } from './styles';
 
 type Props = {
-  title: string;
+  children?: React.ReactNode;
+  title?: string;
   highlightText?: string;
-  description: string | string[];
+  description?: string | string[];
   primaryButtonLabel?: string;
   primaryButtonOnPress?: () => void;
   secondaryButtonLabel?: string;
@@ -28,6 +29,7 @@ type Props = {
 };
 
 const CTACard: React.FC<Props> = ({
+  children,
   title,
   highlightText,
   description,
@@ -47,6 +49,8 @@ const CTACard: React.FC<Props> = ({
   const hasPrimaryButton = primaryButtonLabel && primaryButtonOnPress;
   const hasSecondaryButton = secondaryButtonLabel && secondaryButtonOnPress;
   const hasSingleButton = (hasPrimaryButton && !hasSecondaryButton) || (!hasPrimaryButton && hasSecondaryButton);
+  const hasActions = hasPrimaryButton || hasSecondaryButton;
+  const hasDefaultContent = title != null || description != null;
 
   const customBorderRadius = borderRadius
     ? {
@@ -59,20 +63,27 @@ const CTACard: React.FC<Props> = ({
 
   return (
     <View style={[styles.card, { backgroundColor }, customBorderRadius, style]}>
-      <Text style={[styles.title, titleStyle]}>{title}</Text>
-      <View style={styles.content}>
-        {highlightText && <Text style={styles.highlightText}>{highlightText}</Text>}
-        {Array.isArray(description) ? (
-          description.map((text, index) => (
-            <Text key={index} style={[styles.description, descriptionColor && { color: descriptionColor }]}>
-              {text}
-            </Text>
-          ))
-        ) : (
-          <Text style={[styles.description, descriptionColor && { color: descriptionColor }]}>{description}</Text>
-        )}
-      </View>
-      {(hasPrimaryButton || hasSecondaryButton) && (
+      {children != null ? (
+        <View style={styles.content}>{children}</View>
+      ) : hasDefaultContent ? (
+        <>
+          {title != null && <Text style={[styles.title, titleStyle]}>{title}</Text>}
+          <View style={styles.content}>
+            {highlightText && <Text style={styles.highlightText}>{highlightText}</Text>}
+            {description != null &&
+              (Array.isArray(description) ? (
+                description.map((text, index) => (
+                  <Text key={index} style={[styles.description, descriptionColor && { color: descriptionColor }]}>
+                    {text}
+                  </Text>
+                ))
+              ) : (
+                <Text style={[styles.description, descriptionColor && { color: descriptionColor }]}>{description}</Text>
+              ))}
+          </View>
+        </>
+      ) : null}
+      {hasActions && (
         <View style={[styles.actions, hasSingleButton && styles.actionsSingle]}>
           {hasSecondaryButton && (
             <SecondaryButton

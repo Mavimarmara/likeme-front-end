@@ -1,8 +1,8 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Header, PrimaryButton } from '@/components/ui';
+import { Background, Header, PrimaryButton, Toggle } from '@/components/ui';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen } from '@/analytics';
 import { AuthService } from '@/services';
@@ -90,6 +90,16 @@ const PrivacyPoliciesScreen: React.FC<Props> = ({ navigation, route }) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const tabLabels = useMemo(() => TAB_ITEMS.map(({ labelKey }) => t(labelKey)), [t]);
+  const selectedLabel = tabLabels[TAB_ITEMS.findIndex((tab) => tab.key === activeTab)] ?? tabLabels[0];
+  const handleTabSelect = useCallback(
+    (label: string) => {
+      const idx = tabLabels.indexOf(label);
+      if (idx >= 0) setActiveTab(TAB_ITEMS[idx].key);
+    },
+    [tabLabels],
+  );
+
   const getItems = useCallback((): AccordionItem[] => {
     if (activeTab === 'data') return DATA_ITEMS;
     if (activeTab === 'communication') return COMMUNICATION_ITEMS;
@@ -120,6 +130,7 @@ const PrivacyPoliciesScreen: React.FC<Props> = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Background />
       <Header onBackPress={() => navigation.goBack()} />
 
       <ScrollView
@@ -132,17 +143,8 @@ const PrivacyPoliciesScreen: React.FC<Props> = ({ navigation, route }) => {
           <Text style={styles.intro}>{t('privacyPolicies.intro')}</Text>
           <Text style={styles.inControl}>{t('privacyPolicies.inControl')}</Text>
 
-          <View style={styles.tabsContainer}>
-            {TAB_ITEMS.map(({ key, labelKey }) => (
-              <TouchableOpacity
-                key={key}
-                style={[styles.tab, activeTab === key && styles.tabActive]}
-                onPress={() => setActiveTab(key)}
-                activeOpacity={0.7}
-              >
-                <Text style={[styles.tabText, activeTab === key && styles.tabTextActive]}>{t(labelKey)}</Text>
-              </TouchableOpacity>
-            ))}
+          <View style={styles.tabsWrapper}>
+            <Toggle options={tabLabels} selected={selectedLabel} onSelect={handleTabSelect} />
           </View>
 
           {items.map((item) => {

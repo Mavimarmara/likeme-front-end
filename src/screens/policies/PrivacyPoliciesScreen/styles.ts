@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '@/constants';
+import { COLORS, SPACING, FONT_SIZES } from '@/constants';
 
 export const styles = StyleSheet.create({
   container: {
@@ -38,38 +38,8 @@ export const styles = StyleSheet.create({
     color: COLORS.TEXT,
     marginBottom: SPACING.LG,
   },
-  tabsContainer: {
-    flexDirection: 'row',
-    backgroundColor: COLORS.NEUTRAL.HIGH.PURE,
-    borderRadius: BORDER_RADIUS.MD,
-    padding: SPACING.XS,
+  tabsWrapper: {
     marginBottom: SPACING.LG,
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: SPACING.SM,
-    paddingHorizontal: SPACING.SM,
-    borderRadius: BORDER_RADIUS.SM,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  tabActive: {
-    backgroundColor: COLORS.WHITE,
-    shadowColor: COLORS.BLACK,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  tabText: {
-    fontFamily: 'DM Sans',
-    fontSize: FONT_SIZES.SM,
-    fontWeight: '500',
-    color: COLORS.TEXT_LIGHT,
-  },
-  tabTextActive: {
-    color: COLORS.TEXT,
-    fontWeight: '600',
   },
   accordionItem: {
     borderBottomWidth: 1,

@@ -1,9 +1,13 @@
 {
   "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "file",
   "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSaveTimeout": 5000,
+
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
+
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
@@ -26,4 +30,3 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
 }
-

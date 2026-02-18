@@ -2,8 +2,9 @@ import React, { useState, useCallback } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackScreenProps } from '@react-navigation/stack';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Header, PrimaryButton, Toggle } from '@/components/ui';
+import { Header, Toggle, CTACard, Background } from '@/components/ui';
+import { PlanCard, PlanDescription, ComparativeTable } from '@/components/sections/plans';
+import type { ComparativeTableRow } from '@/components/sections/plans';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen, logButtonClick } from '@/analytics';
 import type { RootStackParamList } from '@/types/navigation';
@@ -14,8 +15,6 @@ import { styles } from './styles';
 type PlanTabId = 'free' | 'basic' | 'premium' | 'compare';
 
 type Props = StackScreenProps<RootStackParamList, 'Plans'>;
-
-type CompareCell = 'yes' | 'no' | 'unlimited';
 
 const PlansScreen: React.FC<Props> = ({ navigation, route }) => {
   useAnalyticsScreen({ screenName: 'Plans', screenClass: 'PlansScreen' });
@@ -83,59 +82,22 @@ const PlansScreen: React.FC<Props> = ({ navigation, route }) => {
     t('plans.premiumInclude6'),
   ];
 
-  const compareRows: { featureKey: string; free: CompareCell; basic: CompareCell; premium: CompareCell }[] = [
-    { featureKey: 'plans.compareFeatureCommunities', free: 'yes', basic: 'yes', premium: 'yes' },
-    { featureKey: 'plans.compareFeatureProducts', free: 'yes', basic: 'yes', premium: 'yes' },
-    { featureKey: 'plans.compareFeatureDiscounts', free: 'no', basic: 'yes', premium: 'yes' },
-    { featureKey: 'plans.compareFeaturePoints', free: 'no', basic: 'yes', premium: 'yes' },
-    { featureKey: 'plans.compareFeatureUpload', free: 'no', basic: 'unlimited', premium: 'unlimited' },
-    { featureKey: 'plans.compareFeatureDevices', free: 'no', basic: 'unlimited', premium: 'unlimited' },
-    { featureKey: 'plans.compareFeatureGenetic', free: 'no', basic: 'no', premium: 'yes' },
-    { featureKey: 'plans.compareFeatureExclusive', free: 'no', basic: 'no', premium: 'yes' },
+  const compareColumnHeaders = [t('plans.tabFree'), t('plans.tabBasic'), t('plans.tabPremium')];
+
+  const compareRows: ComparativeTableRow[] = [
+    { feature: t('plans.compareFeatureCommunities'), values: ['yes', 'yes', 'yes'] },
+    { feature: t('plans.compareFeatureProducts'), values: ['yes', 'yes', 'yes'] },
+    { feature: t('plans.compareFeatureDiscounts'), values: ['no', 'yes', 'yes'] },
+    { feature: t('plans.compareFeaturePoints'), values: ['no', 'yes', 'yes'] },
+    { feature: t('plans.compareFeatureUpload'), values: ['no', 'unlimited', 'unlimited'] },
+    { feature: t('plans.compareFeatureDevices'), values: ['no', 'unlimited', 'unlimited'] },
+    { feature: t('plans.compareFeatureGenetic'), values: ['no', 'no', 'yes'] },
+    { feature: t('plans.compareFeatureExclusive'), values: ['no', 'no', 'yes'] },
   ];
-
-  const renderPlanCard = (
-    titleKey: string,
-    sloganKey: string,
-    descriptionKey: string,
-    priceMonthlyKey: string,
-    priceAnnualKey: string,
-    includes: string[],
-    buttonLabelKey: string,
-  ) => (
-    <>
-      <View style={styles.planCard}>
-        <Text style={styles.planTitle}>{t(titleKey)}</Text>
-        <Text style={styles.planSlogan}>{t(sloganKey)}</Text>
-        <Text style={styles.planDescription}>{t(descriptionKey)}</Text>
-        <Text style={styles.planPrice}>{t(priceMonthlyKey)}</Text>
-        <Text style={styles.planPriceAnnual}>{t(priceAnnualKey)}</Text>
-        <PrimaryButton label={t(buttonLabelKey)} onPress={handleStart} style={styles.startButton} size='large' />
-      </View>
-      <View style={styles.includesSection}>
-        <Text style={styles.includesTitle}>{t('plans.includesTitle')}</Text>
-        {includes.map((item, index) => (
-          <View key={index} style={styles.includeItem}>
-            <Text style={styles.bullet}>•</Text>
-            <Text style={styles.includeText}>{item}</Text>
-          </View>
-        ))}
-      </View>
-    </>
-  );
-
-  const renderCompareCell = (cell: CompareCell) => {
-    if (cell === 'yes') {
-      return <Icon name='check' size={20} color={COLORS.WHITE} />;
-    }
-    if (cell === 'unlimited') {
-      return <Text style={styles.compareCellText}>{t('plans.compareUnlimited')}</Text>;
-    }
-    return <Text style={styles.compareCellText}>{t('plans.compareNo')}</Text>;
-  };
 
   return (
     <SafeAreaView style={styles.container}>
+      <Background />
       <Header onBackPress={handleBack} />
 
       <ScrollView
@@ -146,74 +108,69 @@ const PlansScreen: React.FC<Props> = ({ navigation, route }) => {
       >
         <Text style={styles.title}>{t('plans.title')}</Text>
 
-        <View style={styles.betaCard}>
-          <Text style={styles.betaTitle}>{t('plans.betaTitle')}</Text>
-          <Text style={styles.betaText}>{t('plans.betaParagraph1')}</Text>
-          <Text style={styles.betaText}>{t('plans.betaParagraph2')}</Text>
-          <Text style={styles.betaText}>{t('plans.betaParagraph3')}</Text>
-          <Text style={[styles.betaText, { marginBottom: 0 }]}>{t('plans.betaParagraph4')}</Text>
-        </View>
+        <CTACard
+          title={t('plans.betaTitle')}
+          highlightText={t('plans.betaParagraph1')}
+          description={[t('plans.betaParagraph2'), t('plans.betaParagraph3'), t('plans.betaParagraph4')]}
+          backgroundColor={COLORS.HIGHLIGHT.LIGHT}
+        />
 
         <View style={styles.tabsRow}>
-          <Toggle
-            options={tabLabels}
-            selected={selectedLabel}
-            onSelect={handleTabSelect}
-          />
+          <Toggle options={tabLabels} selected={selectedLabel} onSelect={handleTabSelect} />
         </View>
 
-        {selectedTab === 'free' &&
-          renderPlanCard(
-            'plans.freeTitle',
-            'plans.freeSlogan',
-            'plans.freeDescription',
-            'plans.freePriceMonthly',
-            'plans.freePriceAnnual',
-            freeIncludes,
-            'plans.startButton',
-          )}
+        {selectedTab === 'free' && (
+          <View style={styles.planCardWrapper}>
+            <PlanCard
+              title={t('plans.freeTitle')}
+              slogan={t('plans.freeSlogan')}
+              description={t('plans.freeDescription')}
+              priceMonthly={t('plans.freePriceMonthly')}
+              priceAnnual={t('plans.freePriceAnnual')}
+              primaryButtonLabel={t('plans.startButton')}
+              onPrimaryPress={handleStart}
+            />
+            <PlanDescription title={t('plans.includesTitle')} items={freeIncludes} />
+          </View>
+        )}
 
-        {selectedTab === 'basic' &&
-          renderPlanCard(
-            'plans.basicTitle',
-            'plans.basicSlogan',
-            'plans.basicDescription',
-            'plans.basicPriceMonthly',
-            'plans.basicPriceAnnual',
-            basicIncludes,
-            'plans.startButtonBeta',
-          )}
+        {selectedTab === 'basic' && (
+          <View style={styles.planCardWrapper}>
+            <PlanCard
+              title={t('plans.basicTitle')}
+              slogan={t('plans.basicSlogan')}
+              description={t('plans.basicDescription')}
+              priceMonthly={t('plans.basicPriceMonthly')}
+              priceAnnual={t('plans.basicPriceAnnual')}
+              primaryButtonLabel={t('plans.startButtonBeta')}
+              onPrimaryPress={handleStart}
+            />
+            <PlanDescription title={t('plans.includesTitle')} items={basicIncludes} />
+          </View>
+        )}
 
-        {selectedTab === 'premium' &&
-          renderPlanCard(
-            'plans.premiumTitle',
-            'plans.premiumSlogan',
-            'plans.premiumDescription',
-            'plans.premiumPriceMonthly',
-            'plans.premiumPriceAnnual',
-            premiumIncludes,
-            'plans.startButtonBeta',
-          )}
+        {selectedTab === 'premium' && (
+          <View style={styles.planCardWrapper}>
+            <PlanCard
+              title={t('plans.premiumTitle')}
+              slogan={t('plans.premiumSlogan')}
+              description={t('plans.premiumDescription')}
+              priceMonthly={t('plans.premiumPriceMonthly')}
+              priceAnnual={t('plans.premiumPriceAnnual')}
+              primaryButtonLabel={t('plans.startButtonBeta')}
+              onPrimaryPress={handleStart}
+            />
+            <PlanDescription title={t('plans.includesTitle')} items={premiumIncludes} />
+          </View>
+        )}
 
         {selectedTab === 'compare' && (
-          <View style={styles.compareTable}>
-            <View style={styles.compareHeaderRow}>
-              <View style={styles.compareFeatureCol} />
-              <Text style={styles.compareHeaderCell}>{t('plans.tabFree')}</Text>
-              <Text style={styles.compareHeaderCell}>{t('plans.tabBasic')}</Text>
-              <Text style={styles.compareHeaderCell}>{t('plans.tabPremium')}</Text>
-            </View>
-            {compareRows.map((row, index) => (
-              <View key={index} style={styles.compareRow}>
-                <Text style={styles.compareFeatureCell} numberOfLines={2}>
-                  {t(row.featureKey)}
-                </Text>
-                <View style={styles.compareCell}>{renderCompareCell(row.free)}</View>
-                <View style={styles.compareCell}>{renderCompareCell(row.basic)}</View>
-                <View style={styles.compareCell}>{renderCompareCell(row.premium)}</View>
-              </View>
-            ))}
-          </View>
+          <ComparativeTable
+            columnHeaders={compareColumnHeaders}
+            rows={compareRows}
+            noLabel={t('plans.compareNo')}
+            unlimitedLabel={t('plans.compareUnlimited')}
+          />
         )}
       </ScrollView>
     </SafeAreaView>

@@ -8,5 +8,4 @@ export { default as Header } from './layout/Header';
 export * from './menu';
 export * from './feedback';
 export { default as Badge } from './badge';
-export * from './tabs';
 export * from './modals';
