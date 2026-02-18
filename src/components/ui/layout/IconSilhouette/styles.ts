@@ -6,7 +6,19 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  containerXsmall: {
+    width: 24,
+    height: 20,
+    borderRadius: BORDER_RADIUS.SM,
+    shadowColor: COLORS.BLACK,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 3,
+  },
   containerSmall: {
+    width: 30,
+    height: 26,
     borderRadius: BORDER_RADIUS.MD,
     shadowColor: COLORS.BLACK,
     shadowOffset: { width: 0, height: 4 },
@@ -26,6 +38,10 @@ export const styles = StyleSheet.create({
   },
   image: {
     resizeMode: 'cover',
+  },
+  imageXsmall: {
+    width: 24,
+    height: 20,
   },
   imageSmall: {
     width: 30,

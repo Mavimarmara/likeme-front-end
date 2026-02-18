@@ -15,9 +15,8 @@ export const styles = StyleSheet.create({
   },
 
   buttonSmall: {
-    paddingVertical: SPACING.SM,
     paddingHorizontal: SPACING.MD,
-    minHeight: 40,
+    height: 32,
   },
 
   buttonMedium: {
@@ -27,7 +26,7 @@ export const styles = StyleSheet.create({
   },
 
   buttonDefault: {
-    backgroundColor: COLORS.NEUTRAL.HIGH.LIGHT,
+    backgroundColor: COLORS.NEUTRAL.HIGH.PURE,
     borderColor: COLORS.NEUTRAL.LOW.LIGHT,
   },
 

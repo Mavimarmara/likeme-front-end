@@ -32,8 +32,7 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
     return {
       width: size,
       height: size,
-      right: -size * 0.1,
-      top: -size * 0.3,
+      top: -size * 0.1,
     };
   }, [windowWidth]);
 
@@ -119,7 +118,7 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
                   size='small'
                   onPress={() => toggleMarker(marker.id)}
                   style={styles.markerButton}
-                  iconRight={<IconSilhouette tintColor={gradient} size='small' />}
+                  iconRight={<IconSilhouette tintColor={gradient} size='xsmall' />}
                 />
               );
             })}

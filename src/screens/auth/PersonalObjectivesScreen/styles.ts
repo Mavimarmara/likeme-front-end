@@ -17,7 +17,7 @@ export const styles = StyleSheet.create({
   },
 
   content: {
-    paddingTop: SPACING.LG,
+    paddingTop: SPACING.XXL,
     position: 'relative',
     width: '100%',
   },
@@ -25,15 +25,14 @@ export const styles = StyleSheet.create({
   titleAdornment: {
     position: 'absolute',
     right: -40,
-    top: -60,
   },
 
   greeting: {
     color: COLORS.TEXT,
     fontFamily: 'DM Sans',
-    fontSize: 28,
+    fontSize: 48,
     fontWeight: '700',
-    marginBottom: SPACING.SM,
+    marginBottom: SPACING.MD,
   },
 
   question: {
@@ -48,7 +47,7 @@ export const styles = StyleSheet.create({
 
   markersList: {
     width: '100%',
-    gap: SPACING.SM,
+    gap: SPACING.MD,
   },
 
   markerButton: {

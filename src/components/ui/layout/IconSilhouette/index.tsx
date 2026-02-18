@@ -4,7 +4,7 @@ import Svg, { Defs, LinearGradient, Path, Stop } from 'react-native-svg';
 import { BackgroundIcon } from '@/assets';
 import { styles } from './styles';
 
-export type IconSilhouetteSize = 'small' | 'medium';
+export type IconSilhouetteSize = 'xsmall' | 'small' | 'medium';
 
 export type IconSilhouetteProps = {
   tintColor?: string | readonly string[] | null;
@@ -17,9 +17,14 @@ export type IconSilhouetteProps = {
 const SILHOUETTE_PATH =
   'M38.6352 59.6076C28.4234 59.6076 20.7646 57.4269 15.6587 53.0655C10.5528 48.4619 8 41.4352 8 31.9855C8 22.2936 10.5528 15.2669 15.6587 10.9055C20.7646 6.30184 28.4234 4 38.6352 4C49.0901 4 56.8706 6.30184 61.9765 10.9055C67.3255 15.2669 70 22.2936 70 31.9855C70 50.4003 59.545 59.6076 38.6352 59.6076Z';
 
+const getSizeStyles = (size: IconSilhouetteSize) => {
+  if (size === 'xsmall') return { container: styles.containerXsmall, image: styles.imageXsmall };
+  if (size === 'small') return { container: styles.containerSmall, image: styles.imageSmall };
+  return { container: styles.containerMedium, image: styles.imageMedium };
+};
+
 const IconSilhouette: React.FC<IconSilhouetteProps> = ({ tintColor, source, size = 'medium', style, children }) => {
-  const containerSize = size === 'small' ? styles.containerSmall : styles.containerMedium;
-  const imageSize = size === 'small' ? styles.imageSmall : styles.imageMedium;
+  const { container: containerSize, image: imageSize } = getSizeStyles(size);
   const isGradient = Array.isArray(tintColor) && tintColor.length > 1;
   const singleTint =
     typeof tintColor === 'string'
