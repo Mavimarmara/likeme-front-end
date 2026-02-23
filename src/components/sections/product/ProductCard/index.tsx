@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, Pressable } from 'react-native';
+import { View, Text, TouchableOpacity, Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { BlurView } from 'expo-blur';
+import { BlurCard } from '@/components/ui/cards';
 import { formatPrice } from '@/utils';
 import { styles } from './styles';
 
@@ -21,6 +21,22 @@ type Props = {
 };
 
 const ProductCard: React.FC<Props> = ({ product, onPress, onLike }) => {
+  const topSection = (
+    <View style={styles.tagBadge}>
+      <Text style={styles.tagText}>{product.tag}</Text>
+    </View>
+  );
+
+  const footerSection = (
+    <View style={styles.bottomInfo}>
+      <Text style={styles.price}>{formatPrice(product.price)}</Text>
+      <TouchableOpacity style={styles.likeButton} onPress={() => onLike?.(product)} activeOpacity={0.7}>
+        <Icon name='favorite-border' size={20} color='#f6cffb' />
+        <Text style={styles.likesCount}>{product.likes}</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
   return (
     <Pressable
       style={styles.container}
@@ -28,22 +44,12 @@ const ProductCard: React.FC<Props> = ({ product, onPress, onLike }) => {
       disabled={!onPress}
       accessibilityRole='button'
     >
-      <View style={styles.imageContainer}>
-        <Image source={{ uri: product.image }} style={styles.image} />
-        <BlurView intensity={10} tint='dark' style={styles.imageOverlay} />
-        <View style={styles.contentOverlay}>
-          <View style={styles.tagBadge}>
-            <Text style={styles.tagText}>{product.tag}</Text>
-          </View>
-          <View style={styles.bottomInfo}>
-            <Text style={styles.price}>{formatPrice(product.price)}</Text>
-            <TouchableOpacity style={styles.likeButton} onPress={() => onLike?.(product)} activeOpacity={0.7}>
-              <Icon name='favorite-border' size={20} color='#f6cffb' />
-              <Text style={styles.likesCount}>{product.likes}</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
+      <BlurCard
+        backgroundImage={product.image}
+        topSection={topSection}
+        footerSection={footerSection}
+        style={styles.imageContainer}
+      />
       <View style={styles.footer}>
         <Text style={styles.title} numberOfLines={1}>
           {product.title}

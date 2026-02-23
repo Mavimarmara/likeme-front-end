@@ -69,7 +69,7 @@ export const getBlurStyle = (footerHeight: number, radii: BottomRadii): ViewStyl
   bottom: 0,
   left: 0,
   right: 0,
-  height: footerHeight > 0 ? footerHeight + 8 : 60,
+  height: footerHeight > 0 ? footerHeight + 20 : 60,
   borderBottomLeftRadius: radii.bottomLeft,
   borderBottomRightRadius: radii.bottomRight,
   overflow: 'hidden',
