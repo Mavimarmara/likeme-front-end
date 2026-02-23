@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { View, Text, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '@/components/ui';
+import { PrimaryButton } from '@/components/ui/buttons';
 import { useTranslation } from '@/hooks/i18n';
 import { BackgroundWithGradient4, BackgroundWithGradient5 } from '@/assets';
 import { useAnalyticsScreen } from '@/analytics';
@@ -18,14 +19,6 @@ const AnamnesisCompletionScreen: React.FC<Props> = ({ navigation }) => {
     screenClass: 'AnamnesisCompletionScreen',
   });
   const { t } = useTranslation();
-  useEffect(() => {
-    // Auto-redirecionar para home após 3 segundos
-    const timer = setTimeout(() => {
-      navigation.navigate('Home');
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, [navigation]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -56,6 +49,12 @@ const AnamnesisCompletionScreen: React.FC<Props> = ({ navigation }) => {
         <View style={styles.mainContent}>
           <View style={styles.textContainer}>
             <Text style={styles.title}>{t('anamnesis.completionTitle')}</Text>
+          </View>
+          <View style={styles.buttonContainer}>
+            <PrimaryButton
+              label={t('anamnesis.completionButton')}
+              onPress={() => navigation.navigate('Home')}
+            />
           </View>
         </View>
       </View>

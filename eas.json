@@ -98,7 +98,8 @@
         "appleTeamId": "VS752K4DT8"
       },
       "android": {
-        "track": "internal"
+        "track": "internal",
+        "serviceAccountKeyPath": "./google-service-account.json"
       }
     },
     "production": {
@@ -108,7 +109,9 @@
         "appleTeamId": "VS752K4DT8"
       },
       "android": {
-        "track": "production"
+        "track": "production",
+        "releaseStatus": "draft",
+        "serviceAccountKeyPath": "./google-service-account.json"
       }
     }
   }

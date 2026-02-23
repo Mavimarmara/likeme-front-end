@@ -76,4 +76,9 @@ export const styles = StyleSheet.create({
     fontFamily: 'Urbanist-ExtraBold',
     letterSpacing: 0.5,
   },
+  buttonContainer: {
+    width: '100%',
+    paddingHorizontal: SPACING.XL,
+    marginTop: SPACING.XL,
+  },
 });

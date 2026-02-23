@@ -32,7 +32,7 @@ export const styles = StyleSheet.create({
   providersContainer: {
     paddingTop: SPACING.LG,
   },
-  communitiesContainer: {
+  joinCommunityContainer: {
     paddingTop: SPACING.LG,
   },
   productsContainer: {

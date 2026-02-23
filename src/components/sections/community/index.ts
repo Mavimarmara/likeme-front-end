@@ -2,7 +2,6 @@ export { default as LiveBanner, type LiveBannerData, type LiveStatus } from './L
 export { default as PostDetailsHeader } from './PostDetailsHeader';
 export { default as NextEventsSection } from './NextEventsSection';
 export { default as PopularProvidersSection, type Provider } from './PopularProvidersSection';
-export { default as RecommendedCommunitiesSection, type RecommendedCommunity } from './RecommendedCommunitiesSection';
 export { default as YourCommunitiesSection, type YourCommunity } from './YourCommunitiesSection';
 export { default as OtherCommunitiesSection, type OtherCommunity } from './OtherCommunitiesSection';
 export { default as PostCard } from './PostCard';
@@ -13,3 +12,4 @@ export { default as CommentReactions } from './CommentReactions';
 export { default as SocialList } from './SocialList';
 export { default as PostsSection } from './PostsSection';
 export { default as ProgramsList } from './ProgramsList';
+export { default as JoinCommunityCard, type JoinCommunity } from './JoinCommunityCard';

@@ -1,52 +1,27 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 import { SPACING, FONT_SIZES, BORDER_RADIUS } from '@/constants';
+
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const CARD_WIDTH = SCREEN_WIDTH - SPACING.MD * 2 - SPACING.SM;
 
 export const styles = StyleSheet.create({
   container: {
     paddingHorizontal: SPACING.MD,
-    paddingTop: SPACING.MD,
-    gap: SPACING.MD,
   },
-  title: {
-    fontFamily: 'DM Sans',
-    fontSize: FONT_SIZES.SM,
-    fontWeight: '500',
-    color: '#000000',
-    lineHeight: 14,
-  },
-  communitiesList: {
+  scrollContent: {
+    paddingHorizontal: SPACING.MD,
     gap: SPACING.SM,
+  },
+  cardWrapper: {
+    width: CARD_WIDTH,
   },
   card: {
     height: 164,
-    borderRadius: 24,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 28,
     borderBottomLeftRadius: 12,
     borderBottomRightRadius: 32,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  cardImage: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    width: '100%',
-    height: '100%',
-  },
-  gradient: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
-  cardContent: {
-    flex: 1,
-    padding: SPACING.MD,
-    justifyContent: 'space-between',
+    marginRight: 0,
   },
   badgeContainer: {
     alignSelf: 'flex-start',
@@ -54,9 +29,11 @@ export const styles = StyleSheet.create({
   badge: {
     backgroundColor: 'rgba(0, 17, 55, 0.64)',
     paddingHorizontal: 14,
-    paddingVertical: 0,
     minHeight: 24,
-    borderRadius: 12,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    borderBottomLeftRadius: 11,
+    borderBottomRightRadius: 11,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -69,20 +46,19 @@ export const styles = StyleSheet.create({
     letterSpacing: 0.2,
     textAlign: 'center',
   },
-  cardBottom: {
+  bottom: {
     flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'space-between',
     gap: SPACING.SM,
   },
-  cardTitle: {
+  title: {
     flex: 1,
     fontFamily: 'DM Sans',
     fontSize: FONT_SIZES.XL,
     fontWeight: '500',
     color: '#FFFFFF',
-    lineHeight: 20,
-    marginRight: SPACING.SM,
+    lineHeight: 24,
   },
   seeMoreButton: {
     width: 54,

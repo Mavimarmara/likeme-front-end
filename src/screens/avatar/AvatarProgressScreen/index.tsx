@@ -19,9 +19,9 @@ import type { Event } from '@/types/event';
 import {
   NextEventsSection,
   PopularProvidersSection,
-  RecommendedCommunitiesSection,
+  JoinCommunityCard,
   type Provider,
-  type RecommendedCommunity,
+  type JoinCommunity,
 } from '@/components/sections/community';
 import { ProductsCarousel, type Product } from '@/components/sections/product';
 import Carousel from '@/components/sections/product/Carousel';
@@ -70,14 +70,14 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
     },
   });
 
-  const recommendedCommunities = useMemo(() => {
-    return rawCommunities.slice(0, 2).map((community) => {
+  const joinCommunities = useMemo((): JoinCommunity[] => {
+    return rawCommunities.map((community) => {
       const category = categories.length > 0 ? categories[0] : undefined;
       return {
         id: community.communityId,
         title: community.displayName,
-        badge: category?.name || t('home.community'),
-        image: '',
+        badge: category?.name || 'Community',
+        image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
       };
     });
   }, [rawCommunities, categories]);
@@ -249,7 +249,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
     console.log('Like product:', product.id);
   };
 
-  const handleRecommendedCommunityPress = (community: RecommendedCommunity) => {
+  const handleJoinCommunityPress = (community: JoinCommunity) => {
     rootNavigation.navigate('Community' as never);
   };
 
@@ -506,9 +506,9 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
             </View>
           )}
 
-          <RecommendedCommunitiesSection
-            communities={recommendedCommunities}
-            onCommunityPress={handleRecommendedCommunityPress}
+          <JoinCommunityCard
+            communities={joinCommunities}
+            onCommunityPress={handleJoinCommunityPress}
           />
 
           <View style={styles.addWidgetsContainer}>

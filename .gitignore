@@ -153,3 +153,6 @@ android/keystore.properties
 android/app/*.keystore
 android/app/*.jks
 !android/app/debug.keystore
+
+# Google Service Account (NUNCA commitar!)
+google-service-account.json

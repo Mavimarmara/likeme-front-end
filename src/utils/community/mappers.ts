@@ -273,26 +273,6 @@ export const mapCommunityToProgram = (community: Community, files?: CommunityFil
   };
 };
 
-export const mapCommunityToRecommendedCommunity = (
-  community: Community,
-  category?: CommunityCategory,
-  files?: CommunityFile[],
-): { id: string; title: string; badge: string; image: string } => {
-  const badge = category?.name || 'Community';
-
-  const image =
-    community.avatarFileId && files
-      ? files.find((f) => f.fileId === community.avatarFileId)?.fileUrl
-      : 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800';
-
-  return {
-    id: community.communityId,
-    title: community.displayName,
-    badge,
-    image: image || 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
-  };
-};
-
 export const mapCommunityToOtherCommunity = (
   community: Community,
   category?: CommunityCategory,
