@@ -49,7 +49,7 @@ const IconButton: React.FC<Props> = ({
       return (
         <IconSilhouette
           source={backgroundSource}
-          tintColor={backgroundTintColor ?? undefined}
+          tintColor={backgroundTintColor ?? COLORS.NEUTRAL.HIGH.PURE}
           size={backgroundSize}
           style={iconContainerStyle}
         >

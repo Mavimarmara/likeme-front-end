@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { BlurCard } from '@/components/ui/cards';
+import { IconButton } from '@/components/ui/buttons';
 import { formatPrice } from '@/utils';
 import { styles } from './styles';
 
@@ -54,9 +55,7 @@ const ProductCard: React.FC<Props> = ({ product, onPress, onLike }) => {
         <Text style={styles.title} numberOfLines={1}>
           {product.title}
         </Text>
-        <View style={styles.arrowButton}>
-          <Icon name='chevron-right' size={24} color='#001137' />
-        </View>
+        <IconButton icon='chevron-right' iconColor='#001137' onPress={() => onPress?.(product)} />
       </View>
     </Pressable>
   );
