@@ -282,24 +282,18 @@ describe('CheckoutScreen', () => {
       expect(getByTestId('payment-form')).toBeTruthy();
     });
 
-    // Aguardar um pouco para que o PaymentForm preencha os dados
-    await waitFor(
-      () => {
-        // Aguardar que o createOrder seja chamado (indicando que os dados foram preenchidos)
-      },
-      { timeout: 2000 },
-    );
-
-    // Depois avança para order
-    fireEvent.press(continueButton);
+    // Depois avança para order (handleCompleteOrder é async - chama orderService.createOrder)
+    await act(async () => {
+      fireEvent.press(continueButton);
+    });
 
     await waitFor(
       () => {
-        // Na etapa order, não deve ter payment-form nem address-form
+        expect(mockOrderService.createOrder).toHaveBeenCalled();
         expect(queryByTestId('payment-form')).toBeNull();
         expect(queryByTestId('address-form')).toBeNull();
       },
-      { timeout: 3000 },
+      { timeout: 5000 },
     );
   });
 
