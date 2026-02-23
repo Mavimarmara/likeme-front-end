@@ -224,18 +224,20 @@ class CommunityService {
     }
   }
 
-  async joinCommunity(communityId: string): Promise<{ success: boolean; data?: { communityId: string; joined: boolean }; message?: string }> {
+  async joinCommunity(
+    communityId: string,
+  ): Promise<{ success: boolean; data?: { communityId: string; joined: boolean }; message?: string }> {
     try {
       if (!communityId || communityId.trim() === '') {
         throw new Error('Community ID is required');
       }
 
       const endpoint = `${this.communitiesEndpoint}/${communityId.trim()}/join`;
-      const response = await apiClient.post<{ success: boolean; data: { communityId: string; joined: boolean }; message: string }>(
-        endpoint,
-        undefined,
-        true,
-      );
+      const response = await apiClient.post<{
+        success: boolean;
+        data: { communityId: string; joined: boolean };
+        message: string;
+      }>(endpoint, undefined, true);
 
       logger.debug('Join community response:', { communityId, success: response.success });
       return response;

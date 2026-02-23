@@ -267,14 +267,17 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
     console.log('Provider pressionado:', provider.id);
   };
 
-  const handleJoinCommunity = useCallback(async (community: JoinCommunity) => {
-    try {
-      await communityService.joinCommunity(community.id);
-      rootNavigation.navigate('Community' as never);
-    } catch (error) {
-      Alert.alert(t('common.error'), t('home.joinCommunityError'));
-    }
-  }, [rootNavigation, t]);
+  const handleJoinCommunity = useCallback(
+    async (community: JoinCommunity) => {
+      try {
+        await communityService.joinCommunity(community.id);
+        rootNavigation.navigate('Community' as never);
+      } catch (error) {
+        Alert.alert(t('common.error'), t('home.joinCommunityError'));
+      }
+    },
+    [rootNavigation, t],
+  );
 
   // TODO: Temporariamente desabilitados
   // const handleYourCommunityPress = (community: YourCommunity) => {};
@@ -295,10 +298,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
         <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
           {joinCommunities.length > 0 && (
             <View style={styles.joinCommunityContainer}>
-              <JoinCommunityCard
-                communities={joinCommunities}
-                onCommunityPress={handleJoinCommunity}
-              />
+              <JoinCommunityCard communities={joinCommunities} onCommunityPress={handleJoinCommunity} />
             </View>
           )}
           {/* TODO: Temporariamente desabilitado

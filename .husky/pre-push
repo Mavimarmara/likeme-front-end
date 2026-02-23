@@ -1,11 +1,4 @@
 #!/bin/sh
-# Build local obrigatório antes do push: fix primeiro, depois valida typecheck + lint
-echo "🔨 Aplicando lint --fix..."
-npm run lint:fix
-if [ $? -ne 0 ]; then
-  echo "❌ Push bloqueado: lint falhou."
-  exit 1
-fi
 echo "🔨 Validando build (typecheck + lint)..."
 npm run build
 if [ $? -ne 0 ]; then
