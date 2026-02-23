@@ -138,7 +138,10 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
+      "eslint --fix --no-error-on-unmatched-pattern",
+      "prettier --write"
+    ],
+    "*.{spec,test}.{ts,tsx}": [
       "prettier --write"
     ]
   },
