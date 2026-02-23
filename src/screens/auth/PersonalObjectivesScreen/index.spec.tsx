@@ -60,17 +60,27 @@ jest.mock('@/assets', () => {
 jest.mock('@/components/ui', () => {
   const { View, Text, TouchableOpacity } = require('react-native');
   return {
-    Header: ({ rightLabel, onRightPress, onBackPress }: { rightLabel?: string; onRightPress?: () => void; onBackPress?: () => void }) => (
+    Header: ({
+      rightLabel,
+      onRightPress,
+      onBackPress,
+    }: {
+      rightLabel?: string;
+      onRightPress?: () => void;
+      onBackPress?: () => void;
+    }) => (
       <View>
-        <TouchableOpacity onPress={onBackPress}><Text>Back</Text></TouchableOpacity>
+        <TouchableOpacity onPress={onBackPress}>
+          <Text>Back</Text>
+        </TouchableOpacity>
         {rightLabel != null && (
           <TouchableOpacity onPress={onRightPress}>
-            <Text testID="header-right-label">{rightLabel}</Text>
+            <Text testID='header-right-label'>{rightLabel}</Text>
           </TouchableOpacity>
         )}
       </View>
     ),
-    IconSilhouette: () => <View testID="icon-silhouette" />,
+    IconSilhouette: () => <View testID='icon-silhouette' />,
     PrimaryButton: ({ label, onPress, disabled }: { label: string; onPress: () => void; disabled?: boolean }) => (
       <TouchableOpacity
         onPress={onPress}
@@ -91,13 +101,17 @@ jest.mock('@/components/ui', () => {
 
 jest.mock('@/services', () => ({
   personalObjectivesService: {
-    getPersonalObjectives: jest.fn(),
+    getMySelectedObjectives: jest.fn().mockResolvedValue([]),
   },
   storageService: {
-    setMarkersSelectedAt: jest.fn().mockResolvedValue(undefined),
-    setSelectedMarkerIds: jest.fn().mockResolvedValue(undefined),
-    getSelectedMarkerIds: jest.fn().mockResolvedValue([]),
+    setObjectivesSelectedAt: jest.fn().mockResolvedValue(undefined),
+    setSelectedObjectivesIds: jest.fn().mockResolvedValue(undefined),
+    getSelectedObjectivesIds: jest.fn().mockResolvedValue([]),
   },
+}));
+
+jest.mock('@/utils', () => ({
+  getNextOnboardingScreen: () => 'Home',
 }));
 
 const getServices = () => require('@/services');
@@ -120,18 +134,8 @@ jest.mock('./useMarkers', () => {
 describe('PersonalObjectivesScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    getServices().personalObjectivesService.getPersonalObjectives.mockResolvedValue({
-      data: {
-        objectives: [
-          { id: '1', name: 'Get to know me better' },
-          { id: '2', name: 'Improve my habits' },
-        ],
-        pagination: {
-          totalPages: 1,
-        },
-      },
-    });
-    getServices().storageService.getSelectedMarkerIds.mockResolvedValue([]);
+    getServices().personalObjectivesService.getMySelectedObjectives.mockResolvedValue([]);
+    getServices().storageService.getSelectedObjectivesIds.mockResolvedValue([]);
   });
 
   it('renders correctly', async () => {
@@ -166,9 +170,7 @@ describe('PersonalObjectivesScreen', () => {
       },
     };
 
-    const { getByText } = render(
-      <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />,
-    );
+    const { getByText } = render(<PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(getByText('Salvar')).toBeTruthy();
@@ -178,8 +180,8 @@ describe('PersonalObjectivesScreen', () => {
     fireEvent.press(getByText('Salvar'));
 
     await waitFor(() => {
-      expect(getServices().storageService.setSelectedMarkerIds).toHaveBeenCalledWith(['sleep']);
-      expect(getServices().storageService.setMarkersSelectedAt).toHaveBeenCalled();
+      expect(getServices().storageService.setSelectedObjectivesIds).toHaveBeenCalledWith(['sleep']);
+      expect(getServices().storageService.setObjectivesSelectedAt).toHaveBeenCalled();
       expect(mockNavigation.navigate).toHaveBeenCalledWith('Home');
     });
   });
@@ -195,9 +197,7 @@ describe('PersonalObjectivesScreen', () => {
       },
     };
 
-    const { getByText } = render(
-      <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />,
-    );
+    const { getByText } = render(<PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(getByText('Pular')).toBeTruthy();
@@ -207,7 +207,7 @@ describe('PersonalObjectivesScreen', () => {
 
     await waitFor(() => {
       expect(mockNavigation.navigate).toHaveBeenCalledWith('Home');
-      expect(getServices().storageService.setSelectedMarkerIds).not.toHaveBeenCalled();
+      expect(getServices().storageService.setSelectedObjectivesIds).not.toHaveBeenCalled();
     });
   });
 
@@ -265,7 +265,7 @@ describe('PersonalObjectivesScreen', () => {
     fireEvent.press(getByText('Salvar'));
 
     expect(alertSpy).toHaveBeenCalledWith('Campo obrigatório', 'Selecione ao menos um objetivo para continuar.');
-    expect(getServices().storageService.setSelectedMarkerIds).not.toHaveBeenCalled();
+    expect(getServices().storageService.setSelectedObjectivesIds).not.toHaveBeenCalled();
     expect(mockNavigation.navigate).not.toHaveBeenCalled();
 
     alertSpy.mockRestore();
@@ -275,11 +275,9 @@ describe('PersonalObjectivesScreen', () => {
     const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
     const mockRoute = { params: { userName: 'John' } };
     const alertSpy = jest.spyOn(require('react-native').Alert, 'alert');
-    getServices().storageService.setSelectedMarkerIds.mockRejectedValue(new Error('Storage error'));
+    getServices().storageService.setSelectedObjectivesIds.mockRejectedValue(new Error('Storage error'));
 
-    const { getByText } = render(
-      <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />,
-    );
+    const { getByText } = render(<PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />);
 
     await waitFor(() => expect(getByText('Salvar')).toBeTruthy());
     fireEvent.press(getByText('Sono'));
@@ -297,15 +295,13 @@ describe('PersonalObjectivesScreen', () => {
     const submitPromise = new Promise<void>(() => {
       /* noop */
     });
-    getServices().storageService.setSelectedMarkerIds.mockReturnValue(submitPromise);
-    getServices().storageService.setMarkersSelectedAt.mockReturnValue(submitPromise);
+    getServices().storageService.setSelectedObjectivesIds.mockReturnValue(submitPromise);
+    getServices().storageService.setObjectivesSelectedAt.mockReturnValue(submitPromise);
 
     const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
     const mockRoute = { params: { userName: 'John' } };
 
-    const { getByText } = render(
-      <PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />,
-    );
+    const { getByText } = render(<PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />);
 
     await waitFor(() => expect(getByText('Salvar')).toBeTruthy());
     fireEvent.press(getByText('Sono'));
@@ -313,7 +309,7 @@ describe('PersonalObjectivesScreen', () => {
     fireEvent.press(getByText('Salvar'));
 
     await waitFor(() => {
-      expect(getServices().storageService.setSelectedMarkerIds).toHaveBeenCalledTimes(1);
+      expect(getServices().storageService.setSelectedObjectivesIds).toHaveBeenCalledTimes(1);
     });
     expect(mockNavigation.navigate).not.toHaveBeenCalled();
   });

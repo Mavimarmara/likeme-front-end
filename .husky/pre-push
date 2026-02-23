@@ -1,8 +1,14 @@
 #!/bin/sh
+echo "🧪 Rodando testes..."
+npm test -- --no-coverage
+if [ $? -ne 0 ]; then
+  echo "❌ Push bloqueado: testes falharam."
+  exit 1
+fi
 echo "🔨 Validando build (typecheck + lint)..."
 npm run build
 if [ $? -ne 0 ]; then
   echo "❌ Push bloqueado: build falhou. Corrija os erros antes de fazer push."
   exit 1
 fi
-echo "✅ Build OK. Prosseguindo com o push."
+echo "✅ Testes + Build OK. Prosseguindo com o push."

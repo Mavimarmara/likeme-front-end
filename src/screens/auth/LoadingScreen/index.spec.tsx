@@ -1,22 +1,36 @@
-import { render } from '@testing-library/react-native';
-import { Animated } from 'react-native';
+import { render, act } from '@testing-library/react-native';
+import { Animated, Image } from 'react-native';
 import LoadingScreen from './index';
 
-jest.mock('@/assets', () => ({
-  PartialLogo: 'PartialLogo',
-  GradientEffect: 'GradientEffect',
-}));
-
-jest.mock('react-native-safe-area-context', () => {
-  const ReactNative = require('react-native');
+jest.mock('@/assets', () => {
+  const React = require('react');
+  const { View } = require('react-native');
   return {
-    SafeAreaView: ReactNative.View,
+    PartialLogo: (props: any) => React.createElement(View, props),
+    GradientSplash7: 1,
+    GradientSplash8: 2,
+    GradientSplash9: 3,
   };
 });
+
+jest.mock('@/analytics', () => ({
+  useAnalyticsScreen: jest.fn(),
+}));
+
+jest.mock('@/services', () => ({
+  storageService: {
+    getToken: jest.fn().mockResolvedValue(null),
+  },
+}));
+
+jest.mock('@/config', () => ({
+  getApiUrl: (path: string) => `http://localhost${path}`,
+}));
 
 describe('LoadingScreen', () => {
   beforeEach(() => {
     jest.useFakeTimers();
+    (Image.resolveAssetSource as any) = jest.fn().mockReturnValue({ width: 100, height: 200, uri: 'mock' });
     jest.spyOn(Animated, 'timing').mockImplementation((value: any, config: any) => {
       return {
         start: (cb?: any) => {
@@ -35,13 +49,17 @@ describe('LoadingScreen', () => {
     (Animated.timing as unknown as jest.Mock).mockRestore?.();
   });
 
-  it('navega para Unauthenticated ao concluir o loading', () => {
+  it('navega para Unauthenticated ao concluir o loading', async () => {
     const replace = jest.fn();
     const navigate = jest.fn();
 
     render(<LoadingScreen navigation={{ replace, navigate }} />);
 
-    jest.advanceTimersByTime(5000);
+    for (let i = 0; i < 10; i++) {
+      await act(async () => {
+        jest.advanceTimersByTime(500);
+      });
+    }
 
     expect(replace).toHaveBeenCalledWith('Unauthenticated');
   });

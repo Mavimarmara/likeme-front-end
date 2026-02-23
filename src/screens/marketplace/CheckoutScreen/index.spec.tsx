@@ -135,8 +135,26 @@ jest.mock('@/services', () => {
   };
 });
 
-jest.mock('@/utils/formatters', () => ({
+jest.mock('@/hooks', () => ({
+  useFormattedInput: () => jest.fn((text: string) => text),
+}));
+
+jest.mock('@/analytics', () => ({
+  useAnalyticsScreen: jest.fn(),
+}));
+
+jest.mock('@/utils', () => ({
   formatPrice: jest.fn((price: number) => `R$ ${price.toFixed(2)}`),
+  formatAddress: jest.fn((data: any) => `${data.addressLine1}, ${data.city} - ${data.state}`),
+  formatBillingAddress: jest.fn((data: any) => ({
+    country: 'br',
+    state: data.state || 'SP',
+    city: data.city || 'São Paulo',
+    street: 'Rua Marselha',
+    streetNumber: '1029',
+    zipcode: data.zipCode || '05332-000',
+    complement: 'Apto 94',
+  })),
 }));
 
 jest.mock('@/utils/logger', () => ({
@@ -239,7 +257,7 @@ describe('CheckoutScreen', () => {
       expect(getByTestId('address-form')).toBeTruthy();
     });
 
-    const continueButton = getByText('Continue');
+    const continueButton = getByText('common.continue');
     fireEvent.press(continueButton);
 
     await waitFor(() => {
@@ -257,7 +275,7 @@ describe('CheckoutScreen', () => {
     });
 
     // Primeiro avança para payment
-    const continueButton = getByText('Continue');
+    const continueButton = getByText('common.continue');
     fireEvent.press(continueButton);
 
     await waitFor(() => {
@@ -294,7 +312,7 @@ describe('CheckoutScreen', () => {
       expect(getByTestId('address-form')).toBeTruthy();
     });
 
-    const continueButton = getByText('Continue');
+    const continueButton = getByText('common.continue');
 
     // Avança para payment
     fireEvent.press(continueButton);
@@ -302,7 +320,9 @@ describe('CheckoutScreen', () => {
       expect(getByTestId('payment-form')).toBeTruthy();
     });
 
-    // Aguardar que os dados sejam preenchidos
+    // Avança para order (triggers handleCompleteOrder)
+    fireEvent.press(continueButton);
+
     await waitFor(
       () => {
         expect(mockOrderService.createOrder).toHaveBeenCalled();
@@ -310,8 +330,8 @@ describe('CheckoutScreen', () => {
       { timeout: 3000 },
     );
 
-    // Na etapa order, Continue deve navegar para Home (não goBack)
-    const homeButton = getByText('Home');
+    // Na etapa order, Home button deve navegar para Home
+    const homeButton = getByText('common.home');
     fireEvent.press(homeButton);
     expect(mockNavigation.navigate).toHaveBeenCalledWith('Home');
   });
@@ -363,7 +383,7 @@ describe('CheckoutScreen', () => {
       });
 
       // Avançar para payment step
-      const continueButton = getByText('Continue');
+      const continueButton = getByText('common.continue');
       fireEvent.press(continueButton);
 
       await waitFor(() => {
@@ -413,7 +433,7 @@ describe('CheckoutScreen', () => {
       });
 
       // Avançar para payment step
-      const continueButton = getByText('Continue');
+      const continueButton = getByText('common.continue');
       fireEvent.press(continueButton);
 
       await waitFor(() => {
@@ -441,7 +461,7 @@ describe('CheckoutScreen', () => {
       });
 
       // Avançar para payment step
-      const continueButton = getByText('Continue');
+      const continueButton = getByText('common.continue');
       fireEvent.press(continueButton);
 
       await waitFor(() => {
@@ -472,7 +492,7 @@ describe('CheckoutScreen', () => {
       });
 
       // Avançar para payment step
-      const continueButton = getByText('Continue');
+      const continueButton = getByText('common.continue');
       fireEvent.press(continueButton);
 
       await waitFor(() => {
@@ -500,7 +520,7 @@ describe('CheckoutScreen', () => {
       });
 
       // Avançar para payment step
-      const continueButton = getByText('Continue');
+      const continueButton = getByText('common.continue');
       fireEvent.press(continueButton);
 
       await waitFor(() => {
@@ -528,7 +548,7 @@ describe('CheckoutScreen', () => {
       });
 
       // Avançar para payment step
-      const continueButton = getByText('Continue');
+      const continueButton = getByText('common.continue');
       fireEvent.press(continueButton);
 
       await waitFor(() => {
@@ -571,7 +591,7 @@ describe('CheckoutScreen', () => {
       });
 
       // Avançar para payment step
-      const continueButton = getByText('Continue');
+      const continueButton = getByText('common.continue');
       fireEvent.press(continueButton);
 
       await waitFor(() => {
@@ -608,7 +628,7 @@ describe('CheckoutScreen', () => {
       });
 
       // Avançar para payment step
-      const continueButton = getByText('Continue');
+      const continueButton = getByText('common.continue');
       fireEvent.press(continueButton);
 
       await waitFor(() => {
@@ -647,7 +667,7 @@ describe('CheckoutScreen', () => {
       });
 
       // Avançar para payment step
-      const continueButton = getByText('Continue');
+      const continueButton = getByText('common.continue');
       fireEvent.press(continueButton);
 
       await waitFor(() => {
@@ -687,7 +707,7 @@ describe('CheckoutScreen', () => {
       });
 
       // Avançar para payment step
-      const continueButton = getByText('Continue');
+      const continueButton = getByText('common.continue');
       fireEvent.press(continueButton);
 
       await waitFor(() => {
@@ -726,7 +746,7 @@ describe('CheckoutScreen', () => {
       });
 
       // Avançar para payment step
-      const continueButton = getByText('Continue');
+      const continueButton = getByText('common.continue');
       fireEvent.press(continueButton);
 
       await waitFor(() => {
@@ -738,7 +758,7 @@ describe('CheckoutScreen', () => {
 
       await waitFor(
         () => {
-          expect(mockAlert).toHaveBeenCalledWith('Erro', 'Seu carrinho está vazio');
+          expect(mockAlert).toHaveBeenCalledWith('errors.error', 'checkout.emptyCartError');
         },
         { timeout: 3000 },
       );
@@ -759,7 +779,7 @@ describe('CheckoutScreen', () => {
       });
 
       // Avançar para payment step
-      const continueButton = getByText('Continue');
+      const continueButton = getByText('common.continue');
       fireEvent.press(continueButton);
 
       await waitFor(() => {

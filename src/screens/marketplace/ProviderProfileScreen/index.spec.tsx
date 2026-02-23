@@ -9,6 +9,13 @@ jest.mock('react-native-safe-area-context', () => {
   };
 });
 
+jest.mock('expo-linear-gradient', () => {
+  const { View } = require('react-native');
+  return {
+    LinearGradient: ({ children, ...props }: any) => <View {...props}>{children}</View>,
+  };
+});
+
 jest.mock('@/components/ui/layout', () => {
   const { View, TouchableOpacity, Text } = require('react-native');
   return {
@@ -22,6 +29,71 @@ jest.mock('@/components/ui/layout', () => {
     Background: () => null,
   };
 });
+
+jest.mock('@/components/ui', () => {
+  const { View, Text, TouchableOpacity } = require('react-native');
+  return {
+    Toggle: ({ options, selected, onSelect }: any) => (
+      <View testID='toggle'>
+        {options.map((option: string) => (
+          <TouchableOpacity key={option} onPress={() => onSelect(option)}>
+            <Text>{option}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    ),
+  };
+});
+
+jest.mock('@/components/ui/buttons', () => {
+  const { TouchableOpacity, Text } = require('react-native');
+  return {
+    SecondaryButton: ({ label, onPress }: any) => (
+      <TouchableOpacity onPress={onPress} testID={`button-${label}`}>
+        <Text>{label}</Text>
+      </TouchableOpacity>
+    ),
+  };
+});
+
+jest.mock('@/components/sections/community', () => {
+  const { View, Text } = require('react-native');
+  return {
+    PostCard: ({ post }: any) => (
+      <View testID={`post-${post.id}`}>
+        <Text>{post.content}</Text>
+      </View>
+    ),
+    NextEventsSection: ({ events }: any) => <View testID='next-events' />,
+    ProviderChat: {},
+  };
+});
+
+jest.mock('@/components/sections/product', () => ({
+  Product: {},
+}));
+
+jest.mock('@/hooks', () => ({
+  useUserFeed: () => ({
+    posts: [],
+    loading: false,
+    loadPosts: jest.fn(),
+  }),
+}));
+
+jest.mock('@/utils', () => ({
+  formatPrice: jest.fn((price: number) => `$${price?.toFixed(2) || '0.00'}`),
+}));
+
+jest.mock('@/analytics', () => ({
+  useAnalyticsScreen: jest.fn(),
+}));
+
+jest.mock('@react-navigation/native', () => ({
+  CommonActions: {
+    navigate: jest.fn((params: any) => ({ type: 'NAVIGATE', payload: params })),
+  },
+}));
 
 jest.mock('@/assets', () => ({
   BackgroundIconButton: require('react-native').Image.resolveAssetSource({ uri: 'test' }),
@@ -78,8 +150,8 @@ describe('ProviderProfileScreen', () => {
       <ProviderProfileScreen navigation={mockNavigation} route={mockRouteWithoutProvider} />,
     );
 
-    expect(getByText('Dr. Avery Parker')).toBeTruthy();
-    expect(getByText('Therapist & Wellness Coach')).toBeTruthy();
+    expect(getByText('Marcela Ferraz')).toBeTruthy();
+    expect(getByText('Professora de Yoga')).toBeTruthy();
   });
 
   it('calls goBack when back button is pressed', () => {
@@ -91,25 +163,16 @@ describe('ProviderProfileScreen', () => {
     expect(mockNavigation.goBack).toHaveBeenCalled();
   });
 
-  it('handles Book Appointment button press', () => {
+  it('handles Follow button press', () => {
     const { getByText } = render(<ProviderProfileScreen navigation={mockNavigation} route={mockRouteWithProvider} />);
 
-    const bookButton = getByText('Book Appointment');
-    fireEvent.press(bookButton);
+    const followButton = getByText('Follow');
+    fireEvent.press(followButton);
 
-    expect(console.log).toHaveBeenCalledWith('Book appointment with:', 'provider-1');
+    expect(console.log).toHaveBeenCalledWith('Follow provider:', 'provider-1');
   });
 
-  it('handles Send Message button press', () => {
-    const { getByText } = render(<ProviderProfileScreen navigation={mockNavigation} route={mockRouteWithProvider} />);
-
-    const messageButton = getByText('Send Message');
-    fireEvent.press(messageButton);
-
-    expect(console.log).toHaveBeenCalledWith('Send message to:', 'provider-1');
-  });
-
-  it('displays avatar placeholder when avatar is not provided', () => {
+  it('renders correctly when provider has no avatar', () => {
     const routeWithoutAvatar = {
       params: {
         providerId: 'provider-1',
@@ -122,7 +185,7 @@ describe('ProviderProfileScreen', () => {
 
     const { getByText } = render(<ProviderProfileScreen navigation={mockNavigation} route={routeWithoutAvatar} />);
 
-    // Should render the first letter of the name
-    expect(getByText('D')).toBeTruthy();
+    expect(getByText('Dr. Test')).toBeTruthy();
+    expect(getByText('Test Title')).toBeTruthy();
   });
 });

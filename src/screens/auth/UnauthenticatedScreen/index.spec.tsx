@@ -1,43 +1,42 @@
 import { render, fireEvent } from '@testing-library/react-native';
 import UnauthenticatedScreen from './index';
 
-jest.mock('react-native-safe-area-context', () => {
-  const ReactNative = require('react-native');
-  return {
-    SafeAreaView: ReactNative.View,
-  };
-});
-
-// Mock navigation
 const mockNavigation = {
   navigate: jest.fn(),
   goBack: jest.fn(),
 };
 
-jest.mock('@react-navigation/native', () => ({
-  useNavigation: () => mockNavigation,
+jest.mock('@/hooks', () => ({
+  useAuthLogin: (navigation: any) => ({
+    handleLogin: () => navigation.navigate('Welcome'),
+    isLoading: false,
+  }),
 }));
 
-// Mock SVG components
-jest.mock('@/assets', () => ({
-  Logo: 'Logo',
+jest.mock('@/analytics', () => ({
+  useAnalyticsScreen: jest.fn(),
+  logButtonClick: jest.fn(),
+  logNavigation: jest.fn(),
 }));
 
-jest.mock('@/components/ui', () => {
-  const { Text, TouchableOpacity } = require('react-native');
+jest.mock('./components', () => {
+  const { View, Text, TouchableOpacity } = require('react-native');
+  const { useTranslation } = require('@/hooks/i18n');
   return {
-    Header: () => null,
-    Title: ({ title }: { title: string }) => <Text>{title}</Text>,
-    PrimaryButton: ({ label, onPress }: { label: string; onPress: () => void }) => (
-      <TouchableOpacity onPress={onPress} testID={`button-${label.toLowerCase()}`}>
-        <Text>{label}</Text>
-      </TouchableOpacity>
-    ),
-    SecondaryButton: ({ label, onPress }: { label: string; onPress: () => void }) => (
-      <TouchableOpacity onPress={onPress} testID={`button-${label.toLowerCase()}`}>
-        <Text>{label}</Text>
-      </TouchableOpacity>
-    ),
+    UnauthenticatedStep1: ({ onNext, onLogin }: any) => {
+      const { t } = useTranslation();
+      return (
+        <View>
+          <Text>{t('auth.tagline')}</Text>
+          <TouchableOpacity onPress={onNext}>
+            <Text>{t('common.next')}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={onLogin}>
+            <Text>{t('auth.login')}</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    },
   };
 });
 
@@ -51,15 +50,15 @@ describe('UnauthenticatedScreen', () => {
   it('renders correctly', () => {
     const { getByText } = render(<UnauthenticatedScreen navigation={mockNavigation} route={mockRoute} />);
 
-    expect(getByText('LIKE YOUR LIFE')).toBeTruthy();
-    expect(getByText('Next')).toBeTruthy();
-    expect(getByText('Login')).toBeTruthy();
+    expect(getByText('auth.tagline')).toBeTruthy();
+    expect(getByText('common.next')).toBeTruthy();
+    expect(getByText('auth.login')).toBeTruthy();
   });
 
   it('handles next button press', () => {
     const { getByText } = render(<UnauthenticatedScreen navigation={mockNavigation} route={mockRoute} />);
 
-    const nextButton = getByText('Next');
+    const nextButton = getByText('common.next');
     fireEvent.press(nextButton);
 
     expect(mockNavigation.navigate).toHaveBeenCalledWith('Welcome');
@@ -68,7 +67,7 @@ describe('UnauthenticatedScreen', () => {
   it('handles login button press', () => {
     const { getByText } = render(<UnauthenticatedScreen navigation={mockNavigation} route={mockRoute} />);
 
-    const loginButton = getByText('Login');
+    const loginButton = getByText('auth.login');
     fireEvent.press(loginButton);
 
     expect(mockNavigation.navigate).toHaveBeenCalledWith('Welcome');

@@ -8,7 +8,7 @@
 import { mapApiProductToCarouselProduct, mapApiProductToNavigationParams } from './productMapper';
 import type { Product as ApiProduct } from '@/types/product';
 
-jest.mock('@/utils/formatters', () => ({
+jest.mock('@/utils', () => ({
   formatPrice: jest.fn((price) => {
     if (price === null || price === undefined || isNaN(Number(price))) {
       return '$0.00';
@@ -56,7 +56,7 @@ describe('productMapper', () => {
       const productWithoutImage = { ...mockApiProduct, image: undefined };
       const result = mapApiProductToCarouselProduct(productWithoutImage);
 
-      expect(result.image).toBe('https://via.placeholder.com/400');
+      expect(result.image).toBe('https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400');
     });
 
     it('deve converter price null/undefined para 0', () => {
@@ -91,7 +91,7 @@ describe('productMapper', () => {
       const productWithoutImage = { ...mockApiProduct, image: undefined };
       const result = mapApiProductToNavigationParams(productWithoutImage);
 
-      expect(result.image).toBe('https://via.placeholder.com/400');
+      expect(result.image).toBe('https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400');
     });
 
     it('deve lidar com price null/undefined', () => {

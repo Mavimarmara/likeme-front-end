@@ -23,7 +23,7 @@ jest.mock('@/components/ui/layout', () => {
   };
 });
 
-jest.mock('@/components/ui/community', () => {
+jest.mock('@/components/sections/community', () => {
   const { View, Text } = require('react-native');
   return {
     PostCard: ({ post }: any) => (
@@ -38,6 +38,10 @@ jest.mock('@/services', () => ({
   communityService: {
     getChannels: jest.fn(),
   },
+}));
+
+jest.mock('@/analytics', () => ({
+  useAnalyticsScreen: jest.fn(),
 }));
 
 const mockNavigation = {
@@ -63,7 +67,7 @@ describe('CommunityPreviewScreen', () => {
   it('renders correctly with product name', () => {
     const { getByText } = render(<CommunityPreviewScreen navigation={mockNavigation} route={mockRoute} />);
 
-    expect(getByText('Community Preview')).toBeTruthy();
+    expect(getByText('marketplace.communityPreview')).toBeTruthy();
     expect(getByText('Test Product')).toBeTruthy();
   });
 
@@ -78,7 +82,7 @@ describe('CommunityPreviewScreen', () => {
       <CommunityPreviewScreen navigation={mockNavigation} route={routeWithoutName} />,
     );
 
-    expect(getByText('Community Preview')).toBeTruthy();
+    expect(getByText('marketplace.communityPreview')).toBeTruthy();
     expect(queryByText('Test Product')).toBeNull();
   });
 

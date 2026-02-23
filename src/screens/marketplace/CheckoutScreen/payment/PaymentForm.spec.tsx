@@ -42,10 +42,6 @@ jest.mock('@/components/ui/inputs/TextInput', () => {
   ));
 });
 
-jest.mock('@/hooks/i18n', () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
-}));
-
 describe('PaymentForm', () => {
   const mockProps = {
     paymentMethod: 'credit_card' as const,
@@ -76,33 +72,33 @@ describe('PaymentForm', () => {
   it('should render payment method selection', () => {
     const { getByText } = render(<PaymentForm {...mockProps} />);
 
-    expect(getByText('Payment method')).toBeTruthy();
-    expect(getByText('Credit card')).toBeTruthy();
-    expect(getByText('Pix')).toBeTruthy();
+    expect(getByText('checkout.paymentMethod')).toBeTruthy();
+    expect(getByText('checkout.creditCard')).toBeTruthy();
+    expect(getByText('checkout.pix')).toBeTruthy();
   });
 
   it('should render credit card form when credit_card is selected', () => {
     const { getByText, getByPlaceholderText } = render(<PaymentForm {...mockProps} paymentMethod='credit_card' />);
 
-    expect(getByText("Cardholder's name")).toBeTruthy();
-    expect(getByPlaceholderText('Complete name')).toBeTruthy();
-    expect(getByText('Card number')).toBeTruthy();
-    expect(getByPlaceholderText('1234 5678 9101 1121')).toBeTruthy();
-    expect(getByText('Expiration date')).toBeTruthy();
-    expect(getByText('CVV')).toBeTruthy();
+    expect(getByText('checkout.cardholderName')).toBeTruthy();
+    expect(getByPlaceholderText('checkout.cardholderNamePlaceholder')).toBeTruthy();
+    expect(getByText('checkout.cardNumber')).toBeTruthy();
+    expect(getByPlaceholderText('checkout.cardNumberPlaceholder')).toBeTruthy();
+    expect(getByText('checkout.expiryDate')).toBeTruthy();
+    expect(getByText('checkout.cvv')).toBeTruthy();
   });
 
   it('should not render credit card form when pix is selected', () => {
     const { queryByText, queryByPlaceholderText } = render(<PaymentForm {...mockProps} paymentMethod='pix' />);
 
-    expect(queryByText("Cardholder's name")).toBeNull();
-    expect(queryByPlaceholderText('Complete name')).toBeNull();
+    expect(queryByText('checkout.cardholderName')).toBeNull();
+    expect(queryByPlaceholderText('checkout.cardholderNamePlaceholder')).toBeNull();
   });
 
   it('should call onPaymentMethodChange when credit card option is pressed', () => {
     const { getByText } = render(<PaymentForm {...mockProps} paymentMethod='pix' />);
 
-    const creditCardOption = getByText('Credit card').parent?.parent;
+    const creditCardOption = getByText('checkout.creditCard').parent?.parent;
     fireEvent.press(creditCardOption!);
 
     expect(mockProps.onPaymentMethodChange).toHaveBeenCalledWith('credit_card');
@@ -111,7 +107,7 @@ describe('PaymentForm', () => {
   it('should call onPaymentMethodChange when pix option is pressed', () => {
     const { getByText } = render(<PaymentForm {...mockProps} paymentMethod='credit_card' />);
 
-    const pixOption = getByText('Pix').parent?.parent;
+    const pixOption = getByText('checkout.pix').parent?.parent;
     fireEvent.press(pixOption!);
 
     expect(mockProps.onPaymentMethodChange).toHaveBeenCalledWith('pix');
@@ -120,7 +116,7 @@ describe('PaymentForm', () => {
   it('should call onCardholderNameChange when cardholder name is changed', () => {
     const { getByPlaceholderText } = render(<PaymentForm {...mockProps} paymentMethod='credit_card' />);
 
-    const input = getByPlaceholderText('Complete name');
+    const input = getByPlaceholderText('checkout.cardholderNamePlaceholder');
     fireEvent.changeText(input, 'John Doe');
 
     expect(mockProps.onCardholderNameChange).toHaveBeenCalledWith('John Doe');
@@ -129,7 +125,7 @@ describe('PaymentForm', () => {
   it('should call onCardNumberChange when card number is changed', () => {
     const { getByPlaceholderText } = render(<PaymentForm {...mockProps} paymentMethod='credit_card' />);
 
-    const input = getByPlaceholderText('1234 5678 9101 1121');
+    const input = getByPlaceholderText('checkout.cardNumberPlaceholder');
     fireEvent.changeText(input, '4111 1111 1111 1111');
 
     expect(mockProps.onCardNumberChange).toHaveBeenCalled();
@@ -138,7 +134,7 @@ describe('PaymentForm', () => {
   it('should call onExpiryDateChange when expiry date is changed', () => {
     const { getByPlaceholderText } = render(<PaymentForm {...mockProps} paymentMethod='credit_card' />);
 
-    const input = getByPlaceholderText('mm/yy');
+    const input = getByPlaceholderText('checkout.expiryDatePlaceholder');
     fireEvent.changeText(input, '12/25');
 
     expect(mockProps.onExpiryDateChange).toHaveBeenCalled();
@@ -147,7 +143,7 @@ describe('PaymentForm', () => {
   it('should call onCvvChange when CVV is changed', () => {
     const { getByPlaceholderText } = render(<PaymentForm {...mockProps} paymentMethod='credit_card' />);
 
-    const input = getByPlaceholderText('123');
+    const input = getByPlaceholderText('checkout.cvvPlaceholder');
     fireEvent.changeText(input, '123');
 
     expect(mockProps.onCvvChange).toHaveBeenCalledWith('123');
@@ -156,7 +152,7 @@ describe('PaymentForm', () => {
   it('should call onSaveCardDetailsChange when checkbox is pressed', () => {
     const { getByText } = render(<PaymentForm {...mockProps} paymentMethod='credit_card' saveCardDetails={false} />);
 
-    const checkbox = getByText('Save card datails').parent;
+    const checkbox = getByText('checkout.saveCardDetails').parent;
     fireEvent.press(checkbox!);
 
     expect(mockProps.onSaveCardDetailsChange).toHaveBeenCalledWith(true);
@@ -165,21 +161,21 @@ describe('PaymentForm', () => {
   it('should show checked state when saveCardDetails is true', () => {
     const { getByText } = render(<PaymentForm {...mockProps} paymentMethod='credit_card' saveCardDetails={true} />);
 
-    expect(getByText('Save card datails')).toBeTruthy();
+    expect(getByText('checkout.saveCardDetails')).toBeTruthy();
   });
 
   it('should render coupon section', () => {
     const { getByText, getByPlaceholderText } = render(<PaymentForm {...mockProps} />);
 
-    expect(getByText('Discount coupon')).toBeTruthy();
-    expect(getByPlaceholderText('PRIMEIRACOMPRA')).toBeTruthy();
-    expect(getByText('Apply')).toBeTruthy();
+    expect(getByText('checkout.discountCoupon')).toBeTruthy();
+    expect(getByPlaceholderText('checkout.couponPlaceholder')).toBeTruthy();
+    expect(getByText('common.apply')).toBeTruthy();
   });
 
   it('should call onCouponCodeChange when coupon code is changed', () => {
     const { getByPlaceholderText } = render(<PaymentForm {...mockProps} />);
 
-    const input = getByPlaceholderText('PRIMEIRACOMPRA');
+    const input = getByPlaceholderText('checkout.couponPlaceholder');
     fireEvent.changeText(input, 'DISCOUNT10');
 
     expect(mockProps.onCouponCodeChange).toHaveBeenCalledWith('DISCOUNT10');
@@ -188,7 +184,7 @@ describe('PaymentForm', () => {
   it('should call onApplyCoupon when apply button is pressed', () => {
     const { getByText } = render(<PaymentForm {...mockProps} />);
 
-    const applyButton = getByText('Apply');
+    const applyButton = getByText('common.apply');
     fireEvent.press(applyButton);
 
     expect(mockProps.onApplyCoupon).toHaveBeenCalled();
@@ -216,7 +212,7 @@ describe('PaymentForm', () => {
   it('should render CVV field as secure text entry', () => {
     const { getByPlaceholderText } = render(<PaymentForm {...mockProps} paymentMethod='credit_card' />);
 
-    const cvvInput = getByPlaceholderText('123');
+    const cvvInput = getByPlaceholderText('checkout.cvvPlaceholder');
     // Note: Testing secureTextEntry prop requires checking component props
     // This is a basic test to ensure the field exists
     expect(cvvInput).toBeTruthy();

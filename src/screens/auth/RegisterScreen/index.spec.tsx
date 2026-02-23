@@ -57,6 +57,10 @@ jest.mock('@/assets', () => ({
   GradientSplash5: 'GradientSplash5',
 }));
 
+jest.mock('@/utils', () => ({
+  getNextOnboardingScreen: () => 'PersonalObjectives',
+}));
+
 jest.mock('@/services', () => ({
   storageService: {
     setRegisterCompletedAt: jest.fn().mockResolvedValue(undefined),

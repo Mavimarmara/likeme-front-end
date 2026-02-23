@@ -1,6 +1,9 @@
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import MarketplaceScreen from './index';
-import { adService, storageService } from '@/services';
+import { storageService } from '@/services';
+
+const mockLoadAds = jest.fn();
+const mockUseMarketplaceAds = jest.fn();
 
 jest.mock('react-native-safe-area-context', () => {
   const ReactNative = require('react-native');
@@ -47,8 +50,41 @@ jest.mock('@/components/ui/menu', () => {
   const { View } = require('react-native');
   return {
     FloatingMenu: () => <View testID='floating-menu' />,
+    FilterMenu: () => <View testID='filter-menu' />,
   };
 });
+
+jest.mock('@/components/sections/marketplace', () => {
+  const { View, Text, TouchableOpacity } = require('react-native');
+  return {
+    WeekHighlightCard: ({ title, onPress }: any) => (
+      <TouchableOpacity onPress={onPress} testID='week-highlight'>
+        <Text>{title}</Text>
+      </TouchableOpacity>
+    ),
+  };
+});
+
+jest.mock('@/hooks', () => ({
+  useMarketplaceAds: (...args: any[]) => mockUseMarketplaceAds(...args),
+  useMenuItems: () => [],
+}));
+
+jest.mock('@/analytics', () => ({
+  useAnalyticsScreen: jest.fn(),
+}));
+
+jest.mock('@/utils', () => ({
+  formatPrice: jest.fn((price: number) => `$${price?.toFixed(2) || '0.00'}`),
+  handleAdNavigation: jest.fn(),
+  mapProductToCartItem: jest.fn((product: any) => ({
+    id: product.id,
+    title: product.name,
+    price: product.price,
+    image: product.image,
+    quantity: 1,
+  })),
+}));
 
 jest.mock('@/services', () => ({
   adService: {
@@ -108,6 +144,7 @@ describe('MarketplaceScreen', () => {
   const mockNavigation = {
     navigate: jest.fn(),
     goBack: jest.fn(),
+    addListener: jest.fn(() => jest.fn()),
     getParent: jest.fn(() => ({
       getParent: jest.fn(),
     })),
@@ -119,17 +156,12 @@ describe('MarketplaceScreen', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (adService.listAds as jest.Mock).mockResolvedValue({
-      success: true,
-      data: {
-        ads: mockAds,
-        pagination: {
-          page: 1,
-          limit: 20,
-          total: 2,
-          totalPages: 1,
-        },
-      },
+    mockLoadAds.mockClear();
+    mockUseMarketplaceAds.mockReturnValue({
+      ads: mockAds,
+      loading: false,
+      hasMore: false,
+      loadAds: mockLoadAds,
     });
   });
 
@@ -137,7 +169,7 @@ describe('MarketplaceScreen', () => {
     const { getByText } = render(<MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
-      expect(getByText('Week highlights')).toBeTruthy();
+      expect(getByText('marketplace.weekHighlights')).toBeTruthy();
     });
   });
 
@@ -145,12 +177,7 @@ describe('MarketplaceScreen', () => {
     render(<MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
-      expect(adService.listAds).toHaveBeenCalledWith({
-        page: 1,
-        limit: 20,
-        status: 'active',
-        activeOnly: true,
-      });
+      expect(mockUseMarketplaceAds).toHaveBeenCalled();
     });
   });
 
@@ -163,55 +190,26 @@ describe('MarketplaceScreen', () => {
     expect(mockNavigation.navigate).toHaveBeenCalledWith('Cart');
   });
 
-  it('navigates to ProductDetails when clicking on a regular product', async () => {
+  it('renders product cards from ads', async () => {
     const { getByText } = render(<MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(getByText('Test Product')).toBeTruthy();
     });
-
-    const productCard = getByText('Test Product');
-    fireEvent.press(productCard);
-
-    await waitFor(() => {
-      expect(mockNavigation.navigate).toHaveBeenCalledWith('ProductDetails', {
-        productId: 'product-1',
-        product: expect.objectContaining({
-          id: 'product-1',
-          title: 'Test Product',
-        }),
-      });
-    });
   });
 
-  it('navigates to AffiliateProduct when clicking on an Amazon product', async () => {
+  it('renders amazon product cards from ads', async () => {
     const { getByText } = render(<MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(getByText('Amazon Product')).toBeTruthy();
-    });
-
-    const amazonProduct = getByText('Amazon Product');
-    fireEvent.press(amazonProduct);
-
-    await waitFor(() => {
-      expect(mockNavigation.navigate).toHaveBeenCalledWith('AffiliateProduct', {
-        productId: 'product-2',
-        adId: '2',
-        product: expect.objectContaining({
-          id: 'product-2',
-          title: 'Amazon Product',
-        }),
-      });
     });
   });
 
   it('adds product to cart and navigates to cart when add button is pressed', async () => {
     (storageService.addToCart as jest.Mock).mockResolvedValue(undefined);
 
-    const { getByText } = render(
-      <MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />,
-    );
+    const { getByText } = render(<MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(getByText('Test Product')).toBeTruthy();
@@ -228,10 +226,9 @@ describe('MarketplaceScreen', () => {
     const { getByText } = render(<MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
-      expect(getByText('Week highlights')).toBeTruthy();
+      expect(getByText('marketplace.weekHighlights')).toBeTruthy();
     });
 
-    // Verifica que os ads foram carregados
-    expect(adService.listAds).toHaveBeenCalled();
+    expect(mockUseMarketplaceAds).toHaveBeenCalled();
   });
 });

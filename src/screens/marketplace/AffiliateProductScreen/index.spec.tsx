@@ -42,6 +42,10 @@ jest.mock('@/services', () => ({
   },
 }));
 
+jest.mock('@/analytics', () => ({
+  useAnalyticsScreen: jest.fn(),
+}));
+
 const mockAd = {
   id: 'ad-1',
   productId: 'product-1',
@@ -62,6 +66,7 @@ const mockAd = {
     category: 'amazon product',
     quantity: 5,
     status: 'active',
+    externalUrl: 'https://amazon.com/product',
     createdAt: '2023-01-01',
     updatedAt: '2023-01-01',
   },
@@ -193,10 +198,10 @@ describe('AffiliateProductScreen', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Buy on Amazon')).toBeTruthy();
+      expect(getByText('marketplace.buyOnAmazon')).toBeTruthy();
     });
 
-    const buyButton = getByText('Buy on Amazon');
+    const buyButton = getByText('marketplace.buyOnAmazon');
     fireEvent.press(buyButton);
 
     await waitFor(() => {
@@ -262,13 +267,11 @@ describe('AffiliateProductScreen', () => {
     // Aguarda o loading terminar - o componente deve renderizar mesmo que loadData não encontre nada
     await waitFor(
       () => {
-        expect(queryByText('Loading product...')).toBeNull();
+        expect(queryByText('marketplace.loadingProduct')).toBeNull();
       },
       { timeout: 3000 },
     );
 
-    // Verifica que o componente renderizou (não está em loading)
-    // O teste verifica que o componente não crasha e renderiza algo
-    expect(queryByText('Loading product...')).toBeNull();
+    expect(queryByText('marketplace.loadingProduct')).toBeNull();
   });
 });

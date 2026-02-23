@@ -76,7 +76,7 @@ describe('cartMapper', () => {
       const productWithoutImage = { ...mockApiProduct, image: undefined };
       const result = mapProductToCartItem(productWithoutImage);
 
-      expect(result.image).toBe('https://via.placeholder.com/200');
+      expect(result.image).toBe('https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400');
     });
 
     it('deve usar array vazio para tags quando category é undefined', () => {

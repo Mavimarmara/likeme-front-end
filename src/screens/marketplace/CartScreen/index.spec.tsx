@@ -1,6 +1,10 @@
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import CartScreen from './index';
-import { storageService } from '@/services';
+
+let mockGetCartItems: jest.Mock;
+let mockSetCartItems: jest.Mock;
+let mockRemoveCartItem: jest.Mock;
+let mockGetProductById: jest.Mock;
 
 jest.mock('react-native-safe-area-context', () => {
   const ReactNative = require('react-native');
@@ -45,14 +49,32 @@ jest.mock('@/components/ui/buttons', () => {
   };
 });
 
-jest.mock('@/services', () => ({
-  storageService: {
-    getCartItems: jest.fn(),
-    setCartItems: jest.fn(),
-    clearCart: jest.fn(),
-    removeCartItem: jest.fn(),
-    addToCart: jest.fn(),
-  },
+jest.mock('@/analytics', () => ({
+  useAnalyticsScreen: jest.fn(),
+}));
+
+jest.mock('@/services/auth/storageService', () => {
+  const getCartItems = jest.fn();
+  const setCartItems = jest.fn();
+  const clearCart = jest.fn();
+  const removeCartItem = jest.fn();
+  const addToCart = jest.fn();
+  return {
+    __esModule: true,
+    default: { getCartItems, setCartItems, clearCart, removeCartItem, addToCart },
+  };
+});
+
+jest.mock('@/services/product/productService', () => {
+  const getProductById = jest.fn();
+  return {
+    __esModule: true,
+    default: { getProductById },
+  };
+});
+
+jest.mock('@/utils', () => ({
+  formatPrice: jest.fn((price: number) => `$${price?.toFixed(2) || '0.00'}`),
 }));
 
 const mockCartItems = [
@@ -101,13 +123,34 @@ describe('CartScreen', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    // Garante que getCartItems resolve imediatamente
-    (storageService.getCartItems as jest.Mock).mockResolvedValue(mockCartItems);
-    (storageService.setCartItems as jest.Mock).mockResolvedValue(undefined);
-    (storageService.removeCartItem as jest.Mock).mockResolvedValue(undefined);
+    const storageService = require('@/services/auth/storageService').default;
+    const productService = require('@/services/product/productService').default;
+    mockGetCartItems = storageService.getCartItems;
+    mockSetCartItems = storageService.setCartItems;
+    mockRemoveCartItem = storageService.removeCartItem;
+    mockGetProductById = productService.getProductById;
 
-    // Reset do mock do addListener - apenas registra, não chama o callback
-    // O loadCartItems será chamado apenas pelo useEffect
+    mockGetCartItems.mockResolvedValue(mockCartItems);
+    mockSetCartItems.mockResolvedValue(undefined);
+    mockRemoveCartItem.mockResolvedValue(undefined);
+    mockGetProductById.mockImplementation((id: string) => {
+      const item = mockCartItems.find((i) => i.id === id);
+      if (item) {
+        return Promise.resolve({
+          success: true,
+          data: {
+            id: item.id,
+            name: item.title,
+            price: item.price,
+            quantity: 100,
+            image: item.image,
+            status: 'active',
+          },
+        });
+      }
+      return Promise.resolve({ success: false, data: null });
+    });
+
     mockNavigation.addListener.mockImplementation((event: string, callback: () => void) => {
       return mockUnsubscribe;
     });
@@ -122,7 +165,7 @@ describe('CartScreen', () => {
     await waitFor(
       () => {
         // Verifica que não está mais em loading
-        expect(queryByText('Loading cart...')).toBeNull();
+        expect(queryByText('cart.loadingCart')).toBeNull();
         // E que os produtos foram renderizados
         expect(getByText('Product 1')).toBeTruthy();
       },
@@ -131,12 +174,13 @@ describe('CartScreen', () => {
   });
 
   it('renders empty state when cart is empty', async () => {
-    (storageService.getCartItems as jest.Mock).mockResolvedValue([]);
+    mockGetCartItems.mockResolvedValue([]);
+    mockGetProductById.mockResolvedValue({ success: false, data: null });
 
     const { getByText } = render(<CartScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
-      expect(getByText('Your cart is empty')).toBeTruthy();
+      expect(getByText('cart.emptyCart')).toBeTruthy();
     });
   });
 
@@ -146,7 +190,7 @@ describe('CartScreen', () => {
     // Aguarda o carregamento dos itens - o useEffect chama loadCartItems imediatamente
     await waitFor(
       () => {
-        expect(storageService.getCartItems).toHaveBeenCalled();
+        expect(mockGetCartItems).toHaveBeenCalled();
       },
       { timeout: 2000 },
     );
@@ -159,13 +203,13 @@ describe('CartScreen', () => {
 
     await waitFor(
       () => {
-        expect(queryByText('Loading cart...')).toBeNull();
-        expect(getByText('Buy')).toBeTruthy();
+        expect(queryByText('cart.loadingCart')).toBeNull();
+        expect(getByText('common.buy')).toBeTruthy();
       },
       { timeout: 3000 },
     );
 
-    const buyButton = getByText('Buy');
+    const buyButton = getByText('common.buy');
     fireEvent.press(buyButton);
 
     expect(mockNavigation.navigate).toHaveBeenCalledWith('Checkout');
@@ -178,7 +222,7 @@ describe('CartScreen', () => {
 
     await waitFor(
       () => {
-        expect(queryByText('Loading cart...')).toBeNull();
+        expect(queryByText('cart.loadingCart')).toBeNull();
         expect(getByTestId('back-button')).toBeTruthy();
       },
       { timeout: 3000 },
@@ -197,7 +241,7 @@ describe('CartScreen', () => {
 
     await waitFor(
       () => {
-        expect(queryByText('Loading cart...')).toBeNull();
+        expect(queryByText('cart.loadingCart')).toBeNull();
         // Verifica se os produtos foram renderizados, o que indica que os cálculos foram feitos
         expect(getByText('Product 1')).toBeTruthy();
       },
@@ -212,7 +256,7 @@ describe('CartScreen', () => {
 
     await waitFor(
       () => {
-        expect(queryByText('Loading cart...')).toBeNull();
+        expect(queryByText('cart.loadingCart')).toBeNull();
         expect(getByText('Product 1')).toBeTruthy();
       },
       { timeout: 3000 },
@@ -223,7 +267,7 @@ describe('CartScreen', () => {
 
     await waitFor(
       () => {
-        expect(storageService.setCartItems).toHaveBeenCalled();
+        expect(mockSetCartItems).toHaveBeenCalled();
       },
       { timeout: 2000 },
     );
@@ -236,7 +280,7 @@ describe('CartScreen', () => {
 
     await waitFor(
       () => {
-        expect(queryByText('Loading cart...')).toBeNull();
+        expect(queryByText('cart.loadingCart')).toBeNull();
         expect(getByText('Product 1')).toBeTruthy();
       },
       { timeout: 3000 },
@@ -247,7 +291,7 @@ describe('CartScreen', () => {
 
     await waitFor(
       () => {
-        expect(storageService.setCartItems).toHaveBeenCalled();
+        expect(mockSetCartItems).toHaveBeenCalled();
       },
       { timeout: 2000 },
     );
@@ -260,7 +304,7 @@ describe('CartScreen', () => {
 
     await waitFor(
       () => {
-        expect(queryByText('Loading cart...')).toBeNull();
+        expect(queryByText('cart.loadingCart')).toBeNull();
         expect(getByText('Product 1')).toBeTruthy();
       },
       { timeout: 3000 },
@@ -271,7 +315,7 @@ describe('CartScreen', () => {
 
     await waitFor(
       () => {
-        expect(storageService.removeCartItem).toHaveBeenCalledWith('1');
+        expect(mockRemoveCartItem).toHaveBeenCalledWith('1');
       },
       { timeout: 2000 },
     );
@@ -284,16 +328,16 @@ describe('CartScreen', () => {
 
     await waitFor(
       () => {
-        expect(queryByText('Loading cart...')).toBeNull();
+        expect(queryByText('cart.loadingCart')).toBeNull();
         expect(getByText('Product 1')).toBeTruthy();
       },
       { timeout: 3000 },
     );
 
-    const zipInput = getByPlaceholderText('00000-000');
+    const zipInput = getByPlaceholderText('cart.zipCodePlaceholder');
     fireEvent.changeText(zipInput, '12345-678');
 
-    const applyButton = getByText('Apply');
+    const applyButton = getByText('common.apply');
     fireEvent.press(applyButton);
 
     // Verifica se o estado foi atualizado (shipping pode ser 0.00 neste caso)
@@ -301,15 +345,16 @@ describe('CartScreen', () => {
   });
 
   it('navigates to Marketplace when Start Shopping is pressed in empty cart', async () => {
-    (storageService.getCartItems as jest.Mock).mockResolvedValue([]);
+    mockGetCartItems.mockResolvedValue([]);
+    mockGetProductById.mockResolvedValue({ success: false, data: null });
 
     const { getByText } = render(<CartScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
-      expect(getByText('Your cart is empty')).toBeTruthy();
+      expect(getByText('cart.emptyCart')).toBeTruthy();
     });
 
-    const shopButton = getByText('Start Shopping');
+    const shopButton = getByText('cart.startShopping');
     fireEvent.press(shopButton);
 
     expect(mockNavigation.navigate).toHaveBeenCalledWith('Marketplace');

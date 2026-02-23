@@ -10,21 +10,15 @@ jest.mock('react-native-safe-area-context', () => {
 });
 
 jest.mock('@/assets', () => ({
-  GradientSplash3: 'GradientSplash3',
+  GradientSplash4: 'GradientSplash4',
 }));
 
 jest.mock('@/components/ui', () => {
   const React = require('react');
-  const { View, Text } = require('react-native');
+  const { Text, TouchableOpacity } = require('react-native');
   const RNTextInput = require('react-native').TextInput;
   return {
     Header: () => null,
-    Title: ({ title, subtitle }: { title: string; subtitle?: string }) => (
-      <View>
-        <Text>{title}</Text>
-        {subtitle && <Text>{subtitle}</Text>}
-      </View>
-    ),
     TextInput: React.forwardRef(({ placeholder, onChangeText, value, onSubmitEditing }: any, ref: any) => (
       <RNTextInput
         ref={ref}
@@ -35,8 +29,31 @@ jest.mock('@/components/ui', () => {
         testID={`input-${placeholder}`}
       />
     )),
+    PrimaryButton: ({ label, onPress }: any) => (
+      <TouchableOpacity onPress={onPress}>
+        <Text>{label}</Text>
+      </TouchableOpacity>
+    ),
   };
 });
+
+jest.mock('@/analytics', () => ({
+  useAnalyticsScreen: jest.fn(),
+  logButtonClick: jest.fn(),
+  logFormSubmit: jest.fn(),
+  logNavigation: jest.fn(),
+}));
+
+jest.mock('@/utils', () => ({
+  getNextOnboardingScreen: () => 'AppPresentation',
+}));
+
+jest.mock('@/services', () => ({
+  storageService: {
+    setWelcomeScreenAccessedAt: jest.fn().mockResolvedValue(undefined),
+    getUser: jest.fn().mockResolvedValue(null),
+  },
+}));
 
 describe('WelcomeScreen', () => {
   beforeEach(() => {
@@ -51,9 +68,9 @@ describe('WelcomeScreen', () => {
 
     const { getByText, getByPlaceholderText } = render(<WelcomeScreen navigation={mockNavigation} />);
 
-    expect(getByText('Welcome!')).toBeTruthy();
-    expect(getByText('How can I call you?')).toBeTruthy();
-    expect(getByPlaceholderText('Your name')).toBeTruthy();
+    expect(getByText('auth.welcomeTitleStart')).toBeTruthy();
+    expect(getByText('auth.welcomeSubtitle')).toBeTruthy();
+    expect(getByPlaceholderText('auth.yourNamePlaceholder')).toBeTruthy();
   });
 
   it('navega para AppPresentation ao pressionar Enter em qualquer teclado', () => {
@@ -64,7 +81,7 @@ describe('WelcomeScreen', () => {
 
     const { getByPlaceholderText } = render(<WelcomeScreen navigation={mockNavigation} />);
 
-    const input = getByPlaceholderText('Your name');
+    const input = getByPlaceholderText('auth.yourNamePlaceholder');
     fireEvent.changeText(input, 'John');
     fireEvent(input, 'submitEditing');
 
@@ -81,11 +98,11 @@ describe('WelcomeScreen', () => {
 
     const { getByPlaceholderText } = render(<WelcomeScreen navigation={mockNavigation} />);
 
-    const input = getByPlaceholderText('Your name');
+    const input = getByPlaceholderText('auth.yourNamePlaceholder');
     fireEvent.changeText(input, '');
     fireEvent(input, 'submitEditing');
 
-    expect(alertSpy).toHaveBeenCalledWith('Nome obrigatório', 'Por favor, digite seu nome para continuar.');
+    expect(alertSpy).toHaveBeenCalledWith('auth.nameRequired', 'auth.nameRequiredMessage');
     expect(mockNavigation.navigate).not.toHaveBeenCalled();
 
     alertSpy.mockRestore();
@@ -101,11 +118,11 @@ describe('WelcomeScreen', () => {
 
     const { getByPlaceholderText } = render(<WelcomeScreen navigation={mockNavigation} />);
 
-    const input = getByPlaceholderText('Your name');
+    const input = getByPlaceholderText('auth.yourNamePlaceholder');
     fireEvent.changeText(input, '   ');
     fireEvent(input, 'submitEditing');
 
-    expect(alertSpy).toHaveBeenCalledWith('Nome obrigatório', 'Por favor, digite seu nome para continuar.');
+    expect(alertSpy).toHaveBeenCalledWith('auth.nameRequired', 'auth.nameRequiredMessage');
     expect(mockNavigation.navigate).not.toHaveBeenCalled();
 
     alertSpy.mockRestore();

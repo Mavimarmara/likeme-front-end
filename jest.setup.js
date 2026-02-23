@@ -41,3 +41,14 @@ jest.mock('@react-native-community/datetimepicker', () => {
   const { View } = require('react-native');
   return jest.fn((props) => React.createElement(View, { testID: 'DateTimePicker', ...props }));
 });
+
+jest.mock('@/hooks/i18n', () => ({
+  useTranslation: () => ({
+    t: (key, params) => {
+      if (params) {
+        return Object.entries(params).reduce((acc, [k, v]) => acc.replace(`{{${k}}}`, String(v)), key);
+      }
+      return key;
+    },
+  }),
+}));
