@@ -2,8 +2,7 @@ import { StyleSheet, ViewStyle, StyleProp } from 'react-native';
 import { SPACING } from '@/constants';
 
 export const DEFAULT_BORDER_RADIUS = 22;
-export const BLUR_INTENSITY = 30;
-export const BLUR_TINT: 'light' | 'dark' | 'default' = 'dark';
+export const BLUR_INTENSITY = 10;
 
 export const styles = StyleSheet.create({
   container: {
@@ -89,9 +88,10 @@ export const getBlurStyle = (footerHeight: number, borderRadius: ViewStyle['bord
     bottom: 0,
     left: 0,
     right: 0,
-    height: footerHeight > 0 ? footerHeight : undefined,
+    height: footerHeight > 0 ? footerHeight + 8 : 60,
     borderBottomLeftRadius: radius,
     borderBottomRightRadius: radius,
+    overflow: 'hidden',
   };
 };
 

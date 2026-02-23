@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { View, Image, TouchableOpacity, LayoutChangeEvent, ViewStyle, StyleProp } from 'react-native';
 import { BlurView } from 'expo-blur';
-import { styles, getBlurStyle, getFooterSectionStyle, extractBorderRadius, BLUR_INTENSITY, BLUR_TINT } from './styles';
+import { styles, getBlurStyle, getFooterSectionStyle, extractBorderRadius, BLUR_INTENSITY } from './styles';
 
 type FooterSection = {
   component: React.ReactNode;
@@ -45,7 +45,7 @@ const BlurCard: React.FC<Props> = ({ backgroundImage, topSection, footerSection,
       <View style={styles.content}>
         {topSection && <View style={styles.topSection}>{topSection}</View>}
 
-        <BlurView intensity={BLUR_INTENSITY} tint={BLUR_TINT} style={blurStyle} />
+        <BlurView intensity={BLUR_INTENSITY} style={blurStyle} />
 
         <View style={[styles.footerSection, footerSectionStyle]} onLayout={handleFooterLayout}>
           <View style={styles.footerContent}>{footerSection.component}</View>

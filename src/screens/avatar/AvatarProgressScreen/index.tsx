@@ -506,10 +506,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
             </View>
           )}
 
-          <JoinCommunityCard
-            communities={joinCommunities}
-            onCommunityPress={handleJoinCommunityPress}
-          />
+          <JoinCommunityCard communities={joinCommunities} onCommunityPress={handleJoinCommunityPress} />
 
           <View style={styles.addWidgetsContainer}>
             <SecondaryButton

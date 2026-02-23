@@ -51,10 +51,7 @@ const AnamnesisCompletionScreen: React.FC<Props> = ({ navigation }) => {
             <Text style={styles.title}>{t('anamnesis.completionTitle')}</Text>
           </View>
           <View style={styles.buttonContainer}>
-            <PrimaryButton
-              label={t('anamnesis.completionButton')}
-              onPress={() => navigation.navigate('Home')}
-            />
+            <PrimaryButton label={t('anamnesis.completionButton')} onPress={() => navigation.navigate('Home')} />
           </View>
         </View>
       </View>

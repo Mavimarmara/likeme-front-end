@@ -68,11 +68,7 @@ const JoinCommunityCard: React.FC<Props> = ({ communities, onCommunityPress }) =
   }
 
   return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.scrollContent}
-    >
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
       {communities.map(renderCard)}
     </ScrollView>
   );
