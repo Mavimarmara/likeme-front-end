@@ -55,18 +55,16 @@ const EventCard: React.FC<Props> = ({ event, onPress, onSave }) => {
     </View>
   );
 
-  const footerSection = {
-    component: (
-      <>
-        <Text style={styles.title} numberOfLines={2}>
-          {event.title}
-        </Text>
-        <View style={styles.dateBadge}>
-          <Text style={styles.dateText}>{formatDateTime()}</Text>
-        </View>
-      </>
-    ),
-  };
+  const footerSection = (
+    <>
+      <Text style={styles.title} numberOfLines={2}>
+        {event.title}
+      </Text>
+      <View style={styles.dateBadge}>
+        <Text style={styles.dateText}>{formatDateTime()}</Text>
+      </View>
+    </>
+  );
 
   return (
     <BlurCard

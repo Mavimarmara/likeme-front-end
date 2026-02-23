@@ -31,24 +31,22 @@ const JoinCommunityCard: React.FC<Props> = ({ communities, onCommunityPress }) =
       </View>
     );
 
-    const footerSection = {
-      component: (
-        <View style={styles.bottom}>
-          <Text style={styles.title} numberOfLines={2}>
-            {community.title}
-          </Text>
-          <TouchableOpacity style={styles.seeMoreButton} activeOpacity={0.8} onPress={handlePress}>
-            <ImageBackground
-              source={BackgroundIconButton}
-              style={styles.buttonBackground}
-              imageStyle={styles.buttonImage}
-            >
-              <Icon name='chevron-right' size={30} color='#001137' />
-            </ImageBackground>
-          </TouchableOpacity>
-        </View>
-      ),
-    };
+    const footerSection = (
+      <View style={styles.bottom}>
+        <Text style={styles.title} numberOfLines={2}>
+          {community.title}
+        </Text>
+        <TouchableOpacity style={styles.seeMoreButton} activeOpacity={0.8} onPress={handlePress}>
+          <ImageBackground
+            source={BackgroundIconButton}
+            style={styles.buttonBackground}
+            imageStyle={styles.buttonImage}
+          >
+            <Icon name='chevron-right' size={30} color='#001137' />
+          </ImageBackground>
+        </TouchableOpacity>
+      </View>
+    );
 
     return (
       <View key={community.id} style={styles.cardWrapper}>
