@@ -95,7 +95,10 @@
       "ios": {
         "appleId": "eduarda.s.weber@gmail.com",
         "ascAppId": "6757706434",
-        "appleTeamId": "VS752K4DT8"
+        "appleTeamId": "VS752K4DT8",
+        "ascApiKeyPath": "./AuthKey_6QJ886URZD.p8",
+        "ascApiKeyIssuerId": "f4a624c3-e2af-4ad0-a365-f60b90c2dc9d",
+        "ascApiKeyId": "6QJ886URZD"
       },
       "android": {
         "track": "internal",
@@ -106,7 +109,10 @@
       "ios": {
         "appleId": "eduarda.s.weber@gmail.com",
         "ascAppId": "6757706434",
-        "appleTeamId": "VS752K4DT8"
+        "appleTeamId": "VS752K4DT8",
+        "ascApiKeyPath": "./AuthKey_6QJ886URZD.p8",
+        "ascApiKeyIssuerId": "f4a624c3-e2af-4ad0-a365-f60b90c2dc9d",
+        "ascApiKeyId": "6QJ886URZD"
       },
       "android": {
         "track": "production",

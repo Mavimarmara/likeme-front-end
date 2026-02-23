@@ -1,5 +1,5 @@
-import React, { useMemo, useState, useEffect } from 'react';
-import { View, ScrollView } from 'react-native';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
+import { Alert, View, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 // import { useFocusEffect } from '@react-navigation/native';
 import { FloatingMenu } from '@/components/ui/menu';
@@ -267,6 +267,15 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
     console.log('Provider pressionado:', provider.id);
   };
 
+  const handleJoinCommunity = useCallback(async (community: JoinCommunity) => {
+    try {
+      await communityService.joinCommunity(community.id);
+      rootNavigation.navigate('Community' as never);
+    } catch (error) {
+      Alert.alert(t('common.error'), t('home.joinCommunityError'));
+    }
+  }, [rootNavigation, t]);
+
   // TODO: Temporariamente desabilitados
   // const handleYourCommunityPress = (community: YourCommunity) => {};
   // const handleYourCommunityPostPress = (post: Post) => {};
@@ -288,9 +297,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
             <View style={styles.joinCommunityContainer}>
               <JoinCommunityCard
                 communities={joinCommunities}
-                onCommunityPress={(community) => {
-                  rootNavigation.navigate('Community' as never);
-                }}
+                onCommunityPress={handleJoinCommunity}
               />
             </View>
           )}

@@ -154,5 +154,6 @@ android/app/*.keystore
 android/app/*.jks
 !android/app/debug.keystore
 
-# Google Service Account (NUNCA commitar!)
+# Credenciais de serviço (NUNCA commitar!)
 google-service-account.json
+AuthKey_*.p8

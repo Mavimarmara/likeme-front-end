@@ -246,7 +246,8 @@
     "popularProviders": "Provedores de saúde populares",
     "yourCommunities": "Suas Comunidades",
     "productsRecommended": "Recomendados para a sua jornada de sono pelo Dr. Peter Valasquez",
-    "discoverProducts": "Descubra as opções que escolhemos para você"
+    "discoverProducts": "Descubra as opções que escolhemos para você",
+    "joinCommunityError": "Não foi possível entrar na comunidade. Tente novamente."
   },
   "avatar": {
     "insights": "Insights",
