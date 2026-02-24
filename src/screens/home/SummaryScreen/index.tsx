@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 // import { useFocusEffect } from '@react-navigation/native';
 import { FloatingMenu } from '@/components/ui/menu';
 import { Header, Background } from '@/components/ui/layout';
-import { useCommunities, useSuggestedProducts, useMenuItems } from '@/hooks';
+import { useCommunities, useSuggestedProducts, useMenuItems, useNotifications } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 // import {
 //   mapCommunityToOtherCommunity,
@@ -41,6 +41,7 @@ type Props = {
 
 const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   useAnalyticsScreen({ screenName: 'Summary', screenClass: 'SummaryScreen' });
+  useNotifications();
   const { t } = useTranslation();
   const rootNavigation = navigation.getParent() ?? navigation;
   const [userAvatarUri, setUserAvatarUri] = useState<string | null>(null);

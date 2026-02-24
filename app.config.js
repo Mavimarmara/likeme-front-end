@@ -182,6 +182,7 @@ module.exports = {
         },
       ],
       '@react-native-firebase/app',
+      '@react-native-firebase/messaging',
       './plugins/withPodfileModularHeaders.js',
     ],
     scheme: 'likeme',
@@ -213,6 +214,10 @@ module.exports = {
       buildNumber: '8',
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
+        UIBackgroundModes: ['remote-notification'],
+      },
+      entitlements: {
+        'aps-environment': 'production',
       },
     },
     owner: 'pixelpulselab',

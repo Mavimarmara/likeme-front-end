@@ -5,10 +5,18 @@ import { LogBox } from 'react-native';
 import { registerRootComponent } from 'expo';
 import App from './App';
 
-// Desabilitar todos os logs que aparecem na tela do celular
+// FCM background message handler — deve ser registrado no entry point, fora de componentes React
+try {
+  const messaging = require('@react-native-firebase/messaging').default;
+  messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+    if (__DEV__) {
+      console.log('[FCM] Background message:', remoteMessage);
+    }
+  });
+} catch {
+  // Firebase Messaging não disponível (ex: web ou Expo Go)
+}
+
 LogBox.ignoreAllLogs(true);
 
-// registerRootComponent calls AppRegistry.registerComponent('main', () => App);
-// It also ensures that whether you load the app in Expo Go or in a native build,
-// the environment is set up appropriately
 registerRootComponent(App);

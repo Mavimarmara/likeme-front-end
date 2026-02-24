@@ -24,6 +24,9 @@ export { useAnamnesisProgress } from './anamnesis/useAnamnesisProgress';
 export { useAnamnesisScores } from './anamnesis/useAnamnesisScores';
 export type { AnamnesisProgress, CategoryProgress } from './anamnesis/useAnamnesisProgress';
 
+// Notification hooks
+export { useNotifications } from './notification/useNotifications';
+
 // Navigation hooks
 export { useMenuItems } from './navigation/useMenuItems';
 
