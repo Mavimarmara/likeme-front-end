@@ -51,7 +51,6 @@ jobs:
     name: Build Android
     runs-on: ubuntu-latest
     needs: test
-    environment: production
     if: ${{ !failure() && !cancelled() }}
     outputs:
       build_id: ${{ steps.build.outputs.build_id }}
@@ -90,7 +89,6 @@ jobs:
     name: Build iOS
     runs-on: ubuntu-latest
     needs: test
-    environment: production
     if: ${{ !failure() && !cancelled() }}
     outputs:
       build_id: ${{ steps.build.outputs.build_id }}
@@ -129,7 +127,6 @@ jobs:
     name: Submit Android → Play Store
     runs-on: ubuntu-latest
     needs: build-android
-    environment: production
     if: >-
       ${{ !failure() && !cancelled() &&
           (github.event_name == 'push' || github.event.inputs.submit_to_stores != 'false') }}
@@ -160,7 +157,6 @@ jobs:
     name: Submit iOS → TestFlight
     runs-on: ubuntu-latest
     needs: build-ios
-    environment: production
     if: >-
       ${{ !failure() && !cancelled() &&
           (github.event_name == 'push' || github.event.inputs.submit_to_stores != 'false') }}
