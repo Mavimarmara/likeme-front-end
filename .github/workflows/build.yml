@@ -72,6 +72,7 @@ jobs:
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
+          packager: npm
 
       - name: Build Android (Production)
         id: build
@@ -109,6 +110,7 @@ jobs:
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
+          packager: npm
 
       - name: Build iOS (Production)
         id: build
@@ -146,6 +148,7 @@ jobs:
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
+          packager: npm
 
       - name: Submit to Google Play (production track)
         run: eas submit --platform android --profile production --latest --non-interactive
@@ -175,6 +178,7 @@ jobs:
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
+          packager: npm
 
       - name: Submit to TestFlight
         run: eas submit --platform ios --profile production --latest --non-interactive
