@@ -20,6 +20,8 @@
       "env": {
         "EXPO_PUBLIC_BACKEND_URL": "https://likeme-back-end-git-staging-pixel-pulse-labs.vercel.app",
         "EXPO_PUBLIC_AUTH0_DOMAIN": "likeme.us.auth0.com",
+        "EXPO_PUBLIC_AUTH0_CLIENT_ID": "BoUNLHdItmGpq8rr1A4VS7ea2ceXsWPy",
+        "EXPO_PUBLIC_AUTH0_AUDIENCE": "https://likeme.us.auth0.com/api/v2/",
         "EXPO_PUBLIC_USE_AUTH_PROXY": "true",
         "EXPO_PUBLIC_AUTH_SCHEME": "likeme",
         "EXPO_PUBLIC_AUTH_PROXY_URL": "https://auth.expo.dev/@pixelpulselab/likeme-front-end",
@@ -44,6 +46,8 @@
       "env": {
         "EXPO_PUBLIC_BACKEND_URL": "https://likeme-back-end-one.vercel.app",
         "EXPO_PUBLIC_AUTH0_DOMAIN": "likeme.us.auth0.com",
+        "EXPO_PUBLIC_AUTH0_CLIENT_ID": "BoUNLHdItmGpq8rr1A4VS7ea2ceXsWPy",
+        "EXPO_PUBLIC_AUTH0_AUDIENCE": "https://likeme.us.auth0.com/api/v2/",
         "EXPO_PUBLIC_USE_AUTH_PROXY": "true",
         "EXPO_PUBLIC_AUTH_SCHEME": "likeme",
         "EXPO_PUBLIC_AUTH_PROXY_URL": "https://auth.expo.dev/@pixelpulselab/likeme-front-end",
@@ -70,6 +74,8 @@
       "env": {
         "EXPO_PUBLIC_BACKEND_URL": "https://likeme-back-end-one.vercel.app",
         "EXPO_PUBLIC_AUTH0_DOMAIN": "likeme.us.auth0.com",
+        "EXPO_PUBLIC_AUTH0_CLIENT_ID": "BoUNLHdItmGpq8rr1A4VS7ea2ceXsWPy",
+        "EXPO_PUBLIC_AUTH0_AUDIENCE": "https://likeme.us.auth0.com/api/v2/",
         "EXPO_PUBLIC_USE_AUTH_PROXY": "true",
         "EXPO_PUBLIC_AUTH_SCHEME": "likeme",
         "EXPO_PUBLIC_AUTH_PROXY_URL": "https://auth.expo.dev/@pixelpulselab/likeme-front-end",
