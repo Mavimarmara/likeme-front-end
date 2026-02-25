@@ -150,6 +150,9 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
           packager: npm
 
+      - name: Create Google Service Account file
+        run: echo '${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}' > ./google-service-account.json
+
       - name: Submit to Google Play (production track)
         run: eas submit --platform android --profile production --latest --non-interactive
 
@@ -179,6 +182,9 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
           packager: npm
+
+      - name: Create App Store Connect API Key file
+        run: echo '${{ secrets.ASC_API_KEY_P8 }}' > ./AuthKey_6QJ886URZD.p8
 
       - name: Submit to TestFlight
         run: eas submit --platform ios --profile production --latest --non-interactive
