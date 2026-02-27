@@ -21,13 +21,6 @@ export const useMenuItems = (navigation: any): MenuItem[] => {
         onPress: () => rootNavigation.navigate('Activities' as never),
       },
       {
-        id: 'marketplace',
-        icon: 'store',
-        label: 'Marketplace',
-        fullLabel: 'Marketplace',
-        onPress: () => rootNavigation.navigate('Marketplace' as never),
-      },
-      {
         id: 'community',
         icon: 'group',
         label: 'Comunidade',
@@ -35,11 +28,21 @@ export const useMenuItems = (navigation: any): MenuItem[] => {
         onPress: () => rootNavigation.navigate('Community' as never),
       },
       {
-        id: 'profile',
-        icon: 'person',
-        label: 'Perfil',
-        fullLabel: 'Perfil',
-        onPress: () => rootNavigation.navigate('Profile' as never),
+        id: 'chat',
+        icon: 'chat',
+        label: 'Chat',
+        fullLabel: 'Chat',
+        onPress: () =>
+          rootNavigation.navigate('Community' as never, {
+            screen: 'ChatList',
+          }),
+      },
+      {
+        id: 'marketplace',
+        icon: 'store',
+        label: 'Marketplace',
+        fullLabel: 'Marketplace',
+        onPress: () => rootNavigation.navigate('Marketplace' as never),
       },
     ],
     [rootNavigation],

@@ -127,7 +127,7 @@ export const SCREEN_NAMES = {
   Community: 'community',
   CommunityList: 'community_list',
   PostDetails: 'post_details',
-  ChatScreen: 'chat',
+  ChatList: 'chat_list',
   Activities: 'activities',
   Marketplace: 'marketplace',
   ProductDetails: 'product_details',

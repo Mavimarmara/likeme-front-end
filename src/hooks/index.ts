@@ -24,6 +24,10 @@ export { useAnamnesisProgress } from './anamnesis/useAnamnesisProgress';
 export { useAnamnesisScores } from './anamnesis/useAnamnesisScores';
 export type { AnamnesisProgress, CategoryProgress } from './anamnesis/useAnamnesisProgress';
 
+// Chat hooks
+export { useChat } from './chat/useChat';
+export type { ChatConversation } from './chat/useChat';
+
 // Notification hooks
 export { useNotifications } from './notification/useNotifications';
 

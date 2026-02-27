@@ -145,4 +145,17 @@ export const styles = StyleSheet.create({
     lineHeight: 20,
     textAlign: 'center',
   },
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: SPACING.XL * 2,
+    gap: SPACING.MD,
+  },
+  emptyText: {
+    fontSize: FONT_SIZES.SM,
+    color: COLORS.TEXT_LIGHT,
+    fontFamily: 'DM Sans',
+    textAlign: 'center',
+  },
 });

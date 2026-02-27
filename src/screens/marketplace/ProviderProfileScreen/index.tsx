@@ -121,12 +121,11 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
       unreadCount: 0,
     };
 
-    // Navegar para ChatScreen dentro do Community stack usando CommonActions
     rootNavigation.dispatch(
       CommonActions.navigate({
         name: 'Community',
         params: {
-          screen: 'ChatScreen',
+          screen: 'ChatList',
           params: { chat },
         },
       }),

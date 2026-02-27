@@ -538,5 +538,10 @@
     "invalidPhone": "Telefone inválido",
     "invalidCPF": "CPF inválido",
     "invalidZipCode": "CEP inválido"
+  },
+  "chat": {
+    "yourConversations": "Suas conversas",
+    "noConversations": "Nenhuma conversa ainda",
+    "unknownUser": "Usuário"
   }
 }

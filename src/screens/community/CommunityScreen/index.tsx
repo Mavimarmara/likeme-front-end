@@ -334,7 +334,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleProviderChatPress = (chat: ProviderChat) => {
-    navigation.navigate('ChatScreen', { chat });
+    navigation.navigate('ChatList', { chat });
   };
 
   const handleSearchChange = (text: string) => {
