@@ -58,7 +58,7 @@ export function useChat(options: UseChatOptions = {}) {
     try {
       setLoading(true);
       setError(null);
-      const response = await communityService.getChannels({ types: 'conversation' });
+      const response = await communityService.getChannels({});
       if (response.success && response.data?.channels) {
         setChannels(response.data.channels);
       } else {
