@@ -1,6 +1,7 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import { CommunityScreen, PostDetailsScreen, ChatScreen } from '@/screens/community';
+import { CommunityScreen, PostDetailsScreen } from '@/screens/community';
+import { ChatScreen } from '@/screens/chat';
 import type { CommunityStackParamList } from '@/types/navigation';
 
 const Stack = createStackNavigator<CommunityStackParamList>();

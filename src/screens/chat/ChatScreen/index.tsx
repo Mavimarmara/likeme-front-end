@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, Image, TouchableOpacity, ImageBackground } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SearchBar } from '@/components/ui';
-import { Background } from '@/components/ui/layout';
+import { Header, Background } from '@/components/ui/layout';
 import { useTranslation } from '@/hooks/i18n';
-import { BackgroundIconButton, LogoMini } from '@/assets';
+import { LogoMini } from '@/assets';
 import { COLORS } from '@/constants';
+import { storageService } from '@/services';
 import type { CommunityStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
@@ -37,7 +38,25 @@ const ChatScreen: React.FC<Props> = () => {
   const { t } = useTranslation();
   useRoute<ChatScreenRouteProp>();
   const navigation = useNavigation<ChatScreenNavigationProp>();
+  const rootNavigation = navigation.getParent() ?? navigation;
   const [searchQuery, setSearchQuery] = useState('');
+  const [userAvatarUri, setUserAvatarUri] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadUser = async () => {
+      const user = await storageService.getUser();
+      setUserAvatarUri(user?.picture ?? null);
+    };
+    loadUser();
+  }, []);
+
+  const handleCartPress = () => {
+    rootNavigation.navigate('Cart' as never);
+  };
+
+  const handleMenuPress = () => {
+    rootNavigation.navigate('Profile' as never);
+  };
 
   // Mock conversations - em produção, isso viria de um serviço/API
   const conversations: ChatConversation[] = [
@@ -114,59 +133,15 @@ const ChatScreen: React.FC<Props> = () => {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <Background />
-      {/* Header */}
-      <View style={styles.headerContainer}>
-        <View style={styles.header}>
-          {/* Hamburger Menu with Avatar */}
-          <TouchableOpacity style={styles.menuButton} onPress={() => navigation.goBack()} activeOpacity={0.7}>
-            <ImageBackground
-              source={BackgroundIconButton}
-              style={styles.menuButtonBackground}
-              imageStyle={styles.menuButtonImage}
-            >
-              <View style={styles.menuContent}>
-                <Icon name='menu' size={16} color='#001137' style={styles.menuIcon} />
-                <View style={styles.menuAvatar}>
-                  <Image
-                    source={{
-                      uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100',
-                    }}
-                    style={styles.menuAvatarImage}
-                  />
-                </View>
-              </View>
-            </ImageBackground>
-          </TouchableOpacity>
-
-          {/* Logo */}
-          <View style={styles.logoContainer}>
-            <LogoMini width={87} height={16} />
-          </View>
-
-          {/* Right Icons */}
-          <View style={styles.headerRight}>
-            <TouchableOpacity style={styles.iconButton} activeOpacity={0.7}>
-              <ImageBackground
-                source={BackgroundIconButton}
-                style={styles.iconButtonBackground}
-                imageStyle={styles.iconButtonImage}
-              >
-                <Icon name='notifications' size={20} color='#001137' />
-              </ImageBackground>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.iconButton} activeOpacity={0.7}>
-              <ImageBackground
-                source={BackgroundIconButton}
-                style={styles.iconButtonBackground}
-                imageStyle={styles.iconButtonImage}
-              >
-                <Icon name='shopping-cart' size={20} color='#001137' />
-              </ImageBackground>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Search Bar */}
+      <Header
+        showBackButton={false}
+        showMenuWithAvatar
+        onMenuPress={handleMenuPress}
+        userAvatarUri={userAvatarUri}
+        showCartButton={true}
+        onCartPress={handleCartPress}
+      />
+      <View style={styles.searchContainer}>
         <SearchBar
           placeholder={t('common.search')}
           value={searchQuery}
