@@ -41,9 +41,14 @@ function getMessaging(): FirebaseMessagingModule | null {
   try {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const mod = require('@react-native-firebase/messaging').default as FirebaseMessagingModule;
+    const instance = mod();
+    if (!instance || typeof instance.getToken !== 'function') {
+      throw new Error('Native module not available');
+    }
     messagingModule = mod;
     return mod;
   } catch {
+    if (__DEV__) console.log('[Notification] Firebase Messaging não disponível (Expo Go)');
     messagingModule = null;
     return null;
   }
