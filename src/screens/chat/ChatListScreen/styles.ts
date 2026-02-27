@@ -6,8 +6,9 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'transparent',
   },
-  searchContainer: {
-    paddingBottom: SPACING.MD,
+  searchBarContainer: {
+    paddingHorizontal: SPACING.MD,
+    paddingVertical: SPACING.LG,
   },
   scrollView: {
     flex: 1,

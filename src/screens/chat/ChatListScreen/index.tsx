@@ -99,15 +99,18 @@ const ChatListScreen: React.FC<Props> = () => {
         showCartButton={true}
         onCartPress={handleCartPress}
       />
-      <View style={styles.searchContainer}>
+      <View style={styles.searchBarContainer}>
         <SearchBar
-          placeholder={t('common.search')}
+          placeholder='Search'
           value={searchQuery}
           onChangeText={setSearchQuery}
           onSearchPress={() => {
             /* noop */
           }}
-          showFilterButton={false}
+          onFilterPress={() => {
+            /* noop */
+          }}
+          showFilterButton={true}
         />
       </View>
 
