@@ -88,6 +88,11 @@ export type CommunityStackParamList = {
     channelAvatar?: string;
     channelDescription?: string;
   };
+  ChatDetails: {
+    channelId: string;
+    channelName: string;
+    channelAvatar?: string;
+  };
 };
 
 export interface ScreenProps<T extends keyof RootStackParamList> {

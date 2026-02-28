@@ -64,62 +64,12 @@ export const styles = StyleSheet.create({
   },
   messagesContainer: {
     flex: 1,
+    backgroundColor: COLORS.WHITE,
   },
   messagesContent: {
     paddingHorizontal: SPACING.MD,
     paddingVertical: SPACING.SM,
     flexGrow: 1,
-  },
-  messageBubble: {
-    maxWidth: '80%',
-    paddingHorizontal: SPACING.MD,
-    paddingVertical: SPACING.MD,
-    marginBottom: SPACING.XS,
-  },
-  messageBubbleReceived: {
-    alignSelf: 'flex-start',
-    backgroundColor: '#F0EEE1',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 28,
-    borderBottomLeftRadius: 4,
-    borderBottomRightRadius: 32,
-  },
-  messageBubbleSent: {
-    alignSelf: 'flex-end',
-    backgroundColor: COLORS.NEUTRAL.LOW.PURE,
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 24,
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 4,
-  },
-  messageText: {
-    fontSize: FONT_SIZES.SM,
-    fontFamily: 'DM Sans',
-    fontWeight: '400',
-    lineHeight: 20,
-    letterSpacing: 0.2,
-  },
-  messageTextReceived: {
-    color: COLORS.NEUTRAL.LOW.DARK,
-  },
-  messageTextSent: {
-    color: COLORS.SECONDARY.LIGHT,
-  },
-  messageTimestamp: {
-    fontSize: 10,
-    fontFamily: 'DM Sans',
-    fontWeight: '400',
-    color: COLORS.NEUTRAL.LOW.DARK,
-    lineHeight: 20,
-    marginBottom: SPACING.SM,
-  },
-  messageTimestampReceived: {
-    alignSelf: 'flex-start',
-    marginLeft: SPACING.XS,
-  },
-  messageTimestampSent: {
-    alignSelf: 'flex-end',
-    marginRight: SPACING.XS,
   },
   inputContainer: {
     flexDirection: 'row',

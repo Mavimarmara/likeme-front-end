@@ -12,8 +12,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header, Background } from '@/components/ui/layout';
+import { MessageBubble } from '@/components/ui/chat';
 import { COLORS } from '@/constants';
 import { communityService, storageService } from '@/services';
 import type { CommunityStackParamList } from '@/types/navigation';
@@ -25,18 +27,11 @@ interface ChatMessage {
   text: string;
   timestamp: string;
   isOwn: boolean;
-  senderName?: string;
-  senderAvatar?: string;
-}
-
-function formatMessageTime(dateStr: string): string {
-  const date = new Date(dateStr);
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
 const ChatScreen: React.FC = () => {
   useAnalyticsScreen({ screenName: 'Chat', screenClass: 'ChatScreen' });
-  const navigation = useNavigation();
+  const navigation = useNavigation<StackNavigationProp<CommunityStackParamList, 'Chat'>>();
   const route = useRoute<RouteProp<CommunityStackParamList, 'Chat'>>();
   const { channelId, channelName, channelAvatar, channelDescription } = route.params;
 
@@ -66,8 +61,6 @@ const ChatScreen: React.FC = () => {
             text: msg.data?.text || '',
             timestamp: msg.createdAt || msg.editedAt || '',
             isOwn: msg.userId === backendUserId,
-            senderName: msg.userId,
-            senderAvatar: undefined,
           }));
           setMessages(mapped.reverse());
         }
@@ -115,7 +108,17 @@ const ChatScreen: React.FC = () => {
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Icon name='chevron-left' size={24} color={COLORS.NEUTRAL.LOW.PURE} />
         </TouchableOpacity>
-        <View style={styles.headerInfo}>
+        <TouchableOpacity
+          style={styles.headerInfo}
+          activeOpacity={0.7}
+          onPress={() =>
+            navigation.navigate('ChatDetails', {
+              channelId,
+              channelName,
+              channelAvatar,
+            })
+          }
+        >
           {channelAvatar ? (
             <Image source={{ uri: channelAvatar }} style={styles.headerAvatar} />
           ) : (
@@ -133,7 +136,7 @@ const ChatScreen: React.FC = () => {
               </Text>
             ) : null}
           </View>
-        </View>
+        </TouchableOpacity>
       </View>
 
       <KeyboardAvoidingView
@@ -161,29 +164,11 @@ const ChatScreen: React.FC = () => {
           )}
 
           {messages.map((msg) => (
-            <View key={msg.id}>
-              <View style={[styles.messageBubble, msg.isOwn ? styles.messageBubbleSent : styles.messageBubbleReceived]}>
-                <Text style={[styles.messageText, msg.isOwn ? styles.messageTextSent : styles.messageTextReceived]}>
-                  {msg.text}
-                </Text>
-              </View>
-              <Text
-                style={[
-                  styles.messageTimestamp,
-                  msg.isOwn ? styles.messageTimestampSent : styles.messageTimestampReceived,
-                ]}
-              >
-                {formatMessageTime(msg.timestamp)}
-              </Text>
-            </View>
+            <MessageBubble key={msg.id} text={msg.text} timestamp={msg.timestamp} isOwn={msg.isOwn} />
           ))}
         </ScrollView>
 
         <View style={styles.inputContainer}>
-          <TouchableOpacity style={styles.addButton}>
-            <Icon name='add' size={24} color={COLORS.WHITE} />
-          </TouchableOpacity>
-
           <View style={styles.textInputWrapper}>
             <TextInput
               style={styles.textInput}
@@ -196,7 +181,7 @@ const ChatScreen: React.FC = () => {
           </View>
 
           <TouchableOpacity style={styles.sendButton}>
-            <Icon name='camera-alt' size={20} color={COLORS.WHITE} />
+            <Icon name='send' size={20} color={COLORS.WHITE} />
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
