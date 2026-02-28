@@ -82,6 +82,12 @@ export type CommunityStackParamList = {
   CommunityList: undefined;
   PostDetails: { post: Post };
   ChatList: { chat?: import('@/components/sections/community').ProviderChat };
+  Chat: {
+    channelId: string;
+    channelName: string;
+    channelAvatar?: string;
+    channelDescription?: string;
+  };
 };
 
 export interface ScreenProps<T extends keyof RootStackParamList> {

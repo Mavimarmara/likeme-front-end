@@ -1,0 +1,207 @@
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+  TextInput,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { Header, Background } from '@/components/ui/layout';
+import { COLORS } from '@/constants';
+import { communityService, storageService } from '@/services';
+import type { CommunityStackParamList } from '@/types/navigation';
+import { useAnalyticsScreen } from '@/analytics';
+import { styles } from './styles';
+
+interface ChatMessage {
+  id: string;
+  text: string;
+  timestamp: string;
+  isOwn: boolean;
+  senderName?: string;
+  senderAvatar?: string;
+}
+
+function formatMessageTime(dateStr: string): string {
+  const date = new Date(dateStr);
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+const ChatScreen: React.FC = () => {
+  useAnalyticsScreen({ screenName: 'Chat', screenClass: 'ChatScreen' });
+  const navigation = useNavigation();
+  const route = useRoute<RouteProp<CommunityStackParamList, 'Chat'>>();
+  const { channelId, channelName, channelAvatar, channelDescription } = route.params;
+
+  const scrollViewRef = useRef<ScrollView>(null);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [messageText, setMessageText] = useState('');
+  const [userAvatarUri, setUserAvatarUri] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadUser = async () => {
+      const user = await storageService.getUser();
+      setUserAvatarUri(user?.picture ?? null);
+    };
+    loadUser();
+  }, []);
+
+  const loadMessages = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await communityService.getChannelMessages(channelId);
+      if (response.success && response.data) {
+        const { messages: rawMessages, currentUserId: backendUserId } = response.data;
+        if (rawMessages) {
+          const mapped: ChatMessage[] = rawMessages.map((msg: any) => ({
+            id: msg.messageId || msg._id,
+            text: msg.data?.text || '',
+            timestamp: msg.createdAt || msg.editedAt || '',
+            isOwn: msg.userId === backendUserId,
+            senderName: msg.userId,
+            senderAvatar: undefined,
+          }));
+          setMessages(mapped.reverse());
+        }
+      }
+    } catch (err) {
+      console.error('[ChatScreen] Error loading messages:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [channelId]);
+
+  useEffect(() => {
+    loadMessages();
+  }, [loadMessages]);
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: false }), 100);
+    }
+  }, [messages]);
+
+  const handleMenuPress = () => {
+    const rootNavigation = navigation.getParent() ?? navigation;
+    rootNavigation.navigate('Profile' as never);
+  };
+
+  const handleCartPress = () => {
+    const rootNavigation = navigation.getParent() ?? navigation;
+    rootNavigation.navigate('Cart' as never);
+  };
+
+  return (
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <Background />
+      <Header
+        showBackButton={false}
+        showMenuWithAvatar
+        onMenuPress={handleMenuPress}
+        userAvatarUri={userAvatarUri}
+        showCartButton={true}
+        onCartPress={handleCartPress}
+      />
+
+      <View style={styles.chatHeader}>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+          <Icon name='chevron-left' size={24} color={COLORS.NEUTRAL.LOW.PURE} />
+        </TouchableOpacity>
+        <View style={styles.headerInfo}>
+          {channelAvatar ? (
+            <Image source={{ uri: channelAvatar }} style={styles.headerAvatar} />
+          ) : (
+            <View style={styles.headerAvatarPlaceholder}>
+              <Icon name='person' size={28} color={COLORS.TEXT_LIGHT} />
+            </View>
+          )}
+          <View style={styles.headerTextContainer}>
+            <Text style={styles.headerName} numberOfLines={1}>
+              {channelName}
+            </Text>
+            {channelDescription ? (
+              <Text style={styles.headerDescription} numberOfLines={1}>
+                {channelDescription}
+              </Text>
+            ) : null}
+          </View>
+        </View>
+      </View>
+
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={0}
+      >
+        <ScrollView
+          ref={scrollViewRef}
+          style={styles.messagesContainer}
+          contentContainerStyle={styles.messagesContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {loading && (
+            <View style={styles.centerContainer}>
+              <ActivityIndicator size='large' color={COLORS.PRIMARY.PURE} />
+            </View>
+          )}
+
+          {!loading && messages.length === 0 && (
+            <View style={styles.centerContainer}>
+              <Icon name='chat-bubble-outline' size={48} color={COLORS.TEXT_LIGHT} />
+              <Text style={styles.emptyText}>Nenhuma mensagem ainda</Text>
+            </View>
+          )}
+
+          {messages.map((msg) => (
+            <View key={msg.id}>
+              <View style={[styles.messageBubble, msg.isOwn ? styles.messageBubbleSent : styles.messageBubbleReceived]}>
+                <Text style={[styles.messageText, msg.isOwn ? styles.messageTextSent : styles.messageTextReceived]}>
+                  {msg.text}
+                </Text>
+              </View>
+              <Text
+                style={[
+                  styles.messageTimestamp,
+                  msg.isOwn ? styles.messageTimestampSent : styles.messageTimestampReceived,
+                ]}
+              >
+                {formatMessageTime(msg.timestamp)}
+              </Text>
+            </View>
+          ))}
+        </ScrollView>
+
+        <View style={styles.inputContainer}>
+          <TouchableOpacity style={styles.addButton}>
+            <Icon name='add' size={24} color={COLORS.WHITE} />
+          </TouchableOpacity>
+
+          <View style={styles.textInputWrapper}>
+            <TextInput
+              style={styles.textInput}
+              placeholder='Mensagem...'
+              placeholderTextColor='rgba(253,251,238,0.8)'
+              value={messageText}
+              onChangeText={setMessageText}
+              multiline
+            />
+          </View>
+
+          <TouchableOpacity style={styles.sendButton}>
+            <Icon name='camera-alt' size={20} color={COLORS.WHITE} />
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+};
+
+export default ChatScreen;

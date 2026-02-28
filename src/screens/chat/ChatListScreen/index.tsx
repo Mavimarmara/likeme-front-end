@@ -59,8 +59,11 @@ const ChatListScreen: React.FC<Props> = () => {
   };
 
   const handleConversationPress = (conversation: ChatConversation) => {
-    // TODO: Navegar para tela de conversa individual
-    console.log('Abrir conversa:', conversation.id);
+    navigation.navigate('Chat', {
+      channelId: conversation.id,
+      channelName: conversation.name,
+      channelAvatar: conversation.avatar,
+    });
   };
 
   const renderAvatar = (conversation: ChatConversation) => {

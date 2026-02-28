@@ -247,6 +247,30 @@ class CommunityService {
     }
   }
 
+  async getChannelMessages(channelId: string, limit = 20): Promise<any> {
+    try {
+      if (!channelId || channelId.trim() === '') {
+        throw new Error('Channel ID is required');
+      }
+
+      const endpoint = `${this.channelsEndpoint}/${channelId.trim()}/messages`;
+      const queryParams: Record<string, string> = { limit: String(limit) };
+
+      const response = await apiClient.get<any>(endpoint, queryParams, true, false);
+
+      logger.debug('Channel messages response:', {
+        channelId,
+        success: response.success,
+        messageCount: response.data?.messages?.length || 0,
+      });
+
+      return response;
+    } catch (error) {
+      logger.error('Error fetching channel messages:', error);
+      throw error;
+    }
+  }
+
   async getChannels(params: GetChannelsParams = {}): Promise<ChannelsApiResponse> {
     try {
       const queryParams: Record<string, string> = {};
