@@ -14,11 +14,11 @@ import type { ChatConversation } from '@/hooks';
 import { LogoMini } from '@/assets';
 import { COLORS } from '@/constants';
 import { storageService } from '@/services';
-import type { CommunityStackParamList } from '@/types/navigation';
+import type { ChatStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
-type ChatListNavigationProp = StackNavigationProp<CommunityStackParamList, 'ChatList'>;
+type ChatListNavigationProp = StackNavigationProp<ChatStackParamList, 'ChatList'>;
 
 type Props = {
   navigation: ChatListNavigationProp;

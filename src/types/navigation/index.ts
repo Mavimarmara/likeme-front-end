@@ -12,6 +12,7 @@ export type RootStackParamList = {
   AnamnesisMind: undefined;
   AnamnesisHabits: { title: string; keyPrefix: string };
   Community: undefined;
+  Chat: undefined;
   Activities: undefined;
   Marketplace: undefined;
   ProductDetails: {
@@ -81,6 +82,9 @@ import type { Post } from '@/types';
 export type CommunityStackParamList = {
   CommunityList: undefined;
   PostDetails: { post: Post };
+};
+
+export type ChatStackParamList = {
   ChatList: { chat?: import('@/components/sections/community').ProviderChat };
   Chat: {
     channelId: string;

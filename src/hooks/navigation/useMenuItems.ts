@@ -25,17 +25,17 @@ export const useMenuItems = (navigation: any): MenuItem[] => {
         icon: 'group',
         label: 'Comunidade',
         fullLabel: 'Comunidade',
-        onPress: () => rootNavigation.navigate('Community' as never),
+        onPress: () =>
+          rootNavigation.navigate('Community' as never, {
+            screen: 'CommunityList',
+          }),
       },
       {
         id: 'chat',
         icon: 'chat',
         label: 'Chat',
         fullLabel: 'Chat',
-        onPress: () =>
-          rootNavigation.navigate('Community' as never, {
-            screen: 'ChatList',
-          }),
+        onPress: () => rootNavigation.navigate('Chat' as never),
       },
       {
         id: 'marketplace',

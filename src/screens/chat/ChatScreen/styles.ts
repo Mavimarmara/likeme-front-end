@@ -1,16 +1,21 @@
 import { StyleSheet } from 'react-native';
-import { COLORS, SPACING, FONT_SIZES } from '@/constants';
+import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '@/constants';
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'transparent',
+    backgroundColor: COLORS.WHITE,
+  },
+  headerWrapper: {
+    borderBottomLeftRadius: BORDER_RADIUS.ROUND,
+    borderBottomRightRadius: BORDER_RADIUS.ROUND,
+    overflow: 'hidden',
   },
   chatHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: SPACING.MD,
-    paddingVertical: SPACING.SM,
+    paddingVertical: SPACING.LG,
     gap: SPACING.MD,
   },
   headerInfo: {
@@ -55,7 +60,7 @@ export const styles = StyleSheet.create({
   },
   messagesContent: {
     paddingHorizontal: SPACING.MD,
-    paddingVertical: SPACING.SM,
+    paddingVertical: SPACING.LG,
     flexGrow: 1,
   },
   inputContainer: {

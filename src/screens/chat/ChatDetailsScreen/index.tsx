@@ -9,11 +9,11 @@ import { IconButton } from '@/components/ui/buttons';
 import { COLORS } from '@/constants';
 import { communityService } from '@/services';
 import { useBlockedUser, useUserAvatar, useTranslation } from '@/hooks';
-import type { CommunityStackParamList } from '@/types/navigation';
+import type { ChatStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
-type DetailsNavigation = StackNavigationProp<CommunityStackParamList, 'ChatDetails'>;
+type DetailsNavigation = StackNavigationProp<ChatStackParamList, 'ChatDetails'>;
 
 const ContactAvatar: React.FC<{ uri?: string }> = ({ uri }) => {
   if (uri) {
@@ -30,7 +30,7 @@ const ChatDetailsScreen: React.FC = () => {
   useAnalyticsScreen({ screenName: 'ChatDetails', screenClass: 'ChatDetailsScreen' });
   const { t } = useTranslation();
   const navigation = useNavigation<DetailsNavigation>();
-  const route = useRoute<RouteProp<CommunityStackParamList, 'ChatDetails'>>();
+  const route = useRoute<RouteProp<ChatStackParamList, 'ChatDetails'>>();
   const { channelId, channelName, channelAvatar } = route.params;
 
   const userAvatarUri = useUserAvatar();

@@ -80,32 +80,17 @@ const Header: React.FC<HeaderProps> = ({
           <Text style={styles.rightLabelText}>{rightLabel}</Text>
         </TouchableOpacity>
       )}
-      {!hasRightLabel && showBellButton && (
-        <IconButton
-          icon='notifications'
-          onPress={onBellPress ?? noop}
-          backgroundSize='medium'
-          containerStyle={styles.rightButton}
-        />
-      )}
-      {!hasRightLabel && showCartButton && onCartPress && (
-        <IconButton
-          icon='shopping-cart'
-          onPress={onCartPress}
-          backgroundSize='medium'
-          containerStyle={styles.rightButton}
-        />
-      )}
-      {!hasRightLabel && showLogoutButton && onLogoutPress && (
-        <IconButton icon='logout' onPress={onLogoutPress} backgroundSize='medium' containerStyle={styles.rightButton} />
-      )}
-      {!hasRightLabel && showRating && (
-        <IconButton
-          icon='star'
-          onPress={onRatingPress ?? noop}
-          backgroundSize='medium'
-          containerStyle={styles.rightButton}
-        />
+      {!hasRightLabel && (
+        <View style={styles.rightButtons}>
+          {showBellButton && <IconButton icon='notifications' onPress={onBellPress ?? noop} backgroundSize='medium' />}
+          {showCartButton && onCartPress && (
+            <IconButton icon='shopping-cart' onPress={onCartPress} backgroundSize='medium' />
+          )}
+          {showLogoutButton && onLogoutPress && (
+            <IconButton icon='logout' onPress={onLogoutPress} backgroundSize='medium' />
+          )}
+          {showRating && <IconButton icon='star' onPress={onRatingPress ?? noop} backgroundSize='medium' />}
+        </View>
       )}
     </View>
   );

@@ -48,9 +48,11 @@ export const styles = StyleSheet.create({
     left: SPACING.MD,
     zIndex: 1,
   },
-  rightButton: {
+  rightButtons: {
     position: 'absolute',
     right: SPACING.MD,
+    flexDirection: 'row',
+    alignItems: 'center',
     zIndex: 1,
   },
   rightLabelButton: {

@@ -22,7 +22,7 @@ import {
 } from '@/screens/anamnesis';
 import ErrorScreen from '@/screens/ErrorScreen';
 import AppLoadingScreen from '@/screens/LoadingScreen';
-import { CommunityStackNavigator } from '@/navigation';
+import { CommunityStackNavigator, ChatStackNavigator } from '@/navigation';
 import { ActivitiesScreen } from '@/screens/activities';
 import {
   MarketplaceScreen,
@@ -87,6 +87,7 @@ const RootNavigator: React.FC = () => {
         <Stack.Screen name='Error' component={ErrorScreen} options={{ title: 'Erro' }} />
         <Stack.Screen name='AppLoading' component={AppLoadingScreen} options={{ title: 'Carregando' }} />
         <Stack.Screen name='Community' component={CommunityStackNavigator} options={{ title: 'Comunidade' }} />
+        <Stack.Screen name='Chat' component={ChatStackNavigator} options={{ title: 'Chat' }} />
         <Stack.Screen name='Activities' component={ActivitiesScreen} options={{ title: 'Atividades' }} />
         <Stack.Screen name='Marketplace' component={MarketplaceScreen} options={{ title: 'Marketplace' }} />
         <Stack.Screen

@@ -20,7 +20,7 @@ import { MessageBubble } from '@/components/ui/chat';
 import { COLORS } from '@/constants';
 import { communityService } from '@/services';
 import { useBlockedUser, useUserAvatar, useTranslation } from '@/hooks';
-import type { CommunityStackParamList } from '@/types/navigation';
+import type { ChatStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
@@ -31,7 +31,7 @@ interface ChatMessage {
   isOwn: boolean;
 }
 
-type ChatNavigation = StackNavigationProp<CommunityStackParamList, 'Chat'>;
+type ChatNavigation = StackNavigationProp<ChatStackParamList, 'Chat'>;
 
 function mapRawMessage(msg: any, currentUserId: string): ChatMessage {
   return {
@@ -46,7 +46,7 @@ const ChatScreen: React.FC = () => {
   useAnalyticsScreen({ screenName: 'Chat', screenClass: 'ChatScreen' });
   const { t } = useTranslation();
   const navigation = useNavigation<ChatNavigation>();
-  const route = useRoute<RouteProp<CommunityStackParamList, 'Chat'>>();
+  const route = useRoute<RouteProp<ChatStackParamList, 'Chat'>>();
   const { channelId, channelName, channelAvatar, channelDescription } = route.params;
 
   const scrollViewRef = useRef<ScrollView>(null);
@@ -103,38 +103,43 @@ const ChatScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <Background />
-      <Header
-        showBackButton={false}
-        showMenuWithAvatar
-        onMenuPress={handleMenuPress}
-        userAvatarUri={userAvatarUri}
-        showCartButton
-        onCartPress={handleCartPress}
-      />
+    <View style={styles.container}>
+      <View style={styles.headerWrapper}>
+        <Background />
+        <SafeAreaView edges={['top']}>
+          <Header
+            showBackButton={false}
+            showMenuWithAvatar
+            onMenuPress={handleMenuPress}
+            userAvatarUri={userAvatarUri}
+            showCartButton
+            onCartPress={handleCartPress}
+            showBellButton
+          />
 
-      <View style={styles.chatHeader}>
-        <IconButton icon='chevron-left' onPress={() => navigation.goBack()} backgroundSize='medium' />
-        <TouchableOpacity style={styles.headerInfo} activeOpacity={0.7} onPress={navigateToDetails}>
-          {channelAvatar ? (
-            <Image source={{ uri: channelAvatar }} style={styles.headerAvatar} />
-          ) : (
-            <View style={styles.headerAvatarPlaceholder}>
-              <Icon name='person' size={28} color={COLORS.TEXT_LIGHT} />
-            </View>
-          )}
-          <View style={styles.headerTextContainer}>
-            <Text style={styles.headerName} numberOfLines={1}>
-              {channelName}
-            </Text>
-            {channelDescription ? (
-              <Text style={styles.headerDescription} numberOfLines={1}>
-                {channelDescription}
-              </Text>
-            ) : null}
+          <View style={styles.chatHeader}>
+            <IconButton icon='chevron-left' onPress={() => navigation.goBack()} backgroundSize='medium' />
+            <TouchableOpacity style={styles.headerInfo} activeOpacity={0.7} onPress={navigateToDetails}>
+              {channelAvatar ? (
+                <Image source={{ uri: channelAvatar }} style={styles.headerAvatar} />
+              ) : (
+                <View style={styles.headerAvatarPlaceholder}>
+                  <Icon name='person' size={28} color={COLORS.TEXT_LIGHT} />
+                </View>
+              )}
+              <View style={styles.headerTextContainer}>
+                <Text style={styles.headerName} numberOfLines={1}>
+                  {channelName}
+                </Text>
+                {channelDescription ? (
+                  <Text style={styles.headerDescription} numberOfLines={1}>
+                    {channelDescription}
+                  </Text>
+                ) : null}
+              </View>
+            </TouchableOpacity>
           </View>
-        </TouchableOpacity>
+        </SafeAreaView>
       </View>
 
       <KeyboardAvoidingView
@@ -184,7 +189,7 @@ const ChatScreen: React.FC = () => {
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 };
 

@@ -123,7 +123,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
 
     rootNavigation.dispatch(
       CommonActions.navigate({
-        name: 'Community',
+        name: 'Chat',
         params: {
           screen: 'ChatList',
           params: { chat },
