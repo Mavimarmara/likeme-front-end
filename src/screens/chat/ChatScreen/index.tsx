@@ -11,7 +11,7 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { useNavigation, useRoute, useFocusEffect, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header, Background } from '@/components/ui/layout';
@@ -40,6 +40,7 @@ const ChatScreen: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [messageText, setMessageText] = useState('');
   const [userAvatarUri, setUserAvatarUri] = useState<string | null>(null);
+  const [isBlocked, setIsBlocked] = useState(false);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -48,6 +49,24 @@ const ChatScreen: React.FC = () => {
     };
     loadUser();
   }, []);
+
+  const checkBlockedStatus = useCallback(async () => {
+    try {
+      const response = await communityService.getBlockedUsers();
+      if (response.success && response.data) {
+        const blockedList: string[] = response.data.userIds || response.data.users?.map((u: any) => u.userId) || [];
+        setIsBlocked(blockedList.includes(channelId));
+      }
+    } catch {
+      // silently ignore
+    }
+  }, [channelId]);
+
+  useFocusEffect(
+    useCallback(() => {
+      checkBlockedStatus();
+    }, [checkBlockedStatus]),
+  );
 
   const loadMessages = useCallback(async () => {
     try {
@@ -168,19 +187,20 @@ const ChatScreen: React.FC = () => {
           ))}
         </ScrollView>
 
-        <View style={styles.inputContainer}>
-          <View style={styles.textInputWrapper}>
+        <View style={[styles.inputContainer, isBlocked && styles.inputContainerDisabled]}>
+          <View style={[styles.textInputWrapper, isBlocked && styles.textInputWrapperDisabled]}>
             <TextInput
               style={styles.textInput}
-              placeholder='Mensagem...'
-              placeholderTextColor='rgba(253,251,238,0.8)'
+              placeholder={isBlocked ? 'Contato bloqueado' : 'Mensagem...'}
+              placeholderTextColor={isBlocked ? 'rgba(110,106,106,0.6)' : 'rgba(253,251,238,0.8)'}
               value={messageText}
               onChangeText={setMessageText}
               multiline
+              editable={!isBlocked}
             />
           </View>
 
-          <TouchableOpacity style={styles.sendButton}>
+          <TouchableOpacity style={[styles.sendButton, isBlocked && styles.sendButtonDisabled]} disabled={isBlocked}>
             <Icon name='send' size={20} color={COLORS.WHITE} />
           </TouchableOpacity>
         </View>

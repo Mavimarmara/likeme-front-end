@@ -271,6 +271,58 @@ class CommunityService {
     }
   }
 
+  async leaveChannel(channelId: string): Promise<any> {
+    try {
+      if (!channelId || channelId.trim() === '') {
+        throw new Error('Channel ID is required');
+      }
+
+      const endpoint = `${this.channelsEndpoint}/${channelId.trim()}/leave`;
+      return await apiClient.delete<any>(endpoint, undefined, true);
+    } catch (error) {
+      logger.error('Error leaving channel:', error);
+      throw error;
+    }
+  }
+
+  async blockUser(targetUserId: string): Promise<any> {
+    try {
+      if (!targetUserId || targetUserId.trim() === '') {
+        throw new Error('Target user ID is required');
+      }
+
+      const endpoint = `${this.communitiesEndpoint}/users/block`;
+      return await apiClient.post<any>(endpoint, { targetUserId: targetUserId.trim() }, true);
+    } catch (error) {
+      logger.error('Error blocking user:', error);
+      throw error;
+    }
+  }
+
+  async unblockUser(targetUserId: string): Promise<any> {
+    try {
+      if (!targetUserId || targetUserId.trim() === '') {
+        throw new Error('Target user ID is required');
+      }
+
+      const endpoint = `${this.communitiesEndpoint}/users/block/${targetUserId.trim()}`;
+      return await apiClient.delete<any>(endpoint, undefined, true);
+    } catch (error) {
+      logger.error('Error unblocking user:', error);
+      throw error;
+    }
+  }
+
+  async getBlockedUsers(): Promise<any> {
+    try {
+      const endpoint = `${this.communitiesEndpoint}/users/blocked`;
+      return await apiClient.get<any>(endpoint, undefined, true, false);
+    } catch (error) {
+      logger.error('Error fetching blocked users:', error);
+      throw error;
+    }
+  }
+
   async getChannels(params: GetChannelsParams = {}): Promise<ChannelsApiResponse> {
     try {
       const queryParams: Record<string, string> = {};

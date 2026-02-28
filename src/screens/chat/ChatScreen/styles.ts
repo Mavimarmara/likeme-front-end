@@ -126,6 +126,15 @@ export const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 4,
   },
+  inputContainerDisabled: {
+    opacity: 0.5,
+  },
+  textInputWrapperDisabled: {
+    backgroundColor: COLORS.NEUTRAL.LOW.MEDIUM,
+  },
+  sendButtonDisabled: {
+    backgroundColor: COLORS.NEUTRAL.LOW.MEDIUM,
+  },
   centerContainer: {
     flex: 1,
     justifyContent: 'center',
