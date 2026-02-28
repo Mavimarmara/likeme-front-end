@@ -36,7 +36,7 @@ function mapChannelToConversation(channel: Channel): ChatConversation {
     id: channel.channelId,
     name: channel.displayName || (metadata.displayName as string) || '',
     avatar: (metadata.avatarUrl as string) || undefined,
-    lastMessage: (metadata.lastMessage as string) || '',
+    lastMessage: ch.lastMessagePreview || (metadata.lastMessage as string) || '',
     timestamp: formatTimestamp(ch.lastActivity || channel.updatedAt),
     unreadCount: ch.unreadCount || 0,
     isProvider: (metadata.isProvider as boolean) || false,
