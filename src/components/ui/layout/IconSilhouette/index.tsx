@@ -4,7 +4,7 @@ import Svg, { Defs, LinearGradient, Path, Stop } from 'react-native-svg';
 import { BackgroundIcon } from '@/assets';
 import { styles } from './styles';
 
-export type IconSilhouetteSize = 'xsmall' | 'small' | 'medium';
+export type IconSilhouetteSize = 'xsmall' | 'small' | 'medium' | 'large';
 
 export type IconSilhouetteProps = {
   tintColor?: string | readonly string[] | null;
@@ -20,10 +20,11 @@ const SILHOUETTE_PATH =
 const getSizeStyles = (size: IconSilhouetteSize) => {
   if (size === 'xsmall') return { container: styles.containerXsmall, image: styles.imageXsmall };
   if (size === 'small') return { container: styles.containerSmall, image: styles.imageSmall };
-  return { container: styles.containerMedium, image: styles.imageMedium };
+  if (size === 'medium') return { container: styles.containerMedium, image: styles.imageMedium };
+  return { container: styles.containerLarge, image: styles.imageLarge };
 };
 
-const IconSilhouette: React.FC<IconSilhouetteProps> = ({ tintColor, source, size = 'medium', style, children }) => {
+const IconSilhouette: React.FC<IconSilhouetteProps> = ({ tintColor, source, size = 'large', style, children }) => {
   const { container: containerSize, image: imageSize } = getSizeStyles(size);
   const isGradient = Array.isArray(tintColor) && tintColor.length > 1;
   const singleTint =

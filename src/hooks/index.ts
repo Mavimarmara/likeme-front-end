@@ -27,6 +27,10 @@ export type { AnamnesisProgress, CategoryProgress } from './anamnesis/useAnamnes
 // Chat hooks
 export { useChat } from './chat/useChat';
 export type { ChatConversation } from './chat/useChat';
+export { useBlockedUser } from './chat/useBlockedUser';
+
+// User hooks
+export { useUserAvatar } from './auth/useUserAvatar';
 
 // Notification hooks
 export { useNotifications } from './notification/useNotifications';

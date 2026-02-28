@@ -15,9 +15,11 @@ import { useNavigation, useRoute, useFocusEffect, RouteProp } from '@react-navig
 import { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header, Background } from '@/components/ui/layout';
+import { IconButton } from '@/components/ui/buttons';
 import { MessageBubble } from '@/components/ui/chat';
 import { COLORS } from '@/constants';
-import { communityService, storageService } from '@/services';
+import { communityService } from '@/services';
+import { useBlockedUser, useUserAvatar, useTranslation } from '@/hooks';
 import type { CommunityStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
@@ -29,9 +31,21 @@ interface ChatMessage {
   isOwn: boolean;
 }
 
+type ChatNavigation = StackNavigationProp<CommunityStackParamList, 'Chat'>;
+
+function mapRawMessage(msg: any, currentUserId: string): ChatMessage {
+  return {
+    id: msg.messageId || msg._id,
+    text: msg.data?.text || '',
+    timestamp: msg.createdAt || msg.editedAt || '',
+    isOwn: msg.userId === currentUserId,
+  };
+}
+
 const ChatScreen: React.FC = () => {
   useAnalyticsScreen({ screenName: 'Chat', screenClass: 'ChatScreen' });
-  const navigation = useNavigation<StackNavigationProp<CommunityStackParamList, 'Chat'>>();
+  const { t } = useTranslation();
+  const navigation = useNavigation<ChatNavigation>();
   const route = useRoute<RouteProp<CommunityStackParamList, 'Chat'>>();
   const { channelId, channelName, channelAvatar, channelDescription } = route.params;
 
@@ -39,33 +53,14 @@ const ChatScreen: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [messageText, setMessageText] = useState('');
-  const [userAvatarUri, setUserAvatarUri] = useState<string | null>(null);
-  const [isBlocked, setIsBlocked] = useState(false);
 
-  useEffect(() => {
-    const loadUser = async () => {
-      const user = await storageService.getUser();
-      setUserAvatarUri(user?.picture ?? null);
-    };
-    loadUser();
-  }, []);
-
-  const checkBlockedStatus = useCallback(async () => {
-    try {
-      const response = await communityService.getBlockedUsers();
-      if (response.success && response.data) {
-        const blockedList: string[] = response.data.userIds || response.data.users?.map((u: any) => u.userId) || [];
-        setIsBlocked(blockedList.includes(channelId));
-      }
-    } catch {
-      // silently ignore
-    }
-  }, [channelId]);
+  const userAvatarUri = useUserAvatar();
+  const { isBlocked, checkStatus: recheckBlocked } = useBlockedUser(channelId);
 
   useFocusEffect(
     useCallback(() => {
-      checkBlockedStatus();
-    }, [checkBlockedStatus]),
+      recheckBlocked();
+    }, [recheckBlocked]),
   );
 
   const loadMessages = useCallback(async () => {
@@ -75,13 +70,7 @@ const ChatScreen: React.FC = () => {
       if (response.success && response.data) {
         const { messages: rawMessages, currentUserId: backendUserId } = response.data;
         if (rawMessages) {
-          const mapped: ChatMessage[] = rawMessages.map((msg: any) => ({
-            id: msg.messageId || msg._id,
-            text: msg.data?.text || '',
-            timestamp: msg.createdAt || msg.editedAt || '',
-            isOwn: msg.userId === backendUserId,
-          }));
-          setMessages(mapped.reverse());
+          setMessages(rawMessages.map((msg: any) => mapRawMessage(msg, backendUserId)).reverse());
         }
       }
     } catch (err) {
@@ -102,13 +91,15 @@ const ChatScreen: React.FC = () => {
   }, [messages]);
 
   const handleMenuPress = () => {
-    const rootNavigation = navigation.getParent() ?? navigation;
-    rootNavigation.navigate('Profile' as never);
+    (navigation.getParent() ?? navigation).navigate('Profile' as never);
   };
 
   const handleCartPress = () => {
-    const rootNavigation = navigation.getParent() ?? navigation;
-    rootNavigation.navigate('Cart' as never);
+    (navigation.getParent() ?? navigation).navigate('Cart' as never);
+  };
+
+  const navigateToDetails = () => {
+    navigation.navigate('ChatDetails', { channelId, channelName, channelAvatar });
   };
 
   return (
@@ -119,25 +110,13 @@ const ChatScreen: React.FC = () => {
         showMenuWithAvatar
         onMenuPress={handleMenuPress}
         userAvatarUri={userAvatarUri}
-        showCartButton={true}
+        showCartButton
         onCartPress={handleCartPress}
       />
 
       <View style={styles.chatHeader}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Icon name='chevron-left' size={24} color={COLORS.NEUTRAL.LOW.PURE} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.headerInfo}
-          activeOpacity={0.7}
-          onPress={() =>
-            navigation.navigate('ChatDetails', {
-              channelId,
-              channelName,
-              channelAvatar,
-            })
-          }
-        >
+        <IconButton icon='chevron-left' onPress={() => navigation.goBack()} backgroundSize='medium' />
+        <TouchableOpacity style={styles.headerInfo} activeOpacity={0.7} onPress={navigateToDetails}>
           {channelAvatar ? (
             <Image source={{ uri: channelAvatar }} style={styles.headerAvatar} />
           ) : (
@@ -178,7 +157,7 @@ const ChatScreen: React.FC = () => {
           {!loading && messages.length === 0 && (
             <View style={styles.centerContainer}>
               <Icon name='chat-bubble-outline' size={48} color={COLORS.TEXT_LIGHT} />
-              <Text style={styles.emptyText}>Nenhuma mensagem ainda</Text>
+              <Text style={styles.emptyText}>{t('chat.noMessages')}</Text>
             </View>
           )}
 
@@ -191,7 +170,7 @@ const ChatScreen: React.FC = () => {
           <View style={[styles.textInputWrapper, isBlocked && styles.textInputWrapperDisabled]}>
             <TextInput
               style={styles.textInput}
-              placeholder={isBlocked ? 'Contato bloqueado' : 'Mensagem...'}
+              placeholder={isBlocked ? t('chat.blockedPlaceholder') : t('chat.messagePlaceholder')}
               placeholderTextColor={isBlocked ? 'rgba(110,106,106,0.6)' : 'rgba(253,251,238,0.8)'}
               value={messageText}
               onChangeText={setMessageText}

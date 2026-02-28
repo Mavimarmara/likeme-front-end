@@ -4,6 +4,7 @@ module.exports = {
   rules: {
     curly: ['warn', 'multi-line'],
     'react-hooks/exhaustive-deps': 'warn',
+    'jsx-quotes': ['warn', 'prefer-single'],
   },
   ignorePatterns: [
     'node_modules/',
@@ -28,12 +29,7 @@ module.exports = {
   ],
   overrides: [
     {
-      files: [
-        'App.tsx',
-        'scripts/**/*.js',
-        'src/assets/index.ts',
-        'src/config/environment.ts',
-      ],
+      files: ['App.tsx', 'scripts/**/*.js', 'src/assets/index.ts', 'src/config/environment.ts'],
       rules: {
         '@typescript-eslint/no-var-requires': 'off',
       },

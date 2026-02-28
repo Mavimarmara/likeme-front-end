@@ -1,10 +1,15 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Image, ImageSourcePropType, ImageStyle, ViewStyle } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { View, Text, TouchableOpacity, ImageSourcePropType, ImageStyle, ViewStyle } from 'react-native';
 import { COLORS } from '@/constants';
-import { IconSilhouette } from '@/components/ui/layout';
+import { Icon, IconSilhouette } from '@/components/ui/layout';
 import type { IconSilhouetteSize } from '@/components/ui/layout/IconSilhouette';
 import { styles } from './styles';
+
+type SizeDefaults = { iconSize: number; iconColor: string };
+
+const SIZE_DEFAULTS: Partial<Record<IconSilhouetteSize, SizeDefaults>> = {
+  medium: { iconSize: 18, iconColor: '#0F1B33' },
+};
 
 type Props = {
   icon?: string;
@@ -22,31 +27,32 @@ type Props = {
   iconContainerStyle?: ViewStyle;
 };
 
-const IconButton: React.FC<Props> = ({
-  icon,
-  iconSize = 24,
-  iconColor = COLORS.TEXT,
-  iconImageSource,
-  iconImageStyle,
-  onPress,
-  label,
-  showBackground = true,
-  backgroundSize = 'medium',
-  backgroundSource,
-  backgroundTintColor,
-  containerStyle,
-  iconContainerStyle,
-}) => {
-  const renderIcon = () => {
-    const iconElement =
-      iconImageSource != null ? (
-        <Image source={iconImageSource} style={[styles.iconImage, iconImageStyle]} resizeMode='contain' />
-      ) : icon != null ? (
-        <Icon name={icon} size={iconSize} color={iconColor} />
-      ) : null;
+const IconButton: React.FC<Props> = (props) => {
+  const {
+    icon,
+    iconImageSource,
+    iconImageStyle,
+    onPress,
+    label,
+    showBackground = true,
+    backgroundSize = 'large',
+    backgroundSource,
+    backgroundTintColor,
+    containerStyle,
+    iconContainerStyle,
+  } = props;
 
-    if (showBackground) {
-      return (
+  const defaults = SIZE_DEFAULTS[backgroundSize];
+  const iconSize = props.iconSize ?? defaults?.iconSize;
+  const iconColor = props.iconColor ?? defaults?.iconColor ?? COLORS.TEXT;
+
+  const iconElement = (
+    <Icon name={icon} size={iconSize} color={iconColor} imageSource={iconImageSource} imageStyle={iconImageStyle} />
+  );
+
+  return (
+    <TouchableOpacity style={[styles.container, containerStyle]} onPress={onPress} activeOpacity={0.7}>
+      {showBackground ? (
         <IconSilhouette
           source={backgroundSource}
           tintColor={backgroundTintColor ?? COLORS.NEUTRAL.HIGH.PURE}
@@ -55,15 +61,9 @@ const IconButton: React.FC<Props> = ({
         >
           {iconElement}
         </IconSilhouette>
-      );
-    }
-
-    return <View style={[styles.iconContainer, iconContainerStyle]}>{iconElement}</View>;
-  };
-
-  return (
-    <TouchableOpacity style={[styles.container, containerStyle]} onPress={onPress} activeOpacity={0.7}>
-      {renderIcon()}
+      ) : (
+        <View style={[styles.iconContainer, iconContainerStyle]}>{iconElement}</View>
+      )}
       {label && <Text style={styles.label}>{label}</Text>}
     </TouchableOpacity>
   );

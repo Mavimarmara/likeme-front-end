@@ -542,6 +542,25 @@
   "chat": {
     "yourConversations": "Suas conversas",
     "noConversations": "Nenhuma conversa ainda",
-    "unknownUser": "Usuário"
+    "noMessages": "Nenhuma mensagem ainda",
+    "unknownUser": "Usuário",
+    "messagePlaceholder": "Mensagem...",
+    "blockedPlaceholder": "Contato bloqueado",
+    "details": {
+      "title": "Dados do contato",
+      "deleteConversation": "Excluir conversa",
+      "blockContact": "Bloquear contato",
+      "unblockContact": "Desbloquear contato",
+      "confirmBlock": "Tem certeza que deseja bloquear {{name}}?",
+      "confirmUnblock": "Tem certeza que deseja desbloquear {{name}}?",
+      "confirmDelete": "Tem certeza que deseja excluir a conversa com {{name}}?",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar",
+      "delete": "Excluir",
+      "errorBlock": "Não foi possível bloquear o contato.",
+      "errorUnblock": "Não foi possível desbloquear o contato.",
+      "errorDelete": "Não foi possível excluir a conversa.",
+      "error": "Erro"
+    }
   }
 }

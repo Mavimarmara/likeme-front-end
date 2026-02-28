@@ -27,6 +27,16 @@ export const styles = StyleSheet.create({
     elevation: 4,
   },
   containerMedium: {
+    width: 40,
+    height: 36,
+    borderRadius: BORDER_RADIUS.MD,
+    shadowColor: COLORS.BLACK,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  containerLarge: {
     width: 53,
     height: 48,
     borderRadius: BORDER_RADIUS.MD,
@@ -48,6 +58,10 @@ export const styles = StyleSheet.create({
     height: 26,
   },
   imageMedium: {
+    width: 40,
+    height: 36,
+  },
+  imageLarge: {
     width: 53,
     height: 48,
   },

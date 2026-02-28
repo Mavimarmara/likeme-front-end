@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { BORDER_RADIUS, COLORS } from '@/constants';
+import { COLORS } from '@/constants';
 
 export const styles = StyleSheet.create({
   container: {
@@ -10,27 +10,6 @@ export const styles = StyleSheet.create({
   iconContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  iconImage: {
-    width: 24,
-    height: 24,
-  },
-  iconBackground: {
-    width: 53,
-    height: 48,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: BORDER_RADIUS.MD,
-    shadowColor: COLORS.BLACK,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  iconBackgroundImage: {
-    width: 53,
-    height: 48,
-    resizeMode: 'cover',
   },
   label: {
     fontFamily: 'DM Sans',

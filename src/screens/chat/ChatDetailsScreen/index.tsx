@@ -1,114 +1,120 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header, Background } from '@/components/ui/layout';
+import { IconButton } from '@/components/ui/buttons';
 import { COLORS } from '@/constants';
-import { communityService, storageService } from '@/services';
+import { communityService } from '@/services';
+import { useBlockedUser, useUserAvatar, useTranslation } from '@/hooks';
 import type { CommunityStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
+type DetailsNavigation = StackNavigationProp<CommunityStackParamList, 'ChatDetails'>;
+
+const ContactAvatar: React.FC<{ uri?: string }> = ({ uri }) => {
+  if (uri) {
+    return <Image source={{ uri }} style={styles.avatar} />;
+  }
+  return (
+    <View style={styles.avatarPlaceholder}>
+      <Icon name='person' size={56} color={COLORS.TEXT_LIGHT} />
+    </View>
+  );
+};
+
 const ChatDetailsScreen: React.FC = () => {
   useAnalyticsScreen({ screenName: 'ChatDetails', screenClass: 'ChatDetailsScreen' });
-  const navigation = useNavigation<StackNavigationProp<CommunityStackParamList, 'ChatDetails'>>();
+  const { t } = useTranslation();
+  const navigation = useNavigation<DetailsNavigation>();
   const route = useRoute<RouteProp<CommunityStackParamList, 'ChatDetails'>>();
   const { channelId, channelName, channelAvatar } = route.params;
 
-  const [userAvatarUri, setUserAvatarUri] = useState<string | null>(null);
-  const [isBlocked, setIsBlocked] = useState(false);
-  const [loadingBlock, setLoadingBlock] = useState(false);
-  const [loadingLeave, setLoadingLeave] = useState(false);
-  const [checkingBlock, setCheckingBlock] = useState(true);
-
-  useEffect(() => {
-    const loadUser = async () => {
-      const user = await storageService.getUser();
-      setUserAvatarUri(user?.picture ?? null);
-    };
-    loadUser();
-  }, []);
-
-  const checkBlockedStatus = useCallback(async () => {
-    try {
-      setCheckingBlock(true);
-      const response = await communityService.getBlockedUsers();
-      if (response.success && response.data) {
-        const blockedList: string[] = response.data.userIds || response.data.users?.map((u: any) => u.userId) || [];
-        setIsBlocked(blockedList.includes(channelId));
-      }
-    } catch {
-      // silently ignore
-    } finally {
-      setCheckingBlock(false);
-    }
-  }, [channelId]);
-
-  useEffect(() => {
-    checkBlockedStatus();
-  }, [checkBlockedStatus]);
+  const userAvatarUri = useUserAvatar();
+  const { isBlocked, loading: checkingBlock, toggle: toggleBlock } = useBlockedUser(channelId);
+  const [actionLoading, setActionLoading] = useState<'block' | 'leave' | null>(null);
 
   const handleMenuPress = () => {
-    const rootNavigation = navigation.getParent() ?? navigation;
-    rootNavigation.navigate('Profile' as never);
+    (navigation.getParent() ?? navigation).navigate('Profile' as never);
   };
 
   const handleCartPress = () => {
-    const rootNavigation = navigation.getParent() ?? navigation;
-    rootNavigation.navigate('Cart' as never);
+    (navigation.getParent() ?? navigation).navigate('Cart' as never);
   };
 
-  const handleToggleBlock = async () => {
-    const action = isBlocked ? 'desbloquear' : 'bloquear';
-    Alert.alert(
-      isBlocked ? 'Desbloquear contato' : 'Bloquear contato',
-      `Tem certeza que deseja ${action} ${channelName}?`,
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Confirmar',
-          style: isBlocked ? 'default' : 'destructive',
-          onPress: async () => {
-            try {
-              setLoadingBlock(true);
-              if (isBlocked) {
-                await communityService.unblockUser(channelId);
-              } else {
-                await communityService.blockUser(channelId);
-              }
-              setIsBlocked(!isBlocked);
-            } catch {
-              Alert.alert('Erro', `Não foi possível ${action} o contato.`);
-            } finally {
-              setLoadingBlock(false);
-            }
-          },
-        },
-      ],
-    );
-  };
-
-  const handleLeaveChannel = () => {
-    Alert.alert('Excluir conversa', `Tem certeza que deseja excluir a conversa com ${channelName}?`, [
-      { text: 'Cancelar', style: 'cancel' },
+  const confirmAndExecute = (
+    title: string,
+    message: string,
+    confirmLabel: string,
+    destructive: boolean,
+    action: () => Promise<void>,
+    errorMessage: string,
+  ) => {
+    Alert.alert(title, message, [
+      { text: t('chat.details.cancel'), style: 'cancel' },
       {
-        text: 'Excluir',
-        style: 'destructive',
+        text: confirmLabel,
+        style: destructive ? 'destructive' : 'default',
         onPress: async () => {
           try {
-            setLoadingLeave(true);
-            await communityService.leaveChannel(channelId);
-            navigation.popToTop();
+            await action();
           } catch {
-            Alert.alert('Erro', 'Não foi possível excluir a conversa.');
-            setLoadingLeave(false);
+            Alert.alert(t('chat.details.error'), errorMessage);
           }
         },
       },
     ]);
   };
+
+  const handleToggleBlock = () => {
+    const title = isBlocked ? t('chat.details.unblockContact') : t('chat.details.blockContact');
+    const message = isBlocked
+      ? t('chat.details.confirmUnblock', { name: channelName })
+      : t('chat.details.confirmBlock', { name: channelName });
+    const errorMsg = isBlocked ? t('chat.details.errorUnblock') : t('chat.details.errorBlock');
+
+    confirmAndExecute(
+      title,
+      message,
+      t('chat.details.confirm'),
+      !isBlocked,
+      async () => {
+        setActionLoading('block');
+        try {
+          await toggleBlock();
+        } finally {
+          setActionLoading(null);
+        }
+      },
+      errorMsg,
+    );
+  };
+
+  const handleLeaveChannel = () => {
+    confirmAndExecute(
+      t('chat.details.deleteConversation'),
+      t('chat.details.confirmDelete', { name: channelName }),
+      t('chat.details.delete'),
+      true,
+      async () => {
+        setActionLoading('leave');
+        try {
+          await communityService.leaveChannel(channelId);
+          navigation.popToTop();
+        } catch (err) {
+          setActionLoading(null);
+          throw err;
+        }
+      },
+      t('chat.details.errorDelete'),
+    );
+  };
+
+  const isBlockActionBusy = actionLoading === 'block' || checkingBlock;
+  const isLeaveActionBusy = actionLoading === 'leave';
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -118,25 +124,18 @@ const ChatDetailsScreen: React.FC = () => {
         showMenuWithAvatar
         onMenuPress={handleMenuPress}
         userAvatarUri={userAvatarUri}
-        showCartButton={true}
+        showCartButton
         onCartPress={handleCartPress}
+        showBellButton
       />
 
       <View style={styles.subHeader}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Icon name='chevron-left' size={24} color={COLORS.NEUTRAL.LOW.PURE} />
-        </TouchableOpacity>
-        <Text style={styles.title}>Dados do contato</Text>
+        <IconButton icon='chevron-left' onPress={() => navigation.goBack()} backgroundSize='medium' />
+        <Text style={styles.title}>{t('chat.details.title')}</Text>
       </View>
 
       <View style={styles.content}>
-        {channelAvatar ? (
-          <Image source={{ uri: channelAvatar }} style={styles.avatar} />
-        ) : (
-          <View style={styles.avatarPlaceholder}>
-            <Icon name='person' size={56} color={COLORS.TEXT_LIGHT} />
-          </View>
-        )}
+        <ContactAvatar uri={channelAvatar} />
         <Text style={styles.contactName}>{channelName}</Text>
       </View>
 
@@ -145,12 +144,12 @@ const ChatDetailsScreen: React.FC = () => {
           style={styles.deleteButton}
           activeOpacity={0.8}
           onPress={handleLeaveChannel}
-          disabled={loadingLeave}
+          disabled={isLeaveActionBusy}
         >
-          {loadingLeave ? (
+          {isLeaveActionBusy ? (
             <ActivityIndicator size='small' color={COLORS.WHITE} />
           ) : (
-            <Text style={styles.deleteButtonText}>Excluir conversa</Text>
+            <Text style={styles.deleteButtonText}>{t('chat.details.deleteConversation')}</Text>
           )}
         </TouchableOpacity>
 
@@ -158,12 +157,14 @@ const ChatDetailsScreen: React.FC = () => {
           style={styles.blockButton}
           activeOpacity={0.8}
           onPress={handleToggleBlock}
-          disabled={loadingBlock || checkingBlock}
+          disabled={isBlockActionBusy}
         >
-          {loadingBlock || checkingBlock ? (
+          {isBlockActionBusy ? (
             <ActivityIndicator size='small' color={COLORS.NEUTRAL.LOW.PURE} />
           ) : (
-            <Text style={styles.blockButtonText}>{isBlocked ? 'Desbloquear contato' : 'Bloquear contato'}</Text>
+            <Text style={styles.blockButtonText}>
+              {isBlocked ? t('chat.details.unblockContact') : t('chat.details.blockContact')}
+            </Text>
           )}
         </TouchableOpacity>
       </View>

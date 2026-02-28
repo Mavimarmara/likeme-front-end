@@ -1,8 +1,11 @@
 import React, { ReactNode } from 'react';
-import { View, Text, TouchableOpacity, ImageBackground, Image } from 'react-native';
-import { LogoMini, BackgroundIconButton } from '@/assets';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
+import { LogoMini } from '@/assets';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { IconButton } from '@/components/ui/buttons';
 import { styles } from './styles';
+
+const noop = () => undefined;
 
 interface HeaderProps {
   onBackPress?: () => void;
@@ -59,15 +62,12 @@ const Header: React.FC<HeaderProps> = ({
         </TouchableOpacity>
       )}
       {!showMenuWithAvatar && showBackButton && (
-        <TouchableOpacity style={styles.backButton} onPress={onBackPress} activeOpacity={0.7}>
-          <ImageBackground
-            source={BackgroundIconButton}
-            style={styles.backButtonBackground}
-            imageStyle={styles.backButtonImage}
-          >
-            <Icon name='chevron-left' size={18} color='#0F1B33' />
-          </ImageBackground>
-        </TouchableOpacity>
+        <IconButton
+          icon='chevron-left'
+          onPress={onBackPress ?? noop}
+          backgroundSize='medium'
+          containerStyle={styles.leftButton}
+        />
       )}
       {customLogo || <LogoMini width={87} height={16} />}
       {hasRightLabel && (
@@ -81,48 +81,31 @@ const Header: React.FC<HeaderProps> = ({
         </TouchableOpacity>
       )}
       {!hasRightLabel && showBellButton && (
-        <TouchableOpacity style={styles.bellButton} onPress={onBellPress} activeOpacity={0.7}>
-          <ImageBackground
-            source={BackgroundIconButton}
-            style={styles.bellButtonBackground}
-            imageStyle={styles.bellButtonImage}
-          >
-            <Icon name='notifications' size={18} color='#0F1B33' />
-          </ImageBackground>
-        </TouchableOpacity>
+        <IconButton
+          icon='notifications'
+          onPress={onBellPress ?? noop}
+          backgroundSize='medium'
+          containerStyle={styles.rightButton}
+        />
       )}
       {!hasRightLabel && showCartButton && onCartPress && (
-        <TouchableOpacity style={styles.cartButton} onPress={onCartPress} activeOpacity={0.7}>
-          <ImageBackground
-            source={BackgroundIconButton}
-            style={styles.cartButtonBackground}
-            imageStyle={styles.cartButtonImage}
-          >
-            <Icon name='shopping-cart' size={18} color='#0F1B33' />
-          </ImageBackground>
-        </TouchableOpacity>
+        <IconButton
+          icon='shopping-cart'
+          onPress={onCartPress}
+          backgroundSize='medium'
+          containerStyle={styles.rightButton}
+        />
       )}
       {!hasRightLabel && showLogoutButton && onLogoutPress && (
-        <TouchableOpacity style={styles.logoutButton} onPress={onLogoutPress} activeOpacity={0.7}>
-          <ImageBackground
-            source={BackgroundIconButton}
-            style={styles.logoutButtonBackground}
-            imageStyle={styles.logoutButtonImage}
-          >
-            <Icon name='logout' size={18} color='#0F1B33' />
-          </ImageBackground>
-        </TouchableOpacity>
+        <IconButton icon='logout' onPress={onLogoutPress} backgroundSize='medium' containerStyle={styles.rightButton} />
       )}
       {!hasRightLabel && showRating && (
-        <TouchableOpacity style={styles.ratingButton} onPress={onRatingPress} activeOpacity={0.7}>
-          <ImageBackground
-            source={BackgroundIconButton}
-            style={styles.ratingButtonBackground}
-            imageStyle={styles.ratingButtonImage}
-          >
-            <Icon name='star' size={18} color='#0F1B33' />
-          </ImageBackground>
-        </TouchableOpacity>
+        <IconButton
+          icon='star'
+          onPress={onRatingPress ?? noop}
+          backgroundSize='medium'
+          containerStyle={styles.rightButton}
+        />
       )}
     </View>
   );
