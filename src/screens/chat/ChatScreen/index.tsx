@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, useFocusEffect, RouteProp } from '@react-navigation/native';
@@ -18,7 +19,7 @@ import { Header, Background } from '@/components/ui/layout';
 import { IconButton } from '@/components/ui/buttons';
 import { MessageBubble } from '@/components/ui/chat';
 import { COLORS } from '@/constants';
-import { communityService } from '@/services';
+import { chatService } from '@/services';
 import { useBlockedUser, useUserAvatar, useTranslation } from '@/hooks';
 import type { ChatStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
@@ -66,7 +67,7 @@ const ChatScreen: React.FC = () => {
   const loadMessages = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await communityService.getChannelMessages(channelId);
+      const response = await chatService.getChannelMessages(channelId);
       if (response.success && response.data) {
         const { messages: rawMessages, currentUserId: backendUserId } = response.data;
         if (rawMessages) {
@@ -98,7 +99,44 @@ const ChatScreen: React.FC = () => {
     (navigation.getParent() ?? navigation).navigate('Cart' as never);
   };
 
-  const handleSendMessage = () => undefined;
+  const [sending, setSending] = useState(false);
+
+  const isSendDisabled = useMemo(
+    () => isBlocked || sending || messageText.trim().length === 0,
+    [isBlocked, sending, messageText],
+  );
+
+  const handleSendMessage = useCallback(async () => {
+    const trimmed = messageText.trim();
+    if (trimmed.length === 0 || sending) return;
+
+    const optimisticId = `temp-${Date.now()}`;
+    const optimisticMsg: ChatMessage = {
+      id: optimisticId,
+      text: trimmed,
+      timestamp: new Date().toISOString(),
+      isOwn: true,
+    };
+
+    setMessages((prev) => [...prev, optimisticMsg]);
+    setMessageText('');
+    setSending(true);
+
+    try {
+      const response = await chatService.sendMessage(channelId, trimmed);
+      if (!response.success) {
+        setMessages((prev) => prev.filter((m) => m.id !== optimisticId));
+        setMessageText(trimmed);
+        Alert.alert(t('chat.errorTitle'), t('chat.sendError'));
+      }
+    } catch {
+      setMessages((prev) => prev.filter((m) => m.id !== optimisticId));
+      setMessageText(trimmed);
+      Alert.alert(t('chat.errorTitle'), t('chat.sendError'));
+    } finally {
+      setSending(false);
+    }
+  }, [messageText, sending, channelId, t]);
 
   const navigateToDetails = () => {
     navigation.navigate('ChatDetails', { channelId, channelName, channelAvatar });
@@ -191,7 +229,7 @@ const ChatScreen: React.FC = () => {
             variant='dark'
             onPress={handleSendMessage}
             backgroundSize='medium'
-            disabled={isBlocked}
+            disabled={isSendDisabled}
           />
         </View>
       </KeyboardAvoidingView>

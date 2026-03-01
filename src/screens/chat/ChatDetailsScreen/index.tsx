@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header, Background } from '@/components/ui/layout';
 import { IconButton } from '@/components/ui/buttons';
 import { COLORS } from '@/constants';
-import { communityService } from '@/services';
+import { chatService } from '@/services';
 import { useBlockedUser, useUserAvatar, useTranslation } from '@/hooks';
 import type { ChatStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
@@ -102,7 +102,7 @@ const ChatDetailsScreen: React.FC = () => {
       async () => {
         setActionLoading('leave');
         try {
-          await communityService.leaveChannel(channelId);
+          await chatService.leaveChannel(channelId);
           navigation.popToTop();
         } catch (err) {
           setActionLoading(null);

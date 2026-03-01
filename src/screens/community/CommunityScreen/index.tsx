@@ -15,7 +15,7 @@ import type { CommunityStackParamList } from '@/types/navigation';
 import { useUserFeed, useCommunities, useSuggestedProducts, useMenuItems } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import { mapFiltersToFeedParams, mapCommunityToProgram, mapChannelsToEvents } from '@/utils';
-import { communityService } from '@/services';
+import { chatService } from '@/services';
 import { useAnalyticsScreen } from '@/analytics';
 
 type CommunityMode = 'Social' | 'Programs';
@@ -229,8 +229,8 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     const loadChannels = async () => {
       try {
         const [liveAndBroadcastChannelsResponse, communityChannelsResponse] = await Promise.all([
-          communityService.getChannels({ types: ['live', 'broadcast'] }),
-          communityService.getChannels({ types: 'community' }),
+          chatService.getChannels({ types: ['live', 'broadcast'] }),
+          chatService.getChannels({ types: 'community' }),
         ]);
 
         if (liveAndBroadcastChannelsResponse.success && liveAndBroadcastChannelsResponse.data?.channels) {

@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { communityService } from '@/services';
+import { chatService } from '@/services';
 
 function extractBlockedIds(data: any): string[] {
   return data?.userIds || data?.users?.map((u: any) => u.userId) || [];
@@ -12,7 +12,7 @@ export function useBlockedUser(targetUserId: string) {
   const checkStatus = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await communityService.getBlockedUsers();
+      const response = await chatService.getBlockedUsers();
       if (response.success && response.data) {
         setIsBlocked(extractBlockedIds(response.data).includes(targetUserId));
       }
@@ -28,12 +28,12 @@ export function useBlockedUser(targetUserId: string) {
   }, [checkStatus]);
 
   const block = useCallback(async () => {
-    await communityService.blockUser(targetUserId);
+    await chatService.blockUser(targetUserId);
     setIsBlocked(true);
   }, [targetUserId]);
 
   const unblock = useCallback(async () => {
-    await communityService.unblockUser(targetUserId);
+    await chatService.unblockUser(targetUserId);
     setIsBlocked(false);
   }, [targetUserId]);
 

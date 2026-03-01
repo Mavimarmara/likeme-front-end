@@ -10,7 +10,7 @@ import { CTACard } from '@/components/ui/cards';
 import ProgressBar from '@/components/ui/feedback/ProgressBar';
 import { useMenuItems, useCommunities, useSuggestedProducts, useAnamnesisScores } from '@/hooks';
 import { mapChannelsToEvents } from '@/utils';
-import { communityService, anamnesisService, userService } from '@/services';
+import { chatService, communityService, anamnesisService, userService } from '@/services';
 import type { UserMarker } from '@/types/anamnesis';
 import { getMarkerColor, getMarkerGradient, hasMarkerGradient, MARKER_NAMES } from '@/constants/markers';
 import { COLORS } from '@/constants';
@@ -86,7 +86,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
     const loadEvents = async () => {
       try {
         setLoadingEvents(true);
-        const response = await communityService.getChannels({
+        const response = await chatService.getChannels({
           types: ['live', 'broadcast'],
         });
 

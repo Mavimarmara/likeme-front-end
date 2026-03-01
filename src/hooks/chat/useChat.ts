@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { communityService } from '@/services';
+import { chatService } from '@/services';
 import type { Channel } from '@/types/community';
 
 export interface ChatConversation {
@@ -58,7 +58,7 @@ export function useChat(options: UseChatOptions = {}) {
     try {
       setLoading(true);
       setError(null);
-      const response = await communityService.getChannels({});
+      const response = await chatService.getChannels({});
       if (response.success && response.data?.channels) {
         setChannels(response.data.channels);
       } else {

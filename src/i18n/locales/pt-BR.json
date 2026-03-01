@@ -546,6 +546,8 @@
     "unknownUser": "Usuário",
     "messagePlaceholder": "Mensagem...",
     "blockedPlaceholder": "Contato bloqueado",
+    "errorTitle": "Erro",
+    "sendError": "Não foi possível enviar a mensagem. Tente novamente.",
     "details": {
       "title": "Dados do contato",
       "deleteConversation": "Excluir conversa",
