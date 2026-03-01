@@ -98,6 +98,8 @@ const ChatScreen: React.FC = () => {
     (navigation.getParent() ?? navigation).navigate('Cart' as never);
   };
 
+  const handleSendMessage = () => undefined;
+
   const navigateToDetails = () => {
     navigation.navigate('ChatDetails', { channelId, channelName, channelAvatar });
   };
@@ -184,9 +186,13 @@ const ChatScreen: React.FC = () => {
             />
           </View>
 
-          <TouchableOpacity style={[styles.sendButton, isBlocked && styles.sendButtonDisabled]} disabled={isBlocked}>
-            <Icon name='send' size={20} color={COLORS.WHITE} />
-          </TouchableOpacity>
+          <IconButton
+            icon='send'
+            variant='dark'
+            onPress={handleSendMessage}
+            backgroundSize='medium'
+            disabled={isBlocked}
+          />
         </View>
       </KeyboardAvoidingView>
     </View>

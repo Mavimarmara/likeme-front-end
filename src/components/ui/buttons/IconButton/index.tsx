@@ -5,10 +5,16 @@ import { Icon, IconSilhouette } from '@/components/ui/layout';
 import type { IconSilhouetteSize } from '@/components/ui/layout/IconSilhouette';
 import { styles } from './styles';
 
-type SizeDefaults = { iconSize: number; iconColor: string };
+type IconButtonVariant = 'light' | 'dark';
+type SizeDefaults = { iconSize: number };
 
 const SIZE_DEFAULTS: Partial<Record<IconSilhouetteSize, SizeDefaults>> = {
-  medium: { iconSize: 18, iconColor: '#0F1B33' },
+  medium: { iconSize: 18 },
+};
+
+const VARIANT_CONFIG: Record<IconButtonVariant, { tintColor: string; iconColor: string }> = {
+  light: { tintColor: COLORS.NEUTRAL.HIGH.PURE, iconColor: '#0F1B33' },
+  dark: { tintColor: COLORS.NEUTRAL.LOW.PURE, iconColor: COLORS.WHITE },
 };
 
 type Props = {
@@ -18,7 +24,9 @@ type Props = {
   iconImageSource?: ImageSourcePropType;
   iconImageStyle?: ImageStyle;
   onPress: () => void;
+  disabled?: boolean;
   label?: string;
+  variant?: IconButtonVariant;
   showBackground?: boolean;
   backgroundSize?: IconSilhouetteSize;
   backgroundSource?: ImageSourcePropType;
@@ -33,7 +41,9 @@ const IconButton: React.FC<Props> = (props) => {
     iconImageSource,
     iconImageStyle,
     onPress,
+    disabled = false,
     label,
+    variant = 'light',
     showBackground = true,
     backgroundSize = 'large',
     backgroundSource,
@@ -42,20 +52,26 @@ const IconButton: React.FC<Props> = (props) => {
     iconContainerStyle,
   } = props;
 
+  const variantConfig = VARIANT_CONFIG[variant];
   const defaults = SIZE_DEFAULTS[backgroundSize];
   const iconSize = props.iconSize ?? defaults?.iconSize;
-  const iconColor = props.iconColor ?? defaults?.iconColor ?? COLORS.TEXT;
+  const iconColor = props.iconColor ?? variantConfig.iconColor;
 
   const iconElement = (
     <Icon name={icon} size={iconSize} color={iconColor} imageSource={iconImageSource} imageStyle={iconImageStyle} />
   );
 
   return (
-    <TouchableOpacity style={[styles.container, containerStyle]} onPress={onPress} activeOpacity={0.7}>
+    <TouchableOpacity
+      style={[styles.container, containerStyle, disabled && styles.disabled]}
+      onPress={onPress}
+      activeOpacity={0.7}
+      disabled={disabled}
+    >
       {showBackground ? (
         <IconSilhouette
           source={backgroundSource}
-          tintColor={backgroundTintColor ?? COLORS.NEUTRAL.HIGH.PURE}
+          tintColor={backgroundTintColor ?? variantConfig.tintColor}
           size={backgroundSize}
           style={iconContainerStyle}
         >

@@ -66,9 +66,8 @@ export const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: SPACING.MD,
-    paddingVertical: SPACING.SM,
-    paddingBottom: SPACING.MD,
+    paddingHorizontal: SPACING.LG,
+    paddingVertical: SPACING.LG,
     gap: SPACING.SM,
     backgroundColor: COLORS.PRIMARY.LIGHT,
   },
@@ -105,26 +104,10 @@ export const styles = StyleSheet.create({
     letterSpacing: 0.2,
     padding: 0,
   },
-  sendButton: {
-    width: 40,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: COLORS.NEUTRAL.LOW.PURE,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 4,
-  },
   inputContainerDisabled: {
     opacity: 0.5,
   },
   textInputWrapperDisabled: {
-    backgroundColor: COLORS.NEUTRAL.LOW.MEDIUM,
-  },
-  sendButtonDisabled: {
     backgroundColor: COLORS.NEUTRAL.LOW.MEDIUM,
   },
   centerContainer: {
