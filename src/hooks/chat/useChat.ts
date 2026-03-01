@@ -9,6 +9,7 @@ export interface ChatConversation {
   avatar?: string;
   lastMessage: string;
   timestamp: string;
+  rawTimestamp: string;
   unreadCount: number;
   isProvider: boolean;
   showLogo: boolean;
@@ -32,17 +33,23 @@ function formatTimestamp(dateStr?: string): string {
 function mapChannelToConversation(channel: Channel): ChatConversation {
   const metadata = channel.metadata || {};
   const ch = channel as any;
+  const raw = ch.lastMessageTimestamp || ch.lastActivity || channel.updatedAt || '';
 
   return {
     id: channel.channelId,
     name: channel.displayName || (metadata.displayName as string) || '',
     avatar: (metadata.avatarUrl as string) || undefined,
     lastMessage: ch.lastMessagePreview || (metadata.lastMessage as string) || '',
-    timestamp: formatTimestamp(ch.lastActivity || channel.updatedAt),
+    timestamp: formatTimestamp(raw),
+    rawTimestamp: raw,
     unreadCount: ch.unreadCount || 0,
     isProvider: (metadata.isProvider as boolean) || false,
     showLogo: false,
   };
+}
+
+function sortByMostRecent(a: ChatConversation, b: ChatConversation): number {
+  return new Date(b.rawTimestamp).getTime() - new Date(a.rawTimestamp).getTime();
 }
 
 export interface UseChatOptions {
@@ -81,7 +88,7 @@ export function useChat(options: UseChatOptions = {}) {
   );
 
   const conversations = useMemo(() => {
-    const mapped = channels.map(mapChannelToConversation);
+    const mapped = channels.map(mapChannelToConversation).sort(sortByMostRecent);
 
     if (!searchQuery.trim()) return mapped;
 
