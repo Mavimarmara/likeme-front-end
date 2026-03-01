@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { chatService } from '@/services';
 import type { Channel } from '@/types/community';
 
@@ -73,9 +74,11 @@ export function useChat(options: UseChatOptions = {}) {
     }
   }, []);
 
-  useEffect(() => {
-    loadChannels();
-  }, [loadChannels]);
+  useFocusEffect(
+    useCallback(() => {
+      loadChannels();
+    }, [loadChannels]),
+  );
 
   const conversations = useMemo(() => {
     const mapped = channels.map(mapChannelToConversation);

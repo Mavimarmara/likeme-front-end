@@ -39,8 +39,12 @@ function mapRawMessage(msg: any, currentUserId: string): ChatMessage {
     id: msg.messageId || msg._id,
     text: msg.data?.text || '',
     timestamp: msg.createdAt || msg.editedAt || '',
-    isOwn: msg.userId === currentUserId,
+    isOwn: msg.creatorId === currentUserId || msg.userId === currentUserId,
   };
+}
+
+function sortByTimestampAsc(a: ChatMessage, b: ChatMessage): number {
+  return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
 }
 
 const ChatScreen: React.FC = () => {
@@ -71,7 +75,8 @@ const ChatScreen: React.FC = () => {
       if (response.success && response.data) {
         const { messages: rawMessages, currentUserId: backendUserId } = response.data;
         if (rawMessages) {
-          setMessages(rawMessages.map((msg: any) => mapRawMessage(msg, backendUserId)).reverse());
+          const mapped = rawMessages.map((msg: any) => mapRawMessage(msg, backendUserId));
+          setMessages(mapped.sort(sortByTimestampAsc));
         }
       }
     } catch (err) {
