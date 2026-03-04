@@ -61,16 +61,22 @@ class AuthService {
       console.log('Auth config useAuthProxy:', AUTH_CONFIG.useAuthProxy);
       console.log('Auth redirect URI (fixo, não muda entre deploys):', redirectUri);
 
+      const baseExtraParams: Record<string, string> = {
+        ui_locales: 'pt-BR',
+      };
+
+      const extraParams =
+        AUTH0_CONFIG.audience && AUTH0_CONFIG.audience !== 'your-api-identifier'
+          ? { ...baseExtraParams, audience: AUTH0_CONFIG.audience }
+          : baseExtraParams;
+
       const request = new AuthSession.AuthRequest({
         clientId: AUTH0_CONFIG.clientId,
         scopes: ['openid', 'profile', 'email'],
         responseType: AuthSession.ResponseType.Code,
         redirectUri,
         usePKCE: true,
-        extraParams:
-          AUTH0_CONFIG.audience && AUTH0_CONFIG.audience !== 'your-api-identifier'
-            ? { audience: AUTH0_CONFIG.audience }
-            : {},
+        extraParams,
       });
 
       console.log('Auth request redirect URI:', request.redirectUri);
