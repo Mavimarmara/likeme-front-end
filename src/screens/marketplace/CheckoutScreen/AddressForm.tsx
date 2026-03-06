@@ -17,6 +17,17 @@ export interface AddressData {
   phone: string;
 }
 
+const EMPTY_ADDRESS: AddressData = {
+  fullName: '',
+  addressLine1: '',
+  addressLine2: '',
+  neighborhood: '',
+  city: '',
+  state: '',
+  zipCode: '',
+  phone: '',
+};
+
 interface AddressFormProps {
   sameBillingAddress?: boolean;
   onSameBillingAddressChange?: (value: boolean) => void;
@@ -30,19 +41,8 @@ const AddressForm: React.FC<AddressFormProps> = ({
   addressData,
   onSaveAddress,
 }) => {
-  const defaultAddress: AddressData = {
-    fullName: 'Ana Paula do Amaral',
-    addressLine1: 'Rua Marselha, 1029 - Apto 94',
-    addressLine2: '',
-    neighborhood: 'Jaguaré',
-    city: 'São Paulo',
-    state: 'SP',
-    zipCode: '',
-    phone: '+55 11 97979-2016',
-  };
-
   const [isEditing, setIsEditing] = useState(false);
-  const [editData, setEditData] = useState<AddressData>(addressData || defaultAddress);
+  const [editData, setEditData] = useState<AddressData>(addressData ?? EMPTY_ADDRESS);
 
   const handleZipCodeChange = useFormattedInput({
     type: 'zipCode',
@@ -91,7 +91,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
 
         {!isEditing && (
           <View style={styles.addressCardContent}>
-            <Text style={styles.addressText}>{formatAddressText(addressData || defaultAddress)}</Text>
+            <Text style={styles.addressText}>{formatAddressText(addressData ?? EMPTY_ADDRESS)}</Text>
           </View>
         )}
 

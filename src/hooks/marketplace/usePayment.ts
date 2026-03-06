@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { useFormattedInput } from './useFormattedInput';
+import { useFormattedInput } from '../useFormattedInput';
 import type { CardData } from '@/types/order';
 
 type TFunction = (key: string) => string;
@@ -115,7 +115,6 @@ export function usePayment() {
   }, [cardholderName, cardNumber, expiryDate, cvv, cpf]);
 
   return {
-    // Form state
     cardholderName,
     cardNumber,
     expiryDate,
@@ -126,11 +125,9 @@ export function usePayment() {
     paymentFieldErrors,
     paymentError,
     isProcessing,
-    // Setters used by screen (e.g. after API/step change)
     setPaymentError,
     setPaymentFieldErrors,
     setIsProcessing,
-    // Handlers for PaymentForm
     onCardholderNameChange,
     onCardNumberChange,
     onExpiryDateChange,
@@ -138,7 +135,6 @@ export function usePayment() {
     onCpfChange,
     onCouponCodeChange,
     setCouponError,
-    // Validation & data for order submission
     isPaymentStepValid,
     validatePaymentFields,
     getCardData,

@@ -14,51 +14,6 @@ export const styles = StyleSheet.create({
     paddingHorizontal: SPACING.MD,
     paddingBottom: SPACING.XL,
   },
-  stepperContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: SPACING.MD,
-    marginBottom: SPACING.LG,
-    paddingHorizontal: 0,
-  },
-  stepperItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  stepperLabel: {
-    fontSize: FONT_SIZES.XL,
-    fontFamily: 'DM Sans',
-    fontWeight: '700',
-    color: '#001137',
-    marginBottom: SPACING.XS,
-  },
-  stepperLabelActive: {
-    fontSize: FONT_SIZES.XL,
-    fontFamily: 'DM Sans',
-    fontWeight: '700',
-    color: '#001137',
-    marginBottom: SPACING.XS,
-  },
-  stepperLabelInactive: {
-    fontSize: FONT_SIZES.XL,
-    fontFamily: 'DM Sans',
-    fontWeight: '700',
-    color: '#b2b2b2',
-    marginBottom: SPACING.XS,
-  },
-  stepperLine: {
-    height: 2,
-    width: 105,
-  },
-  stepperLineActive: {
-    backgroundColor: '#0154f8',
-  },
-  stepperLineInactive: {
-    height: 2,
-    width: 100,
-    backgroundColor: '#b2b2b2',
-  },
   addressCard: {
     backgroundColor: '#fbf7e5',
     borderRadius: 28,

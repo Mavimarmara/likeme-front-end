@@ -62,7 +62,8 @@ export const formatAddress = (address: AddressData): string => {
 export const formatBillingAddress = (address: AddressData): BillingAddress => {
   const street = extractStreet(address.addressLine1);
   const streetNumber =
-    (address.streetNumber && address.streetNumber.trim()) || extractStreetNumber(address.addressLine1);
+    (address.streetNumber && address.streetNumber.trim()) || extractStreetNumber(address.addressLine1) || 's/n';
+
   const complement = extractComplement(address.addressLine1) || address.addressLine2 || '';
 
   return {
@@ -72,7 +73,7 @@ export const formatBillingAddress = (address: AddressData): BillingAddress => {
     neighborhood: address.neighborhood,
     street: street,
     streetNumber: streetNumber,
-    zipcode: address.zipCode.replace(/\D/g, ''), // Remove formatação do CEP
+    zipcode: address.zipCode.replace(/\D/g, ''),
     complement: complement || undefined,
   };
 };

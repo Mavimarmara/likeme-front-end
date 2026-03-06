@@ -16,18 +16,7 @@ export interface AddressData {
   phone: string;
 }
 
-interface AddressFormProps {
-  addressData?: AddressData;
-  onSaveAddress?: (address: AddressData) => void | Promise<void>;
-  titleKey?: string;
-  deliverySameAsBilling?: boolean;
-  onDeliverySameAsBillingChange?: (value: boolean) => void;
-  startWithEditOpen?: boolean;
-  addressLoadError?: string | null;
-  addressSaveError?: string | null;
-}
-
-const EMPTY_ADDRESS: AddressData = {
+export const EMPTY_ADDRESS: AddressData = {
   fullName: '',
   addressLine1: '',
   streetNumber: '',
@@ -39,8 +28,31 @@ const EMPTY_ADDRESS: AddressData = {
   phone: '',
 };
 
+export function isAddressFilled(address: AddressData): boolean {
+  return (
+    address.fullName.trim() !== '' &&
+    address.addressLine1.trim() !== '' &&
+    address.neighborhood.trim() !== '' &&
+    address.city.trim() !== '' &&
+    address.state.trim() !== '' &&
+    address.zipCode.replace(/\D/g, '').length >= 8 &&
+    address.phone.replace(/\D/g, '').length >= 10
+  );
+}
+
+interface AddressFormProps {
+  addressData?: AddressData;
+  onSaveAddress?: (address: AddressData) => void | Promise<void>;
+  titleKey?: string;
+  deliverySameAsBilling?: boolean;
+  onDeliverySameAsBillingChange?: (value: boolean) => void;
+  startWithEditOpen?: boolean;
+  addressLoadError?: string | null;
+  addressSaveError?: string | null;
+}
+
 const AddressForm: React.FC<AddressFormProps> = ({
-  addressData,
+  addressData = EMPTY_ADDRESS,
   onSaveAddress,
   titleKey = 'checkout.deliveryAddress',
   deliverySameAsBilling,
@@ -51,7 +63,6 @@ const AddressForm: React.FC<AddressFormProps> = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const currentAddress = addressData ?? EMPTY_ADDRESS;
 
   useEffect(() => {
     if (startWithEditOpen) {
@@ -91,7 +102,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
       ) : null}
       {!isEditing ? (
         <AddressView
-          address={currentAddress}
+          address={addressData}
           onEditPress={handleEditPress}
           titleKey={titleKey}
           deliverySameAsBilling={deliverySameAsBilling}
@@ -99,7 +110,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
         />
       ) : (
         <AddressEdit
-          initialData={currentAddress}
+          initialData={addressData}
           onSave={handleSave}
           onCancel={handleCancelEdit}
           saving={isSaving}

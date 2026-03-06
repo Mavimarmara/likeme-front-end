@@ -1,33 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '@/components/ui/layout';
 import { Background } from '@/components/ui/layout';
 import { SecondaryButton } from '@/components/ui/buttons';
+import { Stepper } from '@/components/ui/tabs';
 import { storageService, orderService, userService } from '@/services';
 import { formatPrice, formatAddress, formatBillingAddress } from '@/utils';
 import { useTranslation, usePayment } from '@/hooks';
 import { logger } from '@/utils/logger';
 import { styles } from './styles';
-import AddressForm, { AddressData } from './address/AddressForm';
+import AddressForm, { AddressData, EMPTY_ADDRESS, isAddressFilled } from './address/AddressForm';
 import PaymentForm from './payment/PaymentForm';
 import CartItemList from './order/CartItemList';
 import OrderSummary from './order/OrderSummary';
 import OrderScreen from './order/OrderScreen';
 import type { CreateOrderData } from '@/types/order';
 import { useAnalyticsScreen } from '@/analytics';
-
-function isAddressFilled(address: AddressData): boolean {
-  return (
-    address.fullName.trim() !== '' &&
-    address.addressLine1.trim() !== '' &&
-    address.neighborhood.trim() !== '' &&
-    address.city.trim() !== '' &&
-    address.state.trim() !== '' &&
-    address.zipCode.replace(/\D/g, '').length >= 8 &&
-    address.phone.replace(/\D/g, '').length >= 10
-  );
-}
 
 interface CartItem {
   id: string;
@@ -41,6 +30,8 @@ interface CartItem {
 type PaymentMethod = 'credit_card' | 'pix';
 type CheckoutStep = 'address' | 'payment' | 'order';
 
+const PAYMENT_METHOD: PaymentMethod = 'credit_card';
+
 type Props = {
   navigation: any;
   route?: any;
@@ -51,37 +42,15 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
   const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState<CheckoutStep>('address');
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [addressData, setAddressData] = useState<AddressData>({
-    fullName: '',
-    addressLine1: '',
-    streetNumber: '',
-    addressLine2: '',
-    neighborhood: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    phone: '',
-  });
-  const [billingAddressData, setBillingAddressData] = useState<AddressData>({
-    fullName: '',
-    addressLine1: '',
-    streetNumber: '',
-    addressLine2: '',
-    neighborhood: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    phone: '',
-  });
+  const [addressData, setAddressData] = useState<AddressData>(EMPTY_ADDRESS);
+  const [billingAddressData, setBillingAddressData] = useState<AddressData>(EMPTY_ADDRESS);
   const [deliverySameAsBilling, setDeliverySameAsBilling] = useState(true);
   const [addressLoaded, setAddressLoaded] = useState(false);
   const [addressLoadError, setAddressLoadError] = useState<string | null>(null);
   const [addressSaveError, setAddressSaveError] = useState<string | null>(null);
-  const [paymentMethod] = useState<PaymentMethod>('credit_card');
   const payment = usePayment();
   const [subtotal, setSubtotal] = useState(0);
-  const [shipping, _setShipping] = useState(0);
-  const [_total, setTotal] = useState(0);
+  const [shipping] = useState(0);
   const [orderId, setOrderId] = useState('');
 
   useEffect(() => {
@@ -112,10 +81,8 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
     if (currentStep !== 'payment') payment.setPaymentError(null);
   }, [currentStep]);
 
-  // Ao entrar no passo de pagamento, preencher endereço de cobrança com o de entrega se ainda vazio
   useEffect(() => {
-    if (currentStep !== 'payment') return;
-    if (!isAddressFilled(billingAddressData) && addressData.addressLine1?.trim()) {
+    if (currentStep === 'payment' && !isAddressFilled(billingAddressData) && addressData.addressLine1?.trim()) {
       setBillingAddressData(addressData);
     }
   }, [currentStep]);
@@ -136,7 +103,6 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
       return sum + price * quantity;
     }, 0);
     setSubtotal(sub);
-    setTotal(sub + shipping);
   };
 
   const formatRating = (rating: number): string => {
@@ -172,14 +138,13 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
     try {
       payment.setIsProcessing(true);
 
-      // Validar dados necessários
       if (cartItems.length === 0) {
         payment.setPaymentError(t('checkout.emptyCartError'));
         payment.setIsProcessing(false);
         return;
       }
 
-      if (paymentMethod === 'credit_card') {
+      if (PAYMENT_METHOD === 'credit_card') {
         const errors = payment.validatePaymentFields(t);
         if (errors) {
           payment.setPaymentFieldErrors(errors);
@@ -189,14 +154,12 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
         }
       }
 
-      // Preparar dados do pedido
       const orderItems = cartItems.map((item) => ({
         productId: item.id,
         quantity: item.quantity,
-        discount: 0, // Pode ser calculado com base em cupons
+        discount: 0,
       }));
 
-      // Log dos produtos que serão enviados
       logger.debug('Produtos do carrinho que serão enviados para o backend:', {
         totalItems: cartItems.length,
         items: cartItems.map((item) => ({
@@ -208,25 +171,8 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
         })),
       });
 
-      console.log(
-        '📦 Produtos do pedido:',
-        JSON.stringify(
-          cartItems.map((item) => ({
-            productId: item.id,
-            title: item.title,
-            quantity: item.quantity,
-            price: item.price,
-            total: item.price * item.quantity,
-          })),
-          null,
-          2,
-        ),
-      );
-
-      // Preparar billingAddress sempre como objeto estruturado (backend sempre exige)
       const billingAddressObj = formatBillingAddress(billingAddressData);
 
-      // Endereço de entrega: mesmo de cobrança se checkbox marcado, senão o do passo de endereço
       const shippingAddressData = deliverySameAsBilling ? billingAddressData : addressData;
       if (!isAddressFilled(billingAddressData)) {
         payment.setPaymentError(t('checkout.billingAddressRequired'));
@@ -235,24 +181,19 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
       }
 
       const shippingAddressFormatted = formatAddress(shippingAddressData);
-
       const cardDataObj = payment.getCardData();
 
-      // Construir orderData - backend sempre exige billingAddress como objeto
       const orderData: CreateOrderData = {
         items: orderItems,
         status: 'pending',
         shippingCost: shipping,
-        tax: 0, // Pode ser calculado se necessário
+        tax: 0,
         shippingAddress: shippingAddressFormatted,
-        billingAddress: billingAddressObj, // Sempre como objeto estruturado
-        paymentMethod: paymentMethod,
-        // paymentStatus será sempre 'pending' no backend ao criar a order
+        billingAddress: billingAddressObj,
+        paymentMethod: PAYMENT_METHOD,
       };
 
-      // Incluir cardData quando for cartão de crédito (backend sempre exige quando paymentMethod é credit_card)
-      // A validação acima já garante que os dados estão preenchidos e válidos
-      if (paymentMethod === 'credit_card') {
+      if (PAYMENT_METHOD === 'credit_card') {
         if (!cardDataObj) {
           payment.setPaymentError(t('checkout.invalidCardDataError'));
           payment.setIsProcessing(false);
@@ -261,26 +202,16 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
         orderData.cardData = cardDataObj;
       }
 
-      console.log('📋 Dados do pedido que serão enviados:', JSON.stringify(orderData, null, 2));
       logger.debug('Dados do pedido completos:', orderData);
 
-      // Criar o pedido
       const orderResponse = await orderService.createOrder(orderData);
 
       if (!orderResponse.success || !orderResponse.data) {
         throw new Error('Falha ao criar pedido');
       }
 
-      const createdOrder = orderResponse.data;
-      setOrderId(createdOrder.id);
-
-      // Order criada com paymentStatus 'pending' por padrão
-      // O pagamento será processado separadamente depois, se necessário
-
-      // Limpar carrinho após sucesso
+      setOrderId(orderResponse.data.id);
       await storageService.clearCart();
-
-      // Navegar para a tela de Order
       setCurrentStep('order');
     } catch (error: any) {
       console.error('Error completing order:', error);
@@ -295,11 +226,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('Home');
   };
 
-  const handleViewProgram = (itemId: string) => {
-    navigation.navigate('ProductDetails', { productId: itemId });
-  };
-
-  const handleAddToCalendar = (itemId: string) => {
+  const handleProductPress = (itemId: string) => {
     navigation.navigate('ProductDetails', { productId: itemId });
   };
 
@@ -317,20 +244,29 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleSaveBillingAddress = (address: AddressData) => {
     setBillingAddressData(address);
-    setDeliverySameAsBilling(false); // Ao editar cobrança, deixa de ser "igual à entrega"
+    setDeliverySameAsBilling(false);
   };
 
   const handleDeliverySameAsBillingChange = (value: boolean) => {
     setDeliverySameAsBilling(value);
-    if (value) {
-      setBillingAddressData(addressData); // Ao marcar, cobrança = entrega
-    }
+    if (value) setBillingAddressData(addressData);
   };
 
   const handleApplyCoupon = () => {
     if (!payment.couponCode.trim()) return;
     payment.setCouponError(t('checkout.invalidCoupon'));
   };
+
+  const stepperSteps = useMemo(
+    () => [
+      { id: 'address', label: t('checkout.address') },
+      { id: 'payment', label: t('checkout.payment') },
+      { id: 'order', label: t('checkout.order') },
+    ],
+    [t],
+  );
+
+  const orderSummary = <OrderSummary subtotal={subtotal} shipping={shipping} formatPrice={formatPrice} />;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -342,46 +278,14 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* Stepper - Address, Payment, Order */}
-        <View style={styles.stepperContainer}>
-          <View style={styles.stepperItem}>
-            <Text style={[currentStep === 'address' ? styles.stepperLabelActive : styles.stepperLabelInactive]}>
-              {t('checkout.address')}
-            </Text>
-            <View
-              style={[
-                styles.stepperLine,
-                currentStep === 'address' ? styles.stepperLineActive : styles.stepperLineInactive,
-              ]}
-            />
-          </View>
-          <View style={styles.stepperItem}>
-            <Text style={[currentStep === 'payment' ? styles.stepperLabelActive : styles.stepperLabelInactive]}>
-              {t('checkout.payment')}
-            </Text>
-            <View
-              style={[
-                styles.stepperLine,
-                currentStep === 'payment' ? styles.stepperLineActive : styles.stepperLineInactive,
-              ]}
-            />
-          </View>
-          <View style={styles.stepperItem}>
-            <Text style={[currentStep === 'order' ? styles.stepperLabelActive : styles.stepperLabelInactive]}>
-              {t('checkout.order')}
-            </Text>
-            <View
-              style={[
-                styles.stepperLine,
-                currentStep === 'order' ? styles.stepperLineActive : styles.stepperLineInactive,
-              ]}
-            />
-          </View>
-        </View>
+        <Stepper
+          steps={stepperSteps}
+          currentStepId={currentStep}
+          onStepPress={(stepId) => setCurrentStep(stepId as CheckoutStep)}
+        />
 
         {currentStep === 'address' && (
           <>
-            {/* Address Form */}
             <AddressForm
               addressData={addressData}
               onSaveAddress={handleSaveAddress}
@@ -390,18 +294,15 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
               addressSaveError={addressSaveError}
             />
 
-            {/* Your Deliveries Section */}
             <Text style={styles.deliveriesTitle}>{t('checkout.yourDeliveries')}</Text>
             <CartItemList items={cartItems} formatPrice={formatPrice} formatRating={formatRating} />
 
-            {/* Order Summary */}
-            <OrderSummary subtotal={subtotal} shipping={shipping} formatPrice={formatPrice} />
+            {orderSummary}
           </>
         )}
 
         {currentStep === 'payment' && (
           <>
-            {/* Payment Form */}
             <PaymentForm
               cardholderName={payment.cardholderName}
               cardNumber={payment.cardNumber}
@@ -425,8 +326,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
             />
             {payment.paymentError ? <Text style={styles.fieldError}>{payment.paymentError}</Text> : null}
 
-            {/* Order Summary */}
-            <OrderSummary subtotal={subtotal} shipping={shipping} formatPrice={formatPrice} />
+            {orderSummary}
           </>
         )}
 
@@ -437,16 +337,22 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
             shipping={shipping}
             addressData={deliverySameAsBilling ? billingAddressData : addressData}
             cartItems={cartItems}
-            onViewProgram={handleViewProgram}
-            onAddToCalendar={handleAddToCalendar}
+            onViewProgram={handleProductPress}
+            onAddToCalendar={handleProductPress}
             onHomePress={handleHomePress}
           />
         )}
       </ScrollView>
 
-      {/* Continue/Home Button */}
-      {currentStep !== 'order' && (
-        <View style={styles.buttonContainer}>
+      <View style={styles.buttonContainer}>
+        {currentStep === 'order' ? (
+          <SecondaryButton
+            label={t('common.home')}
+            onPress={handleHomePress}
+            style={styles.completeButton}
+            size='large'
+          />
+        ) : (
           <SecondaryButton
             testID='button-continue'
             label={t('common.continue')}
@@ -456,19 +362,8 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
             loading={payment.isProcessing}
             disabled={isContinueDisabled}
           />
-        </View>
-      )}
-
-      {currentStep === 'order' && (
-        <View style={styles.buttonContainer}>
-          <SecondaryButton
-            label={t('common.home')}
-            onPress={handleHomePress}
-            style={styles.completeButton}
-            size='large'
-          />
-        </View>
-      )}
+        )}
+      </View>
     </SafeAreaView>
   );
 };

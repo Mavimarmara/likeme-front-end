@@ -10,3 +10,4 @@ export * from './feedback';
 export { default as Badge } from './badge';
 export * from './chat';
 export * from './modals';
+export * from './tabs';

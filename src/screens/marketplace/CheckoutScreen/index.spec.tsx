@@ -58,15 +58,26 @@ jest.mock('./address/AddressForm', () => {
   const React = require('react');
   const { View, Text } = require('react-native');
 
+  const mockAddressData = {
+    fullName: '',
+    addressLine1: '',
+    streetNumber: '',
+    addressLine2: '',
+    neighborhood: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    phone: '',
+  };
+
   function AddressForm(props: any) {
-    // Preenche endereço válido ao montar para o botão Continuar ficar habilitado (zipCode vazio por padrão no Checkout)
     React.useLayoutEffect(() => {
       if (props.onSaveAddress && props.addressData?.zipCode?.replace?.(/\D/g, '')?.length < 8) {
         props.onSaveAddress({
+          ...mockAddressData,
           fullName: 'Nome Teste',
           addressLine1: 'Rua Teste',
           streetNumber: '123',
-          addressLine2: '',
           neighborhood: 'Centro',
           city: 'São Paulo',
           state: 'SP',
@@ -79,7 +90,13 @@ jest.mock('./address/AddressForm', () => {
     return React.createElement(View, { testID: 'address-form' }, React.createElement(Text, null, 'Address Form'));
   }
 
-  return AddressForm;
+  return {
+    __esModule: true,
+    default: AddressForm,
+    AddressData: {},
+    EMPTY_ADDRESS: mockAddressData,
+    isAddressFilled: () => true,
+  };
 });
 
 jest.mock('./payment/PaymentForm', () => {

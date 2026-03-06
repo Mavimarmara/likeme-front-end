@@ -14,12 +14,11 @@ export { useActivities } from './activities/useActivities';
 export { useProductDetails } from './marketplace/useProductDetails';
 export { useMarketplaceAds } from './marketplace/useMarketplaceAds';
 export { useSuggestedProducts } from './marketplace/useSuggestedProducts';
+export { usePayment } from './marketplace/usePayment';
 
 // Formatted input hook
 export { useFormattedInput } from './useFormattedInput';
 export type { FormattedInputType } from './useFormattedInput';
-
-export { usePayment } from './usePayment';
 
 export { useAnamnesisQuestionnaire } from './anamnesis/useAnamnesisQuestionnaire';
 export { useAnamnesisProgress } from './anamnesis/useAnamnesisProgress';
