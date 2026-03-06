@@ -363,6 +363,7 @@
     "invalidExpiryError": "Data de expiração inválida. Use o formato MM/AA",
     "invalidCardDataError": "Dados do cartão inválidos",
     "orderError": "Erro ao processar pedido. Tente novamente.",
+    "shippingRequired": "É necessário calcular o valor do envio antes de finalizar. Verifique o CEP do endereço de entrega.",
     "addressSaveError": "Não foi possível salvar o endereço. Tente novamente.",
     "addressLoadError": "Não foi possível carregar seu endereço. Preencha os dados abaixo.",
     "orderCreated": "Pedido criado com sucesso",

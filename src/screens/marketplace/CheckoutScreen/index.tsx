@@ -149,8 +149,8 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
 
   const isContinueDisabled =
     payment.isProcessing ||
-    (currentStep === 'address' && !canProceedFromAddress) ||
-    (currentStep === 'payment' && !isPaymentStepValid);
+    (currentStep === 'address' && (!canProceedFromAddress || shipping === 0 || shippingLoading)) ||
+    (currentStep === 'payment' && (!isPaymentStepValid || shipping === 0 || shippingLoading));
 
   const handleContinue = async () => {
     if (currentStep === 'address' && !canProceedFromAddress) {
@@ -169,6 +169,12 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
 
       if (cartItems.length === 0) {
         Alert.alert(t('errors.error'), t('checkout.orderError'));
+        payment.setIsProcessing(false);
+        return;
+      }
+
+      if (shipping === 0 || shippingLoading) {
+        Alert.alert(t('errors.error'), t('checkout.shippingRequired'));
         payment.setIsProcessing(false);
         return;
       }
