@@ -101,6 +101,34 @@ class UserService {
       return null;
     }
   }
+
+  /**
+   * Salva o endereço de entrega do usuário (cria ou atualiza o contato shipping_address).
+   */
+  async saveShippingAddress(address: ShippingAddressFromProfile): Promise<GetProfileResponse> {
+    const normalized = {
+      ...address,
+      fullName: (address.fullName || '').trim(),
+      addressLine1: (address.addressLine1 || '').trim(),
+      addressLine2: (address.addressLine2 || '').trim(),
+      neighborhood: (address.neighborhood || '').trim(),
+      city: (address.city || '').trim(),
+      state: (address.state || '').trim().slice(0, 2).toUpperCase(),
+      zipCode: (address.zipCode || '').replace(/\D/g, '').slice(0, 8),
+      phone: (address.phone || '').trim(),
+    };
+    if (normalized.zipCode.length < 8) {
+      throw new Error('CEP deve ter 8 dígitos.');
+    }
+    if (normalized.phone.length < 10) {
+      throw new Error('Telefone inválido.');
+    }
+    const response = await apiClient.put<GetProfileResponse>('/api/auth/profile/shipping-address', normalized, true);
+    if (response && (response as any).success) {
+      return response as GetProfileResponse;
+    }
+    throw new Error((response as any)?.message || 'Erro ao salvar endereço');
+  }
 }
 
 export default new UserService();

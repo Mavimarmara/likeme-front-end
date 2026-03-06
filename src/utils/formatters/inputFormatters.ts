@@ -28,14 +28,16 @@ export const formatExpiryDate = (text: string): string => {
 };
 
 export const formatPhone = (text: string): string => {
-  const numbers = text.replace(/\D/g, '');
+  const numbers = text.replace(/\D/g, '').slice(0, 11);
 
+  if (numbers.length === 0) return '';
   if (numbers.length <= 2) {
-    return numbers.length > 0 ? `(${numbers}` : numbers;
-  } else if (numbers.length <= 7) {
+    return `(${numbers}`;
+  }
+  if (numbers.length <= 7) {
     return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
   }
-  return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7, 11)}`;
+  return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7)}`;
 };
 
 /** CEP: apenas dígitos, formata como 00000-000 (máx. 8 dígitos). */

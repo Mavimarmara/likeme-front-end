@@ -305,8 +305,15 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
     console.log('Add to calendar:', itemId);
   };
 
-  const handleSaveAddress = (address: AddressData) => {
-    setAddressData(address);
+  const handleSaveAddress = async (address: AddressData) => {
+    try {
+      await userService.saveShippingAddress(address);
+      setAddressData(address);
+    } catch (error: any) {
+      const message = (error?.message && String(error.message).trim()) || t('checkout.addressSaveError');
+      Alert.alert(t('errors.error'), message);
+      throw error;
+    }
   };
 
   const handleApplyCoupon = () => {

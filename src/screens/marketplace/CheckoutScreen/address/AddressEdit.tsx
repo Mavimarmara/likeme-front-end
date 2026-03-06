@@ -13,6 +13,7 @@ interface AddressEditProps {
   sameBillingAddress?: boolean;
   onSave: (address: AddressData) => void;
   onSameBillingAddressChange?: (value: boolean) => void;
+  saving?: boolean;
 }
 
 const AddressEdit: React.FC<AddressEditProps> = ({
@@ -20,6 +21,7 @@ const AddressEdit: React.FC<AddressEditProps> = ({
   sameBillingAddress = false,
   onSave,
   onSameBillingAddressChange,
+  saving = false,
 }) => {
   const { t } = useTranslation();
   const [editData, setEditData] = useState<AddressData>(initialData);
@@ -27,6 +29,11 @@ const AddressEdit: React.FC<AddressEditProps> = ({
   const handleZipCodeChange = useFormattedInput({
     type: 'zipCode',
     onChangeText: (text) => setEditData((prev) => ({ ...prev, zipCode: text })),
+  });
+
+  const handlePhoneChange = useFormattedInput({
+    type: 'phone',
+    onChangeText: (text) => setEditData((prev) => ({ ...prev, phone: text })),
   });
 
   useEffect(() => {
@@ -109,7 +116,7 @@ const AddressEdit: React.FC<AddressEditProps> = ({
               label={t('checkout.phone')}
               placeholder={t('checkout.phonePlaceholder')}
               value={editData.phone}
-              onChangeText={(text) => setEditData({ ...editData, phone: text })}
+              onChangeText={handlePhoneChange}
               keyboardType='phone-pad'
             />
           </View>
@@ -122,7 +129,12 @@ const AddressEdit: React.FC<AddressEditProps> = ({
           />
         )}
         <View style={styles.editAddressActions}>
-          <SecondaryButton label={t('common.save')} onPress={handleSave} disabled={!isAddressValid} />
+          <SecondaryButton
+            label={t('common.save')}
+            onPress={handleSave}
+            disabled={!isAddressValid || saving}
+            loading={saving}
+          />
         </View>
       </View>
     </View>

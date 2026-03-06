@@ -18,7 +18,7 @@ interface AddressFormProps {
   sameBillingAddress?: boolean;
   onSameBillingAddressChange?: (value: boolean) => void;
   addressData?: AddressData;
-  onSaveAddress?: (address: AddressData) => void;
+  onSaveAddress?: (address: AddressData) => void | Promise<void>;
   /** Quando true, abre direto no modo edição (ex.: endereço vindo vazio da API) */
   startWithEditOpen?: boolean;
 }
@@ -42,6 +42,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
   };
 
   const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const currentAddress = addressData || defaultAddress;
 
   useEffect(() => {
@@ -54,11 +55,20 @@ const AddressForm: React.FC<AddressFormProps> = ({
     setIsEditing(true);
   };
 
-  const handleSave = (address: AddressData) => {
+  const handleSave = async (address: AddressData) => {
     if (onSaveAddress) {
-      onSaveAddress(address);
+      try {
+        setIsSaving(true);
+        await Promise.resolve(onSaveAddress(address));
+        setIsEditing(false);
+      } catch {
+        // Erro já tratado no parent (ex.: Alert); mantém formulário aberto
+      } finally {
+        setIsSaving(false);
+      }
+    } else {
+      setIsEditing(false);
     }
-    setIsEditing(false);
   };
 
   return (
@@ -71,6 +81,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
           sameBillingAddress={sameBillingAddress}
           onSave={handleSave}
           onSameBillingAddressChange={onSameBillingAddressChange}
+          saving={isSaving}
         />
       )}
     </View>
