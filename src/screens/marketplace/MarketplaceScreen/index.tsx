@@ -6,6 +6,8 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SearchBar } from '@/components/ui/inputs';
 import { FloatingMenu, FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
 import { Header, Background } from '@/components/ui/layout';
+import { FilterCategoryModal, type FilterCategoryResult, type SolutionId } from '@/components/ui/modals';
+import { getCategoryDisplayLabel } from '@/components/ui/modals/FilterCategoryModal';
 import { storageService } from '@/services';
 import { formatPrice, handleAdNavigation, mapProductToCartItem } from '@/utils';
 import { WeekHighlightCard } from '@/components/sections/marketplace';
@@ -39,6 +41,9 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedOrder, setSelectedOrder] = useState<string>('best-rated');
   const [page, setPage] = useState(1);
+  const [isFilterCategoryModalVisible, setIsFilterCategoryModalVisible] = useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>(undefined);
+  const [selectedSolutionIds, setSelectedSolutionIds] = useState<SolutionId[]>([]);
 
   const categoryOptions = useMemo(() => getCategoryOptions(t), [t]);
   const orderOptions = useMemo(() => getOrderOptions(t), [t]);
@@ -96,6 +101,26 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     setSelectedOrder(orderId);
   };
 
+  const handleFilterCategoryApply = (result: FilterCategoryResult) => {
+    setSelectedCategoryId(result.categoryId ?? undefined);
+    setSelectedSolutionIds(result.solutionIds);
+    if (result.solutionIds.length === 1 && result.solutionIds[0] === 'products') {
+      setSelectedCategory('products');
+      setPage(1);
+    } else if (result.solutionIds.length === 1 && result.solutionIds[0] === 'professionals') {
+      setSelectedCategory('specialists');
+      setPage(1);
+    }
+  };
+
+  const handleClearFilterCategory = () => {
+    setSelectedCategoryId(undefined);
+    setSelectedSolutionIds([]);
+  };
+
+  const categoryFilterButtonLabel =
+    selectedCategoryId != null ? getCategoryDisplayLabel(selectedCategoryId, [], t) : t('marketplace.category');
+
   const renderCustomHeader = () => (
     <View style={styles.customHeader}>
       <View style={styles.searchContainer}>
@@ -112,16 +137,26 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       </View>
       <View style={styles.filterMenuContainer}>
         <FilterMenu
-          filterButtonLabel={t('marketplace.marker')}
-          onFilterButtonPress={() => {
-            // TODO: Implementar modal de marker se necessário
-            console.log('Marker button pressed');
-          }}
+          filterButtonLabel={categoryFilterButtonLabel}
+          onFilterButtonPress={() => setIsFilterCategoryModalVisible(true)}
           carouselOptions={categoryOptions}
           selectedCarouselId={selectedCategory}
           onCarouselSelect={handleCategorySelect}
         />
       </View>
+      <FilterCategoryModal
+        visible={isFilterCategoryModalVisible}
+        onClose={() => setIsFilterCategoryModalVisible(false)}
+        categories={[]}
+        selectedCategoryId={selectedCategoryId}
+        onSelectCategory={(cat) => setSelectedCategoryId(cat?.categoryId ?? undefined)}
+        selectedSolutionIds={selectedSolutionIds}
+        onToggleSolution={(id) => {
+          setSelectedSolutionIds((prev) => (prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]));
+        }}
+        onFilter={handleFilterCategoryApply}
+        onClear={handleClearFilterCategory}
+      />
     </View>
   );
 

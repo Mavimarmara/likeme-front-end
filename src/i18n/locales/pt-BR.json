@@ -294,6 +294,7 @@
   "marketplace": {
     "searchPlaceholder": "Buscar",
     "marker": "Biomarcador",
+    "category": "Categorias",
     "product": "Produto",
     "allCategory": "Todos",
     "productsCategory": "Produtos",
@@ -468,6 +469,32 @@
     "off": "Desligado",
     "startsAt": "Inicia – {time}",
     "endsAt": "Termina – {time}"
+  },
+  "filterCategory": {
+    "instruction": "Escolha 1 categoria e as soluções para personalizar sua busca.",
+    "categoriesTitle": "Categorias",
+    "solutionsTitle": "Soluções",
+    "filter": "Filtrar",
+    "clearFilters": "Limpar filtros",
+    "categories": {
+      "stress": "Estresse",
+      "connection": "Relacionamento",
+      "smile": "Saúde Bucal",
+      "nutrition": "Nutrição",
+      "sleep": "Sono",
+      "spirituality": "Espiritualidade",
+      "self_esteem": "Autoestima",
+      "purpose_vision": "Propósito",
+      "environment": "Ambiente",
+      "activity": "Movimento"
+    },
+    "solutions": {
+      "products": "Produtos",
+      "services": "Serviços",
+      "professionals": "Profissionais",
+      "programs": "Programas",
+      "communities": "Comunidades"
+    }
   },
   "community": {
     "social": "Social",

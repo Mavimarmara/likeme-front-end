@@ -10,6 +10,7 @@ import { FloatingMenu } from '@/components/ui/menu';
 import type { Event } from '@/types';
 import type { Program, ProgramDetail } from '@/types/program';
 import type { CommunityCategory } from '@/types/community';
+import type { SolutionId, FilterCategoryResult } from '@/components/ui/modals';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
 import { useUserFeed, useCommunities, useSuggestedProducts, useMenuItems } from '@/hooks';
@@ -148,6 +149,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   const [selectedMode, setSelectedMode] = useState<CommunityMode>('Social');
   const [selectedProgramId, setSelectedProgramId] = useState<string | undefined>();
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>();
+  const [selectedSolutionIds, setSelectedSolutionIds] = useState<SolutionId[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilters, setSelectedFilters] = useState<FilterType>({});
 
@@ -362,6 +364,16 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     console.log('Filtros salvos:', filters);
   };
 
+  const handleFilterCategoryApply = (result: FilterCategoryResult) => {
+    setSelectedCategoryId(result.categoryId ?? undefined);
+    setSelectedSolutionIds(result.solutionIds);
+  };
+
+  const handleClearFilterCategory = () => {
+    setSelectedCategoryId(undefined);
+    setSelectedSolutionIds([]);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <Background />
@@ -403,6 +415,9 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
             categories={categories}
             onCategorySelect={handleCategorySelect}
             selectedCategoryId={selectedCategoryId}
+            selectedSolutionIds={selectedSolutionIds}
+            onFilterCategoryApply={handleFilterCategoryApply}
+            onClearFilterCategory={handleClearFilterCategory}
           />
         ) : (
           <ProgramsList

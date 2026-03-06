@@ -10,7 +10,8 @@ import {
 } from '@/components/sections/community';
 import { ProductsCarousel, PlansCarousel, Product, Plan } from '@/components/sections/product';
 import { FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
-import { CategoryModal } from '@/components/ui/modals';
+import { FilterCategoryModal, type FilterCategoryResult, type SolutionId } from '@/components/ui/modals';
+import { getCategoryDisplayLabel } from '@/components/ui/modals/FilterCategoryModal';
 import { useTranslation } from '@/hooks/i18n';
 import type { Post, Event } from '@/types';
 import type { Program } from '@/types/program';
@@ -50,6 +51,9 @@ type Props = {
   categories?: CommunityCategory[];
   onCategorySelect?: (category: CommunityCategory | null) => void;
   selectedCategoryId?: string;
+  selectedSolutionIds?: SolutionId[];
+  onFilterCategoryApply?: (result: FilterCategoryResult) => void;
+  onClearFilterCategory?: () => void;
 };
 
 const SocialList: React.FC<Props> = ({
@@ -84,23 +88,33 @@ const SocialList: React.FC<Props> = ({
   categories = [],
   onCategorySelect,
   selectedCategoryId,
+  selectedSolutionIds = [],
+  onFilterCategoryApply,
+  onClearFilterCategory,
 }) => {
   const { t } = useTranslation();
   const [isCategoryModalVisible, setIsCategoryModalVisible] = useState(false);
+  const [localSolutionIds, setLocalSolutionIds] = useState<SolutionId[]>(selectedSolutionIds);
 
-  const handleMarkerPress = () => {
-    // Quando clicar no Marker, definir o selectedProgramId como MARKER_ID
-    // e abrir o modal de categorias
-    onProgramPress?.(null); // Limpar seleção de programa
+  const handleCategoryPress = () => {
+    onProgramPress?.(null);
+    setLocalSolutionIds(selectedSolutionIds);
     setIsCategoryModalVisible(true);
   };
 
-  const handleCategorySelect = (category: CommunityCategory) => {
-    onCategorySelect?.(category);
-    // Não fechar o modal automaticamente - usuário deve clicar em Save
+  const handleToggleSolution = (id: SolutionId) => {
+    setLocalSolutionIds((prev) => (prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]));
   };
 
-  const handleCategoryModalClose = () => {
+  const handleFilterApply = (result: FilterCategoryResult) => {
+    onFilterCategoryApply?.(result);
+    setIsCategoryModalVisible(false);
+  };
+
+  const handleClear = () => {
+    onCategorySelect?.(null);
+    setLocalSolutionIds([]);
+    onClearFilterCategory?.();
     setIsCategoryModalVisible(false);
   };
 
@@ -128,25 +142,32 @@ const SocialList: React.FC<Props> = ({
   const isAllSelected = !selectedProgramId || selectedProgramId === '__ALL__';
   const selectedId = isAllSelected ? '__ALL__' : selectedProgramId;
 
+  const categoryFilterButtonLabel =
+    selectedCategoryId != null ? getCategoryDisplayLabel(selectedCategoryId, categories, t) : t('marketplace.category');
+
   return (
     <View style={styles.container}>
       {programs && programs.length > 0 && (
         <View style={styles.programsContainer}>
           <FilterMenu
-            filterButtonLabel={t('marketplace.marker')}
-            onFilterButtonPress={handleMarkerPress}
+            filterButtonLabel={categoryFilterButtonLabel}
+            onFilterButtonPress={handleCategoryPress}
             carouselOptions={filterOptions}
             selectedCarouselId={selectedId}
             onCarouselSelect={handleSelect}
           />
         </View>
       )}
-      <CategoryModal
+      <FilterCategoryModal
         visible={isCategoryModalVisible}
-        onClose={handleCategoryModalClose}
+        onClose={() => setIsCategoryModalVisible(false)}
         categories={categories}
-        onSelectCategory={handleCategorySelect}
         selectedCategoryId={selectedCategoryId}
+        onSelectCategory={(cat) => onCategorySelect?.(cat ?? null)}
+        selectedSolutionIds={localSolutionIds}
+        onToggleSolution={handleToggleSolution}
+        onFilter={handleFilterApply}
+        onClear={handleClear}
       />
       {liveBanner && onLivePress && (
         <View style={styles.liveBannerContainer}>
