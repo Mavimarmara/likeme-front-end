@@ -68,6 +68,7 @@ jest.mock('@/components/sections/marketplace', () => {
 jest.mock('@/hooks', () => ({
   useMarketplaceAds: (...args: any[]) => mockUseMarketplaceAds(...args),
   useMenuItems: () => [],
+  useCategories: () => ({ categories: [] }),
 }));
 
 jest.mock('@/analytics', () => ({
