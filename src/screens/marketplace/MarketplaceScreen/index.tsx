@@ -230,7 +230,9 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
               const displayTitle = product?.name || t('marketplace.product');
               const displayImage =
                 product?.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
-              const displayCategory = product?.type;
+              const displayCategory = product?.categoryId
+                ? categories.find((c) => c.categoryId === product.categoryId)?.name
+                : undefined;
               const productPrice = product?.price;
 
               return (
