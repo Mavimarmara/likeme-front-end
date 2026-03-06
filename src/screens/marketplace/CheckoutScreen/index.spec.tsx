@@ -128,6 +128,7 @@ jest.mock('./order', () => {
 let mockOrderService: any;
 let mockPaymentService: any;
 let mockStorageService: any;
+let mockUserService: any;
 
 // Mock usando factory function
 jest.mock('@/services', () => {
@@ -144,10 +145,16 @@ jest.mock('@/services', () => {
     clearCart: jest.fn(),
   };
 
+  mockUserService = {
+    getShippingAddress: jest.fn().mockResolvedValue(null),
+    saveShippingAddress: jest.fn().mockResolvedValue({ success: true }),
+  };
+
   return {
     storageService: mockStorageService,
     orderService: mockOrderService,
     paymentService: mockPaymentService,
+    userService: mockUserService,
   };
 });
 
