@@ -35,7 +35,7 @@ type ProductDetailsScreenProps = {
         title: string;
         price: string;
         image: string;
-        category?: string;
+        type?: string;
         tags?: string[];
         description?: string;
         provider?: {

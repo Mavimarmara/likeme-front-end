@@ -24,7 +24,7 @@ type AffiliateProductScreenProps = {
         title: string;
         price: string;
         image: string;
-        category?: string;
+        type?: string;
         description?: string;
         externalUrl?: string;
       };
