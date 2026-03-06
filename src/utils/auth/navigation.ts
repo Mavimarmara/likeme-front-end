@@ -5,13 +5,19 @@ const DEFAULT_USER_NAME = 'Usuário';
 /**
  * Retorna a próxima tela na ordem de onboarding.
  * Se a tela atual for a última, retorna 'Home'.
+ * TODO: redirect para Plans desabilitado temporariamente; reativar quando necessário.
  */
 export function getNextOnboardingScreen(current: AuthOnboardingScreenName): AuthOnboardingScreenName | 'Home' {
   const idx = AUTH_ONBOARDING_SCREENS_ORDER.indexOf(current);
   if (idx < 0 || idx === AUTH_ONBOARDING_SCREENS_ORDER.length - 1) {
     return 'Home';
   }
-  return AUTH_ONBOARDING_SCREENS_ORDER[idx + 1];
+  const next = AUTH_ONBOARDING_SCREENS_ORDER[idx + 1];
+  // Pula Plans temporariamente; Register → PersonalObjectives
+  if (next === 'Plans') {
+    return AUTH_ONBOARDING_SCREENS_ORDER[idx + 2] ?? 'Home';
+  }
+  return next;
 }
 
 export type OnboardingRedirectDestination =
@@ -20,6 +26,7 @@ export type OnboardingRedirectDestination =
 
 /**
  * Define a próxima tela de onboarding com base nos flags de storage (usado pelo redirect pós-login).
+ * TODO: redirect para Plans desabilitado temporariamente; reativar quando necessário.
  */
 export function getNextOnboardingDestination(
   welcomeScreenAccessedAt: string | null,
@@ -37,7 +44,10 @@ export function getNextOnboardingDestination(
   }
   if (!objectivesSelectedAt) {
     const registerIdx = order.indexOf('Register');
-    return { screen: order[registerIdx + 1], params: { userName: DEFAULT_USER_NAME } };
+    const nextScreen = order[registerIdx + 1];
+    // Pula Plans temporariamente; vai direto para PersonalObjectives
+    const screen = nextScreen === 'Plans' ? 'PersonalObjectives' : nextScreen;
+    return { screen, params: { userName: DEFAULT_USER_NAME } };
   }
   return { screen: 'Home' };
 }
