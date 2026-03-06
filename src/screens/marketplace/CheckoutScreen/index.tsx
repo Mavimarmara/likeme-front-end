@@ -6,15 +6,28 @@ import { Background } from '@/components/ui/layout';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { storageService, orderService, userService } from '@/services';
 import { formatPrice, formatAddress, formatBillingAddress } from '@/utils';
-import { useFormattedInput } from '@/hooks';
-import { useTranslation } from '@/hooks/i18n';
+import { useTranslation, usePayment } from '@/hooks';
 import { logger } from '@/utils/logger';
 import { styles } from './styles';
-import AddressForm, { AddressData } from './address';
-import PaymentForm from './payment';
-import { CartItemList, OrderSummary, OrderScreen } from './order';
-import type { CreateOrderData, CardData } from '@/types/order';
+import AddressForm, { AddressData } from './address/AddressForm';
+import PaymentForm from './payment/PaymentForm';
+import CartItemList from './order/CartItemList';
+import OrderSummary from './order/OrderSummary';
+import OrderScreen from './order/OrderScreen';
+import type { CreateOrderData } from '@/types/order';
 import { useAnalyticsScreen } from '@/analytics';
+
+function isAddressFilled(address: AddressData): boolean {
+  return (
+    address.fullName.trim() !== '' &&
+    address.addressLine1.trim() !== '' &&
+    address.neighborhood.trim() !== '' &&
+    address.city.trim() !== '' &&
+    address.state.trim() !== '' &&
+    address.zipCode.replace(/\D/g, '').length >= 8 &&
+    address.phone.replace(/\D/g, '').length >= 10
+  );
+}
 
 interface CartItem {
   id: string;
@@ -64,25 +77,12 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
   const [addressLoaded, setAddressLoaded] = useState(false);
   const [addressLoadError, setAddressLoadError] = useState<string | null>(null);
   const [addressSaveError, setAddressSaveError] = useState<string | null>(null);
-  const [paymentError, setPaymentError] = useState<string | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('credit_card');
-  const [cardholderName, setCardholderName] = useState('');
-  const [cardNumber, setCardNumber] = useState('');
-  const [expiryDate, setExpiryDate] = useState('');
-  const [cvv, setCvv] = useState('');
-  const [cpf, setCpf] = useState('');
-  const [saveCardDetails, setSaveCardDetails] = useState(false);
-  const [couponCode, setCouponCode] = useState('');
+  const [paymentMethod] = useState<PaymentMethod>('credit_card');
+  const payment = usePayment();
   const [subtotal, setSubtotal] = useState(0);
   const [shipping, _setShipping] = useState(0);
   const [_total, setTotal] = useState(0);
   const [orderId, setOrderId] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
-
-  const handleCpfChange = useFormattedInput({
-    type: 'cpf',
-    onChangeText: setCpf,
-  });
 
   useEffect(() => {
     loadCartItems();
@@ -109,21 +109,13 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
   }, [cartItems, shipping]);
 
   useEffect(() => {
-    if (currentStep !== 'payment') setPaymentError(null);
+    if (currentStep !== 'payment') payment.setPaymentError(null);
   }, [currentStep]);
 
   // Ao entrar no passo de pagamento, preencher endereço de cobrança com o de entrega se ainda vazio
   useEffect(() => {
     if (currentStep !== 'payment') return;
-    const billingFilled =
-      billingAddressData.addressLine1?.trim() &&
-      billingAddressData.fullName?.trim() &&
-      billingAddressData.neighborhood?.trim() &&
-      billingAddressData.city?.trim() &&
-      billingAddressData.state?.trim() &&
-      billingAddressData.zipCode?.replace(/\D/g, '').length >= 8 &&
-      billingAddressData.phone?.replace(/\D/g, '').length >= 10;
-    if (!billingFilled && addressData.addressLine1?.trim()) {
+    if (!isAddressFilled(billingAddressData) && addressData.addressLine1?.trim()) {
       setBillingAddressData(addressData);
     }
   }, [currentStep]);
@@ -154,17 +146,19 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
     return Number(rating).toFixed(3);
   };
 
-  const isAddressValid =
-    addressData.fullName.trim() !== '' &&
-    addressData.addressLine1.trim() !== '' &&
-    addressData.neighborhood.trim() !== '' &&
-    addressData.city.trim() !== '' &&
-    addressData.state.trim() !== '' &&
-    addressData.zipCode.replace(/\D/g, '').length >= 8 &&
-    addressData.phone.replace(/\D/g, '').length >= 10;
+  const isAddressValid = isAddressFilled(addressData);
+
+  const isPaymentStepValid = payment.isPaymentStepValid(isAddressFilled(billingAddressData));
+
+  const canProceedFromAddress = isAddressValid && (deliverySameAsBilling || isAddressFilled(billingAddressData));
+
+  const isContinueDisabled =
+    payment.isProcessing ||
+    (currentStep === 'address' && !canProceedFromAddress) ||
+    (currentStep === 'payment' && !isPaymentStepValid);
 
   const handleContinue = async () => {
-    if (currentStep === 'address' && !isAddressValid) {
+    if (currentStep === 'address' && !canProceedFromAddress) {
       return;
     }
     if (currentStep === 'address') {
@@ -176,27 +170,21 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleCompleteOrder = async () => {
     try {
-      setIsProcessing(true);
+      payment.setIsProcessing(true);
 
       // Validar dados necessários
       if (cartItems.length === 0) {
-        setPaymentError(t('checkout.emptyCartError'));
-        setIsProcessing(false);
+        payment.setPaymentError(t('checkout.emptyCartError'));
+        payment.setIsProcessing(false);
         return;
       }
 
       if (paymentMethod === 'credit_card') {
-        if (!cardholderName || !cardNumber || !expiryDate || !cvv) {
-          setPaymentError(t('checkout.fillCardDataError'));
-          setIsProcessing(false);
-          return;
-        }
-
-        // Validar formato da data de expiração (deve ter 4 dígitos)
-        const formattedExpiry = expiryDate.replace(/\D/g, '');
-        if (formattedExpiry.length !== 4) {
-          setPaymentError(t('checkout.invalidExpiryError'));
-          setIsProcessing(false);
+        const errors = payment.validatePaymentFields(t);
+        if (errors) {
+          payment.setPaymentFieldErrors(errors);
+          payment.setPaymentError(null);
+          payment.setIsProcessing(false);
           return;
         }
       }
@@ -240,24 +228,15 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
 
       // Endereço de entrega: mesmo de cobrança se checkbox marcado, senão o do passo de endereço
       const shippingAddressData = deliverySameAsBilling ? billingAddressData : addressData;
-      const isBillingValid =
-        billingAddressData.fullName.trim() !== '' &&
-        billingAddressData.addressLine1.trim() !== '' &&
-        billingAddressData.neighborhood.trim() !== '' &&
-        billingAddressData.city.trim() !== '' &&
-        billingAddressData.state.trim() !== '' &&
-        billingAddressData.zipCode.replace(/\D/g, '').length >= 8 &&
-        billingAddressData.phone.replace(/\D/g, '').length >= 10;
-      if (!isBillingValid) {
-        setPaymentError(t('checkout.billingAddressRequired'));
-        setIsProcessing(false);
+      if (!isAddressFilled(billingAddressData)) {
+        payment.setPaymentError(t('checkout.billingAddressRequired'));
+        payment.setIsProcessing(false);
         return;
       }
 
       const shippingAddressFormatted = formatAddress(shippingAddressData);
 
-      // Preparar cardData quando for cartão de crédito (backend sempre exige quando paymentMethod é credit_card)
-      const cardDataObj = formatCardData();
+      const cardDataObj = payment.getCardData();
 
       // Construir orderData - backend sempre exige billingAddress como objeto
       const orderData: CreateOrderData = {
@@ -275,8 +254,8 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
       // A validação acima já garante que os dados estão preenchidos e válidos
       if (paymentMethod === 'credit_card') {
         if (!cardDataObj) {
-          setPaymentError(t('checkout.invalidCardDataError'));
-          setIsProcessing(false);
+          payment.setPaymentError(t('checkout.invalidCardDataError'));
+          payment.setIsProcessing(false);
           return;
         }
         orderData.cardData = cardDataObj;
@@ -306,35 +285,10 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
     } catch (error: any) {
       console.error('Error completing order:', error);
       const errorMessage = error?.message || error?.error || t('checkout.orderError');
-      setPaymentError(errorMessage);
+      payment.setPaymentError(errorMessage);
     } finally {
-      setIsProcessing(false);
+      payment.setIsProcessing(false);
     }
-  };
-
-  // Funções de formatação movidas para utils/formatters/addressFormatter.ts
-
-  const formatCardData = (): CardData | undefined => {
-    if (paymentMethod !== 'credit_card') {
-      return undefined;
-    }
-
-    // Formatar data de expiração de MM/YY para MMYY
-    const formattedExpiry = expiryDate.replace(/\D/g, ''); // Remove caracteres não numéricos
-    if (formattedExpiry.length !== 4) {
-      return undefined;
-    }
-
-    // Formatar CPF (remover caracteres não numéricos)
-    const formattedCpf = cpf.replace(/\D/g, '');
-
-    return {
-      cardNumber: cardNumber.replace(/\s/g, ''), // Remove espaços
-      cardHolderName: cardholderName,
-      cardExpirationDate: formattedExpiry,
-      cardCvv: cvv,
-      cpf: formattedCpf.length === 11 ? formattedCpf : undefined,
-    };
   };
 
   const handleHomePress = () => {
@@ -374,8 +328,8 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleApplyCoupon = () => {
-    // Lógica para aplicar cupom
-    console.log('Aplicar cupom:', couponCode);
+    if (!payment.couponCode.trim()) return;
+    payment.setCouponError(t('checkout.invalidCoupon'));
   };
 
   return (
@@ -437,7 +391,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
             />
 
             {/* Your Deliveries Section */}
-            <Text style={styles.deliveriesTitle}>Your deliveries</Text>
+            <Text style={styles.deliveriesTitle}>{t('checkout.yourDeliveries')}</Text>
             <CartItemList items={cartItems} formatPrice={formatPrice} formatRating={formatRating} />
 
             {/* Order Summary */}
@@ -449,29 +403,27 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
           <>
             {/* Payment Form */}
             <PaymentForm
-              paymentMethod={paymentMethod}
-              cardholderName={cardholderName}
-              cardNumber={cardNumber}
-              expiryDate={expiryDate}
-              cvv={cvv}
-              cpf={cpf}
-              saveCardDetails={saveCardDetails}
-              couponCode={couponCode}
+              cardholderName={payment.cardholderName}
+              cardNumber={payment.cardNumber}
+              expiryDate={payment.expiryDate}
+              cvv={payment.cvv}
+              cpf={payment.cpf}
+              couponCode={payment.couponCode}
+              couponError={payment.couponError}
+              paymentFieldErrors={payment.paymentFieldErrors}
               billingAddressData={billingAddressData}
               deliverySameAsBilling={deliverySameAsBilling}
-              onPaymentMethodChange={setPaymentMethod}
-              onCardholderNameChange={setCardholderName}
-              onCardNumberChange={setCardNumber}
-              onExpiryDateChange={setExpiryDate}
-              onCvvChange={setCvv}
-              onCpfChange={handleCpfChange}
-              onSaveCardDetailsChange={setSaveCardDetails}
-              onCouponCodeChange={setCouponCode}
+              onCardholderNameChange={payment.onCardholderNameChange}
+              onCardNumberChange={payment.onCardNumberChange}
+              onExpiryDateChange={payment.onExpiryDateChange}
+              onCvvChange={payment.onCvvChange}
+              onCpfChange={payment.onCpfChange}
+              onCouponCodeChange={payment.onCouponCodeChange}
               onApplyCoupon={handleApplyCoupon}
               onSaveBillingAddress={handleSaveBillingAddress}
               onDeliverySameAsBillingChange={handleDeliverySameAsBillingChange}
             />
-            {paymentError ? <Text style={styles.fieldError}>{paymentError}</Text> : null}
+            {payment.paymentError ? <Text style={styles.fieldError}>{payment.paymentError}</Text> : null}
 
             {/* Order Summary */}
             <OrderSummary subtotal={subtotal} shipping={shipping} formatPrice={formatPrice} />
@@ -501,8 +453,8 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
             onPress={handleContinue}
             style={styles.completeButton}
             size='large'
-            loading={isProcessing}
-            disabled={isProcessing || (currentStep === 'address' && !isAddressValid)}
+            loading={payment.isProcessing}
+            disabled={isContinueDisabled}
           />
         </View>
       )}

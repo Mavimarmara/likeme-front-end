@@ -54,7 +54,7 @@ jest.mock('@react-navigation/native', () => {
   };
 });
 
-jest.mock('./address', () => {
+jest.mock('./address/AddressForm', () => {
   const React = require('react');
   const { View, Text } = require('react-native');
 
@@ -82,7 +82,7 @@ jest.mock('./address', () => {
   return AddressForm;
 });
 
-jest.mock('./payment', () => {
+jest.mock('./payment/PaymentForm', () => {
   const React = require('react');
   const { View, Text } = require('react-native');
 
@@ -105,24 +105,25 @@ jest.mock('./payment', () => {
   return PaymentForm;
 });
 
-jest.mock('./order', () => {
+jest.mock('./order/CartItemList', () => {
   const React = require('react');
   const { View, Text } = require('react-native');
-
-  const CartItemList = (props: any) =>
+  return (props: any) =>
     React.createElement(View, { testID: 'cart-item-list' }, React.createElement(Text, null, 'Cart Items'));
+});
 
-  const OrderSummary = (props: any) =>
+jest.mock('./order/OrderSummary', () => {
+  const React = require('react');
+  const { View, Text } = require('react-native');
+  return (props: any) =>
     React.createElement(View, { testID: 'order-summary' }, React.createElement(Text, null, 'Order Summary'));
+});
 
-  const OrderScreen = (props: any) =>
+jest.mock('./order/OrderScreen', () => {
+  const React = require('react');
+  const { View, Text } = require('react-native');
+  return (props: any) =>
     React.createElement(View, { testID: 'order-screen' }, React.createElement(Text, null, 'Order Screen'));
-
-  return {
-    CartItemList,
-    OrderSummary,
-    OrderScreen,
-  };
 });
 
 // Criar os mocks como variáveis que serão preenchidas
@@ -161,6 +162,38 @@ jest.mock('@/services', () => {
 
 jest.mock('@/hooks', () => ({
   useFormattedInput: () => jest.fn((text: string) => text),
+  useTranslation: () => ({ t: (key: string) => key }),
+  usePayment: () => ({
+    cardholderName: '',
+    cardNumber: '',
+    expiryDate: '',
+    cvv: '',
+    cpf: '',
+    couponCode: '',
+    couponError: null,
+    paymentFieldErrors: {},
+    paymentError: null,
+    isProcessing: false,
+    setPaymentError: jest.fn(),
+    setPaymentFieldErrors: jest.fn(),
+    setIsProcessing: jest.fn(),
+    onCardholderNameChange: jest.fn(),
+    onCardNumberChange: jest.fn(),
+    onExpiryDateChange: jest.fn(),
+    onCvvChange: jest.fn(),
+    onCpfChange: jest.fn(),
+    onCouponCodeChange: jest.fn(),
+    setCouponError: jest.fn(),
+    isPaymentStepValid: () => true,
+    validatePaymentFields: () => null,
+    getCardData: () => ({
+      cardNumber: '4111111111111111',
+      cardHolderName: 'John Doe',
+      cardExpirationDate: '1225',
+      cardCvv: '123',
+      cpf: '12345678901',
+    }),
+  }),
 }));
 
 jest.mock('@/analytics', () => ({

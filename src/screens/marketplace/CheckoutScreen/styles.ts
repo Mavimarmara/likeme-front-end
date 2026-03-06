@@ -217,7 +217,10 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: SPACING.XS,
     marginTop: SPACING.SM,
-    alignItems: 'flex-end',
+    alignItems: 'flex-start',
+  },
+  applyButtonWrap: {
+    alignSelf: 'flex-start',
   },
   couponInput: {
     flex: 1,

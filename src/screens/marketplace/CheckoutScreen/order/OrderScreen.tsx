@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useTranslation } from '@/hooks/i18n';
 import { formatPrice } from '@/utils';
 import { styles } from '../styles';
-import type { AddressData } from '../address';
+import type { AddressData } from '../address/AddressForm';
 
 interface CartItem {
   id: string;

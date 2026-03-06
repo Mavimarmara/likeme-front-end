@@ -7,13 +7,13 @@ interface TextInputProps extends Omit<RNTextInputProps, 'onChangeText'> {
   value: string;
   onChangeText: (text: string) => void;
   helperText?: string;
-  error?: string;
+  errorText?: string;
   containerStyle?: ViewStyle;
 }
 
 const TextInput = forwardRef<RNTextInput, TextInputProps>(
-  ({ label, value, onChangeText, helperText, error, containerStyle, style, ...props }, ref) => {
-    const hasHelperContent = !!(helperText || error);
+  ({ label, value, onChangeText, helperText, errorText, containerStyle, style, ...props }, ref) => {
+    const hasHelperContent = !!(helperText || errorText);
 
     return (
       <View style={[styles.container, containerStyle]}>
@@ -32,8 +32,8 @@ const TextInput = forwardRef<RNTextInput, TextInputProps>(
         </View>
         {hasHelperContent && (
           <View style={styles.helperContainer}>
-            {helperText && !error && <Text style={styles.helperText}>{helperText}</Text>}
-            {error && <Text style={styles.errorText}>{error}</Text>}
+            {helperText && !errorText && <Text style={styles.helperText}>{helperText}</Text>}
+            {errorText && <Text style={styles.errorText}>{errorText}</Text>}
           </View>
         )}
       </View>

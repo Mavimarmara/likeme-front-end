@@ -26,7 +26,8 @@
     "ok": "OK",
     "retry": "Tentar novamente",
     "goBack": "Voltar",
-    "seeLess": "Ver menos"
+    "seeLess": "Ver menos",
+    "requiredField": "Campo obrigatório"
   },
   "auth": {
     "welcomeTitle": "Que bom ter você por aqui!",
@@ -405,7 +406,8 @@
     "cpfPlaceholder": "000.000.000-00",
     "saveCardDetails": "Salvar dados do cartão",
     "discountCoupon": "Cupom de desconto",
-    "couponPlaceholder": "PRIMEIRACOMPRA"
+    "couponPlaceholder": "PRIMEIRACOMPRA",
+    "invalidCoupon": "Cupom inválido"
   },
   "activities": {
     "actives": "Atividades",

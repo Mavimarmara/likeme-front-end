@@ -19,6 +19,8 @@ export { useSuggestedProducts } from './marketplace/useSuggestedProducts';
 export { useFormattedInput } from './useFormattedInput';
 export type { FormattedInputType } from './useFormattedInput';
 
+export { usePayment } from './usePayment';
+
 export { useAnamnesisQuestionnaire } from './anamnesis/useAnamnesisQuestionnaire';
 export { useAnamnesisProgress } from './anamnesis/useAnamnesisProgress';
 export { useAnamnesisScores } from './anamnesis/useAnamnesisScores';

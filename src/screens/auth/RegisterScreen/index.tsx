@@ -338,7 +338,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
                         placeholder={t('auth.agePlaceholder')}
                         keyboardType={Platform.OS === 'ios' ? 'number-pad' : 'numeric'}
                         onFocus={() => scrollToFocusedField('age')}
-                        error={fieldErrors.age}
+                        errorText={fieldErrors.age}
                       />
                     </View>
 
@@ -384,7 +384,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
                         placeholder={t('auth.weightPlaceholder')}
                         keyboardType='decimal-pad'
                         onFocus={() => scrollToFocusedField('weight')}
-                        error={fieldErrors.weight}
+                        errorText={fieldErrors.weight}
                       />
                     </View>
 
@@ -405,7 +405,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
                         placeholder={t('auth.heightPlaceholder')}
                         keyboardType='decimal-pad'
                         onFocus={() => scrollToFocusedField('height')}
-                        error={fieldErrors.height}
+                        errorText={fieldErrors.height}
                       />
                     </View>
                   </View>
