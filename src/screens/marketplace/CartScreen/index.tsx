@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image, TextInput } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image, TextInput, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -38,6 +38,8 @@ type CartScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'Cart'>;
   route?: any;
 };
+
+const CORREIOS_CEP_URL = 'https://buscacepinter.correios.com.br/app/endereco/index.php';
 
 const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
   useAnalyticsScreen({ screenName: 'Cart', screenClass: 'CartScreen' });
@@ -349,7 +351,15 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
           <Text style={styles.applyButtonText}>{shippingLoading ? t('common.loading') : t('common.apply')}</Text>
         </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.dontKnowZipButton} activeOpacity={0.7}>
+      <TouchableOpacity
+        style={styles.dontKnowZipButton}
+        activeOpacity={0.7}
+        onPress={() =>
+          Linking.openURL(CORREIOS_CEP_URL).catch(() =>
+            Alert.alert(t('errors.error'), t('cart.dontKnowZipCodeOpenError')),
+          )
+        }
+      >
         <Text style={styles.dontKnowZipText}>{t('cart.dontKnowZipCode')}</Text>
       </TouchableOpacity>
     </View>

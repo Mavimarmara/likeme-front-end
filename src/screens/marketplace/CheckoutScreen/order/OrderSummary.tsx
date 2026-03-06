@@ -7,9 +7,10 @@ interface OrderSummaryProps {
   subtotal: number;
   shipping: number;
   formatPrice: (price: number) => string;
+  shippingLoading?: boolean;
 }
 
-const OrderSummary: React.FC<OrderSummaryProps> = ({ subtotal, shipping, formatPrice }) => {
+const OrderSummary: React.FC<OrderSummaryProps> = ({ subtotal, shipping, formatPrice, shippingLoading }) => {
   const { t } = useTranslation();
   const total = subtotal + shipping;
 
@@ -22,7 +23,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ subtotal, shipping, formatP
       </View>
       <View style={cartStyles.summaryRow}>
         <Text style={cartStyles.summaryLabel}>{t('cart.shipping')}</Text>
-        <Text style={cartStyles.summaryValue}>{formatPrice(shipping)}</Text>
+        <Text style={cartStyles.summaryValue}>{shippingLoading ? t('common.loading') : formatPrice(shipping)}</Text>
       </View>
       <View style={cartStyles.separator} />
       <View style={cartStyles.totalRow}>

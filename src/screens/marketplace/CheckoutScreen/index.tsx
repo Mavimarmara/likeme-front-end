@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '@/components/ui/layout';
 import { Background } from '@/components/ui/layout';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { Stepper } from '@/components/ui/tabs';
 import { storageService, orderService, userService } from '@/services';
+import { getShippingQuote } from '@/services/shipping/shippingService';
 import { formatPrice, formatAddress, formatBillingAddress } from '@/utils';
 import { useTranslation, usePayment } from '@/hooks';
 import { logger } from '@/utils/logger';
@@ -50,7 +51,8 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
   const [addressSaveError, setAddressSaveError] = useState<string | null>(null);
   const payment = usePayment();
   const [subtotal, setSubtotal] = useState(0);
-  const [shipping] = useState(0);
+  const [shipping, setShipping] = useState(0);
+  const [shippingLoading, setShippingLoading] = useState(false);
   const [orderId, setOrderId] = useState('');
 
   useEffect(() => {
@@ -76,6 +78,33 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     calculateTotals();
   }, [cartItems, shipping]);
+
+  const effectiveDeliveryAddress = deliverySameAsBilling ? billingAddressData : addressData;
+  const deliveryZipCode = (effectiveDeliveryAddress.zipCode || '').replace(/\D/g, '');
+  const fallbackZipCode = (addressData.zipCode || '').replace(/\D/g, '');
+  const zipCodeForShipping = deliveryZipCode.length === 8 ? deliveryZipCode : fallbackZipCode;
+
+  useEffect(() => {
+    if (zipCodeForShipping.length !== 8) {
+      setShipping(0);
+      return;
+    }
+    let cancelled = false;
+    setShippingLoading(true);
+    getShippingQuote(zipCodeForShipping)
+      .then((res) => {
+        if (!cancelled) setShipping(res.minValue);
+      })
+      .catch(() => {
+        if (!cancelled) setShipping(0);
+      })
+      .then(() => {
+        if (!cancelled) setShippingLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [zipCodeForShipping]);
 
   useEffect(() => {
     if (currentStep !== 'payment') payment.setPaymentError(null);
@@ -139,7 +168,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
       payment.setIsProcessing(true);
 
       if (cartItems.length === 0) {
-        payment.setPaymentError(t('checkout.emptyCartError'));
+        Alert.alert(t('errors.error'), t('checkout.orderError'));
         payment.setIsProcessing(false);
         return;
       }
@@ -175,7 +204,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
 
       const shippingAddressData = deliverySameAsBilling ? billingAddressData : addressData;
       if (!isAddressFilled(billingAddressData)) {
-        payment.setPaymentError(t('checkout.billingAddressRequired'));
+        Alert.alert(t('errors.error'), t('checkout.orderError'));
         payment.setIsProcessing(false);
         return;
       }
@@ -195,7 +224,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
 
       if (PAYMENT_METHOD === 'credit_card') {
         if (!cardDataObj) {
-          payment.setPaymentError(t('checkout.invalidCardDataError'));
+          Alert.alert(t('errors.error'), t('checkout.orderError'));
           payment.setIsProcessing(false);
           return;
         }
@@ -215,8 +244,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
       setCurrentStep('order');
     } catch (error: any) {
       console.error('Error completing order:', error);
-      const errorMessage = error?.message || error?.error || t('checkout.orderError');
-      payment.setPaymentError(errorMessage);
+      Alert.alert(t('errors.error'), t('checkout.orderError'));
     } finally {
       payment.setIsProcessing(false);
     }
@@ -266,7 +294,9 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
     [t],
   );
 
-  const orderSummary = <OrderSummary subtotal={subtotal} shipping={shipping} formatPrice={formatPrice} />;
+  const orderSummary = (
+    <OrderSummary subtotal={subtotal} shipping={shipping} formatPrice={formatPrice} shippingLoading={shippingLoading} />
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -324,8 +354,6 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
               onSaveBillingAddress={handleSaveBillingAddress}
               onDeliverySameAsBillingChange={handleDeliverySameAsBillingChange}
             />
-            {payment.paymentError ? <Text style={styles.fieldError}>{payment.paymentError}</Text> : null}
-
             {orderSummary}
           </>
         )}

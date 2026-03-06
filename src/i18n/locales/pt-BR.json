@@ -345,11 +345,13 @@
     "calculateShipping": "Calcular frete",
     "zipCodePlaceholder": "00000-000",
     "dontKnowZipCode": "Não sei meu CEP",
+    "dontKnowZipCodeOpenError": "Não foi possível abrir o site dos Correios. Tente acessar buscacepinter.correios.com.br no navegador.",
     "subtotal": "Subtotal",
     "shipping": "Envio",
     "total": "Total",
     "date": "Data",
-    "shippingUnavailable": "Serviço de frete temporariamente indisponível. Tente novamente em alguns minutos."
+    "shippingUnavailable": "Serviço de frete temporariamente indisponível. Tente novamente em alguns minutos.",
+    "invalidZipCode": "CEP inválido. Informe um CEP com 8 dígitos."
   },
   "checkout": {
     "address": "Endereço",

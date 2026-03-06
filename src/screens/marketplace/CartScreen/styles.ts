@@ -301,7 +301,7 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
   },
   dontKnowZipButton: {
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'center',
     paddingVertical: 4,
   },
