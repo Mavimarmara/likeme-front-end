@@ -174,6 +174,7 @@ const OrderScreen: React.FC<OrderScreenProps> = ({
           <Text style={styles.deliveryAddressText}>{addressData.fullName}</Text>
           <Text style={styles.deliveryAddressText}>
             {addressData.addressLine1}
+            {addressData.streetNumber ? `, ${addressData.streetNumber}` : ''}
             {addressData.addressLine2 ? ` - ${addressData.addressLine2}` : ''}
           </Text>
           <Text style={styles.deliveryAddressText}>

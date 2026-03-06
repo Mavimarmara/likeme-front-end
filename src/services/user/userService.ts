@@ -42,6 +42,7 @@ export type GetProfileResponse = ApiResponse<UserProfile>;
 export interface ShippingAddressFromProfile {
   fullName: string;
   addressLine1: string;
+  streetNumber: string;
   addressLine2: string;
   neighborhood: string;
   city: string;
@@ -90,6 +91,7 @@ class UserService {
       return {
         fullName: String(parsed.fullName ?? ''),
         addressLine1: String(parsed.addressLine1 ?? ''),
+        streetNumber: String(parsed.streetNumber ?? ''),
         addressLine2: String(parsed.addressLine2 ?? ''),
         neighborhood: String(parsed.neighborhood ?? ''),
         city: String(parsed.city ?? ''),
@@ -110,6 +112,7 @@ class UserService {
       ...address,
       fullName: (address.fullName || '').trim(),
       addressLine1: (address.addressLine1 || '').trim(),
+      streetNumber: (address.streetNumber || '').trim(),
       addressLine2: (address.addressLine2 || '').trim(),
       neighborhood: (address.neighborhood || '').trim(),
       city: (address.city || '').trim(),

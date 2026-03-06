@@ -3,6 +3,7 @@ import type { BillingAddress } from '@/types/order';
 export interface AddressData {
   fullName: string;
   addressLine1: string;
+  streetNumber?: string;
   addressLine2: string;
   neighborhood: string;
   city: string;
@@ -43,8 +44,9 @@ export const extractStreet = (addressLine: string): string => {
  * Formata um endereço como string
  */
 export const formatAddress = (address: AddressData): string => {
+  const line1 = [address.addressLine1, address.streetNumber].filter(Boolean).join(', ');
   const parts = [
-    address.addressLine1,
+    line1,
     address.addressLine2,
     address.neighborhood,
     address.city,
@@ -59,7 +61,8 @@ export const formatAddress = (address: AddressData): string => {
  */
 export const formatBillingAddress = (address: AddressData): BillingAddress => {
   const street = extractStreet(address.addressLine1);
-  const streetNumber = extractStreetNumber(address.addressLine1);
+  const streetNumber =
+    (address.streetNumber && address.streetNumber.trim()) || extractStreetNumber(address.addressLine1);
   const complement = extractComplement(address.addressLine1) || address.addressLine2 || '';
 
   return {

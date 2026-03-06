@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
 import AddressView from './AddressView';
 import AddressEdit from './AddressEdit';
 
 export interface AddressData {
   fullName: string;
   addressLine1: string;
+  streetNumber: string;
   addressLine2: string;
   neighborhood: string;
   city: string;
@@ -21,6 +22,8 @@ interface AddressFormProps {
   onSaveAddress?: (address: AddressData) => void | Promise<void>;
   /** Quando true, abre direto no modo edição (ex.: endereço vindo vazio da API) */
   startWithEditOpen?: boolean;
+  /** Mensagem de erro ao falhar carregar endereço (ex.: exibida acima do formulário) */
+  addressLoadError?: string | null;
 }
 
 const AddressForm: React.FC<AddressFormProps> = ({
@@ -29,11 +32,13 @@ const AddressForm: React.FC<AddressFormProps> = ({
   addressData,
   onSaveAddress,
   startWithEditOpen = false,
+  addressLoadError = null,
 }) => {
   const defaultAddress: AddressData = {
     fullName: 'Ana Paula do Amaral',
-    addressLine1: 'Rua Marselha, 1029 - Apto 94',
-    addressLine2: '',
+    addressLine1: 'Rua Marselha',
+    streetNumber: '1029',
+    addressLine2: 'Apto 94',
     neighborhood: 'Jaguaré',
     city: 'São Paulo',
     state: 'SP',
@@ -73,6 +78,11 @@ const AddressForm: React.FC<AddressFormProps> = ({
 
   return (
     <View>
+      {addressLoadError ? (
+        <View style={{ paddingVertical: 8 }}>
+          <Text style={{ color: '#b00', fontSize: 14 }}>{addressLoadError}</Text>
+        </View>
+      ) : null}
       {!isEditing ? (
         <AddressView address={currentAddress} onEditPress={handleEditPress} />
       ) : (

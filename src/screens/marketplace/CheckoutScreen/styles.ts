@@ -113,6 +113,11 @@ export const styles = StyleSheet.create({
   addressFieldHalf: {
     flex: 1,
   },
+  /** Campo número ao lado do endereço (menor largura) */
+  addressFieldNumber: {
+    flex: 0.28,
+    minWidth: 72,
+  },
   paymentMethodSection: {
     marginBottom: SPACING.LG,
   },

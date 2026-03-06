@@ -51,7 +51,7 @@ const AddressEdit: React.FC<AddressEditProps> = ({
     editData.city.trim() !== '' &&
     editData.state.trim() !== '' &&
     editData.zipCode.replace(/\D/g, '').length >= 8 &&
-    editData.phone.trim() !== '';
+    editData.phone.replace(/\D/g, '').length >= 10;
 
   return (
     <View style={styles.addressCard}>
@@ -65,12 +65,25 @@ const AddressEdit: React.FC<AddressEditProps> = ({
           value={editData.fullName}
           onChangeText={(text) => setEditData({ ...editData, fullName: text })}
         />
-        <TextInput
-          label={t('checkout.addressLine1')}
-          placeholder={t('checkout.addressLine1Placeholder')}
-          value={editData.addressLine1}
-          onChangeText={(text) => setEditData({ ...editData, addressLine1: text })}
-        />
+        <View style={styles.addressRow}>
+          <View style={styles.addressFieldHalf}>
+            <TextInput
+              label={t('checkout.addressLine1')}
+              placeholder={t('checkout.addressLine1Placeholder')}
+              value={editData.addressLine1}
+              onChangeText={(text) => setEditData({ ...editData, addressLine1: text })}
+            />
+          </View>
+          <View style={styles.addressFieldNumber}>
+            <TextInput
+              label={t('checkout.streetNumber')}
+              placeholder={t('checkout.streetNumberPlaceholder')}
+              value={editData.streetNumber}
+              onChangeText={(text) => setEditData({ ...editData, streetNumber: text })}
+              keyboardType='numeric'
+            />
+          </View>
+        </View>
         <TextInput
           label={t('checkout.addressLine2')}
           placeholder={t('checkout.addressLine2Placeholder')}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, SafeAreaView, Alert } from 'react-native';
+import { View, Text, ScrollView, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '@/components/ui/layout';
 import { Background } from '@/components/ui/layout';
 import { SecondaryButton } from '@/components/ui/buttons';
@@ -41,6 +42,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
   const [addressData, setAddressData] = useState<AddressData>({
     fullName: '',
     addressLine1: '',
+    streetNumber: '',
     addressLine2: '',
     neighborhood: '',
     city: '',
@@ -49,6 +51,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
     phone: '',
   });
   const [addressLoaded, setAddressLoaded] = useState(false);
+  const [addressLoadError, setAddressLoadError] = useState<string | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('credit_card');
   const [cardholderName, setCardholderName] = useState('');
   const [cardNumber, setCardNumber] = useState('');
@@ -81,12 +84,14 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
 
   const loadUserAddress = async () => {
     try {
+      setAddressLoadError(null);
       const address = await userService.getShippingAddress();
       if (address) {
         setAddressData(address);
       }
     } catch (error) {
       console.error('Error loading user address:', error);
+      setAddressLoadError(t('checkout.addressLoadError'));
     } finally {
       setAddressLoaded(true);
     }
@@ -129,7 +134,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
     addressData.city.trim() !== '' &&
     addressData.state.trim() !== '' &&
     addressData.zipCode.replace(/\D/g, '').length >= 8 &&
-    addressData.phone.trim() !== '';
+    addressData.phone.replace(/\D/g, '').length >= 10;
 
   const handleContinue = async () => {
     if (currentStep === 'address' && !isAddressValid) {
@@ -296,13 +301,11 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleViewProgram = (itemId: string) => {
-    // Navigate to program details
-    console.log('View program:', itemId);
+    navigation.navigate('ProductDetails', { productId: itemId });
   };
 
   const handleAddToCalendar = (itemId: string) => {
-    // Add to calendar logic
-    console.log('Add to calendar:', itemId);
+    navigation.navigate('ProductDetails', { productId: itemId });
   };
 
   const handleSaveAddress = async (address: AddressData) => {
@@ -377,6 +380,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
               addressData={addressData}
               onSaveAddress={handleSaveAddress}
               startWithEditOpen={addressLoaded && !addressData.addressLine1?.trim()}
+              addressLoadError={addressLoadError}
             />
 
             {/* Your Deliveries Section */}
@@ -436,6 +440,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
       {currentStep !== 'order' && (
         <View style={styles.buttonContainer}>
           <SecondaryButton
+            testID='button-continue'
             label={t('common.continue')}
             onPress={handleContinue}
             style={styles.completeButton}

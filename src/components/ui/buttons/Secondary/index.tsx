@@ -27,6 +27,7 @@ type Props = {
   iconColor?: string;
   iconPosition?: 'left' | 'right';
   variant?: 'default' | 'dark';
+  testID?: string;
 };
 
 const SecondaryButton: React.FC<Props> = ({
@@ -42,6 +43,7 @@ const SecondaryButton: React.FC<Props> = ({
   iconColor,
   iconPosition = 'right',
   variant = 'default',
+  testID,
 }) => {
   const isDisabled = loading || disabled;
 
@@ -73,6 +75,7 @@ const SecondaryButton: React.FC<Props> = ({
 
   return (
     <TouchableOpacity
+      testID={testID}
       style={[
         styles.button,
         variant === 'dark' && styles.buttonDark,

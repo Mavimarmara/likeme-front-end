@@ -15,7 +15,7 @@ const AddressView: React.FC<AddressViewProps> = ({ address, onEditPress }) => {
   const formatAddressText = (address: AddressData) => {
     const addressParts = [
       address.fullName,
-      address.addressLine1,
+      [address.addressLine1, address.streetNumber].filter(Boolean).join(', '),
       address.addressLine2,
       '',
       `${address.neighborhood} - ${address.city} - ${address.state}`,
