@@ -65,7 +65,6 @@ jest.mock('@/components/sections/community', () => {
       </View>
     ),
     NextEventsSection: ({ events }: any) => <View testID='next-events' />,
-    ProviderChat: {},
   };
 });
 

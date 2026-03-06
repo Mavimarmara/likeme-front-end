@@ -85,7 +85,7 @@ export type CommunityStackParamList = {
 };
 
 export type ChatStackParamList = {
-  ChatList: { chat?: import('@/components/sections/community').ProviderChat };
+  ChatList: { chat?: import('@/types').ProviderChat };
   Chat: {
     channelId: string;
     channelName: string;

@@ -7,7 +7,6 @@ export { default as OtherCommunitiesSection, type OtherCommunity } from './Other
 export { default as PostCard } from './PostCard';
 export { default as EventCard } from './EventCard';
 export { default as PollCard } from './PollCard';
-export { default as ProviderChatCard, type ProviderChat } from './ProviderChatCard';
 export { default as CommentReactions } from './CommentReactions';
 export { default as SocialList } from './SocialList';
 export { default as PostsSection } from './PostsSection';

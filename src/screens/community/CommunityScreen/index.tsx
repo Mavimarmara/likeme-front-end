@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { Toggle, Header } from '@/components/ui';
-import { SocialList, ProgramsList, LiveBannerData, ProviderChat } from '@/components/sections/community';
+import { SocialList, ProgramsList, LiveBannerData } from '@/components/sections/community';
 import { Product, Plan } from '@/components/sections/product';
 import { Background } from '@/components/ui/layout';
 import { FloatingMenu } from '@/components/ui/menu';
@@ -221,7 +221,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     console.log('Curtir plano:', plan.id);
   };
 
-  const [providerChat, setProviderChat] = useState<ProviderChat | undefined>(undefined);
   const [liveBanner, setLiveBanner] = useState<LiveBannerData | undefined>(undefined);
   const [events, setEvents] = useState<Event[]>([]);
 
@@ -276,28 +275,12 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
         if (communityChannelsResponse.success && communityChannelsResponse.data?.channels) {
           const communityChannels = communityChannelsResponse.data.channels;
           if (communityChannels.length > 0) {
-            const firstCommunityChannel = communityChannels[0];
-            const metadata = firstCommunityChannel.metadata || {};
-            const avatarUrl = (metadata.avatarUrl as string) || undefined;
-
-            setProviderChat({
-              id: firstCommunityChannel.channelId,
-              providerName: firstCommunityChannel.displayName || (metadata.displayName as string) || 'Provider',
-              providerAvatar: avatarUrl,
-              lastMessage: (metadata.lastMessage as string) || 'Hello! How can I help you today?',
-              timestamp: (metadata.timestamp as string) || 'Now',
-              unreadCount: (metadata.unreadCount as number) || 0,
-            });
-          } else {
-            setProviderChat(undefined);
+            // Canal de comunidade disponível; redirecionamento para chat pode ser feito por outro fluxo
           }
-        } else {
-          setProviderChat(undefined);
         }
       } catch (error) {
         console.error('Error loading channels:', error);
         setLiveBanner(undefined);
-        setProviderChat(undefined);
       }
     };
 
@@ -338,10 +321,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleEventSave = (event: Event) => {
     console.log('Salvar evento:', event.id);
-  };
-
-  const handleProviderChatPress = (chat: ProviderChat) => {
-    navigation.navigate('Chat' as never, { screen: 'ChatList', params: { chat } } as never);
   };
 
   const handleSearchChange = (text: string) => {
@@ -395,8 +374,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
             events={events}
             onEventPress={handleEventPress}
             onEventSave={handleEventSave}
-            providerChat={providerChat}
-            onProviderChatPress={handleProviderChatPress}
             products={suggestedProducts}
             onProductPress={handleProductPress}
             onProductLike={handleProductLike}

@@ -181,6 +181,15 @@ export interface ListCommunitiesApiResponse {
   };
 }
 
+export interface ProviderChat {
+  id: string;
+  providerName: string;
+  providerAvatar?: string;
+  lastMessage: string;
+  timestamp: string;
+  unreadCount?: number;
+}
+
 export interface ProviderData {
   userId: string;
   displayName: string;

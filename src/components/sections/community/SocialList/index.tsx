@@ -1,13 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { View, ScrollView } from 'react-native';
-import {
-  LiveBanner,
-  LiveBannerData,
-  PostsSection,
-  ProviderChat,
-  NextEventsSection,
-  ProviderChatCard,
-} from '@/components/sections/community';
+import { LiveBanner, LiveBannerData, PostsSection, NextEventsSection } from '@/components/sections/community';
 import { ProductsCarousel, PlansCarousel, Product, Plan } from '@/components/sections/product';
 import { FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
 import { FilterCategoryModal, type FilterCategoryResult, type SolutionId } from '@/components/ui/modals';
@@ -34,8 +27,6 @@ type Props = {
   events?: Event[];
   onEventPress?: (event: Event) => void;
   onEventSave?: (event: Event) => void;
-  providerChat?: ProviderChat;
-  onProviderChatPress?: (chat: ProviderChat) => void;
   products?: Product[];
   productsRecommendedProviderName?: string;
   onProductPress?: (product: Product) => void;
@@ -70,8 +61,6 @@ const SocialList: React.FC<Props> = ({
   events,
   onEventPress,
   onEventSave,
-  providerChat,
-  onProviderChatPress,
   products,
   productsRecommendedProviderName,
   onProductPress,
@@ -231,12 +220,6 @@ const SocialList: React.FC<Props> = ({
               onPlanPress={onPlanPress}
               onPlanLike={onPlanLike}
             />
-          </View>
-        )}
-
-        {providerChat && (
-          <View style={styles.sectionContainer}>
-            <ProviderChatCard chat={providerChat} onPress={onProviderChatPress} />
           </View>
         )}
       </ScrollView>
