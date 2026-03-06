@@ -15,7 +15,6 @@ import { getCategoryDisplayLabel } from '@/components/ui/modals/FilterCategoryMo
 import { useTranslation } from '@/hooks/i18n';
 import type { Post, Event } from '@/types';
 import type { Program } from '@/types/program';
-import type { FilterType } from '@/components/ui/modals/FilterModal';
 import type { CommunityCategory } from '@/types/community';
 import { styles } from './styles';
 
@@ -31,8 +30,6 @@ type Props = {
   onSearchPress?: () => void;
   onLoadMore: () => void;
   onFilterPress?: () => void;
-  onFilterSave?: (filters: FilterType) => void;
-  selectedFilters?: FilterType;
   footerComponent?: React.ReactNode;
   events?: Event[];
   onEventPress?: (event: Event) => void;
@@ -69,8 +66,6 @@ const SocialList: React.FC<Props> = ({
   onSearchPress,
   onLoadMore,
   onFilterPress,
-  onFilterSave,
-  selectedFilters,
   footerComponent,
   events,
   onEventPress,
@@ -198,9 +193,7 @@ const SocialList: React.FC<Props> = ({
           onSearchChange={onSearchChange}
           onSearchPress={onSearchPress}
           onLoadMore={onLoadMore}
-          onFilterPress={onFilterPress}
-          onFilterSave={onFilterSave}
-          selectedFilters={selectedFilters}
+          onFilterPress={handleCategoryPress}
         />
 
         {loadingMore && (

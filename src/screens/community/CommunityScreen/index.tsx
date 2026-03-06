@@ -15,7 +15,7 @@ import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
 import { useUserFeed, useCommunities, useCategories, useSuggestedProducts, useMenuItems } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
-import { mapFiltersToFeedParams, mapCommunityToProgram, mapChannelsToEvents } from '@/utils';
+import { mapCommunityToProgram, mapChannelsToEvents } from '@/utils';
 import { chatService } from '@/services';
 import { useAnalyticsScreen } from '@/analytics';
 
@@ -139,8 +139,6 @@ const SUGGESTED_PLANS: Plan[] = [
 type NavigationProp = StackNavigationProp<CommunityStackParamList, 'CommunityList'>;
 type Props = { navigation: NavigationProp };
 
-import type { FilterType } from '@/components/ui/modals/FilterModal';
-
 const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   useAnalyticsScreen({ screenName: 'CommunityList', screenClass: 'CommunityScreen' });
   const { t } = useTranslation();
@@ -151,7 +149,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>();
   const [selectedSolutionIds, setSelectedSolutionIds] = useState<SolutionId[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedFilters, setSelectedFilters] = useState<FilterType>({});
 
   const handleCartPress = () => {
     rootNavigation?.navigate('Cart' as never);
@@ -188,11 +185,10 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
 
   const feedFilterParams = useMemo(
     () => ({
-      ...mapFiltersToFeedParams(selectedFilters),
       ...(selectedCategoryId != null && selectedCategoryId !== '' ? { categoryId: selectedCategoryId } : {}),
       ...(selectedSolutionIds.length > 0 ? { solutionIds: selectedSolutionIds } : {}),
     }),
-    [selectedFilters, selectedCategoryId, selectedSolutionIds],
+    [selectedCategoryId, selectedSolutionIds],
   );
 
   const {
@@ -364,15 +360,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     }
   }, [selectedMode, loadMore]);
 
-  const handleFilterPress = () => {
-    console.log('Abrir filtros');
-  };
-
-  const handleFilterSave = (filters: FilterType) => {
-    setSelectedFilters(filters);
-    console.log('Filtros salvos:', filters);
-  };
-
   const handleFilterCategoryApply = (result: FilterCategoryResult) => {
     setSelectedCategoryId(result.categoryId ?? undefined);
     setSelectedSolutionIds(result.solutionIds);
@@ -405,9 +392,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
             onSearchChange={handleSearchChange}
             onSearchPress={handleSearchPress}
             onLoadMore={handleLoadMore}
-            onFilterPress={handleFilterPress}
-            onFilterSave={handleFilterSave}
-            selectedFilters={selectedFilters}
             events={events}
             onEventPress={handleEventPress}
             onEventSave={handleEventSave}

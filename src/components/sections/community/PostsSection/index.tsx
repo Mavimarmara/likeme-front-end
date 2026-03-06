@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import { SearchBar } from '@/components/ui';
-import FilterModal, { type FilterType } from '@/components/ui/modals/FilterModal';
 import { PostCard } from '@/components/sections/community';
 import type { Post } from '@/types';
 import { styles } from './styles';
@@ -16,8 +15,6 @@ type Props = {
   onSearchPress?: () => void;
   onLoadMore: () => void;
   onFilterPress?: () => void;
-  onFilterSave?: (filters: FilterType) => void;
-  selectedFilters?: FilterType;
 };
 
 const PostsSection: React.FC<Props> = ({
@@ -30,24 +27,7 @@ const PostsSection: React.FC<Props> = ({
   onSearchPress,
   onLoadMore,
   onFilterPress,
-  onFilterSave,
-  selectedFilters,
 }) => {
-  const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
-
-  const handleFilterPress = () => {
-    setIsFilterModalVisible(true);
-    onFilterPress?.();
-  };
-
-  const handleFilterClose = () => {
-    setIsFilterModalVisible(false);
-  };
-
-  const handleFilterSave = (filters: FilterType) => {
-    onFilterSave?.(filters);
-    setIsFilterModalVisible(false);
-  };
   const renderLoadingFooter = () => {
     if (!loadingMore) return null;
     return (
@@ -82,7 +62,7 @@ const PostsSection: React.FC<Props> = ({
           value={searchQuery}
           onChangeText={onSearchChange}
           onSearchPress={onSearchPress}
-          onFilterPress={handleFilterPress}
+          onFilterPress={onFilterPress}
           showFilterButton={true}
         />
       </View>
@@ -113,12 +93,6 @@ const PostsSection: React.FC<Props> = ({
             {renderLoadingFooter()}
           </>
         )}
-        <FilterModal
-          visible={isFilterModalVisible}
-          onClose={handleFilterClose}
-          onSave={handleFilterSave}
-          selectedFilters={selectedFilters}
-        />
       </View>
     </View>
   );
