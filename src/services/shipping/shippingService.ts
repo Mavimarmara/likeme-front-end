@@ -1,4 +1,3 @@
-import apiClient from '../infrastructure/apiClient';
 import { getApiUrl } from '@/config';
 
 export interface ShippingOption {
