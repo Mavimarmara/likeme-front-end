@@ -7,6 +7,10 @@ export const mapUICategoryToApiCategory = (uiCategory: string): string | undefin
     return 'physical product';
   }
 
+  if (uiCategory === 'specialists') {
+    return 'program';
+  }
+
   if (uiCategory === 'programs') {
     return 'program';
   }

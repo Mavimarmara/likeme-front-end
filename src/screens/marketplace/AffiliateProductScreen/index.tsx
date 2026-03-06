@@ -59,7 +59,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
           description: fallbackProduct.description,
           price: parseFloat(fallbackProduct.price.replace('$', '').replace(',', '')) || 0,
           image: fallbackProduct.image,
-          category: fallbackProduct.category,
+          type: fallbackProduct.type,
           quantity: 0,
           status: 'active',
           createdAt: new Date().toISOString(),
@@ -85,7 +85,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
           description: fallbackProduct.description || '',
           price: parseFloat(fallbackProduct.price.replace('$', '').replace(',', '')) || 0,
           image: fallbackProduct.image,
-          category: fallbackProduct.category,
+          type: fallbackProduct.type,
           quantity: 0,
           status: 'active',
           createdAt: new Date().toISOString(),
@@ -112,7 +112,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
                 description: adProduct.description || '',
                 price: adProduct.price ? Number(adProduct.price) : 0,
                 image: adProduct.image || '',
-                category: adProduct.category || '',
+                type: adProduct.type || '',
                 externalUrl: adProduct.externalUrl || route.params?.product?.externalUrl,
                 quantity: adProduct.quantity || 0,
                 status: adProduct.status || 'active',
@@ -143,7 +143,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
                     description: fallbackProduct.description || '',
                     price: parseFloat(fallbackProduct.price.replace('$', '').replace(',', '')) || 0,
                     image: fallbackProduct.image,
-                    category: fallbackProduct.category,
+                    type: fallbackProduct.type,
                     quantity: 0,
                     status: 'active',
                     createdAt: new Date().toISOString(),
@@ -164,7 +164,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
                     description: fallbackProduct.description || '',
                     price: parseFloat(fallbackProduct.price.replace('$', '').replace(',', '')) || 0,
                     image: fallbackProduct.image,
-                    category: fallbackProduct.category,
+                    type: fallbackProduct.type,
                     quantity: 0,
                     status: 'active',
                     createdAt: new Date().toISOString(),
@@ -184,7 +184,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
                 description: fallbackProduct.description || '',
                 price: parseFloat(fallbackProduct.price.replace('$', '').replace(',', '')) || 0,
                 image: fallbackProduct.image,
-                category: fallbackProduct.category,
+                type: fallbackProduct.type,
                 quantity: 0,
                 status: 'active',
                 createdAt: new Date().toISOString(),
@@ -201,7 +201,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
               description: fallbackProduct.description || '',
               price: parseFloat(fallbackProduct.price.replace('$', '').replace(',', '')) || 0,
               image: fallbackProduct.image,
-              category: fallbackProduct.category,
+              type: fallbackProduct.type,
               quantity: 0,
               status: 'active',
               createdAt: new Date().toISOString(),
@@ -220,7 +220,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
               description: fallbackProduct.description || '',
               price: parseFloat(fallbackProduct.price.replace('$', '').replace(',', '')) || 0,
               image: fallbackProduct.image,
-              category: fallbackProduct.category,
+              type: fallbackProduct.type,
               quantity: 0,
               status: 'active',
               createdAt: new Date().toISOString(),
@@ -269,7 +269,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
               description: fallbackProduct.description || '',
               price: parseFloat(fallbackProduct.price.replace('$', '').replace(',', '')) || 0,
               image: fallbackProduct.image,
-              category: fallbackProduct.category,
+              type: fallbackProduct.type,
               quantity: 0,
               status: 'active',
               createdAt: new Date().toISOString(),
@@ -287,7 +287,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
               description: fallbackProduct.description || '',
               price: parseFloat(fallbackProduct.price.replace('$', '').replace(',', '')) || 0,
               image: fallbackProduct.image,
-              category: fallbackProduct.category,
+              type: fallbackProduct.type,
               quantity: 0,
               status: 'active',
               createdAt: new Date().toISOString(),
@@ -300,12 +300,12 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
 
       // Carregar outras opções relacionadas
       // Prioridade: ad.product > product carregado > params.product
-      const category = ad?.product?.category || product?.category || route.params?.product?.category;
+      const category = ad?.product?.type || product?.type || route.params?.product?.type;
       if (category) {
         try {
           const relatedResponse = await productService.listProducts({
             limit: 3,
-            category: category,
+            type: category,
           });
           if (relatedResponse.success && relatedResponse.data) {
             const currentProductId = ad?.product?.id || product?.id || productId || adId;
@@ -359,7 +359,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
     return images;
   }, [displayImage]);
 
-  const productCategory = ad?.product?.category || product?.category || paramsProduct?.category || 'Product';
+  const productCategory = ad?.product?.type || product?.type || paramsProduct?.type || 'Product';
 
   const tabs = useMemo(
     () => [

@@ -24,7 +24,7 @@ describe('productMapper', () => {
     description: 'Test description',
     price: 29.99,
     image: 'https://example.com/image.jpg',
-    category: 'physical product',
+    type: 'physical product',
     quantity: 10,
     status: 'active',
     createdAt: '2023-01-01',
@@ -45,9 +45,9 @@ describe('productMapper', () => {
       });
     });
 
-    it('deve usar "Product" como tag padrão quando category é undefined', () => {
-      const productWithoutCategory = { ...mockApiProduct, category: undefined };
-      const result = mapApiProductToCarouselProduct(productWithoutCategory);
+    it('deve usar "Product" como tag padrão quando type é undefined', () => {
+      const productWithoutType = { ...mockApiProduct, type: undefined };
+      const result = mapApiProductToCarouselProduct(productWithoutType);
 
       expect(result.tag).toBe('Product');
     });
@@ -77,7 +77,7 @@ describe('productMapper', () => {
         title: 'Test Product',
         price: '$29.99',
         image: 'https://example.com/image.jpg',
-        category: 'physical product',
+        type: 'physical product',
         description: 'Test description',
       });
     });

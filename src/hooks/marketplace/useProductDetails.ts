@@ -56,7 +56,7 @@ export const useProductDetails = ({
 
       const productData = response.data;
 
-      if (productData.category === 'amazon product') {
+      if (productData.type === 'amazon product') {
         await handleAmazonProductRedirect(productData, productId, navigation);
         return;
       }
@@ -87,7 +87,7 @@ export const useProductDetails = ({
         title: productData.name,
         price: formatPrice(productData.price),
         image: productData.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
-        category: productData.category,
+        type: productData.type,
         description: productData.description,
       },
     });
@@ -99,7 +99,7 @@ export const useProductDetails = ({
     try {
       const response = await productService.listProducts({
         limit: 5,
-        category: fallbackProduct?.category,
+        type: fallbackProduct?.type,
       });
 
       if (response.success && response.data) {
@@ -108,7 +108,7 @@ export const useProductDetails = ({
     } catch (error) {
       console.error('Error loading related products:', error);
     }
-  }, [productId, fallbackProduct?.category]);
+  }, [productId, fallbackProduct?.type]);
 
   const loadAd = useCallback(async () => {
     if (!productId) return;
@@ -168,7 +168,7 @@ export const useProductDetails = ({
         description: fallbackProduct.description,
         price: parseFloat(fallbackProduct.price.replace('$', '').replace(',', '')),
         image: fallbackProduct.image,
-        category: fallbackProduct.category,
+        type: fallbackProduct.type,
         quantity: 0,
         status: 'active',
         createdAt: new Date().toISOString(),

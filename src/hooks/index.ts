@@ -6,6 +6,7 @@ export { useOnboardingRedirect } from './auth/useOnboardingRedirect';
 // Community hooks
 export { useUserFeed } from './community/useUserFeed';
 export { useCommunities } from './community/useCommunities';
+export { useCategories } from './community/useCategories';
 
 // Activities hooks
 export { useActivities } from './activities/useActivities';

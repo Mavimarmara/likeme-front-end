@@ -144,6 +144,8 @@ export interface UserFeedParams {
   endDate?: string;
   orderBy?: 'createdAt' | 'updatedAt' | 'reactionsCount';
   order?: 'asc' | 'desc';
+  categoryId?: string | null;
+  solutionIds?: string[];
 }
 
 export interface ListCommunitiesParams {

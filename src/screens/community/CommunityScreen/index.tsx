@@ -13,7 +13,7 @@ import type { CommunityCategory } from '@/types/community';
 import type { SolutionId, FilterCategoryResult } from '@/components/ui/modals';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
-import { useUserFeed, useCommunities, useSuggestedProducts, useMenuItems } from '@/hooks';
+import { useUserFeed, useCommunities, useCategories, useSuggestedProducts, useMenuItems } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import { mapFiltersToFeedParams, mapCommunityToProgram, mapChannelsToEvents } from '@/utils';
 import { chatService } from '@/services';
@@ -159,7 +159,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
 
   const {
     communities: rawCommunities,
-    categories,
     loading: _communitiesLoading,
     loadingMore: _communitiesLoadingMore,
     error: _communitiesError,
@@ -175,6 +174,8 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     },
   });
 
+  const { categories } = useCategories({ enabled: true });
+
   const programs = useMemo(() => {
     return rawCommunities.map((community) => mapCommunityToProgram(community));
   }, [rawCommunities]);
@@ -185,7 +186,14 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     }
   }, [selectedMode, programs, selectedProgramId]);
 
-  const feedFilterParams = useMemo(() => mapFiltersToFeedParams(selectedFilters), [selectedFilters]);
+  const feedFilterParams = useMemo(
+    () => ({
+      ...mapFiltersToFeedParams(selectedFilters),
+      ...(selectedCategoryId != null && selectedCategoryId !== '' ? { categoryId: selectedCategoryId } : {}),
+      ...(selectedSolutionIds.length > 0 ? { solutionIds: selectedSolutionIds } : {}),
+    }),
+    [selectedFilters, selectedCategoryId, selectedSolutionIds],
+  );
 
   const {
     posts,
@@ -225,6 +233,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     limit: 4,
     status: 'active',
     enabled: true,
+    categoryId: selectedCategoryId,
   });
 
   useEffect(() => {

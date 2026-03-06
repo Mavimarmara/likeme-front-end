@@ -6,6 +6,7 @@ interface UseSuggestedProductsOptions {
   limit?: number;
   status?: 'active' | 'inactive';
   enabled?: boolean;
+  categoryId?: string | null; // domain category filter (Estresse, Sono, etc.)
 }
 
 interface UseSuggestedProductsReturn {
@@ -16,7 +17,7 @@ interface UseSuggestedProductsReturn {
 }
 
 export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}): UseSuggestedProductsReturn => {
-  const { limit = 4, status = 'active', enabled = true } = options;
+  const { limit = 4, status = 'active', enabled = true, categoryId } = options;
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -33,6 +34,7 @@ export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}):
       const response = await productService.listProducts({
         limit,
         status,
+        ...(categoryId != null && categoryId !== '' ? { categoryId } : {}),
       });
 
       if (response.success && response.data) {
@@ -40,7 +42,7 @@ export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}):
           id: p.id,
           title: p.name,
           price: p.price || 0,
-          tag: p.category || 'Product',
+          tag: p.type || 'Product',
           image: p.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
           likes: 0,
         }));
@@ -55,7 +57,7 @@ export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}):
     } finally {
       setLoading(false);
     }
-  }, [enabled, limit, status]);
+  }, [enabled, limit, status, categoryId]);
 
   useEffect(() => {
     loadProducts();

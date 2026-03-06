@@ -26,7 +26,7 @@ export interface Ad {
   createdAt: string;
   updatedAt: string;
   advertiser?: Advertiser;
-  product?: Product; // Product contains: name, description, image, externalUrl, category
+  product?: Product; // Product contains: name, description, image, externalUrl, type
 }
 
 export interface ListAdsParams {
@@ -35,7 +35,8 @@ export interface ListAdsParams {
   advertiserId?: string;
   productId?: string;
   status?: string;
-  category?: 'amazon product' | 'physical product' | 'program';
+  type?: 'amazon product' | 'physical product' | 'program';
+  categoryId?: string; // domain category (Estresse, Sono, etc.)
   activeOnly?: boolean;
 }
 
@@ -60,7 +61,7 @@ export interface CreateAdData {
     image?: string;
     price?: number;
     quantity?: number;
-    category?: 'amazon product' | 'physical product' | 'program';
+    type?: 'amazon product' | 'physical product' | 'program';
     externalUrl?: string;
     status?: 'active' | 'inactive' | 'out_of_stock';
   };

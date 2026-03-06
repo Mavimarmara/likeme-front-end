@@ -25,8 +25,8 @@ export const mapProductToCartItem = (product: ApiProduct): CartItem => {
     price,
     quantity: 1,
     rating: 5,
-    tags: product.category ? [product.category] : [],
+    tags: product.type ? [product.type] : [],
     category: 'Product',
-    subCategory: product.category || 'Product',
+    subCategory: product.type || 'Product',
   };
 };

@@ -64,6 +64,14 @@ class CommunityService {
         queryParams.order = params.order;
       }
 
+      if (params.categoryId != null && params.categoryId !== '') {
+        queryParams.categoryId = params.categoryId;
+      }
+
+      if (params.solutionIds != null && params.solutionIds.length > 0) {
+        queryParams.solutionIds = params.solutionIds.join(',');
+      }
+
       const userFeedResponse = await apiClient.get<UserFeedApiResponse>(this.userFeeEndpoint, queryParams, true, false);
       console.log('userFeedResponse', JSON.stringify(userFeedResponse));
       return userFeedResponse;

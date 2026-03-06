@@ -7,7 +7,7 @@ interface Navigation {
 }
 
 export const navigateToAmazonProduct = (ad: Ad, navigation: Navigation): boolean => {
-  const isAmazonProduct = ad.product?.category === 'amazon product';
+  const isAmazonProduct = ad.product?.type === 'amazon product';
   if (!isAmazonProduct) {
     return false;
   }
@@ -27,7 +27,7 @@ export const navigateToAmazonProduct = (ad: Ad, navigation: Navigation): boolean
         title: ad.product.name,
         price: formatPrice(ad.product.price),
         image: ad.product.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
-        category: ad.product.category,
+        type: ad.product.type,
         description: ad.product.description,
       }
     : undefined;
@@ -59,7 +59,7 @@ export const navigateToExternalProduct = (ad: Ad, navigation: Navigation): boole
       title: ad.product.name,
       price: formatPrice(ad.product.price),
       image: ad.product.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
-      category: ad.product.category,
+      type: ad.product.type,
       description: ad.product.description,
       externalUrl: ad.product.externalUrl,
     },
@@ -80,7 +80,7 @@ export const navigateToProductDetails = (ad: Ad, navigation: Navigation): boolea
       title: ad.product.name,
       price: formatPrice(ad.product.price),
       image: ad.product.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
-      category: ad.product.category,
+      type: ad.product.type,
       description: ad.product.description,
     },
   });

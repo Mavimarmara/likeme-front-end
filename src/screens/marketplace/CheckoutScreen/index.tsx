@@ -125,6 +125,15 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
     }
   };
 
+  const handleRemoveItem = async (id: string) => {
+    await storageService.removeCartItem(id);
+    const items = await storageService.getCartItems();
+    setCartItems(items);
+    if (items.length === 0) {
+      navigation.navigate('Cart');
+    }
+  };
+
   const calculateTotals = () => {
     const sub = cartItems.reduce((sum, item) => {
       const price = Number(item.price) || 0;
@@ -336,6 +345,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
               formatPrice={formatPrice}
               formatRating={formatRating}
               containerStyle={styles.cartItemListNoPadding}
+              onRemoveItem={handleRemoveItem}
             />
 
             {orderSummary}

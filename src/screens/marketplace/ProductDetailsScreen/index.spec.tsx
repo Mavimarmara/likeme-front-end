@@ -136,7 +136,7 @@ const mockProduct = {
   description: 'Test description',
   price: 29.99,
   image: 'https://example.com/image.jpg',
-  category: 'physical product',
+  type: 'physical product',
   quantity: 10,
   status: 'active' as const,
   createdAt: '2023-01-01',

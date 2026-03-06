@@ -5,6 +5,7 @@ import type { Ad } from '@/types/ad';
 
 interface UseMarketplaceAdsParams {
   selectedCategory: string;
+  selectedCategoryId?: string | null; // domain category (Estresse, Sono, etc.)
   page: number;
 }
 
@@ -15,7 +16,11 @@ interface UseMarketplaceAdsReturn {
   loadAds: () => Promise<void>;
 }
 
-export const useMarketplaceAds = ({ selectedCategory, page }: UseMarketplaceAdsParams): UseMarketplaceAdsReturn => {
+export const useMarketplaceAds = ({
+  selectedCategory,
+  selectedCategoryId,
+  page,
+}: UseMarketplaceAdsParams): UseMarketplaceAdsReturn => {
   const [ads, setAds] = useState<Ad[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
@@ -28,11 +33,15 @@ export const useMarketplaceAds = ({ selectedCategory, page }: UseMarketplaceAdsP
 
     const apiCategory = mapUICategoryToApiCategory(selectedCategory);
     if (apiCategory) {
-      params.category = apiCategory;
+      params.type = apiCategory;
+    }
+
+    if (selectedCategoryId != null && selectedCategoryId !== '') {
+      params.categoryId = selectedCategoryId;
     }
 
     return params;
-  }, [selectedCategory, page]);
+  }, [selectedCategory, selectedCategoryId, page]);
 
   const loadAds = useCallback(async () => {
     try {

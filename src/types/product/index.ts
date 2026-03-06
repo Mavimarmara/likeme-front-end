@@ -25,7 +25,7 @@ export interface Ad {
   createdAt: string;
   updatedAt: string;
   advertiser?: Advertiser;
-  product?: Product; // Product contains: name, description, image, externalUrl, category
+  product?: Product; // Product contains: name, description, image, externalUrl, type, categoryId
 }
 
 export interface Product {
@@ -40,7 +40,8 @@ export interface Product {
   cost?: number;
   quantity?: number; // Optional when externalUrl is provided
   image?: string;
-  category?: 'amazon product' | 'physical product' | 'program' | string;
+  type?: 'amazon product' | 'physical product' | 'program' | string; // product type
+  categoryId?: string; // FK to Category (Estresse, Sono, etc.)
   brand?: string;
   status: 'active' | 'inactive' | 'out_of_stock';
   weight?: number;
@@ -54,7 +55,8 @@ export interface Product {
 export interface ListProductsParams {
   page?: number;
   limit?: number;
-  category?: string;
+  type?: string; // product type: amazon product, physical product, program
+  categoryId?: string; // domain category (Estresse, Sono, etc.)
   status?: string;
   search?: string;
 }
@@ -82,7 +84,8 @@ export interface CreateProductData {
   cost?: number;
   quantity?: number; // Optional when externalUrl is provided
   image?: string;
-  category?: 'amazon product' | 'physical product' | 'program' | string;
+  type?: 'amazon product' | 'physical product' | 'program' | string;
+  categoryId?: string;
   brand?: string;
   status?: 'active' | 'inactive' | 'out_of_stock';
   weight?: number;

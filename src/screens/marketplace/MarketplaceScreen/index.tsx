@@ -11,7 +11,7 @@ import { getCategoryDisplayLabel } from '@/components/ui/modals/FilterCategoryMo
 import { storageService } from '@/services';
 import { formatPrice, handleAdNavigation, mapProductToCartItem } from '@/utils';
 import { WeekHighlightCard } from '@/components/sections/marketplace';
-import { useMarketplaceAds, useMenuItems } from '@/hooks';
+import { useMarketplaceAds, useMenuItems, useCategories } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import type { Ad } from '@/types/ad';
 import type { RootStackParamList } from '@/types/navigation';
@@ -45,11 +45,14 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>(undefined);
   const [selectedSolutionIds, setSelectedSolutionIds] = useState<SolutionId[]>([]);
 
+  const { categories } = useCategories({ enabled: true });
+
   const categoryOptions = useMemo(() => getCategoryOptions(t), [t]);
   const orderOptions = useMemo(() => getOrderOptions(t), [t]);
 
   const { ads, loading, hasMore, loadAds } = useMarketplaceAds({
     selectedCategory,
+    selectedCategoryId,
     page,
   });
 
@@ -66,7 +69,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     loadAds();
 
     return unsubscribe;
-  }, [navigation, selectedCategory, page, loadAds]);
+  }, [navigation, selectedCategory, selectedCategoryId, page, loadAds]);
 
   const handleAdPress = (ad: Ad) => {
     handleAdNavigation(ad, navigation);
@@ -110,16 +113,21 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     } else if (result.solutionIds.length === 1 && result.solutionIds[0] === 'professionals') {
       setSelectedCategory('specialists');
       setPage(1);
+    } else {
+      setSelectedCategory('all');
+      setPage(1);
     }
   };
 
   const handleClearFilterCategory = () => {
     setSelectedCategoryId(undefined);
     setSelectedSolutionIds([]);
+    setSelectedCategory('all');
+    setPage(1);
   };
 
   const categoryFilterButtonLabel =
-    selectedCategoryId != null ? getCategoryDisplayLabel(selectedCategoryId, [], t) : t('marketplace.category');
+    selectedCategoryId != null ? getCategoryDisplayLabel(selectedCategoryId, categories, t) : t('marketplace.category');
 
   const renderCustomHeader = () => (
     <View style={styles.customHeader}>
@@ -148,7 +156,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       <FilterCategoryModal
         visible={isFilterCategoryModalVisible}
         onClose={() => setIsFilterCategoryModalVisible(false)}
-        categories={[]}
+        categories={categories}
         selectedCategoryId={selectedCategoryId}
         onSelectCategory={(cat) => setSelectedCategoryId(cat?.categoryId ?? undefined)}
         selectedSolutionIds={selectedSolutionIds}
@@ -222,7 +230,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
               const displayTitle = product?.name || t('marketplace.product');
               const displayImage =
                 product?.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
-              const displayCategory = product?.category;
+              const displayCategory = product?.type;
               const productPrice = product?.price;
 
               return (

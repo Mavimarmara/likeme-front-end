@@ -7,7 +7,7 @@ export const mapApiProductToCarouselProduct = (apiProduct: ApiProduct): Product 
     id: apiProduct.id,
     title: apiProduct.name,
     price: apiProduct.price || 0,
-    tag: apiProduct.category || 'Product',
+    tag: apiProduct.type || 'Product',
     image: apiProduct.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
     likes: 0,
   };
@@ -19,7 +19,7 @@ export const mapApiProductToNavigationParams = (apiProduct: ApiProduct) => {
     title: apiProduct.name,
     price: formatPrice(apiProduct.price),
     image: apiProduct.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
-    category: apiProduct.category,
+    type: apiProduct.type,
     description: apiProduct.description,
   };
 };

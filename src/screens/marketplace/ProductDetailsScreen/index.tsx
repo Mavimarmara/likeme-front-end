@@ -95,7 +95,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       description: ad?.product?.description || product.description,
       image: ad?.product?.image || product.image,
       price: product.price,
-      tags: product.category ? [product.category] : [],
+      tags: product.type ? [product.type] : [],
       isOutOfStock: product.status === 'out_of_stock' || product.quantity === 0,
     };
   }, [product, ad]);
@@ -120,7 +120,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   );
 
   // Categoria do produto para badges
-  const productCategory = displayData?.tags?.[0] || product?.category || route.params?.product?.category || 'Product';
+  const productCategory = displayData?.tags?.[0] || product?.type || route.params?.product?.type || 'Product';
 
   const isProductType = productCategory == 'Product';
 

@@ -15,7 +15,7 @@ describe('cartMapper', () => {
     description: 'Test description',
     price: 29.99,
     image: 'https://example.com/image.jpg',
-    category: 'physical product',
+    type: 'physical product',
     quantity: 10,
     status: 'active',
     createdAt: '2023-01-01',
@@ -79,12 +79,12 @@ describe('cartMapper', () => {
       expect(result.image).toBe('https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400');
     });
 
-    it('deve usar array vazio para tags quando category é undefined', () => {
-      const productWithoutCategory = {
+    it('deve usar array vazio para tags quando type é undefined', () => {
+      const productWithoutType = {
         ...mockApiProduct,
-        category: undefined,
+        type: undefined,
       };
-      const result = mapProductToCartItem(productWithoutCategory);
+      const result = mapProductToCartItem(productWithoutType);
 
       expect(result.tags).toEqual([]);
       expect(result.subCategory).toBe('Product');

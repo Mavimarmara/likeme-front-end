@@ -26,8 +26,12 @@ class ProductService {
         queryParams.limit = String(params.limit);
       }
 
-      if (params.category) {
-        queryParams.category = params.category;
+      if (params.type) {
+        queryParams.type = params.type;
+      }
+
+      if (params.categoryId) {
+        queryParams.categoryId = params.categoryId;
       }
 
       if (params.status) {

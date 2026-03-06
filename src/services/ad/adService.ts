@@ -30,8 +30,12 @@ class AdService {
         queryParams.status = params.status;
       }
 
-      if (params.category) {
-        queryParams.category = params.category;
+      if (params.type) {
+        queryParams.type = params.type;
+      }
+
+      if (params.categoryId) {
+        queryParams.categoryId = params.categoryId;
       }
 
       if (params.activeOnly !== undefined) {
