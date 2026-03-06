@@ -87,6 +87,13 @@ export const styles = StyleSheet.create({
   addressCardContent: {
     marginBottom: SPACING.LG,
   },
+  /** Container para mensagem de erro acima do formulário (ex.: falha ao carregar endereço) */
+  addressErrorContainer: {
+    paddingVertical: SPACING.MD,
+  },
+  checkboxPaddingTop: {
+    paddingTop: SPACING.MD,
+  },
   addressText: {
     fontSize: FONT_SIZES.SM,
     fontFamily: 'DM Sans',
@@ -278,6 +285,13 @@ export const styles = StyleSheet.create({
     paddingTop: SPACING.SM,
     zIndex: 1,
   },
+  /** Texto de erro em vermelho abaixo de campos/seções */
+  fieldError: {
+    fontSize: FONT_SIZES.SM,
+    color: '#b00',
+    marginTop: SPACING.XS,
+    marginBottom: SPACING.SM,
+  },
   completeButton: {
     borderRadius: 24,
     shadowColor: '#000',
@@ -296,7 +310,11 @@ export const styles = StyleSheet.create({
     rowGap: SPACING.MD,
   },
   editAddressActions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: SPACING.SM,
     justifyContent: 'center',
+    alignItems: 'center',
     marginTop: SPACING.MD,
     paddingTop: SPACING.MD,
   },

@@ -2,16 +2,29 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useTranslation } from '@/hooks/i18n';
+import { Checkbox } from '@/components/ui/inputs';
 import { AddressData } from './AddressForm';
 import { styles } from '../styles';
 
 interface AddressViewProps {
   address: AddressData;
   onEditPress: () => void;
+  titleKey?: string;
+  deliverySameAsBilling?: boolean;
+  onDeliverySameAsBillingChange?: (value: boolean) => void;
 }
 
-const AddressView: React.FC<AddressViewProps> = ({ address, onEditPress }) => {
+const AddressView: React.FC<AddressViewProps> = ({
+  address,
+  onEditPress,
+  titleKey = 'checkout.deliveryAddress',
+  deliverySameAsBilling,
+  onDeliverySameAsBillingChange,
+}) => {
   const { t } = useTranslation();
+  const showDeliverySameAsBillingCheckbox =
+    typeof deliverySameAsBilling === 'boolean' && typeof onDeliverySameAsBillingChange === 'function';
+
   const formatAddressText = (address: AddressData) => {
     const addressParts = [
       address.fullName,
@@ -29,13 +42,22 @@ const AddressView: React.FC<AddressViewProps> = ({ address, onEditPress }) => {
   return (
     <View style={styles.addressCard}>
       <View style={styles.addressCardHeader}>
-        <Text style={styles.addressCardTitle}>{t('checkout.deliveryAddress')}</Text>
+        <Text style={styles.addressCardTitle}>{t(titleKey)}</Text>
         <TouchableOpacity onPress={onEditPress} activeOpacity={0.7}>
           <Icon name='edit' size={24} color='#001137' />
         </TouchableOpacity>
       </View>
       <View style={styles.addressCardContent}>
         <Text style={styles.addressText}>{formatAddressText(address)}</Text>
+        {showDeliverySameAsBillingCheckbox && (
+          <View style={styles.checkboxPaddingTop}>
+            <Checkbox
+              label={t('checkout.deliverySameAsBilling')}
+              checked={deliverySameAsBilling!}
+              onPress={() => onDeliverySameAsBillingChange!(!deliverySameAsBilling)}
+            />
+          </View>
+        )}
       </View>
     </View>
   );

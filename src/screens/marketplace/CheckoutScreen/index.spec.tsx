@@ -533,7 +533,8 @@ describe('CheckoutScreen', () => {
 
       await waitFor(
         () => {
-          expect(mockAlert).toHaveBeenCalled();
+          // Erro exibido em texto vermelho (não mais Alert)
+          expect(getByText(/falha|erro|error/i)).toBeTruthy();
         },
         { timeout: 3000 },
       );
@@ -813,7 +814,7 @@ describe('CheckoutScreen', () => {
     it('shows error when cart is empty', async () => {
       mockStorageService.getCartItems.mockResolvedValue([]);
 
-      const { getByTestId, queryByTestId } = render(
+      const { getByTestId, queryByTestId, getByText } = render(
         <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />,
       );
 
@@ -842,9 +843,8 @@ describe('CheckoutScreen', () => {
 
       await waitFor(
         () => {
-          expect(mockAlert).toHaveBeenCalled();
-          const alertMessage = mockAlert.mock.calls[0]?.[1];
-          expect(alertMessage === 'checkout.emptyCartError' || String(alertMessage).includes('vazio')).toBe(true);
+          // Erro exibido em texto vermelho (não mais Alert)
+          expect(getByText(/vazio|emptyCartError/i)).toBeTruthy();
         },
         { timeout: 3000 },
       );
@@ -856,7 +856,7 @@ describe('CheckoutScreen', () => {
         data: null,
       });
 
-      const { getByTestId, queryByTestId } = render(
+      const { getByTestId, queryByTestId, getByText } = render(
         <CheckoutScreen navigation={mockNavigation as any} route={mockRoute as any} />,
       );
 
@@ -885,7 +885,8 @@ describe('CheckoutScreen', () => {
 
       await waitFor(
         () => {
-          expect(mockAlert).toHaveBeenCalled();
+          // Erro exibido em texto vermelho (não mais Alert)
+          expect(getByText(/falha|erro|error/i)).toBeTruthy();
         },
         { timeout: 3000 },
       );

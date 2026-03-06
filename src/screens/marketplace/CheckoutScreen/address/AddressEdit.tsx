@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import TextInput from '@/components/ui/inputs/TextInput';
-import { Checkbox } from '@/components/ui/inputs';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { useTranslation } from '@/hooks/i18n';
 import { useFormattedInput } from '@/hooks';
@@ -10,18 +9,18 @@ import { styles } from '../styles';
 
 interface AddressEditProps {
   initialData: AddressData;
-  sameBillingAddress?: boolean;
   onSave: (address: AddressData) => void;
-  onSameBillingAddressChange?: (value: boolean) => void;
+  onCancel?: () => void;
   saving?: boolean;
+  titleKey?: string;
 }
 
 const AddressEdit: React.FC<AddressEditProps> = ({
   initialData,
-  sameBillingAddress = false,
   onSave,
-  onSameBillingAddressChange,
+  onCancel,
   saving = false,
+  titleKey = 'checkout.deliveryAddress',
 }) => {
   const { t } = useTranslation();
   const [editData, setEditData] = useState<AddressData>(initialData);
@@ -56,7 +55,7 @@ const AddressEdit: React.FC<AddressEditProps> = ({
   return (
     <View style={styles.addressCard}>
       <View style={styles.addressCardHeader}>
-        <Text style={styles.addressCardTitle}>{t('checkout.deliveryAddress')}</Text>
+        <Text style={styles.addressCardTitle}>{t(titleKey)}</Text>
       </View>
       <View style={styles.editAddressContainer}>
         <TextInput
@@ -134,14 +133,12 @@ const AddressEdit: React.FC<AddressEditProps> = ({
             />
           </View>
         </View>
-        {onSameBillingAddressChange && (
-          <Checkbox
-            label={t('checkout.sameBillingAddress')}
-            checked={sameBillingAddress}
-            onPress={() => onSameBillingAddressChange(!sameBillingAddress)}
-          />
-        )}
         <View style={styles.editAddressActions}>
+          {onCancel && (
+            <TouchableOpacity style={styles.cancelButton} onPress={onCancel} activeOpacity={0.7}>
+              <Text style={styles.cancelButtonText}>{t('common.cancel')}</Text>
+            </TouchableOpacity>
+          )}
           <SecondaryButton
             label={t('common.save')}
             onPress={handleSave}

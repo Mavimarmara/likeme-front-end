@@ -5,6 +5,8 @@ import TextInput from '@/components/ui/inputs/TextInput';
 import { useFormattedInput } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import { styles } from '../styles';
+import AddressForm from '../address';
+import type { AddressData } from '../address';
 
 type PaymentMethod = 'credit_card' | 'pix';
 
@@ -15,19 +17,23 @@ interface PaymentFormProps {
   expiryDate: string;
   cvv: string;
   cpf: string;
-  phone: string;
   saveCardDetails: boolean;
   couponCode: string;
+  /** Endereço de cobrança (editável neste passo) */
+  billingAddressData: AddressData;
+  /** Se true, endereço de entrega será o mesmo do endereço de cobrança */
+  deliverySameAsBilling: boolean;
   onPaymentMethodChange: (method: PaymentMethod) => void;
   onCardholderNameChange: (text: string) => void;
   onCardNumberChange: (text: string) => void;
   onExpiryDateChange: (text: string) => void;
   onCvvChange: (text: string) => void;
   onCpfChange: (text: string) => void;
-  onPhoneChange: (text: string) => void;
   onSaveCardDetailsChange: (value: boolean) => void;
   onCouponCodeChange: (text: string) => void;
   onApplyCoupon: () => void;
+  onSaveBillingAddress: (address: AddressData) => void | Promise<void>;
+  onDeliverySameAsBillingChange: (value: boolean) => void;
 }
 
 const PaymentForm: React.FC<PaymentFormProps> = ({
@@ -37,19 +43,21 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   expiryDate,
   cvv,
   cpf,
-  phone,
   saveCardDetails,
   couponCode,
+  billingAddressData,
+  deliverySameAsBilling,
   onPaymentMethodChange,
   onCardholderNameChange,
   onCardNumberChange,
   onExpiryDateChange,
   onCvvChange,
   onCpfChange,
-  onPhoneChange,
   onSaveCardDetailsChange,
   onCouponCodeChange,
   onApplyCoupon,
+  onSaveBillingAddress,
+  onDeliverySameAsBillingChange,
 }) => {
   const { t } = useTranslation();
   const handleCardNumberChange = useFormattedInput({
@@ -135,13 +143,6 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
             onChangeText={onCpfChange}
             keyboardType='numeric'
           />
-          <TextInput
-            label={t('checkout.phone')}
-            placeholder={t('checkout.phonePlaceholder')}
-            value={phone}
-            onChangeText={onPhoneChange}
-            keyboardType='numeric'
-          />
           <TouchableOpacity
             style={styles.checkboxContainer}
             onPress={() => onSaveCardDetailsChange(!saveCardDetails)}
@@ -171,6 +172,15 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* Endereço de cobrança (mesmo componente do passo de endereço, com botão editar; checkbox dentro do AddressView) */}
+      <AddressForm
+        addressData={billingAddressData}
+        onSaveAddress={onSaveBillingAddress}
+        titleKey='checkout.billingAddress'
+        deliverySameAsBilling={deliverySameAsBilling}
+        onDeliverySameAsBillingChange={onDeliverySameAsBillingChange}
+      />
     </>
   );
 };

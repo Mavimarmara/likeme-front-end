@@ -43,6 +43,18 @@ jest.mock('@/components/ui/inputs/TextInput', () => {
 });
 
 describe('PaymentForm', () => {
+  const mockAddressData = {
+    fullName: 'Nome Teste',
+    addressLine1: 'Rua Teste',
+    streetNumber: '123',
+    addressLine2: '',
+    neighborhood: 'Centro',
+    city: 'São Paulo',
+    state: 'SP',
+    zipCode: '01310100',
+    phone: '11999999999',
+  };
+
   const mockProps = {
     paymentMethod: 'credit_card' as const,
     cardholderName: '',
@@ -50,19 +62,21 @@ describe('PaymentForm', () => {
     expiryDate: '',
     cvv: '',
     cpf: '',
-    phone: '',
     saveCardDetails: false,
     couponCode: '',
+    billingAddressData: mockAddressData,
+    deliverySameAsBilling: true,
     onPaymentMethodChange: jest.fn(),
     onCardholderNameChange: jest.fn(),
     onCardNumberChange: jest.fn(),
     onExpiryDateChange: jest.fn(),
     onCvvChange: jest.fn(),
     onCpfChange: jest.fn(),
-    onPhoneChange: jest.fn(),
     onSaveCardDetailsChange: jest.fn(),
     onCouponCodeChange: jest.fn(),
     onApplyCoupon: jest.fn(),
+    onSaveBillingAddress: jest.fn(),
+    onDeliverySameAsBillingChange: jest.fn(),
   };
 
   beforeEach(() => {

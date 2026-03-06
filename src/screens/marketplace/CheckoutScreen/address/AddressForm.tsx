@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text } from 'react-native';
 import AddressView from './AddressView';
 import AddressEdit from './AddressEdit';
+import { styles } from '../styles';
 
 export interface AddressData {
   fullName: string;
@@ -16,39 +17,41 @@ export interface AddressData {
 }
 
 interface AddressFormProps {
-  sameBillingAddress?: boolean;
-  onSameBillingAddressChange?: (value: boolean) => void;
   addressData?: AddressData;
   onSaveAddress?: (address: AddressData) => void | Promise<void>;
-  /** Quando true, abre direto no modo edição (ex.: endereço vindo vazio da API) */
+  titleKey?: string;
+  deliverySameAsBilling?: boolean;
+  onDeliverySameAsBillingChange?: (value: boolean) => void;
   startWithEditOpen?: boolean;
-  /** Mensagem de erro ao falhar carregar endereço (ex.: exibida acima do formulário) */
   addressLoadError?: string | null;
+  addressSaveError?: string | null;
 }
 
+const EMPTY_ADDRESS: AddressData = {
+  fullName: '',
+  addressLine1: '',
+  streetNumber: '',
+  addressLine2: '',
+  neighborhood: '',
+  city: '',
+  state: '',
+  zipCode: '',
+  phone: '',
+};
+
 const AddressForm: React.FC<AddressFormProps> = ({
-  sameBillingAddress = false,
-  onSameBillingAddressChange,
   addressData,
   onSaveAddress,
+  titleKey = 'checkout.deliveryAddress',
+  deliverySameAsBilling,
+  onDeliverySameAsBillingChange,
   startWithEditOpen = false,
   addressLoadError = null,
+  addressSaveError = null,
 }) => {
-  const defaultAddress: AddressData = {
-    fullName: 'Ana Paula do Amaral',
-    addressLine1: 'Rua Marselha',
-    streetNumber: '1029',
-    addressLine2: 'Apto 94',
-    neighborhood: 'Jaguaré',
-    city: 'São Paulo',
-    state: 'SP',
-    zipCode: '',
-    phone: '+55 11 97979-2016',
-  };
-
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const currentAddress = addressData || defaultAddress;
+  const currentAddress = addressData ?? EMPTY_ADDRESS;
 
   useEffect(() => {
     if (startWithEditOpen) {
@@ -60,6 +63,10 @@ const AddressForm: React.FC<AddressFormProps> = ({
     setIsEditing(true);
   };
 
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+  };
+
   const handleSave = async (address: AddressData) => {
     if (onSaveAddress) {
       try {
@@ -67,7 +74,6 @@ const AddressForm: React.FC<AddressFormProps> = ({
         await Promise.resolve(onSaveAddress(address));
         setIsEditing(false);
       } catch {
-        // Erro já tratado no parent (ex.: Alert); mantém formulário aberto
       } finally {
         setIsSaving(false);
       }
@@ -79,21 +85,28 @@ const AddressForm: React.FC<AddressFormProps> = ({
   return (
     <View>
       {addressLoadError ? (
-        <View style={{ paddingVertical: 8 }}>
-          <Text style={{ color: '#b00', fontSize: 14 }}>{addressLoadError}</Text>
+        <View style={styles.addressErrorContainer}>
+          <Text style={styles.fieldError}>{addressLoadError}</Text>
         </View>
       ) : null}
       {!isEditing ? (
-        <AddressView address={currentAddress} onEditPress={handleEditPress} />
+        <AddressView
+          address={currentAddress}
+          onEditPress={handleEditPress}
+          titleKey={titleKey}
+          deliverySameAsBilling={deliverySameAsBilling}
+          onDeliverySameAsBillingChange={onDeliverySameAsBillingChange}
+        />
       ) : (
         <AddressEdit
           initialData={currentAddress}
-          sameBillingAddress={sameBillingAddress}
           onSave={handleSave}
-          onSameBillingAddressChange={onSameBillingAddressChange}
+          onCancel={handleCancelEdit}
           saving={isSaving}
+          titleKey={titleKey}
         />
       )}
+      {addressSaveError ? <Text style={styles.fieldError}>{addressSaveError}</Text> : null}
     </View>
   );
 };
