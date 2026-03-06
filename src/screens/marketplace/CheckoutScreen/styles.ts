@@ -92,7 +92,7 @@ export const styles = StyleSheet.create({
     paddingVertical: SPACING.MD,
   },
   checkboxPaddingTop: {
-    paddingTop: SPACING.MD,
+    paddingTop: SPACING.LG,
   },
   addressText: {
     fontSize: FONT_SIZES.SM,
