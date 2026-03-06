@@ -1,6 +1,5 @@
 import { StyleSheet } from 'react-native';
 import { COLORS, SPACING, FONT_SIZES } from '@/constants';
-const CART_ITEM_WIDTH = 363;
 const CART_ITEM_HEIGHT = 140;
 const CART_IMAGE_WIDTH = 108;
 
@@ -94,7 +93,7 @@ export const styles = StyleSheet.create({
     backgroundColor: '#fbf7e5',
     borderRadius: 22,
     height: CART_ITEM_HEIGHT,
-    width: CART_ITEM_WIDTH,
+    width: '100%',
     position: 'relative',
     overflow: 'hidden',
   },

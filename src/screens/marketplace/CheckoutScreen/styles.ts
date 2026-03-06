@@ -64,6 +64,10 @@ export const styles = StyleSheet.create({
     color: '#000000',
     marginBottom: SPACING.MD,
   },
+  /** Remove padding horizontal do CartItemList no checkout (evita duplicar o padding do scrollContent) */
+  cartItemListNoPadding: {
+    paddingHorizontal: 0,
+  },
   addressSection: {
     marginBottom: SPACING.LG,
   },

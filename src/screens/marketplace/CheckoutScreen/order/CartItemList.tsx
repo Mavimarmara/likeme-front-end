@@ -23,6 +23,8 @@ interface CartItemListProps {
   onDecreaseQuantity?: (id: string) => void;
   formatPrice: (price: number) => string;
   formatRating: (rating: number) => string;
+  /** Estilo do container da lista (ex.: paddingHorizontal: 0 no Checkout) */
+  containerStyle?: object;
 }
 
 const CartItemList: React.FC<CartItemListProps> = ({
@@ -32,6 +34,7 @@ const CartItemList: React.FC<CartItemListProps> = ({
   onDecreaseQuantity,
   formatPrice,
   formatRating,
+  containerStyle,
 }) => {
   const { t } = useTranslation();
   const renderCartItem = (item: CartItem) => (
@@ -120,7 +123,7 @@ const CartItemList: React.FC<CartItemListProps> = ({
     </View>
   );
 
-  return <View style={cartStyles.cartItemsList}>{items.map((item) => renderCartItem(item))}</View>;
+  return <View style={[cartStyles.cartItemsList, containerStyle]}>{items.map((item) => renderCartItem(item))}</View>;
 };
 
 export default CartItemList;

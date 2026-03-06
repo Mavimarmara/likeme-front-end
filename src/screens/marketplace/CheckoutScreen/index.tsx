@@ -331,7 +331,12 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
             />
 
             <Text style={styles.deliveriesTitle}>{t('checkout.yourDeliveries')}</Text>
-            <CartItemList items={cartItems} formatPrice={formatPrice} formatRating={formatRating} />
+            <CartItemList
+              items={cartItems}
+              formatPrice={formatPrice}
+              formatRating={formatRating}
+              containerStyle={styles.cartItemListNoPadding}
+            />
 
             {orderSummary}
           </>
