@@ -133,6 +133,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
             loadAds();
           }}
           showFilterButton={true}
+          onFilterPress={() => setIsFilterCategoryModalVisible(true)}
         />
       </View>
       <View style={styles.filterMenuContainer}>
