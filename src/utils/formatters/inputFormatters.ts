@@ -37,3 +37,10 @@ export const formatPhone = (text: string): string => {
   }
   return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7, 11)}`;
 };
+
+/** CEP: apenas dígitos, formata como 00000-000 (máx. 8 dígitos). */
+export const formatZipCode = (text: string): string => {
+  const digits = text.replace(/\D/g, '').slice(0, 8);
+  if (digits.length <= 5) return digits;
+  return `${digits.slice(0, 5)}-${digits.slice(5)}`;
+};

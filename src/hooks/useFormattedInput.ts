@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
-import { formatCardNumber, formatExpiryDate, formatCpf, formatPhone } from '@/utils';
+import { formatCardNumber, formatExpiryDate, formatCpf, formatPhone, formatZipCode } from '@/utils';
 
-export type FormattedInputType = 'cardNumber' | 'expiryDate' | 'cpf' | 'phone';
+export type FormattedInputType = 'cardNumber' | 'expiryDate' | 'cpf' | 'phone' | 'zipCode';
 
 interface UseFormattedInputOptions {
   type?: FormattedInputType;
@@ -30,6 +30,9 @@ export const useFormattedInput = ({ type, onChangeText }: UseFormattedInputOptio
           break;
         case 'phone':
           formattedText = formatPhone(text);
+          break;
+        case 'zipCode':
+          formattedText = formatZipCode(text);
           break;
         default:
           formattedText = text;

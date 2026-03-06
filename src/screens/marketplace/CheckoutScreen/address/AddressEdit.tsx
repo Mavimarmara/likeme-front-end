@@ -4,6 +4,7 @@ import TextInput from '@/components/ui/inputs/TextInput';
 import { Checkbox } from '@/components/ui/inputs';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { useTranslation } from '@/hooks/i18n';
+import { useFormattedInput } from '@/hooks';
 import { AddressData } from './AddressForm';
 import { styles } from '../styles';
 
@@ -23,6 +24,11 @@ const AddressEdit: React.FC<AddressEditProps> = ({
   const { t } = useTranslation();
   const [editData, setEditData] = useState<AddressData>(initialData);
 
+  const handleZipCodeChange = useFormattedInput({
+    type: 'zipCode',
+    onChangeText: (text) => setEditData((prev) => ({ ...prev, zipCode: text })),
+  });
+
   useEffect(() => {
     setEditData(initialData);
   }, [initialData]);
@@ -30,6 +36,15 @@ const AddressEdit: React.FC<AddressEditProps> = ({
   const handleSave = () => {
     onSave(editData);
   };
+
+  const isAddressValid =
+    editData.fullName.trim() !== '' &&
+    editData.addressLine1.trim() !== '' &&
+    editData.neighborhood.trim() !== '' &&
+    editData.city.trim() !== '' &&
+    editData.state.trim() !== '' &&
+    editData.zipCode.replace(/\D/g, '').length >= 8 &&
+    editData.phone.trim() !== '';
 
   return (
     <View style={styles.addressCard}>
@@ -85,7 +100,7 @@ const AddressEdit: React.FC<AddressEditProps> = ({
               label={t('checkout.zipCode')}
               placeholder={t('cart.zipCodePlaceholder')}
               value={editData.zipCode}
-              onChangeText={(text) => setEditData({ ...editData, zipCode: text })}
+              onChangeText={handleZipCodeChange}
               keyboardType='numeric'
             />
           </View>
@@ -107,7 +122,7 @@ const AddressEdit: React.FC<AddressEditProps> = ({
           />
         )}
         <View style={styles.editAddressActions}>
-          <SecondaryButton label={t('common.save')} onPress={handleSave} />
+          <SecondaryButton label={t('common.save')} onPress={handleSave} disabled={!isAddressValid} />
         </View>
       </View>
     </View>

@@ -347,7 +347,8 @@
     "subtotal": "Subtotal",
     "shipping": "Envio",
     "total": "Total",
-    "date": "Data"
+    "date": "Data",
+    "shippingUnavailable": "Serviço de frete temporariamente indisponível. Tente novamente em alguns minutos."
   },
   "checkout": {
     "address": "Endereço",

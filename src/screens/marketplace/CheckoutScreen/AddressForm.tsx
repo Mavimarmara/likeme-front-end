@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import TextInput from '@/components/ui/inputs/TextInput';
 import { SecondaryButton } from '@/components/ui/buttons';
+import { useFormattedInput } from '@/hooks';
 import { styles } from './styles';
 
 export interface AddressData {
@@ -36,12 +37,17 @@ const AddressForm: React.FC<AddressFormProps> = ({
     neighborhood: 'Jaguaré',
     city: 'São Paulo',
     state: 'SP',
-    zipCode: '05332-000',
+    zipCode: '',
     phone: '+55 11 97979-2016',
   };
 
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<AddressData>(addressData || defaultAddress);
+
+  const handleZipCodeChange = useFormattedInput({
+    type: 'zipCode',
+    onChangeText: (text) => setEditData((prev) => ({ ...prev, zipCode: text })),
+  });
 
   const formatAddressText = (address: AddressData) => {
     const addressParts = [
@@ -139,7 +145,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
                   label='ZIP code'
                   placeholder='00000-000'
                   value={editData.zipCode}
-                  onChangeText={(text) => setEditData({ ...editData, zipCode: text })}
+                  onChangeText={handleZipCodeChange}
                   keyboardType='numeric'
                 />
               </View>

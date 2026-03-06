@@ -3,7 +3,7 @@ import { View, Text, ScrollView, SafeAreaView, Alert } from 'react-native';
 import { Header } from '@/components/ui/layout';
 import { Background } from '@/components/ui/layout';
 import { SecondaryButton } from '@/components/ui/buttons';
-import { storageService, orderService } from '@/services';
+import { storageService, orderService, userService } from '@/services';
 import { formatPrice, formatAddress, formatBillingAddress } from '@/utils';
 import { useFormattedInput } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
@@ -39,15 +39,16 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [sameBillingAddress, setSameBillingAddress] = useState(false);
   const [addressData, setAddressData] = useState<AddressData>({
-    fullName: 'Ana Paula do Amaral',
-    addressLine1: 'Rua Marselha, 1029 - Apto 94',
+    fullName: '',
+    addressLine1: '',
     addressLine2: '',
-    neighborhood: 'Jaguaré',
-    city: 'São Paulo',
-    state: 'SP',
-    zipCode: '05332-000',
-    phone: '+55 11 97979-2016',
+    neighborhood: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    phone: '',
   });
+  const [addressLoaded, setAddressLoaded] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('credit_card');
   const [cardholderName, setCardholderName] = useState('');
   const [cardNumber, setCardNumber] = useState('');
@@ -75,7 +76,21 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
 
   useEffect(() => {
     loadCartItems();
+    loadUserAddress();
   }, []);
+
+  const loadUserAddress = async () => {
+    try {
+      const address = await userService.getShippingAddress();
+      if (address) {
+        setAddressData(address);
+      }
+    } catch (error) {
+      console.error('Error loading user address:', error);
+    } finally {
+      setAddressLoaded(true);
+    }
+  };
 
   useEffect(() => {
     calculateTotals();
@@ -107,7 +122,19 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
     return Number(rating).toFixed(3);
   };
 
+  const isAddressValid =
+    addressData.fullName.trim() !== '' &&
+    addressData.addressLine1.trim() !== '' &&
+    addressData.neighborhood.trim() !== '' &&
+    addressData.city.trim() !== '' &&
+    addressData.state.trim() !== '' &&
+    addressData.zipCode.replace(/\D/g, '').length >= 8 &&
+    addressData.phone.trim() !== '';
+
   const handleContinue = async () => {
+    if (currentStep === 'address' && !isAddressValid) {
+      return;
+    }
     if (currentStep === 'address') {
       setCurrentStep('payment');
     } else if (currentStep === 'payment') {
@@ -342,6 +369,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
               onSameBillingAddressChange={setSameBillingAddress}
               addressData={addressData}
               onSaveAddress={handleSaveAddress}
+              startWithEditOpen={addressLoaded && !addressData.addressLine1?.trim()}
             />
 
             {/* Your Deliveries Section */}
@@ -406,7 +434,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
             style={styles.completeButton}
             size='large'
             loading={isProcessing}
-            disabled={isProcessing}
+            disabled={isProcessing || (currentStep === 'address' && !isAddressValid)}
           />
         </View>
       )}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View } from 'react-native';
 import AddressView from './AddressView';
 import AddressEdit from './AddressEdit';
@@ -19,6 +19,8 @@ interface AddressFormProps {
   onSameBillingAddressChange?: (value: boolean) => void;
   addressData?: AddressData;
   onSaveAddress?: (address: AddressData) => void;
+  /** Quando true, abre direto no modo edição (ex.: endereço vindo vazio da API) */
+  startWithEditOpen?: boolean;
 }
 
 const AddressForm: React.FC<AddressFormProps> = ({
@@ -26,6 +28,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
   onSameBillingAddressChange,
   addressData,
   onSaveAddress,
+  startWithEditOpen = false,
 }) => {
   const defaultAddress: AddressData = {
     fullName: 'Ana Paula do Amaral',
@@ -34,12 +37,18 @@ const AddressForm: React.FC<AddressFormProps> = ({
     neighborhood: 'Jaguaré',
     city: 'São Paulo',
     state: 'SP',
-    zipCode: '05332-000',
+    zipCode: '',
     phone: '+55 11 97979-2016',
   };
 
   const [isEditing, setIsEditing] = useState(false);
   const currentAddress = addressData || defaultAddress;
+
+  useEffect(() => {
+    if (startWithEditOpen) {
+      setIsEditing(true);
+    }
+  }, [startWithEditOpen]);
 
   const handleEditPress = () => {
     setIsEditing(true);

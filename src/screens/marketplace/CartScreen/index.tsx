@@ -14,6 +14,7 @@ import { formatPrice } from '@/utils';
 import { Alert } from 'react-native';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { useTranslation } from '@/hooks/i18n';
+import { useFormattedInput } from '@/hooks';
 import { useAnalyticsScreen } from '@/analytics';
 import { isValidZipCodeFormat, formatZipCodeDisplay } from '@/services/address/cepService';
 import { getShippingQuote } from '@/services/shipping/shippingService';
@@ -42,10 +43,12 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
   useAnalyticsScreen({ screenName: 'Cart', screenClass: 'CartScreen' });
   const { t } = useTranslation();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [zipCode, setZipCode] = useState('00000-000');
+  const [zipCode, setZipCode] = useState('');
   const [shipping, setShipping] = useState(0.0);
   const [shippingLoading, setShippingLoading] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const handleZipCodeChange = useFormattedInput({ type: 'zipCode', onChangeText: setZipCode });
 
   useEffect(() => {
     loadCartItems();
@@ -187,7 +190,9 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
       setZipCode(formatZipCodeDisplay(trimmed));
       setShipping(result.minValue);
     } catch (err: any) {
-      const message = err?.message || t('cart.invalidZipCode');
+      const status = err?.status;
+      const isUnavailable = status === 502 || status === 504 || status === 503;
+      const message = isUnavailable ? t('cart.shippingUnavailable') : err?.message || t('cart.invalidZipCode');
       Alert.alert(t('errors.error'), message);
     } finally {
       setShippingLoading(false);
@@ -330,9 +335,10 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
         <TextInput
           style={styles.zipCodeInput}
           value={zipCode}
-          onChangeText={setZipCode}
+          onChangeText={handleZipCodeChange}
           placeholder={t('cart.zipCodePlaceholder')}
           placeholderTextColor='#6e6a6a'
+          keyboardType='numeric'
         />
         <TouchableOpacity
           style={[styles.applyButton, shippingLoading && { opacity: 0.6 }]}
