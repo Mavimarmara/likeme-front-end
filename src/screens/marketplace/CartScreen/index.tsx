@@ -15,6 +15,8 @@ import { Alert } from 'react-native';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen } from '@/analytics';
+import { isValidZipCodeFormat, formatZipCodeDisplay } from '@/services/address/cepService';
+import { getShippingQuote } from '@/services/shipping/shippingService';
 import { styles } from './styles';
 
 interface CartItem {
@@ -42,6 +44,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [zipCode, setZipCode] = useState('00000-000');
   const [shipping, setShipping] = useState(0.0);
+  const [shippingLoading, setShippingLoading] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -168,9 +171,27 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
     await loadCartItems();
   };
 
-  const handleApplyShipping = () => {
-    // Lógica para calcular frete
-    setShipping(0.0);
+  const handleApplyShipping = async () => {
+    const trimmed = zipCode.trim();
+    if (!trimmed) {
+      Alert.alert(t('errors.error'), t('cart.invalidZipCode'));
+      return;
+    }
+    if (!isValidZipCodeFormat(trimmed)) {
+      Alert.alert(t('errors.error'), t('cart.invalidZipCode'));
+      return;
+    }
+    setShippingLoading(true);
+    try {
+      const result = await getShippingQuote(trimmed);
+      setZipCode(formatZipCodeDisplay(trimmed));
+      setShipping(result.minValue);
+    } catch (err: any) {
+      const message = err?.message || t('cart.invalidZipCode');
+      Alert.alert(t('errors.error'), message);
+    } finally {
+      setShippingLoading(false);
+    }
   };
 
   const handleBuy = () => {
@@ -313,8 +334,13 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
           placeholder={t('cart.zipCodePlaceholder')}
           placeholderTextColor='#6e6a6a'
         />
-        <TouchableOpacity style={styles.applyButton} onPress={handleApplyShipping} activeOpacity={0.8}>
-          <Text style={styles.applyButtonText}>{t('common.apply')}</Text>
+        <TouchableOpacity
+          style={[styles.applyButton, shippingLoading && { opacity: 0.6 }]}
+          onPress={handleApplyShipping}
+          activeOpacity={0.8}
+          disabled={shippingLoading}
+        >
+          <Text style={styles.applyButtonText}>{shippingLoading ? t('common.loading') : t('common.apply')}</Text>
         </TouchableOpacity>
       </View>
       <TouchableOpacity style={styles.dontKnowZipButton} activeOpacity={0.7}>

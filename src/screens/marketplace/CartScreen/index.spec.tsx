@@ -77,6 +77,20 @@ jest.mock('@/utils', () => ({
   formatPrice: jest.fn((price: number) => `$${price?.toFixed(2) || '0.00'}`),
 }));
 
+jest.mock('@/services/address/cepService', () => ({
+  isValidZipCodeFormat: jest.fn((zip: string) => /^\d{8}$/.test((zip || '').replace(/\D/g, ''))),
+  fetchAddressByZipCode: jest.fn().mockResolvedValue({ cep: '12345-678', localidade: 'Test' }),
+  formatZipCodeDisplay: jest.fn((zip: string) =>
+    zip.replace(/\D/g, '').length === 8
+      ? `${zip.replace(/\D/g, '').slice(0, 5)}-${zip.replace(/\D/g, '').slice(5)}`
+      : zip,
+  ),
+}));
+
+jest.mock('@/services/shipping/shippingService', () => ({
+  getShippingQuote: jest.fn().mockResolvedValue({ options: [{ valor: 15, nome: 'PAC' }], minValue: 15 }),
+}));
+
 const mockCartItems = [
   {
     id: '1',
@@ -340,8 +354,14 @@ describe('CartScreen', () => {
     const applyButton = getByText('common.apply');
     fireEvent.press(applyButton);
 
-    // Verifica se o estado foi atualizado (shipping pode ser 0.00 neste caso)
-    expect(zipInput.props.value).toBe('12345-678');
+    await waitFor(
+      () => {
+        expect(zipInput.props.value).toBe('12345-678');
+        // Frete aplicado com sucesso (valor simulado pelo cepService mock)
+        expect(getByText('$15.00')).toBeTruthy();
+      },
+      { timeout: 3000 },
+    );
   });
 
   it('navigates to Marketplace when Start Shopping is pressed in empty cart', async () => {
