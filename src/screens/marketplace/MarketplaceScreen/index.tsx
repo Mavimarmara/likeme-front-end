@@ -202,6 +202,25 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     // Caso contrário, mostra todos os ads
     const displayAds = page === 1 && ads.length > 0 ? ads.slice(1) : ads;
 
+    // Ordenar conforme o filtro "Ordenar por"
+    const sortedAds = [...displayAds].sort((a, b) => {
+      const priceA = a.product?.price ?? 0;
+      const priceB = b.product?.price ?? 0;
+      const nameA = (a.product?.name ?? '').toLowerCase();
+      const nameB = (b.product?.name ?? '').toLowerCase();
+
+      if (selectedOrder === 'above-100') {
+        // Acima de 100 primeiro (preço >= 100), depois os demais; dentro de cada grupo por preço desc
+        const aAbove = priceA >= 100 ? 1 : 0;
+        const bAbove = priceB >= 100 ? 1 : 0;
+        if (bAbove !== aAbove) return bAbove - aAbove;
+        return priceB - priceA;
+      }
+
+      // best-rated: ordenar por nome (A-Z) como ordem estável
+      return nameA.localeCompare(nameB);
+    });
+
     return (
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
@@ -220,12 +239,12 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
           />
         </View>
         <View style={styles.productsList}>
-          {displayAds.length === 0 ? (
+          {sortedAds.length === 0 ? (
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>{t('marketplace.noAdsFound')}</Text>
             </View>
           ) : (
-            displayAds.map((ad) => {
+            sortedAds.map((ad) => {
               const product = ad.product;
               const displayTitle = product?.name || t('marketplace.product');
               const displayImage =
