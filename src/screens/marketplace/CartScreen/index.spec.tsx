@@ -75,6 +75,10 @@ jest.mock('@/services/product/productService', () => {
 
 jest.mock('@/utils', () => ({
   formatPrice: jest.fn((price: number) => `$${price?.toFixed(2) || '0.00'}`),
+  formatZipCode: jest.fn((text: string) => {
+    const digits = (text || '').replace(/\D/g, '').slice(0, 8);
+    return digits.length <= 5 ? digits : `${digits.slice(0, 5)}-${digits.slice(5)}`;
+  }),
 }));
 
 jest.mock('@/services/address/cepService', () => ({
