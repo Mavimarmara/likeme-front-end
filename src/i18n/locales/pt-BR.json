@@ -246,7 +246,7 @@
     "otherCommunities": "Outras Comunidades",
     "popularProviders": "Provedores de saúde populares",
     "yourCommunities": "Suas Comunidades",
-    "productsRecommended": "Recomendados para a sua jornada de sono pelo Dr. Peter Valasquez",
+    "productsRecommended": "Recomendados para a sua jornada de sono pelo Dr. {provider}",
     "discoverProducts": "Descubra as opções que escolhemos para você",
     "joinCommunityError": "Não foi possível entrar na comunidade. Tente novamente."
   },
@@ -453,7 +453,7 @@
     "eventReminderToday": "{name} está agendado para hoje—não perca!",
     "today": "Hoje",
     "plansForYou": "Planos para você com base na evolução dos seus biomarcadores.",
-    "productsRecommended": "Produtos recomendados para sua jornada do sono pelo Dr. Peter Valasquez.",
+    "productsRecommended": "Recomendados para a sua jornada de sono pelo Dr. {provider}",
     "discoverOptions": "Descubra as nossas opções selecionadas especialmente para você.",
     "eventReminderSoon": "O evento está chegando em breve!",
     "view": "Ver",

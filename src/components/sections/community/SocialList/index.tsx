@@ -40,6 +40,7 @@ type Props = {
   providerChat?: ProviderChat;
   onProviderChatPress?: (chat: ProviderChat) => void;
   products?: Product[];
+  productsRecommendedProviderName?: string;
   onProductPress?: (product: Product) => void;
   onProductLike?: (product: Product) => void;
   plans?: Plan[];
@@ -77,6 +78,7 @@ const SocialList: React.FC<Props> = ({
   providerChat,
   onProviderChatPress,
   products,
+  productsRecommendedProviderName,
   onProductPress,
   onProductLike,
   plans,
@@ -216,7 +218,9 @@ const SocialList: React.FC<Props> = ({
         {products && products.length > 0 && (
           <View>
             <ProductsCarousel
-              title={t('home.productsRecommended')}
+              title={t('home.productsRecommended', {
+                provider: productsRecommendedProviderName ?? '',
+              })}
               subtitle={t('home.discoverProducts')}
               products={products}
               onProductPress={onProductPress}

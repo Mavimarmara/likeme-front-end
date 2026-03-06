@@ -497,7 +497,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
           {recommendedProducts && recommendedProducts.length > 0 && (
             <View style={styles.productsSection}>
               <ProductsCarousel
-                title={t('home.productsRecommended')}
+                title={t('home.productsRecommended', { provider: '' })}
                 subtitle={t('home.discoverProducts')}
                 products={recommendedProducts}
                 onProductPress={handleProductPress}

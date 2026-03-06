@@ -762,7 +762,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
               {activeTab === 'actives' && suggestedProducts.length > 0 && (
                 <View>
                   <ProductsCarousel
-                    title={t('activities.productsRecommended')}
+                    title={t('activities.productsRecommended', { provider: '' })}
                     subtitle={t('activities.discoverOptions')}
                     products={suggestedProducts}
                     onProductPress={(product) => {

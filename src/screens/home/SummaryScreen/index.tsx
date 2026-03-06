@@ -356,7 +356,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
           {recommendedProducts.length > 0 && (
             <View style={styles.productsContainer}>
               <ProductsCarousel
-                title={t('home.productsRecommended')}
+                title={t('home.productsRecommended', { provider: '' })}
                 subtitle={t('home.discoverProducts')}
                 products={recommendedProducts}
                 onProductPress={handleProductPress}
