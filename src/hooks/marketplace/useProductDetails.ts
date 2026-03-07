@@ -22,6 +22,8 @@ interface UseProductDetailsParams {
 interface UseProductDetailsReturn {
   product: ApiProduct | null;
   ad: Ad | null;
+  /** ID do advertiser (parceiro) para navegação à ProviderProfile. */
+  advertiserId: string | undefined;
   relatedProducts: ApiProduct[];
   loading: boolean;
   isFavorite: boolean;
@@ -41,6 +43,8 @@ export const useProductDetails = ({
   const [relatedProducts, setRelatedProducts] = useState<ApiProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
+
+  const advertiserId = product?.advertiserId ?? ad?.advertiserId;
 
   const loadProduct = useCallback(async () => {
     if (!productId) return;
@@ -181,6 +185,7 @@ export const useProductDetails = ({
   return {
     product,
     ad,
+    advertiserId,
     relatedProducts,
     loading,
     isFavorite,

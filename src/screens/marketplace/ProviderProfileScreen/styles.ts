@@ -321,9 +321,15 @@ export const styles = StyleSheet.create({
     marginTop: SPACING.MD,
   },
   loadingContainer: {
+    flex: 1,
     padding: SPACING.XL,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  loadingText: {
+    marginTop: SPACING.MD,
+    fontSize: 16,
+    color: COLORS.NEUTRAL.LOW.DARK,
   },
   emptyContainer: {
     padding: SPACING.XL,

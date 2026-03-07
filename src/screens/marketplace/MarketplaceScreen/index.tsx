@@ -1,18 +1,16 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SearchBar } from '@/components/ui/inputs';
 import { FloatingMenu, FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
 import { Header, Background } from '@/components/ui/layout';
 import { FilterCategoryModal, type FilterCategoryResult, type SolutionId } from '@/components/ui/modals';
 import { getCategoryDisplayLabel } from '@/components/ui/modals/FilterCategoryModal';
-import { storageService } from '@/services';
-import { formatPrice, handleAdNavigation, mapProductToCartItem } from '@/utils';
-import { WeekHighlightCard } from '@/components/sections/marketplace';
+import { WeekHighlightCard, ProductsList } from '@/components/sections/marketplace';
 import { useMarketplaceAds, useMenuItems, useCategories } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
+import { handleAdNavigation } from '@/utils';
 import type { Ad } from '@/types/ad';
 import type { RootStackParamList } from '@/types/navigation';
 import { styles } from './styles';
@@ -73,24 +71,6 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
 
   const handleAdPress = (ad: Ad) => {
     handleAdNavigation(ad, navigation);
-  };
-
-  const handleAddToCart = async (ad: Ad, event?: any) => {
-    if (event) {
-      event.stopPropagation();
-    }
-
-    if (!ad.product) {
-      return;
-    }
-
-    try {
-      const cartItem = mapProductToCartItem(ad.product);
-      await storageService.addToCart(cartItem);
-      navigation.navigate('Cart');
-    } catch (error) {
-      // Error handling
-    }
   };
 
   const menuItems = useMenuItems(navigation);
@@ -189,129 +169,31 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   };
 
   const renderAllAds = () => {
-    if (loading && page === 1) {
-      return (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size='large' color='#2196F3' />
-          <Text style={styles.loadingText}>{t('marketplace.loadingAds')}</Text>
-        </View>
-      );
-    }
-
-    // Se é página 1 e há ads, remove o primeiro (usado no highlight)
-    // Caso contrário, mostra todos os ads
     const displayAds = page === 1 && ads.length > 0 ? ads.slice(1) : ads;
-
-    // Ordenar conforme o filtro "Ordenar por"
     const sortedAds = [...displayAds].sort((a, b) => {
       const priceA = a.product?.price ?? 0;
       const priceB = b.product?.price ?? 0;
       const nameA = (a.product?.name ?? '').toLowerCase();
       const nameB = (b.product?.name ?? '').toLowerCase();
-
       if (selectedOrder === 'above-100') {
-        // Acima de 100 primeiro (preço >= 100), depois os demais; dentro de cada grupo por preço desc
         const aAbove = priceA >= 100 ? 1 : 0;
         const bAbove = priceB >= 100 ? 1 : 0;
         if (bAbove !== aAbove) return bAbove - aAbove;
         return priceB - priceA;
       }
-
-      // best-rated: ordenar por nome (A-Z) como ordem estável
       return nameA.localeCompare(nameB);
     });
-
     return (
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>{t('marketplace.allProducts')}</Text>
-        </View>
-        <View style={styles.orderFilterMenuContainer}>
-          <FilterMenu
-            filterButtonLabel={t('marketplace.orderBy')}
-            onFilterButtonPress={() => {
-              // TODO: Implementar modal de order se necessário
-              console.log('Order by button pressed');
-            }}
-            carouselOptions={orderOptions}
-            selectedCarouselId={selectedOrder}
-            onCarouselSelect={handleOrderSelect}
-          />
-        </View>
-        <View style={styles.productsList}>
-          {sortedAds.length === 0 ? (
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>{t('marketplace.noAdsFound')}</Text>
-            </View>
-          ) : (
-            sortedAds.map((ad) => {
-              const product = ad.product;
-              const displayTitle = product?.name || t('marketplace.product');
-              const displayImage =
-                product?.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
-              const displayCategory = product?.categoryId
-                ? categories.find((c) => c.categoryId === product.categoryId)?.name
-                : undefined;
-              const productPrice = product?.price;
-
-              return (
-                <TouchableOpacity
-                  key={ad.id}
-                  style={styles.productRow}
-                  onPress={() => handleAdPress(ad)}
-                  activeOpacity={0.8}
-                >
-                  <Image source={{ uri: displayImage }} style={styles.productRowImage} />
-                  <View style={styles.productRowContent}>
-                    {displayCategory && (
-                      <View style={styles.productRowCategory}>
-                        <Text style={styles.productRowCategoryText}>{displayCategory}</Text>
-                      </View>
-                    )}
-                    <Text style={styles.productRowTitle}>{displayTitle}</Text>
-                    <View style={styles.productRowFooter}>
-                      {productPrice !== undefined && (
-                        <Text style={styles.productRowPrice}>{formatPrice(productPrice)}</Text>
-                      )}
-                      {product && product.status === 'out_of_stock' && (
-                        <Text style={styles.outOfStockText}>{t('marketplace.outOfStock')}</Text>
-                      )}
-                    </View>
-                  </View>
-                  {product && !product.externalUrl && (
-                    <TouchableOpacity
-                      style={styles.productRowAddButton}
-                      activeOpacity={0.7}
-                      onPress={(e) => {
-                        e.stopPropagation();
-                        handleAddToCart(ad, e);
-                      }}
-                    >
-                      <Icon name='add' size={24} color='#000' />
-                    </TouchableOpacity>
-                  )}
-                </TouchableOpacity>
-              );
-            })
-          )}
-          {loading && page > 1 && (
-            <View style={styles.loadingMoreContainer}>
-              <ActivityIndicator size='small' color='#2196F3' />
-            </View>
-          )}
-          {hasMore && !loading && (
-            <TouchableOpacity
-              style={styles.loadMoreButton}
-              onPress={() => {
-                setPage((prev) => prev + 1);
-              }}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.loadMoreText}>{t('marketplace.loadMore')}</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      </View>
+      <ProductsList
+        ads={sortedAds}
+        loading={loading}
+        hasMore={hasMore}
+        onLoadMore={() => setPage((prev) => prev + 1)}
+        navigation={navigation}
+        orderOptions={orderOptions}
+        selectedOrder={selectedOrder}
+        onOrderSelect={handleOrderSelect}
+      />
     );
   };
 

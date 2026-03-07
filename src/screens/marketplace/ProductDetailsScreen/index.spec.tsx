@@ -159,6 +159,7 @@ describe('ProductDetailsScreen', () => {
     mockUseProductDetails.mockReturnValue({
       product: mockProduct,
       ad: null,
+      advertiserId: undefined,
       relatedProducts: [],
       loading: false,
       isFavorite: false,
@@ -195,6 +196,7 @@ describe('ProductDetailsScreen', () => {
     mockUseProductDetails.mockReturnValue({
       product: null,
       ad: null,
+      advertiserId: undefined,
       relatedProducts: [],
       loading: false,
       isFavorite: false,
@@ -220,6 +222,7 @@ describe('ProductDetailsScreen', () => {
     mockUseProductDetails.mockReturnValue({
       product: { ...mockProduct, name: 'Fallback Product' },
       ad: null,
+      advertiserId: undefined,
       relatedProducts: [],
       loading: false,
       isFavorite: false,
@@ -267,6 +270,7 @@ describe('ProductDetailsScreen', () => {
     mockUseProductDetails.mockReturnValue({
       product: mockProduct,
       ad: null,
+      advertiserId: undefined,
       relatedProducts: [mockProduct],
       loading: false,
       isFavorite: false,

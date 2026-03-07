@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header } from '@/components/ui/layout';
 import { Toggle } from '@/components/ui';
 import { SecondaryButton } from '@/components/ui/buttons';
-import { PlansCarousel, type Plan } from '@/components/sections/product';
+import { PlansCarousel, ProductsCarousel, type Plan, type Product } from '@/components/sections/product';
 import { PostCard } from '@/components/sections/community';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
 import { useProductDetails } from '@/hooks';
@@ -78,8 +78,9 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   const [activeTab, setActiveTab] = useState<'info' | 'preview'>('info');
   const [activeInfoTab, setActiveInfoTab] = useState<'about' | 'objectives' | 'communities'>('about');
   const [activeProductTab, setActiveProductTab] = useState<'goal' | 'description' | 'composition' | 'review'>('goal');
+  const [quantity, setQuantity] = useState(1);
 
-  const { product, ad, loading, handleAddToCart } = useProductDetails({
+  const { product, ad, advertiserId, loading, handleAddToCart, relatedProducts, loadAd } = useProductDetails({
     productId: route.params?.productId,
     fallbackProduct: route.params?.product,
     navigation,
@@ -122,7 +123,42 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   // Categoria do produto para badges
   const productCategory = displayData?.tags?.[0] || product?.type || route.params?.product?.type || 'Product';
 
-  const isProductType = productCategory == 'Product';
+  // Parceiro = dono do anúncio (advertiser). Dados vêm do ad quando a API retorna advertiser; senão de params. ProviderProfile carrega os dados na própria tela.
+  const partnerData = useMemo(() => {
+    const source = ad?.advertiser;
+    if (source) {
+      return {
+        id: source.id,
+        name: source.name ?? '',
+        avatar: source.logo ?? '',
+        description: source.description ?? '',
+        title: '' as string,
+        rating: undefined as number | undefined,
+        specialties: [] as string[],
+      };
+    }
+    const productWithProvider = product as {
+      provider?: { name?: string; avatar?: string; title?: string; description?: string; specialties?: string[] };
+      rating?: number;
+    };
+    const fromParams = route.params?.product?.provider as
+      | { name?: string; avatar?: string; title?: string; description?: string; specialties?: string[] }
+      | undefined;
+    const fromProduct = productWithProvider?.provider;
+    const p = fromParams || fromProduct;
+    const rating = route.params?.product?.rating ?? productWithProvider?.rating;
+    return {
+      id: advertiserId ?? product?.id ?? route.params?.productId ?? '',
+      name: p?.name ?? '',
+      avatar: p?.avatar ?? '',
+      description: p?.description ?? '',
+      title: p?.title ?? '',
+      rating,
+      specialties: p?.specialties ?? [],
+    };
+  }, [ad?.advertiser, advertiserId, product, route.params?.product]);
+
+  const isProductType = productCategory == 'physical product';
 
   const handleBackPress = () => {
     logButtonClick({
@@ -134,27 +170,17 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   };
 
   const handleSeeProviderProfile = () => {
-    const productWithProvider = product as { provider?: { name?: string; avatar?: string } };
-    const provider = route.params?.product?.provider || productWithProvider?.provider;
+    const providerId = advertiserId ?? partnerData.id ?? '';
+
     logButtonClick({
       screen_name: 'product_details',
       button_label: 'see_provider_profile',
       action_name: 'navigate_provider',
-      item_id: route.params?.productId || product?.id,
+      item_id: providerId,
     });
-    // Dados mockados quando não há provider disponível
-    const mockProvider = {
-      name: provider?.name || 'Dr. Avery Parker',
-      avatar: provider?.avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200',
-      title: 'Therapist & Wellness Coach',
-      description: 'Specialized in mental health and wellness coaching with over 10 years of experience.',
-      rating: route.params?.product?.rating ?? (product as { rating?: number })?.rating ?? 4.8,
-      specialties: ['Mental Health', 'Wellness Coaching', 'Therapy'],
-    };
 
     navigation.navigate('ProviderProfile', {
-      providerId: route.params?.productId || product?.id || 'mock-provider-id',
-      provider: mockProvider,
+      providerId,
     });
   };
 
@@ -173,6 +199,12 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       loadCommunityPosts(1);
     }
   }, [activeTab, loadCommunityPosts]);
+
+  useEffect(() => {
+    if (product?.id && route.params?.productId) {
+      loadAd();
+    }
+  }, [product?.id, route.params?.productId, loadAd]);
 
   const handlePlanPress = (plan: Plan) => {
     logSelectContent({
@@ -248,18 +280,36 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
               style={styles.heroGradient}
             />
             <View style={styles.heroContent}>
-              <View style={styles.badgesContainer}>
-                <View style={styles.badge}>
-                  <Text style={styles.badgeText}>Product</Text>
-                </View>
-                {productCategory && productCategory !== 'Product' && (
+              <View style={styles.heroContentLeft}>
+                <View style={styles.badgesContainer}>
                   <View style={styles.badge}>
-                    <Text style={styles.badgeText}>{productCategory}</Text>
+                    <Text style={styles.badgeText}>{t('marketplace.product')}</Text>
                   </View>
-                )}
+                  {productCategory && productCategory !== 'Product' && (
+                    <View style={styles.badge}>
+                      <Text style={styles.badgeText}>{productCategory}</Text>
+                    </View>
+                  )}
+                </View>
+                <Text style={styles.heroTitle}>{displayData.title}</Text>
+                {displayData.price && <Text style={styles.heroPrice}>{formatPrice(displayData.price)}</Text>}
               </View>
-              <Text style={styles.heroTitle}>{displayData.title}</Text>
-              {displayData.price && <Text style={styles.heroPrice}>{formatPrice(displayData.price)}</Text>}
+              {!displayData.isOutOfStock && (
+                <TouchableOpacity
+                  style={styles.heroCartButton}
+                  onPress={() => {
+                    logAddToCart({
+                      item_id: product?.id ?? route.params?.productId ?? '',
+                      item_name: displayData?.title,
+                      item_category: productCategory,
+                    });
+                    handleAddToCart();
+                  }}
+                  activeOpacity={0.8}
+                >
+                  <Icon name='shopping-cart' size={24} color='#001137' />
+                </TouchableOpacity>
+              )}
             </View>
           </View>
         </View>
@@ -275,17 +325,53 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
         <View style={styles.content}>
           {isProductType ? (
             <>
-              <View style={styles.tabsContainer}>
-                <ButtonCarousel
-                  options={productTabOptions}
-                  selectedId={activeProductTab}
-                  onSelect={(tabId) => {
-                    logTabSelect({ screen_name: 'product_details', tab_id: tabId });
-                    setActiveProductTab(tabId);
-                  }}
-                />
+              <View style={styles.contentCard}>
+                <View style={styles.ratingRow}>
+                  <View style={styles.contentBadge}>
+                    <Text style={styles.contentBadgeText}>{productCategory}</Text>
+                  </View>
+                  <View style={styles.ratingBlock}>
+                    <Text style={styles.ratingCount}>
+                      {((product as { reviewCount?: number })?.reviewCount ?? 2657).toLocaleString('pt-BR')}
+                    </Text>
+                    <Icon name='star' size={18} color='#FFB800' />
+                  </View>
+                </View>
+                <View style={styles.tabsContainerInCard}>
+                  <ButtonCarousel
+                    options={productTabOptions}
+                    selectedId={activeProductTab}
+                    onSelect={(tabId) => {
+                      logTabSelect({ screen_name: 'product_details', tab_id: tabId });
+                      setActiveProductTab(tabId);
+                    }}
+                  />
+                </View>
+                {renderProductTabContent()}
+                <View style={styles.priceQuantityRow}>
+                  <Text style={styles.contentPrice}>
+                    {displayData.price != null ? formatPrice(displayData.price * quantity) : ''}
+                  </Text>
+                  <View style={styles.quantitySelector}>
+                    <Text style={styles.quantityLabel}>{quantity}</Text>
+                    <TouchableOpacity
+                      style={styles.quantityButton}
+                      onPress={() => setQuantity((q) => Math.max(1, q - 1))}
+                    >
+                      <Icon name='keyboard-arrow-down' size={20} color='#FDFBEE' />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.quantityButton} onPress={() => setQuantity((q) => q + 1)}>
+                      <Icon name='keyboard-arrow-up' size={20} color='#FDFBEE' />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+                <TouchableOpacity style={styles.paymentLinkRow} onPress={() => undefined} activeOpacity={0.7}>
+                  <Text style={styles.paymentLinkText}>{t('marketplace.paymentOptionsText')} </Text>
+                  <Text style={styles.paymentLinkAnchor}>{t('marketplace.learnMore')}</Text>
+                </TouchableOpacity>
+                {renderPartnerSection()}
               </View>
-              {renderProductTabContent()}
+              {renderRecommendedProducts()}
             </>
           ) : (
             <>
@@ -315,7 +401,6 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                   </View>
                   {renderInfoSection()}
                   {renderUserFeedback()}
-                  {renderPlansCarousel()}
                 </>
               )}
 
@@ -343,42 +428,108 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   );
 
   function renderAddToCartButton() {
-    const productWithProvider = product as { provider?: { avatar?: string } };
-    const provider = route.params?.product?.provider || productWithProvider?.provider;
-    const providerAvatar = provider?.avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200';
-
     return (
       <View style={styles.floatingButtonContainer}>
         {!displayData.isOutOfStock && (
-          <View style={styles.floatingButtonRow}>
-            <Image source={{ uri: providerAvatar }} style={styles.providerAvatarInButton as ImageStyle} />
-            <TouchableOpacity
-              style={styles.floatingAddToCartButton}
-              onPress={() => {
-                logAddToCart({
-                  item_id: product?.id ?? route.params?.productId ?? '',
-                  item_name: displayData?.title,
-                  item_category: productCategory,
-                });
-                handleAddToCart();
-              }}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.floatingAddToCartText}>{t('marketplace.addToCart')}</Text>
-              <View style={styles.floatingCartIconContainer}>
-                <Icon name='shopping-cart' size={20} color='#FFFFFF' />
-              </View>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            style={styles.floatingAddToCartButton}
+            onPress={() => {
+              logAddToCart({
+                item_id: product?.id ?? route.params?.productId ?? '',
+                item_name: displayData?.title,
+                item_category: productCategory,
+              });
+              handleAddToCart();
+            }}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.floatingAddToCartText}>{t('marketplace.addToCart')}</Text>
+            <View style={styles.floatingCartIconContainer}>
+              <Icon name='shopping-cart' size={20} color='#FFFFFF' />
+            </View>
+          </TouchableOpacity>
         )}
-        <View style={styles.providerButtonContainer}>
-          <SecondaryButton
-            label={t('marketplace.seeProviderProfile')}
-            onPress={handleSeeProviderProfile}
-            style={styles.providerProfileButton}
-            size='large'
-          />
+      </View>
+    );
+  }
+
+  function renderPartnerSection() {
+    const providerName = partnerData.name;
+    const providerAvatar = partnerData.avatar;
+    const providerRating = partnerData.rating;
+
+    return (
+      <View style={styles.partnerSection}>
+        <View style={styles.partnerRow}>
+          {providerAvatar ? (
+            <Image source={{ uri: providerAvatar }} style={styles.partnerAvatar as ImageStyle} />
+          ) : (
+            <View style={[styles.partnerAvatar, styles.partnerAvatarPlaceholder]} />
+          )}
+          <View style={styles.partnerInfo}>
+            <Text style={styles.partnerName}>{providerName}</Text>
+            <Text style={styles.partnerTitle}>{t('marketplace.specialistLabel')}</Text>
+          </View>
+          {providerRating != null && (
+            <View style={styles.partnerRating}>
+              <Icon name='star' size={24} color='#FFB800' />
+              <Text style={styles.partnerRatingText}>{String(providerRating)}</Text>
+            </View>
+          )}
         </View>
+        <SecondaryButton
+          label={t('marketplace.seePartnerProfile')}
+          onPress={handleSeeProviderProfile}
+          style={styles.partnerProfileButton}
+          size='large'
+        />
+      </View>
+    );
+  }
+
+  function renderRecommendedProducts() {
+    const providerName = partnerData.name;
+    const recommendedTitle = t('marketplace.recommendedProductsForJourney', { provider: providerName });
+    const recommendedProducts: Product[] = (relatedProducts || [])
+      .filter((p) => p.id !== product?.id)
+      .map((p) => ({
+        id: p.id,
+        title: p.name,
+        price: p.price ?? 0,
+        tag: productCategory || p.type || 'Produto',
+        image: p.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
+        likes: 0,
+      }));
+
+    if (recommendedProducts.length === 0) return null;
+
+    return (
+      <View style={styles.recommendedSection}>
+        <ProductsCarousel
+          title={recommendedTitle}
+          subtitle={t('marketplace.discoverOptionsForYou')}
+          products={recommendedProducts}
+          onProductPress={(p) => {
+            logSelectContent({
+              content_type: 'product',
+              item_id: p.id,
+              item_name: p.title,
+              screen_name: 'product_details',
+            });
+            navigation.navigate('ProductDetails', {
+              productId: p.id,
+              product: {
+                id: p.id,
+                title: p.title,
+                price: formatPrice(p.price ?? 0),
+                image: p.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
+              },
+            });
+          }}
+          onProductLike={(p) =>
+            logSelectContent({ content_type: 'product_like', item_id: p.id, screen_name: 'product_details' })
+          }
+        />
       </View>
     );
   }
@@ -434,58 +585,6 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
             </View>
           ))}
         </View>
-      </View>
-    );
-  }
-
-  function renderPlansCarousel() {
-    // Mock plans data - substituir por dados reais quando disponível
-    const plans: Plan[] = [
-      {
-        id: '1',
-        title: 'Sleep Well Program',
-        price: 99.99,
-        tag: 'Wellness',
-        tagColor: 'green',
-        image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400',
-        likes: 42,
-        currency: 'USD',
-      },
-      {
-        id: '2',
-        title: 'Mindfulness Journey',
-        price: 79.99,
-        tag: 'Mental Health',
-        tagColor: 'orange',
-        image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400',
-        likes: 38,
-        currency: 'USD',
-      },
-      {
-        id: '3',
-        title: 'Fitness Challenge',
-        price: 59.99,
-        tag: 'Fitness',
-        tagColor: 'default',
-        image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400',
-        likes: 55,
-        currency: 'USD',
-      },
-    ];
-
-    if (plans.length === 0) {
-      return null;
-    }
-
-    return (
-      <View style={styles.plansSection}>
-        <PlansCarousel
-          title={t('marketplace.recommendedPlans')}
-          subtitle='Discover programs tailored for you'
-          plans={plans}
-          onPlanPress={handlePlanPress}
-          onPlanLike={handlePlanLike}
-        />
       </View>
     );
   }

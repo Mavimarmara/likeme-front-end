@@ -13,7 +13,9 @@ export { useActivities } from './activities/useActivities';
 
 // Marketplace hooks
 export { useProductDetails } from './marketplace/useProductDetails';
+export { useAdvertiser } from './marketplace/useAdvertiser';
 export { useMarketplaceAds } from './marketplace/useMarketplaceAds';
+export { useProviderAds } from './marketplace/useProviderAds';
 export { useSuggestedProducts } from './marketplace/useSuggestedProducts';
 export { usePayment } from './marketplace/usePayment';
 

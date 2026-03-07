@@ -49,6 +49,7 @@ export interface Product {
   externalUrl?: string; // External URL for the product (e.g., Amazon product link)
   createdAt: string;
   updatedAt: string;
+  advertiserId?: string; // Dono do anúncio / parceiro
   ads?: Ad[];
 }
 

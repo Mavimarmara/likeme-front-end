@@ -11,6 +11,7 @@ export { default as personalObjectivesService } from './person/personalObjective
 
 export { default as productService } from './product/productService';
 export { default as adService } from './ad/adService';
+export { default as advertiserService } from './advertiser/advertiserService';
 export { default as orderService } from './order/orderService';
 export { default as paymentService } from './payment/paymentService';
 export { default as activityService } from './activity/activityService';

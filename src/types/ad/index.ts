@@ -52,6 +52,8 @@ export type ListAdsApiResponse = ApiResponse<{
 
 export type GetAdApiResponse = ApiResponse<Ad>;
 
+export type GetAdvertiserApiResponse = ApiResponse<Advertiser>;
+
 export interface CreateAdData {
   advertiserId?: string;
   productId?: string;
