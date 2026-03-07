@@ -72,6 +72,13 @@ jest.mock('@/components/sections/product', () => ({
   Product: {},
 }));
 
+jest.mock('@/components/sections/marketplace', () => {
+  const { View } = require('react-native');
+  return {
+    ProductsList: () => <View testID='products-list' />,
+  };
+});
+
 jest.mock('@/hooks', () => ({
   useUserFeed: () => ({
     posts: [],

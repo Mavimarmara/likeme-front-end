@@ -10,7 +10,7 @@ import { Toggle } from '@/components/ui';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { PostCard } from '@/components/sections/community';
 import { ProductsList } from '@/components/sections/marketplace';
-import { useUserFeed, useAdvertiser } from '@/hooks';
+import { useUserFeed, useAdvertiser, useProviderAds } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import type { ProviderChat } from '@/types/community';
 import type { RootStackParamList } from '@/types/navigation';
@@ -43,6 +43,26 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
   const [_isFavorite, _setIsFavorite] = useState(false);
   const [isAboutExpanded, setIsAboutExpanded] = useState(true);
   const [isAcademicExpanded, setIsAcademicExpanded] = useState(true);
+  const [productsPage, setProductsPage] = useState(1);
+
+  const {
+    ads: providerAds,
+    loading: loadingAds,
+    hasMore: hasMoreAds,
+    loadAds: loadProviderAds,
+  } = useProviderAds({
+    advertiserId: providerId || undefined,
+    page: productsPage,
+    limit: 20,
+  });
+
+  React.useEffect(() => {
+    setProductsPage(1);
+  }, [providerId]);
+
+  React.useEffect(() => {
+    if (providerId) loadProviderAds();
+  }, [providerId, productsPage, loadProviderAds]);
 
   const initialAdvertiser = useMemo(() => {
     if (!providerFromParams) return null;
@@ -241,8 +261,11 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
                 </View>
 
                 <ProductsList
-                  advertiserId={providerId}
                   navigation={navigation}
+                  ads={providerAds}
+                  loading={loadingAds}
+                  hasMore={hasMoreAds}
+                  onLoadMore={() => setProductsPage((p) => p + 1)}
                   title={t('marketplace.recommendedProductsForJourney', { provider: providerData.name })}
                 />
 
