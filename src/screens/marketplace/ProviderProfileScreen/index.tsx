@@ -35,30 +35,6 @@ type ProviderProfileScreenProps = {
   };
 };
 
-const USER_REVIEWS = [
-  {
-    id: '1',
-    userName: 'Caio César',
-    comment: 'Helped me a lot',
-    date: '20 Jun 2023',
-    rating: 5,
-  },
-  {
-    id: '2',
-    userName: 'Maria Fernandes',
-    comment: 'Really nice!',
-    date: '19 Jun 2023',
-    rating: 4,
-  },
-  {
-    id: '3',
-    userName: 'Carla Junqueira',
-    comment: "I'd recommend it to everyone!",
-    date: '19 Jun 2023',
-    rating: 4,
-  },
-] as const;
-
 const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigation, route }) => {
   useAnalyticsScreen({ screenName: 'ProviderProfile', screenClass: 'ProviderProfileScreen' });
   const { t } = useTranslation();
@@ -138,10 +114,6 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
 
   const handleBackPress = () => {
     navigation.goBack();
-  };
-
-  const handleFollow = () => {
-    console.log('Follow provider:', providerId);
   };
 
   const handleTalkToProvider = () => {

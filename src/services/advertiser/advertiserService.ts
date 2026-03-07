@@ -1,7 +1,6 @@
 import apiClient from '../infrastructure/apiClient';
 import { logger } from '@/utils/logger';
-import type { Advertiser, GetAdvertiserApiResponse } from '@/types/ad';
-import type { ApiResponse } from '@/types/infrastructure';
+import type { GetAdvertiserApiResponse } from '@/types/ad';
 
 class AdvertiserService {
   private readonly advertisersEndpoint = '/api/advertisers';

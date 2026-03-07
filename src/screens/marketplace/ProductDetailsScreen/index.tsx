@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header } from '@/components/ui/layout';
 import { Toggle } from '@/components/ui';
 import { SecondaryButton } from '@/components/ui/buttons';
-import { PlansCarousel, ProductsCarousel, type Plan, type Product } from '@/components/sections/product';
+import { ProductsCarousel, type Product } from '@/components/sections/product';
 import { PostCard } from '@/components/sections/community';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
 import { useProductDetails } from '@/hooks';
@@ -205,23 +205,6 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       loadAd();
     }
   }, [product?.id, route.params?.productId, loadAd]);
-
-  const handlePlanPress = (plan: Plan) => {
-    logSelectContent({
-      content_type: 'plan',
-      item_id: plan.id,
-      item_name: plan.title,
-      screen_name: 'product_details',
-    });
-  };
-
-  const handlePlanLike = (plan: Plan) => {
-    logSelectContent({
-      content_type: 'plan_like',
-      item_id: plan.id,
-      screen_name: 'product_details',
-    });
-  };
 
   // Obter imagem do produto para o background e hero section
   const backgroundImage = useMemo(() => {
