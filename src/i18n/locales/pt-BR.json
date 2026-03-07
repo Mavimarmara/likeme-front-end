@@ -396,6 +396,7 @@
     "state": "Estado",
     "statePlaceholder": "Estado",
     "zipCode": "CEP",
+    "searchingAddress": "Buscando endereço...",
     "phone": "Telefone",
     "phonePlaceholder": "(00) 00000-0000",
     "sameBillingAddress": "Endereço de cobrança será o mesmo de entrega",

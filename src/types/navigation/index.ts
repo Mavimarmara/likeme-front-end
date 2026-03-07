@@ -59,7 +59,7 @@ export type RootStackParamList = {
     };
   };
   Cart: undefined;
-  Checkout: undefined;
+  Checkout: { zipCode?: string } | undefined;
   CommunityPreview: {
     productId: string;
     productName?: string;

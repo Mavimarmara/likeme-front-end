@@ -101,7 +101,7 @@ const ProductsList: React.FC<ProductsListProps> = ({
                   key={ad.id}
                   image={displayImage}
                   title={displayName}
-                  category={displayCategory}
+                  badges={[displayCategory]}
                   price={productPrice}
                   outOfStock={product?.status === 'out_of_stock'}
                   outOfStockLabel={t('marketplace.outOfStock', { defaultValue: 'Out of stock' })}

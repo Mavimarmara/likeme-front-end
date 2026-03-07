@@ -230,7 +230,7 @@ describe('CartScreen', () => {
     const buyButton = getByText('common.buy');
     fireEvent.press(buyButton);
 
-    expect(mockNavigation.navigate).toHaveBeenCalledWith('Checkout');
+    expect(mockNavigation.navigate).toHaveBeenCalledWith('Checkout', undefined);
   });
 
   it('handles back button press', async () => {

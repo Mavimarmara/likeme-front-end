@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import TextInput from '@/components/ui/inputs/TextInput';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { useTranslation } from '@/hooks/i18n';
 import { useFormattedInput } from '@/hooks';
+import { fetchAddressByZipCode, formatZipCodeDisplay } from '@/services/address/cepService';
 import { AddressData } from './AddressForm';
 import { styles } from '../styles';
 
@@ -24,11 +25,44 @@ const AddressEdit: React.FC<AddressEditProps> = ({
 }) => {
   const { t } = useTranslation();
   const [editData, setEditData] = useState<AddressData>(initialData);
+  const [loadingCep, setLoadingCep] = useState(false);
+  const lastFetchedCepRef = useRef<string | null>(null);
 
   const handleZipCodeChange = useFormattedInput({
     type: 'zipCode',
     onChangeText: (text) => setEditData((prev) => ({ ...prev, zipCode: text })),
   });
+
+  useEffect(() => {
+    const digits = editData.zipCode.replace(/\D/g, '');
+    if (digits.length !== 8 || digits === lastFetchedCepRef.current) return;
+    let cancelled = false;
+    lastFetchedCepRef.current = digits;
+    setLoadingCep(true);
+    fetchAddressByZipCode(editData.zipCode)
+      .then((data) => {
+        if (cancelled || !data) return;
+        setEditData((prev) => ({
+          ...prev,
+          zipCode: data.cep ? formatZipCodeDisplay(data.cep) : prev.zipCode,
+          addressLine1: data.logradouro ?? prev.addressLine1,
+          neighborhood: data.bairro ?? prev.neighborhood,
+          city: data.localidade ?? prev.city,
+          state: data.uf ?? prev.state,
+        }));
+      })
+      .then(
+        () => {
+          if (!cancelled) setLoadingCep(false);
+        },
+        () => {
+          if (!cancelled) setLoadingCep(false);
+        },
+      );
+    return () => {
+      cancelled = true;
+    };
+  }, [editData.zipCode]);
 
   const handlePhoneChange = useFormattedInput({
     type: 'phone',
@@ -37,6 +71,7 @@ const AddressEdit: React.FC<AddressEditProps> = ({
 
   useEffect(() => {
     setEditData(initialData);
+    lastFetchedCepRef.current = null;
   }, [initialData]);
 
   const handleSave = () => {
@@ -58,6 +93,23 @@ const AddressEdit: React.FC<AddressEditProps> = ({
         <Text style={styles.addressCardTitle}>{t(titleKey)}</Text>
       </View>
       <View style={styles.editAddressContainer}>
+        <View style={styles.addressRow}>
+          <View style={styles.addressFieldHalf}>
+            <TextInput
+              label={t('checkout.zipCode')}
+              placeholder={t('cart.zipCodePlaceholder')}
+              value={editData.zipCode}
+              onChangeText={handleZipCodeChange}
+              keyboardType='numeric'
+            />
+          </View>
+        </View>
+        {loadingCep && (
+          <View style={styles.cepLoadingWrap}>
+            <ActivityIndicator size='small' color='#001137' />
+            <Text style={styles.cepLoadingText}>{t('checkout.searchingAddress')}</Text>
+          </View>
+        )}
         <TextInput
           label={t('checkout.fullName')}
           placeholder={t('checkout.fullNamePlaceholder')}
@@ -113,26 +165,13 @@ const AddressEdit: React.FC<AddressEditProps> = ({
             />
           </View>
         </View>
-        <View style={styles.addressRow}>
-          <View style={styles.addressFieldHalf}>
-            <TextInput
-              label={t('checkout.zipCode')}
-              placeholder={t('cart.zipCodePlaceholder')}
-              value={editData.zipCode}
-              onChangeText={handleZipCodeChange}
-              keyboardType='numeric'
-            />
-          </View>
-          <View style={styles.addressFieldHalf}>
-            <TextInput
-              label={t('checkout.phone')}
-              placeholder={t('checkout.phonePlaceholder')}
-              value={editData.phone}
-              onChangeText={handlePhoneChange}
-              keyboardType='phone-pad'
-            />
-          </View>
-        </View>
+        <TextInput
+          label={t('checkout.phone')}
+          placeholder={t('checkout.phonePlaceholder')}
+          value={editData.phone}
+          onChangeText={handlePhoneChange}
+          keyboardType='phone-pad'
+        />
         <View style={styles.editAddressActions}>
           {onCancel && (
             <TouchableOpacity style={styles.cancelButton} onPress={onCancel} activeOpacity={0.7}>

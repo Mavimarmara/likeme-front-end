@@ -7,13 +7,14 @@ import { SecondaryButton } from '@/components/ui/buttons';
 import { Stepper } from '@/components/ui/tabs';
 import { storageService, orderService, userService } from '@/services';
 import { getShippingQuote } from '@/services/shipping/shippingService';
+import { formatZipCodeDisplay } from '@/services/address/cepService';
 import { formatPrice, formatAddress, formatBillingAddress } from '@/utils';
 import { useTranslation, usePayment } from '@/hooks';
 import { logger } from '@/utils/logger';
 import { styles } from './styles';
 import AddressForm, { AddressData, EMPTY_ADDRESS, isAddressFilled } from './address/AddressForm';
 import PaymentForm from './payment/PaymentForm';
-import CartItemList from './order/CartItemList';
+import { ProductItemCard } from '@/components/ui/cards';
 import OrderSummary from './order/OrderSummary';
 import OrderScreen from './order/OrderScreen';
 import type { CreateOrderData } from '@/types/order';
@@ -26,6 +27,9 @@ interface CartItem {
   quantity: number;
   image: string;
   tags?: string[];
+  subtitle?: string;
+  date?: string;
+  rating?: number;
 }
 
 type PaymentMethod = 'credit_card' | 'pix';
@@ -33,12 +37,14 @@ type CheckoutStep = 'address' | 'payment' | 'order';
 
 const PAYMENT_METHOD: PaymentMethod = 'credit_card';
 
+const noop = (): void => undefined;
+
 type Props = {
   navigation: any;
   route?: any;
 };
 
-const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
+const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
   useAnalyticsScreen({ screenName: 'Checkout', screenClass: 'CheckoutScreen' });
   const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState<CheckoutStep>('address');
@@ -66,6 +72,12 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
       const address = await userService.getShippingAddress();
       if (address) {
         setAddressData(address);
+      } else {
+        const cartZip = route?.params?.zipCode;
+        const digits = (cartZip || '').replace(/\D/g, '');
+        if (digits.length === 8) {
+          setAddressData({ ...EMPTY_ADDRESS, zipCode: formatZipCodeDisplay(cartZip!) });
+        }
       }
     } catch (error) {
       console.error('Error loading user address:', error);
@@ -104,7 +116,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
     return () => {
       cancelled = true;
     };
-  }, [zipCodeForShipping]);
+  }, [zipCodeForShipping, currentStep]);
 
   useEffect(() => {
     if (currentStep !== 'payment') payment.setPaymentError(null);
@@ -132,6 +144,29 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
     if (items.length === 0) {
       navigation.navigate('Cart');
     }
+  };
+
+  const handleIncreaseQuantity = async (id: string) => {
+    const items = await storageService.getCartItems();
+    const updated = items.map((item) =>
+      item.id === id ? { ...item, quantity: (Number(item.quantity) || 1) + 1 } : item,
+    );
+    await storageService.setCartItems(updated);
+    setCartItems(updated);
+  };
+
+  const handleDecreaseQuantity = async (id: string) => {
+    const items = await storageService.getCartItems();
+    const current = items.find((i) => i.id === id);
+    if (!current) return;
+    const q = Number(current.quantity) || 1;
+    if (q <= 1) {
+      await handleRemoveItem(id);
+      return;
+    }
+    const updated = items.map((item) => (item.id === id ? { ...item, quantity: q - 1 } : item));
+    await storageService.setCartItems(updated);
+    setCartItems(updated);
   };
 
   const calculateTotals = () => {
@@ -340,13 +375,36 @@ const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
             />
 
             <Text style={styles.deliveriesTitle}>{t('checkout.yourDeliveries')}</Text>
-            <CartItemList
-              items={cartItems}
-              formatPrice={formatPrice}
-              formatRating={formatRating}
-              containerStyle={styles.cartItemListNoPadding}
-              onRemoveItem={handleRemoveItem}
-            />
+            <View style={styles.cartItemsList} testID='cart-items-list'>
+              {cartItems.map((item) => (
+                <ProductItemCard
+                  key={item.id}
+                  image={item.image}
+                  title={item.title}
+                  price={item.price}
+                  formatPrice={formatPrice}
+                  onPress={noop}
+                  showAddButton={false}
+                  badges={item.tags}
+                  subtitle={
+                    item.subtitle
+                      ? item.date
+                        ? `${item.subtitle} · ${t('cart.date')}: ${item.date}`
+                        : item.subtitle
+                      : item.date
+                      ? `${t('cart.date')}: ${item.date}`
+                      : undefined
+                  }
+                  rating={item.rating}
+                  formatRating={formatRating}
+                  quantity={item.quantity}
+                  showDelete={true}
+                  onRemove={() => handleRemoveItem(item.id)}
+                  onIncreaseQuantity={() => handleIncreaseQuantity(item.id)}
+                  onDecreaseQuantity={() => handleDecreaseQuantity(item.id)}
+                />
+              ))}
+            </View>
 
             {orderSummary}
           </>

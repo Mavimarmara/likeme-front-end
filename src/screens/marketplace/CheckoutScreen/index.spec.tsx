@@ -122,11 +122,13 @@ jest.mock('./payment/PaymentForm', () => {
   return PaymentForm;
 });
 
-jest.mock('./order/CartItemList', () => {
+jest.mock('@/components/ui/cards', () => {
   const React = require('react');
   const { View, Text } = require('react-native');
-  return (props: any) =>
-    React.createElement(View, { testID: 'cart-item-list' }, React.createElement(Text, null, 'Cart Items'));
+  return {
+    ProductItemCard: (props: any) =>
+      React.createElement(View, { testID: 'product-item-card' }, React.createElement(Text, null, props?.title ?? '')),
+  };
 });
 
 jest.mock('./order/OrderSummary', () => {

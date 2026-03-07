@@ -202,7 +202,9 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
   };
 
   const handleBuy = () => {
-    navigation.navigate('Checkout');
+    const zipParam =
+      zipCode.trim().replace(/\D/g, '').length === 8 ? { zipCode: formatZipCodeDisplay(zipCode.trim()) } : undefined;
+    navigation.navigate('Checkout', zipParam);
   };
 
   const calculateSubtotal = () => {

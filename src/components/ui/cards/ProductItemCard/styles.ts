@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { COLORS } from '@/constants';
+import { COLORS, SPACING } from '@/constants';
 
 export const styles = StyleSheet.create({
   card: {
@@ -17,20 +17,31 @@ export const styles = StyleSheet.create({
   },
   image: {
     width: 108,
-    height: 122,
+    height: 140,
     borderRadius: 22,
+    backgroundColor: COLORS.NEUTRAL.LOW.MEDIUM,
   },
   content: {
     flex: 1,
     gap: 10,
     justifyContent: 'space-between',
     minWidth: 0,
+    marginVertical: SPACING.SM,
   },
   topRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
+  },
+  topRowRight: {
+    flexShrink: 0,
+  },
+  badgesWrap: {
+    flexDirection: 'row',
+    gap: 8,
+    flexShrink: 1,
+    minWidth: 0,
   },
   badge: {
     backgroundColor: 'rgba(0, 17, 55, 0.64)',
@@ -47,16 +58,26 @@ export const styles = StyleSheet.create({
     color: COLORS.PRIMARY.LIGHT,
     letterSpacing: 0.2,
   },
+  middleRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    width: '100%',
+    gap: 8,
+  },
+  titleBlock: {
+    flex: 1,
+    minWidth: 0,
+  },
   bottomRow: {
     flexDirection: 'row',
-    alignItems: 'flex-end',
+    alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
   },
-  textBlock: {
-    gap: 16,
-    flex: 1,
-    minWidth: 0,
+  priceBlock: {
+    flexShrink: 0,
+    justifyContent: 'center',
   },
   title: {
     fontSize: 14,
@@ -76,5 +97,53 @@ export const styles = StyleSheet.create({
     fontSize: 12,
     color: COLORS.ERROR,
     fontWeight: '600',
+  },
+  deleteButton: {
+    width: 24,
+    height: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  subtitle: {
+    fontSize: 14,
+    fontFamily: 'DM Sans',
+    fontWeight: '400',
+    color: COLORS.TEXT,
+    letterSpacing: 0.2,
+    marginTop: 2,
+  },
+  ratingWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    flexShrink: 0,
+  },
+  ratingText: {
+    fontSize: 14,
+    fontFamily: 'DM Sans',
+    fontWeight: '400',
+    color: COLORS.TEXT,
+    letterSpacing: 0.2,
+  },
+  quantityRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    flexShrink: 0,
+  },
+  quantityButton: {
+    width: 24,
+    height: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  quantityText: {
+    fontSize: 14,
+    fontFamily: 'DM Sans',
+    fontWeight: '400',
+    color: COLORS.TEXT,
+    minWidth: 24,
+    textAlign: 'center',
+    letterSpacing: 0.2,
   },
 });

@@ -64,8 +64,9 @@ export const styles = StyleSheet.create({
     color: '#000000',
     marginBottom: SPACING.MD,
   },
-  /** Remove padding horizontal do CartItemList no checkout (evita duplicar o padding do scrollContent) */
-  cartItemListNoPadding: {
+  /** Lista de itens do carrinho no passo endereço (sem padding horizontal para alinhar ao conteúdo) */
+  cartItemsList: {
+    gap: SPACING.MD,
     paddingHorizontal: 0,
   },
   addressSection: {
@@ -83,6 +84,18 @@ export const styles = StyleSheet.create({
   addressFieldNumber: {
     flex: 0.28,
     minWidth: 72,
+  },
+  cepLoadingWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.SM,
+    marginTop: SPACING.XS,
+  },
+  cepLoadingText: {
+    fontSize: FONT_SIZES.XS,
+    fontFamily: 'DM Sans',
+    fontWeight: '400',
+    color: '#6e6a6a',
   },
   paymentMethodSection: {
     marginBottom: SPACING.LG,
