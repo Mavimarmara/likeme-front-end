@@ -5,20 +5,7 @@ import { useTranslation } from '@/hooks/i18n';
 import { formatPrice } from '@/utils';
 import { styles } from '../styles';
 import type { AddressData } from '../address/AddressForm';
-
-interface CartItem {
-  id: string;
-  title: string;
-  price: number;
-  quantity: number;
-  image: string;
-  tags?: string[];
-  subtitle?: string;
-  date?: string;
-  rating?: number;
-  category?: 'Programs' | 'Product' | 'Service' | 'Sport';
-  deliveryForecast?: string;
-}
+import type { CartItem } from '@/types/cart';
 
 interface OrderScreenProps {
   orderId: string;

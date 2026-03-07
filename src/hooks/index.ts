@@ -18,6 +18,8 @@ export { useMarketplaceAds } from './marketplace/useMarketplaceAds';
 export { useProviderAds } from './marketplace/useProviderAds';
 export { useSuggestedProducts } from './marketplace/useSuggestedProducts';
 export { usePayment } from './marketplace/usePayment';
+export { useCart } from './marketplace/useCart';
+export type { UseCartOptions, UseCartReturn } from './marketplace/useCart';
 
 // Formatted input hook
 export { useFormattedInput } from './useFormattedInput';

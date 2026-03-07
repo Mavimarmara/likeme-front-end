@@ -34,9 +34,10 @@ describe('cartMapper', () => {
         price: 29.99,
         quantity: 1,
         rating: 5,
-        tags: ['physical product'],
+        type: 'physical product',
+        categoryId: undefined,
         category: 'Product',
-        subCategory: 'physical product',
+        tags: ['physical product'],
       });
     });
 
@@ -87,12 +88,18 @@ describe('cartMapper', () => {
       const result = mapProductToCartItem(productWithoutType);
 
       expect(result.tags).toEqual([]);
-      expect(result.subCategory).toBe('Product');
+      expect(result.category).toBe('Product');
     });
 
-    it('deve usar "Product" como category padrão', () => {
+    it('deve usar "Product" como category padrão quando type não é program', () => {
       const result = mapProductToCartItem(mockApiProduct);
       expect(result.category).toBe('Product');
+    });
+
+    it('deve usar category "Programs" quando type é program', () => {
+      const programProduct = { ...mockApiProduct, type: 'program' as const };
+      const result = mapProductToCartItem(programProduct);
+      expect(result.category).toBe('Programs');
     });
 
     it('deve usar description vazia quando undefined', () => {

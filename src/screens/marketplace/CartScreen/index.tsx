@@ -1,38 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image, TextInput, Linking } from 'react-native';
+import React, { useCallback, useState, useEffect, useRef } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, ImageBackground, TextInput, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { LogoMini } from '@/assets';
 import { Background } from '@/components/ui/layout';
 import { BackgroundIconButton } from '@/assets';
-import { ImageBackground } from 'react-native';
 import type { RootStackParamList } from '@/types/navigation';
-import storageService from '@/services/auth/storageService';
-import productService from '@/services/product/productService';
 import { formatPrice } from '@/utils';
 import { Alert } from 'react-native';
 import { SecondaryButton } from '@/components/ui/buttons';
-import { useTranslation } from '@/hooks/i18n';
-import { useFormattedInput } from '@/hooks';
+import { ProductItemCard } from '@/components/ui/cards';
+import { useTranslation, useCart, useFormattedInput } from '@/hooks';
 import { useAnalyticsScreen } from '@/analytics';
 import { isValidZipCodeFormat, formatZipCodeDisplay } from '@/services/address/cepService';
 import { getShippingQuote } from '@/services/shipping/shippingService';
 import { styles } from './styles';
-
-interface CartItem {
-  id: string;
-  image: string;
-  title: string;
-  subtitle?: string;
-  date?: string;
-  price: number;
-  quantity: number;
-  rating: number;
-  tags: string[];
-  category: 'Programs' | 'Product' | 'Service' | 'Sport';
-  subCategory: string;
-}
+import type { CartItem } from '@/types/cart';
 
 type CartScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'Cart'>;
@@ -44,136 +28,42 @@ const CORREIOS_CEP_URL = 'https://buscacepinter.correios.com.br/app/endereco/ind
 const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
   useAnalyticsScreen({ screenName: 'Cart', screenClass: 'CartScreen' });
   const { t } = useTranslation();
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const { cartItems, loading, loadAndValidateCartItems, increaseQuantity, decreaseQuantity, removeItem, subtotal } =
+    useCart();
+
   const [zipCode, setZipCode] = useState('');
   const [shipping, setShipping] = useState(0.0);
   const [shippingLoading, setShippingLoading] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   const handleZipCodeChange = useFormattedInput({ type: 'zipCode', onChangeText: setZipCode });
 
-  useEffect(() => {
-    loadCartItems();
+  const loadCartRef = useRef(() => {
+    loadAndValidateCartItems((removedNames) => {
+      if (removedNames.length > 0) {
+        Alert.alert(t('cart.cartUpdated'), `${t('cart.productsRemoved')}\n\n${removedNames.join('\n')}`);
+      }
+    });
+  });
+  loadCartRef.current = () => {
+    loadAndValidateCartItems((removedNames) => {
+      if (removedNames.length > 0) {
+        Alert.alert(t('cart.cartUpdated'), `${t('cart.productsRemoved')}\n\n${removedNames.join('\n')}`);
+      }
+    });
+  };
 
-    // Listener para quando a tela recebe foco (para atualizar quando voltar de outra tela)
+  useEffect(() => {
+    loadCartRef.current();
+
     const unsubscribe = navigation.addListener('focus', () => {
-      loadCartItems();
+      loadCartRef.current();
     });
 
     return unsubscribe;
   }, [navigation]);
 
-  const loadCartItems = async () => {
-    try {
-      setLoading(true);
-      const items = await storageService.getCartItems();
-
-      // Validar produtos: verificar se ainda existem e têm saldo
-      const validatedItems: CartItem[] = [];
-      const removedItems: string[] = [];
-
-      for (const item of items) {
-        try {
-          const productResponse = await productService.getProductById(item.id);
-
-          if (!productResponse.success || !productResponse.data) {
-            // Produto não existe mais
-            removedItems.push(item.title || item.id);
-            continue;
-          }
-
-          const product = productResponse.data;
-          const requestedQuantity = Number(item.quantity) || 1;
-
-          // Se quantity é null, ignora verificação de estoque (produto externo ou sem controle)
-          if (product.quantity !== null) {
-            const availableQuantity = product.quantity;
-
-            if (availableQuantity < requestedQuantity) {
-              // Produto não tem saldo suficiente
-              if (availableQuantity === 0) {
-                removedItems.push(item.title || item.id);
-                continue;
-              }
-              // Ajustar quantidade para o saldo disponível
-              item.quantity = availableQuantity;
-            }
-          }
-
-          // Garante que price e quantity são números
-          validatedItems.push({
-            ...item,
-            price: Number(product.price) || Number(item.price) || 0,
-            quantity: Number(item.quantity) || 1,
-            rating: Number(item.rating) || 0,
-          } as CartItem);
-        } catch (error) {
-          // Erro ao buscar produto - remover do carrinho
-          console.error(`Error validating product ${item.id}:`, error);
-          removedItems.push(item.title || item.id);
-        }
-      }
-
-      // Atualizar carrinho com itens validados
-      if (validatedItems.length !== items.length || removedItems.length > 0) {
-        await storageService.setCartItems(validatedItems);
-
-        if (removedItems.length > 0) {
-          Alert.alert(t('cart.cartUpdated'), `${t('cart.productsRemoved')}\n\n${removedItems.join('\n')}`);
-        }
-      }
-
-      setCartItems(validatedItems);
-    } catch (error) {
-      console.error('Error loading cart items:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const saveCartItems = async (items: CartItem[]) => {
-    try {
-      await storageService.setCartItems(items);
-      setCartItems(items);
-    } catch (error) {
-      console.error('Error saving cart items:', error);
-    }
-  };
-
   const handleBackPress = () => {
     navigation.goBack();
-  };
-
-  const handleIncreaseQuantity = async (id: string) => {
-    const updatedItems = cartItems.map((item) => {
-      if (item.id === id) {
-        const currentQuantity = Number(item.quantity) || 1;
-        return { ...item, quantity: currentQuantity + 1 };
-      }
-      return item;
-    });
-    await saveCartItems(updatedItems);
-  };
-
-  const handleDecreaseQuantity = async (id: string) => {
-    const updatedItems = cartItems
-      .map((item) => {
-        if (item.id === id) {
-          const currentQuantity = Number(item.quantity) || 1;
-          if (currentQuantity > 1) {
-            return { ...item, quantity: currentQuantity - 1 };
-          }
-          return null; // Marca para remover
-        }
-        return item;
-      })
-      .filter((item): item is CartItem => item !== null && (Number(item.quantity) || 0) > 0);
-    await saveCartItems(updatedItems);
-  };
-
-  const handleRemoveItem = async (id: string) => {
-    await storageService.removeCartItem(id);
-    await loadCartItems();
   };
 
   const handleApplyShipping = async () => {
@@ -207,17 +97,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
     navigation.navigate('Checkout', zipParam);
   };
 
-  const calculateSubtotal = () => {
-    return cartItems.reduce((sum, item) => {
-      const price = Number(item.price) || 0;
-      const quantity = Number(item.quantity) || 0;
-      return sum + price * quantity;
-    }, 0);
-  };
-
-  const calculateTotal = () => {
-    return calculateSubtotal() + shipping;
-  };
+  const calculateTotal = () => subtotal + shipping;
 
   const formatRating = (rating: number | undefined | null) => {
     if (rating === undefined || rating === null || isNaN(Number(rating))) {
@@ -226,6 +106,39 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
     return Number(rating).toFixed(3);
   };
 
+  const noop = useCallback((): void => undefined, []);
+
+  const renderCartItem = (item: CartItem) => (
+    <ProductItemCard
+      key={item.id}
+      image={item.image}
+      title={item.title}
+      price={item.price}
+      formatPrice={formatPrice}
+      onPress={noop}
+      showAddButton={false}
+      badges={item.tags}
+      subtitle={
+        item.subtitle
+          ? item.date
+            ? `${item.subtitle} · ${t('cart.date')}: ${item.date}`
+            : item.subtitle
+          : item.date
+          ? `${t('cart.date')}: ${item.date}`
+          : undefined
+      }
+      rating={item.rating}
+      formatRating={formatRating}
+      quantity={item.quantity}
+      showDelete={true}
+      onRemove={() => removeItem(item.id)}
+      onIncreaseQuantity={() => increaseQuantity(item.id)}
+      onDecreaseQuantity={() => decreaseQuantity(item.id)}
+      deleteButtonTestID={`delete-item-${item.id}`}
+      increaseQuantityTestID={`increase-quantity-${item.id}`}
+      decreaseQuantityTestID={`decrease-quantity-${item.id}`}
+    />
+  );
   const renderHeader = () => (
     <View style={styles.headerContainer}>
       <TouchableOpacity style={styles.backButton} onPress={handleBackPress} activeOpacity={0.7} testID='back-button'>
@@ -247,88 +160,6 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
   const renderWarningBanner = () => (
     <View style={styles.warningBanner}>
       <Text style={styles.warningText}>{t('cart.warningMessage')}</Text>
-    </View>
-  );
-
-  const renderCartItem = (item: CartItem) => (
-    <View key={item.id} style={styles.cartItemCard}>
-      {/* Imagem posicionada à esquerda */}
-      <Image source={{ uri: item.image }} style={styles.itemImage} />
-
-      {/* Tags e botão delete - PRIMEIRO (acima do título) */}
-      <View style={styles.itemTagsRow}>
-        <View style={styles.tagsContainer}>
-          {item.tags.map((tag, index) => (
-            <View key={index} style={styles.tagBadge}>
-              <Text style={[styles.tagText, index === 0 && styles.tagTextOrange, index === 1 && styles.tagTextGreen]}>
-                {tag}
-              </Text>
-            </View>
-          ))}
-        </View>
-        <TouchableOpacity
-          style={styles.deleteButton}
-          onPress={() => handleRemoveItem(item.id)}
-          activeOpacity={0.7}
-          testID={`delete-item-${item.id}`}
-        >
-          <Icon name='delete' size={24} color='#001137' />
-        </TouchableOpacity>
-      </View>
-
-      {/* Conteúdo principal - título, subtitle/date e rating */}
-      <View style={styles.itemHeaderContainer}>
-        <View style={styles.itemInfo}>
-          <Text style={styles.itemTitle} numberOfLines={2} ellipsizeMode='tail'>
-            {item.title}
-          </Text>
-          {item.subtitle && (
-            <Text style={styles.itemSubtitle} numberOfLines={1} ellipsizeMode='tail'>
-              {item.subtitle}
-            </Text>
-          )}
-          {!item.subtitle && item.date && (
-            <Text style={styles.itemDate}>
-              {t('cart.date')}: {item.date}
-            </Text>
-          )}
-          {item.subtitle && item.date && (
-            <Text style={styles.itemDate}>
-              {t('cart.date')}: {item.date}
-            </Text>
-          )}
-        </View>
-        {item.rating !== undefined && item.rating !== null && (
-          <View style={styles.ratingContainer}>
-            <Text style={styles.ratingText}>{formatRating(item.rating)}</Text>
-            <Icon name='star' size={18} color='#001137' />
-          </View>
-        )}
-      </View>
-
-      {/* Preço e controles de quantidade */}
-      <View style={styles.itemFooter}>
-        <Text style={styles.itemPrice}>{formatPrice(item.price)}</Text>
-        <View style={styles.quantityControls}>
-          <TouchableOpacity
-            style={styles.quantityButton}
-            onPress={() => handleDecreaseQuantity(item.id)}
-            activeOpacity={0.7}
-            testID={`decrease-quantity-${item.id}`}
-          >
-            <Icon name='remove-circle-outline' size={24} color='#001137' />
-          </TouchableOpacity>
-          <Text style={styles.quantityText}>{String(item.quantity).padStart(2, '0')}</Text>
-          <TouchableOpacity
-            style={styles.quantityButton}
-            onPress={() => handleIncreaseQuantity(item.id)}
-            activeOpacity={0.7}
-            testID={`increase-quantity-${item.id}`}
-          >
-            <Icon name='add-circle-outline' size={24} color='#001137' />
-          </TouchableOpacity>
-        </View>
-      </View>
     </View>
   );
 
@@ -368,7 +199,6 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
   );
 
   const renderOrderSummary = () => {
-    const subtotal = calculateSubtotal();
     const total = calculateTotal();
 
     return (

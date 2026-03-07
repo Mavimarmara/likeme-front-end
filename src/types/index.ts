@@ -10,6 +10,7 @@ export * from './product';
 export type { ListAdsParams, ListAdsApiResponse, GetAdApiResponse, CreateAdData, UpdateAdData } from './ad';
 export * from './activity';
 export * from './order';
+export * from './cart';
 
 export interface User {
   id: string;

@@ -25,6 +25,10 @@ export type ProductItemCardProps = {
   quantity?: number;
   onIncreaseQuantity?: () => void;
   onDecreaseQuantity?: () => void;
+  testID?: string;
+  deleteButtonTestID?: string;
+  increaseQuantityTestID?: string;
+  decreaseQuantityTestID?: string;
 };
 
 const DEFAULT_PLACEHOLDER_URI = 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
@@ -49,6 +53,10 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
   quantity,
   onIncreaseQuantity,
   onDecreaseQuantity,
+  testID,
+  deleteButtonTestID,
+  increaseQuantityTestID,
+  decreaseQuantityTestID,
 }) => {
   const imageSource = image ? { uri: image } : fallbackImage ?? { uri: DEFAULT_PLACEHOLDER_URI };
   const handleAddPress = useCallback(() => onAddPress?.(), [onAddPress]);
@@ -78,6 +86,7 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
                 activeOpacity={0.7}
                 accessibilityRole='button'
                 accessibilityLabel='Remover do carrinho'
+                testID={deleteButtonTestID}
               >
                 <Icon name='delete' size={24} color={iconColor} />
               </TouchableOpacity>
@@ -118,6 +127,7 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
                 activeOpacity={0.7}
                 accessibilityRole='button'
                 accessibilityLabel='Diminuir quantidade'
+                testID={decreaseQuantityTestID}
               >
                 <Icon name='remove-circle-outline' size={24} color={iconColor} />
               </TouchableOpacity>
@@ -130,6 +140,7 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
                 activeOpacity={0.7}
                 accessibilityRole='button'
                 accessibilityLabel='Aumentar quantidade'
+                testID={increaseQuantityTestID}
               >
                 <Icon name='add-circle-outline' size={24} color={iconColor} />
               </TouchableOpacity>
@@ -159,6 +170,7 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
       accessibilityRole='button'
       accessibilityLabel={`${title}${outOfStock ? `, ${outOfStockLabel}` : ''}`}
       accessibilityHint='Toque duas vezes para abrir o produto'
+      testID={testID}
     >
       {content}
     </TouchableOpacity>

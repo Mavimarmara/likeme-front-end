@@ -1,17 +1,5 @@
 import type { Product as ApiProduct } from '@/types/product';
-
-interface CartItem {
-  id: string;
-  image: string;
-  title: string;
-  subtitle: string;
-  price: number;
-  quantity: number;
-  rating: number;
-  tags: string[];
-  category: 'Product';
-  subCategory: string;
-}
+import type { CartItem } from '@/types/cart';
 
 export const mapProductToCartItem = (product: ApiProduct): CartItem => {
   const price =
@@ -25,8 +13,9 @@ export const mapProductToCartItem = (product: ApiProduct): CartItem => {
     price,
     quantity: 1,
     rating: 5,
+    type: product.type,
+    categoryId: product.categoryId,
+    category: product.type === 'program' ? 'Programs' : 'Product',
     tags: product.type ? [product.type] : [],
-    category: 'Product',
-    subCategory: product.type || 'Product',
   };
 };

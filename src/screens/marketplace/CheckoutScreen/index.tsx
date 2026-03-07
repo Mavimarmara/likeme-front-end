@@ -19,25 +19,14 @@ import OrderSummary from './order/OrderSummary';
 import OrderScreen from './order/OrderScreen';
 import type { CreateOrderData } from '@/types/order';
 import { useAnalyticsScreen } from '@/analytics';
+import { useCart } from '@/hooks';
 
-interface CartItem {
-  id: string;
-  title: string;
-  price: number;
-  quantity: number;
-  image: string;
-  tags?: string[];
-  subtitle?: string;
-  date?: string;
-  rating?: number;
-}
+const noop = (): void => undefined;
 
 type PaymentMethod = 'credit_card' | 'pix';
 type CheckoutStep = 'address' | 'payment' | 'order';
 
 const PAYMENT_METHOD: PaymentMethod = 'credit_card';
-
-const noop = (): void => undefined;
 
 type Props = {
   navigation: any;
@@ -47,8 +36,11 @@ type Props = {
 const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
   useAnalyticsScreen({ screenName: 'Checkout', screenClass: 'CheckoutScreen' });
   const { t } = useTranslation();
+  const { cartItems, loadCartItems, increaseQuantity, decreaseQuantity, removeItem, subtotal } = useCart({
+    onEmpty: () => navigation.navigate('Cart'),
+  });
+
   const [currentStep, setCurrentStep] = useState<CheckoutStep>('address');
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [addressData, setAddressData] = useState<AddressData>(EMPTY_ADDRESS);
   const [billingAddressData, setBillingAddressData] = useState<AddressData>(EMPTY_ADDRESS);
   const [deliverySameAsBilling, setDeliverySameAsBilling] = useState(true);
@@ -56,10 +48,14 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
   const [addressLoadError, setAddressLoadError] = useState<string | null>(null);
   const [addressSaveError, setAddressSaveError] = useState<string | null>(null);
   const payment = usePayment();
-  const [subtotal, setSubtotal] = useState(0);
   const [shipping, setShipping] = useState(0);
   const [shippingLoading, setShippingLoading] = useState(false);
   const [orderId, setOrderId] = useState('');
+
+  const effectiveDeliveryAddress = deliverySameAsBilling ? billingAddressData : addressData;
+  const deliveryZipCode = (effectiveDeliveryAddress.zipCode || '').replace(/\D/g, '');
+  const fallbackZipCode = (addressData.zipCode || '').replace(/\D/g, '');
+  const zipCodeForShipping = deliveryZipCode.length === 8 ? deliveryZipCode : fallbackZipCode;
 
   useEffect(() => {
     loadCartItems();
@@ -86,15 +82,6 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
       setAddressLoaded(true);
     }
   };
-
-  useEffect(() => {
-    calculateTotals();
-  }, [cartItems, shipping]);
-
-  const effectiveDeliveryAddress = deliverySameAsBilling ? billingAddressData : addressData;
-  const deliveryZipCode = (effectiveDeliveryAddress.zipCode || '').replace(/\D/g, '');
-  const fallbackZipCode = (addressData.zipCode || '').replace(/\D/g, '');
-  const zipCodeForShipping = deliveryZipCode.length === 8 ? deliveryZipCode : fallbackZipCode;
 
   useEffect(() => {
     if (zipCodeForShipping.length !== 8) {
@@ -127,56 +114,6 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
       setBillingAddressData(addressData);
     }
   }, [currentStep]);
-
-  const loadCartItems = async () => {
-    try {
-      const items = await storageService.getCartItems();
-      setCartItems(items);
-    } catch (error) {
-      console.error('Error loading cart items:', error);
-    }
-  };
-
-  const handleRemoveItem = async (id: string) => {
-    await storageService.removeCartItem(id);
-    const items = await storageService.getCartItems();
-    setCartItems(items);
-    if (items.length === 0) {
-      navigation.navigate('Cart');
-    }
-  };
-
-  const handleIncreaseQuantity = async (id: string) => {
-    const items = await storageService.getCartItems();
-    const updated = items.map((item) =>
-      item.id === id ? { ...item, quantity: (Number(item.quantity) || 1) + 1 } : item,
-    );
-    await storageService.setCartItems(updated);
-    setCartItems(updated);
-  };
-
-  const handleDecreaseQuantity = async (id: string) => {
-    const items = await storageService.getCartItems();
-    const current = items.find((i) => i.id === id);
-    if (!current) return;
-    const q = Number(current.quantity) || 1;
-    if (q <= 1) {
-      await handleRemoveItem(id);
-      return;
-    }
-    const updated = items.map((item) => (item.id === id ? { ...item, quantity: q - 1 } : item));
-    await storageService.setCartItems(updated);
-    setCartItems(updated);
-  };
-
-  const calculateTotals = () => {
-    const sub = cartItems.reduce((sum, item) => {
-      const price = Number(item.price) || 0;
-      const quantity = Number(item.quantity) || 0;
-      return sum + price * quantity;
-    }, 0);
-    setSubtotal(sub);
-  };
 
   const formatRating = (rating: number): string => {
     if (rating === undefined || rating === null || isNaN(rating)) {
@@ -399,9 +336,9 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
                   formatRating={formatRating}
                   quantity={item.quantity}
                   showDelete={true}
-                  onRemove={() => handleRemoveItem(item.id)}
-                  onIncreaseQuantity={() => handleIncreaseQuantity(item.id)}
-                  onDecreaseQuantity={() => handleDecreaseQuantity(item.id)}
+                  onRemove={() => removeItem(item.id)}
+                  onIncreaseQuantity={() => increaseQuantity(item.id)}
+                  onDecreaseQuantity={() => decreaseQuantity(item.id)}
                 />
               ))}
             </View>
