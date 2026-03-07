@@ -1,7 +1,5 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { COLORS, SPACING } from '@/constants';
-
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
   container: {
@@ -20,117 +18,6 @@ export const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 100,
-  },
-  heroSection: {
-    width: SCREEN_WIDTH,
-    height: SCREEN_HEIGHT * 0.6,
-    position: 'relative',
-  },
-  heroImage: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
-  heroImageStyle: {
-    borderBottomLeftRadius: 40,
-    borderBottomRightRadius: 40,
-  },
-  heroOverlay: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    paddingHorizontal: 32,
-    paddingBottom: 30,
-    borderBottomLeftRadius: 40,
-    borderBottomRightRadius: 40,
-  },
-  heroGradient: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 327,
-    borderBottomLeftRadius: 40,
-    borderBottomRightRadius: 40,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-  },
-  heroContent: {
-    zIndex: 1,
-  },
-  badgesContainer: {
-    flexDirection: 'row',
-    gap: 10,
-    marginBottom: 10,
-  },
-  badge: {
-    backgroundColor: 'rgba(0, 17, 55, 0.64)',
-    paddingHorizontal: 14,
-    paddingVertical: 0,
-    borderRadius: 16,
-    minHeight: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  badgeText: {
-    fontSize: 12,
-    fontFamily: 'DM Sans',
-    fontWeight: '500',
-    color: '#f6dea9',
-    letterSpacing: 0.2,
-  },
-  heroTitle: {
-    fontSize: 16,
-    fontFamily: 'DM Sans',
-    fontWeight: '500',
-    color: '#FFFFFF',
-    marginTop: 10,
-  },
-  heroName: {
-    fontSize: 24,
-    fontFamily: 'DM Sans',
-    fontWeight: '700',
-    color: '#FFFFFF',
-    marginTop: 8,
-  },
-  heroFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 16,
-  },
-  heroStats: {
-    flexDirection: 'row',
-    gap: 16,
-    alignItems: 'center',
-  },
-  statItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  statText: {
-    fontSize: 14,
-    fontFamily: 'DM Sans',
-    fontWeight: '500',
-    color: '#FFFFFF',
-  },
-  followButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingHorizontal: 20,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-  },
-  followButtonText: {
-    fontSize: 14,
-    fontFamily: 'DM Sans',
-    fontWeight: '600',
-    color: '#FFFFFF',
   },
   content: {
     paddingHorizontal: SPACING.MD,
