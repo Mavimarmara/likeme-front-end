@@ -203,24 +203,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
             {activeTab === 'about' && (
               <>
                 <View style={styles.aboutSection}>
-                  <TouchableOpacity
-                    style={styles.sectionHeader}
-                    onPress={() => setIsAboutExpanded(!isAboutExpanded)}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={styles.sectionTitle}>
-                      {t('marketplace.about')} {providerData.name}
-                    </Text>
-                    <Icon
-                      name={isAboutExpanded ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
-                      size={24}
-                      color='#001137'
-                    />
-                  </TouchableOpacity>
-                  {isAboutExpanded && <Text style={styles.descriptionText}>{providerData.description}</Text>}
-                </View>
-
-                <View style={styles.aboutSection}>
+                  {providerData.description}
                   <TouchableOpacity
                     style={styles.sectionHeader}
                     onPress={() => setIsAcademicExpanded(!isAcademicExpanded)}

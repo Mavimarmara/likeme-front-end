@@ -9,25 +9,27 @@ interface TextInputProps extends Omit<RNTextInputProps, 'onChangeText'> {
   helperText?: string;
   errorText?: string;
   containerStyle?: ViewStyle;
+  suffix?: string;
 }
 
 const TextInput = forwardRef<RNTextInput, TextInputProps>(
-  ({ label, value, onChangeText, helperText, errorText, containerStyle, style, ...props }, ref) => {
+  ({ label, value, onChangeText, helperText, errorText, containerStyle, style, suffix, ...props }, ref) => {
     const hasHelperContent = !!(helperText || errorText);
 
     return (
       <View style={[styles.container, containerStyle]}>
         <View style={styles.inputSection}>
           {label && <Text style={styles.label}>{label}</Text>}
-          <View style={styles.inputWrapper}>
+          <View style={[styles.inputWrapper, suffix ? styles.inputWrapperRow : undefined]}>
             <RNTextInput
               ref={ref}
-              style={[style, styles.input]}
+              style={[style, styles.input, suffix ? styles.inputWithSuffix : undefined]}
               placeholderTextColor={PLACEHOLDER_TEXT_COLOR}
               value={value}
               onChangeText={onChangeText}
               {...props}
             />
+            {suffix != null && suffix !== '' ? <Text style={styles.suffix}>{suffix}</Text> : null}
           </View>
         </View>
         {hasHelperContent && (

@@ -38,6 +38,21 @@ export const styles = StyleSheet.create({
     width: '100%',
   },
 
+  inputWrapperRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fdfbee',
+    borderRadius: 18,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 16,
+    elevation: 4,
+    paddingLeft: 16,
+    paddingRight: 16,
+    minHeight: 42,
+  },
+
   input: {
     alignSelf: 'stretch',
     backgroundColor: '#fdfbee',
@@ -61,6 +76,31 @@ export const styles = StyleSheet.create({
     position: 'relative',
     width: '100%',
     minHeight: 42,
+  },
+
+  inputWithSuffix: {
+    flex: 1,
+    minWidth: 0,
+    paddingRight: 4,
+    paddingLeft: 0,
+    paddingTop: 12,
+    paddingBottom: 12,
+    backgroundColor: 'transparent',
+    borderRadius: 0,
+    shadowColor: 'transparent',
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 0,
+  },
+
+  suffix: {
+    color: '#6e6a6a',
+    fontFamily: 'DM Sans',
+    fontSize: 14,
+    fontWeight: '400',
+    letterSpacing: 0.2,
+    lineHeight: 20,
+    paddingRight: 0,
   },
 
   helperContainer: {

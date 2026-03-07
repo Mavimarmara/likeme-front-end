@@ -45,6 +45,31 @@ const KEYBOARD_RESPIRATION = 24;
 const SCROLL_FOCUS_OFFSET_PX = 80;
 const SCROLL_PADDING_WHEN_KEYBOARD_OPEN = 120;
 
+/** Extrai só números e um separador decimal para peso. */
+function parseWeightInput(text: string): string {
+  const cleaned = text.replace(/[^\d,.]/g, '').replace(',', '.');
+  const parts = cleaned.split('.');
+  if (parts.length <= 1) return parts[0] ?? '';
+  return `${parts[0]}.${parts.slice(1).join('').slice(0, 1)}`;
+}
+
+/** Formata digitação de altura como X,XX (vírgula decimal). */
+function parseHeightInput(text: string): string {
+  const cleaned = text.replace(/[^\d,]/g, '');
+  const hasComma = cleaned.includes(',');
+  if (hasComma) {
+    const [intPart, decPart = ''] = cleaned.split(',');
+    const a = (intPart ?? '').slice(0, 2);
+    const b = (decPart ?? '').slice(0, 2).padEnd(2, '0').slice(0, 2);
+    return a ? `${a},${b}` : '';
+  }
+  if (cleaned.length <= 2) return cleaned;
+  const asMeters = cleaned.slice(0, 4);
+  const intPart = asMeters.slice(0, -2) || '0';
+  const decPart = asMeters.slice(-2);
+  return `${intPart},${decPart}`;
+}
+
 type Props = StackScreenProps<RootStackParamList, 'Register'>;
 
 const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
@@ -378,10 +403,11 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
                         label={t('auth.weight')}
                         value={weight}
                         onChangeText={(v) => {
-                          setWeight(v);
+                          setWeight(parseWeightInput(v));
                           setFieldErrors((e) => (e.weight ? { ...e, weight: undefined } : e));
                         }}
-                        placeholder={t('auth.weightPlaceholder')}
+                        placeholder='60'
+                        suffix=' Kg'
                         keyboardType='decimal-pad'
                         onFocus={() => scrollToFocusedField('weight')}
                         errorText={fieldErrors.weight}
@@ -399,10 +425,11 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
                         label={t('auth.height')}
                         value={height}
                         onChangeText={(v) => {
-                          setHeight(v);
+                          setHeight(parseHeightInput(v));
                           setFieldErrors((e) => (e.height ? { ...e, height: undefined } : e));
                         }}
-                        placeholder={t('auth.heightPlaceholder')}
+                        placeholder='1,60'
+                        suffix=' m'
                         keyboardType='decimal-pad'
                         onFocus={() => scrollToFocusedField('height')}
                         errorText={fieldErrors.height}
