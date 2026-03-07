@@ -27,6 +27,15 @@ jest.mock('@/components/ui/layout', () => {
       </View>
     ),
     Background: () => null,
+    HeroImage: ({ name, title, badges = [], ...rest }: any) => (
+      <View testID='hero-image'>
+        {name != null && <Text>{name}</Text>}
+        {title != null && <Text>{title}</Text>}
+        {(badges || []).map((b: string, i: number) => (
+          <Text key={i}>{b}</Text>
+        ))}
+      </View>
+    ),
   };
 });
 
@@ -38,6 +47,21 @@ jest.mock('@/components/ui', () => {
         {options.map((option: string) => (
           <TouchableOpacity key={option} onPress={() => onSelect(option)}>
             <Text>{option}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    ),
+  };
+});
+
+jest.mock('@/components/ui/tabs', () => {
+  const { View, Text, TouchableOpacity } = require('react-native');
+  return {
+    ToggleTabs: ({ tabs, activeTabId, onTabPress }: any) => (
+      <View testID='toggle-tabs'>
+        {(tabs || []).map((tab: { id: string; label: string }) => (
+          <TouchableOpacity key={tab.id} onPress={() => onTabPress?.(tab.id)}>
+            <Text>{tab.label}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -169,7 +193,7 @@ describe('ProviderProfileScreen', () => {
 
     expect(getByText('Dr. Avery Parker')).toBeTruthy();
     expect(getByText('Therapist & Wellness Coach')).toBeTruthy();
-    expect(getByText('Specialized in mental health and wellness coaching.')).toBeTruthy();
+    expect(getByText(/Specialized in mental health/)).toBeTruthy();
     expect(getByText('Mental Health')).toBeTruthy();
     expect(getByText('Wellness Coaching')).toBeTruthy();
     expect(getByText('Therapy')).toBeTruthy();

@@ -1,6 +1,24 @@
 // Mock para react-native-vector-icons
 jest.mock('react-native-vector-icons/MaterialIcons', () => 'MaterialIcons');
 
+// Mock para expo-linear-gradient (evita carregar expo-modules-core ESM no Jest)
+jest.mock('expo-linear-gradient', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  return {
+    LinearGradient: ({ children, ...props }) => React.createElement(View, props, children),
+  };
+});
+
+// Mock para expo-blur (ESM no Jest)
+jest.mock('expo-blur', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  return {
+    BlurView: (props) => React.createElement(View, props),
+  };
+});
+
 // Mock para expo-auth-session
 jest.mock('expo-auth-session', () => ({
   AuthRequest: jest.fn(),

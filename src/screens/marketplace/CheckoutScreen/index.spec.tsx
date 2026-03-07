@@ -179,41 +179,80 @@ jest.mock('@/services', () => {
   };
 });
 
-jest.mock('@/hooks', () => ({
-  useFormattedInput: () => jest.fn((text: string) => text),
-  useTranslation: () => ({ t: (key: string) => key }),
-  usePayment: () => ({
-    cardholderName: '',
-    cardNumber: '',
-    expiryDate: '',
-    cvv: '',
-    cpf: '',
-    couponCode: '',
-    couponError: null,
-    paymentFieldErrors: {},
-    paymentError: null,
-    isProcessing: false,
-    setPaymentError: jest.fn(),
-    setPaymentFieldErrors: jest.fn(),
-    setIsProcessing: jest.fn(),
-    onCardholderNameChange: jest.fn(),
-    onCardNumberChange: jest.fn(),
-    onExpiryDateChange: jest.fn(),
-    onCvvChange: jest.fn(),
-    onCpfChange: jest.fn(),
-    onCouponCodeChange: jest.fn(),
-    setCouponError: jest.fn(),
-    isPaymentStepValid: () => true,
-    validatePaymentFields: () => null,
-    getCardData: () => ({
-      cardNumber: '4111111111111111',
-      cardHolderName: 'John Doe',
-      cardExpirationDate: '1225',
-      cardCvv: '123',
-      cpf: '12345678901',
+jest.mock('@/hooks', () => {
+  const mockCartItems = [
+    {
+      id: '1',
+      image: 'https://example.com/image1.jpg',
+      title: 'Product 1',
+      subtitle: 'Description 1',
+      price: 29.99,
+      quantity: 2,
+      rating: 4.5,
+      tags: ['tag1'],
+    },
+  ];
+  return {
+    useFormattedInput: () => jest.fn((text: string) => text),
+    useTranslation: () => ({ t: (key: string) => key }),
+    usePayment: () => ({
+      cardholderName: '',
+      cardNumber: '',
+      expiryDate: '',
+      cvv: '',
+      cpf: '',
+      couponCode: '',
+      couponError: null,
+      paymentFieldErrors: {},
+      paymentError: null,
+      isProcessing: false,
+      setPaymentError: jest.fn(),
+      setPaymentFieldErrors: jest.fn(),
+      setIsProcessing: jest.fn(),
+      onCardholderNameChange: jest.fn(),
+      onCardNumberChange: jest.fn(),
+      onExpiryDateChange: jest.fn(),
+      onCvvChange: jest.fn(),
+      onCpfChange: jest.fn(),
+      onCouponCodeChange: jest.fn(),
+      setCouponError: jest.fn(),
+      isPaymentStepValid: () => true,
+      validatePaymentFields: () => null,
+      getCardData: () => ({
+        cardNumber: '4111111111111111',
+        cardHolderName: 'John Doe',
+        cardExpirationDate: '1225',
+        cardCvv: '123',
+        cpf: '12345678901',
+      }),
     }),
-  }),
-}));
+    useCart: () => {
+      const { storageService: storage } = require('@/services');
+      const items = [
+        {
+          id: '1',
+          image: 'https://example.com/image1.jpg',
+          title: 'Product 1',
+          subtitle: 'Description 1',
+          price: 29.99,
+          quantity: 2,
+          rating: 4.5,
+          tags: ['tag1'],
+        },
+      ];
+      return {
+        cartItems: items,
+        loading: false,
+        loadCartItems: jest.fn().mockImplementation(() => storage.getCartItems()),
+        loadAndValidateCartItems: jest.fn(),
+        increaseQuantity: jest.fn(),
+        decreaseQuantity: jest.fn(),
+        removeItem: jest.fn(),
+        subtotal: items.reduce((s, i) => s + i.price * i.quantity, 0),
+      };
+    },
+  };
+});
 
 jest.mock('@/analytics', () => ({
   useAnalyticsScreen: jest.fn(),

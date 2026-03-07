@@ -203,7 +203,9 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
             {activeTab === 'about' && (
               <>
                 <View style={styles.aboutSection}>
-                  {providerData.description}
+                  {providerData.description ? (
+                    <Text style={styles.descriptionText}>{providerData.description}</Text>
+                  ) : null}
                   <TouchableOpacity
                     style={styles.sectionHeader}
                     onPress={() => setIsAcademicExpanded(!isAcademicExpanded)}
