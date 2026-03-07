@@ -5,8 +5,9 @@ import type { Ad } from '@/types/ad';
 
 interface UseMarketplaceAdsParams {
   selectedCategory: string;
-  selectedCategoryId?: string | null; // domain category (Estresse, Sono, etc.)
+  selectedCategoryId?: string | null;
   page: number;
+  searchQuery?: string;
 }
 
 interface UseMarketplaceAdsReturn {
@@ -20,6 +21,7 @@ export const useMarketplaceAds = ({
   selectedCategory,
   selectedCategoryId,
   page,
+  searchQuery,
 }: UseMarketplaceAdsParams): UseMarketplaceAdsReturn => {
   const [ads, setAds] = useState<Ad[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,8 +42,13 @@ export const useMarketplaceAds = ({
       params.categoryId = selectedCategoryId;
     }
 
+    const trimmedSearch = searchQuery?.trim();
+    if (trimmedSearch) {
+      params.search = trimmedSearch;
+    }
+
     return params;
-  }, [selectedCategory, selectedCategoryId, page]);
+  }, [selectedCategory, selectedCategoryId, page, searchQuery]);
 
   const loadAds = useCallback(async () => {
     try {

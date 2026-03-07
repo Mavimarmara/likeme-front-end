@@ -38,6 +38,7 @@ export interface ListAdsParams {
   type?: 'amazon product' | 'physical product' | 'program';
   categoryId?: string; // domain category (Estresse, Sono, etc.)
   activeOnly?: boolean;
+  search?: string;
 }
 
 export type ListAdsApiResponse = ApiResponse<{

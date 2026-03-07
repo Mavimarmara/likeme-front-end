@@ -34,6 +34,7 @@ export const styles = StyleSheet.create({
   },
   joinCommunityContainer: {
     paddingTop: SPACING.LG,
+    paddingHorizontal: SPACING.MD,
   },
   productsContainer: {
     paddingTop: SPACING.LG,

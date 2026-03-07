@@ -42,6 +42,10 @@ class AdService {
         queryParams.activeOnly = String(params.activeOnly);
       }
 
+      if (params.search != null && params.search.trim() !== '') {
+        queryParams.search = params.search.trim();
+      }
+
       const response = await apiClient.get<ListAdsApiResponse>(this.adsEndpoint, queryParams, true, false);
 
       logger.debug('Ads list response:', {

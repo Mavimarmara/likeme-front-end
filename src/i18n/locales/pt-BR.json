@@ -338,7 +338,9 @@
     "buyOnAmazon": "Comprar na Amazon",
     "amazonDisclaimer": "A compra do produto selecionado será concluída na Amazon.",
     "learnMore": "Saiba mais",
-    "otherOptions": "Outras opções"
+    "otherOptions": "Outras opções",
+    "talkToProvider": "Conversar com {provider}",
+    "curatedSpecialty": "Curadoria especializada"
   },
   "cart": {
     "yourCart": "Seu carrinho",

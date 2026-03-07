@@ -228,7 +228,8 @@ export const styles = StyleSheet.create({
     marginLeft: SPACING.MD,
   },
   talkButtonContainer: {
-    marginBottom: SPACING.XL,
+    marginVertical: SPACING.XL,
+    marginHorizontal: SPACING.MD,
   },
   talkButton: {
     width: '100%',
@@ -318,7 +319,14 @@ export const styles = StyleSheet.create({
     color: '#001137',
   },
   communityPreviewContainer: {
-    marginTop: SPACING.MD,
+    gap: SPACING.MD,
+  },
+  communitiesSectionTitle: {
+    fontSize: 14,
+    fontFamily: 'DM Sans',
+    fontWeight: '700',
+    color: '#001137',
+    marginBottom: SPACING.SM,
   },
   loadingContainer: {
     flex: 1,

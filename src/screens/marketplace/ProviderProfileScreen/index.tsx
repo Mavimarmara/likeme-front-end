@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ImageBackground, ActivityIndicator } from 'react-native';
+import React, { useState, useMemo, useCallback } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, ImageBackground, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { CommonActions } from '@react-navigation/native';
@@ -8,14 +8,15 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header } from '@/components/ui/layout';
 import { Toggle } from '@/components/ui';
 import { SecondaryButton } from '@/components/ui/buttons';
-import { PostCard } from '@/components/sections/community';
+import { JoinCommunityCard, type JoinCommunity } from '@/components/sections/community';
 import { ProductsList } from '@/components/sections/marketplace';
-import { useUserFeed, useAdvertiser, useProviderAds } from '@/hooks';
+import { useAdvertiser, useProviderAds, useCommunities } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import type { ProviderChat } from '@/types/community';
 import type { RootStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
+import { communityService } from '@/services';
 
 type ProviderProfileScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'ProviderProfile'>;
@@ -116,21 +117,34 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
     return providerData?.avatar ?? '';
   }, [providerData?.avatar]);
 
-  // Carregar posts quando a aba communities estiver ativa
-  const {
-    posts: communityPosts,
-    loading: loadingPosts,
-    loadPosts: loadCommunityPosts,
-  } = useUserFeed({
-    enabled: false,
+  const { communities: rawCommunities, categories } = useCommunities({
+    enabled: activeTab === 'communities',
     pageSize: 10,
   });
 
-  React.useEffect(() => {
-    if (activeTab === 'communities') {
-      loadCommunityPosts(1);
-    }
-  }, [activeTab, loadCommunityPosts]);
+  const joinCommunities = useMemo((): JoinCommunity[] => {
+    return rawCommunities.map((community) => {
+      const category = categories.length > 0 ? categories[0] : undefined;
+      return {
+        id: community.communityId,
+        title: community.displayName,
+        badge: category?.name ?? 'Community',
+        image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
+      };
+    });
+  }, [rawCommunities, categories]);
+
+  const handleJoinCommunity = useCallback(
+    async (community: JoinCommunity) => {
+      try {
+        await communityService.joinCommunity(community.id);
+        rootNavigation.navigate('Community' as never);
+      } catch {
+        Alert.alert(t('common.error'), t('home.joinCommunityError'));
+      }
+    },
+    [rootNavigation, t],
+  );
 
   const handleBackPress = () => {
     navigation.goBack();
@@ -266,12 +280,12 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
                   loading={loadingAds}
                   hasMore={hasMoreAds}
                   onLoadMore={() => setProductsPage((p) => p + 1)}
-                  title={t('marketplace.recommendedProductsForJourney', { provider: providerData.name })}
+                  title={t('marketplace.allProducts')}
                 />
 
                 <View style={styles.talkButtonContainer}>
                   <SecondaryButton
-                    label={providerData.name ? `Talk to ${providerData.name}` : 'Talk to provider'}
+                    label={t('marketplace.talkToProvider', { provider: providerData.name })}
                     onPress={handleTalkToProvider}
                     icon='arrow-forward'
                     iconPosition='right'
@@ -283,17 +297,17 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
 
             {activeTab === 'communities' && (
               <View style={styles.communityPreviewContainer}>
-                {loadingPosts ? (
-                  <View style={styles.loadingContainer}>
-                    <ActivityIndicator size='large' color='#001137' />
-                  </View>
-                ) : !communityPosts || communityPosts.length === 0 ? (
-                  <View style={styles.emptyContainer}>
-                    <Text style={styles.emptyText}>{t('marketplace.noCommunityPostsFound')}</Text>
-                  </View>
-                ) : (
-                  communityPosts.map((post) => <PostCard key={post.id} post={post} />)
-                )}
+                <Text style={styles.communitiesSectionTitle}>{t('marketplace.curatedSpecialty')}</Text>
+                <JoinCommunityCard communities={joinCommunities} onCommunityPress={handleJoinCommunity} />
+                <View style={styles.talkButtonContainer}>
+                  <SecondaryButton
+                    label={t('marketplace.talkToProvider', { provider: providerData.name })}
+                    onPress={handleTalkToProvider}
+                    icon='arrow-forward'
+                    iconPosition='right'
+                    style={styles.talkButton}
+                  />
+                </View>
               </View>
             )}
           </View>

@@ -64,6 +64,7 @@ jest.mock('@/components/sections/community', () => {
         <Text>{post.content}</Text>
       </View>
     ),
+    JoinCommunityCard: () => <View testID='join-community-card' />,
     NextEventsSection: ({ events }: any) => <View testID='next-events' />,
   };
 });
@@ -80,10 +81,11 @@ jest.mock('@/components/sections/marketplace', () => {
 });
 
 jest.mock('@/hooks', () => ({
-  useUserFeed: () => ({
-    posts: [],
+  useCommunities: () => ({
+    communities: [],
+    categories: [],
     loading: false,
-    loadPosts: jest.fn(),
+    loadCommunities: jest.fn(),
   }),
   useAdvertiser: jest.fn(
     (opts: { initialAdvertiser?: { id: string; name: string; description?: string; logo?: string } }) => {

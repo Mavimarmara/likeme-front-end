@@ -5,9 +5,7 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 const CARD_WIDTH = SCREEN_WIDTH - SPACING.MD * 2 - SPACING.SM;
 
 export const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: SPACING.MD,
-  },
+  container: {},
   scrollContent: {
     paddingHorizontal: SPACING.MD,
     gap: SPACING.SM,
