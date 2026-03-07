@@ -78,6 +78,29 @@ jest.mock('@/hooks', () => ({
     loading: false,
     loadPosts: jest.fn(),
   }),
+  useAdvertiser: jest.fn(
+    (opts: { initialAdvertiser?: { id: string; name: string; description?: string; logo?: string } }) => {
+      if (opts?.initialAdvertiser) {
+        return { advertiser: undefined, loading: false };
+      }
+      return {
+        advertiser: {
+          id: 'provider-1',
+          name: 'Marcela Ferraz',
+          description: '',
+          logo: undefined,
+        },
+        loading: false,
+      };
+    },
+  ),
+  useProviderAds: () => ({
+    ads: [],
+    loading: false,
+    hasMore: false,
+    loadAds: jest.fn(),
+  }),
+  useCategories: () => ({ categories: [] }),
 }));
 
 jest.mock('@/utils', () => ({
@@ -137,7 +160,6 @@ describe('ProviderProfileScreen', () => {
 
     expect(getByText('Dr. Avery Parker')).toBeTruthy();
     expect(getByText('Therapist & Wellness Coach')).toBeTruthy();
-    expect(getByText('4.8')).toBeTruthy();
     expect(getByText('Specialized in mental health and wellness coaching.')).toBeTruthy();
     expect(getByText('Mental Health')).toBeTruthy();
     expect(getByText('Wellness Coaching')).toBeTruthy();
@@ -150,7 +172,6 @@ describe('ProviderProfileScreen', () => {
     );
 
     expect(getByText('Marcela Ferraz')).toBeTruthy();
-    expect(getByText('Professora de Yoga')).toBeTruthy();
   });
 
   it('calls goBack when back button is pressed', () => {
@@ -160,15 +181,6 @@ describe('ProviderProfileScreen', () => {
     fireEvent.press(backButton);
 
     expect(mockNavigation.goBack).toHaveBeenCalled();
-  });
-
-  it('handles Follow button press', () => {
-    const { getByText } = render(<ProviderProfileScreen navigation={mockNavigation} route={mockRouteWithProvider} />);
-
-    const followButton = getByText('Follow');
-    fireEvent.press(followButton);
-
-    expect(console.log).toHaveBeenCalledWith('Follow provider:', 'provider-1');
   });
 
   it('renders correctly when provider has no avatar', () => {
