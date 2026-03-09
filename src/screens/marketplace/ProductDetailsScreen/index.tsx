@@ -10,7 +10,7 @@ import { SecondaryButton } from '@/components/ui/buttons';
 import { ProductsCarousel, type Product } from '@/components/sections/product';
 import { PostCard } from '@/components/sections/community';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
-import { useProductDetails } from '@/hooks';
+import { useProductDetails, useSuggestedProducts, useCategories } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import { formatPrice } from '@/utils';
 import { useUserFeed } from '@/hooks';
@@ -80,26 +80,38 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   const [activeProductTab, setActiveProductTab] = useState<'goal' | 'description' | 'composition' | 'review'>('goal');
   const [quantity, setQuantity] = useState(1);
 
-  const { product, ad, advertiserId, loading, handleAddToCart, relatedProducts, loadAd } = useProductDetails({
+  const { product, ad, advertiserId, loading, handleAddToCart, loadAd } = useProductDetails({
     productId: route.params?.productId,
     fallbackProduct: route.params?.product,
     navigation,
   });
+
+  const { products: suggestedProducts, loading: loadingSuggested } = useSuggestedProducts({
+    limit: 5,
+    categoryId: product?.categoryId ?? undefined,
+    enabled: !!product?.id,
+  });
+
+  const { categories } = useCategories({ enabled: true });
 
   const displayData = useMemo(() => {
     if (!product) {
       return null;
     }
 
+    const categoryName = product.categoryId
+      ? categories.find((c) => c.categoryId === product.categoryId)?.name
+      : undefined;
+
     return {
       title: ad?.product?.name || product.name,
       description: ad?.product?.description || product.description,
       image: ad?.product?.image || product.image,
       price: product.price,
-      tags: product.type ? [product.type] : [],
+      tags: categoryName ? [categoryName] : [],
       isOutOfStock: product.status === 'out_of_stock' || product.quantity === 0,
     };
-  }, [product, ad]);
+  }, [product, ad, categories]);
 
   const infoTabOptions: ButtonCarouselOption<'about' | 'objectives' | 'communities'>[] = useMemo(
     () => [
@@ -120,8 +132,8 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     [t],
   );
 
-  // Categoria do produto para badges
-  const productCategory = displayData?.tags?.[0] || product?.type || route.params?.product?.type || 'Product';
+  // Categoria do produto para badges/tags (nome da categoria); tipo do produto para layout
+  const productCategory = displayData?.tags?.[0] || 'Product';
 
   // Parceiro = dono do anúncio (advertiser). Dados vêm do ad quando a API retorna advertiser; senão de params. ProviderProfile carrega os dados na própria tela.
   const partnerData = useMemo(() => {
@@ -158,7 +170,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     };
   }, [ad?.advertiser, advertiserId, product, route.params?.product]);
 
-  const isProductType = productCategory == 'physical product';
+  const isProductType = product?.type === 'physical product';
 
   const handleBackPress = () => {
     logButtonClick({
@@ -473,17 +485,9 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   function renderRecommendedProducts() {
     const providerName = partnerData.name;
     const recommendedTitle = t('marketplace.recommendedProductsForJourney', { provider: providerName });
-    const recommendedProducts: Product[] = (relatedProducts || [])
-      .filter((p) => p.id !== product?.id)
-      .map((p) => ({
-        id: p.id,
-        title: p.name,
-        price: p.price ?? 0,
-        tag: productCategory || p.type || 'Produto',
-        image: p.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
-        likes: 0,
-      }));
+    const recommendedProducts: Product[] = (suggestedProducts || []).filter((p) => p.id !== product?.id).slice(0, 5);
 
+    if (loadingSuggested && recommendedProducts.length === 0) return null;
     if (recommendedProducts.length === 0) return null;
 
     return (
