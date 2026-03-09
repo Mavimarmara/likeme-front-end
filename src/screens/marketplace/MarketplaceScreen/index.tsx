@@ -168,6 +168,10 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       return null;
     }
 
+    const categoryBadge = highlight.product.categoryId
+      ? categories.find((c) => c.categoryId === highlight.product?.categoryId)?.name
+      : undefined;
+
     return (
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t('marketplace.weekHighlights')}</Text>
@@ -176,6 +180,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
           image={highlight.product.image || DEFAULT_HIGHLIGHT_IMAGE}
           price={highlight.product.price}
           onPress={() => handleAdPress(highlight)}
+          badge={categoryBadge}
         />
       </View>
     );

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { productService } from '@/services';
+import { productService, categoryService } from '@/services';
 import type { Product } from '@/components/sections/product';
 
 interface UseSuggestedProductsOptions {
@@ -31,18 +31,21 @@ export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}):
     setError(null);
 
     try {
-      const response = await productService.listProducts({
-        limit,
-        status,
-        ...(categoryId != null && categoryId !== '' ? { categoryId } : {}),
-      });
+      const [productsResponse, categoriesList] = await Promise.all([
+        productService.listProducts({
+          limit,
+          status,
+          ...(categoryId != null && categoryId !== '' ? { categoryId } : {}),
+        }),
+        categoryService.listCategories().catch(() => []),
+      ]);
 
-      if (response.success && response.data) {
-        const mappedProducts: Product[] = response.data.products.map((p) => ({
+      if (productsResponse.success && productsResponse.data) {
+        const mappedProducts: Product[] = productsResponse.data.products.map((p) => ({
           id: p.id,
           title: p.name,
           price: p.price || 0,
-          tag: p.type || 'Product',
+          tag: categoriesList.find((c) => c.categoryId === p.categoryId)?.name ?? 'Product',
           image: p.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
           likes: 0,
         }));
