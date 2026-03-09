@@ -29,6 +29,9 @@ const ROUTES_HIDE_MENU = ['ProductDetails', 'ProviderProfile', 'Cart', 'Checkout
 /** Nomes de telas em que o menu deve ficar escondido (rota focada em qualquer nível) */
 const FOCUSED_ROUTES_HIDE_MENU = ['Chat', 'ChatDetails'];
 
+/** Rota focada na stack de Chat que deve mostrar o menu (lista de conversas) */
+const CHAT_STACK_LIST_ROUTE = 'ChatList';
+
 /** Retorna o nome da rota ativa no fim da árvore (rota "focada") a partir do state dado */
 function getFocusedRouteName(
   state: { routes: { name: string; state?: any }[]; index: number } | undefined,
@@ -42,9 +45,28 @@ function getFocusedRouteName(
   return route?.name;
 }
 
+/** Na stack Chat: índice 0 = ChatList, 1 = Chat, 2 = ChatDetails. Retorna -1 se não for a stack Chat. */
+function getChatStackFocusedIndex(
+  state: { routes: { name: string; state?: any }[]; index: number } | undefined,
+): number {
+  if (!state?.routes?.length || state.index == null) return -1;
+  const route = state.routes[state.index];
+  if (route?.name !== 'Chat' || !route?.state?.routes?.length || route.state?.index == null) return -1;
+  return route.state.index as number;
+}
+
 /** Retorna se o menu deve ser escondido com base no state de navegação */
 function shouldHideMenu(state: { routes: { name: string; state?: any }[]; index: number } | undefined): boolean {
   const focusedName = getFocusedRouteName(state);
+  const chatStackIndex = getChatStackFocusedIndex(state);
+
+  // Estamos na stack de Chat: índice 0 = ChatList (mostrar menu), 1 = Chat, 2 = ChatDetails (esconder)
+  if (chatStackIndex === 0) return false;
+  if (chatStackIndex === 1 || chatStackIndex === 2) return true;
+  // Primeira vez na stack Chat: state aninhado pode não existir ainda (chatStackIndex -1) -> mostrar menu
+  if (chatStackIndex === -1 && state?.routes?.[state?.index ?? -1]?.name === 'Chat') return false;
+
+  if (focusedName === CHAT_STACK_LIST_ROUTE) return false;
   if (focusedName && FOCUSED_ROUTES_HIDE_MENU.includes(focusedName)) return true;
   if (!state?.routes?.length || state.index == null) return false;
   const route = state.routes[state.index];
