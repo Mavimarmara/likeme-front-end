@@ -31,8 +31,9 @@ const CHAT_STACK_HIDE_MENU_NESTED = ['Chat', 'ChatDetails'];
 
 /** Retorna se o menu deve ser escondido com base no state de navegação */
 function shouldHideMenu(state: { routes: { name: string; state?: any }[]; index: number } | undefined): boolean {
-  if (!state?.routes?.[state.index]) return false;
+  if (!state?.routes?.length || state.index == null) return false;
   const route = state.routes[state.index];
+  if (!route) return false;
   if (ROUTES_HIDE_MENU.includes(route.name)) return true;
   if (route.name === 'Chat' && route.state?.routes) {
     const nestedIndex = route.state.index ?? 0;
@@ -68,7 +69,7 @@ function getSelectedIdFromRoute(routeName: string | undefined): string | undefin
 export const FloatingMenuProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [menu, setMenuState] = useState<MenuState>(null);
 
-  const currentRouteName = useNavigationState((state) => state.routes[state.index]?.name);
+  const currentRouteName = useNavigationState((state) => state?.routes?.[state?.index]?.name);
   const hideMenu = useNavigationState(shouldHideMenu);
   const selectedIdFromRoute = useMemo(() => getSelectedIdFromRoute(currentRouteName), [currentRouteName]);
 
