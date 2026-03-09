@@ -8,7 +8,7 @@
  *    - Com scores: se tem respostas ou completou
  *    - Vazio: se não tem respostas e não completou
  *
- * 2. CARD DE PROMPT (AnamnesisPromptCard):
+ * 2. CARD DE PROMPT (AnamnesisPromptCard) - temporariamente comentado:
  *    - Aparece quando: !hasCompletedAnamnesis
  *    - Desaparece quando: hasCompletedAnamnesis === true
  *

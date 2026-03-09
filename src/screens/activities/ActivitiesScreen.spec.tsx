@@ -132,12 +132,10 @@ jest.mock('@/components/ui/cards', () => {
   };
 });
 
-jest.mock('@/components/sections/anamnesis', () => {
-  const { View } = require('react-native');
-  return {
-    AnamnesisPromptCard: () => <View testID='anamnesis-prompt' />,
-  };
-});
+jest.mock('@/components/sections/anamnesis', () => ({
+  // AnamnesisPromptCard temporariamente comentado
+  // AnamnesisPromptCard: () => <View testID='anamnesis-prompt' />,
+}));
 
 jest.mock('@/assets', () => ({
   BackgroundIconButton: require('react-native').Image.resolveAssetSource({ uri: 'test' }),

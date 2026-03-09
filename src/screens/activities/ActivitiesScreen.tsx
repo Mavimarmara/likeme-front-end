@@ -16,7 +16,7 @@ import { formatPrice, getDateFromDatetime, getTimeFromDatetime, sortByDateTime, 
 import { COLORS } from '@/constants';
 import { useActivities, useSuggestedProducts, useMenuItems } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
-import { AnamnesisPromptCard } from '@/components/sections/anamnesis';
+// import { AnamnesisPromptCard } from '@/components/sections/anamnesis';
 import type { Order } from '@/types/order';
 import type { RootStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
@@ -46,7 +46,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
   const [daySortOrder, setDaySortOrder] = useState<'asc' | 'desc'>('desc');
   const [menuVisibleForId, setMenuVisibleForId] = useState<string | null>(null);
   const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null);
-  const [hasCompletedAnamnesis, setHasCompletedAnamnesis] = useState<boolean>(false);
+  const [_hasCompletedAnamnesis, setHasCompletedAnamnesis] = useState<boolean>(false);
 
   // Usar o hook useActivities
   const {
@@ -407,9 +407,10 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
     }
   };
 
-  const handleStartAnamnesis = () => {
-    rootNavigation.navigate('Anamnesis' as never);
-  };
+  // AnamnesisPromptCard temporariamente comentado
+  // const handleStartAnamnesis = () => {
+  //   rootNavigation.navigate('Anamnesis' as never);
+  // };
 
   const renderTabs = () => (
     <View style={styles.tabsContainer}>
@@ -743,11 +744,13 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
               ) : (
                 filteredActivities.map(renderActivityCard)
               )}
+              {/* TODO: AnamnesisPromptCard temporariamente comentado
               {!hasCompletedAnamnesis && (
                 <View style={styles.anamnesisPromptContainer}>
                   <AnamnesisPromptCard onStartPress={handleStartAnamnesis} />
                 </View>
               )}
+              */}
               {activeTab === 'actives' && plans.length > 0 && (
                 <View>
                   <PlansCarousel
