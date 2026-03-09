@@ -52,15 +52,18 @@ const ChatScreen: React.FC = () => {
   const { t } = useTranslation();
   const navigation = useNavigation<ChatNavigation>();
   const route = useRoute<RouteProp<ChatStackParamList, 'Chat'>>();
-  const { channelId, channelName, channelAvatar, channelDescription } = route.params;
+  const { channelId, channelName, channelAvatar, channelDescription, targetAdvertiserId, initialMessage } =
+    route.params;
+
+  const isComposeMode = !channelId && !!targetAdvertiserId;
 
   const scrollViewRef = useRef<ScrollView>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [messageText, setMessageText] = useState('');
+  const [loading, setLoading] = useState(!isComposeMode);
+  const [messageText, setMessageText] = useState(isComposeMode ? initialMessage ?? '' : '');
 
   const userAvatarUri = useUserAvatar();
-  const { isBlocked, checkStatus: recheckBlocked } = useBlockedUser(channelId);
+  const { isBlocked, checkStatus: recheckBlocked } = useBlockedUser(channelId ?? '');
 
   useFocusEffect(
     useCallback(() => {
@@ -69,6 +72,7 @@ const ChatScreen: React.FC = () => {
   );
 
   const loadMessages = useCallback(async () => {
+    if (!channelId) return;
     try {
       setLoading(true);
       const response = await chatService.getChannelMessages(channelId);
@@ -87,8 +91,8 @@ const ChatScreen: React.FC = () => {
   }, [channelId]);
 
   useEffect(() => {
-    loadMessages();
-  }, [loadMessages]);
+    if (!isComposeMode) loadMessages();
+  }, [loadMessages, isComposeMode]);
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -114,6 +118,31 @@ const ChatScreen: React.FC = () => {
   const handleSendMessage = useCallback(async () => {
     const trimmed = messageText.trim();
     if (trimmed.length === 0 || sending) return;
+
+    if (isComposeMode && targetAdvertiserId) {
+      setSending(true);
+      try {
+        const result = await chatService.createConversation(targetAdvertiserId, trimmed);
+        if (result.success && result.data?.channelId) {
+          setMessageText('');
+          navigation.replace('Chat', {
+            channelId: result.data.channelId,
+            channelName,
+            channelAvatar,
+            channelDescription,
+          });
+        } else {
+          Alert.alert(t('chat.errorTitle'), result.error || t('chat.sendError'));
+        }
+      } catch {
+        Alert.alert(t('chat.errorTitle'), t('chat.sendError'));
+      } finally {
+        setSending(false);
+      }
+      return;
+    }
+
+    if (!channelId) return;
 
     const optimisticId = `temp-${Date.now()}`;
     const optimisticMsg: ChatMessage = {
@@ -141,9 +170,21 @@ const ChatScreen: React.FC = () => {
     } finally {
       setSending(false);
     }
-  }, [messageText, sending, channelId, t]);
+  }, [
+    messageText,
+    sending,
+    channelId,
+    isComposeMode,
+    targetAdvertiserId,
+    channelName,
+    channelAvatar,
+    channelDescription,
+    navigation,
+    t,
+  ]);
 
   const navigateToDetails = () => {
+    if (!channelId) return;
     navigation.navigate('ChatDetails', { channelId, channelName, channelAvatar });
   };
 
@@ -164,7 +205,12 @@ const ChatScreen: React.FC = () => {
 
           <View style={styles.chatHeader}>
             <IconButton icon='chevron-left' onPress={() => navigation.goBack()} backgroundSize='medium' />
-            <TouchableOpacity style={styles.headerInfo} activeOpacity={0.7} onPress={navigateToDetails}>
+            <TouchableOpacity
+              style={styles.headerInfo}
+              activeOpacity={0.7}
+              onPress={channelId ? navigateToDetails : undefined}
+              disabled={!channelId}
+            >
               {channelAvatar ? (
                 <Image source={{ uri: channelAvatar }} style={styles.headerAvatar} />
               ) : (
