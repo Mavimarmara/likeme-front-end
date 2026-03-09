@@ -1,6 +1,10 @@
 import apiClient from '../infrastructure/apiClient';
 import { logger } from '@/utils/logger';
-import type { GetAdvertiserApiResponse, ListAdvertisersApiResponse } from '@/types/ad';
+import type {
+  GetAdvertiserApiResponse,
+  ListAdvertisersApiResponse,
+  ListAdvertiserProfilesApiResponse,
+} from '@/types/ad';
 
 class AdvertiserService {
   private readonly advertisersEndpoint = '/api/advertisers';
@@ -54,6 +58,29 @@ class AdvertiserService {
       return response;
     } catch (error) {
       logger.error('Error fetching advertiser detail:', error);
+      throw error;
+    }
+  }
+
+  async getAdvertiserProfiles(advertiserId: string, locale = 'pt-BR'): Promise<ListAdvertiserProfilesApiResponse> {
+    try {
+      if (!advertiserId || advertiserId.trim() === '') {
+        throw new Error('Advertiser ID is required');
+      }
+
+      const endpoint = `${this.advertisersEndpoint}/${advertiserId.trim()}/profiles`;
+
+      const response = await apiClient.get<ListAdvertiserProfilesApiResponse>(endpoint, { locale }, true, false);
+
+      logger.debug('Advertiser profiles response:', {
+        advertiserId,
+        success: response.success,
+        count: response.data?.profiles?.length ?? 0,
+      });
+
+      return response;
+    } catch (error) {
+      logger.error('Error fetching advertiser profiles:', error);
       throw error;
     }
   }
