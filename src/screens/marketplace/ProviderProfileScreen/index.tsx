@@ -41,7 +41,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
   const { providerId, provider: providerFromParams } = route.params;
   const [activeTab, setActiveTab] = useState<'about' | 'communities'>('about');
   const [_isFavorite, _setIsFavorite] = useState(false);
-  const [isAboutExpanded, setIsAboutExpanded] = useState(true);
+  const [_isAboutExpanded, _setIsAboutExpanded] = useState(true);
   const [isAcademicExpanded, setIsAcademicExpanded] = useState(true);
   const [productsPage, setProductsPage] = useState(1);
 
