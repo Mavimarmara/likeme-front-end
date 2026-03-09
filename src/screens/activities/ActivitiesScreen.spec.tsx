@@ -126,8 +126,7 @@ jest.mock('@/components/sections/product', () => {
   const { View } = require('react-native');
   return {
     ProductsCarousel: () => <View testID='products-carousel' />,
-    PlansCarousel: () => <View testID='plans-carousel' />,
-    Plan: {},
+    PlansCarousel: () => null,
   };
 });
 

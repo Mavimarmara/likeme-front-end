@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { CommonActions } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header, HeroImage } from '@/components/ui/layout';
@@ -11,7 +10,6 @@ import { JoinCommunityCard, type JoinCommunity } from '@/components/sections/com
 import { ProductsList } from '@/components/sections/marketplace';
 import { useAdvertiser, useProviderAds, useCommunities } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
-import type { ProviderChat } from '@/types/community';
 import type { RootStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
@@ -145,24 +143,15 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
 
   const handleTalkToProvider = () => {
     if (!providerData) return;
-    const chat: ProviderChat = {
-      id: providerId,
-      providerName: providerData.name,
-      providerAvatar: providerData.avatar,
-      lastMessage: '',
-      timestamp: 'Now',
-      unreadCount: 0,
-    };
-
-    rootNavigation.dispatch(
-      CommonActions.navigate({
-        name: 'Chat',
-        params: {
-          screen: 'ChatList',
-          params: { chat },
-        },
-      }),
-    );
+    (rootNavigation as any).navigate('Chat', {
+      screen: 'Chat',
+      params: {
+        targetAdvertiserId: providerId,
+        channelName: providerData.name,
+        channelAvatar: providerData.avatar,
+        initialMessage: t('marketplace.chatInitialMessage'),
+      },
+    });
   };
 
   return (

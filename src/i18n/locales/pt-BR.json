@@ -340,6 +340,7 @@
     "learnMore": "Saiba mais",
     "otherOptions": "Outras opções",
     "talkToProvider": "Conversar com {provider}",
+    "chatInitialMessage": "Olá! Gostaria de mais informações sobre seus produtos e serviços.",
     "curatedSpecialty": "Curadoria especializada"
   },
   "cart": {

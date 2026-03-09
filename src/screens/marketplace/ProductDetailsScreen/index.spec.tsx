@@ -78,14 +78,9 @@ jest.mock('@/components/sections/marketplace', () => {
 });
 
 jest.mock('@/components/sections/product', () => {
-  const { View, Text } = require('react-native');
+  const { View } = require('react-native');
   return {
-    PlansCarousel: () => (
-      <View testID='plans-carousel'>
-        <Text>Plans</Text>
-      </View>
-    ),
-    Plan: {},
+    ProductsCarousel: () => <View testID='products-carousel' />,
   };
 });
 

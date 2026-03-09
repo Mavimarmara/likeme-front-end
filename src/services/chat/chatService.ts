@@ -4,7 +4,6 @@ import type { ChannelsApiResponse, GetChannelsParams } from '@/types/community';
 
 const CHANNELS_ENDPOINT = '/api/chat/channels';
 const USERS_ENDPOINT = '/api/chat/users';
-const CONVERSATIONS_ENDPOINT = '/api/chat/conversations';
 
 class ChatService {
   async getChannels(params: GetChannelsParams = {}): Promise<ChannelsApiResponse> {
@@ -86,10 +85,11 @@ class ChatService {
   }
 
   /**
-   * Cria uma conversa com o parceiro (advertiserId) e opcionalmente envia a primeira mensagem.
+   * Cria um canal de conversa com o parceiro (advertiserId) e opcionalmente envia a primeira mensagem.
+   * POST /api/chat/channels com body { advertiserId, initialMessage? }.
    * Retorna o channelId para navegar para a tela de chat.
    */
-  async createConversation(
+  async createChannel(
     advertiserId: string,
     initialMessage?: string,
   ): Promise<{ success: boolean; data?: { channelId: string }; error?: string }> {
@@ -106,18 +106,18 @@ class ChatService {
         data?: { channelId: string };
         error?: string;
         message?: string;
-      }>(CONVERSATIONS_ENDPOINT, body, true);
+      }>(CHANNELS_ENDPOINT, body, true);
       if (response.success === false || !response.success) {
         return {
           success: false,
-          error: response.error || response.message || 'Erro ao criar conversa',
+          error: response.error || response.message || 'Erro ao criar canal',
         };
       }
       return { success: true, data: response.data };
     } catch (error) {
-      logger.error('Error creating conversation:', error);
+      logger.error('Error creating channel:', error);
       const err = error as { message?: string };
-      return { success: false, error: err?.message || 'Erro ao criar conversa' };
+      return { success: false, error: err?.message || 'Erro ao criar canal' };
     }
   }
 

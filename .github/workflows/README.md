@@ -51,11 +51,19 @@ Os builds ficam disponíveis em:
 - [expo.dev](https://expo.dev/accounts/pixelpulselab/projects/likeme-front-end/builds)
 - Você receberá notificação por email quando os builds concluírem
 
-## 🔄 Envio Automático (Opcional)
+## 🔄 Envio para lojas (Submit) com aprovação
 
-Para enviar automaticamente para TestFlight/Google Play após o build, você pode adicionar jobs de submit no workflow. Isso requer credenciais adicionais (Apple ID, Google Service Account JSON).
+A pipeline tem um **step de aprovação** antes dos submits: o job **"Aprovar envio para lojas"** (`approve`). Ele só roda depois que os builds de Android e iOS terminam e fica em **"Waiting for approval"** até alguém aprovar. Só depois disso os jobs de submit (Play Store e TestFlight) são executados.
 
-Por enquanto, os builds são gerados mas não enviados automaticamente. Use:
+### Configurar o step de approve
 
-- `./submit-to-testflight.sh` para iOS
-- `eas submit --platform android --latest --profile production` para Android
+1. No repositório GitHub, vá em **Settings** → **Environments**
+2. Clique em **New environment**
+3. Nome: `store-submit`
+4. Marque **Required reviewers** e adicione as pessoas que podem aprovar o envio
+5. Salve
+
+Quando os builds terminarem, o job **Aprovar envio para lojas** ficará pendente. Um revisor deve ir em **Actions** → workflow em execução → **Review pending deployments** → aprovar para a pipeline seguir com os submits.
+
+- **Submit Android**: usa `GOOGLE_SERVICE_ACCOUNT_JSON` (secret)
+- **Submit iOS**: usa `ASC_API_KEY_P8` (secret)

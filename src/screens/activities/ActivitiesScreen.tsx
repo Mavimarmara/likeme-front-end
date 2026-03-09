@@ -666,29 +666,8 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
     );
   };
 
-  // Mock plans data - será substituído por dados reais
-  const plans: Plan[] = [
-    {
-      id: '1',
-      title: 'Strategies to relax in your day to day',
-      price: 130.99,
-      currency: 'BRL',
-      tag: 'Curated for you',
-      tagColor: 'green',
-      image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800',
-      likes: 10,
-    },
-    {
-      id: '2',
-      title: 'How to evolve to a deep sleep',
-      price: 55.99,
-      currency: 'BRL',
-      tag: 'Market-based',
-      tagColor: 'green',
-      image: 'https://images.unsplash.com/photo-1494390248081-4e521a5940db?w=800',
-      likes: 10,
-    },
-  ];
+  // Plans: exibir apenas quando houver dados reais (por enquanto vazio)
+  const plans: Plan[] = [];
 
   return (
     <SafeAreaView style={styles.container}>

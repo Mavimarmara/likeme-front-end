@@ -87,10 +87,13 @@ export type CommunityStackParamList = {
 export type ChatStackParamList = {
   ChatList: { chat?: import('@/types').ProviderChat };
   Chat: {
-    channelId: string;
+    channelId?: string;
     channelName: string;
     channelAvatar?: string;
     channelDescription?: string;
+    /** Modo “nova conversa”: ID do parceiro (advertiser). Ao enviar, cria o canal e envia a mensagem. */
+    targetAdvertiserId?: string;
+    initialMessage?: string;
   };
   ChatDetails: {
     channelId: string;

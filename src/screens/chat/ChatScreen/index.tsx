@@ -122,7 +122,7 @@ const ChatScreen: React.FC = () => {
     if (isComposeMode && targetAdvertiserId) {
       setSending(true);
       try {
-        const result = await chatService.createConversation(targetAdvertiserId, trimmed);
+        const result = await chatService.createChannel(targetAdvertiserId, trimmed);
         if (result.success && result.data?.channelId) {
           setMessageText('');
           navigation.replace('Chat', {
