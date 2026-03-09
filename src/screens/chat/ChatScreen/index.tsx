@@ -20,7 +20,7 @@ import { IconButton } from '@/components/ui/buttons';
 import { MessageBubble } from '@/components/ui/chat';
 import { COLORS } from '@/constants';
 import { chatService } from '@/services';
-import { useBlockedUser, useUserAvatar, useTranslation } from '@/hooks';
+import { useBlockedUser, useUserAvatar, useTranslation, useChat } from '@/hooks';
 import type { ChatStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
@@ -57,10 +57,40 @@ const ChatScreen: React.FC = () => {
 
   const isComposeMode = !channelId && !!targetAdvertiserId;
 
+  const { refresh: refreshChatList } = useChat();
   const scrollViewRef = useRef<ScrollView>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(!isComposeMode);
+  const [resolvingChannel, setResolvingChannel] = useState(isComposeMode);
   const [messageText, setMessageText] = useState(isComposeMode ? initialMessage ?? '' : '');
+  const resolvingChannelRef = useRef(false);
+
+  // Se entrou em modo "conversar com" (targetAdvertiserId), resolve o canal (existente ou novo) e carrega o chat
+  useEffect(() => {
+    if (!isComposeMode || !targetAdvertiserId || resolvingChannelRef.current) return;
+    resolvingChannelRef.current = true;
+    setResolvingChannel(true);
+    chatService
+      .createChannel(targetAdvertiserId)
+      .then((result) => {
+        if (result.success && result.data?.channelId) {
+          resolvingChannelRef.current = false;
+          refreshChatList();
+          navigation.replace('Chat', {
+            channelId: result.data.channelId,
+            channelName,
+            channelAvatar,
+            channelDescription,
+            initialMessage: initialMessage ?? undefined,
+          });
+        }
+        setResolvingChannel(false);
+      })
+      .catch(() => {
+        resolvingChannelRef.current = false;
+        setResolvingChannel(false);
+      });
+  }, [isComposeMode, targetAdvertiserId, channelName, channelAvatar, channelDescription, initialMessage, navigation]);
 
   const userAvatarUri = useUserAvatar();
   const { isBlocked, checkStatus: recheckBlocked } = useBlockedUser(channelId ?? '');
@@ -94,6 +124,15 @@ const ChatScreen: React.FC = () => {
     if (!isComposeMode) loadMessages();
   }, [loadMessages, isComposeMode]);
 
+  // Pré-preenche a mensagem sugerida uma vez ao abrir um canal (ex.: após "Conversar com")
+  const initialMessageSetRef = useRef(false);
+  useEffect(() => {
+    if (channelId && initialMessage && !initialMessageSetRef.current) {
+      initialMessageSetRef.current = true;
+      setMessageText(initialMessage);
+    }
+  }, [channelId, initialMessage]);
+
   useEffect(() => {
     if (messages.length > 0) {
       setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: false }), 100);
@@ -111,8 +150,8 @@ const ChatScreen: React.FC = () => {
   const [sending, setSending] = useState(false);
 
   const isSendDisabled = useMemo(
-    () => isBlocked || sending || messageText.trim().length === 0,
-    [isBlocked, sending, messageText],
+    () => isBlocked || sending || resolvingChannel || messageText.trim().length === 0,
+    [isBlocked, sending, resolvingChannel, messageText],
   );
 
   const handleSendMessage = useCallback(async () => {
@@ -125,6 +164,7 @@ const ChatScreen: React.FC = () => {
         const result = await chatService.createChannel(targetAdvertiserId, trimmed);
         if (result.success && result.data?.channelId) {
           setMessageText('');
+          refreshChatList();
           navigation.replace('Chat', {
             channelId: result.data.channelId,
             channelName,
@@ -162,6 +202,8 @@ const ChatScreen: React.FC = () => {
         setMessages((prev) => prev.filter((m) => m.id !== optimisticId));
         setMessageText(trimmed);
         Alert.alert(t('chat.errorTitle'), t('chat.sendError'));
+      } else {
+        refreshChatList();
       }
     } catch {
       setMessages((prev) => prev.filter((m) => m.id !== optimisticId));
@@ -181,6 +223,7 @@ const ChatScreen: React.FC = () => {
     channelDescription,
     navigation,
     t,
+    refreshChatList,
   ]);
 
   const navigateToDetails = () => {
@@ -244,22 +287,26 @@ const ChatScreen: React.FC = () => {
           contentContainerStyle={styles.messagesContent}
           showsVerticalScrollIndicator={false}
         >
-          {loading && (
+          {(loading || resolvingChannel) && (
             <View style={styles.centerContainer}>
               <ActivityIndicator size='large' color={COLORS.PRIMARY.PURE} />
+              {resolvingChannel ? (
+                <Text style={[styles.emptyText, { marginTop: 12 }]}>{t('chat.loadingChannel')}</Text>
+              ) : null}
             </View>
           )}
 
-          {!loading && messages.length === 0 && (
+          {!loading && !resolvingChannel && messages.length === 0 && (
             <View style={styles.centerContainer}>
               <Icon name='chat-bubble-outline' size={48} color={COLORS.TEXT_LIGHT} />
               <Text style={styles.emptyText}>{t('chat.noMessages')}</Text>
             </View>
           )}
 
-          {messages.map((msg) => (
-            <MessageBubble key={msg.id} text={msg.text} timestamp={msg.timestamp} isOwn={msg.isOwn} />
-          ))}
+          {!resolvingChannel &&
+            messages.map((msg) => (
+              <MessageBubble key={msg.id} text={msg.text} timestamp={msg.timestamp} isOwn={msg.isOwn} />
+            ))}
         </ScrollView>
 
         <View style={[styles.inputContainer, isBlocked && styles.inputContainerDisabled]}>

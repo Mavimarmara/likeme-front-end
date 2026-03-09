@@ -1,9 +1,39 @@
 import apiClient from '../infrastructure/apiClient';
 import { logger } from '@/utils/logger';
-import type { GetAdvertiserApiResponse } from '@/types/ad';
+import type { GetAdvertiserApiResponse, ListAdvertisersApiResponse } from '@/types/ad';
 
 class AdvertiserService {
   private readonly advertisersEndpoint = '/api/advertisers';
+
+  async getAdvertisers(params?: {
+    page?: number;
+    limit?: number;
+    status?: string;
+  }): Promise<ListAdvertisersApiResponse> {
+    try {
+      const queryParams: Record<string, string> = {};
+      if (params?.page != null) queryParams.page = String(params.page);
+      if (params?.limit != null) queryParams.limit = String(params.limit);
+      if (params?.status) queryParams.status = params.status;
+
+      const response = await apiClient.get<ListAdvertisersApiResponse>(
+        this.advertisersEndpoint,
+        queryParams,
+        true,
+        false,
+      );
+
+      logger.debug('Advertisers list response:', {
+        success: response.success,
+        count: response.data?.advertisers?.length ?? 0,
+      });
+
+      return response;
+    } catch (error) {
+      logger.error('Error fetching advertisers list:', error);
+      throw error;
+    }
+  }
 
   async getAdvertiserById(advertiserId: string): Promise<GetAdvertiserApiResponse> {
     try {

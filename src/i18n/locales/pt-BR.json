@@ -594,6 +594,7 @@
     "yourConversations": "Suas conversas",
     "noConversations": "Nenhuma conversa ainda",
     "noMessages": "Nenhuma mensagem ainda",
+    "loadingChannel": "Abrindo conversa...",
     "unknownUser": "Usuário",
     "messagePlaceholder": "Mensagem...",
     "blockedPlaceholder": "Contato bloqueado",

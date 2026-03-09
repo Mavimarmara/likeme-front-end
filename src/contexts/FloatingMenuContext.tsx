@@ -26,21 +26,30 @@ const FloatingMenuContext = createContext<ContextValue | null>(null);
 /** Rotas em que o menu flutuante não deve aparecer (root ou nested) */
 const ROUTES_HIDE_MENU = ['ProductDetails', 'ProviderProfile', 'Cart', 'Checkout'];
 
-/** No stack Chat, esconder menu nas telas de conversa individual (não na lista) */
-const CHAT_STACK_HIDE_MENU_NESTED = ['Chat', 'ChatDetails'];
+/** Nomes de telas em que o menu deve ficar escondido (rota focada em qualquer nível) */
+const FOCUSED_ROUTES_HIDE_MENU = ['Chat', 'ChatDetails'];
+
+/** Retorna o nome da rota ativa no fim da árvore (rota "focada") a partir do state dado */
+function getFocusedRouteName(
+  state: { routes: { name: string; state?: any }[]; index: number } | undefined,
+): string | undefined {
+  if (!state?.routes?.length || state.index == null) return undefined;
+  let route = state.routes[state.index];
+  if (!route) return undefined;
+  while (route.state?.routes?.length && route.state?.index != null) {
+    route = route.state.routes[route.state.index];
+  }
+  return route?.name;
+}
 
 /** Retorna se o menu deve ser escondido com base no state de navegação */
 function shouldHideMenu(state: { routes: { name: string; state?: any }[]; index: number } | undefined): boolean {
+  const focusedName = getFocusedRouteName(state);
+  if (focusedName && FOCUSED_ROUTES_HIDE_MENU.includes(focusedName)) return true;
   if (!state?.routes?.length || state.index == null) return false;
   const route = state.routes[state.index];
   if (!route) return false;
-  if (ROUTES_HIDE_MENU.includes(route.name)) return true;
-  if (route.name === 'Chat' && route.state?.routes) {
-    const nestedIndex = route.state.index ?? 0;
-    const nestedName = route.state.routes[nestedIndex]?.name;
-    return CHAT_STACK_HIDE_MENU_NESTED.includes(nestedName);
-  }
-  return false;
+  return ROUTES_HIDE_MENU.includes(route.name);
 }
 
 /** Mapeia nome da rota (root) para o selectedId do menu */

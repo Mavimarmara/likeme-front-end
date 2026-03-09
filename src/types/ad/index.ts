@@ -55,6 +55,11 @@ export type GetAdApiResponse = ApiResponse<Ad>;
 
 export type GetAdvertiserApiResponse = ApiResponse<Advertiser>;
 
+export type ListAdvertisersApiResponse = ApiResponse<{
+  advertisers: Advertiser[];
+  pagination: { page: number; limit: number; total: number; totalPages: number };
+}>;
+
 export interface CreateAdData {
   advertiserId?: string;
   productId?: string;
