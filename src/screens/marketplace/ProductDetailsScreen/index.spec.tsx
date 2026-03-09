@@ -3,6 +3,8 @@ import ProductDetailsScreen from './index';
 
 const mockUseProductDetails = jest.fn();
 const mockUseUserFeed = jest.fn();
+const mockUseSuggestedProducts = jest.fn();
+const mockUseCategories = jest.fn();
 
 jest.mock('react-native-safe-area-context', () => {
   const ReactNative = require('react-native');
@@ -101,6 +103,8 @@ jest.mock('@/components/sections/community', () => {
 jest.mock('@/hooks', () => ({
   useProductDetails: (...args: any[]) => mockUseProductDetails(...args),
   useUserFeed: (...args: any[]) => mockUseUserFeed(...args),
+  useSuggestedProducts: (...args: any[]) => mockUseSuggestedProducts(...args),
+  useCategories: (...args: any[]) => mockUseCategories(...args),
 }));
 
 jest.mock('@/analytics', () => ({
@@ -172,6 +176,20 @@ describe('ProductDetailsScreen', () => {
       posts: [],
       loading: false,
       loadPosts: jest.fn(),
+    });
+
+    mockUseSuggestedProducts.mockReturnValue({
+      products: [],
+      loading: false,
+      error: null,
+      refresh: jest.fn(),
+    });
+
+    mockUseCategories.mockReturnValue({
+      categories: [],
+      loading: false,
+      error: null,
+      refresh: jest.fn(),
     });
   });
 
