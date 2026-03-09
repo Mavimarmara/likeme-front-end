@@ -3,7 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { PostDetailsHeader } from '@/components/sections/community';
-import { FloatingMenu } from '@/components/ui';
+import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 import { CommunityStackParamList } from '@/types';
 import { useAnalyticsScreen } from '@/analytics';
@@ -52,10 +52,11 @@ const PostDetailsScreen: React.FC = () => {
     },
   ];
 
+  useSetFloatingMenu(floatingMenuItems);
+
   return (
     <SafeAreaView style={styles.container}>
       <PostDetailsHeader post={post} />
-      <FloatingMenu items={floatingMenuItems} />
     </SafeAreaView>
   );
 };

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { View, ScrollView, Text, TouchableOpacity, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Header, FloatingMenu, ChartBar, CTACard, PeriodSelector, ProgressHeaderLogo } from '@/components/ui';
+import { Header, ChartBar, CTACard, PeriodSelector, ProgressHeaderLogo } from '@/components/ui';
 import ProgressBar from '@/components/ui/feedback/ProgressBar';
 import { useMenuItems } from '@/hooks';
+import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 import { COLORS, SPACING } from '@/constants';
 import { getMarkerColor, getMarkerGradient, MARKER_NAMES, hasMarkerGradient } from '@/constants/markers';
@@ -28,6 +29,7 @@ const MarkerDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
   const { t } = useTranslation();
   const rootNavigation = navigation.getParent() ?? navigation;
   const menuItems = useMenuItems(rootNavigation);
+  useSetFloatingMenu(menuItems, 'activities');
   const [selectedPeriod, setSelectedPeriod] = useState<Period>('week');
 
   const marker = route?.params?.marker;
@@ -39,7 +41,6 @@ const MarkerDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
           <Text style={{ fontSize: 16, color: COLORS.TEXT }}>{t('avatar.markerNotFound')}</Text>
         </View>
-        <FloatingMenu items={menuItems} selectedId='activities' />
       </SafeAreaView>
     );
   }
@@ -184,7 +185,6 @@ const MarkerDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
           </View>
         </ScrollView>
       </View>
-      <FloatingMenu items={menuItems} selectedId='home' />
     </SafeAreaView>
   );
 };

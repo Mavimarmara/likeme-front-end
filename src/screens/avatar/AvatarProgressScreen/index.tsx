@@ -3,12 +3,12 @@ import { View, ScrollView, Text, TouchableOpacity, StatusBar, Share } from 'reac
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header, ProgressHeaderLogo } from '@/components/ui/layout';
-import { FloatingMenu } from '@/components/ui/menu';
 import { SecondaryButton, IconButton } from '@/components/ui/buttons';
 import { PeriodSelector } from '@/components/ui/inputs';
 import { CTACard } from '@/components/ui/cards';
 import ProgressBar from '@/components/ui/feedback/ProgressBar';
 import { useMenuItems, useCommunities, useSuggestedProducts, useAnamnesisScores } from '@/hooks';
+import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { mapChannelsToEvents } from '@/utils';
 import { chatService, communityService, anamnesisService, userService } from '@/services';
 import type { UserMarker } from '@/types/anamnesis';
@@ -46,6 +46,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
   const [loadingMarkers, setLoadingMarkers] = useState(true);
   const [markerRowWidth, setMarkerRowWidth] = useState(0);
   const menuItems = useMenuItems(navigation);
+  useSetFloatingMenu(menuItems, 'home');
 
   const TREND_ICON_WIDTH = 34;
 
@@ -518,7 +519,6 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
           </View>
         </ScrollView>
       </View>
-      <FloatingMenu items={menuItems} selectedId='home' />
     </SafeAreaView>
   );
 };

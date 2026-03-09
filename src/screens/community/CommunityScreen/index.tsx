@@ -6,7 +6,6 @@ import { Toggle, Header } from '@/components/ui';
 import { SocialList, ProgramsList, LiveBannerData } from '@/components/sections/community';
 import { Product, Plan } from '@/components/sections/product';
 import { Background } from '@/components/ui/layout';
-import { FloatingMenu } from '@/components/ui/menu';
 import type { Event } from '@/types';
 import type { Program, ProgramDetail } from '@/types/program';
 import type { CommunityCategory } from '@/types/community';
@@ -14,6 +13,7 @@ import type { SolutionId, FilterCategoryResult } from '@/components/ui/modals';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
 import { useUserFeed, useCommunities, useCategories, useSuggestedProducts, useMenuItems } from '@/hooks';
+import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 import { mapCommunityToProgram, mapChannelsToEvents } from '@/utils';
 import { chatService } from '@/services';
@@ -288,6 +288,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   }, []);
 
   const menuItems = useMenuItems(navigation);
+  useSetFloatingMenu(menuItems, 'community');
 
   const handleProgramPress = (program: Program | null) => {
     if (program === null) {
@@ -398,7 +399,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
           />
         )}
       </View>
-      <FloatingMenu items={menuItems} selectedId='community' />
     </SafeAreaView>
   );
 };

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LogoutButton, Title, FloatingMenu } from '@/components/ui';
+import { LogoutButton, Title } from '@/components/ui';
 import { storageService } from '@/services';
 import { useMenuItems } from '@/hooks';
+import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 import type { StoredUser } from '@/types/auth';
 import { useAnalyticsScreen } from '@/analytics';
@@ -37,6 +38,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const menuItems = useMenuItems(navigation);
+  useSetFloatingMenu(menuItems, 'profile');
 
   const handleLogout = () => {
     rootNavigation.reset({
@@ -82,7 +84,6 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
           )}
         </View>
       </ScrollView>
-      <FloatingMenu items={menuItems} selectedId='profile' />
     </SafeAreaView>
   );
 };

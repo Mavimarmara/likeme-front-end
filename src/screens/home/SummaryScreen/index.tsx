@@ -2,9 +2,9 @@ import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { Alert, View, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 // import { useFocusEffect } from '@react-navigation/native';
-import { FloatingMenu } from '@/components/ui/menu';
 import { Header, Background } from '@/components/ui/layout';
 import { useCommunities, useSuggestedProducts, useMenuItems, useNotifications } from '@/hooks';
+import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 // import {
 //   mapCommunityToOtherCommunity,
@@ -245,6 +245,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   // }, [rawCommunities, categories]);
 
   const menuItems = useMenuItems(navigation);
+  useSetFloatingMenu(menuItems, 'home');
 
   // TODO: Temporariamente desabilitados
   // const handleEventPress = (event: Event) => {};
@@ -377,7 +378,6 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
           */}
         </ScrollView>
       </View>
-      <FloatingMenu items={menuItems} selectedId='home' />
     </SafeAreaView>
   );
 };

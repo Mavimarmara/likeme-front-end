@@ -3,7 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, Image, Modal, Alert, Linking 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { FloatingMenu, FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
+import { FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
 import { Header, Background } from '@/components/ui/layout';
 import { Toggle, PrimaryButton, Badge } from '@/components/ui';
 import { CreateActivityModal } from '@/components/sections/activity';
@@ -15,6 +15,7 @@ import { storageService } from '@/services';
 import { formatPrice, getDateFromDatetime, getTimeFromDatetime, sortByDateTime, sortByDateField } from '@/utils';
 import { COLORS } from '@/constants';
 import { useActivities, useSuggestedProducts, useMenuItems } from '@/hooks';
+import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 // import { AnamnesisPromptCard } from '@/components/sections/anamnesis';
 import type { Order } from '@/types/order';
@@ -311,6 +312,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
   }, [activeTab, selectedFilter, daySortOrder, historyActivities, activeActivities]);
 
   const menuItems = useMenuItems(navigation);
+  useSetFloatingMenu(menuItems, 'activities');
 
   const handleMarkAsDone = async (activityId: string) => {
     try {
@@ -781,7 +783,6 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
           )}
         </ScrollView>
       </View>
-      <FloatingMenu items={menuItems} selectedId='activities' />
       <CreateActivityModal
         visible={isCreateActivityModalVisible}
         onClose={() => {
