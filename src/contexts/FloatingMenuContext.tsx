@@ -24,7 +24,31 @@ type ContextValue = {
 const FloatingMenuContext = createContext<ContextValue | null>(null);
 
 /** Rotas em que o menu flutuante não deve aparecer (root ou nested) */
-const ROUTES_HIDE_MENU = ['ProductDetails', 'ProviderProfile', 'Cart', 'Checkout'];
+const ROUTES_HIDE_MENU = [
+  // Onboarding / auth flow
+  'Loading',
+  'Unauthenticated',
+  'Authenticated',
+  'Welcome',
+  'AppPresentation',
+  'Register',
+  'Plans',
+  'Anamnesis',
+  'AnamnesisHome',
+  'AnamnesisBody',
+  'AnamnesisMind',
+  'AnamnesisHabits',
+  'AnamnesisCompletion',
+  'PersonalObjectives',
+  'AppLoading',
+  'Error',
+  'PrivacyPolicies',
+  // Detail flows
+  'ProductDetails',
+  'ProviderProfile',
+  'Cart',
+  'Checkout',
+];
 
 /** Nomes de telas em que o menu deve ficar escondido (rota focada em qualquer nível) */
 const FOCUSED_ROUTES_HIDE_MENU = ['Chat', 'ChatDetails'];
