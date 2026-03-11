@@ -1,7 +1,5 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { COLORS, FONT_SIZES, SPACING, BORDER_RADIUS } from '@/constants';
-
-const { width, height } = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
   container: {
@@ -14,35 +12,33 @@ export const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
+    paddingBottom: SPACING.XL,
+  },
+
+  body: {
+    flex: 1,
+    paddingHorizontal: SPACING.MD,
   },
 
   imageContainer: {
     alignItems: 'center',
-    paddingHorizontal: SPACING.MD,
-    paddingTop: SPACING.XL,
-    position: 'relative',
+    paddingTop: SPACING.MD,
+    paddingBottom: SPACING.SM,
   },
   image: {
-    width: width - SPACING.MD * 2,
-    height: height * 0.55,
     borderRadius: BORDER_RADIUS.LG,
-    marginBottom: SPACING.XS,
   },
   imageSvgWrapper: {
-    width: width - SPACING.MD * 2,
-    height: height * 0.55,
     borderRadius: BORDER_RADIUS.LG,
-    marginBottom: SPACING.XS,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
   },
 
   content: {
-    paddingHorizontal: SPACING.MD,
-    paddingVertical: SPACING.MD,
-    flexGrow: 1,
-    justifyContent: 'center',
+    paddingVertical: SPACING.SM,
+    paddingHorizontal: 0,
+    flexShrink: 1,
   },
   title: {
     fontSize: FONT_SIZES.XL,
@@ -83,17 +79,8 @@ export const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: COLORS.BLACK,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  nextButtonText: {
-    fontSize: 24,
-    color: COLORS.WHITE,
-    fontWeight: 'bold',
-  },
-  nextButtonDisabled: {
-    opacity: 0.6,
   },
   topActions: {
     position: 'absolute',
