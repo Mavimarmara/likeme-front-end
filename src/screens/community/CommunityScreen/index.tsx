@@ -4,9 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { Toggle, Header } from '@/components/ui';
 import { SocialList, ProgramsList, LiveBannerData } from '@/components/sections/community';
-import { Product, Plan } from '@/components/sections/product';
+import { Product } from '@/components/sections/product';
 import { Background } from '@/components/ui/layout';
-import { FloatingMenu } from '@/components/ui/menu';
 import type { Event } from '@/types';
 import type { Program, ProgramDetail } from '@/types/program';
 import type { CommunityCategory } from '@/types/community';
@@ -14,9 +13,9 @@ import type { SolutionId, FilterCategoryResult } from '@/components/ui/modals';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
 import { useUserFeed, useCommunities, useCategories, useSuggestedProducts, useMenuItems } from '@/hooks';
+import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
-import { mapCommunityToProgram, mapChannelsToEvents } from '@/utils';
-import { chatService } from '@/services';
+import { mapCommunityToProgram } from '@/utils';
 import { useAnalyticsScreen } from '@/analytics';
 
 type CommunityMode = 'Social' | 'Programs';
@@ -103,39 +102,6 @@ const mockProgramDetails: ProgramDetail = {
   ],
 };
 
-const SUGGESTED_PLANS: Plan[] = [
-  {
-    id: '1',
-    title: 'Strategies to relax in your day to day',
-    price: 130.99,
-    tag: 'Curated for you',
-    tagColor: 'orange',
-    image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800',
-    likes: 10,
-    currency: 'BRL',
-  },
-  {
-    id: '2',
-    title: 'How to evolve to a deep sleep',
-    price: 5.99,
-    tag: 'Marker based',
-    tagColor: 'green',
-    image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800',
-    likes: 10,
-    currency: 'BRL',
-  },
-  {
-    id: '3',
-    title: 'Lorem ipsum dolor sit amet, consectetur',
-    price: 0,
-    tag: '',
-    tagColor: 'default',
-    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800',
-    likes: 10,
-    currency: 'BRL',
-  },
-];
-
 type NavigationProp = StackNavigationProp<CommunityStackParamList, 'CommunityList'>;
 type Props = { navigation: NavigationProp };
 
@@ -162,6 +128,8 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     hasMore: _communitiesHasMore,
     loadMore: _loadMoreCommunities,
     refresh: _refreshCommunities,
+    liveBanner,
+    events,
   } = useCommunities({
     enabled: true,
     pageSize: 10,
@@ -169,6 +137,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
       sortBy: 'createdAt',
       includeDeleted: false,
     },
+    loadLiveChannels: true,
   });
 
   const { categories } = useCategories({ enabled: true });
@@ -206,23 +175,12 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   });
 
   const handleProductPress = (product: Product) => {
-    console.log('Ver produto:', product.id);
+    rootNavigation?.navigate('ProductDetails', { productId: product.id } as never);
   };
 
   const handleProductLike = (product: Product) => {
     console.log('Curtir produto:', product.id);
   };
-
-  const handlePlanPress = (plan: Plan) => {
-    console.log('Ver plano:', plan.id);
-  };
-
-  const handlePlanLike = (plan: Plan) => {
-    console.log('Curtir plano:', plan.id);
-  };
-
-  const [liveBanner, setLiveBanner] = useState<LiveBannerData | undefined>(undefined);
-  const [events, setEvents] = useState<Event[]>([]);
 
   const { products: suggestedProducts } = useSuggestedProducts({
     limit: 4,
@@ -231,63 +189,8 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     categoryId: selectedCategoryId,
   });
 
-  useEffect(() => {
-    const loadChannels = async () => {
-      try {
-        const [liveAndBroadcastChannelsResponse, communityChannelsResponse] = await Promise.all([
-          chatService.getChannels({ types: ['live', 'broadcast'] }),
-          chatService.getChannels({ types: 'community' }),
-        ]);
-
-        if (liveAndBroadcastChannelsResponse.success && liveAndBroadcastChannelsResponse.data?.channels) {
-          const liveAndBroadcastChannels = liveAndBroadcastChannelsResponse.data.channels;
-
-          // Map channels to events
-          const mappedEvents = mapChannelsToEvents(liveAndBroadcastChannels);
-          setEvents(mappedEvents);
-
-          if (liveAndBroadcastChannels.length > 0) {
-            const firstChannel = liveAndBroadcastChannels[0];
-            const metadata = firstChannel.metadata || {};
-            const thumbnail =
-              (metadata.thumbnailUrl as string) ||
-              (firstChannel.avatarFileId
-                ? undefined
-                : 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400');
-
-            setLiveBanner({
-              id: firstChannel.channelId,
-              title: (metadata.title as string) || firstChannel.displayName || 'Live Session',
-              host: (metadata.host as string) || 'Host',
-              status: 'Live Now' as const,
-              startTime: (metadata.startTime as string) || '08:00 pm',
-              endTime: (metadata.endTime as string) || '10:00 pm',
-              thumbnail,
-            });
-          } else {
-            setLiveBanner(undefined);
-          }
-        } else {
-          setLiveBanner(undefined);
-          setEvents([]);
-        }
-
-        if (communityChannelsResponse.success && communityChannelsResponse.data?.channels) {
-          const communityChannels = communityChannelsResponse.data.channels;
-          if (communityChannels.length > 0) {
-            // Canal de comunidade disponível; redirecionamento para chat pode ser feito por outro fluxo
-          }
-        }
-      } catch (error) {
-        console.error('Error loading channels:', error);
-        setLiveBanner(undefined);
-      }
-    };
-
-    loadChannels();
-  }, []);
-
   const menuItems = useMenuItems(navigation);
+  useSetFloatingMenu(menuItems, 'community');
 
   const handleProgramPress = (program: Program | null) => {
     if (program === null) {
@@ -377,9 +280,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
             products={suggestedProducts}
             onProductPress={handleProductPress}
             onProductLike={handleProductLike}
-            plans={SUGGESTED_PLANS}
-            onPlanPress={handlePlanPress}
-            onPlanLike={handlePlanLike}
             selectedProgramId={selectedProgramId}
             onProgramPress={handleProgramPress}
             categories={categories}
@@ -398,7 +298,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
           />
         )}
       </View>
-      <FloatingMenu items={menuItems} selectedId='community' />
     </SafeAreaView>
   );
 };

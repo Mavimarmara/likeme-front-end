@@ -29,6 +29,17 @@ export interface Ad {
   product?: Product; // Product contains: name, description, image, externalUrl, type
 }
 
+export interface AdvertiserProfile {
+  id: string;
+  advertiserId: string;
+  key: string;
+  locale: string;
+  title?: string | null;
+  value: string;
+  sortOrder: number;
+  isVisible: boolean;
+}
+
 export interface ListAdsParams {
   page?: number;
   limit?: number;
@@ -54,6 +65,15 @@ export type ListAdsApiResponse = ApiResponse<{
 export type GetAdApiResponse = ApiResponse<Ad>;
 
 export type GetAdvertiserApiResponse = ApiResponse<Advertiser>;
+
+export type ListAdvertisersApiResponse = ApiResponse<{
+  advertisers: Advertiser[];
+  pagination: { page: number; limit: number; total: number; totalPages: number };
+}>;
+
+export type ListAdvertiserProfilesApiResponse = ApiResponse<{
+  profiles: AdvertiserProfile[];
+}>;
 
 export interface CreateAdData {
   advertiserId?: string;

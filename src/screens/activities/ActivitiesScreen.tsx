@@ -3,7 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, Image, Modal, Alert, Linking 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { FloatingMenu, FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
+import { FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
 import { Header, Background } from '@/components/ui/layout';
 import { Toggle, PrimaryButton, Badge } from '@/components/ui';
 import { CreateActivityModal } from '@/components/sections/activity';
@@ -15,8 +15,9 @@ import { storageService } from '@/services';
 import { formatPrice, getDateFromDatetime, getTimeFromDatetime, sortByDateTime, sortByDateField } from '@/utils';
 import { COLORS } from '@/constants';
 import { useActivities, useSuggestedProducts, useMenuItems } from '@/hooks';
+import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
-import { AnamnesisPromptCard } from '@/components/sections/anamnesis';
+// import { AnamnesisPromptCard } from '@/components/sections/anamnesis';
 import type { Order } from '@/types/order';
 import type { RootStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
@@ -46,7 +47,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
   const [daySortOrder, setDaySortOrder] = useState<'asc' | 'desc'>('desc');
   const [menuVisibleForId, setMenuVisibleForId] = useState<string | null>(null);
   const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null);
-  const [hasCompletedAnamnesis, setHasCompletedAnamnesis] = useState<boolean>(false);
+  const [_hasCompletedAnamnesis, setHasCompletedAnamnesis] = useState<boolean>(false);
 
   // Usar o hook useActivities
   const {
@@ -311,6 +312,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
   }, [activeTab, selectedFilter, daySortOrder, historyActivities, activeActivities]);
 
   const menuItems = useMenuItems(navigation);
+  useSetFloatingMenu(menuItems, 'activities');
 
   const handleMarkAsDone = async (activityId: string) => {
     try {
@@ -407,9 +409,10 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
     }
   };
 
-  const handleStartAnamnesis = () => {
-    rootNavigation.navigate('Anamnesis' as never);
-  };
+  // AnamnesisPromptCard temporariamente comentado
+  // const handleStartAnamnesis = () => {
+  //   rootNavigation.navigate('Anamnesis' as never);
+  // };
 
   const renderTabs = () => (
     <View style={styles.tabsContainer}>
@@ -663,29 +666,8 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
     );
   };
 
-  // Mock plans data - será substituído por dados reais
-  const plans: Plan[] = [
-    {
-      id: '1',
-      title: 'Strategies to relax in your day to day',
-      price: 130.99,
-      currency: 'BRL',
-      tag: 'Curated for you',
-      tagColor: 'green',
-      image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800',
-      likes: 10,
-    },
-    {
-      id: '2',
-      title: 'How to evolve to a deep sleep',
-      price: 55.99,
-      currency: 'BRL',
-      tag: 'Market-based',
-      tagColor: 'green',
-      image: 'https://images.unsplash.com/photo-1494390248081-4e521a5940db?w=800',
-      likes: 10,
-    },
-  ];
+  // Plans: exibir apenas quando houver dados reais (por enquanto vazio)
+  const plans: Plan[] = [];
 
   return (
     <SafeAreaView style={styles.container}>
@@ -743,11 +725,13 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
               ) : (
                 filteredActivities.map(renderActivityCard)
               )}
+              {/* TODO: AnamnesisPromptCard temporariamente comentado
               {!hasCompletedAnamnesis && (
                 <View style={styles.anamnesisPromptContainer}>
                   <AnamnesisPromptCard onStartPress={handleStartAnamnesis} />
                 </View>
               )}
+              */}
               {activeTab === 'actives' && plans.length > 0 && (
                 <View>
                   <PlansCarousel
@@ -778,7 +762,6 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
           )}
         </ScrollView>
       </View>
-      <FloatingMenu items={menuItems} selectedId='activities' />
       <CreateActivityModal
         visible={isCreateActivityModalVisible}
         onClose={() => {

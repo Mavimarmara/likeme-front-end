@@ -29,6 +29,26 @@ export const styles = StyleSheet.create({
   aboutSection: {
     marginBottom: SPACING.XL,
   },
+  highlightContainer: {
+    marginBottom: SPACING.XL,
+  },
+  highlightQuote: {
+    fontSize: 18,
+    fontFamily: 'DM Sans',
+    fontWeight: '700',
+    color: '#001137',
+    lineHeight: 26,
+    marginBottom: SPACING.SM,
+  },
+  highlightSubtitle: {
+    fontSize: 13,
+    fontFamily: 'DM Sans',
+    fontWeight: '400',
+    color: '#666666',
+  },
+  profileSection: {
+    marginBottom: SPACING.LG,
+  },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',

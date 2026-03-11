@@ -6,10 +6,10 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SearchBar } from '@/components/ui';
-import { FloatingMenu } from '@/components/ui/menu';
 import { Header, Background } from '@/components/ui/layout';
 import { useTranslation } from '@/hooks/i18n';
 import { useChat, useMenuItems } from '@/hooks';
+import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import type { ChatConversation } from '@/hooks';
 import { LogoMini } from '@/assets';
 import { COLORS } from '@/constants';
@@ -34,6 +34,7 @@ const ChatListScreen: React.FC<Props> = () => {
 
   const { conversations, loading, refresh } = useChat({ searchQuery });
   const menuItems = useMenuItems(navigation);
+  useSetFloatingMenu(menuItems, 'chat');
   const [refreshing, setRefreshing] = useState(false);
 
   const handleRefresh = async () => {
@@ -191,7 +192,6 @@ const ChatListScreen: React.FC<Props> = () => {
           </View>
         )}
       </ScrollView>
-      <FloatingMenu items={menuItems} selectedId='chat' />
     </SafeAreaView>
   );
 };

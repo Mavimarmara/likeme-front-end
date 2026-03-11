@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { CommonActions } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Header, HeroImage } from '@/components/ui/layout';
@@ -11,11 +10,11 @@ import { JoinCommunityCard, type JoinCommunity } from '@/components/sections/com
 import { ProductsList } from '@/components/sections/marketplace';
 import { useAdvertiser, useProviderAds, useCommunities } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
-import type { ProviderChat } from '@/types/community';
 import type { RootStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
-import { communityService } from '@/services';
+import { communityService, advertiserService } from '@/services';
+import type { AdvertiserProfile } from '@/types/ad';
 
 type ProviderProfileScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'ProviderProfile'>;
@@ -41,9 +40,19 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
   const { providerId, provider: providerFromParams } = route.params;
   const [activeTab, setActiveTab] = useState<'about' | 'communities'>('about');
   const [_isFavorite, _setIsFavorite] = useState(false);
-  const [_isAboutExpanded, _setIsAboutExpanded] = useState(true);
-  const [isAcademicExpanded, setIsAcademicExpanded] = useState(true);
+  const [expandedSectionIds, setExpandedSectionIds] = useState<Set<string>>(new Set());
   const [productsPage, setProductsPage] = useState(1);
+  const [profiles, setProfiles] = useState<AdvertiserProfile[]>([]);
+  const [loadingProfiles, setLoadingProfiles] = useState(false);
+
+  const toggleSection = useCallback((profileId: string) => {
+    setExpandedSectionIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(profileId)) next.delete(profileId);
+      else next.add(profileId);
+      return next;
+    });
+  }, []);
 
   const {
     ads: providerAds,
@@ -63,6 +72,28 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
   React.useEffect(() => {
     if (providerId) loadProviderAds();
   }, [providerId, productsPage, loadProviderAds]);
+
+  React.useEffect(() => {
+    const loadProfiles = async () => {
+      if (!providerId) return;
+      setLoadingProfiles(true);
+      try {
+        const response = await advertiserService.getAdvertiserProfiles(providerId, 'pt-BR');
+        if (response.success && response.data?.profiles) {
+          setProfiles(response.data.profiles);
+        } else {
+          setProfiles([]);
+        }
+      } catch (error) {
+        console.error('Error loading advertiser profiles:', error);
+        setProfiles([]);
+      } finally {
+        setLoadingProfiles(false);
+      }
+    };
+
+    loadProfiles();
+  }, [providerId]);
 
   const initialAdvertiser = useMemo(() => {
     if (!providerFromParams) return null;
@@ -109,6 +140,32 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
     return null;
   }, [advertiser, providerFromParams]);
 
+  const positioningProfile = useMemo(
+    () => profiles.find((profile) => profile.key === 'profile.positioning'),
+    [profiles],
+  );
+
+  const visibleProfiles = useMemo(
+    () =>
+      profiles.filter(
+        (profile) =>
+          profile.key !== 'profile.positioning' &&
+          profile.key !== 'profile.categories' &&
+          profile.key !== 'profile.mainImage',
+      ),
+    [profiles],
+  );
+
+  const hasProfileSections = visibleProfiles.length > 0;
+
+  React.useEffect(() => {
+    if (visibleProfiles.length > 0) {
+      setExpandedSectionIds(new Set([visibleProfiles[0].id]));
+    } else {
+      setExpandedSectionIds(new Set());
+    }
+  }, [visibleProfiles]);
+
   const rootNavigation = navigation.getParent() ?? navigation;
 
   const { communities: rawCommunities, categories } = useCommunities({
@@ -146,24 +203,15 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
 
   const handleTalkToProvider = () => {
     if (!providerData) return;
-    const chat: ProviderChat = {
-      id: providerId,
-      providerName: providerData.name,
-      providerAvatar: providerData.avatar,
-      lastMessage: '',
-      timestamp: 'Now',
-      unreadCount: 0,
-    };
-
-    rootNavigation.dispatch(
-      CommonActions.navigate({
-        name: 'Chat',
-        params: {
-          screen: 'ChatList',
-          params: { chat },
-        },
-      }),
-    );
+    (rootNavigation as any).navigate('Chat', {
+      screen: 'Chat',
+      params: {
+        targetAdvertiserId: providerId,
+        channelName: providerData.name,
+        channelAvatar: providerData.avatar,
+        initialMessage: t('marketplace.chatInitialMessage'),
+      },
+    });
   };
 
   return (
@@ -203,28 +251,38 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
             {activeTab === 'about' && (
               <>
                 <View style={styles.aboutSection}>
-                  {providerData.description ? (
-                    <Text style={styles.descriptionText}>{providerData.description}</Text>
-                  ) : null}
-                  <TouchableOpacity
-                    style={styles.sectionHeader}
-                    onPress={() => setIsAcademicExpanded(!isAcademicExpanded)}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={styles.sectionTitle}>Academic background</Text>
-                    <Icon
-                      name={isAcademicExpanded ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
-                      size={24}
-                      color='#001137'
-                    />
-                  </TouchableOpacity>
-                  {isAcademicExpanded && (
-                    <Text style={styles.descriptionText}>
-                      I am trained in Yoga with specializations in meditation, mindful breathing, and restorative
-                      practices. I've been teaching and supporting students for over 10 years working with people in
-                      different stages of their journey.
-                    </Text>
+                  {positioningProfile && (
+                    <View style={styles.highlightContainer}>
+                      <Text style={styles.highlightQuote}>{`“${positioningProfile.value}”`}</Text>
+                      <Text style={styles.highlightSubtitle}>Conheça meu impacto dentro dos pilares Like:Me</Text>
+                    </View>
                   )}
+                  {loadingProfiles && <Text style={styles.descriptionText}>{t('common.loading')}</Text>}
+                  {!loadingProfiles && !hasProfileSections && providerData.description && (
+                    <Text style={styles.descriptionText}>{providerData.description}</Text>
+                  )}
+                  {!loadingProfiles &&
+                    visibleProfiles.map((profile) => {
+                      const isExpanded = expandedSectionIds.has(profile.id);
+                      const sectionTitle = profile.title || profile.key || '';
+                      return (
+                        <View key={profile.id} style={styles.profileSection}>
+                          <TouchableOpacity
+                            style={styles.sectionHeader}
+                            onPress={() => toggleSection(profile.id)}
+                            activeOpacity={0.7}
+                          >
+                            <Text style={styles.sectionTitle}>{sectionTitle}</Text>
+                            <Icon
+                              name={isExpanded ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
+                              size={24}
+                              color='#001137'
+                            />
+                          </TouchableOpacity>
+                          {isExpanded && <Text style={styles.descriptionText}>{profile.value}</Text>}
+                        </View>
+                      );
+                    })}
                 </View>
 
                 <ProductsList

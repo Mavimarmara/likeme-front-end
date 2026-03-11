@@ -5,6 +5,10 @@ import { storageService } from '@/services';
 const mockLoadAds = jest.fn();
 const mockUseMarketplaceAds = jest.fn();
 
+jest.mock('@/contexts/FloatingMenuContext', () => ({
+  useSetFloatingMenu: () => jest.fn(),
+}));
+
 jest.mock('react-native-safe-area-context', () => {
   const ReactNative = require('react-native');
   return {

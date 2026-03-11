@@ -4,12 +4,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { RouteProp } from '@react-navigation/native';
 import { SearchBar } from '@/components/ui/inputs';
-import { FloatingMenu, FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
+import { FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
 import { Header, Background } from '@/components/ui/layout';
 import { FilterCategoryModal, type FilterCategoryResult, type SolutionId } from '@/components/ui/modals';
 import { getCategoryDisplayLabel } from '@/components/ui/modals/FilterCategoryModal';
 import { WeekHighlightCard, ProductsList } from '@/components/sections/marketplace';
 import { useMarketplaceAds, useMenuItems, useCategories } from '@/hooks';
+import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 import { handleAdNavigation } from '@/utils';
 import type { Ad } from '@/types/ad';
@@ -87,6 +88,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   };
 
   const menuItems = useMenuItems(navigation);
+  useSetFloatingMenu(menuItems, 'marketplace');
 
   const handleCategorySelect = (categoryId: string) => {
     setSelectedCategory(categoryId);
@@ -231,7 +233,6 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
           {renderAllAds()}
         </ScrollView>
       </View>
-      <FloatingMenu items={menuItems} selectedId='marketplace' />
     </SafeAreaView>
   );
 };

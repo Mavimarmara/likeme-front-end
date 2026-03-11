@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { View, ScrollView } from 'react-native';
 import { LiveBanner, LiveBannerData, PostsSection, NextEventsSection } from '@/components/sections/community';
-import { ProductsCarousel, PlansCarousel, Product, Plan } from '@/components/sections/product';
+import { ProductsCarousel, Product } from '@/components/sections/product';
 import { FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
 import { FilterCategoryModal, type FilterCategoryResult, type SolutionId } from '@/components/ui/modals';
 import { getCategoryDisplayLabel } from '@/components/ui/modals/FilterCategoryModal';
@@ -22,18 +22,12 @@ type Props = {
   onSearchChange: (text: string) => void;
   onSearchPress?: () => void;
   onLoadMore: () => void;
-  onFilterPress?: () => void;
-  footerComponent?: React.ReactNode;
   events?: Event[];
   onEventPress?: (event: Event) => void;
   onEventSave?: (event: Event) => void;
   products?: Product[];
-  productsRecommendedProviderName?: string;
   onProductPress?: (product: Product) => void;
   onProductLike?: (product: Product) => void;
-  plans?: Plan[];
-  onPlanPress?: (plan: Plan) => void;
-  onPlanLike?: (plan: Plan) => void;
   programs?: Program[];
   selectedProgramId?: string;
   onProgramPress?: (program: Program | null) => void;
@@ -56,18 +50,12 @@ const SocialList: React.FC<Props> = ({
   onSearchChange,
   onSearchPress,
   onLoadMore,
-  onFilterPress,
-  footerComponent,
   events,
   onEventPress,
   onEventSave,
   products,
-  productsRecommendedProviderName,
   onProductPress,
   onProductLike,
-  plans,
-  onPlanPress,
-  onPlanLike,
   programs,
   selectedProgramId,
   onProgramPress,
@@ -195,30 +183,14 @@ const SocialList: React.FC<Props> = ({
           </View>
         )}
 
-        {footerComponent}
-
         {products && products.length > 0 && (
           <View>
             <ProductsCarousel
-              title={t('home.productsRecommended', {
-                provider: productsRecommendedProviderName ?? '',
-              })}
+              title={t('home.productsRecommended', { provider: '' })}
               subtitle={t('home.discoverProducts')}
               products={products}
               onProductPress={onProductPress}
               onProductLike={onProductLike}
-            />
-          </View>
-        )}
-
-        {plans && plans.length > 0 && (
-          <View>
-            <PlansCarousel
-              title={t('activities.plansForYou')}
-              subtitle={t('activities.discoverOptions')}
-              plans={plans}
-              onPlanPress={onPlanPress}
-              onPlanLike={onPlanLike}
             />
           </View>
         )}

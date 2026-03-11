@@ -2,9 +2,9 @@ import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { Alert, View, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 // import { useFocusEffect } from '@react-navigation/native';
-import { FloatingMenu } from '@/components/ui/menu';
 import { Header, Background } from '@/components/ui/layout';
 import { useCommunities, useSuggestedProducts, useMenuItems, useNotifications } from '@/hooks';
+import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 // import {
 //   mapCommunityToOtherCommunity,
@@ -12,7 +12,7 @@ import { useTranslation } from '@/hooks/i18n';
 //   mapChannelsToEvents,
 //   sortByDateObject,
 // } from '@/utils';
-import { communityService, storageService } from '@/services';
+import { communityService, storageService, advertiserService } from '@/services';
 import {
   // NextEventsSection,
   // OtherCommunitiesSection,
@@ -28,7 +28,6 @@ import { ProductsCarousel, type Product } from '@/components/sections/product';
 // TODO: Temporariamente desabilitados
 // import { AnamnesisPromptCard } from '@/components/sections/anamnesis';
 // import { AvatarSection } from '@/components/sections/avatar';
-import type { CommunityFeedData } from '@/types/community';
 // import type { Event } from '@/types/event';
 // import type { Post } from '@/types';
 import { useAnalyticsScreen } from '@/analytics';
@@ -122,91 +121,24 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   const [_loadingProviders, setLoadingProviders] = useState(false);
   // const [events, setEvents] = useState<Event[]>([]);
 
-  const { products: recommendedProducts } = useSuggestedProducts({
-    limit: 4,
-    status: 'active',
-    enabled: true,
-  });
-
-  // TODO: Temporariamente desabilitado
-  // useEffect(() => {
-  //   const loadEvents = async () => { ... };
-  //   loadEvents();
-  // }, []);
-
   useEffect(() => {
     const loadProviders = async () => {
       try {
         setLoadingProviders(true);
-
-        const userFeedResponse = await communityService.getUserFeed({
+        const response = await advertiserService.getAdvertisers({
           page: 1,
-          limit: 50,
+          limit: 20,
+          status: 'active',
         });
-
-        const isSuccess =
-          userFeedResponse.success === true ||
-          userFeedResponse.status === 'ok' ||
-          userFeedResponse.data?.status === 'ok';
-
-        let feedData: CommunityFeedData | undefined;
-        if (userFeedResponse.data?.data) {
-          feedData = userFeedResponse.data.data;
-        } else if (userFeedResponse.data && 'posts' in userFeedResponse.data) {
-          feedData = userFeedResponse.data as CommunityFeedData;
-        }
-
-        if (!isSuccess || !feedData) {
+        if (!response.success || !response.data?.advertisers) {
           setPopularProviders([]);
           return;
         }
-
-        const communityUsers = feedData.communityUsers || [];
-        const users = feedData.users || [];
-        const files = feedData.files || [];
-
-        const ownerUserIds = new Set<string>();
-        communityUsers.forEach((relation) => {
-          const roles = relation.roles || [];
-          if (
-            roles.includes('community-moderator') ||
-            roles.includes('community-admin') ||
-            roles.includes('owner') ||
-            relation.communityMembership === 'owner'
-          ) {
-            ownerUserIds.add(relation.userId);
-          }
-        });
-
-        if (ownerUserIds.size === 0) {
-          const uniqueUserIds = new Set<string>();
-          communityUsers.forEach((relation) => {
-            if (relation.userId) {
-              uniqueUserIds.add(relation.userId);
-            }
-          });
-          uniqueUserIds.forEach((userId) => ownerUserIds.add(userId));
-        }
-
-        const providers: Provider[] = Array.from(ownerUserIds)
-          .map((userId) => {
-            const user = users.find((u) => u.userId === userId);
-            if (!user || !user.displayName) {
-              return null;
-            }
-
-            const avatarUrl = user.avatarFileId
-              ? files.find((f) => f.fileId === user.avatarFileId)?.fileUrl
-              : undefined;
-
-            return {
-              id: user.userId,
-              name: user.displayName,
-              avatar: avatarUrl,
-            } as Provider;
-          })
-          .filter((p): p is Provider => p !== null);
-
+        const providers: Provider[] = response.data.advertisers.map((a) => ({
+          id: a.id,
+          name: a.name,
+          avatar: a.logo,
+        }));
         setPopularProviders(providers);
       } catch (error) {
         console.error('Error loading providers:', error);
@@ -215,11 +147,14 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
         setLoadingProviders(false);
       }
     };
+    loadProviders();
+  }, []);
 
-    if (rawCommunities.length > 0) {
-      loadProviders();
-    }
-  }, [rawCommunities.length]);
+  const { products: recommendedProducts } = useSuggestedProducts({
+    limit: 4,
+    status: 'active',
+    enabled: true,
+  });
 
   // TODO: Temporariamente desabilitado
   // const yourCommunity = useMemo((): YourCommunity | null => { ... }, [firstCommunity, communityPosts]);
@@ -245,6 +180,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   // }, [rawCommunities, categories]);
 
   const menuItems = useMenuItems(navigation);
+  useSetFloatingMenu(menuItems, 'home');
 
   // TODO: Temporariamente desabilitados
   // const handleEventPress = (event: Event) => {};
@@ -265,7 +201,10 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleProviderPress = (provider: Provider) => {
-    console.log('Provider pressionado:', provider.id);
+    rootNavigation.navigate('ProviderProfile', {
+      providerId: provider.id,
+      provider: { name: provider.name, avatar: provider.avatar },
+    } as never);
   };
 
   const handleJoinCommunity = useCallback(
@@ -377,7 +316,6 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
           */}
         </ScrollView>
       </View>
-      <FloatingMenu items={menuItems} selectedId='home' />
     </SafeAreaView>
   );
 };

@@ -84,6 +84,43 @@ class ChatService {
     }
   }
 
+  /**
+   * Cria um canal de conversa com o parceiro (advertiserId) e opcionalmente envia a primeira mensagem.
+   * POST /api/chat/channels com body { advertiserId, initialMessage? }.
+   * Retorna o channelId para navegar para a tela de chat.
+   */
+  async createChannel(
+    advertiserId: string,
+    initialMessage?: string,
+  ): Promise<{ success: boolean; data?: { channelId: string }; error?: string }> {
+    try {
+      if (!advertiserId || advertiserId.trim() === '') {
+        throw new Error('advertiserId is required');
+      }
+      const body: { advertiserId: string; initialMessage?: string } = { advertiserId: advertiserId.trim() };
+      if (initialMessage != null && String(initialMessage).trim() !== '') {
+        body.initialMessage = String(initialMessage).trim();
+      }
+      const response = await apiClient.post<{
+        success?: boolean;
+        data?: { channelId: string };
+        error?: string;
+        message?: string;
+      }>(CHANNELS_ENDPOINT, body, true);
+      if (response.success === false || !response.success) {
+        return {
+          success: false,
+          error: response.error || response.message || 'Erro ao criar canal',
+        };
+      }
+      return { success: true, data: response.data };
+    } catch (error) {
+      logger.error('Error creating channel:', error);
+      const err = error as { message?: string };
+      return { success: false, error: err?.message || 'Erro ao criar canal' };
+    }
+  }
+
   async blockUser(targetUserId: string): Promise<any> {
     try {
       if (!targetUserId || targetUserId.trim() === '') {
