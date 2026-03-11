@@ -10,6 +10,12 @@ export const styles = StyleSheet.create({
     gap: SPACING.SM,
     paddingLeft: SPACING.MD,
   },
+  ctaCardContainer: {
+    paddingHorizontal: SPACING.MD,
+  },
+  ctaCard: {
+    marginHorizontal: -SPACING.MD,
+  },
   liveBannerContainer: {
     paddingTop: SPACING.MD,
     paddingBottom: SPACING.SM,

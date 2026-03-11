@@ -512,6 +512,9 @@
   "community": {
     "social": "Social",
     "programs": "Programa",
+    "ctaCardTitle": "Bem-vindo(a) a comunidade",
+    "ctaCardHighlightText": "Conecte-se com outras pessoas",
+    "ctaCardDescription": "Participe de programas e acompanhe eventos ao vivo.",
     "liveNow": "Ao vivo agora",
     "noPostsFound": "Nenhuma publicação encontrada",
     "loadingPosts": "Carregando publicações...",

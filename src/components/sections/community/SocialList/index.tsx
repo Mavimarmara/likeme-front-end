@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { View, ScrollView } from 'react-native';
 import { LiveBanner, LiveBannerData, PostsSection, NextEventsSection } from '@/components/sections/community';
+import { CTACard } from '@/components/ui/cards';
 import { ProductsCarousel, Product } from '@/components/sections/product';
 import { FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
 import { FilterCategoryModal, type FilterCategoryResult, type SolutionId } from '@/components/ui/modals';
@@ -161,6 +162,16 @@ const SocialList: React.FC<Props> = ({
         }}
         scrollEventThrottle={400}
       >
+        <View style={styles.ctaCardContainer}>
+          <CTACard
+            title={t('community.ctaCardTitle')}
+            highlightText={t('community.ctaCardHighlightText')}
+            description={t('community.ctaCardDescription')}
+            backgroundColor='#F6CFFB'
+            titleStyle={{ fontSize: 20 }}
+            style={styles.ctaCard}
+          />
+        </View>
         <PostsSection
           posts={posts}
           loading={loading}
