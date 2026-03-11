@@ -16,8 +16,9 @@ export function parseHeightInput(text: string): string {
   if (hasComma) {
     const [intPart, decPart = ''] = cleaned.split(',');
     const a = (intPart ?? '').slice(0, 2);
-    const b = (decPart ?? '').slice(0, 2).padEnd(2, '0').slice(0, 2);
-    return a ? `${a},${b}` : '';
+    const b = (decPart ?? '').slice(0, 2);
+    if (!a) return '';
+    return b ? `${a},${b}` : `${a},`;
   }
   if (cleaned.length <= 2) return cleaned;
   const asMeters = cleaned.slice(0, 4);
