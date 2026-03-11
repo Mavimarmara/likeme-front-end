@@ -23,14 +23,11 @@ jest.mock('./components', () => {
   const { View, Text, TouchableOpacity } = require('react-native');
   const { useTranslation } = require('@/hooks/i18n');
   return {
-    UnauthenticatedStep1: ({ onNext, onLogin }: any) => {
+    UnauthenticatedStep1: ({ onLogin }: any) => {
       const { t } = useTranslation();
       return (
         <View>
           <Text>{t('auth.tagline')}</Text>
-          <TouchableOpacity onPress={onNext}>
-            <Text>{t('common.next')}</Text>
-          </TouchableOpacity>
           <TouchableOpacity onPress={onLogin}>
             <Text>{t('auth.login')}</Text>
           </TouchableOpacity>
@@ -51,17 +48,7 @@ describe('UnauthenticatedScreen', () => {
     const { getByText } = render(<UnauthenticatedScreen navigation={mockNavigation} route={mockRoute} />);
 
     expect(getByText('auth.tagline')).toBeTruthy();
-    expect(getByText('common.next')).toBeTruthy();
     expect(getByText('auth.login')).toBeTruthy();
-  });
-
-  it('handles next button press', () => {
-    const { getByText } = render(<UnauthenticatedScreen navigation={mockNavigation} route={mockRoute} />);
-
-    const nextButton = getByText('common.next');
-    fireEvent.press(nextButton);
-
-    expect(mockNavigation.navigate).toHaveBeenCalledWith('Welcome');
   });
 
   it('handles login button press', () => {

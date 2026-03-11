@@ -10,6 +10,7 @@ const OBJECTIVES_SELECTED_AT_KEY = '@likeme:objectives_selected_at';
 const SELECTED_OBJECTIVES_IDS_KEY = '@likeme:selected_objectives_ids';
 const ANAMNESIS_COMPLETED_AT_KEY = '@likeme:anamnesis_completed_at';
 const CART_ITEMS_KEY = '@likeme:cart_items';
+const PRIVACY_POLICY_ACCEPTED_AT_KEY = '@likeme:privacy_policy_accepted_at';
 
 class StorageService {
   async setToken(token: string): Promise<void> {
@@ -173,6 +174,27 @@ class StorageService {
     }
   }
 
+  async setPrivacyPolicyAcceptedAt(date: string | null): Promise<void> {
+    try {
+      if (date) {
+        await AsyncStorage.setItem(PRIVACY_POLICY_ACCEPTED_AT_KEY, date);
+      } else {
+        await AsyncStorage.removeItem(PRIVACY_POLICY_ACCEPTED_AT_KEY);
+      }
+    } catch (error) {
+      logger.error('Error saving privacy policy accepted at:', error);
+    }
+  }
+
+  async getPrivacyPolicyAcceptedAt(): Promise<string | null> {
+    try {
+      return await AsyncStorage.getItem(PRIVACY_POLICY_ACCEPTED_AT_KEY);
+    } catch (error) {
+      logger.error('Error getting privacy policy accepted at:', error);
+      return null;
+    }
+  }
+
   async getCartItems(): Promise<any[]> {
     try {
       const cartItemsString = await AsyncStorage.getItem(CART_ITEMS_KEY);
@@ -240,6 +262,7 @@ class StorageService {
       await AsyncStorage.removeItem(OBJECTIVES_SELECTED_AT_KEY);
       await AsyncStorage.removeItem(SELECTED_OBJECTIVES_IDS_KEY);
       await AsyncStorage.removeItem(ANAMNESIS_COMPLETED_AT_KEY);
+      await AsyncStorage.removeItem(PRIVACY_POLICY_ACCEPTED_AT_KEY);
       await this.clearCart();
     } catch (error) {
       logger.error('Error clearing storage:', error);

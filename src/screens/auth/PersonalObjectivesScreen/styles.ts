@@ -39,19 +39,35 @@ export const styles = StyleSheet.create({
     color: COLORS.TEXT,
     fontFamily: 'DM Sans',
     fontSize: 16,
-    fontWeight: '400',
+    fontWeight: '700',
     lineHeight: 22,
     marginBottom: SPACING.LG,
     width: '100%',
   },
 
+  description: {
+    color: COLORS.NEUTRAL.LOW.PURE,
+    fontFamily: 'DM Sans',
+    fontSize: 14,
+    fontWeight: 400,
+    letterSpacing: 0.2,
+  },
+
   markersList: {
     width: '100%',
     gap: SPACING.MD,
+    paddingHorizontal: SPACING.MD,
+    paddingTop: SPACING.XL,
   },
 
   markerButton: {
     width: '100%',
+  },
+
+  ctaCard: {
+    marginTop: SPACING.MD,
+    marginBottom: SPACING.XL,
+    marginHorizontal: -SPACING.MD,
   },
 
   footer: {

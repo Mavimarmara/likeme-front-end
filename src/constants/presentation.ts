@@ -1,9 +1,15 @@
+import React from 'react';
 import { ImageSourcePropType } from 'react-native';
-import { Presentation1, Presentation2, Presentation3, Presentation4 } from '@/assets';
+import { Presentation2, Presentation3, Presentation4 } from '@/assets';
+import { BackgroundWithLogo } from '@/components/ui/layout';
+
+export type PresentationImageType =
+  | ImageSourcePropType
+  | React.ComponentType<{ width?: number; height?: number; style?: unknown }>;
 
 export interface PresentationPage {
   id: string;
-  image: ImageSourcePropType;
+  image: PresentationImageType;
   title: string;
   description: string;
   order: number;
@@ -12,7 +18,7 @@ export interface PresentationPage {
 export const PRESENTATION_PAGES: PresentationPage[] = [
   {
     id: '1',
-    image: Presentation1,
+    image: BackgroundWithLogo,
     title: 'So many tips and apps... and self care still feels confusing?',
     description:
       'Here, everything that matters is in one place - from health trackers, to wellbeing programs and a curated marketplace.',

@@ -10,16 +10,26 @@ interface TextInputProps extends Omit<RNTextInputProps, 'onChangeText'> {
   errorText?: string;
   containerStyle?: ViewStyle;
   suffix?: string;
+  /** Quando true, exibe asterisco ao lado do label (campo obrigatório). Padrão: false. */
+  required?: boolean;
 }
 
 const TextInput = forwardRef<RNTextInput, TextInputProps>(
-  ({ label, value, onChangeText, helperText, errorText, containerStyle, style, suffix, ...props }, ref) => {
+  (
+    { label, value, onChangeText, helperText, errorText, containerStyle, style, suffix, required = false, ...props },
+    ref,
+  ) => {
     const hasHelperContent = !!(helperText || errorText);
 
     return (
       <View style={[styles.container, containerStyle]}>
         <View style={styles.inputSection}>
-          {label && <Text style={styles.label}>{label}</Text>}
+          {label && (
+            <View style={styles.labelRow}>
+              <Text style={styles.label}>{label}</Text>
+              {required && <Text style={styles.requiredMark}> *</Text>}
+            </View>
+          )}
           <View style={[styles.inputWrapper, suffix ? styles.inputWrapperRow : undefined]}>
             <RNTextInput
               ref={ref}

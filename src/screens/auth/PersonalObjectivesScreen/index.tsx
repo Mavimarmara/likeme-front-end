@@ -3,6 +3,8 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import type { StackScreenProps } from '@react-navigation/stack';
 import { View, Text, ScrollView, Image, useWindowDimensions, Alert } from 'react-native';
 import { Header, IconSilhouette, PrimaryButton, SelectionButtonQuiz } from '@/components/ui';
+import { CTACard } from '@/components/ui/cards';
+import { COLORS } from '@/constants';
 import { GradientSplash6 } from '@/assets';
 import { personalObjectivesService, storageService } from '@/services';
 import { useTranslation } from '@/hooks/i18n';
@@ -21,7 +23,7 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
   useAnalyticsScreen({ screenName: 'PersonalObjectives', screenClass: 'PersonalObjectivesScreen' });
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const userName = route.params?.userName || 'Usuário';
+  const firstName = route.params?.firstName || 'Usuário';
   const { markers } = useMarkers();
   const [selectedMarkers, setSelectedMarkers] = useState<Set<string>>(new Set());
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -102,8 +104,15 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
       >
         <View style={styles.content}>
           <Image source={GradientSplash6} style={[styles.titleAdornment, adornmentStyle]} resizeMode='contain' />
-          <Text style={styles.greeting}>{userName},</Text>
+          <Text style={styles.greeting}>{firstName},</Text>
+          <CTACard
+            highlightText={t('auth.personalObjectivesCardTitle')}
+            description={t('auth.personalObjectivesCardDescription')}
+            backgroundColor={COLORS.HIGHLIGHT.LIGHT}
+            style={styles.ctaCard}
+          />
           <Text style={styles.question}>{t('auth.personalObjectivesQuestion')}</Text>
+          <Text style={styles.description}>{t('auth.personalObjectivesQuestioDescription')}</Text>
 
           <View style={styles.markersList}>
             {markers.map((marker) => {

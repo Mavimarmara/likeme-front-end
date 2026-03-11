@@ -7,7 +7,8 @@ class ApiClient {
   private baseUrl: string;
 
   constructor() {
-    this.baseUrl = BACKEND_CONFIG.baseUrl || 'http://localhost:3000';
+    const base = BACKEND_CONFIG.baseUrl || 'http://localhost:3000';
+    this.baseUrl = base.replace(/\/+$/, '');
   }
 
   private logAuthHeader(method: string, endpoint: string, headers: Record<string, string>) {

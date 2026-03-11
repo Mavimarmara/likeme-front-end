@@ -17,29 +17,24 @@ export const styles = StyleSheet.create({
     paddingTop: SPACING.LG,
   },
   title: {
-    fontFamily: 'DM Sans',
-    fontSize: FONT_SIZES.XXL,
-    fontWeight: '700',
-    color: COLORS.TEXT,
-    marginBottom: SPACING.MD,
+    fontFamily: 'Bricolage Grotesque',
+    fontSize: FONT_SIZES.XL,
+    fontWeight: '600',
+    color: COLORS.NEUTRAL.LOW.PURE,
+    marginBottom: SPACING.LG,
+    textTransform: 'uppercase',
   },
-  intro: {
+  description: {
     fontFamily: 'DM Sans',
-    fontSize: FONT_SIZES.MD,
+    fontSize: FONT_SIZES.SM,
     fontWeight: '400',
-    color: COLORS.TEXT_LIGHT,
+    color: COLORS.NEUTRAL.LOW.PURE,
     lineHeight: 22,
-    marginBottom: SPACING.SM,
+    marginBottom: SPACING.LG,
   },
-  inControl: {
-    fontFamily: 'DM Sans',
-    fontSize: FONT_SIZES.MD,
+  descriptionBold: {
     fontWeight: '700',
     color: COLORS.TEXT,
-    marginBottom: SPACING.LG,
-  },
-  tabsWrapper: {
-    marginBottom: SPACING.LG,
   },
   accordionItem: {
     borderBottomWidth: 1,
@@ -67,8 +62,8 @@ export const styles = StyleSheet.create({
     fontFamily: 'DM Sans',
     fontSize: FONT_SIZES.SM,
     fontWeight: '400',
-    color: COLORS.TEXT_LIGHT,
-    lineHeight: 20,
+    color: COLORS.NEUTRAL.LOW.PURE,
+    lineHeight: 22,
   },
   footer: {
     position: 'absolute',

@@ -1,8 +1,9 @@
 const MAX_CARD_NUMBER_LENGTH = 19;
+const MAX_CARD_DIGITS = 16;
 
 export const formatCardNumber = (text: string): string => {
-  const cleaned = text.replace(/\s/g, '');
-  const formatted = cleaned.match(/.{1,4}/g)?.join(' ') || cleaned;
+  const digitsOnly = text.replace(/\D/g, '').slice(0, MAX_CARD_DIGITS);
+  const formatted = digitsOnly.match(/.{1,4}/g)?.join(' ') || digitsOnly;
   return formatted.slice(0, MAX_CARD_NUMBER_LENGTH);
 };
 

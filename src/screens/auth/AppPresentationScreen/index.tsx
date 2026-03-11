@@ -1,11 +1,18 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, Image, ScrollView, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Header } from '@/components/ui';
+import { Header, IconButton } from '@/components/ui';
 import { PRESENTATION_PAGES } from '@/constants/presentation';
 import { useTranslation } from '@/hooks/i18n';
+import { SPACING } from '@/constants';
+import { storageService } from '@/services';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
+
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+const horizontalPadding = SPACING.MD * 2;
+const imageWidth = screenWidth - horizontalPadding;
+const imageHeight = screenHeight * 0.5;
 
 /** Parse "text **bold** more" into segments for rendering bold in React Native Text */
 function parseBoldSegments(str: string): { text: string; bold: boolean }[] {
@@ -44,20 +51,25 @@ const AppPresentationScreen: React.FC<Props> = ({ navigation, route }) => {
     }));
   }, [t]);
 
-  const goToPrivacyPolicies = () => {
-    navigation.navigate('PrivacyPolicies', { userName });
+  const goToPrivacyPolicies = async () => {
+    const acceptedAt = await storageService.getPrivacyPolicyAcceptedAt();
+    if (acceptedAt) {
+      navigation.navigate('Register', { userName });
+    } else {
+      navigation.navigate('PrivacyPolicies', { userName });
+    }
   };
 
   const handleNext = () => {
     if (currentPage < pages.length - 1) {
       setCurrentPage(currentPage + 1);
     } else {
-      goToPrivacyPolicies();
+      void goToPrivacyPolicies();
     }
   };
 
   const handleSkip = () => {
-    goToPrivacyPolicies();
+    void goToPrivacyPolicies();
   };
 
   const handleBack = () => {
@@ -79,19 +91,40 @@ const AppPresentationScreen: React.FC<Props> = ({ navigation, route }) => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <View style={styles.imageContainer}>
-          <Image source={currentPageData.image} style={styles.image} resizeMode='cover' />
-        </View>
+        <View style={styles.body}>
+          <View style={styles.imageContainer}>
+            {typeof currentPageData.image === 'function' ? (
+              (() => {
+                const SvgComponent = currentPageData.image as React.ComponentType<{
+                  width?: number;
+                  height?: number;
+                  style?: unknown;
+                }>;
+                return (
+                  <View style={[styles.imageSvgWrapper, { width: imageWidth, height: imageHeight }]}>
+                    <SvgComponent width={imageWidth} height={imageHeight} style={styles.image} />
+                  </View>
+                );
+              })()
+            ) : (
+              <Image
+                source={currentPageData.image}
+                style={[styles.image, { width: imageWidth, height: imageHeight }]}
+                resizeMode='cover'
+              />
+            )}
+          </View>
 
-        <View style={styles.content}>
-          <Text style={styles.title}>{currentPageData.title}</Text>
-          <Text style={styles.description}>
-            {parseBoldSegments(currentPageData.description).map((segment, i) => (
-              <Text key={i} style={segment.bold ? styles.descriptionBold : undefined}>
-                {segment.text}
-              </Text>
-            ))}
-          </Text>
+          <View style={styles.content}>
+            <Text style={styles.title}>{currentPageData.title}</Text>
+            <Text style={styles.description}>
+              {parseBoldSegments(currentPageData.description).map((segment, i) => (
+                <Text key={i} style={segment.bold ? styles.descriptionBold : undefined}>
+                  {segment.text}
+                </Text>
+              ))}
+            </Text>
+          </View>
         </View>
       </ScrollView>
 
@@ -100,9 +133,7 @@ const AppPresentationScreen: React.FC<Props> = ({ navigation, route }) => {
         <Text style={styles.stepIndicator}>
           {currentPage + 1}/{pages.length}
         </Text>
-        <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-          <Text style={styles.nextButtonText}>›</Text>
-        </TouchableOpacity>
+        <IconButton icon='chevron-right' onPress={handleNext} variant='dark' containerStyle={styles.nextButton} />
       </View>
     </SafeAreaView>
   );

@@ -72,6 +72,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
           value={cardholderName}
           onChangeText={onCardholderNameChange}
           errorText={paymentFieldErrors.cardholderName}
+          required
         />
         <TextInput
           label={t('checkout.cardNumber')}
@@ -80,6 +81,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
           onChangeText={handleCardNumberChange}
           keyboardType='numeric'
           errorText={paymentFieldErrors.cardNumber}
+          required
         />
         <View style={styles.cardRow}>
           <View style={styles.cardFieldHalf}>
@@ -90,6 +92,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
               onChangeText={handleExpiryDateChange}
               keyboardType='numeric'
               errorText={paymentFieldErrors.expiryDate}
+              required
             />
           </View>
           <View style={styles.cardFieldHalf}>
@@ -101,6 +104,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
               keyboardType='numeric'
               secureTextEntry
               errorText={paymentFieldErrors.cvv}
+              required
             />
           </View>
         </View>
@@ -111,6 +115,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
           onChangeText={onCpfChange}
           keyboardType='numeric'
           errorText={paymentFieldErrors.cpf}
+          required
         />
       </View>
 

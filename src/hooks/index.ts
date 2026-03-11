@@ -38,6 +38,10 @@ export { useBlockedUser } from './chat/useBlockedUser';
 // User hooks
 export { useUserAvatar } from './auth/useUserAvatar';
 
+// Person hooks
+export { useLoadPersonalData } from './person/useLoadPersonalData';
+export type { PersonFormData } from './person/useLoadPersonalData';
+
 // Notification hooks
 export { useNotifications } from './notification/useNotifications';
 

@@ -1,81 +1,49 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Background, Header, PrimaryButton, Toggle } from '@/components/ui';
+import { Background, Header, PrimaryButton } from '@/components/ui';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen } from '@/analytics';
-import { AuthService } from '@/services';
+import { AuthService, storageService } from '@/services';
 import { COLORS } from '@/constants';
 import { styles } from './styles';
 
-type PolicyTab = 'data' | 'communication' | 'notification';
+/** Parse "text **bold** more" into segments for rendering bold in React Native Text */
+function parseBoldSegments(str: string): { text: string; bold: boolean }[] {
+  const segments: { text: string; bold: boolean }[] = [];
+  let remaining = str;
+  let bold = false;
+  while (remaining.length > 0) {
+    const marker = '**';
+    const idx = remaining.indexOf(marker);
+    if (idx === -1) {
+      segments.push({ text: remaining, bold });
+      break;
+    }
+    if (idx > 0) {
+      segments.push({ text: remaining.slice(0, idx), bold });
+    }
+    bold = !bold;
+    remaining = remaining.slice(idx + marker.length);
+  }
+  return segments;
+}
 
-type AccordionItem = {
-  id: string;
-  titleKey: string;
-  contentKey: string;
-};
-
-const DATA_ITEMS: AccordionItem[] = [
-  {
-    id: 'data-security',
-    titleKey: 'privacyPolicies.policyDataSecurity',
-    contentKey: 'privacyPolicies.policyDataSecurityContent',
-  },
-  {
-    id: 'privacy-usage',
-    titleKey: 'privacyPolicies.policyPrivacyUsage',
-    contentKey: 'privacyPolicies.policyPrivacyUsageContent',
-  },
-  {
-    id: 'health-data',
-    titleKey: 'privacyPolicies.policyHealthData',
-    contentKey: 'privacyPolicies.policyHealthDataContent',
-  },
-];
-
-const COMMUNICATION_ITEMS: AccordionItem[] = [
-  {
-    id: 'channels',
-    titleKey: 'privacyPolicies.policyCommunicationChannels',
-    contentKey: 'privacyPolicies.policyCommunicationChannelsContent',
-  },
-  {
-    id: 'marketing',
-    titleKey: 'privacyPolicies.policyMarketing',
-    contentKey: 'privacyPolicies.policyMarketingContent',
-  },
-  {
-    id: 'support',
-    titleKey: 'privacyPolicies.policySupport',
-    contentKey: 'privacyPolicies.policySupportContent',
-  },
-];
-
-const NOTIFICATION_ITEMS: AccordionItem[] = [
-  {
-    id: 'types',
-    titleKey: 'privacyPolicies.policyNotificationTypes',
-    contentKey: 'privacyPolicies.policyNotificationTypesContent',
-  },
-  {
-    id: 'preferences',
-    titleKey: 'privacyPolicies.policyNotificationPreferences',
-    contentKey: 'privacyPolicies.policyNotificationPreferencesContent',
-  },
-  {
-    id: 'push',
-    titleKey: 'privacyPolicies.policyPushSettings',
-    contentKey: 'privacyPolicies.policyPushSettingsContent',
-  },
-];
-
-const TAB_ITEMS: { key: PolicyTab; labelKey: string }[] = [
-  { key: 'data', labelKey: 'privacyPolicies.tabData' },
-  { key: 'communication', labelKey: 'privacyPolicies.tabCommunication' },
-  { key: 'notification', labelKey: 'privacyPolicies.tabNotification' },
-];
+const SECTION_KEYS = [
+  'section1',
+  'section2',
+  'section3',
+  'section4',
+  'section5',
+  'section6',
+  'section7',
+  'section8',
+  'section9',
+  'section10',
+  'section11',
+  'section12',
+] as const;
 
 type Props = {
   navigation: any;
@@ -86,25 +54,8 @@ const PrivacyPoliciesScreen: React.FC<Props> = ({ navigation, route }) => {
   useAnalyticsScreen({ screenName: 'PrivacyPolicies', screenClass: 'PrivacyPoliciesScreen' });
   const { t } = useTranslation();
   const userName = route.params?.userName || 'Usuário';
-  const [activeTab, setActiveTab] = useState<PolicyTab>('data');
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const tabLabels = useMemo(() => TAB_ITEMS.map(({ labelKey }) => t(labelKey)), [t]);
-  const selectedLabel = tabLabels[TAB_ITEMS.findIndex((tab) => tab.key === activeTab)] ?? tabLabels[0];
-  const handleTabSelect = useCallback(
-    (label: string) => {
-      const idx = tabLabels.indexOf(label);
-      if (idx >= 0) setActiveTab(TAB_ITEMS[idx].key);
-    },
-    [tabLabels],
-  );
-
-  const getItems = useCallback((): AccordionItem[] => {
-    if (activeTab === 'data') return DATA_ITEMS;
-    if (activeTab === 'communication') return COMMUNICATION_ITEMS;
-    return NOTIFICATION_ITEMS;
-  }, [activeTab]);
 
   const toggleAccordion = useCallback((id: string) => {
     setExpandedId((prev) => (prev === id ? null : id));
@@ -112,21 +63,21 @@ const PrivacyPoliciesScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const handleAgree = useCallback(async () => {
     if (isSubmitting) return;
+    const acceptedAt = new Date().toISOString();
     try {
       setIsSubmitting(true);
-      await AuthService.acceptPrivacyPolicy();
+      await storageService.setPrivacyPolicyAcceptedAt(acceptedAt);
+      await AuthService.acceptPrivacyPolicy(acceptedAt);
     } catch (error) {
-      // Endpoint pode não existir ainda no backend (404); não bloqueia o fluxo.
       if (__DEV__ && error instanceof Error) {
         console.warn('[PrivacyPolicies] acceptPrivacyPolicy:', error.message);
       }
+      // Aceite já salvo no storage; mesmo se o backend falhar, segue para Register
     } finally {
       setIsSubmitting(false);
       navigation.navigate('Register', { userName });
     }
   }, [navigation, userName, isSubmitting]);
-
-  const items = getItems();
 
   return (
     <SafeAreaView style={styles.container}>
@@ -140,28 +91,52 @@ const PrivacyPoliciesScreen: React.FC<Props> = ({ navigation, route }) => {
       >
         <View style={styles.content}>
           <Text style={styles.title}>{t('privacyPolicies.title')}</Text>
-          <Text style={styles.intro}>{t('privacyPolicies.intro')}</Text>
-          <Text style={styles.inControl}>{t('privacyPolicies.inControl')}</Text>
+          <Text style={styles.description}>
+            {parseBoldSegments(t('privacyPolicies.description')).map((segment, i) => (
+              <Text key={i} style={segment.bold ? styles.descriptionBold : undefined}>
+                {segment.text}
+              </Text>
+            ))}
+          </Text>
 
-          <View style={styles.tabsWrapper}>
-            <Toggle options={tabLabels} selected={selectedLabel} onSelect={handleTabSelect} />
+          <View style={styles.accordionItem}>
+            <TouchableOpacity
+              style={styles.accordionHeader}
+              onPress={() => toggleAccordion('intro')}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.accordionTitle}>{t('privacyPolicies.introTitle')}</Text>
+              <Icon
+                name={expandedId === 'intro' ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
+                size={24}
+                color={COLORS.TEXT}
+              />
+            </TouchableOpacity>
+            {expandedId === 'intro' && (
+              <View style={styles.accordionContent}>
+                <Text style={styles.accordionBody}>{t('privacyPolicies.intro')}</Text>
+              </View>
+            )}
           </View>
 
-          {items.map((item) => {
-            const isExpanded = expandedId === item.id;
+          {SECTION_KEYS.map((sectionKey, index) => {
+            const id = `section-${index + 1}`;
+            const isExpanded = expandedId === id;
+            const titleKey = `privacyPolicies.${sectionKey}Title`;
+            const contentKey = `privacyPolicies.${sectionKey}Content`;
             return (
-              <View key={item.id} style={styles.accordionItem}>
+              <View key={id} style={styles.accordionItem}>
                 <TouchableOpacity
                   style={styles.accordionHeader}
-                  onPress={() => toggleAccordion(item.id)}
+                  onPress={() => toggleAccordion(id)}
                   activeOpacity={0.7}
                 >
-                  <Text style={styles.accordionTitle}>{t(item.titleKey)}</Text>
+                  <Text style={styles.accordionTitle}>{t(titleKey)}</Text>
                   <Icon name={isExpanded ? 'keyboard-arrow-up' : 'keyboard-arrow-down'} size={24} color={COLORS.TEXT} />
                 </TouchableOpacity>
                 {isExpanded && (
                   <View style={styles.accordionContent}>
-                    <Text style={styles.accordionBody}>{t(item.contentKey)}</Text>
+                    <Text style={styles.accordionBody}>{t(contentKey)}</Text>
                   </View>
                 )}
               </View>
