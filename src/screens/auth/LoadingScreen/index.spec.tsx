@@ -2,7 +2,7 @@ import { render, act } from '@testing-library/react-native';
 import { Animated, Image } from 'react-native';
 import LoadingScreen from './index';
 
-jest.mock('@/assets', () => {
+jest.mock('@/assets/auth', () => {
   const React = require('react');
   const { View } = require('react-native');
   return {
