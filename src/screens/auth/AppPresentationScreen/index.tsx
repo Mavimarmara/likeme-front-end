@@ -5,6 +5,7 @@ import { Header, IconButton } from '@/components/ui';
 import { PRESENTATION_PAGES } from '@/constants/presentation';
 import { useTranslation } from '@/hooks/i18n';
 import { SPACING } from '@/constants';
+import { storageService } from '@/services';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
@@ -50,20 +51,25 @@ const AppPresentationScreen: React.FC<Props> = ({ navigation, route }) => {
     }));
   }, [t]);
 
-  const goToPrivacyPolicies = () => {
-    navigation.navigate('PrivacyPolicies', { userName });
+  const goToPrivacyPolicies = async () => {
+    const acceptedAt = await storageService.getPrivacyPolicyAcceptedAt();
+    if (acceptedAt) {
+      navigation.navigate('Register', { userName });
+    } else {
+      navigation.navigate('PrivacyPolicies', { userName });
+    }
   };
 
   const handleNext = () => {
     if (currentPage < pages.length - 1) {
       setCurrentPage(currentPage + 1);
     } else {
-      goToPrivacyPolicies();
+      void goToPrivacyPolicies();
     }
   };
 
   const handleSkip = () => {
-    goToPrivacyPolicies();
+    void goToPrivacyPolicies();
   };
 
   const handleBack = () => {

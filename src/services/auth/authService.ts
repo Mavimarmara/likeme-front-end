@@ -394,8 +394,9 @@ class AuthService {
 
   /**
    * Registra o aceite da política de privacidade no backend (atualiza privacyPolicyAcceptedAt do usuário).
+   * @param acceptedAt Data/hora do aceite em ISO 8601 (ex: new Date().toISOString()). Enviada ao backend para persistência.
    */
-  async acceptPrivacyPolicy(): Promise<void> {
+  async acceptPrivacyPolicy(acceptedAt: string): Promise<void> {
     const token = await storageService.getToken();
     if (!token) {
       throw new Error('Usuário não autenticado');
@@ -406,6 +407,7 @@ class AuthService {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
+      body: JSON.stringify({ acceptedAt }),
     });
     if (!response.ok) {
       const data = await response.json().catch(() => ({}));

@@ -10,11 +10,13 @@ export function useOnboardingRedirect(navigationReplace: NavigationReplace): voi
     const redirect = async () => {
       try {
         const welcomeScreenAccessedAt = await storageService.getWelcomeScreenAccessedAt();
+        const privacyPolicyAcceptedAt = await storageService.getPrivacyPolicyAcceptedAt();
         const registerCompletedAt = await storageService.getRegisterCompletedAt();
         const objectivesSelectedAt = await storageService.getObjectivesSelectedAt();
 
         const destination = getNextOnboardingDestination(
           welcomeScreenAccessedAt,
+          privacyPolicyAcceptedAt,
           registerCompletedAt,
           objectivesSelectedAt,
         );
