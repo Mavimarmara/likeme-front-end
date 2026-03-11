@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Image, ImageSourcePropType } from 'react-native';
-import { FirstStepBackground, Logo2 } from '@/assets/auth';
+import { FirstStepBackground, LogoFull } from '@/assets/auth';
 import { styles } from './styles';
 
 type Props = {
@@ -16,7 +16,7 @@ const BackgroundWithLogo: React.FC<Props> = ({
   height,
   style,
   backgroundImage = FirstStepBackground,
-  logoImage = Logo2,
+  logoImage = LogoFull,
 }) => {
   const containerStyle = [
     styles.container,

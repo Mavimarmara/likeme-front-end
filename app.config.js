@@ -191,7 +191,7 @@ module.exports = {
       googleServicesFile: './google-services.json',
       versionCode: 2,
       adaptiveIcon: {
-        foregroundImage: './assets/Logo2.png',
+        foregroundImage: './assets/ui/LogoFull.png',
         backgroundColor: '#FFFFFF',
       },
       permissions: [],

@@ -25,7 +25,7 @@ import Presentation4Png from '../../assets/onboarding/290e3173934f96302658e6be4e
 import FirstStepBackgroundPng from '../../assets/onboarding/FirstStepBackground.png';
 
 // Logo usada em telas de auth
-import Logo2Png from '../../assets/auth/Logo2.png';
+import LogoFullPng from '../../assets/ui/LogoFull.png';
 
 export const PartialLogo = PartialLogoSvg;
 export const PartialLogo2 = PartialLogo2Svg;
@@ -46,4 +46,4 @@ export const Presentation3 = Presentation3Png;
 export const Presentation4 = Presentation4Png;
 export const FirstStepBackground = FirstStepBackgroundPng;
 
-export const Logo2 = Logo2Png;
+export const LogoFull = LogoFullPng;
