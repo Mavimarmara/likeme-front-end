@@ -5,7 +5,7 @@ export type RootStackParamList = {
   AppPresentation: { userName?: string };
   Register: { userName?: string };
   Plans: { userName?: string };
-  PersonalObjectives: { userName?: string };
+  PersonalObjectives: { firstName?: string };
   Anamnesis: undefined;
   AnamnesisHome: undefined;
   AnamnesisBody: undefined;

@@ -1,11 +1,15 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '@/components/ui';
 import { PRESENTATION_PAGES } from '@/constants/presentation';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
+
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+const imageWidth = screenWidth - 32;
+const imageHeight = screenHeight * 0.55;
 
 /** Parse "text **bold** more" into segments for rendering bold in React Native Text */
 function parseBoldSegments(str: string): { text: string; bold: boolean }[] {
@@ -80,7 +84,22 @@ const AppPresentationScreen: React.FC<Props> = ({ navigation, route }) => {
         contentContainerStyle={styles.scrollContent}
       >
         <View style={styles.imageContainer}>
-          <Image source={currentPageData.image} style={styles.image} resizeMode='cover' />
+          {typeof currentPageData.image === 'function' ? (
+            (() => {
+              const SvgComponent = currentPageData.image as React.ComponentType<{
+                width?: number;
+                height?: number;
+                style?: unknown;
+              }>;
+              return (
+                <View style={styles.imageSvgWrapper}>
+                  <SvgComponent width={imageWidth} height={imageHeight} style={styles.image} />
+                </View>
+              );
+            })()
+          ) : (
+            <Image source={currentPageData.image} style={styles.image} resizeMode='cover' />
+          )}
         </View>
 
         <View style={styles.content}>

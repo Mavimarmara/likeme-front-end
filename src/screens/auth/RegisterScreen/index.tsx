@@ -217,9 +217,10 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
       const now = new Date().toISOString();
       await storageService.setRegisterCompletedAt(now);
 
-      const userName = fullName || route.params?.userName || 'Usuário';
       const nextScreen = getNextOnboardingScreen('Register');
-      const params = { userName };
+      const params = {
+        firstName: firstName || fullName.trim() || route.params?.userName || 'Usuário',
+      };
       navigation.navigate(nextScreen as never, params as never);
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : t('auth.registerError');
@@ -235,9 +236,9 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
       setIsSkipLoading(true);
       const now = new Date().toISOString();
       await storageService.setRegisterCompletedAt(now);
-      const userName = fullName || route.params?.userName || 'Usuário';
+      const firstName = fullName.trim().split(/\s+/)[0] || fullName || route.params?.userName || 'Usuário';
       const nextScreen = getNextOnboardingScreen('Register');
-      const params = { userName };
+      const params = { firstName };
       navigation.navigate(nextScreen as never, params as never);
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : t('auth.registerError');

@@ -28,6 +28,15 @@ export const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.LG,
     marginBottom: SPACING.XS,
   },
+  imageSvgWrapper: {
+    width: width - SPACING.MD * 2,
+    height: height * 0.55,
+    borderRadius: BORDER_RADIUS.LG,
+    marginBottom: SPACING.XS,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
 
   content: {
     paddingHorizontal: SPACING.MD,

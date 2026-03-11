@@ -23,7 +23,7 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
   useAnalyticsScreen({ screenName: 'PersonalObjectives', screenClass: 'PersonalObjectivesScreen' });
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const userName = route.params?.userName || 'Usuário';
+  const firstName = route.params?.firstName || 'Usuário';
   const { markers } = useMarkers();
   const [selectedMarkers, setSelectedMarkers] = useState<Set<string>>(new Set());
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -104,7 +104,7 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
       >
         <View style={styles.content}>
           <Image source={GradientSplash6} style={[styles.titleAdornment, adornmentStyle]} resizeMode='contain' />
-          <Text style={styles.greeting}>{userName},</Text>
+          <Text style={styles.greeting}>{firstName},</Text>
           <CTACard
             highlightText={t('auth.personalObjectivesCardTitle')}
             description={t('auth.personalObjectivesCardDescription')}

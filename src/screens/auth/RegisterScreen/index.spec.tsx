@@ -134,7 +134,7 @@ describe('RegisterScreen', () => {
     await waitFor(() => {
       expect(getServices().personsService.createOrUpdatePerson).toHaveBeenCalled();
       expect(mockNavigation.navigate).toHaveBeenCalledWith('PersonalObjectives', {
-        userName: 'John',
+        firstName: 'John',
       });
     });
   });
@@ -168,7 +168,7 @@ describe('RegisterScreen', () => {
     await waitFor(() => {
       expect(getServices().personsService.createOrUpdatePerson).toHaveBeenCalled();
       expect(mockNavigation.navigate).toHaveBeenCalledWith('PersonalObjectives', {
-        userName: 'John Doe',
+        firstName: 'John',
       });
     });
   });
@@ -183,7 +183,7 @@ describe('RegisterScreen', () => {
 
     await expect(getServices().storageService.setRegisterCompletedAt).toHaveBeenCalled();
     expect(mockNavigation.navigate).toHaveBeenCalledWith('PersonalObjectives', {
-      userName: 'John',
+      firstName: 'John',
     });
   });
 

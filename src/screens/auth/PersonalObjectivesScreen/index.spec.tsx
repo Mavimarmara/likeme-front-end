@@ -3,7 +3,7 @@ import PersonalObjectivesScreen from './index';
 
 const t = (key: string, opts?: Record<string, string>) => {
   const map: Record<string, string> = {
-    'auth.personalObjectivesTitle': `${opts?.userName ?? ''},`,
+    'auth.personalObjectivesTitle': `${opts?.firstName ?? ''},`,
     'auth.personalObjectivesQuestion': 'Quais são os principais pontos onde podemos te ajudar?',
     'auth.requiredField': 'Campo obrigatório',
     'auth.objectivesSelectAtLeastOne': 'Selecione ao menos um objetivo para continuar.',
@@ -145,7 +145,7 @@ describe('PersonalObjectivesScreen', () => {
     };
     const mockRoute = {
       params: {
-        userName: 'John',
+        firstName: 'John',
       },
     };
 
@@ -166,7 +166,7 @@ describe('PersonalObjectivesScreen', () => {
     };
     const mockRoute = {
       params: {
-        userName: 'John',
+        firstName: 'John',
       },
     };
 
@@ -193,7 +193,7 @@ describe('PersonalObjectivesScreen', () => {
     };
     const mockRoute = {
       params: {
-        userName: 'John',
+        firstName: 'John',
       },
     };
 
@@ -218,7 +218,7 @@ describe('PersonalObjectivesScreen', () => {
     };
     const mockRoute = {
       params: {
-        userName: 'John',
+        firstName: 'John',
       },
     };
 
@@ -237,7 +237,7 @@ describe('PersonalObjectivesScreen', () => {
     };
     const mockRoute = {
       params: {
-        userName: 'John',
+        firstName: 'John',
       },
     };
 
@@ -256,7 +256,7 @@ describe('PersonalObjectivesScreen', () => {
 
   it('shows alert when Salvar is pressed without selecting any marker', async () => {
     const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
-    const mockRoute = { params: { userName: 'John' } };
+    const mockRoute = { params: { firstName: 'John' } };
     const alertSpy = jest.spyOn(require('react-native').Alert, 'alert');
 
     const { getByText } = render(<PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />);
@@ -273,7 +273,7 @@ describe('PersonalObjectivesScreen', () => {
 
   it('shows alert and does not navigate when storage fails on submit', async () => {
     const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
-    const mockRoute = { params: { userName: 'John' } };
+    const mockRoute = { params: { firstName: 'John' } };
     const alertSpy = jest.spyOn(require('react-native').Alert, 'alert');
     getServices().storageService.setSelectedObjectivesIds.mockRejectedValue(new Error('Storage error'));
 
@@ -299,7 +299,7 @@ describe('PersonalObjectivesScreen', () => {
     getServices().storageService.setObjectivesSelectedAt.mockReturnValue(submitPromise);
 
     const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
-    const mockRoute = { params: { userName: 'John' } };
+    const mockRoute = { params: { firstName: 'John' } };
 
     const { getByText } = render(<PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />);
 
