@@ -139,6 +139,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         titleKey='checkout.billingAddress'
         deliverySameAsBilling={deliverySameAsBilling}
         onDeliverySameAsBillingChange={onDeliverySameAsBillingChange}
+        startWithEditOpen={!deliverySameAsBilling}
       />
     </>
   );

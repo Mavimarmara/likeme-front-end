@@ -264,7 +264,11 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const handleDeliverySameAsBillingChange = (value: boolean) => {
     setDeliverySameAsBilling(value);
-    if (value) setBillingAddressData(addressData);
+    if (value) {
+      setBillingAddressData(addressData);
+    } else {
+      setBillingAddressData(EMPTY_ADDRESS);
+    }
   };
 
   const handleApplyCoupon = () => {

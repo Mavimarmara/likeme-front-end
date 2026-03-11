@@ -70,6 +70,12 @@ const AddressForm: React.FC<AddressFormProps> = ({
     }
   }, [startWithEditOpen]);
 
+  useEffect(() => {
+    if (deliverySameAsBilling === false) {
+      setIsEditing(true);
+    }
+  }, [deliverySameAsBilling]);
+
   const handleEditPress = () => {
     setIsEditing(true);
   };
