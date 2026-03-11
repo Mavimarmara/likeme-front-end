@@ -126,6 +126,18 @@ export const styles = StyleSheet.create({
     lineHeight: 22,
     marginBottom: 8,
   },
+  genderLabelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  requiredMark: {
+    color: '#e30f3c',
+    fontFamily: 'DM Sans',
+    fontSize: 14,
+    fontWeight: '400',
+    lineHeight: 22,
+  },
   genderTouchable: {
     alignSelf: 'stretch',
     backgroundColor: COLORS.SECONDARY.LIGHT,

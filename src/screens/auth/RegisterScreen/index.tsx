@@ -326,6 +326,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
                         onSubmitEditing={() => birthdateInputRef.current?.focus()}
                         blurOnSubmit={false}
                         errorText={fieldErrors.fullName}
+                        required
                       />
                     </View>
 
@@ -347,11 +348,15 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
                         keyboardType={Platform.OS === 'ios' ? 'number-pad' : 'numeric'}
                         onFocus={() => scrollToFocusedField('birthdate')}
                         errorText={fieldErrors.birthdate}
+                        required
                       />
                     </View>
 
                     <View collapsable={false} style={styles.fieldRow} onLayout={handleFieldLayout('gender')}>
-                      <Text style={styles.genderLabel}>{t('auth.gender')}</Text>
+                      <View style={styles.genderLabelRow}>
+                        <Text style={styles.genderLabel}>{t('auth.gender')}</Text>
+                        <Text style={styles.requiredMark}> *</Text>
+                      </View>
                       <TouchableOpacity
                         style={styles.genderTouchable}
                         onPress={() => {
@@ -395,6 +400,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
                         keyboardType='decimal-pad'
                         onFocus={() => scrollToFocusedField('weight')}
                         errorText={fieldErrors.weight}
+                        required
                       />
                     </View>
 
@@ -417,6 +423,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
                         keyboardType='decimal-pad'
                         onFocus={() => scrollToFocusedField('height')}
                         errorText={fieldErrors.height}
+                        required
                       />
                     </View>
                   </View>

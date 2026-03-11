@@ -124,14 +124,12 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const isAddressValid = isAddressFilled(addressData);
 
-  const isPaymentStepValid = payment.isPaymentStepValid(isAddressFilled(billingAddressData));
-
   const canProceedFromAddress = isAddressValid && (deliverySameAsBilling || isAddressFilled(billingAddressData));
 
   const isContinueDisabled =
     payment.isProcessing ||
     (currentStep === 'address' && (!canProceedFromAddress || shipping === 0 || shippingLoading)) ||
-    (currentStep === 'payment' && (!isPaymentStepValid || shipping === 0 || shippingLoading));
+    (currentStep === 'payment' && (shipping === 0 || shippingLoading));
 
   const handleContinue = async () => {
     if (currentStep === 'address' && !canProceedFromAddress) {

@@ -415,7 +415,7 @@
     "cpfPlaceholder": "000.000.000-00",
     "saveCardDetails": "Salvar dados do cartão",
     "discountCoupon": "Cupom de desconto",
-    "couponPlaceholder": "PRIMEIRACOMPRA",
+    "couponPlaceholder": "Cupom de desconto",
     "invalidCoupon": "Cupom inválido"
   },
   "activities": {

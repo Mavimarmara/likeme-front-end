@@ -29,6 +29,20 @@ export const styles = StyleSheet.create({
     lineHeight: 22,
   },
 
+  labelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+  },
+
+  requiredMark: {
+    color: '#e30f3c',
+    fontFamily: 'DM Sans',
+    fontSize: 14,
+    fontWeight: '400',
+    lineHeight: 22,
+  },
+
   inputWrapper: {
     alignItems: 'flex-start',
     alignSelf: 'stretch',

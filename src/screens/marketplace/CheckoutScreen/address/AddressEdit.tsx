@@ -25,8 +25,18 @@ const AddressEdit: React.FC<AddressEditProps> = ({
 }) => {
   const { t } = useTranslation();
   const [editData, setEditData] = useState<AddressData>(initialData);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [loadingCep, setLoadingCep] = useState(false);
   const lastFetchedCepRef = useRef<string | null>(null);
+
+  const clearFieldError = (field: string) => {
+    setFieldErrors((prev) => {
+      if (!prev[field]) return prev;
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  };
 
   const handleZipCodeChange = useFormattedInput({
     type: 'zipCode',
@@ -75,17 +85,24 @@ const AddressEdit: React.FC<AddressEditProps> = ({
   }, [initialData]);
 
   const handleSave = () => {
+    const errors: Record<string, string> = {};
+    if (!editData.fullName.trim()) errors.fullName = t('common.requiredField');
+    if (!editData.addressLine1.trim()) errors.addressLine1 = t('common.requiredField');
+    if (!editData.neighborhood.trim()) errors.neighborhood = t('common.requiredField');
+    if (!editData.city.trim()) errors.city = t('common.requiredField');
+    if (!editData.state.trim()) errors.state = t('common.requiredField');
+    const zipDigits = editData.zipCode.replace(/\D/g, '');
+    if (zipDigits.length < 8) errors.zipCode = t('common.requiredField');
+    const phoneDigits = editData.phone.replace(/\D/g, '');
+    if (phoneDigits.length < 10) errors.phone = t('common.requiredField');
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
+    setFieldErrors({});
     onSave(editData);
   };
-
-  const isAddressValid =
-    editData.fullName.trim() !== '' &&
-    editData.addressLine1.trim() !== '' &&
-    editData.neighborhood.trim() !== '' &&
-    editData.city.trim() !== '' &&
-    editData.state.trim() !== '' &&
-    editData.zipCode.replace(/\D/g, '').length >= 8 &&
-    editData.phone.replace(/\D/g, '').length >= 10;
 
   return (
     <View style={styles.addressCard}>
@@ -99,8 +116,13 @@ const AddressEdit: React.FC<AddressEditProps> = ({
               label={t('checkout.zipCode')}
               placeholder={t('cart.zipCodePlaceholder')}
               value={editData.zipCode}
-              onChangeText={handleZipCodeChange}
+              onChangeText={(text) => {
+                handleZipCodeChange(text);
+                clearFieldError('zipCode');
+              }}
               keyboardType='numeric'
+              errorText={fieldErrors.zipCode}
+              required
             />
           </View>
         </View>
@@ -114,7 +136,12 @@ const AddressEdit: React.FC<AddressEditProps> = ({
           label={t('checkout.fullName')}
           placeholder={t('checkout.fullNamePlaceholder')}
           value={editData.fullName}
-          onChangeText={(text) => setEditData({ ...editData, fullName: text })}
+          onChangeText={(text) => {
+            setEditData({ ...editData, fullName: text });
+            clearFieldError('fullName');
+          }}
+          errorText={fieldErrors.fullName}
+          required
         />
         <View style={styles.addressRow}>
           <View style={styles.addressFieldHalf}>
@@ -122,7 +149,12 @@ const AddressEdit: React.FC<AddressEditProps> = ({
               label={t('checkout.addressLine1')}
               placeholder={t('checkout.addressLine1Placeholder')}
               value={editData.addressLine1}
-              onChangeText={(text) => setEditData({ ...editData, addressLine1: text })}
+              onChangeText={(text) => {
+                setEditData({ ...editData, addressLine1: text });
+                clearFieldError('addressLine1');
+              }}
+              errorText={fieldErrors.addressLine1}
+              required
             />
           </View>
           <View style={styles.addressFieldNumber}>
@@ -145,7 +177,12 @@ const AddressEdit: React.FC<AddressEditProps> = ({
           label={t('checkout.neighborhood')}
           placeholder={t('checkout.neighborhoodPlaceholder')}
           value={editData.neighborhood}
-          onChangeText={(text) => setEditData({ ...editData, neighborhood: text })}
+          onChangeText={(text) => {
+            setEditData({ ...editData, neighborhood: text });
+            clearFieldError('neighborhood');
+          }}
+          errorText={fieldErrors.neighborhood}
+          required
         />
         <View style={styles.addressRow}>
           <View style={styles.addressFieldHalf}>
@@ -153,7 +190,12 @@ const AddressEdit: React.FC<AddressEditProps> = ({
               label={t('checkout.city')}
               placeholder={t('checkout.cityPlaceholder')}
               value={editData.city}
-              onChangeText={(text) => setEditData({ ...editData, city: text })}
+              onChangeText={(text) => {
+                setEditData({ ...editData, city: text });
+                clearFieldError('city');
+              }}
+              errorText={fieldErrors.city}
+              required
             />
           </View>
           <View style={styles.addressFieldHalf}>
@@ -161,7 +203,12 @@ const AddressEdit: React.FC<AddressEditProps> = ({
               label={t('checkout.state')}
               placeholder={t('checkout.statePlaceholder')}
               value={editData.state}
-              onChangeText={(text) => setEditData({ ...editData, state: text })}
+              onChangeText={(text) => {
+                setEditData({ ...editData, state: text });
+                clearFieldError('state');
+              }}
+              errorText={fieldErrors.state}
+              required
             />
           </View>
         </View>
@@ -169,8 +216,13 @@ const AddressEdit: React.FC<AddressEditProps> = ({
           label={t('checkout.phone')}
           placeholder={t('checkout.phonePlaceholder')}
           value={editData.phone}
-          onChangeText={handlePhoneChange}
+          onChangeText={(text) => {
+            handlePhoneChange(text);
+            clearFieldError('phone');
+          }}
           keyboardType='phone-pad'
+          errorText={fieldErrors.phone}
+          required
         />
         <View style={styles.editAddressActions}>
           {onCancel && (
@@ -178,12 +230,7 @@ const AddressEdit: React.FC<AddressEditProps> = ({
               <Text style={styles.cancelButtonText}>{t('common.cancel')}</Text>
             </TouchableOpacity>
           )}
-          <SecondaryButton
-            label={t('common.save')}
-            onPress={handleSave}
-            disabled={!isAddressValid || saving}
-            loading={saving}
-          />
+          <SecondaryButton label={t('common.save')} onPress={handleSave} disabled={saving} loading={saving} />
         </View>
       </View>
     </View>
