@@ -35,7 +35,11 @@
     "useDefineForClassFields": true,
     "paths": {
       "@/*": ["src/*"],
-      "@/assets/*": ["assets/*"],
+      "@/assets": ["src/assets/index"],
+      "@/assets/auth": ["src/assets/auth"],
+      "@/assets/anamnesis": ["src/assets/anamnesis"],
+      "@/assets/ui": ["src/assets/ui"],
+      "@/assets/profile": ["src/assets/profile"],
       "@/components/*": ["src/components/*"],
       "@/screens/*": ["src/screens/*"],
       "@/navigation/*": ["src/navigation/*"],
