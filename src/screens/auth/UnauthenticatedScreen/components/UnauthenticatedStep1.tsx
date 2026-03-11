@@ -1,17 +1,16 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Animated, Dimensions, Image } from 'react-native';
-import { PrimaryButton, SecondaryButton, ButtonGroup } from '@/components/ui';
+import { PrimaryButton, ButtonGroup } from '@/components/ui';
 import { useTranslation } from '@/hooks/i18n';
 import { GradientSplash2, PartialLogo, PartialLogo2 } from '@/assets';
 import { styles } from './UnauthenticatedStep1.styles';
 
 interface UnauthenticatedStep1Props {
-  onNext: () => void;
   onLogin: () => void;
   isLoading?: boolean;
 }
 
-const UnauthenticatedStep1: React.FC<UnauthenticatedStep1Props> = ({ onNext, onLogin, isLoading = false }) => {
+const UnauthenticatedStep1: React.FC<UnauthenticatedStep1Props> = ({ onLogin, isLoading = false }) => {
   const { t } = useTranslation();
   const { width } = Dimensions.get('window');
   const slideLeft = useRef(new Animated.Value(0)).current;
@@ -52,8 +51,13 @@ const UnauthenticatedStep1: React.FC<UnauthenticatedStep1Props> = ({ onNext, onL
 
       <Animated.View style={[styles.buttonContainer, { opacity: buttonsOpacity }]}>
         <ButtonGroup direction='vertical'>
-          <PrimaryButton label={t('common.next')} onPress={onNext} disabled={isLoading} />
-          <SecondaryButton label={t('auth.login')} onPress={onLogin} loading={isLoading} />
+          <PrimaryButton
+            label={t('auth.login')}
+            onPress={onLogin}
+            loading={isLoading}
+            disabled={isLoading}
+            size='large'
+          />
         </ButtonGroup>
       </Animated.View>
 

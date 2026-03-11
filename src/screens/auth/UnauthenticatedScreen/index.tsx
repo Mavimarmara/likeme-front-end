@@ -14,20 +14,6 @@ const UnauthenticatedScreen: React.FC<Props> = ({ navigation }) => {
   useAnalyticsScreen({ screenName: 'Unauthenticated', screenClass: 'UnauthenticatedScreen' });
   const { handleLogin: authLogin, isLoading } = useAuthLogin(navigation);
 
-  const handleNext = () => {
-    logButtonClick({
-      screen_name: 'unauthenticated',
-      button_label: 'next',
-      action_name: 'continue',
-    });
-    logNavigation({
-      source_screen: 'unauthenticated',
-      destination_screen: 'authenticated',
-      action_name: 'next',
-    });
-    authLogin();
-  };
-
   const handleLogin = () => {
     logButtonClick({
       screen_name: 'unauthenticated',
@@ -44,7 +30,7 @@ const UnauthenticatedScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <UnauthenticatedStep1 onNext={handleNext} onLogin={handleLogin} isLoading={isLoading} />
+      <UnauthenticatedStep1 onLogin={handleLogin} isLoading={isLoading} />
     </SafeAreaView>
   );
 };
