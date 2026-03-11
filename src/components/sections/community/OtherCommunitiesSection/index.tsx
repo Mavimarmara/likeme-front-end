@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, ImageBackground } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { BackgroundIconButton } from '@/assets';
+import { BackgroundIconButton } from '@/assets/ui';
 import { SearchBar } from '@/components/ui';
 import { useTranslation } from '@/hooks/i18n';
 import { styles } from './styles';

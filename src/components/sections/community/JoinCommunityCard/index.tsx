@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, ImageBackground, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import BlurCard from '@/components/ui/cards/BlurCard';
-import { BackgroundIconButton } from '@/assets';
+import { BackgroundIconButton } from '@/assets/ui';
 import { styles } from './styles';
 
 export type JoinCommunity = {

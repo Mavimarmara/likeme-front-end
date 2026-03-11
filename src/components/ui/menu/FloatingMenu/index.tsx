@@ -3,7 +3,7 @@ import { View, TouchableOpacity, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { IconButton } from '@/components/ui/buttons';
-import { TwoDotsIcon } from '@/assets';
+import { TwoDotsIcon } from '@/assets/ui';
 import { styles } from './styles';
 
 type MenuItem = {

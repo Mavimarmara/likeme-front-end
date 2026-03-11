@@ -11,7 +11,7 @@ import { useTranslation } from '@/hooks/i18n';
 import { useChat, useMenuItems } from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import type { ChatConversation } from '@/hooks';
-import { LogoMini } from '@/assets';
+import { LogoMini } from '@/assets/ui';
 import { COLORS } from '@/constants';
 import { storageService } from '@/services';
 import type { ChatStackParamList } from '@/types/navigation';

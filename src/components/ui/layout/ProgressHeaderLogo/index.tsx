@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TextStyle, StyleSheet } from 'react-native';
-import { LogoPartialMini } from '@/assets';
+import { LogoPartialMini } from '@/assets/ui';
 import { COLORS } from '@/constants';
 import { useTranslation } from '@/hooks/i18n';
 

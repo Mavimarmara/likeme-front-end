@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { ImageBackground, ImageSourcePropType, StyleSheet, View, ViewStyle } from 'react-native';
 import Svg, { Defs, LinearGradient, Path, Stop } from 'react-native-svg';
-import { BackgroundIcon } from '@/assets';
+import { BackgroundIcon } from '@/assets/ui';
 import { styles } from './styles';
 
 export type IconSilhouetteSize = 'xsmall' | 'small' | 'medium' | 'large';

@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, Animated, Dimensions, Image } from 'react-native';
 import { PrimaryButton, ButtonGroup } from '@/components/ui';
 import { useTranslation } from '@/hooks/i18n';
-import { GradientSplash2, PartialLogo, PartialLogo2 } from '@/assets';
+import { GradientSplash2, PartialLogo, PartialLogo2 } from '@/assets/auth';
 import { styles } from './UnauthenticatedStep1.styles';
 
 interface UnauthenticatedStep1Props {

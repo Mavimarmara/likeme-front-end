@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, TouchableOpacity, TextInput as RNTextInput, ImageBackground } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { BackgroundIconButton } from '@/assets';
+import { BackgroundIconButton } from '@/assets/ui';
 import { styles } from './styles';
 
 interface SearchBarProps {

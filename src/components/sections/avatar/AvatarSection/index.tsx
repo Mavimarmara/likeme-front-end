@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, Alert } from 'react-native';
-import { MindAvatar, BodyAvatar, MindAvatarActive, BodyAvatarActive } from '@/assets';
+import { MindAvatar, BodyAvatar, MindAvatarActive, BodyAvatarActive } from '@/assets/profile';
 import { IconButton } from '@/components/ui/buttons';
 import { COLORS } from '@/constants';
 import { getAvatarSizeFromPercentage, getAvatarDimensions } from '@/utils/anamnesis/avatarSizeMapper';

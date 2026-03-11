@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image, StyleSheet } from 'react-native';
-import { BackgroundWithGradient } from '@/assets';
+import { BackgroundWithGradient } from '@/assets/ui';
 
 const Background: React.FC = () => {
   return <Image source={BackgroundWithGradient} style={styles.background} resizeMode='cover' />;

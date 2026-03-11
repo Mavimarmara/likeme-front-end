@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
-import { LogoMini } from '@/assets';
+import { LogoMini } from '@/assets/ui';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { IconButton } from '@/components/ui/buttons';
 import { styles } from './styles';

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, Animated, Image, ImageStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { PartialLogo, GradientSplash7, GradientSplash8, GradientSplash9 } from '@/assets';
+import { PartialLogo, GradientSplash7, GradientSplash8, GradientSplash9 } from '@/assets/auth';
 import { styles, GRADIENT_STRIP_HEIGHT, GRADIENT_STRIP_WIDTH } from './styles';
 import { storageService } from '@/services';
 import { useTranslation } from '@/hooks/i18n';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ImageSourcePropType } from 'react-native';
-import { Presentation2, Presentation3, Presentation4 } from '@/assets';
+import { Presentation2, Presentation3, Presentation4 } from '@/assets/auth';
 import { BackgroundWithLogo } from '@/components/ui/layout';
 
 export type PresentationImageType =

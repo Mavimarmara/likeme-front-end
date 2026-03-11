@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, KeyboardAvoidingView, Platform, Alert, TextInput as RNTextInput, Image, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header, TextInput, PrimaryButton } from '@/components/ui';
-import { GradientSplash4 } from '@/assets';
+import { GradientSplash4 } from '@/assets/auth';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen, logButtonClick, logFormSubmit, logNavigation } from '@/analytics';
 import { getNextOnboardingScreen } from '@/utils';

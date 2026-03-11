@@ -5,7 +5,7 @@ import { View, Text, ScrollView, Image, useWindowDimensions, Alert } from 'react
 import { Header, IconSilhouette, PrimaryButton, SelectionButtonQuiz } from '@/components/ui';
 import { CTACard } from '@/components/ui/cards';
 import { COLORS } from '@/constants';
-import { GradientSplash6 } from '@/assets';
+import { GradientSplash6 } from '@/assets/auth';
 import { personalObjectivesService, storageService } from '@/services';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen, logEvent } from '@/analytics';

@@ -5,7 +5,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Header } from '@/components/ui';
 import { SecondaryButton } from '@/components/ui/buttons';
 import ProgressBar from '@/components/ui/feedback/ProgressBar';
-import { BackgroundWithGradient2, BackgroundWithGradient3 } from '@/assets';
+import { BackgroundWithGradient2, BackgroundWithGradient3 } from '@/assets/anamnesis';
 import { useAnamnesisProgress } from '@/hooks/anamnesis/useAnamnesisProgress';
 import { useTranslation } from '@/hooks/i18n';
 import { COLORS } from '@/constants';

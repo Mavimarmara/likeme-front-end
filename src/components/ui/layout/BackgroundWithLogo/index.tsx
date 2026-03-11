@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Image, ImageSourcePropType } from 'react-native';
-import { FirstStepBackground, Logo2 } from '@/assets';
+import { FirstStepBackground, Logo2 } from '@/assets/auth';
 import { styles } from './styles';
 
 type Props = {

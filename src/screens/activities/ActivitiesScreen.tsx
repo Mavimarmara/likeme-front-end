@@ -7,7 +7,7 @@ import { FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
 import { Header, Background } from '@/components/ui/layout';
 import { Toggle, PrimaryButton, Badge } from '@/components/ui';
 import { CreateActivityModal } from '@/components/sections/activity';
-import { DoneIcon, CloseIcon } from '@/assets';
+import { DoneIcon, CloseIcon } from '@/assets/ui';
 import { ProductsCarousel, PlansCarousel, type Plan } from '@/components/sections/product';
 import { EventReminder } from '@/components/ui/cards';
 import { orderService, activityService } from '@/services';

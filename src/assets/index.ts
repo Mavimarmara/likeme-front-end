@@ -1,39 +1,11 @@
-// Assets exports para usar com aliases
-export { default as Logo } from '../../assets/Logo.svg';
-export { default as PartialLogo } from '../../assets/PartialLogo.svg';
-export { default as PartialLogo2 } from '../../assets/PartialLogo2.svg';
-export { default as RightArrow } from '../../assets/RightArrow.svg';
-export { default as LogoMini } from '../../assets/LogoMini.svg';
-export { default as LogoPartialMini } from '../../assets/LogoPartialMini.svg';
-export { default as GradientSplash } from '../../assets/GradientSplash.svg';
-export { default as BackgroundIcon } from '../../assets/icons/BackgroundIcon.svg';
-export { default as Presentation1 } from '../../assets/onboarding/FirstStep.svg';
+// Reexports organizados por domínio.
+// Use sempre imports específicos por domínio, por exemplo:
+// - import { GradientSplash4 } from '@/assets/auth';
+// - import { LogoMini } from '@/assets/ui';
+// - import { BackgroundWithGradient2 } from '@/assets/anamnesis';
+// - import { MindAvatar } from '@/assets/profile';
 
-// Para imagens PNG, vamos usar require direto
-//export const GradientSplash = require('../../assets/GradientSplash.png');
-export const GradientSplash2 = require('../../assets/GradientSplash2.png');
-export const GradientSplash3 = require('../../assets/GradientSplash3.png');
-export const GradientSplash4 = require('../../assets/GradientSplash4.png');
-export const GradientSplash5 = require('../../assets/GradientSplash5.png');
-export const GradientSplash6 = require('../../assets/GradientSplash6.png');
-export const GradientSplash7 = require('../../assets/GradientSplash7.png');
-export const GradientSplash8 = require('../../assets/GradientSplash8.png');
-export const GradientSplash9 = require('../../assets/GradientSplash9.png');
-export const Presentation2 = require('../../assets/onboarding/f964373bda0df68c716c1f22cdf92231ffac6980.png');
-export const Presentation3 = require('../../assets/onboarding/48b7ed383896162722c5bfdaa122634379aa6048.png');
-export const Presentation4 = require('../../assets/onboarding/290e3173934f96302658e6be4e15057da130dc19.png');
-export const FirstStepBackground = require('../../assets/onboarding/FirstStepBackground.png');
-export const Logo2 = require('../../assets/Logo2.png');
-export const BackgroundIconButton = require('../../assets/BackgroundIconButton.png');
-export const BackgroundWithGradient = require('../../assets/BackgroundWithGradient.png');
-export const BackgroundWithGradient2 = require('../../assets/BackgroundWithGradient2.png');
-export const BackgroundWithGradient3 = require('../../assets/BackgroundWithGradient3.png');
-export const BackgroundWithGradient4 = require('../../assets/BackgroundWithGradient4.png');
-export const BackgroundWithGradient5 = require('../../assets/BackgroundWithGradient5.png');
-export const DoneIcon = require('../../assets/Done.png');
-export const CloseIcon = require('../../assets/Close.png');
-export const MindAvatar = require('../../assets/avatar/DisableMindAvatar.png');
-export const BodyAvatar = require('../../assets/avatar/DisableBodyAvatar.png');
-export const MindAvatarActive = require('../../assets/avatar/MindAvatar.png');
-export const BodyAvatarActive = require('../../assets/avatar/BodyAvatar.png');
-export const TwoDotsIcon = require('../../assets/icons/TwoDots.png');
+export * as AuthAssets from './auth';
+export * as AnamnesisAssets from './anamnesis';
+export * as UiAssets from './ui';
+export * as ProfileAssets from './profile';

@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '@/components/ui';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import { useTranslation } from '@/hooks/i18n';
-import { BackgroundWithGradient2, BackgroundWithGradient3 } from '@/assets';
+import { BackgroundWithGradient2, BackgroundWithGradient3 } from '@/assets/anamnesis';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 
