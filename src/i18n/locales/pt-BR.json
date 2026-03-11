@@ -76,7 +76,7 @@
     "validationOutOfRange": "Deve estar entre {{min}} e {{max}}.",
     "validationInvalidBirthdate": "Informe uma data de nascimento válida (DD/MM/AAAA).",
     "personalObjectivesTitle": "{userName},",
-    "personalObjectivesQuestion": "Quais são os principais pontos onde podemos te ajudar?",
+    "personalObjectivesQuestion": "Quais categorias são mais relevantes para você?",
     "personalObjectivesQuestioDescription": "Selecione abaixo para que possamos oferecer as melhores recomendações em breve e comece a sua experiência.",
     "personalObjectivesCardTitle": "Você está entrando em uma plataforma em beta teste.",
     "personalObjectivesCardDescription": "Isso significa que você faz parte de um grupo especial que está começando essa jornada conosco.\n\nAqui você encontrará comunidades, recomendações de profissionais, produtos e serviços de saúde e bem-estar. Todas as categorias estarão disponíveis em breve, mas por enquanto, nos ajude a personalizar sua experiência.",
@@ -546,7 +546,7 @@
     "loading": "Carregando..."
   },
   "privacyPolicies": {
-    "title": "Política de Privacidade",
+    "title": "Política de Privacidade de Dados",
     "description": "Abaixo você encontra nossas políticas, que garantem total sigilo e segurança dos seus dados. Também explicamos como as informações fornecidas são usadas para recomendações e personalizações.\n\n**Aqui, você está no controle.**",
     "introTitle": "Introdução",
     "intro": "Atualizada em: 02/02/2026\n\nLIKEME GLOBAL BRASIL LTDA, sociedade empresária limitada, com sede na Alameda Santos, nº 122, conjunto 603, São Paulo/SP, CEP 01418-000, inscrita no CNPJ/MF sob o nº 61.840.894/0001-12, doravante denominada simplesmente \"Like:Me\", valoriza a sua privacidade e está comprometida com a proteção dos dados pessoais de seus clientes, parceiros e usuários, nos termos da Lei nº 13.709/2018 (Lei Geral de Proteção de Dados - LGPD) e do Regulamento (UE) 2016/679 (General Data Protection Regulation - GDPR).\n\nEsta Política explica de forma simples e transparente como coletamos, usamos e protegemos seus dados pessoais utilizados na plataforma Like:Me, para fins de personalização da experiência, criação do avatar, recomendações e integrações, nos termos da legislação aplicável e desta Política de Privacidade.",
