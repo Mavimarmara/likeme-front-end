@@ -134,6 +134,7 @@ export * from './auth/navigation';
 export * from './formatters/priceFormatter';
 export * from './formatters/dateFormatter';
 export * from './formatters/inputFormatters';
+export * from './formatters/personFormats';
 export * from './formatters/addressFormatter';
 
 // Sorters

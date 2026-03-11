@@ -1,23 +1,33 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
-import { Alert } from 'react-native';
 import RegisterScreen from './index';
 
 const t = (key: string, opts?: Record<string, string>) => {
   const map: Record<string, string> = {
     'auth.registerTitle': 'Vamos começar!',
     'common.next': 'Próximo',
+    'common.save': 'Salvar',
+    'common.saving': 'Salvando...',
     'common.skipInformation': 'Pular Informação',
+    'common.configureLater': 'Configurar depois',
     'auth.fullName': 'Nome completo',
     'auth.fullNamePlaceholder': 'Nome completo',
     'auth.age': 'Idade',
     'auth.agePlaceholder': 'Idade',
+    'auth.birthdate': 'Data de nascimento',
+    'auth.birthdatePlaceholder': 'DD/MM/AAAA',
+    'auth.validationInvalidBirthdate': 'Informe uma data de nascimento válida (DD/MM/AAAA).',
     'auth.requiredField': 'Campo obrigatório',
     'auth.fillFullName': 'Por favor, preencha o nome completo.',
     'auth.validationInvalidNumber': 'Informe um número válido.',
     'auth.validationOutOfRange': `Deve estar entre ${opts?.min ?? ''} e ${opts?.max ?? ''}.`,
     'auth.gender': 'Gênero',
     'auth.genderPlaceholder': 'Selecione',
+    'auth.genderFemale': 'Feminino',
+    'auth.genderMale': 'Masculino',
+    'auth.genderNonBinary': 'Não binário',
+    'auth.genderOther': 'Outro',
+    'auth.genderPreferNotToSay': 'Prefiro não dizer',
     'auth.registerInvitationQuestion': 'Convite?',
     'auth.registerEnterCode': 'Código',
     'auth.registerCodePlaceholder': 'Código',
@@ -62,11 +72,12 @@ jest.mock('@/utils', () => ({
 }));
 
 jest.mock('@/services', () => ({
-  storageService: {
-    setRegisterCompletedAt: jest.fn().mockResolvedValue(undefined),
-  },
   personsService: {
     createOrUpdatePerson: jest.fn().mockResolvedValue(undefined),
+    getPerson: jest.fn().mockResolvedValue(null),
+  },
+  userService: {
+    getProfile: jest.fn().mockResolvedValue({ success: false }),
   },
 }));
 
@@ -76,7 +87,7 @@ jest.mock('@/components/ui', () => {
   return {
     Header: () => null,
     Title: ({ title }: { title: string }) => <Text>{title}</Text>,
-    TextInput: React.forwardRef(({ label, placeholder, onChangeText, value }: any, ref: any) => (
+    TextInput: React.forwardRef(({ label, placeholder, onChangeText, value, errorText }: any, ref: any) => (
       <View>
         {label && <Text>{label}</Text>}
         <RNTextInput
@@ -86,6 +97,7 @@ jest.mock('@/components/ui', () => {
           value={value}
           testID={`input-${placeholder}`}
         />
+        {errorText ? <Text>{errorText}</Text> : null}
       </View>
     )),
     PrimaryButton: ({ label, onPress }: { label: string; onPress: () => void }) => (
@@ -108,7 +120,7 @@ describe('RegisterScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     getServices().personsService.createOrUpdatePerson.mockResolvedValue(undefined);
-    getServices().storageService.setRegisterCompletedAt.mockResolvedValue(undefined);
+    getServices().personsService.getPerson.mockResolvedValue(null);
   });
 
   it('renders correctly', () => {
@@ -118,18 +130,23 @@ describe('RegisterScreen', () => {
     const { getByText } = render(<RegisterScreen navigation={mockNavigation} route={mockRoute as any} />);
 
     expect(getByText('Vamos começar!')).toBeTruthy();
-    expect(getByText('Próximo')).toBeTruthy();
-    expect(getByText('Pular Informação')).toBeTruthy();
+    expect(getByText('Salvar')).toBeTruthy();
+    expect(getByText('Configurar depois')).toBeTruthy();
   });
 
-  it('navigates to PersonalObjectives when Next button is pressed', async () => {
+  it('navigates to PersonalObjectives when Salvar button is pressed with all required fields', async () => {
     const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
     const mockRoute = { params: { userName: 'John' } };
 
     const { getByText, getByTestId } = render(<RegisterScreen navigation={mockNavigation} route={mockRoute as any} />);
 
     fireEvent.changeText(getByTestId('input-Nome completo'), 'John');
-    fireEvent.press(getByText('Próximo'));
+    fireEvent.changeText(getByTestId('input-DD/MM/AAAA'), '01/01/1990');
+    fireEvent.press(getByText('Selecione'));
+    fireEvent.press(getByText('Masculino'));
+    fireEvent.changeText(getByTestId('input-60'), '70');
+    fireEvent.changeText(getByTestId('input-1,60'), '1,75');
+    fireEvent.press(getByText('Salvar'));
 
     await waitFor(() => {
       expect(getServices().personsService.createOrUpdatePerson).toHaveBeenCalled();
@@ -139,14 +156,19 @@ describe('RegisterScreen', () => {
     });
   });
 
-  it('sends personData with optional fields when set', async () => {
+  it('sends personData with all required fields when set', async () => {
     const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
     const mockRoute = { params: {} };
 
     const { getByText, getByTestId } = render(<RegisterScreen navigation={mockNavigation} route={mockRoute as any} />);
 
     fireEvent.changeText(getByTestId('input-Nome completo'), 'Maria Silva');
-    fireEvent.press(getByText('Próximo'));
+    fireEvent.changeText(getByTestId('input-DD/MM/AAAA'), '15/06/1985');
+    fireEvent.press(getByText('Selecione'));
+    fireEvent.press(getByText('Feminino'));
+    fireEvent.changeText(getByTestId('input-60'), '60');
+    fireEvent.changeText(getByTestId('input-1,60'), '1,65');
+    fireEvent.press(getByText('Salvar'));
 
     await expect(getServices().personsService.createOrUpdatePerson).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -156,14 +178,19 @@ describe('RegisterScreen', () => {
     );
   });
 
-  it('navigates to PersonalObjectives with fullName when Next is pressed and fullName is set', async () => {
+  it('navigates to PersonalObjectives with fullName when Salvar is pressed and fullName is set', async () => {
     const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
     const mockRoute = { params: { userName: 'John' } };
 
     const { getByText, getByTestId } = render(<RegisterScreen navigation={mockNavigation} route={mockRoute as any} />);
 
     fireEvent.changeText(getByTestId('input-Nome completo'), 'John Doe');
-    fireEvent.press(getByText('Próximo'));
+    fireEvent.changeText(getByTestId('input-DD/MM/AAAA'), '01/01/1990');
+    fireEvent.press(getByText('Selecione'));
+    fireEvent.press(getByText('Masculino'));
+    fireEvent.changeText(getByTestId('input-60'), '70');
+    fireEvent.changeText(getByTestId('input-1,60'), '1,75');
+    fireEvent.press(getByText('Salvar'));
 
     await waitFor(() => {
       expect(getServices().personsService.createOrUpdatePerson).toHaveBeenCalled();
@@ -173,62 +200,55 @@ describe('RegisterScreen', () => {
     });
   });
 
-  it('navigates to PersonalObjectives when Skip button is pressed', async () => {
+  it('navigates to PersonalObjectives when Configurar depois button is pressed', async () => {
     const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
     const mockRoute = { params: { userName: 'John' } };
 
     const { getByText } = render(<RegisterScreen navigation={mockNavigation} route={mockRoute as any} />);
 
-    fireEvent.press(getByText('Pular Informação'));
+    fireEvent.press(getByText('Configurar depois'));
 
-    await expect(getServices().storageService.setRegisterCompletedAt).toHaveBeenCalled();
     expect(mockNavigation.navigate).toHaveBeenCalledWith('PersonalObjectives', {
       firstName: 'John',
     });
   });
 
-  it('shows alert when Next is pressed without fullName', () => {
+  it('shows inline error when Salvar is pressed without fullName', () => {
     const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
     const mockRoute = { params: {} };
-    const alertSpy = jest.spyOn(Alert, 'alert');
 
     const { getByText, getByTestId } = render(<RegisterScreen navigation={mockNavigation} route={mockRoute as any} />);
 
     fireEvent.changeText(getByTestId('input-Nome completo'), '');
-    fireEvent.press(getByText('Próximo'));
+    fireEvent.press(getByText('Salvar'));
 
-    expect(alertSpy).toHaveBeenCalledWith('Campo obrigatório', 'Por favor, preencha o nome completo.');
+    expect(getByText('Por favor, preencha o nome completo.')).toBeTruthy();
     expect(mockNavigation.navigate).not.toHaveBeenCalled();
     expect(getServices().personsService.createOrUpdatePerson).not.toHaveBeenCalled();
-
-    alertSpy.mockRestore();
   });
 
-  it('shows alert when Next is pressed with only whitespace in fullName', () => {
+  it('shows inline error when Salvar is pressed with only whitespace in fullName', () => {
     const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
     const mockRoute = { params: {} };
-    const alertSpy = jest.spyOn(Alert, 'alert');
 
     const { getByText, getByTestId } = render(<RegisterScreen navigation={mockNavigation} route={mockRoute as any} />);
 
     fireEvent.changeText(getByTestId('input-Nome completo'), '   ');
-    fireEvent.press(getByText('Próximo'));
+    fireEvent.press(getByText('Salvar'));
 
-    expect(alertSpy).toHaveBeenCalledWith('Campo obrigatório', 'Por favor, preencha o nome completo.');
+    expect(getByText('Por favor, preencha o nome completo.')).toBeTruthy();
     expect(mockNavigation.navigate).not.toHaveBeenCalled();
-
-    alertSpy.mockRestore();
   });
 
-  it('does not navigate when age is out of range and sets field error', async () => {
+  it('does not navigate when birthdate is out of range and sets field error', async () => {
     const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
     const mockRoute = { params: {} };
 
     const { getByText, getByTestId } = render(<RegisterScreen navigation={mockNavigation} route={mockRoute as any} />);
 
     fireEvent.changeText(getByTestId('input-Nome completo'), 'João');
-    fireEvent.changeText(getByTestId('input-Idade'), '200');
-    fireEvent.press(getByText('Próximo'));
+    fireEvent.changeText(getByTestId('input-DD/MM/AAAA'), '01/01/1820');
+    fireEvent.press(getByText('Salvar'));
 
     expect(getServices().personsService.createOrUpdatePerson).not.toHaveBeenCalled();
     expect(mockNavigation.navigate).not.toHaveBeenCalled();

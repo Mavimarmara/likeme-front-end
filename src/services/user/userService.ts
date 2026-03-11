@@ -29,6 +29,12 @@ export interface PersonWithContacts {
   lastName?: string | null;
   surname?: string | null;
   contacts?: PersonContact[];
+  /** Dados do formulário de registro (quando retornados pelo perfil) */
+  birthdate?: string | null;
+  gender?: string | null;
+  weight?: string | null;
+  height?: string | null;
+  insurance?: string | null;
 }
 
 /** Perfil completo retornado por GET /api/auth/profile */

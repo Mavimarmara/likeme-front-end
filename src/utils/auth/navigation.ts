@@ -26,7 +26,8 @@ export type OnboardingRedirectDestination =
 
 /**
  * Define a próxima tela de onboarding com base nos flags de storage (usado pelo redirect pós-login).
- * Considera o aceite da política de privacidade: se o usuário ainda não aceitou, redireciona para PrivacyPolicies.
+ * Se o usuário ainda não tem dados pessoais salvos (registerCompletedAt), redireciona para Register.
+ * Considera também o aceite da política de privacidade antes do registro.
  * TODO: redirect para Plans desabilitado temporariamente; reativar quando necessário.
  */
 export function getNextOnboardingDestination(
@@ -43,6 +44,7 @@ export function getNextOnboardingDestination(
   if (!privacyPolicyAcceptedAt) {
     return { screen: 'PrivacyPolicies', params: { userName: DEFAULT_USER_NAME } };
   }
+  // Sem dados pessoais salvos (registro não concluído) → sempre para Register
   if (!registerCompletedAt) {
     return { screen: 'Register', params: { userName: DEFAULT_USER_NAME } };
   }
