@@ -14,7 +14,7 @@ jest.mock('react-native-safe-area-context', () => {
   };
 });
 
-jest.mock('@/assets', () => ({
+jest.mock('@/assets/ui', () => ({
   LogoMini: () => null,
   BackgroundIconButton: { uri: 'background-icon-button' },
 }));

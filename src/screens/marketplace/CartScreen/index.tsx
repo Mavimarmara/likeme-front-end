@@ -3,7 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, ImageBackground, TextInput, L
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import { LogoMini, BackgroundIconButton } from '@/assets';
+import { LogoMini, BackgroundIconButton } from '@/assets/ui';
 import { Background } from '@/components/ui/layout';
 import type { RootStackParamList } from '@/types/navigation';
 import { formatPrice } from '@/utils';
