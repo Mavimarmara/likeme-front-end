@@ -59,6 +59,17 @@ jest.mock('@/components/ui/menu', () => {
   };
 });
 
+jest.mock('@/components/ui/buttons', () => {
+  const { TouchableOpacity, Text } = require('react-native');
+  return {
+    IconButton: ({ onPress, icon }: any) => (
+      <TouchableOpacity onPress={onPress} testID={`icon-button-${icon ?? 'unknown'}`}>
+        <Text>{icon ?? 'icon'}</Text>
+      </TouchableOpacity>
+    ),
+  };
+});
+
 jest.mock('@/components/sections/marketplace', () => {
   const { View, Text, TouchableOpacity } = require('react-native');
   return {
@@ -83,6 +94,7 @@ jest.mock('@/hooks', () => ({
   useMenuItems: () => [],
   useCategories: () => ({ categories: [] }),
   useCategoryDisplayLabel: () => ({ getCategoryName: (id: string) => id || 'Category' }),
+  useUserAvatar: () => null,
 }));
 
 jest.mock('@/analytics', () => ({

@@ -29,6 +29,7 @@ export const styles = StyleSheet.create({
   },
   searchRowBackButton: {
     justifyContent: 'center',
+    paddingBottom: SPACING.MD,
   },
   searchRowSearch: {
     flex: 1,
