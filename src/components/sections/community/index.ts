@@ -14,4 +14,5 @@ export { default as CommentReactions } from './CommentReactions';
 export { default as SocialList } from './SocialList';
 export { default as PostsSection } from './PostsSection';
 export { default as ProgramsList } from './ProgramsList';
+export { default as ShoppingList } from './ShoppingList';
 export { default as JoinCommunityCard, type JoinCommunity } from './JoinCommunityCard';

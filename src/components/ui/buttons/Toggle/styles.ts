@@ -34,6 +34,19 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     minHeight: 48,
   },
+  /** Largura conforme conteúdo (sem flex: 1) */
+  optionVariableWidth: {
+    paddingVertical: 12,
+    paddingHorizontal: SPACING.SM,
+    borderRadius: 24,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    borderBottomLeftRadius: 22,
+    borderBottomRightRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 48,
+  },
   optionSelected: {
     backgroundColor: '#fbf7e5',
     shadowColor: '#000',

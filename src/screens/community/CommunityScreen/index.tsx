@@ -4,105 +4,24 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { Toggle, Header } from '@/components/ui';
 import { IconButton } from '@/components/ui/buttons';
-import { SocialList, ProgramsList, LiveBannerData } from '@/components/sections/community';
+import { SocialList, ShoppingList, LiveBannerData } from '@/components/sections/community';
 import type { SpecialistCardProps } from '@/components/sections/community/SpecialistCard';
 import { Product } from '@/components/sections/product';
 import { Background } from '@/components/ui/layout';
 import type { Event } from '@/types';
-import type { Program, ProgramDetail } from '@/types/program';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
 import { useUserFeed, useCommunities, useSuggestedProducts, useMenuItems, useUserAvatar } from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
-import { mapCommunityToProgram } from '@/utils';
 import { useAnalyticsScreen } from '@/analytics';
 import { advertiserService } from '@/services';
 import type { Advertiser } from '@/types/ad';
 
-type CommunityMode = 'Feed' | 'Programs';
+type CommunityMode = 'Feed' | 'Solutions';
 
 const getToggleOptions = (t: (key: string) => string): readonly [CommunityMode, CommunityMode] =>
-  [t('community.social') as CommunityMode, t('community.programs') as CommunityMode] as const;
-
-const mockProgramDetails: ProgramDetail = {
-  id: '1',
-  name: 'The best sleep for an offline life',
-  description:
-    'This protocol establishes guidelines to promote a healthy work environment, prevent psychological distress, and provide appropriate support to those in need.',
-  duration: '30 dias',
-  participantsCount: 450,
-  modules: [
-    {
-      id: '1',
-      title: 'Module 1',
-      isCompleted: true,
-      content: [
-        {
-          id: '1.1',
-          type: 'video',
-          title: '1.1 Content',
-          thumbnail: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
-          duration: '3 minutes vídeo',
-        },
-      ],
-      activities: [
-        {
-          id: '1.2',
-          type: 'survey',
-          title: '1.2 Activity',
-          question: 'What motivated you to purchase this protocol?',
-          options: ['Bad sleep Habits', 'Insomnia', 'Medical Recommendation', "I'd like to learn more about sleep"],
-          isSubmitted: true,
-        },
-      ],
-    },
-    {
-      id: '2',
-      title: 'Module 2',
-      isCompleted: true,
-    },
-    {
-      id: '3',
-      title: 'Module 3',
-      isCompleted: false,
-      content: [
-        {
-          id: '3.1',
-          type: 'video',
-          title: '1.1 Content',
-          thumbnail: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
-          duration: '3 minutes vídeo',
-        },
-      ],
-      activities: [
-        {
-          id: '3.2',
-          type: 'survey',
-          title: '1.2 Activity',
-          question: 'What motivated you to purchase this protocol?',
-          options: ['Bad sleep Habits', 'Insomnia', 'Medical Recommendation', "I'd like to learn more about sleep"],
-          isSubmitted: false,
-        },
-      ],
-    },
-    {
-      id: '4',
-      title: 'Module 4',
-      isCompleted: false,
-    },
-    {
-      id: '5',
-      title: 'Module 5',
-      isCompleted: false,
-    },
-    {
-      id: '6',
-      title: 'Module 6',
-      isCompleted: false,
-    },
-  ],
-};
+  [t('community.social') as CommunityMode, t('community.solutions') as CommunityMode] as const;
 
 type NavigationProp = StackNavigationProp<CommunityStackParamList, 'CommunityList'>;
 type Props = { navigation: NavigationProp };
@@ -114,7 +33,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   const rootNavigation = navigation.getParent()?.getParent?.() ?? navigation.getParent();
   const userAvatarUri = useUserAvatar();
   const [selectedMode, setSelectedMode] = useState<CommunityMode>('Feed');
-  const [selectedProgramId, setSelectedProgramId] = useState<string | undefined>();
   const [featuredAdvertiser, setFeaturedAdvertiser] = useState<Advertiser | null>(null);
 
   const handleCartPress = () => {
@@ -144,16 +62,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     },
     loadLiveChannels: true,
   });
-
-  const programs = useMemo(() => {
-    return rawCommunities.map((community) => mapCommunityToProgram(community));
-  }, [rawCommunities]);
-
-  useEffect(() => {
-    if (selectedMode === 'Programs' && !selectedProgramId && programs.length > 0) {
-      setSelectedProgramId(programs[0].id);
-    }
-  }, [selectedMode, programs, selectedProgramId]);
 
   useEffect(() => {
     const loadAdvertiser = async () => {
@@ -206,14 +114,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
 
   const menuItems = useMenuItems(navigation);
   useSetFloatingMenu(menuItems, 'community');
-
-  const handleProgramPress = (program: Program | null) => {
-    if (program === null) {
-      setSelectedProgramId(undefined);
-    } else {
-      setSelectedProgramId(program.id);
-    }
-  };
 
   const handleModeSelect = (mode: CommunityMode) => {
     setSelectedMode(mode);
@@ -305,11 +205,17 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
             onProductLike={handleProductLike}
           />
         ) : (
-          <ProgramsList
-            programs={programs}
-            programDetails={selectedProgramId === '1' ? mockProgramDetails : undefined}
-            onProgramPress={handleProgramPress}
-            selectedProgramId={selectedProgramId}
+          <ShoppingList
+            products={suggestedProducts.map((p) => ({
+              id: p.id,
+              title: p.name,
+              price: p.price,
+              tag: p.category,
+              image: p.image,
+              likes: p.likes ?? 0,
+            }))}
+            onProductPress={handleProductPress}
+            onProductLike={handleProductLike}
           />
         )}
       </View>
