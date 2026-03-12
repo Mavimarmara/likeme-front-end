@@ -49,6 +49,7 @@ type MarketplaceScreenProps = {
 const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => {
   useAnalyticsScreen({ screenName: 'Marketplace', screenClass: 'MarketplaceScreen' });
   const { t } = useTranslation();
+  const rootNavigation = navigation.getParent() ?? navigation;
   const userAvatarUri = useUserAvatar();
   const [searchQuery, setSearchQuery] = useState('');
   const [appliedSearchQuery, setAppliedSearchQuery] = useState('');
@@ -78,8 +79,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   };
 
   const handleMenuPress = () => {
-    const root = navigation.getParent()?.getParent?.() ?? navigation.getParent();
-    root?.navigate('Profile' as never);
+    rootNavigation.navigate('Profile' as never);
   };
 
   useEffect(() => {
