@@ -8,11 +8,9 @@ import { Product } from '@/components/sections/product';
 import { Background } from '@/components/ui/layout';
 import type { Event } from '@/types';
 import type { Program, ProgramDetail } from '@/types/program';
-import type { CommunityCategory } from '@/types/community';
-import type { SolutionId, FilterCategoryResult } from '@/components/ui/modals';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
-import { useUserFeed, useCommunities, useCategories, useSuggestedProducts, useMenuItems } from '@/hooks';
+import { useUserFeed, useCommunities, useSuggestedProducts, useMenuItems } from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 import { mapCommunityToProgram } from '@/utils';
@@ -112,9 +110,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   const rootNavigation = navigation.getParent()?.getParent?.() ?? navigation.getParent();
   const [selectedMode, setSelectedMode] = useState<CommunityMode>('Social');
   const [selectedProgramId, setSelectedProgramId] = useState<string | undefined>();
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>();
-  const [selectedSolutionIds, setSelectedSolutionIds] = useState<SolutionId[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
 
   const handleCartPress = () => {
     rootNavigation?.navigate('Cart' as never);
@@ -140,8 +135,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     loadLiveChannels: true,
   });
 
-  const { categories } = useCategories({ enabled: true });
-
   const programs = useMemo(() => {
     return rawCommunities.map((community) => mapCommunityToProgram(community));
   }, [rawCommunities]);
@@ -152,13 +145,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     }
   }, [selectedMode, programs, selectedProgramId]);
 
-  const feedFilterParams = useMemo(
-    () => ({
-      ...(selectedCategoryId != null && selectedCategoryId !== '' ? { categoryId: selectedCategoryId } : {}),
-      ...(selectedSolutionIds.length > 0 ? { solutionIds: selectedSolutionIds } : {}),
-    }),
-    [selectedCategoryId, selectedSolutionIds],
-  );
+  const feedFilterParams = useMemo(() => ({}), []);
 
   const {
     posts,
@@ -167,10 +154,9 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     error,
     hasMore: _hasMore,
     loadMore,
-    search,
   } = useUserFeed({
     enabled: selectedMode === 'Social',
-    searchQuery,
+    searchQuery: '',
     params: feedFilterParams,
   });
 
@@ -186,7 +172,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     limit: 4,
     status: 'active',
     enabled: true,
-    categoryId: selectedCategoryId,
   });
 
   const menuItems = useMenuItems(navigation);
@@ -197,16 +182,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
       setSelectedProgramId(undefined);
     } else {
       setSelectedProgramId(program.id);
-      setSelectedCategoryId(undefined);
-    }
-  };
-
-  const handleCategorySelect = (category: CommunityCategory | null) => {
-    if (category === null) {
-      setSelectedCategoryId(undefined);
-    } else {
-      setSelectedCategoryId(category.categoryId);
-      setSelectedProgramId(undefined);
     }
   };
 
@@ -226,31 +201,11 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     console.log('Salvar evento:', event.id);
   };
 
-  const handleSearchChange = (text: string) => {
-    setSearchQuery(text);
-  };
-
-  const handleSearchPress = useCallback(() => {
-    if (selectedMode === 'Social') {
-      search(searchQuery);
-    }
-  }, [searchQuery, selectedMode, search]);
-
   const handleLoadMore = useCallback(() => {
     if (selectedMode === 'Social') {
       loadMore();
     }
   }, [selectedMode, loadMore]);
-
-  const handleFilterCategoryApply = (result: FilterCategoryResult) => {
-    setSelectedCategoryId(result.categoryId ?? undefined);
-    setSelectedSolutionIds(result.solutionIds);
-  };
-
-  const handleClearFilterCategory = () => {
-    setSelectedCategoryId(undefined);
-    setSelectedSolutionIds([]);
-  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -263,16 +218,12 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
 
         {selectedMode === 'Social' ? (
           <SocialList
-            programs={programs}
             liveBanner={liveBanner}
             onLivePress={handleLivePress}
             posts={posts}
             loading={loading}
             loadingMore={loadingMore}
             error={error}
-            searchQuery={searchQuery}
-            onSearchChange={handleSearchChange}
-            onSearchPress={handleSearchPress}
             onLoadMore={handleLoadMore}
             events={events}
             onEventPress={handleEventPress}
@@ -280,14 +231,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
             products={suggestedProducts}
             onProductPress={handleProductPress}
             onProductLike={handleProductLike}
-            selectedProgramId={selectedProgramId}
-            onProgramPress={handleProgramPress}
-            categories={categories}
-            onCategorySelect={handleCategorySelect}
-            selectedCategoryId={selectedCategoryId}
-            selectedSolutionIds={selectedSolutionIds}
-            onFilterCategoryApply={handleFilterCategoryApply}
-            onClearFilterCategory={handleClearFilterCategory}
           />
         ) : (
           <ProgramsList

@@ -5,11 +5,6 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  programsContainer: {
-    marginBottom: SPACING.MD,
-    gap: SPACING.SM,
-    paddingLeft: SPACING.MD,
-  },
   ctaCardContainer: {
     paddingHorizontal: SPACING.MD,
   },

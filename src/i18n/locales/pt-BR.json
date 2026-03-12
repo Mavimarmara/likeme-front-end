@@ -505,9 +505,8 @@
   "community": {
     "social": "Social",
     "programs": "Programa",
-    "ctaCardTitle": "Bem-vindo(a) a comunidade",
-    "ctaCardHighlightText": "Conecte-se com outras pessoas",
-    "ctaCardDescription": "Participe de programas e acompanhe eventos ao vivo.",
+    "ctaCardTitle": "Que bom que você chegou.",
+    "ctaCardDescription": "Você está no feed, aproveite os conteúdos, interaja com outros membros e acompanhe tudo que acontecerá por aqui.",
     "liveNow": "Ao vivo agora",
     "noPostsFound": "Nenhuma publicação encontrada",
     "noPostsFoundDescription": "Tente ajustar os filtros ou explore outros programas.",

@@ -11,9 +11,6 @@ export const styles = StyleSheet.create({
     paddingBottom: SPACING.SM,
     paddingHorizontal: SPACING.MD,
   },
-  searchBarContainer: {
-    paddingHorizontal: SPACING.MD,
-  },
   title: {
     fontSize: FONT_SIZES.XL,
     fontWeight: 'bold',

@@ -1,15 +1,10 @@
-import React, { useState, useMemo } from 'react';
+import React from 'react';
 import { View, ScrollView } from 'react-native';
 import { LiveBanner, LiveBannerData, PostsSection, NextEventsSection } from '@/components/sections/community';
 import { CTACard } from '@/components/ui/cards';
 import { ProductsCarousel, Product } from '@/components/sections/product';
-import { FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
-import { FilterCategoryModal, type FilterCategoryResult, type SolutionId } from '@/components/ui/modals';
-import { useCategoryDisplayLabel } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import type { Post, Event } from '@/types';
-import type { Program } from '@/types/program';
-import type { CommunityCategory } from '@/types/community';
 import { styles } from './styles';
 
 type Props = {
@@ -19,9 +14,6 @@ type Props = {
   loading: boolean;
   loadingMore: boolean;
   error: string | null;
-  searchQuery: string;
-  onSearchChange: (text: string) => void;
-  onSearchPress?: () => void;
   onLoadMore: () => void;
   events?: Event[];
   onEventPress?: (event: Event) => void;
@@ -29,15 +21,6 @@ type Props = {
   products?: Product[];
   onProductPress?: (product: Product) => void;
   onProductLike?: (product: Product) => void;
-  programs?: Program[];
-  selectedProgramId?: string;
-  onProgramPress?: (program: Program | null) => void;
-  categories?: CommunityCategory[];
-  onCategorySelect?: (category: CommunityCategory | null) => void;
-  selectedCategoryId?: string;
-  selectedSolutionIds?: SolutionId[];
-  onFilterCategoryApply?: (result: FilterCategoryResult) => void;
-  onClearFilterCategory?: () => void;
 };
 
 const SocialList: React.FC<Props> = ({
@@ -47,9 +30,6 @@ const SocialList: React.FC<Props> = ({
   loading,
   loadingMore,
   error,
-  searchQuery,
-  onSearchChange,
-  onSearchPress,
   onLoadMore,
   events,
   onEventPress,
@@ -57,94 +37,11 @@ const SocialList: React.FC<Props> = ({
   products,
   onProductPress,
   onProductLike,
-  programs,
-  selectedProgramId,
-  onProgramPress,
-  categories = [],
-  onCategorySelect,
-  selectedCategoryId,
-  selectedSolutionIds = [],
-  onFilterCategoryApply,
-  onClearFilterCategory,
 }) => {
   const { t } = useTranslation();
-  const { getCategoryName } = useCategoryDisplayLabel({ categories });
-  const [isCategoryModalVisible, setIsCategoryModalVisible] = useState(false);
-  const [localSolutionIds, setLocalSolutionIds] = useState<SolutionId[]>(selectedSolutionIds);
-
-  const handleCategoryPress = () => {
-    onProgramPress?.(null);
-    setLocalSolutionIds(selectedSolutionIds);
-    setIsCategoryModalVisible(true);
-  };
-
-  const handleToggleSolution = (id: SolutionId) => {
-    setLocalSolutionIds((prev) => (prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]));
-  };
-
-  const handleFilterApply = (result: FilterCategoryResult) => {
-    onFilterCategoryApply?.(result);
-    setIsCategoryModalVisible(false);
-  };
-
-  const handleClear = () => {
-    onCategorySelect?.(null);
-    setLocalSolutionIds([]);
-    onClearFilterCategory?.();
-    setIsCategoryModalVisible(false);
-  };
-
-  const filterOptions: ButtonCarouselOption<string>[] = useMemo(() => {
-    const options =
-      programs?.map((program) => ({
-        id: program.id,
-        label: program.name,
-      })) || [];
-
-    return [{ id: '__ALL__', label: t('common.all') }, ...options];
-  }, [programs, t]);
-
-  const handleSelect = (optionId: string) => {
-    if (optionId === '__ALL__') {
-      onProgramPress?.(null);
-      return;
-    }
-    const program = programs?.find((p) => p.id === optionId);
-    if (program) {
-      onProgramPress?.(program);
-    }
-  };
-
-  const isAllSelected = !selectedProgramId || selectedProgramId === '__ALL__';
-  const selectedId = isAllSelected ? '__ALL__' : selectedProgramId;
-
-  const categoryFilterButtonLabel =
-    selectedCategoryId != null ? getCategoryName(selectedCategoryId) : t('marketplace.category');
 
   return (
     <View style={styles.container}>
-      {programs && programs.length > 0 && (
-        <View style={styles.programsContainer}>
-          <FilterMenu
-            filterButtonLabel={categoryFilterButtonLabel}
-            onFilterButtonPress={handleCategoryPress}
-            carouselOptions={filterOptions}
-            selectedCarouselId={selectedId}
-            onCarouselSelect={handleSelect}
-          />
-        </View>
-      )}
-      <FilterCategoryModal
-        visible={isCategoryModalVisible}
-        onClose={() => setIsCategoryModalVisible(false)}
-        categories={categories}
-        selectedCategoryId={selectedCategoryId}
-        onSelectCategory={(cat, _categoryName) => onCategorySelect?.(cat ?? null)}
-        selectedSolutionIds={localSolutionIds}
-        onToggleSolution={handleToggleSolution}
-        onFilter={handleFilterApply}
-        onClear={handleClear}
-      />
       {liveBanner && onLivePress && (
         <View style={styles.liveBannerContainer}>
           <LiveBanner live={liveBanner} onPress={onLivePress} />
@@ -166,24 +63,13 @@ const SocialList: React.FC<Props> = ({
         <View style={styles.ctaCardContainer}>
           <CTACard
             title={t('community.ctaCardTitle')}
-            highlightText={t('community.ctaCardHighlightText')}
             description={t('community.ctaCardDescription')}
             backgroundColor='#F6CFFB'
             titleStyle={{ fontSize: 20 }}
             style={styles.ctaCard}
           />
         </View>
-        <PostsSection
-          posts={posts}
-          loading={loading}
-          loadingMore={loadingMore}
-          error={error}
-          searchQuery={searchQuery}
-          onSearchChange={onSearchChange}
-          onSearchPress={onSearchPress}
-          onLoadMore={onLoadMore}
-          onFilterPress={handleCategoryPress}
-        />
+        <PostsSection posts={posts} loading={loading} loadingMore={loadingMore} error={error} onLoadMore={onLoadMore} />
 
         {loadingMore && (
           <View style={styles.loadingFooter}>{/* Loading indicator será renderizado aqui se necessário */}</View>

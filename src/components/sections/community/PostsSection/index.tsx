@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
-import { SearchBar, EmptyState } from '@/components/ui';
+import { EmptyState } from '@/components/ui';
 import { PostCard } from '@/components/sections/community';
 import { useTranslation } from '@/hooks/i18n';
 import type { Post } from '@/types';
@@ -11,24 +11,10 @@ type Props = {
   loading: boolean;
   loadingMore: boolean;
   error: string | null;
-  searchQuery: string;
-  onSearchChange: (text: string) => void;
-  onSearchPress?: () => void;
   onLoadMore: () => void;
-  onFilterPress?: () => void;
 };
 
-const PostsSection: React.FC<Props> = ({
-  posts,
-  loading,
-  loadingMore,
-  error,
-  searchQuery,
-  onSearchChange,
-  onSearchPress,
-  onLoadMore,
-  onFilterPress,
-}) => {
+const PostsSection: React.FC<Props> = ({ posts, loading, loadingMore, error, onLoadMore }) => {
   const { t } = useTranslation();
 
   const renderLoadingFooter = () => {
@@ -59,21 +45,9 @@ const PostsSection: React.FC<Props> = ({
   };
 
   const renderHeader = () => (
-    <>
-      <View style={styles.header}>
-        <Text style={styles.title}>Posts</Text>
-      </View>
-      <View style={styles.searchBarContainer}>
-        <SearchBar
-          placeholder='Search'
-          value={searchQuery}
-          onChangeText={onSearchChange}
-          onSearchPress={onSearchPress}
-          onFilterPress={onFilterPress}
-          showFilterButton={true}
-        />
-      </View>
-    </>
+    <View style={styles.header}>
+      <Text style={styles.title}>Posts</Text>
+    </View>
   );
 
   if (loading && posts.length === 0) {
