@@ -139,7 +139,7 @@ const SocialList: React.FC<Props> = ({
         onClose={() => setIsCategoryModalVisible(false)}
         categories={categories}
         selectedCategoryId={selectedCategoryId}
-        onSelectCategory={(cat) => onCategorySelect?.(cat ?? null)}
+        onSelectCategory={(cat, _categoryName) => onCategorySelect?.(cat ?? null)}
         selectedSolutionIds={localSolutionIds}
         onToggleSolution={handleToggleSolution}
         onFilter={handleFilterApply}

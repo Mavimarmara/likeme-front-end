@@ -1,4 +1,3 @@
-/** Nomes das categorias em português (markers + abas do marketplace). */
 export const CATEGORY_NAMES = {
   activity: 'Atividade',
   connection: 'Conexão',
@@ -10,12 +9,11 @@ export const CATEGORY_NAMES = {
   smile: 'Sorriso',
   spirituality: 'Espiritualidade',
   stress: 'Estresse',
-  all: 'Tudo',
-  products: 'Produtos',
-  specialists: 'Especialistas',
 } as const;
 
 export type CategoryName = keyof typeof CATEGORY_NAMES;
+
+export type CategoryDisplayName = (typeof CATEGORY_NAMES)[CategoryName];
 
 /** Mapeia categoryId ou nome da API para o id canônico da categoria (para ícone e label). */
 export const NAME_TO_CATEGORY_ID: Record<string, CategoryName> = {

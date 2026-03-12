@@ -1,35 +1,35 @@
-import { MARKER_COLORS, MARKER_GRADIENTS } from './markers';
-import { DEFAULT_BACKGROUND_GRADIENT } from './index';
-import { CATEGORY_NAMES, type CategoryName } from '@/types/category';
+import { CategoryName } from '@/types';
 
-export { CATEGORY_NAMES, type CategoryName };
-
-/** Cores por categoria (mesmas de MARKER_COLORS + abas do marketplace). */
 export const CATEGORY_COLORS = {
-  ...MARKER_COLORS,
-  all: '#D0DCE8',
-  products: '#7DD4B8',
-  specialists: '#9BB0E8',
+  activity: '#0154F8',
+  connection: '#8A2BE2',
+  environment: '#32CD32',
+  nutrition: '#FFD700',
+  'purpose-vision': '#6B8E23',
+  'self-esteem': '#D2B48C',
+  sleep: '#9370DB',
+  smile: '#FF69B4',
+  spirituality: '#FF1493',
+  stress: '#FF4500',
 } as const;
 
-/** Gradientes por categoria (mesmos de MARKER_GRADIENTS + abas do marketplace). */
-export const CATEGORY_GRADIENTS: Record<string, readonly [string, string, ...string[]]> = {
-  ...MARKER_GRADIENTS,
-  all: DEFAULT_BACKGROUND_GRADIENT,
-  products: ['#7DD4B8', '#B8E6D5', '#E0F5EC'] as const,
-  specialists: ['#9BB0E8', '#C5D0F0', '#E8ECF8'] as const,
+export const CATEGORY_GRADIENTS: Record<CategoryName, readonly [string, string, ...string[]]> = {
+  activity: ['#B7CFFF', '#0154F8', '#003EB8', '#003191'] as const,
+  connection: ['#FFEABC', '#F6DEA9', '#DFC488', '#BA9F62'] as const,
+  environment: ['#d8e4d6', '#8F988E', '#767D75'] as const,
+  nutrition: ['#E0F431', '#C3D714', '#AFC211', '#96A60C'] as const,
+  'purpose-vision': ['#D3BE15', '#A6950B', '#90820F', '#675D08'] as const,
+  'self-esteem': ['#F6DEA9', '#C4B179', '#8E7A3F'] as const,
+  sleep: ['#E3DBF2', '#958AAA', '#706683', '#655C74'] as const,
+  smile: ['#FCE3FF', '#F6CFFB', '#EE8AFB', '#E760F9'] as const,
+  spirituality: ['#F6CFFB', '#EB7DC6', '#E23BAA', '#DC1499'] as const,
+  stress: ['#FFAB76', '#FF6300', '#D85400', '#C24B00'] as const,
 };
 
-export const getCategoryColor = (categoryId: string): string => {
-  const normalizedId = categoryId.toLowerCase().replace(/\s+/g, '-') as CategoryName;
-  return CATEGORY_COLORS[normalizedId] ?? '#001137';
+export const getCategoryColor = (categoryName: CategoryName): string | null => {
+  return CATEGORY_COLORS[categoryName] ?? null;
 };
 
-export const getCategoryGradient = (categoryId: string): readonly [string, string, ...string[]] | null => {
-  const normalizedId = categoryId.toLowerCase().replace(/\s+/g, '-');
-  return CATEGORY_GRADIENTS[normalizedId] ?? null;
-};
-
-export const hasCategoryGradient = (categoryId: string): boolean => {
-  return getCategoryGradient(categoryId) !== null;
+export const getCategoryGradient = (categoryName: CategoryName): readonly [string, string, ...string[]] | null => {
+  return CATEGORY_GRADIENTS[categoryName] ?? null;
 };

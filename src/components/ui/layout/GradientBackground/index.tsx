@@ -7,7 +7,7 @@ const VERTICAL_START = { x: 0.5, y: -0.5 };
 const VERTICAL_END = { x: 0.5, y: 1 };
 
 type Props = {
-  colors?: readonly [string, string, ...string[]];
+  colors?: readonly [string, string, ...string[]] | null;
   start?: { x: number; y: number };
   end?: { x: number; y: number };
 };
@@ -16,7 +16,7 @@ const GradientBackground: React.FC<Props> = ({
   colors = DEFAULT_BACKGROUND_GRADIENT,
   start = VERTICAL_START,
   end = VERTICAL_END,
-}) => <LinearGradient colors={colors} start={start} end={end} style={styles.gradient} />;
+}) => <LinearGradient colors={colors ?? DEFAULT_BACKGROUND_GRADIENT} start={start} end={end} style={styles.gradient} />;
 
 const styles = StyleSheet.create({
   gradient: {

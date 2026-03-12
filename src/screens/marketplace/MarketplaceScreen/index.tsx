@@ -7,7 +7,6 @@ import { SearchBar } from '@/components/ui/inputs';
 import { FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
 import { Header } from '@/components/ui/layout';
 import { GradientBackgroundByCategory } from '@/components/sections';
-import type { CategoryName } from '@/constants/categoryColors';
 import { FilterCategoryModal, type FilterCategoryResult, type SolutionId } from '@/components/ui/modals';
 import { WeekHighlightCard, ProductsList } from '@/components/sections/marketplace';
 import { useMarketplaceAds, useMenuItems, useCategories, useCategoryDisplayLabel } from '@/hooks';
@@ -18,6 +17,7 @@ import type { Ad } from '@/types/ad';
 import type { RootStackParamList } from '@/types/navigation';
 import { styles } from './styles';
 import { useAnalyticsScreen } from '@/analytics';
+import { CategoryName } from '@/types';
 
 const CATEGORY_ALL = 'all';
 const CATEGORY_PRODUCTS = 'products';
@@ -51,6 +51,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   const [searchQuery, setSearchQuery] = useState('');
   const [appliedSearchQuery, setAppliedSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>(CATEGORY_ALL);
+  const [selectedCategoryName, setSelectedCategoryName] = useState<CategoryName | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<string>(ORDER_BEST_RATED);
   const [page, setPage] = useState(1);
   const [isFilterCategoryModalVisible, setIsFilterCategoryModalVisible] = useState(false);
@@ -94,6 +95,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
 
   const handleCategorySelect = (categoryId: string) => {
     setSelectedCategory(categoryId);
+    setSelectedCategoryName(null);
     setPage(1);
   };
 
@@ -106,12 +108,15 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     setSelectedSolutionIds(result.solutionIds);
     if (result.solutionIds.length === 1 && result.solutionIds[0] === SOLUTION_PRODUCTS) {
       setSelectedCategory(CATEGORY_PRODUCTS);
+      setSelectedCategoryName(null);
       setPage(1);
     } else if (result.solutionIds.length === 1 && result.solutionIds[0] === SOLUTION_PROFESSIONALS) {
       setSelectedCategory(CATEGORY_SPECIALISTS);
+      setSelectedCategoryName(null);
       setPage(1);
     } else {
       setSelectedCategory(CATEGORY_ALL);
+      setSelectedCategoryName(result.categoryName);
       setPage(1);
     }
   };
@@ -120,11 +125,12 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     setSelectedCategoryId(undefined);
     setSelectedSolutionIds([]);
     setSelectedCategory(CATEGORY_ALL);
+    setSelectedCategoryName(null);
     setPage(1);
   };
 
   const categoryFilterButtonLabel =
-    selectedCategoryId != null ? getCategoryName(selectedCategoryId) : t('marketplace.category');
+    selectedCategoryName != null ? getCategoryName(selectedCategoryName) : t('marketplace.category');
 
   const renderCustomHeader = () => (
     <View style={styles.customHeader}>
@@ -155,7 +161,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
         onClose={() => setIsFilterCategoryModalVisible(false)}
         categories={categories}
         selectedCategoryId={selectedCategoryId}
-        onSelectCategory={(cat) => setSelectedCategoryId(cat?.categoryId ?? undefined)}
+        onSelectCategory={(cat, _categoryName) => setSelectedCategoryId(cat?.categoryId ?? undefined)}
         selectedSolutionIds={selectedSolutionIds}
         onToggleSolution={(id) => {
           setSelectedSolutionIds((prev) => (prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]));
@@ -222,7 +228,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
 
   return (
     <SafeAreaView style={styles.container}>
-      <GradientBackgroundByCategory category={(selectedCategoryId ?? selectedCategory) as CategoryName} />
+      <GradientBackgroundByCategory category={selectedCategoryName} />
       <Header showBackButton={false} showCartButton={true} onCartPress={handleCartPress} />
       <View style={styles.content}>
         {renderCustomHeader()}

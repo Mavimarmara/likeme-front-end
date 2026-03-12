@@ -1,20 +1,34 @@
 import React from 'react';
-import { getCategoryGradient, type CategoryName } from '@/constants/categoryColors';
-import { DEFAULT_BACKGROUND_GRADIENT } from '@/constants';
+import { View, StyleSheet } from 'react-native';
+import { getCategoryGradient } from '@/constants/categoryColors';
+import { COLORS } from '@/constants';
 import { GradientBackground } from '@/components/ui/layout';
+import { CategoryName } from '@/types';
 
 type Props = {
-  category: CategoryName;
+  category: CategoryName | null;
 };
+
+const OPACITY = 0.6;
 
 const GradientBackgroundByCategory: React.FC<Props> = ({ category }) => {
-  const categoryGradient = getCategoryGradient(category);
-  const colors = categoryGradient ?? DEFAULT_BACKGROUND_GRADIENT;
-  const useVertical = category === 'all';
+  const raw = getCategoryGradient(category) ?? null;
+  const colors: readonly [string, string, ...string[]] | null =
+    raw != null
+      ? ([...[...raw].reverse(), COLORS.NEUTRAL.HIGH.PURE] as unknown as readonly [string, string, ...string[]])
+      : null;
 
   return (
-    <GradientBackground colors={colors} {...(useVertical ? {} : { start: { x: 0, y: 0 }, end: { x: 1, y: 1 } })} />
+    <View style={[styles.container, { opacity: OPACITY }]}>
+      <GradientBackground colors={colors} {...{ start: { x: 0, y: -0.2 }, end: { x: 0, y: 0.5 } }} />
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    ...StyleSheet.absoluteFillObject,
+  },
+});
 
 export default GradientBackgroundByCategory;

@@ -8,6 +8,7 @@ import { getMarkerColor, getMarkerGradient, hasMarkerGradient, MARKER_NAMES } fr
 import { getMarkerIdForCategory } from '@/hooks/category';
 import { styles } from './styles';
 import type { CommunityCategory } from '@/types/community';
+import type { CategoryName } from '@/types';
 
 /** Lista fixa de categorias (markers) para exibir quando a API não retorna categorias */
 const FALLBACK_CATEGORIES: CommunityCategory[] = (Object.entries(MARKER_NAMES) as [string, string][]).map(
@@ -34,6 +35,7 @@ const DEFAULT_SOLUTION_OPTIONS: SolutionOption[] = [
 
 export type FilterCategoryResult = {
   categoryId: string | null;
+  categoryName: CategoryName | null;
   solutionIds: SolutionId[];
 };
 
@@ -42,7 +44,7 @@ type Props = {
   onClose: () => void;
   categories: CommunityCategory[];
   selectedCategoryId: string | undefined;
-  onSelectCategory: (category: CommunityCategory | null) => void;
+  onSelectCategory: (category: CommunityCategory | null, categoryName: CategoryName | null) => void;
   selectedSolutionIds: SolutionId[];
   onToggleSolution: (id: SolutionId) => void;
   onFilter: (result: FilterCategoryResult) => void;
@@ -65,28 +67,43 @@ const FilterCategoryModal: React.FC<Props> = ({
 
   /** Estado local da categoria selecionada para atualização imediata da UI ao toque */
   const [localSelectedCategoryId, setLocalSelectedCategoryId] = useState<string | undefined>(selectedCategoryId);
+  const [localSelectedCategoryName, setLocalSelectedCategoryName] = useState<CategoryName | null>(null);
   const prevVisible = useRef(false);
 
   /** Sincroniza com o pai apenas quando o modal abre; evita sobrescrever a seleção durante o uso */
   useEffect(() => {
     if (visible && !prevVisible.current) {
       setLocalSelectedCategoryId(selectedCategoryId);
+      const cat = displayCategories.find((c) => String(c.categoryId) === String(selectedCategoryId));
+      const resolved: CategoryName | null = cat ? getMarkerIdForCategory(cat.categoryId, cat.name) ?? null : null;
+      setLocalSelectedCategoryName(resolved);
       prevVisible.current = true;
     }
     if (!visible) {
       prevVisible.current = false;
     }
-  }, [visible, selectedCategoryId]);
+  }, [visible, selectedCategoryId, displayCategories]);
 
   const handleSelectCategory = (cat: CommunityCategory | null) => {
     const nextId = cat ? String(cat.categoryId) : undefined;
+    const categoryName: CategoryName | null = cat ? getMarkerIdForCategory(cat.categoryId, cat.name) ?? null : null;
+    console.log('categoryName', categoryName);
     setLocalSelectedCategoryId(nextId);
-    onSelectCategory(cat);
+    setLocalSelectedCategoryName(categoryName);
+    onSelectCategory(cat, categoryName);
   };
 
   const handleFilter = () => {
+    const resolvedName: CategoryName | null =
+      localSelectedCategoryName ??
+      (() => {
+        const cat = displayCategories.find((c) => String(c.categoryId) === String(localSelectedCategoryId));
+        return cat ? getMarkerIdForCategory(cat.categoryId, cat.name) ?? null : null;
+      })();
+    console.log('resolvedName', resolvedName);
     onFilter({
       categoryId: localSelectedCategoryId ?? null,
+      categoryName: resolvedName,
       solutionIds: [...selectedSolutionIds],
     });
     onClose();
@@ -94,6 +111,7 @@ const FilterCategoryModal: React.FC<Props> = ({
 
   const handleClear = () => {
     setLocalSelectedCategoryId(undefined);
+    setLocalSelectedCategoryName(null);
     onClear();
     onClose();
   };
