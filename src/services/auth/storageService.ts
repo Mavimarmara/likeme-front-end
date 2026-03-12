@@ -286,6 +286,7 @@ class StorageService {
       await AsyncStorage.removeItem(SELECTED_OBJECTIVES_IDS_KEY);
       await AsyncStorage.removeItem(ANAMNESIS_COMPLETED_AT_KEY);
       await AsyncStorage.removeItem(PRIVACY_POLICY_ACCEPTED_AT_KEY);
+      await AsyncStorage.removeItem(COMMUNITY_WELCOME_DISMISSED_KEY);
       await this.clearCart();
     } catch (error) {
       logger.error('Error clearing storage:', error);
