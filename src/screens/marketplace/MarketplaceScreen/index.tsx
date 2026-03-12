@@ -5,11 +5,12 @@ import type { StackNavigationProp } from '@react-navigation/stack';
 import type { RouteProp } from '@react-navigation/native';
 import { SearchBar } from '@/components/ui/inputs';
 import { FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
-import { Header, Background } from '@/components/ui/layout';
+import { Header } from '@/components/ui/layout';
+import { GradientBackgroundByCategory } from '@/components/sections';
+import type { CategoryName } from '@/constants/categoryColors';
 import { FilterCategoryModal, type FilterCategoryResult, type SolutionId } from '@/components/ui/modals';
-import { getCategoryDisplayLabel } from '@/components/ui/modals/FilterCategoryModal';
 import { WeekHighlightCard, ProductsList } from '@/components/sections/marketplace';
-import { useMarketplaceAds, useMenuItems, useCategories } from '@/hooks';
+import { useMarketplaceAds, useMenuItems, useCategories, useCategoryDisplayLabel } from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 import { handleAdNavigation } from '@/utils';
@@ -57,6 +58,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   const [selectedSolutionIds, setSelectedSolutionIds] = useState<SolutionId[]>([]);
 
   const { categories } = useCategories({ enabled: true });
+  const { getCategoryName } = useCategoryDisplayLabel();
 
   const categoryOptions = useMemo(() => getCategoryOptions(t), [t]);
   const orderOptions = useMemo(() => getOrderOptions(t), [t]);
@@ -122,7 +124,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   };
 
   const categoryFilterButtonLabel =
-    selectedCategoryId != null ? getCategoryDisplayLabel(selectedCategoryId, categories, t) : t('marketplace.category');
+    selectedCategoryId != null ? getCategoryName(selectedCategoryId) : t('marketplace.category');
 
   const renderCustomHeader = () => (
     <View style={styles.customHeader}>
@@ -220,7 +222,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
 
   return (
     <SafeAreaView style={styles.container}>
-      <Background />
+      <GradientBackgroundByCategory category={(selectedCategoryId ?? selectedCategory) as CategoryName} />
       <Header showBackButton={false} showCartButton={true} onCartPress={handleCartPress} />
       <View style={styles.content}>
         {renderCustomHeader()}

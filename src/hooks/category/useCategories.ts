@@ -2,11 +2,11 @@ import { useState, useEffect, useCallback } from 'react';
 import categoryService from '@/services/category/categoryService';
 import type { CommunityCategory } from '@/types/community';
 
-interface UseCategoriesOptions {
+export interface UseCategoriesOptions {
   enabled?: boolean;
 }
 
-interface UseCategoriesReturn {
+export interface UseCategoriesReturn {
   categories: CommunityCategory[];
   loading: boolean;
   error: string | null;

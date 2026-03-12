@@ -57,6 +57,13 @@ export const GRADIENTS = {
   GREEN: '#32CD32',
 } as const;
 
+/** Gradiente padrão de fundo (equivalente a assets/ui/BackgroundWithGradient.png): cinza-esverdeado claro → creme. */
+export const DEFAULT_BACKGROUND_GRADIENT = [
+  COLORS.NEUTRAL.HIGH.DARK,
+  COLORS.PRIMARY.LIGHT,
+  COLORS.NEUTRAL.HIGH.PURE,
+] as const;
+
 export const SPACING = {
   XS: 4,
   SM: 8,

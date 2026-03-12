@@ -6,7 +6,15 @@ export { useOnboardingRedirect } from './auth/useOnboardingRedirect';
 // Community hooks
 export { useUserFeed } from './community/useUserFeed';
 export { useCommunities } from './community/useCommunities';
-export { useCategories } from './community/useCategories';
+
+// Category hooks
+export { useCategories, useCategoryDisplayLabel, getMarkerIdForCategory } from './category';
+export type {
+  UseCategoriesOptions,
+  UseCategoriesReturn,
+  UseCategoryDisplayLabelOptions,
+  UseCategoryDisplayLabelReturn,
+} from './category';
 
 // Activities hooks
 export { useActivities } from './activities/useActivities';

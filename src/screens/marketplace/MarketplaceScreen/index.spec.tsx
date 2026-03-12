@@ -35,6 +35,7 @@ jest.mock('@/components/ui/layout', () => {
       </View>
     ),
     Background: () => null,
+    GradientBackground: () => null,
   };
 });
 
@@ -70,10 +71,18 @@ jest.mock('@/components/sections/marketplace', () => {
   };
 });
 
+jest.mock('@/components/sections', () => {
+  const { View } = require('react-native');
+  return {
+    GradientBackgroundByCategory: () => <View testID='gradient-background-by-category' />,
+  };
+});
+
 jest.mock('@/hooks', () => ({
   useMarketplaceAds: (...args: any[]) => mockUseMarketplaceAds(...args),
   useMenuItems: () => [],
   useCategories: () => ({ categories: [] }),
+  useCategoryDisplayLabel: () => ({ getCategoryName: (id: string) => id || 'Category' }),
 }));
 
 jest.mock('@/analytics', () => ({

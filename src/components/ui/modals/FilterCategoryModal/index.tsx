@@ -5,54 +5,9 @@ import { useTranslation } from '@/hooks/i18n';
 import { IconSilhouette } from '@/components/ui/layout';
 import { FilterModalButton, PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import { getMarkerColor, getMarkerGradient, hasMarkerGradient, MARKER_NAMES } from '@/constants/markers';
-import type { MarkerId } from '@/constants/markers';
+import { getMarkerIdForCategory } from '@/hooks/category';
 import { styles } from './styles';
 import type { CommunityCategory } from '@/types/community';
-
-/** Mapeia categoryId ou nome da API para markerId (para ícone de gradiente) */
-const NAME_TO_MARKER_ID: Record<string, MarkerId> = {
-  stress: 'stress',
-  estresse: 'stress',
-  connection: 'connection',
-  relacionamento: 'connection',
-  smile: 'smile',
-  'saúde bucal': 'smile',
-  nutrition: 'nutrition',
-  nutrição: 'nutrition',
-  sleep: 'sleep',
-  sono: 'sleep',
-  spirituality: 'spirituality',
-  espiritualidade: 'spirituality',
-  'self-esteem': 'self-esteem',
-  autoestima: 'self-esteem',
-  'purpose-vision': 'purpose-vision',
-  propósito: 'purpose-vision',
-  environment: 'environment',
-  ambiente: 'environment',
-  activity: 'activity',
-  movimento: 'activity',
-};
-
-function getMarkerIdForCategory(categoryId: string, name: string): MarkerId | null {
-  const key = (categoryId || name).toLowerCase().trim().replace(/\s+/g, '-');
-  if (NAME_TO_MARKER_ID[key]) return NAME_TO_MARKER_ID[key];
-  const nameKey = name.toLowerCase().trim().replace(/\s+/g, ' ');
-  if (NAME_TO_MARKER_ID[nameKey]) return NAME_TO_MARKER_ID[nameKey];
-  return (key in MARKER_NAMES ? key : null) as MarkerId | null;
-}
-
-/** Retorna o label de exibição de uma categoria (para o botão do filtro, etc.) */
-export function getCategoryDisplayLabel(
-  categoryId: string,
-  categories: CommunityCategory[],
-  t: (key: string) => string,
-): string {
-  const cat = categories.find((c) => String(c.categoryId) === String(categoryId));
-  const name = cat?.name ?? '';
-  const markerId = getMarkerIdForCategory(categoryId, name);
-  if (markerId) return t(`filterCategory.categories.${markerId.replace(/-/g, '_')}`);
-  return cat?.name ?? categoryId;
-}
 
 /** Lista fixa de categorias (markers) para exibir quando a API não retorna categorias */
 const FALLBACK_CATEGORIES: CommunityCategory[] = (Object.entries(MARKER_NAMES) as [string, string][]).map(

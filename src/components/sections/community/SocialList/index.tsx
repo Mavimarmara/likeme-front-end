@@ -5,7 +5,7 @@ import { CTACard } from '@/components/ui/cards';
 import { ProductsCarousel, Product } from '@/components/sections/product';
 import { FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
 import { FilterCategoryModal, type FilterCategoryResult, type SolutionId } from '@/components/ui/modals';
-import { getCategoryDisplayLabel } from '@/components/ui/modals/FilterCategoryModal';
+import { useCategoryDisplayLabel } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import type { Post, Event } from '@/types';
 import type { Program } from '@/types/program';
@@ -68,6 +68,7 @@ const SocialList: React.FC<Props> = ({
   onClearFilterCategory,
 }) => {
   const { t } = useTranslation();
+  const { getCategoryName } = useCategoryDisplayLabel({ categories });
   const [isCategoryModalVisible, setIsCategoryModalVisible] = useState(false);
   const [localSolutionIds, setLocalSolutionIds] = useState<SolutionId[]>(selectedSolutionIds);
 
@@ -118,7 +119,7 @@ const SocialList: React.FC<Props> = ({
   const selectedId = isAllSelected ? '__ALL__' : selectedProgramId;
 
   const categoryFilterButtonLabel =
-    selectedCategoryId != null ? getCategoryDisplayLabel(selectedCategoryId, categories, t) : t('marketplace.category');
+    selectedCategoryId != null ? getCategoryName(selectedCategoryId) : t('marketplace.category');
 
   return (
     <View style={styles.container}>

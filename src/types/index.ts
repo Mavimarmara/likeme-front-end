@@ -11,6 +11,7 @@ export type { ListAdsParams, ListAdsApiResponse, GetAdApiResponse, CreateAdData,
 export * from './activity';
 export * from './order';
 export * from './cart';
+export * from './category';
 
 export interface User {
   id: string;
