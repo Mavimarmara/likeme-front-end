@@ -2,7 +2,7 @@
 
 // Logos e ícones vetoriais
 import LogoSvg from '../../assets/ui/Logo.svg';
-import LogoMiniSvg from '../../assets/ui/LogoMini.svg';
+import LogoMiniSvg from '../../assets/ui/LogoFullMini.svg';
 import LogoPartialMiniSvg from '../../assets/ui/LogoPartialMini.svg';
 import RightArrowSvg from '../../assets/ui/RightArrow.svg';
 import BackgroundIconSvg from '../../assets/icons/BackgroundIcon.svg';

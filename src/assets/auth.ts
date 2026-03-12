@@ -1,7 +1,7 @@
 // Assets específicos do domínio de autenticação / onboarding
 
 // Logos/ícones usados em telas de autenticação
-import PartialLogoSvg from '../../assets/ui/PartialLogo.svg';
+import PartialLogoSvg from '../../assets/ui/LogoPartial.svg';
 import PartialLogo2Svg from '../../assets/ui/PartialLogo2.svg';
 
 // Gradiente principal
