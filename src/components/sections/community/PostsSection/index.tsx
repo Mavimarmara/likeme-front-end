@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
-import { SearchBar } from '@/components/ui';
+import { SearchBar, EmptyState } from '@/components/ui';
 import { PostCard } from '@/components/sections/community';
+import { useTranslation } from '@/hooks/i18n';
 import type { Post } from '@/types';
 import { styles } from './styles';
 
@@ -28,6 +29,8 @@ const PostsSection: React.FC<Props> = ({
   onLoadMore,
   onFilterPress,
 }) => {
+  const { t } = useTranslation();
+
   const renderLoadingFooter = () => {
     if (!loadingMore) return null;
     return (
@@ -40,15 +43,19 @@ const PostsSection: React.FC<Props> = ({
   const renderEmpty = () => {
     if (loading) return null;
 
-    const emptyMessage = error ? `Erro: ${error}` : posts.length === 0 ? 'Nenhum post encontrado' : null;
+    if (error) {
+      return (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>{`Erro: ${error}`}</Text>
+        </View>
+      );
+    }
 
-    if (!emptyMessage) return null;
+    if (posts.length === 0) {
+      return <EmptyState title={t('community.noPostsFound')} description={t('community.noPostsFoundDescription')} />;
+    }
 
-    return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>{emptyMessage}</Text>
-      </View>
-    );
+    return null;
   };
 
   const renderHeader = () => (

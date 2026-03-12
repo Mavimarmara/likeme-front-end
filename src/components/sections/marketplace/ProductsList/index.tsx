@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, StyleProp, ViewStyle } from 'react-native';
 import { ProductItemCard } from '@/components/ui/cards';
 import { FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
-import { MarketplaceEmptyState } from '@/components/sections/marketplace';
+import { EmptyState } from '@/components/ui/feedback';
 import { useCategories } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import { formatPrice, handleAdNavigation, mapProductToCartItem } from '@/utils';
@@ -69,10 +69,7 @@ const ProductsList: React.FC<ProductsListProps> = ({
   return (
     <View style={[styles.section, styles.sectionMarketplace, contentContainerStyle]}>
       {ads.length === 0 ? (
-        <MarketplaceEmptyState
-          title={t('marketplace.noAdsFound')}
-          description={t('marketplace.noAdsFoundDescription')}
-        />
+        <EmptyState title={t('marketplace.noAdsFound')} description={t('marketplace.noAdsFoundDescription')} />
       ) : (
         <>
           <View style={styles.sectionHeader}>
