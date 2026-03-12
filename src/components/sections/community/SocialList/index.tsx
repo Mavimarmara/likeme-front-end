@@ -1,15 +1,33 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, ScrollView } from 'react-native';
-import { LiveBanner, LiveBannerData, PostsSection, NextEventsSection } from '@/components/sections/community';
+import {
+  LiveBanner,
+  LiveBannerData,
+  PostsSection,
+  NextEventsSection,
+  CommunityIntroSection,
+  SpecialistCard,
+} from '@/components/sections/community';
+import type { SpecialistCardProps } from '@/components/sections/community/SpecialistCard';
 import { CTACard } from '@/components/ui/cards';
 import { ProductsCarousel, Product } from '@/components/sections/product';
+import { storageService } from '@/services';
 import { useTranslation } from '@/hooks/i18n';
 import type { Post, Event } from '@/types';
 import { styles } from './styles';
 
+export type CommunityIntroData = {
+  title: string;
+  description: string;
+  imageUri?: string | null;
+};
+
 type Props = {
   liveBanner?: LiveBannerData | null;
   onLivePress?: (live: LiveBannerData) => void;
+  communityIntro?: CommunityIntroData | null;
+  onIntroSeeMore?: () => void;
+  specialist?: SpecialistCardProps | null;
   posts: Post[];
   loading: boolean;
   loadingMore: boolean;
@@ -26,6 +44,9 @@ type Props = {
 const SocialList: React.FC<Props> = ({
   liveBanner,
   onLivePress,
+  communityIntro,
+  onIntroSeeMore,
+  specialist,
   posts,
   loading,
   loadingMore,
@@ -39,6 +60,16 @@ const SocialList: React.FC<Props> = ({
   onProductLike,
 }) => {
   const { t } = useTranslation();
+  const [welcomeDismissed, setWelcomeDismissed] = useState(true);
+
+  useEffect(() => {
+    storageService.getCommunityWelcomeDismissed().then(setWelcomeDismissed);
+  }, []);
+
+  const handleWelcomeClose = useCallback(() => {
+    setWelcomeDismissed(true);
+    storageService.setCommunityWelcomeDismissed(true);
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -60,15 +91,38 @@ const SocialList: React.FC<Props> = ({
         }}
         scrollEventThrottle={400}
       >
-        <View style={styles.ctaCardContainer}>
-          <CTACard
-            title={t('community.ctaCardTitle')}
-            description={t('community.ctaCardDescription')}
-            backgroundColor='#F6CFFB'
-            titleStyle={{ fontSize: 20 }}
-            style={styles.ctaCard}
+        {communityIntro && (
+          <CommunityIntroSection
+            title={communityIntro.title}
+            description={communityIntro.description}
+            imageUri={communityIntro.imageUri}
+            onSeeMore={onIntroSeeMore}
+            seeMoreLabel={t('community.seeMore')}
           />
+        )}
+        <View style={styles.ctaCardContainer}>
+          {!welcomeDismissed && (
+            <CTACard
+              title={t('community.ctaCardTitle')}
+              description={t('community.ctaCardDescription')}
+              backgroundColor='#F6CFFB'
+              titleStyle={{ fontSize: 20 }}
+              style={styles.ctaCard}
+              onClose={handleWelcomeClose}
+            />
+          )}
         </View>
+        {specialist && (
+          <View>
+            <SpecialistCard
+              name={specialist.name}
+              subtitle={specialist.subtitle}
+              rating={specialist.rating}
+              tags={specialist.tags}
+              avatarUri={specialist.avatarUri}
+            />
+          </View>
+        )}
         <PostsSection posts={posts} loading={loading} loadingMore={loadingMore} error={error} onLoadMore={onLoadMore} />
 
         {loadingMore && (

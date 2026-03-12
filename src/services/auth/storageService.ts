@@ -11,6 +11,7 @@ const SELECTED_OBJECTIVES_IDS_KEY = '@likeme:selected_objectives_ids';
 const ANAMNESIS_COMPLETED_AT_KEY = '@likeme:anamnesis_completed_at';
 const CART_ITEMS_KEY = '@likeme:cart_items';
 const PRIVACY_POLICY_ACCEPTED_AT_KEY = '@likeme:privacy_policy_accepted_at';
+const COMMUNITY_WELCOME_DISMISSED_KEY = '@likeme:community_welcome_dismissed';
 
 class StorageService {
   async setToken(token: string): Promise<void> {
@@ -250,6 +251,28 @@ class StorageService {
       await AsyncStorage.removeItem(CART_ITEMS_KEY);
     } catch (error) {
       logger.error('Error clearing cart:', error);
+    }
+  }
+
+  async getCommunityWelcomeDismissed(): Promise<boolean> {
+    try {
+      const value = await AsyncStorage.getItem(COMMUNITY_WELCOME_DISMISSED_KEY);
+      return value === 'true';
+    } catch (error) {
+      logger.error('Error getting community welcome dismissed:', error);
+      return false;
+    }
+  }
+
+  async setCommunityWelcomeDismissed(dismissed: boolean): Promise<void> {
+    try {
+      if (dismissed) {
+        await AsyncStorage.setItem(COMMUNITY_WELCOME_DISMISSED_KEY, 'true');
+      } else {
+        await AsyncStorage.removeItem(COMMUNITY_WELCOME_DISMISSED_KEY);
+      }
+    } catch (error) {
+      logger.error('Error saving community welcome dismissed:', error);
     }
   }
 

@@ -3,20 +3,24 @@ import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { Toggle, Header } from '@/components/ui';
+import { IconButton } from '@/components/ui/buttons';
 import { SocialList, ProgramsList, LiveBannerData } from '@/components/sections/community';
+import type { SpecialistCardProps } from '@/components/sections/community/SpecialistCard';
 import { Product } from '@/components/sections/product';
 import { Background } from '@/components/ui/layout';
 import type { Event } from '@/types';
 import type { Program, ProgramDetail } from '@/types/program';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
-import { useUserFeed, useCommunities, useSuggestedProducts, useMenuItems } from '@/hooks';
+import { useUserFeed, useCommunities, useSuggestedProducts, useMenuItems, useUserAvatar } from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 import { mapCommunityToProgram } from '@/utils';
 import { useAnalyticsScreen } from '@/analytics';
+import { advertiserService } from '@/services';
+import type { Advertiser } from '@/types/ad';
 
-type CommunityMode = 'Social' | 'Programs';
+type CommunityMode = 'Feed' | 'Programs';
 
 const getToggleOptions = (t: (key: string) => string): readonly [CommunityMode, CommunityMode] =>
   [t('community.social') as CommunityMode, t('community.programs') as CommunityMode] as const;
@@ -108,11 +112,17 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   const { t } = useTranslation();
   const toggleOptions = useMemo(() => getToggleOptions(t), [t]);
   const rootNavigation = navigation.getParent()?.getParent?.() ?? navigation.getParent();
-  const [selectedMode, setSelectedMode] = useState<CommunityMode>('Social');
+  const userAvatarUri = useUserAvatar();
+  const [selectedMode, setSelectedMode] = useState<CommunityMode>('Feed');
   const [selectedProgramId, setSelectedProgramId] = useState<string | undefined>();
+  const [featuredAdvertiser, setFeaturedAdvertiser] = useState<Advertiser | null>(null);
 
   const handleCartPress = () => {
     rootNavigation?.navigate('Cart' as never);
+  };
+
+  const handleMenuPress = () => {
+    rootNavigation?.navigate('Profile' as never);
   };
 
   const {
@@ -145,6 +155,26 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     }
   }, [selectedMode, programs, selectedProgramId]);
 
+  useEffect(() => {
+    const loadAdvertiser = async () => {
+      try {
+        const response = await advertiserService.getAdvertisers({
+          page: 1,
+          limit: 1,
+          status: 'active',
+        });
+        if (response.success && response.data?.advertisers?.length) {
+          setFeaturedAdvertiser(response.data.advertisers[0]);
+        } else {
+          setFeaturedAdvertiser(null);
+        }
+      } catch {
+        setFeaturedAdvertiser(null);
+      }
+    };
+    loadAdvertiser();
+  }, []);
+
   const feedFilterParams = useMemo(() => ({}), []);
 
   const {
@@ -155,7 +185,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     hasMore: _hasMore,
     loadMore,
   } = useUserFeed({
-    enabled: selectedMode === 'Social',
+    enabled: selectedMode === 'Feed',
     searchQuery: '',
     params: feedFilterParams,
   });
@@ -202,24 +232,66 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleLoadMore = useCallback(() => {
-    if (selectedMode === 'Social') {
+    if (selectedMode === 'Feed') {
       loadMore();
     }
   }, [selectedMode, loadMore]);
 
+  const communityIntro = useMemo(() => {
+    const first = rawCommunities[0];
+    if (first) {
+      return {
+        title: first.displayName,
+        description: first.description,
+        imageUri: first.avatarFileId as string | undefined,
+      };
+    }
+  }, [rawCommunities, t]);
+
+  const specialistData: SpecialistCardProps | null = useMemo(() => {
+    if (!featuredAdvertiser) return null;
+    return {
+      name: featuredAdvertiser.name ?? '',
+      subtitle: t('community.specialistLabel'),
+      rating: undefined,
+      tags: [],
+      avatarUri: featuredAdvertiser.logo ?? undefined,
+    };
+  }, [featuredAdvertiser, t]);
+
   return (
     <SafeAreaView style={styles.container}>
       <Background />
-      <Header showBackButton={false} showCartButton={true} onCartPress={handleCartPress} />
+      <Header
+        showBackButton={false}
+        showMenuWithAvatar={true}
+        onMenuPress={handleMenuPress}
+        userAvatarUri={userAvatarUri}
+        showCartButton={true}
+        onCartPress={handleCartPress}
+      />
       <View style={styles.content}>
-        <View style={styles.toggleContainer}>
-          <Toggle<CommunityMode> options={toggleOptions} selected={selectedMode} onSelect={handleModeSelect} />
+        <View style={styles.toggleRow}>
+          <IconButton
+            icon='chevron-left'
+            onPress={() => navigation.goBack()}
+            backgroundSize='medium'
+            containerStyle={styles.toggleBackButton}
+          />
+          <View style={styles.toggleContainer}>
+            <Toggle<CommunityMode> options={toggleOptions} selected={selectedMode} onSelect={handleModeSelect} />
+          </View>
         </View>
 
-        {selectedMode === 'Social' ? (
+        {selectedMode === 'Feed' ? (
           <SocialList
             liveBanner={liveBanner}
             onLivePress={handleLivePress}
+            communityIntro={communityIntro}
+            onIntroSeeMore={() => {
+              /* TODO: expandir descrição ou navegar para detalhe da comunidade */
+            }}
+            specialist={specialistData}
             posts={posts}
             loading={loading}
             loadingMore={loadingMore}

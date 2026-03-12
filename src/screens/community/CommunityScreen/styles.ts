@@ -14,8 +14,16 @@ export const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   toggleContainer: {
-    paddingHorizontal: SPACING.MD,
+    flex: 1,
   },
+  toggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    paddingHorizontal: SPACING.MD,
+    gap: SPACING.MD,
+  },
+  toggleBackButton: {},
   suggestedSection: {
     marginTop: SPACING.XL,
     backgroundColor: COLORS.WHITE,

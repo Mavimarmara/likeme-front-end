@@ -1,4 +1,7 @@
 export { default as LiveBanner, type LiveBannerData, type LiveStatus } from './LiveBanner';
+export { default as CommunityIntroSection } from './CommunityIntroSection';
+export { default as SpecialistCard } from './SpecialistCard';
+export type { SpecialistCardProps } from './SpecialistCard';
 export { default as PostDetailsHeader } from './PostDetailsHeader';
 export { default as NextEventsSection } from './NextEventsSection';
 export { default as PopularProvidersSection, type Provider } from './PopularProvidersSection';

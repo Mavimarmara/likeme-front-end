@@ -38,7 +38,7 @@ export const styles = StyleSheet.create({
     fontFamily: 'DM Sans',
     fontSize: FONT_SIZES.SM,
     fontWeight: '400',
-    color: COLORS.TEXT_LIGHT,
+    color: COLORS.TEXT,
     letterSpacing: 0.2,
     lineHeight: 20,
   },
@@ -61,5 +61,13 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 8,
     elevation: 4,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: SPACING.MD,
+    right: SPACING.MD,
+    zIndex: 1,
+    paddingHorizontal: SPACING.MD,
+    paddingVertical: SPACING.XS,
   },
 });

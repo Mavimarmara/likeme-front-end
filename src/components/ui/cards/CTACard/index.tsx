@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, ViewStyle, TextStyle } from 'react-native';
+import { View, Text, TouchableOpacity, ViewStyle, TextStyle } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import { COLORS } from '@/constants';
 import { styles } from './styles';
@@ -26,6 +27,7 @@ type Props = {
   };
   titleStyle?: TextStyle;
   style?: ViewStyle | ViewStyle[];
+  onClose?: () => void;
 };
 
 const CTACard: React.FC<Props> = ({
@@ -45,6 +47,7 @@ const CTACard: React.FC<Props> = ({
   borderRadius,
   titleStyle,
   style,
+  onClose,
 }) => {
   const hasPrimaryButton = primaryButtonLabel && primaryButtonOnPress;
   const hasSecondaryButton = secondaryButtonLabel && secondaryButtonOnPress;
@@ -62,6 +65,17 @@ const CTACard: React.FC<Props> = ({
 
   return (
     <View style={[styles.card, { backgroundColor }, customBorderRadius, style]}>
+      {onClose && (
+        <TouchableOpacity
+          style={styles.closeButton}
+          onPress={onClose}
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          accessibilityRole='button'
+          accessibilityLabel='Fechar'
+        >
+          <Icon name='close' size={18} color={COLORS.TEXT} />
+        </TouchableOpacity>
+      )}
       {children != null ? (
         <View style={styles.content}>{children}</View>
       ) : hasDefaultContent ? (

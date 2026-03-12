@@ -24,7 +24,6 @@ export const styles = StyleSheet.create({
   },
   sectionContainer: {
     paddingHorizontal: SPACING.MD,
-    marginTop: SPACING.XL,
   },
   loadingFooter: {
     paddingVertical: SPACING.MD,

@@ -7,13 +7,11 @@ export const styles = StyleSheet.create({
     paddingHorizontal: SPACING.MD,
   },
   header: {
-    paddingTop: SPACING.MD,
-    paddingBottom: SPACING.SM,
+    paddingVertical: SPACING.MD,
     paddingHorizontal: SPACING.MD,
   },
   title: {
-    fontSize: FONT_SIZES.XL,
-    fontWeight: 'bold',
+    fontSize: FONT_SIZES.SM,
     color: COLORS.TEXT,
   },
   listContent: {
