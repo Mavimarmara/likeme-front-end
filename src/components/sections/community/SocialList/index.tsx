@@ -92,13 +92,16 @@ const SocialList: React.FC<Props> = ({
         scrollEventThrottle={400}
       >
         {communityIntro && (
-          <CommunityIntroSection
-            title={communityIntro.title}
-            description={communityIntro.description}
-            imageUri={communityIntro.imageUri}
-            onSeeMore={onIntroSeeMore}
-            seeMoreLabel={t('community.seeMore')}
-          />
+          <View style={styles.communityIntroContainer}>
+            <CommunityIntroSection
+              title={communityIntro.title}
+              description={communityIntro.description}
+              imageUri={communityIntro.imageUri}
+              onSeeMore={onIntroSeeMore}
+              seeMoreLabel={t('community.seeMore')}
+              seeLessLabel={t('community.seeLess')}
+            />
+          </View>
         )}
         <View style={styles.ctaCardContainer}>
           {!welcomeDismissed && (

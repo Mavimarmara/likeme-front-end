@@ -16,6 +16,10 @@ export const styles = StyleSheet.create({
     paddingBottom: SPACING.SM,
     paddingHorizontal: SPACING.MD,
   },
+  communityIntroContainer: {
+    paddingTop: SPACING.MD,
+    paddingBottom: SPACING.SM,
+  },
   scrollView: {
     flex: 1,
   },
@@ -24,6 +28,7 @@ export const styles = StyleSheet.create({
   },
   sectionContainer: {
     paddingHorizontal: SPACING.MD,
+    marginTop: SPACING.XL,
   },
   loadingFooter: {
     paddingVertical: SPACING.MD,
