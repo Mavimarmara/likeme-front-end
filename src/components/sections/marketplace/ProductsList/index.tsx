@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, StyleProp, ViewStyle } from 'react-native';
 import { ProductItemCard } from '@/components/ui/cards';
 import { FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
+import { MarketplaceEmptyState } from '@/components/sections/marketplace';
 import { useCategories } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import { formatPrice, handleAdNavigation, mapProductToCartItem } from '@/utils';
@@ -67,27 +68,28 @@ const ProductsList: React.FC<ProductsListProps> = ({
 
   return (
     <View style={[styles.section, styles.sectionMarketplace, contentContainerStyle]}>
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>{sectionTitle}</Text>
-      </View>
-      {orderOptions.length > 0 && (
-        <View style={styles.mOrderFilterMenuContainer}>
-          <FilterMenu
-            filterButtonLabel={t('marketplace.orderBy')}
-            onFilterButtonPress={() => undefined}
-            carouselOptions={orderOptions}
-            selectedCarouselId={selectedOrder}
-            onCarouselSelect={onOrderSelect ?? (() => undefined)}
-          />
-        </View>
-      )}
-      <View style={styles.mProductsList}>
-        {ads.length === 0 ? (
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>{t('marketplace.noAdsFound')}</Text>
+      {ads.length === 0 ? (
+        <MarketplaceEmptyState
+          title={t('marketplace.noAdsFound')}
+          description={t('marketplace.noAdsFoundDescription')}
+        />
+      ) : (
+        <>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>{sectionTitle}</Text>
           </View>
-        ) : (
-          <>
+          {orderOptions.length > 0 && (
+            <View style={styles.mOrderFilterMenuContainer}>
+              <FilterMenu
+                filterButtonLabel={t('marketplace.orderBy')}
+                onFilterButtonPress={() => undefined}
+                carouselOptions={orderOptions}
+                selectedCarouselId={selectedOrder}
+                onCarouselSelect={onOrderSelect ?? (() => undefined)}
+              />
+            </View>
+          )}
+          <View style={styles.mProductsList}>
             {ads.map((ad) => {
               const product = ad.product;
               const displayName = product?.name || t('marketplace.product', { defaultValue: 'Product' });
@@ -122,9 +124,9 @@ const ProductsList: React.FC<ProductsListProps> = ({
                 <Text style={styles.loadMoreText}>{t('marketplace.loadMore')}</Text>
               </TouchableOpacity>
             )}
-          </>
-        )}
-      </View>
+          </View>
+        </>
+      )}
     </View>
   );
 };
