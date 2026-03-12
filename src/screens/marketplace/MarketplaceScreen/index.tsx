@@ -175,7 +175,9 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
         onClose={() => setIsFilterCategoryModalVisible(false)}
         categories={categories}
         selectedCategoryId={selectedCategoryId}
-        onSelectCategory={(cat, _categoryName) => setSelectedCategoryId(cat?.categoryId ?? undefined)}
+        onSelectCategory={() => {
+          // A seleção de categoria só deve ser aplicada quando o usuário clicar em "Filtrar"
+        }}
         selectedSolutionIds={selectedSolutionIds}
         onToggleSolution={(id) => {
           setSelectedSolutionIds((prev) => (prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]));
