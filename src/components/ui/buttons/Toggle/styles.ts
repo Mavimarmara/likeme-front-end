@@ -3,6 +3,7 @@ import { SPACING } from '@/constants';
 
 export const styles = StyleSheet.create({
   container: {
+    width: '100%',
     flexDirection: 'row',
     backgroundColor: 'rgba(253, 251, 238, 0.8)',
     borderRadius: 24,
@@ -20,6 +21,7 @@ export const styles = StyleSheet.create({
     elevation: 4,
     marginVertical: SPACING.MD,
     height: 48,
+    justifyContent: 'space-between',
   },
   option: {
     flex: 1,

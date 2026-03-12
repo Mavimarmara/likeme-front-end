@@ -10,7 +10,7 @@ import type { Product } from '@/components/sections/product/ProductCard';
 import { styles } from './styles';
 
 type SolutionTab = 'products' | 'services' | 'professionals' | 'programs';
-type OrderTab = 'default' | 'best' | 'above100';
+type OrderTab = 'best' | 'above100';
 
 type Props = {
   products: Product[];
@@ -21,7 +21,7 @@ type Props = {
 const ShoppingList: React.FC<Props> = ({ products, onProductPress, onProductLike: _onProductLike }) => {
   const { t } = useTranslation();
   const [activeSolution, setActiveSolution] = useState<SolutionTab>('products');
-  const [activeOrder, setActiveOrder] = useState<OrderTab>('default');
+  const [activeOrder, setActiveOrder] = useState<OrderTab>('best');
 
   const productsWithProgramTag = useMemo(
     () =>
@@ -49,7 +49,6 @@ const ShoppingList: React.FC<Props> = ({ products, onProductPress, onProductLike
 
   const orderOptions: ButtonCarouselOption<OrderTab>[] = useMemo(
     () => [
-      { id: 'default', label: t('marketplace.orderBy') },
       { id: 'best', label: t('marketplace.bestRated') },
       { id: 'above100', label: t('marketplace.above100') },
     ],
