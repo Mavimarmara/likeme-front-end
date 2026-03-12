@@ -22,6 +22,17 @@ export const styles = StyleSheet.create({
   },
   searchContainer: {
     marginBottom: SPACING.MD,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: SPACING.MD,
+  },
+  searchRowBackButton: {
+    justifyContent: 'center',
+  },
+  searchRowSearch: {
+    flex: 1,
+    justifyContent: 'center',
   },
   filterMenuContainer: {
     marginBottom: SPACING.SM,

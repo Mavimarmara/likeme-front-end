@@ -4,12 +4,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { RouteProp } from '@react-navigation/native';
 import { SearchBar } from '@/components/ui/inputs';
+import { IconButton } from '@/components/ui/buttons';
 import { FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
 import { Header } from '@/components/ui/layout';
 import { GradientBackgroundByCategory } from '@/components/sections';
 import { FilterCategoryModal, type FilterCategoryResult, type SolutionId } from '@/components/ui/modals';
 import { WeekHighlightCard, ProductsList } from '@/components/sections/marketplace';
-import { useMarketplaceAds, useMenuItems, useCategories, useCategoryDisplayLabel } from '@/hooks';
+import { useMarketplaceAds, useMenuItems, useCategories, useCategoryDisplayLabel, useUserAvatar } from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 import { handleAdNavigation } from '@/utils';
@@ -48,6 +49,7 @@ type MarketplaceScreenProps = {
 const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => {
   useAnalyticsScreen({ screenName: 'Marketplace', screenClass: 'MarketplaceScreen' });
   const { t } = useTranslation();
+  const userAvatarUri = useUserAvatar();
   const [searchQuery, setSearchQuery] = useState('');
   const [appliedSearchQuery, setAppliedSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>(CATEGORY_ALL);
@@ -73,6 +75,11 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
 
   const handleCartPress = () => {
     navigation.navigate('Cart');
+  };
+
+  const handleMenuPress = () => {
+    const root = navigation.getParent()?.getParent?.() ?? navigation.getParent();
+    root?.navigate('Profile' as never);
   };
 
   useEffect(() => {
@@ -135,17 +142,24 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   const renderCustomHeader = () => (
     <View style={styles.customHeader}>
       <View style={styles.searchContainer}>
-        <SearchBar
-          placeholder={t('marketplace.searchPlaceholder')}
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          onSearchPress={() => {
-            setAppliedSearchQuery(searchQuery.trim());
-            setPage(1);
-          }}
-          showFilterButton={true}
-          onFilterPress={() => setIsFilterCategoryModalVisible(true)}
+        <IconButton
+          icon='chevron-left'
+          onPress={() => navigation.goBack()}
+          backgroundSize='medium'
+          containerStyle={styles.searchRowBackButton}
         />
+        <View style={styles.searchRowSearch}>
+          <SearchBar
+            placeholder={t('marketplace.searchPlaceholder')}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            onSearchPress={() => {
+              setAppliedSearchQuery(searchQuery.trim());
+              setPage(1);
+            }}
+            showFilterButton={false}
+          />
+        </View>
       </View>
       <View style={styles.filterMenuContainer}>
         <FilterMenu
@@ -229,7 +243,14 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   return (
     <SafeAreaView style={styles.container}>
       <GradientBackgroundByCategory category={selectedCategoryName} />
-      <Header showBackButton={false} showCartButton={true} onCartPress={handleCartPress} />
+      <Header
+        showBackButton={false}
+        showMenuWithAvatar={true}
+        onMenuPress={handleMenuPress}
+        userAvatarUri={userAvatarUri}
+        showCartButton={true}
+        onCartPress={handleCartPress}
+      />
       <View style={styles.content}>
         {renderCustomHeader()}
         <ScrollView
