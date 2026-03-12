@@ -206,14 +206,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
           />
         ) : (
           <ShoppingList
-            products={suggestedProducts.map((p) => ({
-              id: p.id,
-              title: p.name,
-              price: p.price,
-              tag: p.category,
-              image: p.image,
-              likes: p.likes ?? 0,
-            }))}
+            products={suggestedProducts}
             onProductPress={handleProductPress}
             onProductLike={handleProductLike}
           />
