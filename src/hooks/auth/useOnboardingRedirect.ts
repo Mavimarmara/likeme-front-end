@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { getApiUrl } from '@/config';
 import { getNextOnboardingDestination } from '@/utils';
-import { storageService } from '@/services';
+import { storageService, userService } from '@/services';
 import { logger } from '@/utils/logger';
 
 type NavigationReplace = (screen: string, params?: object) => void;
@@ -41,6 +41,31 @@ async function syncOnboardingStateFromBackend(): Promise<void> {
   }
 }
 
+/**
+ * Obtém o nome do usuário logado para exibir nas telas de onboarding (storage primeiro, depois perfil da API).
+ */
+async function getLoggedInUserDisplayName(): Promise<string | null> {
+  const token = await storageService.getToken();
+  if (!token) return null;
+  const stored = await storageService.getUser();
+  const fromStorage = stored?.name?.trim() || stored?.nickname?.trim();
+  if (fromStorage) return fromStorage;
+  try {
+    const response = await userService.getProfile();
+    if (response.success && response.data) {
+      const person = response.data.person;
+      if (person?.firstName) {
+        const full = [person.firstName, person.lastName, person.surname].filter(Boolean).join(' ').trim();
+        return full || response.data.name?.trim() || null;
+      }
+      return response.data.name?.trim() || null;
+    }
+  } catch {
+    // Ignora; fallback "Usuário" será usado
+  }
+  return null;
+}
+
 export function useOnboardingRedirect(navigationReplace: NavigationReplace): void {
   useEffect(() => {
     const redirect = async () => {
@@ -51,12 +76,14 @@ export function useOnboardingRedirect(navigationReplace: NavigationReplace): voi
         const privacyPolicyAcceptedAt = await storageService.getPrivacyPolicyAcceptedAt();
         const registerCompletedAt = await storageService.getRegisterCompletedAt();
         const objectivesSelectedAt = await storageService.getObjectivesSelectedAt();
+        const userDisplayName = await getLoggedInUserDisplayName();
 
         const destination = getNextOnboardingDestination(
           welcomeScreenAccessedAt,
           privacyPolicyAcceptedAt,
           registerCompletedAt,
           objectivesSelectedAt,
+          userDisplayName,
         );
         navigationReplace(destination.screen, destination.params);
       } catch (error) {

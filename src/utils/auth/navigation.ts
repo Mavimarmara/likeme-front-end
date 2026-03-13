@@ -28,6 +28,7 @@ export type OnboardingRedirectDestination =
  * Define a próxima tela de onboarding com base nos flags de storage (usado pelo redirect pós-login).
  * Se o usuário ainda não tem dados pessoais salvos (registerCompletedAt), redireciona para Register.
  * Considera também o aceite da política de privacidade antes do registro.
+ * Quando informado, userDisplayName (ex.: do usuário logado) é usado nas params em vez do fallback "Usuário".
  * TODO: redirect para Plans desabilitado temporariamente; reativar quando necessário.
  */
 export function getNextOnboardingDestination(
@@ -35,24 +36,27 @@ export function getNextOnboardingDestination(
   privacyPolicyAcceptedAt: string | null,
   registerCompletedAt: string | null,
   objectivesSelectedAt: string | null,
+  userDisplayName?: string | null,
 ): OnboardingRedirectDestination {
   const order = AUTH_ONBOARDING_SCREENS_ORDER;
+  const name = (userDisplayName?.trim() || DEFAULT_USER_NAME) as string;
+  const firstName = name.split(/\s+/)[0] || name;
 
   if (!welcomeScreenAccessedAt) {
     return { screen: order[0] };
   }
   if (!privacyPolicyAcceptedAt) {
-    return { screen: 'PrivacyPolicies', params: { userName: DEFAULT_USER_NAME } };
+    return { screen: 'PrivacyPolicies', params: { userName: name } };
   }
   // Sem dados pessoais salvos (registro não concluído) → sempre para Register
   if (!registerCompletedAt) {
-    return { screen: 'Register', params: { userName: DEFAULT_USER_NAME } };
+    return { screen: 'Register', params: { userName: name } };
   }
   if (!objectivesSelectedAt) {
     const registerIdx = order.indexOf('Register');
     const nextScreen = order[registerIdx + 1];
     const screen = nextScreen === 'Plans' ? 'PersonalObjectives' : nextScreen;
-    return { screen, params: { userName: DEFAULT_USER_NAME } };
+    return { screen, params: { userName: name, firstName } };
   }
   return { screen: 'Home' };
 }
