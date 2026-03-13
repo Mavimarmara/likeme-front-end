@@ -6,9 +6,8 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    paddingTop: SPACING.LG,
+    paddingTop: SPACING.MD,
     paddingBottom: SPACING.XL,
-    gap: SPACING.MD,
   },
   communityIntroContainer: {},
   shoppingTipContainer: {},
@@ -17,6 +16,17 @@ export const styles = StyleSheet.create({
   },
   shoppingTipTitle: {
     fontSize: 20,
+    fontWeight: '700',
+    color: COLORS.BLACK,
+  },
+  shoppingTipDescription: {
+    fontSize: 14,
+    fontWeight: '400',
+    color: COLORS.BLACK,
+    lineHeight: 20,
+  },
+  shoppingTipDescriptionBold: {
+    fontWeight: '700',
   },
   specialistBlock: {},
   headerTextContainer: {
@@ -81,23 +91,58 @@ export const styles = StyleSheet.create({
     elevation: 3,
   },
   professionalCardWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: BORDER_RADIUS.XL,
     overflow: 'hidden',
-    backgroundColor: COLORS.NEUTRAL.LOW.PURE,
     shadowColor: '#000',
     shadowOpacity: 0.06,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
     elevation: 3,
-    paddingRight: SPACING.SM,
+    paddingHorizontal: SPACING.MD,
+    paddingTop: SPACING.MD,
+    paddingBottom: 0,
   },
   professionalCardContent: {
-    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingBottom: SPACING.MD,
   },
-  professionalCardChevron: {
-    marginLeft: SPACING.XS,
+  professionalAvatar: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    marginRight: SPACING.MD,
+  },
+  professionalAvatarPlaceholder: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: COLORS.NEUTRAL.HIGH.PURE,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SPACING.MD,
+  },
+  professionalInfo: {
+    flex: 1,
+    justifyContent: 'center',
+    minWidth: 0,
+  },
+  professionalName: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: COLORS.TEXT,
+    marginBottom: 2,
+  },
+  professionalProfession: {
+    fontSize: 13,
+    color: COLORS.TEXT_LIGHT,
+    fontWeight: '400',
+  },
+  professionalViewProfileButton: {
+    alignSelf: 'center',
+  },
+  professionalCardSeparator: {
+    height: 1,
+    backgroundColor: COLORS.NEUTRAL.LOW.MEDIUM,
   },
   emptySection: {
     paddingVertical: SPACING.XL,

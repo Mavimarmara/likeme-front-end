@@ -1,8 +1,9 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import { ScrollView, View, TouchableOpacity } from 'react-native';
+import { ScrollView, View, Text, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { CTACard } from '@/components/ui/cards';
 import ProductItemCard from '@/components/ui/cards/ProductItemCard';
+import { SecondaryButton } from '@/components/ui/buttons';
 import { ToggleTabs } from '@/components/ui/tabs';
 import { FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
 import { EmptyState } from '@/components/ui/feedback';
@@ -15,8 +16,6 @@ import type { Product } from '@/components/sections/product/ProductCard';
 import type { Advertiser } from '@/types/ad';
 import { COLORS } from '@/constants';
 import { styles } from './styles';
-
-const SHOPPING_TIP_BACKGROUND = '#F6DEA9';
 
 export type CommunityIntroData = {
   title: string;
@@ -141,14 +140,18 @@ const ShoppingList: React.FC<Props> = ({
     <ScrollView style={styles.container} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       {!shoppingTipDismissed && (
         <View style={styles.shoppingTipContainer}>
-          <CTACard
-            title={t('community.ctaCardTitle')}
-            description={t('community.ctaCardDescription')}
-            backgroundColor={SHOPPING_TIP_BACKGROUND}
-            titleStyle={styles.shoppingTipTitle}
-            style={styles.shoppingTip}
-            onClose={handleShoppingTipClose}
-          />
+          <CTACard backgroundColor={COLORS.HIGHLIGHT.LIGHT} style={styles.shoppingTip} onClose={handleShoppingTipClose}>
+            <Text style={styles.shoppingTipTitle}>{t('community.shoppingTipTitle')}</Text>
+            <Text style={styles.shoppingTipDescription}>{t('community.shoppingTipIntro')}</Text>
+            <Text style={styles.shoppingTipDescription}>{t('community.shoppingTipBullet1')}</Text>
+            <Text style={styles.shoppingTipDescription}>{t('community.shoppingTipBullet2')}</Text>
+            <Text style={styles.shoppingTipDescription}>{t('community.shoppingTipBullet3')}</Text>
+            <Text style={styles.shoppingTipDescription}>{t('community.shoppingTipBullet4')}</Text>
+            <Text style={styles.shoppingTipDescription}>{t('community.shoppingTipBullet5')}</Text>
+            <Text style={[styles.shoppingTipDescription, styles.shoppingTipDescriptionBold]}>
+              {t('community.shoppingTipOutro')}
+            </Text>
+          </CTACard>
         </View>
       )}
       {communityIntro && (
@@ -184,67 +187,76 @@ const ShoppingList: React.FC<Props> = ({
         fixedWidth={false}
       />
 
-      {showOrderFilter && (
-        <View style={styles.orderRow}>
-          <FilterMenu
-            filterButtonLabel={t('marketplace.orderBy')}
-            onFilterButtonPress={() => undefined}
-            carouselOptions={orderOptions}
-            selectedCarouselId={activeOrder}
-            onCarouselSelect={(id) => setActiveOrder(id)}
+      {isEmptySection ? (
+        <View style={styles.emptySection}>
+          <EmptyState
+            title={t('marketplace.noAdsFound')}
+            description={t('marketplace.noAdsFoundDescription')}
+            iconName='storefront'
           />
         </View>
-      )}
-
-      <View style={styles.list}>
-        {isEmptySection ? (
-          <View style={styles.emptySection}>
-            <EmptyState
-              title={t('marketplace.noAdsFound')}
-              description={t('marketplace.noAdsFoundDescription')}
-              iconName='storefront'
-            />
-          </View>
-        ) : activeSolution === 'professionals' ? (
-          professionals.map((advertiser) => (
-            <TouchableOpacity
-              key={advertiser.id}
-              style={styles.professionalCardWrapper}
-              onPress={() => onProfessionalPress?.(advertiser)}
-              activeOpacity={0.7}
-              accessibilityRole='button'
-              accessibilityLabel={advertiser.name ?? ''}
-            >
-              <View style={styles.professionalCardContent}>
-                <SpecialistCard
-                  name={advertiser.name ?? ''}
-                  subtitle={advertiser.description ?? undefined}
-                  avatarUri={advertiser.logo ?? undefined}
-                />
-              </View>
-              <View style={styles.professionalCardChevron}>
-                <Icon name='chevron-right' size={24} color={COLORS.TEXT} />
-              </View>
-            </TouchableOpacity>
-          ))
-        ) : (
-          currentList.map((product) => (
-            <View key={product.id} style={styles.cardWrapper}>
-              <ProductItemCard
-                image={product.image}
-                title={product.title}
-                badges={[product.tag]}
-                price={product.price ?? undefined}
-                onPress={() => onProductPress?.(product)}
-                onAddPress={() => onProductPress?.(product)}
-                showAddButton={false}
-                formatPrice={formatPrice}
-                subtitle={undefined}
+      ) : (
+        <>
+          {showOrderFilter && (
+            <View style={styles.orderRow}>
+              <FilterMenu
+                filterButtonLabel={t('marketplace.orderBy')}
+                onFilterButtonPress={() => undefined}
+                carouselOptions={orderOptions}
+                selectedCarouselId={activeOrder}
+                onCarouselSelect={(id) => setActiveOrder(id)}
               />
             </View>
-          ))
-        )}
-      </View>
+          )}
+          <View style={styles.list}>
+            {activeSolution === 'professionals'
+              ? professionals.map((advertiser) => (
+                  <View key={advertiser.id} style={styles.professionalCardWrapper}>
+                    <View style={styles.professionalCardContent}>
+                      {advertiser.logo ? (
+                        <Image source={{ uri: advertiser.logo }} style={styles.professionalAvatar} resizeMode='cover' />
+                      ) : (
+                        <View style={styles.professionalAvatarPlaceholder}>
+                          <Icon name='person' size={32} color={COLORS.NEUTRAL.LOW.MEDIUM} />
+                        </View>
+                      )}
+                      <View style={styles.professionalInfo}>
+                        <Text style={styles.professionalName} numberOfLines={1}>
+                          {advertiser.name ?? ''}
+                        </Text>
+                        {advertiser.description ? (
+                          <Text style={styles.professionalProfession} numberOfLines={1}>
+                            Especialista
+                          </Text>
+                        ) : null}
+                      </View>
+                      <SecondaryButton
+                        label={t('community.viewProfile')}
+                        onPress={() => onProfessionalPress?.(advertiser)}
+                        size='medium'
+                        style={styles.professionalViewProfileButton}
+                      />
+                    </View>
+                  </View>
+                ))
+              : currentList.map((product) => (
+                  <View key={product.id} style={styles.cardWrapper}>
+                    <ProductItemCard
+                      image={product.image}
+                      title={product.title}
+                      badges={[product.tag]}
+                      price={product.price ?? undefined}
+                      onPress={() => onProductPress?.(product)}
+                      onAddPress={() => onProductPress?.(product)}
+                      showAddButton={false}
+                      formatPrice={formatPrice}
+                      subtitle={undefined}
+                    />
+                  </View>
+                ))}
+          </View>
+        </>
+      )}
     </ScrollView>
   );
 };

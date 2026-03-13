@@ -507,6 +507,14 @@
     "solutions": "Shopping",
     "ctaCardTitle": "Que bom que você chegou.",
     "ctaCardDescription": "Você está no feed, aproveite os conteúdos, interaja com outros membros e acompanhe tudo que acontecerá por aqui.",
+    "shoppingTipTitle": "Essa comunidade é um ecossistema de cuidado contínuo.",
+    "shoppingTipIntro": "Aqui você encontra diferentes caminhos para aprofundar sua jornada, todos mediados ou recomendados pelo Dr. Diogo.",
+    "shoppingTipBullet1": "• Vivências quinzenais ao vivo com o Dr. Diogo.",
+    "shoppingTipBullet2": "• Conteúdos autorais sobre saúde emocional.",
+    "shoppingTipBullet3": "• Protocolos estruturados de aprofundamento.",
+    "shoppingTipBullet4": "• Aplicativos, livros e recursos recomendados por ele.",
+    "shoppingTipBullet5": "• Retiros, experiências presenciais e rede de profissionais alinhados à sua abordagem.",
+    "shoppingTipOutro": "Você escolhe como participar. No seu ritmo. No seu tempo.",
     "liveNow": "Ao vivo agora",
     "noPostsFound": "Nenhuma publicação encontrada",
     "noPostsFoundDescription": "Tente ajustar os filtros ou explore outros programas.",
@@ -543,7 +551,8 @@
     "communities": "Comunidades",
     "messages": "Mensagens",
     "newPost": "{count} Nova Publicação",
-    "newestPosts": "Publicações mais recentes"
+    "newestPosts": "Publicações mais recentes",
+    "viewProfile": "Ver perfil"
   },
   "profile": {
     "title": "Perfil",
