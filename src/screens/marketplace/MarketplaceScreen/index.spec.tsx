@@ -78,7 +78,7 @@ jest.mock('@/components/sections/marketplace', () => {
         <Text>{title}</Text>
       </TouchableOpacity>
     ),
-    ProductsList: () => <View testID='products-list' />,
+    AdsList: () => <View testID='ads-list' />,
   };
 });
 
@@ -221,7 +221,7 @@ describe('MarketplaceScreen', () => {
     const { getByTestId } = render(<MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
-      expect(getByTestId('products-list')).toBeTruthy();
+      expect(getByTestId('ads-list')).toBeTruthy();
     });
   });
 
@@ -229,7 +229,7 @@ describe('MarketplaceScreen', () => {
     const { getByTestId } = render(<MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
-      expect(getByTestId('products-list')).toBeTruthy();
+      expect(getByTestId('ads-list')).toBeTruthy();
     });
   });
 
@@ -239,7 +239,7 @@ describe('MarketplaceScreen', () => {
     const { getByTestId } = render(<MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
-      expect(getByTestId('products-list')).toBeTruthy();
+      expect(getByTestId('ads-list')).toBeTruthy();
     });
 
     expect(storageService.addToCart).toBeDefined();

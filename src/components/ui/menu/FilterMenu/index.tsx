@@ -14,6 +14,8 @@ type Props<T = string> = {
   carouselOptions: ButtonCarouselOption<T>[];
   selectedCarouselId?: T | null;
   onCarouselSelect: (optionId: T) => void;
+  /** Quando false, não exibe o carrossel de opções (ex.: quando as abas estão no conteúdo). */
+  showCarousel?: boolean;
 };
 
 const FilterMenu = <T extends string | number = string>({
@@ -26,6 +28,7 @@ const FilterMenu = <T extends string | number = string>({
   carouselOptions,
   selectedCarouselId,
   onCarouselSelect,
+  showCarousel = true,
 }: Props<T>) => {
   const hasFilterButton = !!filterButtonLabel;
 
@@ -42,7 +45,9 @@ const FilterMenu = <T extends string | number = string>({
           onModalClose={onFilterModalClose}
         />
       )}
-      <ButtonCarousel options={carouselOptions} selectedId={selectedCarouselId} onSelect={onCarouselSelect} />
+      {showCarousel && (
+        <ButtonCarousel options={carouselOptions} selectedId={selectedCarouselId} onSelect={onCarouselSelect} />
+      )}
     </View>
   );
 };

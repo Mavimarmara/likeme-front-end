@@ -2,15 +2,13 @@ import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import { ScrollView, View, Text, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { CTACard } from '@/components/ui/cards';
-import ProductItemCard from '@/components/ui/cards/ProductItemCard';
 import { SecondaryButton } from '@/components/ui/buttons';
-import { ToggleTabs } from '@/components/ui/tabs';
-import { FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
 import { EmptyState } from '@/components/ui/feedback';
 import { CommunityIntroSection, SpecialistCard } from '@/components/sections/community';
+import { AdsList } from '@/components/sections/marketplace';
+import type { ButtonCarouselOption } from '@/components/ui/menu';
 import type { SpecialistCardProps } from '@/components/sections/community/SpecialistCard';
 import { useTranslation } from '@/hooks/i18n';
-import { formatPrice } from '@/utils';
 import { storageService } from '@/services';
 import type { Product } from '@/components/sections/product/ProductCard';
 import type { Advertiser } from '@/types/ad';
@@ -23,7 +21,6 @@ export type CommunityIntroData = {
   imageUri?: string | null;
 };
 
-type SolutionTab = 'products' | 'services' | 'professionals' | 'programs';
 type OrderTab = 'best' | 'above100';
 
 const applyOrder = <T extends Product>(list: T[], order: OrderTab): T[] => {
@@ -66,7 +63,6 @@ const ShoppingList: React.FC<Props> = ({
   embedInParentScroll = false,
 }) => {
   const { t } = useTranslation();
-  const [activeSolution, setActiveSolution] = useState<SolutionTab>('products');
   const [activeOrder, setActiveOrder] = useState<OrderTab>('best');
   const [shoppingTipDismissed, setShoppingTipDismissed] = useState(true);
 
@@ -116,7 +112,7 @@ const ShoppingList: React.FC<Props> = ({
     [t],
   );
 
-  const solutionTabs: { id: SolutionTab; label: string }[] = useMemo(
+  const solutionTabs: { id: string; label: string }[] = useMemo(
     () => [
       { id: 'products', label: t('filterCategory.solutions.products') },
       { id: 'services', label: t('filterCategory.solutions.services') },
@@ -126,18 +122,52 @@ const ShoppingList: React.FC<Props> = ({
     [t],
   );
 
-  const currentList =
-    activeSolution === 'products'
-      ? orderedProducts
-      : activeSolution === 'services'
-      ? orderedServices
-      : activeSolution === 'programs'
-      ? orderedPrograms
-      : [];
-
-  const showOrderFilter = activeSolution !== 'professionals';
-
-  const isEmptySection = activeSolution === 'professionals' ? professionals.length === 0 : currentList.length === 0;
+  const professionalsContent = useMemo(() => {
+    if (professionals.length === 0) {
+      return (
+        <View style={styles.emptySection}>
+          <EmptyState
+            title={t('marketplace.noAdsFound')}
+            description={t('marketplace.noAdsFoundDescription')}
+            iconName='storefront'
+          />
+        </View>
+      );
+    }
+    return (
+      <View style={styles.list}>
+        {professionals.map((advertiser) => (
+          <View key={advertiser.id} style={styles.professionalCardWrapper}>
+            <View style={styles.professionalCardContent}>
+              {advertiser.logo ? (
+                <Image source={{ uri: advertiser.logo }} style={styles.professionalAvatar} resizeMode='cover' />
+              ) : (
+                <View style={styles.professionalAvatarPlaceholder}>
+                  <Icon name='person' size={32} color={COLORS.NEUTRAL.LOW.MEDIUM} />
+                </View>
+              )}
+              <View style={styles.professionalInfo}>
+                <Text style={styles.professionalName} numberOfLines={1}>
+                  {advertiser.name ?? ''}
+                </Text>
+                {advertiser.description ? (
+                  <Text style={styles.professionalProfession} numberOfLines={1}>
+                    Especialista
+                  </Text>
+                ) : null}
+              </View>
+              <SecondaryButton
+                label={t('community.viewProfile')}
+                onPress={() => onProfessionalPress?.(advertiser)}
+                size='medium'
+                style={styles.professionalViewProfileButton}
+              />
+            </View>
+          </View>
+        ))}
+      </View>
+    );
+  }, [professionals, onProfessionalPress, t]);
 
   const listContent = (
     <>
@@ -182,84 +212,18 @@ const ShoppingList: React.FC<Props> = ({
         </View>
       )}
 
-      <ToggleTabs
-        tabs={solutionTabs.map((tab) => ({ id: tab.id, label: tab.label }))}
-        selectedId={activeSolution}
-        onSelect={(id) => setActiveSolution(id as SolutionTab)}
-        containerStyle={styles.solutionsTabsRow}
-        fixedWidth={false}
+      <AdsList
+        solutionTabs={solutionTabs}
+        productsList={orderedProducts}
+        servicesList={orderedServices}
+        programsList={orderedPrograms}
+        professionalsContent={professionalsContent}
+        onProductPress={onProductPress}
+        orderOptions={orderOptions}
+        selectedOrder={activeOrder}
+        onOrderSelect={(id) => setActiveOrder(id as OrderTab)}
+        tabsContainerStyle={styles.solutionsTabsRow}
       />
-
-      {isEmptySection ? (
-        <View style={styles.emptySection}>
-          <EmptyState
-            title={t('marketplace.noAdsFound')}
-            description={t('marketplace.noAdsFoundDescription')}
-            iconName='storefront'
-          />
-        </View>
-      ) : (
-        <>
-          {showOrderFilter && (
-            <View style={styles.orderRow}>
-              <FilterMenu
-                filterButtonLabel={t('marketplace.orderBy')}
-                onFilterButtonPress={() => undefined}
-                carouselOptions={orderOptions}
-                selectedCarouselId={activeOrder}
-                onCarouselSelect={(id) => setActiveOrder(id)}
-              />
-            </View>
-          )}
-          <View style={styles.list}>
-            {activeSolution === 'professionals'
-              ? professionals.map((advertiser) => (
-                  <View key={advertiser.id} style={styles.professionalCardWrapper}>
-                    <View style={styles.professionalCardContent}>
-                      {advertiser.logo ? (
-                        <Image source={{ uri: advertiser.logo }} style={styles.professionalAvatar} resizeMode='cover' />
-                      ) : (
-                        <View style={styles.professionalAvatarPlaceholder}>
-                          <Icon name='person' size={32} color={COLORS.NEUTRAL.LOW.MEDIUM} />
-                        </View>
-                      )}
-                      <View style={styles.professionalInfo}>
-                        <Text style={styles.professionalName} numberOfLines={1}>
-                          {advertiser.name ?? ''}
-                        </Text>
-                        {advertiser.description ? (
-                          <Text style={styles.professionalProfession} numberOfLines={1}>
-                            Especialista
-                          </Text>
-                        ) : null}
-                      </View>
-                      <SecondaryButton
-                        label={t('community.viewProfile')}
-                        onPress={() => onProfessionalPress?.(advertiser)}
-                        size='medium'
-                        style={styles.professionalViewProfileButton}
-                      />
-                    </View>
-                  </View>
-                ))
-              : currentList.map((product) => (
-                  <View key={product.id} style={styles.cardWrapper}>
-                    <ProductItemCard
-                      image={product.image}
-                      title={product.title}
-                      badges={[product.tag]}
-                      price={product.price ?? undefined}
-                      onPress={() => onProductPress?.(product)}
-                      onAddPress={() => onProductPress?.(product)}
-                      showAddButton={false}
-                      formatPrice={formatPrice}
-                      subtitle={undefined}
-                    />
-                  </View>
-                ))}
-          </View>
-        </>
-      )}
     </>
   );
 

@@ -9,7 +9,7 @@ import { FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
 import { Header } from '@/components/ui/layout';
 import { GradientBackgroundByCategory } from '@/components/sections';
 import { FilterCategoryModal, type FilterCategoryResult, type SolutionId } from '@/components/ui/modals';
-import { WeekHighlightCard, ProductsList } from '@/components/sections/marketplace';
+import { WeekHighlightCard, AdsList } from '@/components/sections/marketplace';
 import { useMarketplaceAds, useMenuItems, useCategories, useCategoryDisplayLabel, useUserAvatar } from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
@@ -36,6 +36,13 @@ const getCategoryOptions = (t: (key: string) => string): ButtonCarouselOption<st
   { id: CATEGORY_SPECIALISTS, label: t('marketplace.specialistsCategory') },
 ];
 
+const getSolutionTabs = (t: (key: string) => string) => [
+  { id: 'products', label: t('filterCategory.solutions.products') },
+  { id: 'services', label: t('filterCategory.solutions.services') },
+  { id: 'programs', label: t('filterCategory.solutions.programs') },
+  { id: 'professionals', label: t('filterCategory.solutions.professionals') },
+];
+
 const getOrderOptions = (t: (key: string) => string): ButtonCarouselOption<string>[] => [
   { id: ORDER_BEST_RATED, label: t('marketplace.bestRated') },
   { id: ORDER_ABOVE_100, label: t('marketplace.above100') },
@@ -53,7 +60,8 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   const userAvatarUri = useUserAvatar();
   const [searchQuery, setSearchQuery] = useState('');
   const [appliedSearchQuery, setAppliedSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>(CATEGORY_ALL);
+  const [selectedSolutionTab, setSelectedSolutionTab] = useState<string>('products');
+  const selectedCategory = selectedSolutionTab === 'professionals' ? CATEGORY_SPECIALISTS : selectedSolutionTab;
   const [selectedCategoryName, setSelectedCategoryName] = useState<CategoryName | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<string>(ORDER_BEST_RATED);
   const [page, setPage] = useState(1);
@@ -65,6 +73,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   const { getCategoryName } = useCategoryDisplayLabel();
 
   const categoryOptions = useMemo(() => getCategoryOptions(t), [t]);
+  const solutionTabs = useMemo(() => getSolutionTabs(t), [t]);
   const orderOptions = useMemo(() => getOrderOptions(t), [t]);
 
   const { ads, loading, hasMore, loadAds } = useMarketplaceAds({
@@ -100,8 +109,8 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   const menuItems = useMenuItems(navigation);
   useSetFloatingMenu(menuItems, 'marketplace');
 
-  const handleCategorySelect = (categoryId: string) => {
-    setSelectedCategory(categoryId);
+  const handleSolutionTabChange = (tabId: string) => {
+    setSelectedSolutionTab(tabId);
     setSelectedCategoryName(null);
     setPage(1);
   };
@@ -114,15 +123,15 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     setSelectedCategoryId(result.categoryId ?? undefined);
     setSelectedSolutionIds(result.solutionIds);
     if (result.solutionIds.length === 1 && result.solutionIds[0] === SOLUTION_PRODUCTS) {
-      setSelectedCategory(CATEGORY_PRODUCTS);
+      setSelectedSolutionTab('products');
       setSelectedCategoryName(null);
       setPage(1);
     } else if (result.solutionIds.length === 1 && result.solutionIds[0] === SOLUTION_PROFESSIONALS) {
-      setSelectedCategory(CATEGORY_SPECIALISTS);
+      setSelectedSolutionTab('professionals');
       setSelectedCategoryName(null);
       setPage(1);
     } else {
-      setSelectedCategory(CATEGORY_ALL);
+      setSelectedSolutionTab('products');
       setSelectedCategoryName(result.categoryName);
       setPage(1);
     }
@@ -131,7 +140,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   const handleClearFilterCategory = () => {
     setSelectedCategoryId(undefined);
     setSelectedSolutionIds([]);
-    setSelectedCategory(CATEGORY_ALL);
+    setSelectedSolutionTab('products');
     setSelectedCategoryName(null);
     setPage(1);
   };
@@ -167,7 +176,10 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
           onFilterButtonPress={() => setIsFilterCategoryModalVisible(true)}
           carouselOptions={categoryOptions}
           selectedCarouselId={selectedCategory}
-          onCarouselSelect={handleCategorySelect}
+          onCarouselSelect={() => {
+            /* category driven by tabs */
+          }}
+          showCarousel={false}
         />
       </View>
       <FilterCategoryModal
@@ -230,7 +242,10 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   }, [displayAds, selectedOrder]);
 
   const renderAllAds = () => (
-    <ProductsList
+    <AdsList
+      solutionTabs={solutionTabs}
+      selectedTabId={selectedSolutionTab}
+      onTabChange={handleSolutionTabChange}
       ads={sortedAds}
       loading={loading}
       hasMore={hasMore}

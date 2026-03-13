@@ -22,6 +22,11 @@ describe('categoryMapper', () => {
       expect(result).toBe('program');
     });
 
+    it('deve retornar undefined para "services"', () => {
+      const result = mapUICategoryToApiCategory('services');
+      expect(result).toBeUndefined();
+    });
+
     it('deve retornar undefined para categoria desconhecida', () => {
       const result = mapUICategoryToApiCategory('unknown');
       expect(result).toBeUndefined();

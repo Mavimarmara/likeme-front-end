@@ -199,7 +199,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
       </View>
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingTop: heroOffsetTop, paddingBottom: SPACING.XL }}
+        contentContainerStyle={{ paddingTop: SPACING.XXL, paddingBottom: SPACING.XL }}
         showsVerticalScrollIndicator={false}
         onMomentumScrollEnd={(e) => {
           const { layoutMeasurement, contentOffset, contentSize } = e.nativeEvent;

@@ -100,7 +100,7 @@ jest.mock('@/components/sections/product', () => ({
 jest.mock('@/components/sections/marketplace', () => {
   const { View } = require('react-native');
   return {
-    ProductsList: () => <View testID='products-list' />,
+    AdsList: () => <View testID='ads-list' />,
   };
 });
 

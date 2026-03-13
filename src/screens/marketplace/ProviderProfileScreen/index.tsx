@@ -7,7 +7,7 @@ import { Header, HeroImage } from '@/components/ui/layout';
 import { ToggleTabs } from '@/components/ui/tabs';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { JoinCommunityCard, type JoinCommunity } from '@/components/sections/community';
-import { ProductsList } from '@/components/sections/marketplace';
+import { AdsList } from '@/components/sections/marketplace';
 import { useAdvertiser, useProviderAds, useCommunities } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import type { RootStackParamList } from '@/types/navigation';
@@ -284,7 +284,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
                     })}
                 </View>
 
-                <ProductsList
+                <AdsList
                   navigation={navigation}
                   ads={providerAds}
                   loading={loadingAds}

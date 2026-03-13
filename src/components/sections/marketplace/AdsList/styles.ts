@@ -58,7 +58,16 @@ export const styles = StyleSheet.create({
   mOrderFilterMenuContainer: {
     marginBottom: SPACING.MD,
   },
-  mProductsList: {
+  mAdsList: {
     gap: SPACING.MD,
+  },
+  solutionTabsRow: {
+    marginTop: SPACING.MD,
+    width: '100%',
+    alignSelf: 'stretch',
+    paddingHorizontal: SPACING.MD,
+  },
+  emptySection: {
+    marginTop: SPACING.MD,
   },
 });
