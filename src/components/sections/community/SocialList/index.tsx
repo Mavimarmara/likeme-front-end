@@ -39,6 +39,9 @@ type Props = {
   products?: Product[];
   onProductPress?: (product: Product) => void;
   onProductLike?: (product: Product) => void;
+  /** Quando informados, o estado do CTACard de boas-vindas fica controlado pelo pai (ex.: CommunityScreen) */
+  welcomeDismissed?: boolean;
+  onWelcomeClose?: () => void;
 };
 
 const SocialList: React.FC<Props> = ({
@@ -58,18 +61,28 @@ const SocialList: React.FC<Props> = ({
   products,
   onProductPress,
   onProductLike,
+  welcomeDismissed: welcomeDismissedProp,
+  onWelcomeClose: onWelcomeCloseProp,
 }) => {
   const { t } = useTranslation();
-  const [welcomeDismissed, setWelcomeDismissed] = useState(true);
+  const [welcomeDismissedLocal, setWelcomeDismissedLocal] = useState(true);
 
   useEffect(() => {
-    storageService.getCommunityWelcomeDismissed().then(setWelcomeDismissed);
-  }, []);
+    if (onWelcomeCloseProp == null) {
+      storageService.getCommunityWelcomeDismissed().then(setWelcomeDismissedLocal);
+    }
+  }, [onWelcomeCloseProp]);
 
   const handleWelcomeClose = useCallback(() => {
-    setWelcomeDismissed(true);
-    storageService.setCommunityWelcomeDismissed(true);
-  }, []);
+    if (onWelcomeCloseProp) {
+      onWelcomeCloseProp();
+    } else {
+      setWelcomeDismissedLocal(true);
+      storageService.setCommunityWelcomeDismissed(true);
+    }
+  }, [onWelcomeCloseProp]);
+
+  const welcomeDismissed = onWelcomeCloseProp != null ? welcomeDismissedProp ?? true : welcomeDismissedLocal;
 
   return (
     <View style={styles.container}>

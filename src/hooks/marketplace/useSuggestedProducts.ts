@@ -7,6 +7,8 @@ interface UseSuggestedProductsOptions {
   status?: 'active' | 'inactive';
   enabled?: boolean;
   categoryId?: string | null; // domain category filter (Estresse, Sono, etc.)
+  /** Filtro por tipo: 'physical product' | 'program' | 'service' etc. */
+  type?: string;
 }
 
 interface UseSuggestedProductsReturn {
@@ -17,7 +19,7 @@ interface UseSuggestedProductsReturn {
 }
 
 export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}): UseSuggestedProductsReturn => {
-  const { limit = 4, status = 'active', enabled = true, categoryId } = options;
+  const { limit = 4, status = 'active', enabled = true, categoryId, type } = options;
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -36,6 +38,7 @@ export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}):
           limit,
           status,
           ...(categoryId != null && categoryId !== '' ? { categoryId } : {}),
+          ...(type != null && type !== '' ? { type } : {}),
         }),
         categoryService.listCategories().catch(() => []),
       ]);
@@ -60,7 +63,7 @@ export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}):
     } finally {
       setLoading(false);
     }
-  }, [enabled, limit, status, categoryId]);
+  }, [enabled, limit, status, categoryId, type]);
 
   useEffect(() => {
     loadProducts();

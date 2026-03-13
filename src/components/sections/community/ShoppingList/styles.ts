@@ -6,14 +6,21 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    paddingHorizontal: SPACING.MD,
     paddingTop: SPACING.LG,
     paddingBottom: SPACING.XL,
     gap: SPACING.MD,
   },
+  communityIntroContainer: {},
+  shoppingTipContainer: {},
+  shoppingTip: {
+    borderRadius: BORDER_RADIUS.XL,
+  },
+  shoppingTipTitle: {
+    fontSize: 20,
+  },
+  specialistBlock: {},
   headerTextContainer: {
     gap: SPACING.XS,
-    marginBottom: SPACING.SM,
   },
   sectionTitle: {
     fontSize: 20,
@@ -36,6 +43,7 @@ export const styles = StyleSheet.create({
     marginTop: SPACING.MD,
     width: '100%',
     alignSelf: 'stretch',
+    paddingHorizontal: SPACING.MD,
   },
   solutionTab: {
     paddingHorizontal: SPACING.MD,
@@ -56,9 +64,11 @@ export const styles = StyleSheet.create({
   },
   orderRow: {
     marginTop: SPACING.MD,
+    paddingHorizontal: SPACING.MD,
   },
   list: {
     gap: SPACING.MD,
+    paddingHorizontal: SPACING.MD,
   },
   cardWrapper: {
     borderRadius: BORDER_RADIUS.XL,
@@ -69,5 +79,29 @@ export const styles = StyleSheet.create({
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
     elevation: 3,
+  },
+  professionalCardWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: BORDER_RADIUS.XL,
+    overflow: 'hidden',
+    backgroundColor: COLORS.NEUTRAL.LOW.PURE,
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 3,
+    paddingRight: SPACING.SM,
+  },
+  professionalCardContent: {
+    flex: 1,
+  },
+  professionalCardChevron: {
+    marginLeft: SPACING.XS,
+  },
+  emptySection: {
+    paddingVertical: SPACING.XL,
+    alignItems: 'center',
+    gap: SPACING.LG,
   },
 });

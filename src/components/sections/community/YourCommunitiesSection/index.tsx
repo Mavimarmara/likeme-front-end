@@ -33,7 +33,7 @@ const YourCommunitiesSection: React.FC<Props> = ({ community, onCommunityPress, 
     if (post.content) {
       return post.content.length > 50 ? post.content.substring(0, 50) + '...' : post.content;
     }
-    return t('community.postWithoutTitle');
+    return '';
   };
 
   const getPostContent = (post: Post): string => {

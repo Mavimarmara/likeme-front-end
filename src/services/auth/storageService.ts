@@ -12,6 +12,7 @@ const ANAMNESIS_COMPLETED_AT_KEY = '@likeme:anamnesis_completed_at';
 const CART_ITEMS_KEY = '@likeme:cart_items';
 const PRIVACY_POLICY_ACCEPTED_AT_KEY = '@likeme:privacy_policy_accepted_at';
 const COMMUNITY_WELCOME_DISMISSED_KEY = '@likeme:community_welcome_dismissed';
+const COMMUNITY_SHOPPING_TIP_DISMISSED_KEY = '@likeme:community_shopping_tip_dismissed';
 
 class StorageService {
   async setToken(token: string): Promise<void> {
@@ -276,6 +277,28 @@ class StorageService {
     }
   }
 
+  async getCommunityShoppingTipDismissed(): Promise<boolean> {
+    try {
+      const value = await AsyncStorage.getItem(COMMUNITY_SHOPPING_TIP_DISMISSED_KEY);
+      return value === 'true';
+    } catch (error) {
+      logger.error('Error getting community shopping tip dismissed:', error);
+      return false;
+    }
+  }
+
+  async setCommunityShoppingTipDismissed(dismissed: boolean): Promise<void> {
+    try {
+      if (dismissed) {
+        await AsyncStorage.setItem(COMMUNITY_SHOPPING_TIP_DISMISSED_KEY, 'true');
+      } else {
+        await AsyncStorage.removeItem(COMMUNITY_SHOPPING_TIP_DISMISSED_KEY);
+      }
+    } catch (error) {
+      logger.error('Error saving community shopping tip dismissed:', error);
+    }
+  }
+
   async clearAll(): Promise<void> {
     try {
       await this.removeToken();
@@ -287,6 +310,7 @@ class StorageService {
       await AsyncStorage.removeItem(ANAMNESIS_COMPLETED_AT_KEY);
       await AsyncStorage.removeItem(PRIVACY_POLICY_ACCEPTED_AT_KEY);
       await AsyncStorage.removeItem(COMMUNITY_WELCOME_DISMISSED_KEY);
+      await AsyncStorage.removeItem(COMMUNITY_SHOPPING_TIP_DISMISSED_KEY);
       await this.clearCart();
     } catch (error) {
       logger.error('Error clearing storage:', error);

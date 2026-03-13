@@ -111,7 +111,6 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
   const { advertiser, loading: loadingProvider } = useAdvertiser({
     advertiserId: providerId || undefined,
     initialAdvertiser: initialAdvertiser ?? undefined,
-    enabled: !!providerId,
   });
 
   const providerData = useMemo(() => {

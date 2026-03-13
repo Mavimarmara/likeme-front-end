@@ -504,7 +504,7 @@
   },
   "community": {
     "social": "Feed",
-    "programs": "Soluções",
+    "solutions": "Shopping",
     "ctaCardTitle": "Que bom que você chegou.",
     "ctaCardDescription": "Você está no feed, aproveite os conteúdos, interaja com outros membros e acompanhe tudo que acontecerá por aqui.",
     "liveNow": "Ao vivo agora",
@@ -543,8 +543,7 @@
     "communities": "Comunidades",
     "messages": "Mensagens",
     "newPost": "{count} Nova Publicação",
-    "newestPosts": "Publicações mais recentes",
-    "postWithoutTitle": "Publicação sem título"
+    "newestPosts": "Publicações mais recentes"
   },
   "profile": {
     "title": "Perfil",

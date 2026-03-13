@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -11,11 +11,11 @@ import { Background } from '@/components/ui/layout';
 import type { Event } from '@/types';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
-import { useUserFeed, useCommunities, useSuggestedProducts, useMenuItems, useUserAvatar } from '@/hooks';
+import { useUserFeed, useCommunities, useSuggestedProducts, useAdvertiser, useMenuItems, useUserAvatar } from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen } from '@/analytics';
-import { advertiserService } from '@/services';
+import { storageService } from '@/services';
 import type { Advertiser } from '@/types/ad';
 
 type CommunityMode = 'Feed' | 'Solutions';
@@ -33,7 +33,20 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   const rootNavigation = navigation.getParent()?.getParent?.() ?? navigation.getParent();
   const userAvatarUri = useUserAvatar();
   const [selectedMode, setSelectedMode] = useState<CommunityMode>('Feed');
-  const [featuredAdvertiser, setFeaturedAdvertiser] = useState<Advertiser | null>(null);
+  const [welcomeDismissed, setWelcomeDismissed] = useState(true);
+
+  useEffect(() => {
+    storageService.getCommunityWelcomeDismissed().then(setWelcomeDismissed);
+  }, []);
+
+  const handleWelcomeClose = useCallback(() => {
+    setWelcomeDismissed(true);
+    storageService.setCommunityWelcomeDismissed(true);
+  }, []);
+
+  const { advertiser: featuredAdvertiser, advertisers: advertisersList } = useAdvertiser({
+    listOptions: { page: 1, limit: 50, status: 'active' },
+  });
 
   const handleCartPress = () => {
     rootNavigation?.navigate('Cart' as never);
@@ -63,26 +76,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     loadLiveChannels: true,
   });
 
-  useEffect(() => {
-    const loadAdvertiser = async () => {
-      try {
-        const response = await advertiserService.getAdvertisers({
-          page: 1,
-          limit: 1,
-          status: 'active',
-        });
-        if (response.success && response.data?.advertisers?.length) {
-          setFeaturedAdvertiser(response.data.advertisers[0]);
-        } else {
-          setFeaturedAdvertiser(null);
-        }
-      } catch {
-        setFeaturedAdvertiser(null);
-      }
-    };
-    loadAdvertiser();
-  }, []);
-
   const feedFilterParams = useMemo(() => ({}), []);
 
   const {
@@ -106,10 +99,26 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     console.log('Curtir produto:', product.id);
   };
 
+  const handleProfessionalPress = (advertiser: Advertiser) => {
+    rootNavigation?.navigate('ProviderProfile', { providerId: advertiser.id } as never);
+  };
+
   const { products: suggestedProducts } = useSuggestedProducts({
-    limit: 4,
+    limit: 20,
     status: 'active',
     enabled: true,
+  });
+  const { products: suggestedServices } = useSuggestedProducts({
+    limit: 20,
+    status: 'active',
+    enabled: selectedMode === 'Solutions',
+    type: 'service',
+  });
+  const { products: suggestedPrograms } = useSuggestedProducts({
+    limit: 20,
+    status: 'active',
+    enabled: selectedMode === 'Solutions',
+    type: 'program',
   });
 
   const menuItems = useMenuItems(navigation);
@@ -189,7 +198,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
             onLivePress={handleLivePress}
             communityIntro={communityIntro}
             onIntroSeeMore={() => {
-              /* TODO: expandir descrição ou navegar para detalhe da comunidade */
+              /* expand or navigate to community detail */
             }}
             specialist={specialistData}
             posts={posts}
@@ -203,12 +212,23 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
             products={suggestedProducts}
             onProductPress={handleProductPress}
             onProductLike={handleProductLike}
+            welcomeDismissed={welcomeDismissed}
+            onWelcomeClose={handleWelcomeClose}
           />
         ) : (
           <ShoppingList
             products={suggestedProducts}
+            services={suggestedServices}
+            programs={suggestedPrograms}
+            professionals={advertisersList}
             onProductPress={handleProductPress}
             onProductLike={handleProductLike}
+            onProfessionalPress={handleProfessionalPress}
+            communityIntro={communityIntro}
+            onIntroSeeMore={() => {
+              /* expand or navigate to community detail */
+            }}
+            specialist={specialistData}
           />
         )}
       </View>

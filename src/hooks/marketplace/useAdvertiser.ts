@@ -1,75 +1,140 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { advertiserService } from '@/services';
+import { logger } from '@/utils/logger';
 import type { Advertiser } from '@/types/ad';
 
+export interface UseAdvertiserListOptions {
+  page?: number;
+  limit?: number;
+  status?: string;
+}
+
 export interface UseAdvertiserParams {
-  /** ID do advertiser (dono do anúncio) a ser buscado. */
   advertiserId?: string | null;
-  /** Dados já disponíveis (ex.: ad.advertiser). Evita request quando fornecidos. */
   initialAdvertiser?: Advertiser | null;
-  /** Se false, não dispara a busca. Default true. */
-  enabled?: boolean;
+  listOptions?: UseAdvertiserListOptions;
 }
 
 export interface UseAdvertiserReturn {
   advertiser: Advertiser | null;
+  advertisers: Advertiser[];
   loading: boolean;
   error: Error | null;
   refresh: () => Promise<void>;
 }
 
-/**
- * Hook do domínio marketplace para carregar dados de um advertiser (parceiro / dono do anúncio).
- * Usa advertiserId para buscar via API; se initialAdvertiser for passado, usa até que advertiserId mude.
- */
 export const useAdvertiser = (params: UseAdvertiserParams = {}): UseAdvertiserReturn => {
-  const { advertiserId, initialAdvertiser = null, enabled = true } = params;
+  const { advertiserId, initialAdvertiser = null, listOptions } = params;
   const [advertiser, setAdvertiser] = useState<Advertiser | null>(initialAdvertiser ?? null);
+  const [advertisers, setAdvertisers] = useState<Advertiser[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const cancelledRef = useRef(false);
 
-  const loadAdvertiser = useCallback(async () => {
-    if (!enabled || !advertiserId || advertiserId.trim() === '') {
-      return;
+  const loadById = useCallback(async () => {
+    if (!advertiserId || advertiserId.trim() === '') {
+      return Promise.resolve();
     }
-
     setLoading(true);
     setError(null);
-
     try {
-      const response = await advertiserService.getAdvertiserById(advertiserId);
+      const response = await advertiserService.getAdvertiserById(advertiserId.trim());
+      if (cancelledRef.current) return;
       if (response.success && response.data) {
         setAdvertiser(response.data);
+        setAdvertisers([]);
       } else {
+        setAdvertiser(null);
+        setAdvertisers([]);
+      }
+    } catch (err) {
+      if (cancelledRef.current) return;
+      logger.error('Error loading advertiser:', err);
+      setError(err instanceof Error ? err : new Error('Failed to load advertiser'));
+      setAdvertiser(null);
+      setAdvertisers([]);
+    } finally {
+      if (!cancelledRef.current) setLoading(false);
+    }
+  }, [advertiserId]);
+
+  const loadList = useCallback(async () => {
+    if (!listOptions) {
+      return Promise.resolve();
+    }
+    const { page = 1, limit = 50, status = 'active' } = listOptions;
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await advertiserService.getAdvertisers({ page, limit, status });
+      if (cancelledRef.current) return;
+      if (response.success && response.data?.advertisers?.length) {
+        const list = response.data.advertisers;
+        setAdvertisers(list);
+        setAdvertiser(list[0] ?? null);
+      } else {
+        setAdvertisers([]);
         setAdvertiser(null);
       }
     } catch (err) {
-      console.error('Error loading advertiser:', err);
-      setError(err instanceof Error ? err : new Error('Failed to load advertiser'));
+      if (cancelledRef.current) return;
+      logger.error('Error loading advertisers list:', err);
+      setError(err instanceof Error ? err : new Error('Failed to load advertisers'));
+      setAdvertisers([]);
       setAdvertiser(null);
     } finally {
-      setLoading(false);
+      if (!cancelledRef.current) setLoading(false);
     }
-  }, [enabled, advertiserId]);
+  }, [listOptions?.page, listOptions?.limit, listOptions?.status]);
+
+  const refresh = useCallback(async (): Promise<void> => {
+    if (listOptions != null && (advertiserId == null || advertiserId === '')) {
+      return loadList();
+    }
+    return loadById();
+  }, [listOptions, advertiserId, loadList, loadById]);
+
+  const hasListOptions = listOptions != null;
+  const listPage = listOptions?.page;
+  const listLimit = listOptions?.limit;
+  const listStatus = listOptions?.status;
 
   useEffect(() => {
-    if (initialAdvertiser?.id === advertiserId) {
+    cancelledRef.current = false;
+
+    if (initialAdvertiser?.id === advertiserId && advertiserId) {
       setAdvertiser(initialAdvertiser);
+      setAdvertisers([]);
       setError(null);
-      return;
+      return () => {
+        cancelledRef.current = true;
+      };
     }
-    if (!advertiserId || !enabled) {
+    if (hasListOptions && (advertiserId == null || advertiserId === '')) {
+      loadList();
+      return () => {
+        cancelledRef.current = true;
+      };
+    }
+    if (!advertiserId && !hasListOptions) {
       setAdvertiser(initialAdvertiser ?? null);
+      setAdvertisers([]);
       setError(null);
-      return;
+      return () => {
+        cancelledRef.current = true;
+      };
     }
-    loadAdvertiser();
-  }, [advertiserId, initialAdvertiser, enabled, loadAdvertiser]);
+    loadById();
+    return () => {
+      cancelledRef.current = true;
+    };
+  }, [advertiserId, initialAdvertiser, hasListOptions, listPage, listLimit, listStatus, loadList, loadById]);
 
   return {
     advertiser,
+    advertisers,
     loading,
     error,
-    refresh: loadAdvertiser,
+    refresh,
   };
 };
