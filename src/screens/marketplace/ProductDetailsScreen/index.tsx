@@ -1,10 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Image, type ImageStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Header } from '@/components/ui/layout';
+import { Header, HeroImage } from '@/components/ui/layout';
 import { Toggle } from '@/components/ui';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { ProductsCarousel, type Product } from '@/components/sections/product';
@@ -266,48 +265,40 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       <Header showBackButton={true} onBackPress={handleBackPress} />
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Hero Section with Image */}
-        <View style={styles.heroSection}>
-          <Image source={{ uri: backgroundImage }} style={styles.backgroundImage as ImageStyle} resizeMode='cover' />
-          <View style={styles.heroOverlay}>
-            <LinearGradient
-              colors={['rgba(48, 48, 48, 0)', 'rgba(41, 41, 41, 1)']}
-              locations={[0.64, 1]}
-              style={styles.heroGradient}
-            />
-            <View style={styles.heroContent}>
-              <View style={styles.heroContentLeft}>
-                <View style={styles.badgesContainer}>
-                  <View style={styles.badge}>
-                    <Text style={styles.badgeText}>{t('marketplace.product')}</Text>
-                  </View>
-                  {productCategory && productCategory !== 'Product' && (
-                    <View style={styles.badge}>
-                      <Text style={styles.badgeText}>{productCategory}</Text>
-                    </View>
-                  )}
+        <HeroImage imageUri={backgroundImage} heightRatio={0.6}>
+          <View style={styles.heroContent}>
+            <View style={styles.heroContentLeft}>
+              <View style={styles.badgesContainer}>
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>{t('marketplace.product')}</Text>
                 </View>
-                <Text style={styles.heroTitle}>{displayData.title}</Text>
-                {displayData.price && <Text style={styles.heroPrice}>{formatPrice(displayData.price)}</Text>}
+                {productCategory && productCategory !== 'Product' && (
+                  <View style={styles.badge}>
+                    <Text style={styles.badgeText}>{productCategory}</Text>
+                  </View>
+                )}
               </View>
-              {!displayData.isOutOfStock && (
-                <TouchableOpacity
-                  style={styles.heroCartButton}
-                  onPress={() => {
-                    logAddToCart({
-                      item_id: product?.id ?? route.params?.productId ?? '',
-                      item_name: displayData?.title,
-                      item_category: productCategory,
-                    });
-                    handleAddToCart();
-                  }}
-                  activeOpacity={0.8}
-                >
-                  <Icon name='shopping-cart' size={24} color='#001137' />
-                </TouchableOpacity>
-              )}
+              <Text style={styles.heroTitle}>{displayData.title}</Text>
+              {displayData.price && <Text style={styles.heroPrice}>{formatPrice(displayData.price)}</Text>}
             </View>
+            {!displayData.isOutOfStock && (
+              <TouchableOpacity
+                style={styles.heroCartButton}
+                onPress={() => {
+                  logAddToCart({
+                    item_id: product?.id ?? route.params?.productId ?? '',
+                    item_name: displayData?.title,
+                    item_category: productCategory,
+                  });
+                  handleAddToCart();
+                }}
+                activeOpacity={0.8}
+              >
+                <Icon name='shopping-cart' size={24} color='#001137' />
+              </TouchableOpacity>
+            )}
           </View>
-        </View>
+        </HeroImage>
 
         {/* Pagination Dots - Mostrar apenas se houver mais de uma imagem */}
         {productImages && productImages.length > 1 && (

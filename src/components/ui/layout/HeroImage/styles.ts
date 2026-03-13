@@ -1,4 +1,5 @@
 import { StyleSheet, Dimensions } from 'react-native';
+import { SPACING } from '@/constants';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -7,6 +8,14 @@ export const styles = StyleSheet.create({
     width: SCREEN_WIDTH,
     height: SCREEN_HEIGHT * 0.6,
     position: 'relative',
+  },
+  /** Container para cardContent (ex.: card de produto no canto inferior direito) */
+  cardContainer: {
+    position: 'absolute',
+    bottom: SPACING.LG,
+    right: SPACING.MD,
+    left: SPACING.MD,
+    alignItems: 'flex-end',
   },
   image: {
     width: '100%',

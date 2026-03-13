@@ -1,14 +1,15 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, ScrollView, type LayoutChangeEvent } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { Toggle, Header } from '@/components/ui';
 import { IconButton } from '@/components/ui/buttons';
 import { SocialList, ShoppingList, LiveBannerData } from '@/components/sections/community';
 import type { SpecialistCardProps } from '@/components/sections/community/SpecialistCard';
 import { Product } from '@/components/sections/product';
-import { Background } from '@/components/ui/layout';
+import { Background, HeroImage } from '@/components/ui/layout';
 import type { Event } from '@/types';
+import { SPACING } from '@/constants';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
 import { useUserFeed, useCommunities, useSuggestedProducts, useAdvertiser, useMenuItems, useUserAvatar } from '@/hooks';
@@ -26,14 +27,25 @@ const getToggleOptions = (t: (key: string) => string): readonly [CommunityMode, 
 type NavigationProp = StackNavigationProp<CommunityStackParamList, 'CommunityList'>;
 type Props = { navigation: NavigationProp };
 
+/** Mesma imagem padrão do CommunityIntroSection para manter consistência. */
+const DEFAULT_COMMUNITY_IMAGE = 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400';
+
 const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   useAnalyticsScreen({ screenName: 'CommunityList', screenClass: 'CommunityScreen' });
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   const toggleOptions = useMemo(() => getToggleOptions(t), [t]);
   const rootNavigation = navigation.getParent()?.getParent?.() ?? navigation.getParent();
   const userAvatarUri = useUserAvatar();
   const [selectedMode, setSelectedMode] = useState<CommunityMode>('Feed');
   const [welcomeDismissed, setWelcomeDismissed] = useState(true);
+  const [headerHeight, setHeaderHeight] = useState(0);
+
+  const handleHeaderLayout = useCallback((e: LayoutChangeEvent) => {
+    setHeaderHeight(e.nativeEvent.layout.height);
+  }, []);
+
+  const heroOffsetTop = insets.top + headerHeight;
 
   useEffect(() => {
     storageService.getCommunityWelcomeDismissed().then(setWelcomeDismissed);
@@ -171,15 +183,40 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <Background />
-      <Header
-        showBackButton={false}
-        showMenuWithAvatar={true}
-        onMenuPress={handleMenuPress}
-        userAvatarUri={userAvatarUri}
-        showCartButton={true}
-        onCartPress={handleCartPress}
-      />
-      <View style={styles.content}>
+      <View
+        style={[styles.headerWrapper, { top: 0, paddingTop: insets.top, zIndex: 10 }]}
+        onLayout={handleHeaderLayout}
+        pointerEvents='box-none'
+      >
+        <Header
+          showBackButton={false}
+          showMenuWithAvatar={true}
+          onMenuPress={handleMenuPress}
+          userAvatarUri={userAvatarUri}
+          showCartButton={true}
+          onCartPress={handleCartPress}
+        />
+      </View>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingTop: heroOffsetTop, paddingBottom: SPACING.XL }}
+        showsVerticalScrollIndicator={false}
+        onMomentumScrollEnd={(e) => {
+          const { layoutMeasurement, contentOffset, contentSize } = e.nativeEvent;
+          if (selectedMode === 'Feed' && layoutMeasurement.height + contentOffset.y >= contentSize.height - 20) {
+            handleLoadMore();
+          }
+        }}
+        scrollEventThrottle={400}
+      >
+        {communityIntro?.title != null && (
+          <HeroImage
+            imageUri={communityIntro.imageUri ?? DEFAULT_COMMUNITY_IMAGE}
+            name={communityIntro.title}
+            heightRatio={0.35}
+            offsetTop={heroOffsetTop}
+          />
+        )}
         <View style={styles.toggleRow}>
           <IconButton
             icon='chevron-left'
@@ -191,7 +228,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
             <Toggle<CommunityMode> options={toggleOptions} selected={selectedMode} onSelect={handleModeSelect} />
           </View>
         </View>
-
         {selectedMode === 'Feed' ? (
           <SocialList
             liveBanner={liveBanner}
@@ -214,6 +250,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
             onProductLike={handleProductLike}
             welcomeDismissed={welcomeDismissed}
             onWelcomeClose={handleWelcomeClose}
+            embedInParentScroll
           />
         ) : (
           <ShoppingList
@@ -229,9 +266,10 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
               /* expand or navigate to community detail */
             }}
             specialist={specialistData}
+            embedInParentScroll
           />
         )}
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };

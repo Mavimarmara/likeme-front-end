@@ -42,6 +42,8 @@ type Props = {
   /** Quando informados, o estado do CTACard de boas-vindas fica controlado pelo pai (ex.: CommunityScreen) */
   welcomeDismissed?: boolean;
   onWelcomeClose?: () => void;
+  /** Quando true, não usa ScrollView próprio; o conteúdo é renderizado para ficar dentro do scroll do pai. */
+  embedInParentScroll?: boolean;
 };
 
 const SocialList: React.FC<Props> = ({
@@ -63,6 +65,7 @@ const SocialList: React.FC<Props> = ({
   onProductLike,
   welcomeDismissed: welcomeDismissedProp,
   onWelcomeClose: onWelcomeCloseProp,
+  embedInParentScroll = false,
 }) => {
   const { t } = useTranslation();
   const [welcomeDismissedLocal, setWelcomeDismissedLocal] = useState(true);
@@ -84,6 +87,69 @@ const SocialList: React.FC<Props> = ({
 
   const welcomeDismissed = onWelcomeCloseProp != null ? welcomeDismissedProp ?? true : welcomeDismissedLocal;
 
+  const listContent = (
+    <>
+      {communityIntro && (
+        <View style={styles.communityIntroContainer}>
+          <CommunityIntroSection
+            title={communityIntro.title}
+            description={communityIntro.description}
+            imageUri={communityIntro.imageUri}
+            onSeeMore={onIntroSeeMore}
+            seeMoreLabel={t('community.seeMore')}
+            seeLessLabel={t('community.seeLess')}
+          />
+        </View>
+      )}
+      <View style={styles.ctaCardContainer}>
+        {!welcomeDismissed && (
+          <CTACard
+            title={t('community.ctaCardTitle')}
+            description={t('community.ctaCardDescription')}
+            backgroundColor='#F6CFFB'
+            titleStyle={{ fontSize: 20 }}
+            style={styles.ctaCard}
+            onClose={handleWelcomeClose}
+          />
+        )}
+      </View>
+      {specialist && (
+        <View>
+          <SpecialistCard
+            name={specialist.name}
+            subtitle={specialist.subtitle}
+            rating={specialist.rating}
+            tags={specialist.tags}
+            avatarUri={specialist.avatarUri}
+          />
+        </View>
+      )}
+      <PostsSection posts={posts} loading={loading} loadingMore={loadingMore} error={error} onLoadMore={onLoadMore} />
+
+      {loadingMore && (
+        <View style={styles.loadingFooter}>{/* Loading indicator será renderizado aqui se necessário */}</View>
+      )}
+
+      {events && events.length > 0 && (
+        <View style={styles.sectionContainer}>
+          <NextEventsSection events={events} onEventPress={onEventPress} onEventSave={onEventSave} />
+        </View>
+      )}
+
+      {products && products.length > 0 && (
+        <View>
+          <ProductsCarousel
+            title={t('home.productsRecommended', { provider: '' })}
+            subtitle={t('home.discoverProducts')}
+            products={products}
+            onProductPress={onProductPress}
+            onProductLike={onProductLike}
+          />
+        </View>
+      )}
+    </>
+  );
+
   return (
     <View style={styles.container}>
       {liveBanner && onLivePress && (
@@ -91,78 +157,25 @@ const SocialList: React.FC<Props> = ({
           <LiveBanner live={liveBanner} onPress={onLivePress} />
         </View>
       )}
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        onMomentumScrollEnd={(event) => {
-          const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
-          const paddingToBottom = 20;
-          if (layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom) {
-            onLoadMore();
-          }
-        }}
-        scrollEventThrottle={400}
-      >
-        {communityIntro && (
-          <View style={styles.communityIntroContainer}>
-            <CommunityIntroSection
-              title={communityIntro.title}
-              description={communityIntro.description}
-              imageUri={communityIntro.imageUri}
-              onSeeMore={onIntroSeeMore}
-              seeMoreLabel={t('community.seeMore')}
-              seeLessLabel={t('community.seeLess')}
-            />
-          </View>
-        )}
-        <View style={styles.ctaCardContainer}>
-          {!welcomeDismissed && (
-            <CTACard
-              title={t('community.ctaCardTitle')}
-              description={t('community.ctaCardDescription')}
-              backgroundColor='#F6CFFB'
-              titleStyle={{ fontSize: 20 }}
-              style={styles.ctaCard}
-              onClose={handleWelcomeClose}
-            />
-          )}
-        </View>
-        {specialist && (
-          <View>
-            <SpecialistCard
-              name={specialist.name}
-              subtitle={specialist.subtitle}
-              rating={specialist.rating}
-              tags={specialist.tags}
-              avatarUri={specialist.avatarUri}
-            />
-          </View>
-        )}
-        <PostsSection posts={posts} loading={loading} loadingMore={loadingMore} error={error} onLoadMore={onLoadMore} />
-
-        {loadingMore && (
-          <View style={styles.loadingFooter}>{/* Loading indicator será renderizado aqui se necessário */}</View>
-        )}
-
-        {events && events.length > 0 && (
-          <View style={styles.sectionContainer}>
-            <NextEventsSection events={events} onEventPress={onEventPress} onEventSave={onEventSave} />
-          </View>
-        )}
-
-        {products && products.length > 0 && (
-          <View>
-            <ProductsCarousel
-              title={t('home.productsRecommended', { provider: '' })}
-              subtitle={t('home.discoverProducts')}
-              products={products}
-              onProductPress={onProductPress}
-              onProductLike={onProductLike}
-            />
-          </View>
-        )}
-      </ScrollView>
+      {embedInParentScroll ? (
+        <View style={styles.scrollContent}>{listContent}</View>
+      ) : (
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          onMomentumScrollEnd={(event) => {
+            const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+            const paddingToBottom = 20;
+            if (layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom) {
+              onLoadMore();
+            }
+          }}
+          scrollEventThrottle={400}
+        >
+          {listContent}
+        </ScrollView>
+      )}
     </View>
   );
 };

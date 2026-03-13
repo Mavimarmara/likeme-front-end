@@ -25,10 +25,14 @@ jest.mock('@/assets', () => ({
   LogoMini: () => null,
 }));
 
-jest.mock('@/components/ui/layout', () => ({
-  Header: () => null,
-  Background: () => null,
-}));
+jest.mock('@/components/ui/layout', () => {
+  const { View } = require('react-native');
+  return {
+    Header: () => null,
+    HeroImage: ({ children }: any) => <View testID='hero-image'>{children}</View>,
+    Background: () => null,
+  };
+});
 
 jest.mock('@/components/ui', () => {
   const { View, Text, TouchableOpacity } = require('react-native');

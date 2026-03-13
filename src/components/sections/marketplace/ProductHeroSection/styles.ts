@@ -1,19 +1,9 @@
 import { StyleSheet, Dimensions } from 'react-native';
 import { SPACING, BORDER_RADIUS } from '@/constants';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
-  heroSection: {
-    width: SCREEN_WIDTH,
-    height: SCREEN_HEIGHT * 0.5,
-    position: 'relative',
-  },
-  heroImage: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: '#2E7D32',
-  },
   heroProductCard: {
     position: 'absolute',
     bottom: SPACING.LG,

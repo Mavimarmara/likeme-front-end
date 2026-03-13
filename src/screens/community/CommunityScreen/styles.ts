@@ -7,6 +7,20 @@ export const styles = StyleSheet.create({
     position: 'relative',
     backgroundColor: 'transparent',
   },
+  /** Header em posição absoluta no topo para o HeroImage começar logo abaixo. */
+  headerWrapper: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    zIndex: 10,
+    backgroundColor: 'transparent',
+  },
+  scroll: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: SPACING.XL,
+  },
   content: {
     flex: 1,
     zIndex: 1,

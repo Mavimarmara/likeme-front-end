@@ -48,6 +48,8 @@ type Props = {
   communityIntro?: CommunityIntroData | null;
   onIntroSeeMore?: () => void;
   specialist?: SpecialistCardProps | null;
+  /** Quando true, não usa ScrollView próprio; o conteúdo é renderizado para ficar dentro do scroll do pai. */
+  embedInParentScroll?: boolean;
 };
 
 const ShoppingList: React.FC<Props> = ({
@@ -61,6 +63,7 @@ const ShoppingList: React.FC<Props> = ({
   communityIntro,
   onIntroSeeMore,
   specialist,
+  embedInParentScroll = false,
 }) => {
   const { t } = useTranslation();
   const [activeSolution, setActiveSolution] = useState<SolutionTab>('products');
@@ -136,8 +139,8 @@ const ShoppingList: React.FC<Props> = ({
 
   const isEmptySection = activeSolution === 'professionals' ? professionals.length === 0 : currentList.length === 0;
 
-  return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+  const listContent = (
+    <>
       {!shoppingTipDismissed && (
         <View style={styles.shoppingTipContainer}>
           <CTACard backgroundColor={COLORS.HIGHLIGHT.LIGHT} style={styles.shoppingTip} onClose={handleShoppingTipClose}>
@@ -257,6 +260,16 @@ const ShoppingList: React.FC<Props> = ({
           </View>
         </>
       )}
+    </>
+  );
+
+  if (embedInParentScroll) {
+    return <View style={[styles.container, styles.content]}>{listContent}</View>;
+  }
+
+  return (
+    <ScrollView style={styles.container} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      {listContent}
     </ScrollView>
   );
 };
