@@ -130,6 +130,58 @@ const AdsList: React.FC<AdsListProps> = ({
   const isEmptyTab = hasTabbedMode && !isControlledTabbed && !isProfessionalsTab && listToShow.length === 0;
   const isEmptyControlledTabbed = hasTabbedMode && isControlledTabbed && ads.length === 0;
 
+  const renderEmptyState = () => (
+    <View style={styles.emptySection}>
+      <EmptyState
+        title={t('marketplace.noAdsFound')}
+        description={t('marketplace.noAdsFoundDescription')}
+        iconName='storefront'
+      />
+    </View>
+  );
+
+  const renderAdCard = (ad: Ad) => {
+    const product = ad.product;
+    const displayName = product?.name || t('marketplace.product', { defaultValue: 'Product' });
+    const displayImage = product?.image || DEFAULT_IMAGE;
+    const displayCategory = product?.categoryId
+      ? categories.find((c) => c.categoryId === product.categoryId)?.name
+      : undefined;
+    const productPrice = product?.price;
+
+    return (
+      <ProductItemCard
+        key={ad.id}
+        image={displayImage}
+        title={displayName}
+        badges={[displayCategory]}
+        price={productPrice}
+        outOfStock={product?.status === 'out_of_stock'}
+        outOfStockLabel={t('marketplace.outOfStock', {
+          defaultValue: 'Out of stock',
+        })}
+        onPress={() => handleAdPress(ad)}
+        onAddPress={product && !product.externalUrl ? () => handleAddToCart(ad) : undefined}
+        showAddButton={!!(product && !product.externalUrl)}
+        formatPrice={formatPrice}
+      />
+    );
+  };
+
+  const renderSimpleProductCard = (product: SimpleProductItem) => (
+    <ProductItemCard
+      key={product.id}
+      image={product.image || DEFAULT_IMAGE}
+      title={product.title}
+      badges={product.tag ? [product.tag] : []}
+      price={product.price ?? undefined}
+      onPress={() => onProductPress?.(product)}
+      onAddPress={undefined}
+      showAddButton={false}
+      formatPrice={formatPrice}
+    />
+  );
+
   return (
     <View style={[styles.section, styles.sectionMarketplace, contentContainerStyle]}>
       {hasTabbedMode && (
@@ -144,21 +196,9 @@ const AdsList: React.FC<AdsListProps> = ({
       {hasTabbedMode && isProfessionalsTab ? (
         professionalsContent
       ) : hasTabbedMode && isEmptyTab ? (
-        <View style={styles.emptySection}>
-          <EmptyState
-            title={t('marketplace.noAdsFound')}
-            description={t('marketplace.noAdsFoundDescription')}
-            iconName='storefront'
-          />
-        </View>
+        renderEmptyState()
       ) : hasTabbedMode && isEmptyControlledTabbed ? (
-        <View style={styles.emptySection}>
-          <EmptyState
-            title={t('marketplace.noAdsFound')}
-            description={t('marketplace.noAdsFoundDescription')}
-            iconName='storefront'
-          />
-        </View>
+        renderEmptyState()
       ) : !isEmpty || showAdsListInTabbedMode ? (
         <>
           {!isSimpleMode && !hasTabbedMode && (
@@ -179,72 +219,10 @@ const AdsList: React.FC<AdsListProps> = ({
           )}
           <View style={styles.mAdsList}>
             {showAdsListInTabbedMode
-              ? ads.map((ad) => {
-                  const product = ad.product;
-                  const displayName = product?.name || t('marketplace.product', { defaultValue: 'Product' });
-                  const displayImage = product?.image || DEFAULT_IMAGE;
-                  const displayCategory = product?.categoryId
-                    ? categories.find((c) => c.categoryId === product.categoryId)?.name
-                    : undefined;
-                  const productPrice = product?.price;
-                  return (
-                    <ProductItemCard
-                      key={ad.id}
-                      image={displayImage}
-                      title={displayName}
-                      badges={[displayCategory]}
-                      price={productPrice}
-                      outOfStock={product?.status === 'out_of_stock'}
-                      outOfStockLabel={t('marketplace.outOfStock', {
-                        defaultValue: 'Out of stock',
-                      })}
-                      onPress={() => handleAdPress(ad)}
-                      onAddPress={product && !product.externalUrl ? () => handleAddToCart(ad) : undefined}
-                      showAddButton={!!(product && !product.externalUrl)}
-                      formatPrice={formatPrice}
-                    />
-                  );
-                })
+              ? ads.map(renderAdCard)
               : hasTabbedMode || (isSimpleMode && simpleProducts)
-              ? (hasTabbedMode ? listToShow : simpleProducts ?? []).map((product: SimpleProductItem) => (
-                  <ProductItemCard
-                    key={product.id}
-                    image={product.image || DEFAULT_IMAGE}
-                    title={product.title}
-                    badges={product.tag ? [product.tag] : []}
-                    price={product.price ?? undefined}
-                    onPress={() => onProductPress?.(product)}
-                    onAddPress={undefined}
-                    showAddButton={false}
-                    formatPrice={formatPrice}
-                  />
-                ))
-              : ads.map((ad) => {
-                  const product = ad.product;
-                  const displayName = product?.name || t('marketplace.product', { defaultValue: 'Product' });
-                  const displayImage = product?.image || DEFAULT_IMAGE;
-                  const displayCategory = product?.categoryId
-                    ? categories.find((c) => c.categoryId === product.categoryId)?.name
-                    : undefined;
-                  const productPrice = product?.price;
-                  return (
-                    <ProductItemCard
-                      key={ad.id}
-                      image={displayImage}
-                      title={displayName}
-                      badges={[displayCategory]}
-                      price={productPrice}
-                      outOfStock={product?.status === 'out_of_stock'}
-                      outOfStockLabel={t('marketplace.outOfStock', {
-                        defaultValue: 'Out of stock',
-                      })}
-                      onPress={() => handleAdPress(ad)}
-                      onAddPress={product && !product.externalUrl ? () => handleAddToCart(ad) : undefined}
-                      showAddButton={!!(product && !product.externalUrl)}
-                      formatPrice={formatPrice}
-                    />
-                  );
-                })}
+              ? (hasTabbedMode ? listToShow : simpleProducts ?? []).map(renderSimpleProductCard)
+              : ads.map(renderAdCard)}
             {((!isSimpleMode && !hasTabbedMode) || showAdsListInTabbedMode) && loading && (
               <View style={styles.loadingMoreContainer}>
                 <ActivityIndicator size='small' color='#2196F3' />
