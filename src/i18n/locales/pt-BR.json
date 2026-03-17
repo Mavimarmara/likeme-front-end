@@ -71,6 +71,7 @@
     "optional": "Opcional",
     "requiredField": "Campo obrigatório",
     "fillFullName": "Por favor, preencha o nome completo.",
+    "validationInvalidFullName": "Use apenas letras e espaços no nome.",
     "registerError": "Não foi possível salvar. Tente novamente.",
     "validationInvalidNumber": "Informe um número válido.",
     "validationOutOfRange": "Deve estar entre {{min}} e {{max}}.",

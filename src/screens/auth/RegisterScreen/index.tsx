@@ -3,7 +3,6 @@ import {
   View,
   Text,
   ScrollView,
-  KeyboardAvoidingView,
   Platform,
   StatusBar,
   Alert,
@@ -47,6 +46,7 @@ const GENDER_OPTIONS = [
 const KEYBOARD_RESPIRATION = 24;
 const SCROLL_FOCUS_OFFSET_PX = 80;
 const SCROLL_PADDING_WHEN_KEYBOARD_OPEN = 120;
+const FULL_NAME_REGEX = /^[\p{L}\s]+$/u;
 
 type Props = StackScreenProps<RootStackParamList, 'Register'>;
 
@@ -137,10 +137,12 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
     [],
   );
 
-  const topSectionStyle = useMemo(
+  const topSectionStyle = useMemo(() => [styles.topSection], []);
+
+  const headerFixedStyle = useMemo(
     () => [
-      styles.topSection,
       {
+        backgroundColor: COLORS.BACKGROUND_SECONDARY,
         paddingTop: Math.max(insets.top, Platform.OS === 'android' ? 16 : 0),
       },
     ],
@@ -175,6 +177,8 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
 
       if (!fullName.trim()) {
         errors.fullName = t('auth.fillFullName');
+      } else if (!FULL_NAME_REGEX.test(fullName.trim())) {
+        errors.fullName = t('auth.validationInvalidFullName');
       }
 
       const birthdateISO = birthdate.trim() ? birthdateToISO(birthdate.trim()) : null;
@@ -274,179 +278,175 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
       <StatusBar barStyle='dark-content' backgroundColor={COLORS.BACKGROUND_SECONDARY} />
 
       <View style={styles.container}>
-        <KeyboardAvoidingView
-          style={styles.keyboardAvoidingView}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={0}
+        <View style={headerFixedStyle}>
+          <Header onBackPress={() => navigation.goBack()} />
+        </View>
+
+        <ScrollView
+          ref={scrollViewRef}
+          style={styles.scrollView}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={[
+            styles.scrollContent,
+            keyboardHeight > 0 && {
+              paddingBottom: keyboardHeight + SCROLL_PADDING_WHEN_KEYBOARD_OPEN,
+            },
+          ]}
+          keyboardShouldPersistTaps='handled'
         >
-          <ScrollView
-            ref={scrollViewRef}
-            style={styles.scrollView}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={[
-              styles.scrollContent,
-              keyboardHeight > 0 && {
-                paddingBottom: keyboardHeight + SCROLL_PADDING_WHEN_KEYBOARD_OPEN,
-              },
-            ]}
-            keyboardShouldPersistTaps='handled'
-          >
-            <View ref={scrollContentRef} collapsable={false} style={styles.scrollContentInner}>
-              <View style={topSectionStyle}>
-                <Header onBackPress={() => navigation.goBack()} />
-
-                <View style={styles.headerContent}>
-                  <Title title={t('auth.registerTitle')} />
-                </View>
+          <View ref={scrollContentRef} collapsable={false} style={styles.scrollContentInner}>
+            <View style={topSectionStyle}>
+              <View style={styles.headerContent}>
+                <Title title={t('auth.registerTitle')} />
               </View>
+            </View>
 
-              <View style={styles.content} onLayout={handleContentLayout}>
-                <View style={styles.infoSection}>
-                  <Text style={styles.infoText}>{t('auth.registerInfoMessage')}</Text>
-                  <Text style={styles.sectionLabel}>Dados Pessoais</Text>
+            <View style={styles.content} onLayout={handleContentLayout}>
+              <View style={styles.infoSection}>
+                <Text style={styles.infoText}>{t('auth.registerInfoMessage')}</Text>
+                <Text style={styles.sectionLabel}>Dados Pessoais</Text>
 
-                  <View style={styles.fieldsContainer} onLayout={handleContainerLayout}>
-                    <View
-                      ref={fullNameRowRef}
-                      collapsable={false}
-                      style={styles.fieldRow}
-                      onLayout={handleFieldLayout('fullName')}
-                    >
-                      <TextInput
-                        ref={fullNameInputRef}
-                        label={t('auth.fullName')}
-                        value={fullName}
-                        onChangeText={(v) => {
-                          setFullName(v);
-                          setFieldErrors((e) => (e.fullName ? { ...e, fullName: undefined } : e));
-                        }}
-                        placeholder={t('auth.fullNamePlaceholder')}
-                        onFocus={() => scrollToFocusedField('fullName')}
-                        returnKeyType='next'
-                        onSubmitEditing={() => birthdateInputRef.current?.focus()}
-                        blurOnSubmit={false}
-                        errorText={fieldErrors.fullName}
-                        required
-                      />
+                <View style={styles.fieldsContainer} onLayout={handleContainerLayout}>
+                  <View
+                    ref={fullNameRowRef}
+                    collapsable={false}
+                    style={styles.fieldRow}
+                    onLayout={handleFieldLayout('fullName')}
+                  >
+                    <TextInput
+                      ref={fullNameInputRef}
+                      label={t('auth.fullName')}
+                      value={fullName}
+                      onChangeText={(v) => {
+                        setFullName(v);
+                        setFieldErrors((e) => (e.fullName ? { ...e, fullName: undefined } : e));
+                      }}
+                      placeholder={t('auth.fullNamePlaceholder')}
+                      onFocus={() => scrollToFocusedField('fullName')}
+                      returnKeyType='next'
+                      onSubmitEditing={() => birthdateInputRef.current?.focus()}
+                      blurOnSubmit={false}
+                      errorText={fieldErrors.fullName}
+                      required
+                    />
+                  </View>
+
+                  <View
+                    ref={birthdateRowRef}
+                    collapsable={false}
+                    style={styles.fieldRow}
+                    onLayout={handleFieldLayout('birthdate')}
+                  >
+                    <TextInput
+                      ref={birthdateInputRef}
+                      label={t('auth.birthdate')}
+                      value={birthdate}
+                      onChangeText={(v) => {
+                        setBirthdate(formatBirthdateInput(v));
+                        setFieldErrors((e) => (e.birthdate ? { ...e, birthdate: undefined } : e));
+                      }}
+                      placeholder={BIRTHDATE_MASK}
+                      keyboardType={Platform.OS === 'ios' ? 'number-pad' : 'numeric'}
+                      onFocus={() => scrollToFocusedField('birthdate')}
+                      errorText={fieldErrors.birthdate}
+                      required
+                    />
+                  </View>
+
+                  <View collapsable={false} style={styles.fieldRow} onLayout={handleFieldLayout('gender')}>
+                    <View style={styles.genderLabelRow}>
+                      <Text style={styles.genderLabel}>{t('auth.gender')}</Text>
+                      <Text style={styles.requiredMark}> *</Text>
                     </View>
-
-                    <View
-                      ref={birthdateRowRef}
-                      collapsable={false}
-                      style={styles.fieldRow}
-                      onLayout={handleFieldLayout('birthdate')}
+                    <TouchableOpacity
+                      style={styles.genderTouchable}
+                      onPress={() => {
+                        Keyboard.dismiss();
+                        setGenderModalVisible(true);
+                      }}
+                      activeOpacity={0.7}
+                      accessibilityLabel={
+                        genderLabel ? `${t('auth.gender')}: ${genderLabel}` : t('auth.genderPlaceholder')
+                      }
+                      accessibilityRole='button'
+                      accessibilityHint={t('auth.genderPlaceholder')}
                     >
-                      <TextInput
-                        ref={birthdateInputRef}
-                        label={t('auth.birthdate')}
-                        value={birthdate}
-                        onChangeText={(v) => {
-                          setBirthdate(formatBirthdateInput(v));
-                          setFieldErrors((e) => (e.birthdate ? { ...e, birthdate: undefined } : e));
-                        }}
-                        placeholder={BIRTHDATE_MASK}
-                        keyboardType={Platform.OS === 'ios' ? 'number-pad' : 'numeric'}
-                        onFocus={() => scrollToFocusedField('birthdate')}
-                        errorText={fieldErrors.birthdate}
-                        required
-                      />
-                    </View>
-
-                    <View collapsable={false} style={styles.fieldRow} onLayout={handleFieldLayout('gender')}>
-                      <View style={styles.genderLabelRow}>
-                        <Text style={styles.genderLabel}>{t('auth.gender')}</Text>
-                        <Text style={styles.requiredMark}> *</Text>
-                      </View>
-                      <TouchableOpacity
-                        style={styles.genderTouchable}
-                        onPress={() => {
-                          Keyboard.dismiss();
-                          setGenderModalVisible(true);
-                        }}
-                        activeOpacity={0.7}
-                        accessibilityLabel={
-                          genderLabel ? `${t('auth.gender')}: ${genderLabel}` : t('auth.genderPlaceholder')
-                        }
-                        accessibilityRole='button'
-                        accessibilityHint={t('auth.genderPlaceholder')}
+                      <Text
+                        style={[styles.genderTouchableText, !genderLabel && styles.genderPlaceholder]}
+                        numberOfLines={1}
                       >
-                        <Text
-                          style={[styles.genderTouchableText, !genderLabel && styles.genderPlaceholder]}
-                          numberOfLines={1}
-                        >
-                          {genderLabel || t('auth.genderPlaceholder')}
-                        </Text>
-                        <Icon name='keyboard-arrow-down' size={24} color={COLORS.NEUTRAL.LOW.DARK} />
-                      </TouchableOpacity>
-                      {fieldErrors.gender ? <Text style={styles.fieldErrorText}>{fieldErrors.gender}</Text> : null}
-                    </View>
+                        {genderLabel || t('auth.genderPlaceholder')}
+                      </Text>
+                      <Icon name='keyboard-arrow-down' size={24} color={COLORS.NEUTRAL.LOW.DARK} />
+                    </TouchableOpacity>
+                    {fieldErrors.gender ? <Text style={styles.fieldErrorText}>{fieldErrors.gender}</Text> : null}
+                  </View>
 
-                    <View
-                      ref={weightRowRef}
-                      collapsable={false}
-                      style={styles.fieldRow}
-                      onLayout={handleFieldLayout('weight')}
-                    >
-                      <TextInput
-                        ref={weightInputRef}
-                        label={t('auth.weight')}
-                        value={weight}
-                        onChangeText={(v) => {
-                          setWeight(parseWeightInput(v));
-                          setFieldErrors((e) => (e.weight ? { ...e, weight: undefined } : e));
-                        }}
-                        placeholder='60'
-                        suffix=' Kg'
-                        keyboardType='decimal-pad'
-                        onFocus={() => scrollToFocusedField('weight')}
-                        errorText={fieldErrors.weight}
-                        required
-                      />
-                    </View>
+                  <View
+                    ref={weightRowRef}
+                    collapsable={false}
+                    style={styles.fieldRow}
+                    onLayout={handleFieldLayout('weight')}
+                  >
+                    <TextInput
+                      ref={weightInputRef}
+                      label={t('auth.weight')}
+                      value={weight}
+                      onChangeText={(v) => {
+                        setWeight(parseWeightInput(v));
+                        setFieldErrors((e) => (e.weight ? { ...e, weight: undefined } : e));
+                      }}
+                      placeholder='60'
+                      suffix=' Kg'
+                      keyboardType='decimal-pad'
+                      onFocus={() => scrollToFocusedField('weight')}
+                      errorText={fieldErrors.weight}
+                      required
+                    />
+                  </View>
 
-                    <View
-                      ref={heightRowRef}
-                      collapsable={false}
-                      style={styles.fieldRow}
-                      onLayout={handleFieldLayout('height')}
-                    >
-                      <TextInput
-                        ref={heightInputRef}
-                        label={t('auth.height')}
-                        value={height}
-                        onChangeText={(v) => {
-                          setHeight(parseHeightInput(v));
-                          setFieldErrors((e) => (e.height ? { ...e, height: undefined } : e));
-                        }}
-                        placeholder='1,60'
-                        suffix=' m'
-                        keyboardType='decimal-pad'
-                        onFocus={() => scrollToFocusedField('height')}
-                        errorText={fieldErrors.height}
-                        required
-                      />
-                    </View>
+                  <View
+                    ref={heightRowRef}
+                    collapsable={false}
+                    style={styles.fieldRow}
+                    onLayout={handleFieldLayout('height')}
+                  >
+                    <TextInput
+                      ref={heightInputRef}
+                      label={t('auth.height')}
+                      value={height}
+                      onChangeText={(v) => {
+                        setHeight(parseHeightInput(v));
+                        setFieldErrors((e) => (e.height ? { ...e, height: undefined } : e));
+                      }}
+                      placeholder='1,60'
+                      suffix=' m'
+                      keyboardType='decimal-pad'
+                      onFocus={() => scrollToFocusedField('height')}
+                      errorText={fieldErrors.height}
+                      required
+                    />
                   </View>
                 </View>
               </View>
             </View>
-          </ScrollView>
-
-          <View style={footerStyle}>
-            <ButtonGroup style={styles.buttonGroup}>
-              <PrimaryButton
-                label={isLoading ? t('common.saving') : t('common.save')}
-                onPress={handleNext}
-                disabled={isLoading || isSkipLoading}
-              />
-              <SecondaryButton
-                label={t('common.configureLater')}
-                onPress={handleSkip}
-                disabled={isLoading || isSkipLoading}
-              />
-            </ButtonGroup>
           </View>
-        </KeyboardAvoidingView>
+        </ScrollView>
+
+        <View style={footerStyle}>
+          <ButtonGroup style={styles.buttonGroup}>
+            <PrimaryButton
+              label={isLoading ? t('common.saving') : t('common.save')}
+              onPress={handleNext}
+              disabled={isLoading || isSkipLoading}
+            />
+            <SecondaryButton
+              label={t('common.configureLater')}
+              onPress={handleSkip}
+              disabled={isLoading || isSkipLoading}
+            />
+          </ButtonGroup>
+        </View>
       </View>
 
       <Modal
