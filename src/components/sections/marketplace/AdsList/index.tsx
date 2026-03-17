@@ -92,8 +92,8 @@ const AdsList: React.FC<AdsListProps> = ({
   }, [hasTabbedMode, selectedTabId, productsList, servicesList, programsList]);
   const listToShow = hasTabbedMode ? currentListFromTabs : simpleProducts ?? [];
   const showOrderFilter = hasTabbedMode ? selectedTabId !== 'professionals' : true;
-  const isProfessionalsTab = hasTabbedMode && !isControlledTabbed && selectedTabId === 'professionals';
-  const showAdsListInTabbedMode = isControlledTabbed;
+  const isProfessionalsTab = hasTabbedMode && selectedTabId === 'professionals';
+  const showAdsListInTabbedMode = isControlledTabbed && !isProfessionalsTab;
 
   const handleAdPress = (ad: Ad) => {
     if (navigation) handleAdNavigation(ad, navigation);

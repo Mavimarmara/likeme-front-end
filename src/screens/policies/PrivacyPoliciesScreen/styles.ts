@@ -40,6 +40,11 @@ export const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: COLORS.NEUTRAL.LOW.LIGHT,
   },
+  accordionItemExpanded: {
+    backgroundColor: '#FBF7E5',
+    marginHorizontal: -SPACING.MD,
+    paddingHorizontal: SPACING.MD,
+  },
   accordionHeader: {
     flexDirection: 'row',
     alignItems: 'center',

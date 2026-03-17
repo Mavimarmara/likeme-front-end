@@ -99,7 +99,7 @@ const PrivacyPoliciesScreen: React.FC<Props> = ({ navigation, route }) => {
             ))}
           </Text>
 
-          <View style={styles.accordionItem}>
+          <View style={[styles.accordionItem, expandedId === 'intro' && styles.accordionItemExpanded]}>
             <TouchableOpacity
               style={styles.accordionHeader}
               onPress={() => toggleAccordion('intro')}
@@ -125,7 +125,7 @@ const PrivacyPoliciesScreen: React.FC<Props> = ({ navigation, route }) => {
             const titleKey = `privacyPolicies.${sectionKey}Title`;
             const contentKey = `privacyPolicies.${sectionKey}Content`;
             return (
-              <View key={id} style={styles.accordionItem}>
+              <View key={id} style={[styles.accordionItem, isExpanded && styles.accordionItemExpanded]}>
                 <TouchableOpacity
                   style={styles.accordionHeader}
                   onPress={() => toggleAccordion(id)}

@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { RouteProp } from '@react-navigation/native';
@@ -10,12 +10,23 @@ import { Header } from '@/components/ui/layout';
 import { GradientBackgroundByCategory } from '@/components/sections';
 import { FilterCategoryModal, type FilterCategoryResult, type SolutionId } from '@/components/ui/modals';
 import { WeekHighlightCard, AdsList } from '@/components/sections/marketplace';
-import { useMarketplaceAds, useMenuItems, useCategories, useCategoryDisplayLabel, useUserAvatar } from '@/hooks';
+import {
+  useMarketplaceAds,
+  useMenuItems,
+  useCategories,
+  useCategoryDisplayLabel,
+  useUserAvatar,
+  useAdvertiser,
+} from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 import { handleAdNavigation } from '@/utils';
-import type { Ad } from '@/types/ad';
+import type { Ad, Advertiser } from '@/types/ad';
 import type { RootStackParamList } from '@/types/navigation';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { SecondaryButton } from '@/components/ui/buttons';
+import { COLORS } from '@/constants';
+import { styles as shoppingListStyles } from '@/components/sections/community/ShoppingList/styles';
 import { styles } from './styles';
 import { useAnalyticsScreen } from '@/analytics';
 import { CategoryName } from '@/types';
@@ -71,6 +82,9 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
 
   const { categories } = useCategories({ enabled: true });
   const { getCategoryName } = useCategoryDisplayLabel();
+  const { advertisers: professionals } = useAdvertiser({
+    listOptions: { status: 'active', limit: 50 },
+  });
 
   const categoryOptions = useMemo(() => getCategoryOptions(t), [t]);
   const solutionTabs = useMemo(() => getSolutionTabs(t), [t]);
@@ -200,8 +214,112 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     </View>
   );
 
+  const sortedAds = useMemo(() => {
+    return [...ads].sort((a, b) => {
+      const priceA = a.product?.price ?? 0;
+      const priceB = b.product?.price ?? 0;
+      const nameA = (a.product?.name ?? '').toLowerCase();
+      const nameB = (b.product?.name ?? '').toLowerCase();
+
+      if (selectedOrder === ORDER_ABOVE_100) {
+        const aAbove = priceA >= 100 ? 1 : 0;
+        const bAbove = priceB >= 100 ? 1 : 0;
+        if (bAbove !== aAbove) return bAbove - aAbove;
+        return priceB - priceA;
+      }
+
+      return nameA.localeCompare(nameB);
+    });
+  }, [ads, selectedOrder]);
+
+  const filteredAdsBySolution = useMemo(() => {
+    return sortedAds.filter((ad) => {
+      const product = ad.product;
+      const type = (product?.type ?? '').toLowerCase();
+      const hasProduct = !!product;
+
+      switch (selectedSolutionTab) {
+        case 'products':
+          return hasProduct && type !== 'program' && type !== 'service';
+        case 'services':
+          return hasProduct && type === 'service';
+        case 'programs':
+          return hasProduct && type === 'program';
+        case 'professionals':
+          return false;
+        default:
+          return true;
+      }
+    });
+  }, [sortedAds, selectedSolutionTab]);
+
+  const listAdsForCurrentTab = useMemo(
+    () => (page === 1 ? filteredAdsBySolution.slice(1) : filteredAdsBySolution),
+    [filteredAdsBySolution, page],
+  );
+
+  const handleProfessionalPress = (advertiser: Advertiser) => {
+    navigation.navigate('ProviderProfile', {
+      providerId: advertiser.id,
+      provider: {
+        name: advertiser.name,
+        avatar: advertiser.logo,
+      },
+    });
+  };
+
+  const professionalsContent = useMemo(() => {
+    if (!professionals.length) {
+      return null;
+    }
+    return (
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>{t('filterCategory.solutions.professionals')}</Text>
+        <View style={shoppingListStyles.list}>
+          {professionals.map((advertiser) => (
+            <View key={advertiser.id} style={shoppingListStyles.professionalCardWrapper}>
+              <View style={shoppingListStyles.professionalCardContent}>
+                {advertiser.logo ? (
+                  <Image
+                    source={{ uri: advertiser.logo }}
+                    style={shoppingListStyles.professionalAvatar}
+                    resizeMode='cover'
+                  />
+                ) : (
+                  <View style={shoppingListStyles.professionalAvatarPlaceholder}>
+                    <Icon name='person' size={32} color={COLORS.NEUTRAL.LOW.MEDIUM} />
+                  </View>
+                )}
+                <View style={shoppingListStyles.professionalInfo}>
+                  <Text style={shoppingListStyles.professionalName} numberOfLines={1}>
+                    {advertiser.name ?? ''}
+                  </Text>
+                  {advertiser.description ? (
+                    <Text style={shoppingListStyles.professionalProfession} numberOfLines={1}>
+                      Especialista
+                    </Text>
+                  ) : null}
+                </View>
+                <SecondaryButton
+                  label={t('community.viewProfile')}
+                  onPress={() => handleProfessionalPress(advertiser)}
+                  size='medium'
+                  style={shoppingListStyles.professionalViewProfileButton}
+                />
+              </View>
+            </View>
+          ))}
+        </View>
+      </View>
+    );
+  }, [professionals, t, handleProfessionalPress]);
+
   const renderWeekHighlights = () => {
-    const highlight = ads[0];
+    if (selectedSolutionTab === 'professionals') {
+      return null;
+    }
+
+    const highlight = filteredAdsBySolution[0];
     if (!highlight?.product) {
       return null;
     }
@@ -224,29 +342,13 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     );
   };
 
-  const displayAds = page === 1 && ads.length > 0 ? ads.slice(1) : ads;
-  const sortedAds = useMemo(() => {
-    return [...displayAds].sort((a, b) => {
-      const priceA = a.product?.price ?? 0;
-      const priceB = b.product?.price ?? 0;
-      const nameA = (a.product?.name ?? '').toLowerCase();
-      const nameB = (b.product?.name ?? '').toLowerCase();
-      if (selectedOrder === ORDER_ABOVE_100) {
-        const aAbove = priceA >= 100 ? 1 : 0;
-        const bAbove = priceB >= 100 ? 1 : 0;
-        if (bAbove !== aAbove) return bAbove - aAbove;
-        return priceB - priceA;
-      }
-      return nameA.localeCompare(nameB);
-    });
-  }, [displayAds, selectedOrder]);
-
   const renderAllAds = () => (
     <AdsList
       solutionTabs={solutionTabs}
       selectedTabId={selectedSolutionTab}
       onTabChange={handleSolutionTabChange}
-      ads={sortedAds}
+      ads={listAdsForCurrentTab}
+      professionalsContent={professionalsContent}
       loading={loading}
       hasMore={hasMore}
       onLoadMore={() => setPage((prev) => prev + 1)}
