@@ -6,6 +6,10 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'transparent',
   },
+  gradientBackground: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 0,
+  },
   searchBarContainer: {
     paddingHorizontal: SPACING.MD,
     paddingVertical: SPACING.LG,

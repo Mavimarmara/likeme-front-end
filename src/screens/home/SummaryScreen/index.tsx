@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { Alert, View, ScrollView, Text } from 'react-native';
 // import { useFocusEffect } from '@react-navigation/native';
-import { ScreenWithHeader } from '@/components/ui/layout';
+import { GradientBackground, ScreenWithHeader } from '@/components/ui/layout';
 import { SearchBar } from '@/components/ui/inputs';
 import { FilterMenu } from '@/components/ui/menu';
 import { FilterCategoryModal, type FilterCategoryResult, type SolutionId } from '@/components/ui/modals';
@@ -334,6 +334,9 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
       }}
       contentContainerStyle={styles.content}
     >
+      <View pointerEvents='none' style={styles.gradientBackground}>
+        <GradientBackground />
+      </View>
       <View style={styles.content}>
         <ScrollView
           showsVerticalScrollIndicator={false}

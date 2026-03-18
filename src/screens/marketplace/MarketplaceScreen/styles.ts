@@ -15,6 +15,10 @@ export const styles = StyleSheet.create({
     paddingBottom: SPACING.XXL,
     backgroundColor: 'transparent',
   },
+  backgroundGradient: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 0,
+  },
   customHeader: {
     paddingTop: SPACING.MD,
     paddingHorizontal: SPACING.MD,

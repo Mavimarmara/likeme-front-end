@@ -5,7 +5,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SearchBar } from '@/components/ui';
-import { ScreenWithHeader } from '@/components/ui/layout';
+import { GradientBackground, ScreenWithHeader } from '@/components/ui/layout';
 import { useTranslation } from '@/hooks/i18n';
 import { useChat, useMenuItems } from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
@@ -104,6 +104,9 @@ const ChatListScreen: React.FC<Props> = () => {
       }}
       contentContainerStyle={styles.container}
     >
+      <View pointerEvents='none' style={styles.gradientBackground}>
+        <GradientBackground />
+      </View>
       <View style={styles.searchBarContainer}>
         <SearchBar
           placeholder='Search'

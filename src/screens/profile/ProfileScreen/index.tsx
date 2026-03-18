@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Image } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { LogoutButton, Title } from '@/components/ui';
+import { ScreenWithHeader } from '@/components/ui/layout';
 import { storageService } from '@/services';
 import { useMenuItems } from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 import type { StoredUser } from '@/types/auth';
 import { useAnalyticsScreen } from '@/analytics';
+import { COLORS } from '@/constants';
 import { styles } from './styles';
 
 type Props = {
@@ -48,7 +49,12 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <ScreenWithHeader
+      navigation={navigation}
+      headerProps={{ showBackButton: false }}
+      contentBackgroundColor={COLORS.BACKGROUND}
+      contentContainerStyle={styles.container}
+    >
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
           <Title title={t('profile.title')} />
@@ -84,7 +90,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
           )}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </ScreenWithHeader>
   );
 };
 

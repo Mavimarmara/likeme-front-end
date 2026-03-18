@@ -77,11 +77,8 @@ export type RootStackParamList = {
   };
 };
 
-import type { Post } from '@/types';
-
 export type CommunityStackParamList = {
   CommunityList: undefined;
-  PostDetails: { post: Post };
 };
 
 export type ChatStackParamList = {

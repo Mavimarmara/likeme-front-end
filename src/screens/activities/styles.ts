@@ -4,10 +4,15 @@ import { COLORS, FONT_SIZES, SPACING, BORDER_RADIUS } from '@/constants';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.BACKGROUND,
+    backgroundColor: 'transparent',
   },
   content: {
     flex: 1,
+    zIndex: 1,
+  },
+  gradientBackground: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 0,
   },
   tabsContainer: {
     paddingHorizontal: SPACING.MD,

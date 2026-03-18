@@ -377,6 +377,9 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       contentContainerStyle={styles.container}
     >
       <GradientBackgroundByCategory category={selectedCategoryName} />
+      <View pointerEvents='none' style={styles.backgroundGradient}>
+        <GradientBackgroundByCategory category={selectedCategoryName} />
+      </View>
       <View style={styles.content}>
         {renderCustomHeader()}
         <ScrollView

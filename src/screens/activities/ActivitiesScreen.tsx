@@ -3,7 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, Image, Modal, Alert, Linking 
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
-import { ScreenWithHeader } from '@/components/ui/layout';
+import { GradientBackground, ScreenWithHeader } from '@/components/ui/layout';
 import { Toggle, PrimaryButton, Badge } from '@/components/ui';
 import { CreateActivityModal } from '@/components/sections/activity';
 import { DoneIcon, CloseIcon } from '@/assets/ui';
@@ -674,6 +674,9 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
       headerProps={{ showBackButton: false }}
       contentContainerStyle={styles.container}
     >
+      <View pointerEvents='none' style={styles.gradientBackground}>
+        <GradientBackground />
+      </View>
       <View style={styles.content}>
         {renderTabs()}
         {renderFilters()}

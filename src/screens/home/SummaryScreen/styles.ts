@@ -10,7 +10,11 @@ export const styles = StyleSheet.create({
   content: {
     flex: 1,
     zIndex: 1,
-    backgroundColor: COLORS.BACKGROUND,
+    backgroundColor: 'transparent',
+  },
+  gradientBackground: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 0,
   },
   scrollView: {
     backgroundColor: 'transparent',

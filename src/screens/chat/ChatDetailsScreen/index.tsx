@@ -3,7 +3,7 @@ import { View, Text, Image, TouchableOpacity, Alert, ActivityIndicator } from 'r
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { ScreenWithHeader } from '@/components/ui/layout';
+import { GradientBackground, ScreenWithHeader } from '@/components/ui/layout';
 import { IconButton } from '@/components/ui/buttons';
 import { COLORS } from '@/constants';
 import { chatService } from '@/services';
@@ -129,6 +129,9 @@ const ChatDetailsScreen: React.FC = () => {
       }}
       contentContainerStyle={styles.container}
     >
+      <View pointerEvents='none' style={styles.gradientBackground}>
+        <GradientBackground />
+      </View>
       <View style={styles.subHeader}>
         <IconButton icon='chevron-left' onPress={() => navigation.goBack()} backgroundSize='medium' />
         <Text style={styles.title}>{t('chat.details.title')}</Text>

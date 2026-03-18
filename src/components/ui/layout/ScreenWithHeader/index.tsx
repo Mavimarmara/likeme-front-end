@@ -29,7 +29,9 @@ const ScreenWithHeader: React.FC<Props> = ({
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.BACKGROUND_SECONDARY }} edges={['top']}>
       <Header {...headerProps} onLogoPress={headerProps?.onLogoPress ?? defaultOnLogoPress} />
-      <View style={[{ flex: 1, backgroundColor: contentBackgroundColor }, contentContainerStyle]}>{children}</View>
+      <View style={[{ flex: 1, backgroundColor: contentBackgroundColor, position: 'relative' }, contentContainerStyle]}>
+        {children}
+      </View>
     </SafeAreaView>
   );
 };

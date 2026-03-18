@@ -4,45 +4,20 @@ import { COLORS, SPACING, FONT_SIZES } from '@/constants';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.BACKGROUND,
+    backgroundColor: 'transparent',
+    position: 'relative',
   },
-  headerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: SPACING.MD,
-    paddingTop: SPACING.SM,
-    paddingBottom: SPACING.XS,
-  },
-  backButton: {
-    width: 40,
-    height: 36,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  iconButtonBackground: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  iconButtonImage: {
-    borderRadius: 18,
-  },
-  logoContainer: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  placeholderButton: {
-    width: 40,
+  backgroundLayer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 0,
   },
   scrollView: {
     flex: 1,
+    zIndex: 1,
   },
   scrollContent: {
     paddingBottom: SPACING.XL,

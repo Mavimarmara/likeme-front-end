@@ -6,6 +6,10 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'transparent',
   },
+  gradientBackground: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 0,
+  },
   subHeader: {
     flexDirection: 'row',
     alignItems: 'center',

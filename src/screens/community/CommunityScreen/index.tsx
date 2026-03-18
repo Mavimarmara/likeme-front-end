@@ -1,12 +1,10 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, Text } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import { Toggle } from '@/components/ui';
-import { IconButton } from '@/components/ui/buttons';
 import { SocialList, ShoppingList, LiveBannerData } from '@/components/sections/community';
 import type { SpecialistCardProps } from '@/components/sections/community/SpecialistCard';
 import { Product } from '@/components/sections/product';
-import { HeroImage, ScreenWithHeader } from '@/components/ui/layout';
+import { GradientBackground, HeroImage, ScreenWithHeader } from '@/components/ui/layout';
 import type { Event } from '@/types';
 import { SPACING } from '@/constants';
 import { styles } from './styles';
@@ -17,6 +15,7 @@ import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen } from '@/analytics';
 import { storageService } from '@/services';
 import type { Advertiser } from '@/types/ad';
+import Toggle from '@/components/ui/buttons/Toggle';
 
 type CommunityMode = 'Feed' | 'Solutions';
 
@@ -61,6 +60,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
 
   const {
     communities: rawCommunities,
+    categories,
     loading: _communitiesLoading,
     loadingMore: _communitiesLoadingMore,
     error: _communitiesError,
@@ -160,12 +160,17 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     }
   }, [rawCommunities, t]);
 
+  const communityIntroBadges = useMemo(() => {
+    const firstTwo = categories?.slice(0, 2) ?? [];
+    return firstTwo.map((c) => c.name).filter(Boolean);
+  }, [categories]);
+
   const specialistData: SpecialistCardProps | null = useMemo(() => {
     if (!featuredAdvertiser) return null;
     return {
       name: featuredAdvertiser.name ?? '',
       subtitle: t('community.specialistLabel'),
-      rating: undefined,
+      rating: 5,
       tags: [],
       avatarUri: featuredAdvertiser.logo ?? undefined,
     };
@@ -184,9 +189,12 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
       }}
       contentContainerStyle={styles.container}
     >
+      <View pointerEvents='none' style={styles.gradientBackground}>
+        <GradientBackground />
+      </View>
       <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{ paddingTop: SPACING.XXL, paddingBottom: SPACING.XL }}
+        style={[{ flex: 1 }, { zIndex: 1 }]}
+        contentContainerStyle={{ paddingTop: SPACING.MD, paddingBottom: SPACING.XL }}
         showsVerticalScrollIndicator={false}
         onMomentumScrollEnd={(e) => {
           const { layoutMeasurement, contentOffset, contentSize } = e.nativeEvent;
@@ -200,16 +208,18 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
           <HeroImage
             imageUri={communityIntro.imageUri ?? DEFAULT_COMMUNITY_IMAGE}
             name={communityIntro.title}
-            heightRatio={0.35}
+            badges={communityIntroBadges}
+            heightRatio={0.42}
+            footer={
+              communityIntro.description ? (
+                <View style={styles.heroFooter}>
+                  <Text style={styles.heroDescription}>{communityIntro.description}</Text>
+                </View>
+              ) : undefined
+            }
           />
         )}
         <View style={styles.toggleRow}>
-          <IconButton
-            icon='chevron-left'
-            onPress={() => navigation.goBack()}
-            backgroundSize='medium'
-            containerStyle={styles.toggleBackButton}
-          />
           <View style={styles.toggleContainer}>
             <Toggle<CommunityMode> options={toggleOptions} selected={selectedMode} onSelect={handleModeSelect} />
           </View>
@@ -218,10 +228,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
           <SocialList
             liveBanner={liveBanner}
             onLivePress={handleLivePress}
-            communityIntro={communityIntro}
-            onIntroSeeMore={() => {
-              /* expand or navigate to community detail */
-            }}
             specialist={specialistData}
             posts={posts}
             loading={loading}
@@ -247,10 +253,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
             onProductPress={handleProductPress}
             onProductLike={handleProductLike}
             onProfessionalPress={handleProfessionalPress}
-            communityIntro={communityIntro}
-            onIntroSeeMore={() => {
-              /* expand or navigate to community detail */
-            }}
             specialist={specialistData}
             embedInParentScroll
           />

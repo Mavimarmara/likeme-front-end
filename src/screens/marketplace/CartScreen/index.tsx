@@ -1,10 +1,7 @@
 import React, { useCallback, useState, useEffect, useRef } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ImageBackground, TextInput, Linking } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { View, Text, ScrollView, TouchableOpacity, TextInput, Linking } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import { LogoMini, BackgroundIconButton } from '@/assets/ui';
-import { Background } from '@/components/ui/layout';
+import { Background, ScreenWithHeader } from '@/components/ui/layout';
 import type { RootStackParamList } from '@/types/navigation';
 import { formatPrice } from '@/utils';
 import { Alert } from 'react-native';
@@ -138,21 +135,9 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
       decreaseQuantityTestID={`decrease-quantity-${item.id}`}
     />
   );
-  const renderHeader = () => (
-    <View style={styles.headerContainer}>
-      <TouchableOpacity style={styles.backButton} onPress={handleBackPress} activeOpacity={0.7} testID='back-button'>
-        <ImageBackground
-          source={BackgroundIconButton}
-          style={styles.iconButtonBackground}
-          imageStyle={styles.iconButtonImage}
-        >
-          <Icon name='arrow-back' size={20} color='#001137' />
-        </ImageBackground>
-      </TouchableOpacity>
-      <View style={styles.logoContainer}>
-        <LogoMini width={87} height={16} />
-      </View>
-      <View style={styles.placeholderButton} />
+  const renderBackground = () => (
+    <View pointerEvents='none' style={styles.backgroundLayer}>
+      <Background />
     </View>
   );
 
@@ -221,9 +206,18 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <Background />
-      {renderHeader()}
+    <ScreenWithHeader
+      navigation={navigation}
+      headerProps={{
+        showBackButton: true,
+        onBackPress: handleBackPress,
+        showCartButton: false,
+        showMenuWithAvatar: false,
+      }}
+      contentContainerStyle={styles.container}
+      contentBackgroundColor='transparent'
+    >
+      {renderBackground()}
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -256,7 +250,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
           </View>
         )}
       </ScrollView>
-    </SafeAreaView>
+    </ScreenWithHeader>
   );
 };
 
