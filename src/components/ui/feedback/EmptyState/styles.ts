@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { SPACING, COLORS } from '@/constants';
+import { SPACING } from '@/constants';
 
 const TITLE_COLOR = '#15293B';
 const DESCRIPTION_COLOR = '#46596E';
