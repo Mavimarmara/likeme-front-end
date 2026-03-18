@@ -4,7 +4,6 @@ import {
   Text,
   ScrollView,
   Platform,
-  StatusBar,
   Alert,
   Keyboard,
   Modal,
@@ -271,8 +270,6 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
       contentContainerStyle={styles.safeArea}
       contentBackgroundColor={COLORS.BACKGROUND}
     >
-      <StatusBar barStyle='dark-content' backgroundColor={COLORS.BACKGROUND_SECONDARY} />
-
       <View style={styles.container}>
         <ScrollView
           ref={scrollViewRef}
@@ -431,11 +428,13 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
               label={isLoading ? t('common.saving') : t('common.save')}
               onPress={handleNext}
               disabled={isLoading || isSkipLoading}
+              size='large'
             />
             <SecondaryButton
               label={t('common.configureLater')}
               onPress={handleSkip}
               disabled={isLoading || isSkipLoading}
+              size='large'
             />
           </ButtonGroup>
         </View>

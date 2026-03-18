@@ -18,10 +18,6 @@ export const styles = StyleSheet.create({
   },
   topSection: {
     width: '100%',
-    backgroundColor: COLORS.BACKGROUND_SECONDARY,
-    borderBottomLeftRadius: 64,
-    borderBottomRightRadius: 64,
-    overflow: 'hidden',
   },
   headerContent: {
     width: '100%',
@@ -74,6 +70,7 @@ export const styles = StyleSheet.create({
     fontWeight: '400',
     lineHeight: 24,
     textAlign: 'left',
+    paddingBottom: SPACING.MD,
   },
   sectionLabel: {
     color: COLORS.NEUTRAL.LOW.PURE,
