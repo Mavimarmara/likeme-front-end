@@ -365,6 +365,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
 
   return (
     <ScreenWithHeader
+      navigation={navigation}
       headerProps={{
         showBackButton: false,
         showMenuWithAvatar: true,

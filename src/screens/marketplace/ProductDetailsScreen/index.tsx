@@ -262,6 +262,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
 
   return (
     <ScreenWithHeader
+      navigation={navigation}
       headerProps={{ showBackButton: true, onBackPress: handleBackPress }}
       contentContainerStyle={styles.container}
     >

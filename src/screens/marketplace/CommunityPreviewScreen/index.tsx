@@ -65,6 +65,7 @@ const CommunityPreviewScreen: React.FC<CommunityPreviewScreenProps> = ({ navigat
 
   return (
     <ScreenWithHeader
+      navigation={navigation}
       headerProps={{ showBackButton: true, onBackPress: handleBackPress }}
       contentContainerStyle={styles.container}
     >

@@ -1,6 +1,5 @@
 import React, { ReactNode } from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { LogoMini } from '@/assets/ui';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { IconButton } from '@/components/ui/buttons';
@@ -50,8 +49,6 @@ const Header: React.FC<HeaderProps> = ({
   onMenuPress,
   userAvatarUri,
 }) => {
-  const navigation = useNavigation<any>();
-  const rootNavigation = (navigation?.getParent?.() ?? navigation) as any;
   const hasRightLabel = Boolean(rightLabel && onRightPress);
   return (
     <View style={styles.container}>
@@ -77,7 +74,7 @@ const Header: React.FC<HeaderProps> = ({
           />
         )}
         <TouchableOpacity
-          onPress={onLogoPress ?? (() => rootNavigation.navigate('Summary' as never))}
+          onPress={onLogoPress ?? noop}
           activeOpacity={0.7}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >

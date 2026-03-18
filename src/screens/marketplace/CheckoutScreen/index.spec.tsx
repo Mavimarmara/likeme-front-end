@@ -12,15 +12,22 @@ jest.mock('react-native-safe-area-context', () => {
 
 jest.mock('@/components/ui/layout', () => {
   const { View, TouchableOpacity, Text } = require('react-native');
+  const Header = ({ onBackPress }: any) => (
+    <View>
+      <TouchableOpacity onPress={onBackPress} testID='back-button'>
+        <Text>Back</Text>
+      </TouchableOpacity>
+    </View>
+  );
   return {
-    Header: ({ onBackPress }: any) => (
+    Header,
+    Background: () => null,
+    ScreenWithHeader: ({ children, headerProps }: any) => (
       <View>
-        <TouchableOpacity onPress={onBackPress} testID='back-button'>
-          <Text>Back</Text>
-        </TouchableOpacity>
+        <Header {...headerProps} />
+        {children}
       </View>
     ),
-    Background: () => null,
   };
 });
 

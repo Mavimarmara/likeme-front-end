@@ -118,6 +118,7 @@ const ChatDetailsScreen: React.FC = () => {
 
   return (
     <ScreenWithHeader
+      navigation={navigation}
       headerProps={{
         showBackButton: false,
         showMenuWithAvatar: true,

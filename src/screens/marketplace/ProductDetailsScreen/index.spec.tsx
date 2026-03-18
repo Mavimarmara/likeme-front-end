@@ -27,10 +27,17 @@ jest.mock('@/assets', () => ({
 
 jest.mock('@/components/ui/layout', () => {
   const { View } = require('react-native');
+  const Header = () => null;
   return {
-    Header: () => null,
+    Header,
     HeroImage: ({ children }: any) => <View testID='hero-image'>{children}</View>,
     Background: () => null,
+    ScreenWithHeader: ({ children, headerProps }: any) => (
+      <View>
+        <Header {...headerProps} />
+        {children}
+      </View>
+    ),
   };
 });
 

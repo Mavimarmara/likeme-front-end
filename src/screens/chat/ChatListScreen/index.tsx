@@ -94,6 +94,7 @@ const ChatListScreen: React.FC<Props> = () => {
 
   return (
     <ScreenWithHeader
+      navigation={navigation}
       headerProps={{
         showBackButton: false,
         showMenuWithAvatar: true,

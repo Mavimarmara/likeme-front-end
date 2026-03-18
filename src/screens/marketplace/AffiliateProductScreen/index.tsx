@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { ScreenWithHeader } from '@/components/ui/layout';
+import { Header } from '@/components/ui/layout';
 import { useTranslation } from '@/hooks/i18n';
 import { adService, productService } from '@/services';
 import type { Ad } from '@/types/ad';
@@ -426,10 +426,8 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
   }
 
   return (
-    <ScreenWithHeader
-      headerProps={{ showBackButton: true, onBackPress: handleBackPress }}
-      contentContainerStyle={styles.container}
-    >
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <Header showBackButton={true} onBackPress={handleBackPress} />
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Hero Section with Image */}
         <View style={styles.heroSection}>
@@ -507,7 +505,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
           </View>
         </View>
       </ScrollView>
-    </ScreenWithHeader>
+    </SafeAreaView>
   );
 };
 

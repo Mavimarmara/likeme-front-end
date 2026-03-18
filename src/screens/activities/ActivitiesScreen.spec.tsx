@@ -28,10 +28,18 @@ jest.mock('react-native-safe-area-context', () => {
 
 // Mock components
 jest.mock('@/components/ui/layout', () => {
-  require('react');
+  const React = require('react');
+  const { View } = require('react-native');
+  const Header = () => null;
   return {
-    Header: () => null,
+    Header,
     Background: () => null,
+    ScreenWithHeader: ({ children, headerProps }: any) => (
+      <View>
+        <Header {...headerProps} />
+        {children}
+      </View>
+    ),
   };
 });
 

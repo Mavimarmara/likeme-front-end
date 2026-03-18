@@ -358,6 +358,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <ScreenWithHeader
+      navigation={navigation}
       headerProps={{ showBackButton: true, onBackPress: handleBackPress, customLogo: <ProgressHeaderLogo /> }}
       contentContainerStyle={styles.container}
     >

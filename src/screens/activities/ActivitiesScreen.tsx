@@ -669,7 +669,11 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
   const plans: Plan[] = [];
 
   return (
-    <ScreenWithHeader headerProps={{ showBackButton: false }} contentContainerStyle={styles.container}>
+    <ScreenWithHeader
+      navigation={navigation}
+      headerProps={{ showBackButton: false }}
+      contentContainerStyle={styles.container}
+    >
       <View style={styles.content}>
         {renderTabs()}
         {renderFilters()}

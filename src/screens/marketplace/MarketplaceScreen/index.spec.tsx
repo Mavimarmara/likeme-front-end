@@ -24,18 +24,25 @@ jest.mock('@/assets', () => ({
 
 jest.mock('@/components/ui/layout', () => {
   const { View, Text, TouchableOpacity } = require('react-native');
+  const Header = ({ onCartPress, showCartButton }: any) => (
+    <View>
+      {showCartButton && onCartPress && (
+        <TouchableOpacity onPress={onCartPress} testID='cart-button'>
+          <Text>Cart</Text>
+        </TouchableOpacity>
+      )}
+    </View>
+  );
   return {
-    Header: ({ onCartPress, showCartButton }: any) => (
-      <View>
-        {showCartButton && onCartPress && (
-          <TouchableOpacity onPress={onCartPress} testID='cart-button'>
-            <Text>Cart</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-    ),
+    Header,
     Background: () => null,
     GradientBackground: () => null,
+    ScreenWithHeader: ({ children, headerProps }: any) => (
+      <View>
+        <Header {...headerProps} />
+        {children}
+      </View>
+    ),
   };
 });
 

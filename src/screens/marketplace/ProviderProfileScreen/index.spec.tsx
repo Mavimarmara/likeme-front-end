@@ -18,14 +18,15 @@ jest.mock('expo-linear-gradient', () => {
 
 jest.mock('@/components/ui/layout', () => {
   const { View, TouchableOpacity, Text } = require('react-native');
+  const Header = ({ onBackPress }: any) => (
+    <View>
+      <TouchableOpacity onPress={onBackPress} testID='back-button'>
+        <Text>Back</Text>
+      </TouchableOpacity>
+    </View>
+  );
   return {
-    Header: ({ onBackPress }: any) => (
-      <View>
-        <TouchableOpacity onPress={onBackPress} testID='back-button'>
-          <Text>Back</Text>
-        </TouchableOpacity>
-      </View>
-    ),
+    Header,
     Background: () => null,
     HeroImage: ({ name, title, badges = [], ...rest }: any) => (
       <View testID='hero-image'>
@@ -34,6 +35,12 @@ jest.mock('@/components/ui/layout', () => {
         {(badges || []).map((b: string, i: number) => (
           <Text key={i}>{b}</Text>
         ))}
+      </View>
+    ),
+    ScreenWithHeader: ({ children, headerProps }: any) => (
+      <View>
+        <Header {...headerProps} />
+        {children}
       </View>
     ),
   };

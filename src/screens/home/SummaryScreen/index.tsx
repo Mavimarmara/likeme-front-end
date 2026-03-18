@@ -321,6 +321,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <ScreenWithHeader
+      navigation={navigation}
       headerProps={{
         showBackButton: false,
         showMenuWithAvatar: true,

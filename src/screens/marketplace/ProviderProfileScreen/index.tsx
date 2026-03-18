@@ -214,6 +214,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
 
   return (
     <ScreenWithHeader
+      navigation={navigation}
       headerProps={{ showBackButton: true, onBackPress: handleBackPress }}
       contentContainerStyle={styles.container}
     >

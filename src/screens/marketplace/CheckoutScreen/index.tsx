@@ -287,7 +287,11 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
   );
 
   return (
-    <ScreenWithHeader headerProps={{ onBackPress: () => navigation.goBack() }} contentContainerStyle={styles.container}>
+    <ScreenWithHeader
+      navigation={navigation}
+      headerProps={{ onBackPress: () => navigation.goBack() }}
+      contentContainerStyle={styles.container}
+    >
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
