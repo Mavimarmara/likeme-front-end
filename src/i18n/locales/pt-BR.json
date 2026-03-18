@@ -245,7 +245,10 @@
     "yourCommunities": "Suas Comunidades",
     "productsRecommended": "Recomendados para a sua jornada de sono pelo Dr. {provider}",
     "discoverProducts": "Descubra as opções que escolhemos para você",
-    "joinCommunityError": "Não foi possível entrar na comunidade. Tente novamente."
+    "joinCommunityError": "Não foi possível entrar na comunidade. Tente novamente.",
+    "noResultsTitle": "Ainda não temos resultados pra sua busca.",
+    "noResultsDescription": "Estamos em Beta, testando conteúdos e, em breve, teremos novas soluções disponíveis. Por ora, tente ajustar os filtros ou explorar outras categorias.",
+    "clearFilters": "Limpar filtros"
   },
   "avatar": {
     "insights": "Insights",

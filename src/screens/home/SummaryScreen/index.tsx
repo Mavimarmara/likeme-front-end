@@ -35,6 +35,7 @@ import {
   type JoinCommunity,
 } from '@/components/sections/community';
 import { ProductsCarousel, type Product } from '@/components/sections/product';
+import { EmptyState } from '@/components/ui/feedback';
 // TODO: Temporariamente desabilitados
 // import { AnamnesisPromptCard } from '@/components/sections/anamnesis';
 // import { AvatarSection } from '@/components/sections/avatar';
@@ -203,6 +204,34 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
     return base.filter((p) => p.title?.toLowerCase?.().includes?.(q));
   }, [recommendedProducts, searchQuery, selectedSolutionTab]);
 
+  const hasActiveSearchOrFilter =
+    searchQuery.trim() !== '' || selectedCategoryName != null || selectedSolutionIds.length > 0;
+
+  const hasNoResultsForCurrentTab = useMemo(() => {
+    if (!hasActiveSearchOrFilter) return false;
+    switch (selectedSolutionTab) {
+      case 'communities':
+        return filteredJoinCommunities.length === 0;
+      case 'products':
+        return filteredProducts.length === 0;
+      case 'professionals':
+        return filteredProviders.length === 0;
+      case 'programs':
+        return filteredJoinCommunities.length === 0;
+      case 'all':
+      default:
+        return filteredJoinCommunities.length === 0 && filteredProviders.length === 0 && filteredProducts.length === 0;
+    }
+  }, [
+    hasActiveSearchOrFilter,
+    selectedSolutionTab,
+    filteredJoinCommunities.length,
+    filteredProviders.length,
+    filteredProducts.length,
+  ]);
+
+  const showEmptyState = hasActiveSearchOrFilter && hasNoResultsForCurrentTab;
+
   const handleFilterCategoryApply = useCallback(
     (result: FilterCategoryResult) => {
       setSelectedCategoryId(result.categoryId ?? undefined);
@@ -337,24 +366,38 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
             onClear={handleClearFilterCategory}
           />
 
-          {filteredJoinCommunities.length > 0 && (
-            <View style={styles.sectionDivider}>
-              <Text style={styles.sectionTitle}>Comunidade recomendada</Text>
-              <View style={styles.sectionContainer}>
-                <JoinCommunityCard communities={filteredJoinCommunities} onCommunityPress={handleJoinCommunity} />
-              </View>
+          {showEmptyState ? (
+            <View style={[styles.sectionDivider, styles.sectionContainer, styles.emptyStateContainer]}>
+              <EmptyState
+                title={t('home.noResultsTitle')}
+                description={t('home.noResultsDescription')}
+                actionLabel={t('home.clearFilters')}
+                onActionPress={() => {
+                  setSearchQuery('');
+                  handleClearFilterCategory();
+                }}
+              />
             </View>
-          )}
+          ) : (
+            <>
+              {filteredJoinCommunities.length > 0 && (
+                <View style={styles.sectionDivider}>
+                  <Text style={styles.sectionTitle}>Comunidade recomendada</Text>
+                  <View style={styles.sectionContainer}>
+                    <JoinCommunityCard communities={filteredJoinCommunities} onCommunityPress={handleJoinCommunity} />
+                  </View>
+                </View>
+              )}
 
-          {(selectedSolutionTab === 'all' || selectedSolutionTab === 'programs') && (
-            <View style={styles.sectionDivider}>
-              <Text style={styles.sectionTitle}>Programa recomendado</Text>
-              <View style={styles.sectionContainer}>
-                <JoinCommunityCard communities={[RECOMMENDED_PROGRAM]} onCommunityPress={handleProgramPress} />
-              </View>
-            </View>
-          )}
-          {/* TODO: Temporariamente desabilitado
+              {(selectedSolutionTab === 'all' || selectedSolutionTab === 'programs') && (
+                <View style={styles.sectionDivider}>
+                  <Text style={styles.sectionTitle}>Programa recomendado</Text>
+                  <View style={styles.sectionContainer}>
+                    <JoinCommunityCard communities={[RECOMMENDED_PROGRAM]} onCommunityPress={handleProgramPress} />
+                  </View>
+                </View>
+              )}
+              {/* TODO: Temporariamente desabilitado
           {yourCommunity && (
             <View style={styles.yourCommunitiesContainer}>
               <YourCommunitiesSection
@@ -365,7 +408,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
             </View>
           )}
           */}
-          {/* TODO: Avatar e Anamnese temporariamente desabilitados
+              {/* TODO: Avatar e Anamnese temporariamente desabilitados
           {(hasAnyAnamnesisAnswers || hasCompletedAnamnesis) && (
             <View style={styles.avatarContainer}>
               <AvatarSection
@@ -393,33 +436,33 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
             </View>
           )}
           */}
-          {/* TODO: Temporariamente desabilitados
+              {/* TODO: Temporariamente desabilitados
           {events.length > 0 && (
             <View style={styles.eventsContainer}>
               <NextEventsSection events={events} onEventPress={handleEventPress} onEventSave={handleEventSave} />
             </View>
           )}
           */}
-          {filteredProviders.length > 0 && (
-            <View style={[styles.sectionDivider]}>
-              <PopularProvidersSection providers={filteredProviders} onProviderPress={handleProviderPress} />
-            </View>
-          )}
-          {filteredProducts.length > 0 && (
-            <View style={[styles.productsContainer, styles.sectionDivider]}>
-              <Text style={styles.sectionTitle}>{t('home.recommendedProductsTitle')}</Text>
-              <View style={styles.sectionContainer}>
-                <ProductsCarousel
-                  title={t('home.productsRecommended', { provider: '' })}
-                  subtitle={t('home.discoverProducts')}
-                  products={filteredProducts}
-                  onProductPress={handleProductPress}
-                  onProductLike={handleProductLike}
-                />
-              </View>
-            </View>
-          )}
-          {/* TODO: Temporariamente desabilitado
+              {filteredProviders.length > 0 && (
+                <View style={[styles.sectionDivider]}>
+                  <PopularProvidersSection providers={filteredProviders} onProviderPress={handleProviderPress} />
+                </View>
+              )}
+              {filteredProducts.length > 0 && (
+                <View style={[styles.productsContainer, styles.sectionDivider]}>
+                  <Text style={styles.sectionTitle}>{t('home.recommendedProductsTitle')}</Text>
+                  <View style={styles.sectionContainer}>
+                    <ProductsCarousel
+                      title={t('home.productsRecommended', { provider: '' })}
+                      subtitle={t('home.discoverProducts')}
+                      products={filteredProducts}
+                      onProductPress={handleProductPress}
+                      onProductLike={handleProductLike}
+                    />
+                  </View>
+                </View>
+              )}
+              {/* TODO: Temporariamente desabilitado
           <View style={styles.otherCommunitiesContainer}>
             <OtherCommunitiesSection
               communities={otherCommunities}
@@ -430,6 +473,8 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
             />
           </View>
           */}
+            </>
+          )}
         </ScrollView>
       </View>
     </SafeAreaView>

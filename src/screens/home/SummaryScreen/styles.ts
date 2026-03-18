@@ -53,4 +53,7 @@ export const styles = StyleSheet.create({
   sectionDivider: {
     paddingBottom: SPACING.MD,
   },
+  emptyStateContainer: {
+    justifyContent: 'center',
+  },
 });
