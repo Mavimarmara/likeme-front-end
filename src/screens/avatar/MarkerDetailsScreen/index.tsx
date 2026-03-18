@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, ScrollView, Text, TouchableOpacity, StatusBar } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Header, ChartBar, CTACard, PeriodSelector, ProgressHeaderLogo } from '@/components/ui';
+import { ChartBar, CTACard, PeriodSelector, ProgressHeaderLogo } from '@/components/ui';
+import { ScreenWithHeader } from '@/components/ui/layout';
 import ProgressBar from '@/components/ui/feedback/ProgressBar';
 import { useMenuItems } from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
@@ -11,7 +11,6 @@ import { getMarkerColor, getMarkerGradient, MARKER_NAMES, hasMarkerGradient } fr
 import type { UserMarker } from '@/types/anamnesis';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
-import Background from '../../../components/ui/layout/Background';
 
 type Props = {
   navigation: any;
@@ -36,12 +35,19 @@ const MarkerDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
 
   if (!marker) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.BACKGROUND }} edges={['top']}>
-        <Header onBackPress={() => navigation.goBack()} showBackButton />
+      <ScreenWithHeader
+        navigation={navigation}
+        headerProps={{
+          onBackPress: () => navigation.goBack(),
+          showBackButton: true,
+          customLogo: <ProgressHeaderLogo />,
+        }}
+        contentBackgroundColor={COLORS.BACKGROUND}
+      >
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
           <Text style={{ fontSize: 16, color: COLORS.TEXT }}>{t('avatar.markerNotFound')}</Text>
         </View>
-      </SafeAreaView>
+      </ScreenWithHeader>
     );
   }
 
@@ -74,11 +80,13 @@ const MarkerDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.BACKGROUND }} edges={['top']}>
-      <Background />
+    <ScreenWithHeader
+      navigation={navigation}
+      headerProps={{ onBackPress: handleBack, showBackButton: true, customLogo: <ProgressHeaderLogo /> }}
+      contentBackgroundColor={COLORS.BACKGROUND}
+      contentContainerStyle={{ flex: 1 }}
+    >
       <StatusBar backgroundColor={COLORS.BACKGROUND} barStyle='dark-content' />
-      <Header onBackPress={handleBack} showBackButton customLogo={<ProgressHeaderLogo />} />
-
       <View style={styles.content}>
         <ScrollView
           style={styles.scrollView}
@@ -185,7 +193,7 @@ const MarkerDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
           </View>
         </ScrollView>
       </View>
-    </SafeAreaView>
+    </ScreenWithHeader>
   );
 };
 

@@ -1,8 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Header } from '@/components/ui';
+import { ScreenWithHeader } from '@/components/ui/layout';
 import { PrimaryButton } from '@/components/ui/buttons';
 import { useAnamnesisQuestionnaire, useTranslation } from '@/hooks';
 import { buildSingleChoiceAnswerKey, parseSingleChoiceAnswerKey } from '@/hooks/anamnesis/anamnesisAnswerMappers';
@@ -136,9 +135,11 @@ const AnamnesisHabitsScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Header onBackPress={() => navigation.goBack()} />
-
+    <ScreenWithHeader
+      navigation={navigation}
+      headerProps={{ onBackPress: () => navigation.goBack() }}
+      contentContainerStyle={styles.container}
+    >
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -216,7 +217,7 @@ const AnamnesisHabitsScreen: React.FC<Props> = ({ navigation, route }) => {
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </ScreenWithHeader>
   );
 };
 

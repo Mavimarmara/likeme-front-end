@@ -1,8 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackScreenProps } from '@react-navigation/stack';
-import { Header, Toggle, CTACard, Background } from '@/components/ui';
+import { Toggle, CTACard } from '@/components/ui';
+import { ScreenWithHeader } from '@/components/ui/layout';
 import { PlanCard, PlanDescription, ComparativeTable } from '@/components/sections/plans';
 import type { ComparativeTableRow } from '@/components/sections/plans';
 import { useTranslation } from '@/hooks/i18n';
@@ -96,10 +96,11 @@ const PlansScreen: React.FC<Props> = ({ navigation, route }) => {
   ];
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Background />
-      <Header onBackPress={handleBack} />
-
+    <ScreenWithHeader
+      navigation={navigation}
+      headerProps={{ onBackPress: handleBack }}
+      contentContainerStyle={styles.container}
+    >
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -173,7 +174,7 @@ const PlansScreen: React.FC<Props> = ({ navigation, route }) => {
           />
         )}
       </ScrollView>
-    </SafeAreaView>
+    </ScreenWithHeader>
   );
 };
 

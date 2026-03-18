@@ -40,6 +40,22 @@ jest.mock('react-native-safe-area-context', () => {
   };
 });
 
+jest.mock('@/components/ui/layout', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  return {
+    ScreenWithHeader: ({ children, headerProps }: any) => {
+      const { Header } = require('@/components/ui');
+      return (
+        <View>
+          <Header {...headerProps} />
+          {children}
+        </View>
+      );
+    },
+  };
+});
+
 jest.mock('@/analytics', () => ({
   useAnalyticsScreen: () => {
     /* noop */

@@ -1,13 +1,12 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { View, ScrollView, type LayoutChangeEvent } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { View, ScrollView } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import { Toggle, Header } from '@/components/ui';
+import { Toggle } from '@/components/ui';
 import { IconButton } from '@/components/ui/buttons';
 import { SocialList, ShoppingList, LiveBannerData } from '@/components/sections/community';
 import type { SpecialistCardProps } from '@/components/sections/community/SpecialistCard';
 import { Product } from '@/components/sections/product';
-import { Background, HeroImage } from '@/components/ui/layout';
+import { HeroImage, ScreenWithHeader } from '@/components/ui/layout';
 import type { Event } from '@/types';
 import { SPACING } from '@/constants';
 import { styles } from './styles';
@@ -33,19 +32,11 @@ const DEFAULT_COMMUNITY_IMAGE = 'https://images.unsplash.com/photo-1529156069898
 const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   useAnalyticsScreen({ screenName: 'CommunityList', screenClass: 'CommunityScreen' });
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
   const toggleOptions = useMemo(() => getToggleOptions(t), [t]);
   const rootNavigation = navigation.getParent()?.getParent?.() ?? navigation.getParent();
   const userAvatarUri = useUserAvatar();
   const [selectedMode, setSelectedMode] = useState<CommunityMode>('Feed');
   const [welcomeDismissed, setWelcomeDismissed] = useState(true);
-  const [headerHeight, setHeaderHeight] = useState(0);
-
-  const handleHeaderLayout = useCallback((e: LayoutChangeEvent) => {
-    setHeaderHeight(e.nativeEvent.layout.height);
-  }, []);
-
-  const heroOffsetTop = insets.top + headerHeight;
 
   useEffect(() => {
     storageService.getCommunityWelcomeDismissed().then(setWelcomeDismissed);
@@ -181,22 +172,18 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   }, [featuredAdvertiser, t]);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Background />
-      <View
-        style={[styles.headerWrapper, { top: 0, paddingTop: insets.top, zIndex: 10 }]}
-        onLayout={handleHeaderLayout}
-        pointerEvents='box-none'
-      >
-        <Header
-          showBackButton={false}
-          showMenuWithAvatar={true}
-          onMenuPress={handleMenuPress}
-          userAvatarUri={userAvatarUri}
-          showCartButton={true}
-          onCartPress={handleCartPress}
-        />
-      </View>
+    <ScreenWithHeader
+      navigation={rootNavigation}
+      headerProps={{
+        showBackButton: false,
+        showMenuWithAvatar: true,
+        onMenuPress: handleMenuPress,
+        userAvatarUri,
+        showCartButton: true,
+        onCartPress: handleCartPress,
+      }}
+      contentContainerStyle={styles.container}
+    >
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingTop: SPACING.XXL, paddingBottom: SPACING.XL }}
@@ -214,7 +201,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
             imageUri={communityIntro.imageUri ?? DEFAULT_COMMUNITY_IMAGE}
             name={communityIntro.title}
             heightRatio={0.35}
-            offsetTop={heroOffsetTop}
           />
         )}
         <View style={styles.toggleRow}>
@@ -270,7 +256,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
           />
         )}
       </ScrollView>
-    </SafeAreaView>
+    </ScreenWithHeader>
   );
 };
 

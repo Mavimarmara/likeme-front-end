@@ -12,10 +12,11 @@ import {
   TextInput as RNTextInput,
   LayoutChangeEvent,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { StackScreenProps } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Header, Title, TextInput, PrimaryButton, SecondaryButton, ButtonGroup } from '@/components/ui';
+import { Title, TextInput, PrimaryButton, SecondaryButton, ButtonGroup } from '@/components/ui';
+import { ScreenWithHeader } from '@/components/ui/layout';
 import { personsService } from '@/services';
 import { useTranslation } from '@/hooks/i18n';
 import type { PersonData } from '@/types/person';
@@ -138,16 +139,6 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
   );
 
   const topSectionStyle = useMemo(() => [styles.topSection], []);
-
-  const headerFixedStyle = useMemo(
-    () => [
-      {
-        backgroundColor: COLORS.BACKGROUND_SECONDARY,
-        paddingTop: Math.max(insets.top, Platform.OS === 'android' ? 16 : 0),
-      },
-    ],
-    [insets.top],
-  );
 
   const validateNumericField = useCallback(
     (value: string, min: number, max: number, required: boolean): string | undefined => {
@@ -274,14 +265,15 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
   );
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['bottom', 'left', 'right']}>
+    <ScreenWithHeader
+      navigation={navigation}
+      headerProps={{ onBackPress: () => navigation.goBack() }}
+      contentContainerStyle={styles.safeArea}
+      contentBackgroundColor={COLORS.BACKGROUND}
+    >
       <StatusBar barStyle='dark-content' backgroundColor={COLORS.BACKGROUND_SECONDARY} />
 
       <View style={styles.container}>
-        <View style={headerFixedStyle}>
-          <Header onBackPress={() => navigation.goBack()} />
-        </View>
-
         <ScrollView
           ref={scrollViewRef}
           style={styles.scrollView}
@@ -498,7 +490,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
           </View>
         </TouchableOpacity>
       </Modal>
-    </SafeAreaView>
+    </ScreenWithHeader>
   );
 };
 

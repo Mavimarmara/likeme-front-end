@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { StackScreenProps } from '@react-navigation/stack';
 import { View, Text, ScrollView, Image, useWindowDimensions, Alert } from 'react-native';
-import { Header, IconSilhouette, PrimaryButton, SelectionButtonQuiz } from '@/components/ui';
+import { IconSilhouette, PrimaryButton, SelectionButtonQuiz } from '@/components/ui';
+import { ScreenWithHeader } from '@/components/ui/layout';
 import { CTACard } from '@/components/ui/cards';
 import { COLORS } from '@/constants';
 import { GradientSplash6 } from '@/assets/auth';
@@ -94,9 +95,11 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
   }, [navigation]);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Header onBackPress={() => navigation.goBack()} rightLabel={t('common.skip')} onRightPress={handleSkip} />
-
+    <ScreenWithHeader
+      navigation={navigation}
+      headerProps={{ onBackPress: () => navigation.goBack(), rightLabel: t('common.skip'), onRightPress: handleSkip }}
+      contentContainerStyle={styles.container}
+    >
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
@@ -145,7 +148,7 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
           size='large'
         />
       </View>
-    </SafeAreaView>
+    </ScreenWithHeader>
   );
 };
 

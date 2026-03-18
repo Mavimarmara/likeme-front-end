@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, Image } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Header } from '@/components/ui';
+import { ScreenWithHeader } from '@/components/ui/layout';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import { useTranslation } from '@/hooks/i18n';
 import { BackgroundWithGradient2, BackgroundWithGradient3 } from '@/assets/anamnesis';
@@ -25,14 +24,16 @@ const AnamnesisStartScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <ScreenWithHeader
+      navigation={navigation}
+      headerProps={{ showBackButton: true, onBackPress: () => navigation.goBack() }}
+      contentContainerStyle={styles.container}
+    >
       {/* Background superior */}
       <Image source={BackgroundWithGradient3} style={styles.backgroundTop} resizeMode='cover' />
 
       {/* Background inferior */}
       <Image source={BackgroundWithGradient2} style={styles.backgroundBottom} resizeMode='cover' />
-
-      <Header showBackButton={true} onBackPress={() => navigation.goBack()} />
 
       <View style={styles.content}>
         {/* Imagem decorativa rotacionada 270 graus e centralizada */}
@@ -66,7 +67,7 @@ const AnamnesisStartScreen: React.FC<Props> = ({ navigation }) => {
           </View>
         </View>
       </View>
-    </SafeAreaView>
+    </ScreenWithHeader>
   );
 };
 

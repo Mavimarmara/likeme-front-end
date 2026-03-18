@@ -1,8 +1,7 @@
 import React from 'react';
 import { View, Text, ScrollView, Image, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
-import { Header } from '@/components/ui';
+import { ScreenWithHeader } from '@/components/ui/layout';
 import { SecondaryButton } from '@/components/ui/buttons';
 import ProgressBar from '@/components/ui/feedback/ProgressBar';
 import { BackgroundWithGradient2, BackgroundWithGradient3 } from '@/assets/anamnesis';
@@ -86,37 +85,45 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.container}>
-        <Header showBackButton={true} onBackPress={() => navigation.goBack()} />
+      <ScreenWithHeader
+        navigation={navigation}
+        headerProps={{ showBackButton: true, onBackPress: () => navigation.goBack() }}
+        contentContainerStyle={styles.container}
+      >
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <ActivityIndicator size='large' color={COLORS.PRIMARY.PURE} />
           <Text style={{ marginTop: 16, color: '#666' }}>{t('anamnesis.loadingProgress')}</Text>
         </View>
-      </SafeAreaView>
+      </ScreenWithHeader>
     );
   }
 
   if (error) {
     return (
-      <SafeAreaView style={styles.container}>
-        <Header showBackButton={true} onBackPress={() => navigation.goBack()} />
+      <ScreenWithHeader
+        navigation={navigation}
+        headerProps={{ showBackButton: true, onBackPress: () => navigation.goBack() }}
+        contentContainerStyle={styles.container}
+      >
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
           <Text style={{ color: '#EF4444', marginBottom: 16 }}>{t('anamnesis.errorLoadingData')}</Text>
           <Text style={{ color: '#666', textAlign: 'center' }}>{error}</Text>
         </View>
-      </SafeAreaView>
+      </ScreenWithHeader>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <ScreenWithHeader
+      navigation={navigation}
+      headerProps={{ showBackButton: true, onBackPress: () => navigation.goBack() }}
+      contentContainerStyle={styles.container}
+    >
       {/* Background superior */}
       <Image source={BackgroundWithGradient3} style={styles.backgroundTop} resizeMode='cover' />
 
       {/* Background inferior */}
       <Image source={BackgroundWithGradient2} style={styles.backgroundBottom} resizeMode='cover' />
-
-      <Header showBackButton={true} onBackPress={() => navigation.goBack()} />
 
       <ScrollView
         style={styles.scrollView}
@@ -307,7 +314,7 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </ScreenWithHeader>
   );
 };
 

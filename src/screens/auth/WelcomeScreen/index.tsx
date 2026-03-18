@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, KeyboardAvoidingView, Platform, Alert, TextInput as RNTextInput, Image, Text } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Header, TextInput, PrimaryButton } from '@/components/ui';
+import { TextInput, PrimaryButton } from '@/components/ui';
+import { ScreenWithHeader } from '@/components/ui/layout';
 import { GradientSplash4 } from '@/assets/auth';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen, logButtonClick, logFormSubmit, logNavigation } from '@/analytics';
@@ -62,25 +62,27 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
     navigation.navigate(nextScreen as never, params as never);
   };
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView style={styles.keyboardAvoidingView} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-        <Header
-          onBackPress={() => {
-            logButtonClick({
-              screen_name: 'welcome',
-              button_label: 'back',
-              action_name: 'go_back',
-            });
-            logNavigation({
-              source_screen: 'welcome',
-              destination_screen: 'unauthenticated',
-              action_name: 'go_back',
-            });
-            navigation.goBack();
-          }}
-        />
+  const handleBack = () => {
+    logButtonClick({
+      screen_name: 'welcome',
+      button_label: 'back',
+      action_name: 'go_back',
+    });
+    logNavigation({
+      source_screen: 'welcome',
+      destination_screen: 'unauthenticated',
+      action_name: 'go_back',
+    });
+    navigation.goBack();
+  };
 
+  return (
+    <ScreenWithHeader
+      navigation={navigation}
+      headerProps={{ onBackPress: handleBack }}
+      contentContainerStyle={styles.container}
+    >
+      <KeyboardAvoidingView style={styles.keyboardAvoidingView} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <View style={styles.main}>
           <View style={styles.content}>
             <View style={styles.welcomeTitleBlock}>
@@ -113,7 +115,7 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
           </View>
         </View>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </ScreenWithHeader>
   );
 };
 

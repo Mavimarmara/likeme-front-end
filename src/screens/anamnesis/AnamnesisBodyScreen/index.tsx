@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, Text, ScrollView, ActivityIndicator, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Header } from '@/components/ui';
+import { ScreenWithHeader } from '@/components/ui/layout';
 import { PrimaryButton } from '@/components/ui/buttons';
 import { SymptomSlider } from '@/components/ui/inputs';
 import { useAnamnesisQuestionnaire } from '@/hooks';
@@ -66,20 +65,25 @@ const AnamnesisBodyScreen: React.FC<Props> = ({ navigation }) => {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.container}>
-        <Header onBackPress={() => navigation.goBack()} />
+      <ScreenWithHeader
+        navigation={navigation}
+        headerProps={{ onBackPress: () => navigation.goBack() }}
+        contentContainerStyle={styles.container}
+      >
         <View style={styles.loadingContainer}>
           <ActivityIndicator size='large' color='#007AFF' />
           <Text style={styles.loadingText}>{t('anamnesis.loadingQuestions')}</Text>
         </View>
-      </SafeAreaView>
+      </ScreenWithHeader>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Header onBackPress={() => navigation.goBack()} />
-
+    <ScreenWithHeader
+      navigation={navigation}
+      headerProps={{ onBackPress: () => navigation.goBack() }}
+      contentContainerStyle={styles.container}
+    >
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -122,7 +126,7 @@ const AnamnesisBodyScreen: React.FC<Props> = ({ navigation }) => {
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </ScreenWithHeader>
   );
 };
 

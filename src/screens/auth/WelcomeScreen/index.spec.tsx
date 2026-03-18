@@ -18,7 +18,6 @@ jest.mock('@/components/ui', () => {
   const { Text, TouchableOpacity } = require('react-native');
   const RNTextInput = require('react-native').TextInput;
   return {
-    Header: () => null,
     TextInput: React.forwardRef(({ placeholder, onChangeText, value, onSubmitEditing }: any, ref: any) => (
       <RNTextInput
         ref={ref}
@@ -34,6 +33,13 @@ jest.mock('@/components/ui', () => {
         <Text>{label}</Text>
       </TouchableOpacity>
     ),
+  };
+});
+
+jest.mock('@/components/ui/layout', () => {
+  const { View } = require('react-native');
+  return {
+    ScreenWithHeader: ({ children }: any) => <View>{children}</View>,
   };
 });
 

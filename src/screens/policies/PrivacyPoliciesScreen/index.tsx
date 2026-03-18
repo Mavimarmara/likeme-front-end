@@ -1,8 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Background, Header, PrimaryButton } from '@/components/ui';
+import { PrimaryButton } from '@/components/ui';
+import { ScreenWithHeader } from '@/components/ui/layout';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen } from '@/analytics';
 import { AuthService, storageService } from '@/services';
@@ -80,10 +80,11 @@ const PrivacyPoliciesScreen: React.FC<Props> = ({ navigation, route }) => {
   }, [navigation, userName, isSubmitting]);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Background />
-      <Header onBackPress={() => navigation.goBack()} />
-
+    <ScreenWithHeader
+      navigation={navigation}
+      headerProps={{ onBackPress: () => navigation.goBack() }}
+      contentContainerStyle={styles.container}
+    >
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
@@ -154,7 +155,7 @@ const PrivacyPoliciesScreen: React.FC<Props> = ({ navigation, route }) => {
           loading={isSubmitting}
         />
       </View>
-    </SafeAreaView>
+    </ScreenWithHeader>
   );
 };
 

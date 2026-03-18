@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, Image, ScrollView, Dimensions } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Header, IconButton } from '@/components/ui';
+import { IconButton } from '@/components/ui';
+import { ScreenWithHeader } from '@/components/ui/layout';
 import { PRESENTATION_PAGES } from '@/constants/presentation';
 import { useTranslation } from '@/hooks/i18n';
 import { SPACING } from '@/constants';
@@ -83,9 +83,11 @@ const AppPresentationScreen: React.FC<Props> = ({ navigation, route }) => {
   const currentPageData = pages[currentPage];
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Header onBackPress={handleBack} rightLabel={t('common.skip')} onRightPress={handleSkip} />
-
+    <ScreenWithHeader
+      navigation={navigation}
+      headerProps={{ onBackPress: handleBack, rightLabel: t('common.skip'), onRightPress: handleSkip }}
+      contentContainerStyle={styles.container}
+    >
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
@@ -135,7 +137,7 @@ const AppPresentationScreen: React.FC<Props> = ({ navigation, route }) => {
         </Text>
         <IconButton icon='chevron-right' onPress={handleNext} variant='dark' containerStyle={styles.nextButton} />
       </View>
-    </SafeAreaView>
+    </ScreenWithHeader>
   );
 };
 

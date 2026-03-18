@@ -114,6 +114,13 @@ jest.mock('@/components/ui', () => {
   };
 });
 
+jest.mock('@/components/ui/layout', () => {
+  const { View } = require('react-native');
+  return {
+    ScreenWithHeader: ({ children }: any) => <View>{children}</View>,
+  };
+});
+
 const getServices = () => require('@/services');
 
 describe('RegisterScreen', () => {
