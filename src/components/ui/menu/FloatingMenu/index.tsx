@@ -41,7 +41,7 @@ const FloatingMenu: React.FC<Props> = ({ items, selectedId }) => {
           accessibilityRole='button'
           accessibilityLabel='Home'
         >
-          <ColoredTwoDotsIcon width={18} height={18} />
+          <ColoredTwoDotsIcon width={20} height={20} />
           {selectedId === 'home' && <Text style={styles.pillLabel}>Home</Text>}
         </TouchableOpacity>
 

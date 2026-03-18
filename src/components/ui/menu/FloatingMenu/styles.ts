@@ -56,8 +56,8 @@ export const styles = StyleSheet.create({
     color: ACCENT_BLUE,
   },
   homeIcon: {
-    width: 18,
-    height: 18,
+    width: 20,
+    height: 20,
     resizeMode: 'contain',
   },
 });
