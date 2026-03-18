@@ -1,7 +1,6 @@
 import { COLORS, SPACING } from '@/constants';
 import { StyleSheet } from 'react-native';
 
-const SURFACE_WHITE = '#FFFFFF';
 const ACCENT_BLUE = '#0154F8';
 
 export const styles = StyleSheet.create({
@@ -60,5 +59,55 @@ export const styles = StyleSheet.create({
     width: 20,
     height: 20,
     resizeMode: 'contain',
+  },
+
+  menuIconImage: {
+    width: 32,
+    height: 32,
+  },
+
+  shopIconWrap: {
+    width: 32,
+    height: 32,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  shopIconLayer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: '100%',
+    height: '100%',
+  },
+  shopIconOverlay: {
+    // Pequeno ajuste para o overlay ficar visível sem cobrir tudo.
+    opacity: 1,
+  },
+
+  communityIconWrap: {
+    width: 32,
+    height: 32,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  communityIconLayer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: '100%',
+    height: '100%',
+  },
+  communityWordmarkLayer: {
+    position: 'absolute',
+    top: -2,
+    left: -2,
+    right: -2,
+    bottom: -2,
+    width: '100%',
+    height: '100%',
   },
 });

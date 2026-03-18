@@ -20,6 +20,9 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
   const { t } = useTranslation();
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
   const [isContentExpanded, setIsContentExpanded] = useState(false);
+  const [likeDelta, setLikeDelta] = useState(0);
+  const [isLiking, setIsLiking] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
 
   const capitalizeWords = (text: string): string => {
     return text
@@ -135,6 +138,25 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
     }
   };
 
+  const likeCount = (post.likes ?? 0) + likeDelta;
+
+  const handleLikePress = async () => {
+    if (isLiking || isLiked) return;
+
+    setIsLiking(true);
+    try {
+      const ok = await communityService.addPostReaction(post.id, 'like');
+      if (ok) {
+        setLikeDelta((d) => d + 1);
+        setIsLiked(true);
+      }
+    } catch (error) {
+      logger.error('Erro ao dar like no post:', error);
+    } finally {
+      setIsLiking(false);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.contentContainer}>
@@ -173,21 +195,39 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
       {post.poll && <PollCard poll={post.poll} onVote={handlePollVote} disabled={false} />}
 
       <View style={styles.footer}>
-        {content && (
-          <TouchableOpacity style={styles.seeMoreButton} onPress={handleSeeMorePress} activeOpacity={0.7}>
-            <Text style={styles.seeMoreButtonText}>
-              {isContentExpanded ? t('common.seeLess') : t('avatar.seeMore')}
-            </Text>
-          </TouchableOpacity>
-        )}
+        <View style={styles.footerLeft}>
+          {!post.poll && content && (
+            <TouchableOpacity style={styles.seeMoreButton} onPress={handleSeeMorePress} activeOpacity={0.7}>
+              <Text style={styles.seeMoreButtonText}>
+                {isContentExpanded ? t('common.seeLess') : t('avatar.seeMore')}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
 
-        {/* Não mostrar botão de comentários quando for uma enquete */}
-        {!post.poll && (
-          <TouchableOpacity style={styles.commentsInfo} onPress={handleCommentsPress} activeOpacity={0.7}>
-            <Icon name='chat-bubble-outline' size={24} color='#0154f8' />
-            <Text style={styles.commentsCount}>{commentsCount}</Text>
-          </TouchableOpacity>
-        )}
+        <View style={styles.footerRight}>
+          {!post.poll && (
+            <TouchableOpacity
+              style={[styles.likeButton, isLiking && styles.likeButtonDisabled]}
+              onPress={handleLikePress}
+              activeOpacity={0.7}
+              disabled={isLiking || isLiked}
+              accessibilityRole='button'
+              accessibilityLabel='Like'
+            >
+              <Icon name={isLiked ? 'thumb-up' : 'thumb-up-off-alt'} size={18} color='#0154f8' />
+              <Text style={styles.likeCount}>{likeCount}</Text>
+            </TouchableOpacity>
+          )}
+
+          {/* Não mostrar botão de comentários quando for uma enquete */}
+          {!post.poll && (
+            <TouchableOpacity style={styles.commentsInfo} onPress={handleCommentsPress} activeOpacity={0.7}>
+              <Icon name='chat-bubble-outline' size={18} color='#0154f8' />
+              <Text style={styles.commentsCount}>{commentsCount}</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
 
       {/* Não mostrar seção de comentários quando for uma enquete */}

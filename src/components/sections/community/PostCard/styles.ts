@@ -61,20 +61,48 @@ export const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '400',
     color: '#001137',
-    lineHeight: 20,
   },
   description: {
     fontSize: 14,
     fontWeight: '400',
     color: '#6e6a6a',
     letterSpacing: 0.2,
-    lineHeight: 14,
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-end',
+    alignItems: 'center',
     marginTop: SPACING.SM,
+  },
+  footerLeft: {
+    flexShrink: 0,
+    alignItems: 'flex-start',
+  },
+  footerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.SM,
+  },
+  likeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.XS,
+    minHeight: 24,
+  },
+  likeButtonDisabled: {
+    opacity: 0.6,
+  },
+  likeIcon: {
+    width: 24,
+    height: 24,
+  },
+  likeCount: {
+    fontFamily: 'DM Sans',
+    fontSize: 10,
+    fontWeight: '400',
+    color: '#0154f8',
+    letterSpacing: 0.2,
+    lineHeight: 20,
   },
   seeMoreButton: {
     backgroundColor: 'rgba(240, 238, 225, 0.16)',
@@ -90,6 +118,7 @@ export const styles = StyleSheet.create({
     minHeight: 36,
     justifyContent: 'center',
     alignItems: 'center',
+    alignSelf: 'flex-start',
   },
   seeMoreButtonText: {
     fontSize: 14,

@@ -19,6 +19,9 @@ type Props = {
   selectedId?: string;
 };
 
+const HOME_ICON_SIZE = 32;
+const MENU_ICON_SIZE = 20;
+
 const FloatingMenu: React.FC<Props> = ({ items, selectedId }) => {
   const navigation = useNavigation();
 
@@ -39,7 +42,7 @@ const FloatingMenu: React.FC<Props> = ({ items, selectedId }) => {
           accessibilityRole='button'
           accessibilityLabel='Home'
         >
-          <ColoredTwoDotsIcon width={30} height={30} />
+          <ColoredTwoDotsIcon width={HOME_ICON_SIZE} height={HOME_ICON_SIZE} />
           {selectedId === 'home' && <Text style={styles.pillLabel}>Home</Text>}
         </TouchableOpacity>
 
@@ -54,7 +57,7 @@ const FloatingMenu: React.FC<Props> = ({ items, selectedId }) => {
               accessibilityRole='button'
               accessibilityLabel={item.fullLabel || item.label}
             >
-              <Icon name={item.icon} size={20} color={isSelected ? '#0154F8' : '#001137'} />
+              <Icon name={item.icon} size={MENU_ICON_SIZE} color={isSelected ? '#0154F8' : '#001137'} />
               {isSelected && <Text style={styles.pillLabel}>{item.fullLabel || item.label}</Text>}
             </TouchableOpacity>
           );

@@ -11,6 +11,7 @@ class CommunityService {
   private readonly userFeeEndpoint = '/api/communities/feed';
   private readonly pollDetailEndpoint = '/api/v3/polls';
   private readonly commentReactionEndpoint = '/api/communities/comments';
+  private readonly postReactionEndpoint = '/api/communities/posts';
   private readonly communitiesEndpoint = '/api/communities';
 
   async getUserFeed(params: UserFeedParams = {}): Promise<UserFeedApiResponse> {
@@ -137,6 +138,30 @@ class CommunityService {
     } catch (error) {
       logger.error('Error voting on poll:', error);
       throw error;
+    }
+  }
+
+  async addPostReaction(postId: string, reactionName: 'like' | 'dislike' = 'like'): Promise<boolean> {
+    try {
+      if (!postId || postId.trim() === '') {
+        throw new Error('Post ID is required');
+      }
+
+      const endpoint = `${this.postReactionEndpoint}/${postId.trim()}/reactions`;
+
+      await apiClient.post(
+        endpoint,
+        {
+          reactionName,
+        },
+        true,
+      );
+
+      logger.debug('Post reaction added:', { postId, reactionName });
+      return true;
+    } catch (error) {
+      logger.warn('Error adding post reaction (ignored):', error);
+      return false;
     }
   }
 
