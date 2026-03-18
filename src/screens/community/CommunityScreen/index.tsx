@@ -194,7 +194,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
       </View>
       <ScrollView
         style={[{ flex: 1 }, { zIndex: 1 }]}
-        contentContainerStyle={{ paddingTop: SPACING.MD, paddingBottom: SPACING.XL }}
+        contentContainerStyle={{ paddingBottom: SPACING.XL }}
         showsVerticalScrollIndicator={false}
         onMomentumScrollEnd={(e) => {
           const { layoutMeasurement, contentOffset, contentSize } = e.nativeEvent;
@@ -209,7 +209,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
             imageUri={communityIntro.imageUri ?? DEFAULT_COMMUNITY_IMAGE}
             name={communityIntro.title}
             badges={communityIntroBadges}
-            heightRatio={0.42}
+            heightRatio={0.68}
             footer={
               communityIntro.description ? (
                 <View style={styles.heroFooter}>
