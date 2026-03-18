@@ -2,6 +2,7 @@ import React from 'react';
 import { Easing } from 'react-native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import { CommunityScreen } from '@/screens/community';
+import { PostDetailScreen } from '@/screens/community';
 import type { CommunityStackParamList } from '@/types/navigation';
 
 const Stack = createStackNavigator<CommunityStackParamList>();
@@ -22,6 +23,7 @@ const CommunityStackNavigator: React.FC = () => {
       }}
     >
       <Stack.Screen name='CommunityList' component={CommunityScreen} />
+      <Stack.Screen name='PostDetail' component={PostDetailScreen} />
     </Stack.Navigator>
   );
 };

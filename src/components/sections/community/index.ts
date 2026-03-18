@@ -2,7 +2,6 @@ export { default as LiveBanner, type LiveBannerData, type LiveStatus } from './L
 export { default as CommunityIntroSection } from './CommunityIntroSection';
 export { default as SpecialistCard } from './SpecialistCard';
 export type { SpecialistCardProps } from './SpecialistCard';
-export { default as PostDetailsHeader } from './PostDetailsHeader';
 export { default as NextEventsSection } from './NextEventsSection';
 export { default as PopularProvidersSection, type Provider } from './PopularProvidersSection';
 export { default as YourCommunitiesSection, type YourCommunity } from './YourCommunitiesSection';
@@ -16,3 +15,4 @@ export { default as PostsSection } from './PostsSection';
 export { default as ProgramsList } from './ProgramsList';
 export { default as ShoppingList } from './ShoppingList';
 export { default as JoinCommunityCard, type JoinCommunity } from './JoinCommunityCard';
+export { default as PostReplies } from './PostReplies';

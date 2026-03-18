@@ -138,10 +138,4 @@ export const styles = StyleSheet.create({
     letterSpacing: 0.2,
     lineHeight: 22,
   },
-  commentsSection: {
-    marginTop: 16,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#E0E0E0',
-  },
 });

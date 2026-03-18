@@ -79,6 +79,7 @@ export type RootStackParamList = {
 
 export type CommunityStackParamList = {
   CommunityList: undefined;
+  PostDetail: { post: import('@/types').Post };
 };
 
 export type ChatStackParamList = {

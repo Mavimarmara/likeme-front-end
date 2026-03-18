@@ -5,6 +5,7 @@ import { PostCard } from '@/components/sections/community';
 import { useTranslation } from '@/hooks/i18n';
 import type { Post } from '@/types';
 import { styles } from './styles';
+import { useNavigation } from '@react-navigation/native';
 
 type Props = {
   posts: Post[];
@@ -16,6 +17,7 @@ type Props = {
 
 const PostsSection: React.FC<Props> = ({ posts, loading, loadingMore, error, onLoadMore }) => {
   const { t } = useTranslation();
+  const navigation = useNavigation<any>();
 
   const renderLoadingFooter = () => {
     if (!loadingMore) return null;
@@ -69,7 +71,13 @@ const PostsSection: React.FC<Props> = ({ posts, loading, loadingMore, error, onL
         ) : (
           <>
             {posts.map((post) => (
-              <PostCard key={post.id} post={post} />
+              <PostCard
+                key={post.id}
+                post={post}
+                onPress={(selectedPost) => {
+                  navigation.navigate('PostDetail', { post: selectedPost });
+                }}
+              />
             ))}
             {renderLoadingFooter()}
           </>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Badge, CommentCard } from '@/components/ui';
+import { Badge } from '@/components/ui';
 import { PollCard } from '@/components/sections/community';
 import { useTranslation } from '@/hooks/i18n';
 import { styles } from './styles';
@@ -14,12 +14,28 @@ type Props = {
   post: Post;
   onPress?: (post: Post) => void;
   category?: string;
+  initialContentExpanded?: boolean;
+  initialCommentsOpen?: boolean;
+  onCommentsOpenChange?: (open: boolean) => void;
+  /**
+   * Quando true, força o conteúdo sempre expandido e oculta o botão see more/see less.
+   * Usado na `PostDetailScreen`.
+   */
+  forceContentExpanded?: boolean;
 };
 
-const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
+const PostCard: React.FC<Props> = ({
+  post,
+  onPress,
+  category: _category,
+  initialContentExpanded = false,
+  initialCommentsOpen = false,
+  onCommentsOpenChange,
+  forceContentExpanded = false,
+}) => {
   const { t } = useTranslation();
-  const [isCommentsOpen, setIsCommentsOpen] = useState(false);
-  const [isContentExpanded, setIsContentExpanded] = useState(false);
+  const [isCommentsOpen, setIsCommentsOpen] = useState(initialCommentsOpen);
+  const [isContentExpanded, setIsContentExpanded] = useState(forceContentExpanded ? true : initialContentExpanded);
   const [likeDelta, setLikeDelta] = useState(0);
   const [isLiking, setIsLiking] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
@@ -101,10 +117,14 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
   const commentsCount = post.commentsCount !== undefined ? post.commentsCount : post.comments?.length || 0;
 
   const handleCommentsPress = () => {
-    setIsCommentsOpen(!isCommentsOpen);
+    const next = !isCommentsOpen;
+    setIsCommentsOpen(next);
+    onCommentsOpenChange?.(next);
+    onPress?.(post);
   };
 
   const handleSeeMorePress = () => {
+    if (forceContentExpanded) return;
     setIsContentExpanded(!isContentExpanded);
   };
 
@@ -157,46 +177,56 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
     }
   };
 
+  const handlePostPress = () => {
+    onPress?.(post);
+  };
+
   return (
     <View style={styles.container}>
-      <View style={styles.contentContainer}>
-        {badgeLabel && (
-          <View style={styles.badgeContainer}>
-            <Badge label={badgeLabel} />
-          </View>
-        )}
-
-        <View>
-          <View style={styles.authorSection}>
-            {post.userAvatar ? (
-              <Image source={{ uri: post.userAvatar }} style={styles.avatar} />
-            ) : (
-              <View style={styles.avatarPlaceholder}>
-                <Icon name='person' size={12} color={COLORS.TEXT_LIGHT} />
-              </View>
-            )}
-            {post.userName && <Text style={styles.authorName}>{capitalizeWords(post.userName)}</Text>}
-          </View>
-
-          {title ? (
-            <View style={styles.titleContainer}>
-              <Text style={styles.title}>{title}</Text>
+      <TouchableOpacity
+        onPress={onPress != null ? handlePostPress : undefined}
+        activeOpacity={0.85}
+        disabled={onPress == null}
+      >
+        <View style={styles.contentContainer}>
+          {badgeLabel && (
+            <View style={styles.badgeContainer}>
+              <Badge label={badgeLabel} />
             </View>
-          ) : null}
+          )}
 
-          {content ? (
-            <Text style={styles.description} numberOfLines={isContentExpanded ? undefined : 3}>
-              {content}
-            </Text>
-          ) : null}
+          <View>
+            <View style={styles.authorSection}>
+              {post.userAvatar ? (
+                <Image source={{ uri: post.userAvatar }} style={styles.avatar} />
+              ) : (
+                <View style={styles.avatarPlaceholder}>
+                  <Icon name='person' size={12} color={COLORS.TEXT_LIGHT} />
+                </View>
+              )}
+              {post.userName && <Text style={styles.authorName}>{capitalizeWords(post.userName)}</Text>}
+            </View>
+
+            {title ? (
+              <View style={styles.titleContainer}>
+                <Text style={styles.title}>{title}</Text>
+              </View>
+            ) : null}
+
+            {content ? (
+              <Text style={styles.description} numberOfLines={isContentExpanded ? undefined : 3}>
+                {content}
+              </Text>
+            ) : null}
+          </View>
         </View>
-      </View>
+      </TouchableOpacity>
 
       {post.poll && <PollCard poll={post.poll} onVote={handlePollVote} disabled={false} />}
 
       <View style={styles.footer}>
         <View style={styles.footerLeft}>
-          {!post.poll && content && (
+          {!post.poll && content && !forceContentExpanded && (
             <TouchableOpacity style={styles.seeMoreButton} onPress={handleSeeMorePress} activeOpacity={0.7}>
               <Text style={styles.seeMoreButtonText}>
                 {isContentExpanded ? t('common.seeLess') : t('avatar.seeMore')}
@@ -229,40 +259,6 @@ const PostCard: React.FC<Props> = ({ post, onPress, category }) => {
           )}
         </View>
       </View>
-
-      {/* Não mostrar seção de comentários quando for uma enquete */}
-      {!post.poll && isCommentsOpen && post.comments && post.comments.length > 0 && (
-        <View style={styles.commentsSection}>
-          {post.comments.map((comment) => (
-            <CommentCard
-              key={comment.id}
-              comment={{
-                id: comment.id,
-                postId: post.id,
-                author: {
-                  id: comment.userId,
-                  name: comment.userName || `User ${comment.userId.slice(0, 8)}`,
-                  avatar: comment.userAvatar,
-                },
-                content: comment.content,
-                upvotes:
-                  comment.reactions?.filter((r) => r.type === 'like' || r.type === 'upvote' || r.type === '👍')
-                    .length || 0,
-                downvotes:
-                  comment.reactions?.filter((r) => r.type === 'dislike' || r.type === 'downvote' || r.type === '👎')
-                    .length || 0,
-                reactionsCount: comment.reactionsCount,
-                commentsCount: comment.commentsCount,
-                createdAt:
-                  comment.createdAt instanceof Date
-                    ? comment.createdAt.toISOString()
-                    : new Date(comment.createdAt).toISOString(),
-              }}
-              showReplies={true}
-            />
-          ))}
-        </View>
-      )}
     </View>
   );
 };
