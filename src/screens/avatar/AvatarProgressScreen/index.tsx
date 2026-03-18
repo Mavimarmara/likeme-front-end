@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { View, ScrollView, Text, TouchableOpacity, StatusBar, Share } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScreenWithHeader, ProgressHeaderLogo } from '@/components/ui/layout';
 import { SecondaryButton, IconButton } from '@/components/ui/buttons';
