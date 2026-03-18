@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { View, Text, ImageBackground, Dimensions, type LayoutChangeEvent } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
@@ -8,27 +8,18 @@ const DEFAULT_IMAGE_URI = 'https://images.unsplash.com/photo-1494790108377-be9c2
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export type HeroImageProps = {
-  /** URI da imagem de fundo (hero) */
   imageUri: string;
-  /** Modo perfil: nome exibido no overlay (usado em ProviderProfile) */
   name?: string;
-  /** Modo perfil: subtítulo opcional */
   title?: string;
-  /** Modo perfil: badges no overlay */
   badges?: string[];
-  /** Modo perfil: rodapé opcional */
   footer?: React.ReactNode;
-  /** Conteúdo customizado no overlay (gradiente + children). Usado em ProductDetails e CommunityScreen. */
   children?: React.ReactNode;
-  /** Conteúdo em card no canto inferior direito (ex.: ProductHeroSection). Ignora gradient e overlay de perfil. */
   cardContent?: React.ReactNode;
-  /** Altura da seção como fração da tela (0–1). Default 0.6 */
   heightRatio?: number;
-  /** Quando informado, a altura é (tela - offsetTop) * heightRatio. Use a altura do header para o hero não ignorar o header. */
   offsetTop?: number;
 };
 
-const HeroImage: React.FC<HeroImageProps> = ({
+const HeroImage = ({
   imageUri,
   name,
   title,
@@ -38,11 +29,16 @@ const HeroImage: React.FC<HeroImageProps> = ({
   cardContent,
   heightRatio = 0.5,
   offsetTop = 0,
-}) => {
-  const source = { uri: imageUri || DEFAULT_IMAGE_URI };
-  const useProfileMode = !children && !cardContent && name != null;
-  const useCustomOverlay = Boolean(children);
-  const useCardContent = Boolean(cardContent);
+}: HeroImageProps) => {
+  const source = useMemo(() => ({ uri: imageUri || DEFAULT_IMAGE_URI }), [imageUri]);
+
+  const profileMode = !children && !cardContent && name != null;
+  const customOverlay = Boolean(children);
+  const cardMode = Boolean(cardContent);
+
+  const shouldRenderOverlay = profileMode || customOverlay;
+  const shouldRenderCard = cardMode;
+
   const [overlayContentHeight, setOverlayContentHeight] = useState(0);
   const overlayContentHeightRef = useRef(0);
 
@@ -52,32 +48,32 @@ const HeroImage: React.FC<HeroImageProps> = ({
     overlayContentHeightRef.current = next;
     setOverlayContentHeight(next);
   }, []);
+
+  const overlayHeight = overlayContentHeight > 0 ? overlayContentHeight : 60;
+  const dynamicHeightStyle = useMemo(() => ({ height: overlayHeight }), [overlayHeight]);
+
   const availableHeight = SCREEN_HEIGHT - offsetTop;
   const sectionHeight = Math.max(0, availableHeight * heightRatio);
 
   return (
     <View style={[styles.section, { height: sectionHeight }]}>
       <ImageBackground source={source} style={styles.image} imageStyle={styles.imageStyle}>
-        {useCardContent ? (
+        {shouldRenderCard ? (
           <View style={styles.cardContainer}>{cardContent}</View>
         ) : (
           <View style={styles.overlay}>
-            {(useProfileMode || useCustomOverlay) && (
-              <>
-                <BlurView
-                  intensity={10}
-                  tint='dark'
-                  style={[styles.blur, { height: overlayContentHeight > 0 ? overlayContentHeight : 60 }]}
-                />
+            {shouldRenderOverlay && (
+              <View>
+                <BlurView intensity={10} tint='dark' style={[styles.blur, dynamicHeightStyle]} />
                 <LinearGradient
                   colors={['rgba(48, 48, 48, 0)', 'rgba(41, 41, 41, 1)']}
                   locations={[0.64, 1]}
-                  style={[styles.gradient, { height: overlayContentHeight > 0 ? overlayContentHeight : 60 }]}
+                  style={[styles.gradient, dynamicHeightStyle]}
                 />
-              </>
+              </View>
             )}
             <View style={styles.content} onLayout={handleOverlayContentLayout}>
-              {useProfileMode && (
+              {profileMode && (
                 <>
                   {badges.length > 0 && (
                     <View style={styles.badgesContainer}>
@@ -93,7 +89,7 @@ const HeroImage: React.FC<HeroImageProps> = ({
                   {footer != null ? <View style={styles.footer}>{footer}</View> : <View style={styles.footer} />}
                 </>
               )}
-              {useCustomOverlay && children}
+              {customOverlay && children}
             </View>
           </View>
         )}
