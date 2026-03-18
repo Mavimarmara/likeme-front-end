@@ -1,0 +1,12 @@
+---
+description: Evitar comentários desnecessários (priorizar autocomentar)
+globs: **/*.{ts,tsx}
+alwaysApply: true
+---
+
+# Regra de comentários
+
+- Evite adicionar comentários “de decoração” (ex.: “incrementa”, “atribui valor”, “passo 1”).
+- Prefira código autocomentado: nomes claros, funções pequenas, estrutura explícita e tipos bem definidos.
+- Use comentários somente quando a intenção não for óbvia ou quando houver trade-off relevante (ex.: workaround, requisito externo, efeitos colaterais importantes).
+- Se precisar explicar uma lógica complexa, documente a decisão (o por que), não o óbvio (o que).

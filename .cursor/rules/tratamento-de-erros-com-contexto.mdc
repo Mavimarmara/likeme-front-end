@@ -1,0 +1,12 @@
+---
+description: Erros nunca devem ser engolidos; adicione contexto
+globs: **/*.{ts,tsx}
+alwaysApply: true
+---
+
+# Regra de tratamento de erros
+
+- Evite `catch (e) {}` silencioso; sempre registre e/ou retorne/propague o erro com contexto.
+- Em `catch`, inclua o “por que” e o “onde”: qual operação falhou e quais parâmetros relevantes.
+- Para `async/await`, use `throw` para propagar quando o handler não consegue resolver.
+- Quando fizer sentido, crie/propague erros tipados (ex.: `new Error(...)` com `cause`).

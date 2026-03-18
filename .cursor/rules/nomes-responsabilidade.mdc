@@ -1,0 +1,12 @@
+---
+description: Nomes claros e responsabilidades bem separadas
+globs: **/*.{ts,tsx}
+alwaysApply: true
+---
+
+# Regra de nomes e estrutura
+
+- Prefira nomes descritivos (o que faz) em vez de genéricos (`data`, `info`, `temp`, `handleSomething`).
+- Mantenha funções pequenas e com responsabilidade única; quando ficar “grande demais”, extraia `helpers`/`utils` ou crie um `custom hook`.
+- Em React, o componente deve focar em renderização e delegar lógica de negócio para helpers/services/hooks.
+- Evite duplicação: se a mesma transformação/validação reaparece, extraia uma função reutilizável.

@@ -1,0 +1,12 @@
+---
+description: useEffect para side effects reais; sem estado derivado
+globs: **/*.{ts,tsx}
+alwaysApply: true
+---
+
+# Regra de `useEffect`
+
+- Use `useEffect` apenas para efeitos colaterais (fetch, sincronizar com sistemas externos, subscriptions, timers).
+- Evite `useEffect` para “estado derivado” que poderia ser calculado em render (ou via `useMemo`/helper).
+- Sempre confira as dependências do efeito: se algo é usado, precisa estar no array (ou ser justificado).
+- Evite suprimir ESLint/React Hooks sem motivo explícito.

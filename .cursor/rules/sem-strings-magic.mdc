@@ -1,0 +1,11 @@
+---
+description: Evitar strings mágicas (status/chaves/rotas)
+globs: **/*.{ts,tsx}
+alwaysApply: true
+---
+
+# Regra de “strings mágicas”
+
+- Evite repetir literais como status, chaves, nomes de campos, rotas/paths e labels.
+- Prefira `const`/`enum`/tipos (ex.: `STATUS.PENDING` ou `type RouteKey = ...`) para centralizar valores.
+- Se for um contrato externo (API), concentre a “mapeação” em um local único (ex.: `adapters/`).

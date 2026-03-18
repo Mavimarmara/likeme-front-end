@@ -1,0 +1,20 @@
+---
+description: Estrutura layer-first (screens > UI > services > utils/types)
+globs: likeme-front-end/src/**/*.{ts,tsx}
+alwaysApply: true
+---
+
+# Regra “layer-first”
+
+- Ao implementar uma nova funcionalidade, comece decidindo a “layer” correta no ecossistema do projeto:
+  - `screens/<dominio>/<Feature>/` para a camada de apresentação por domínio (UI da tela + estados locais + composição).
+  - `components/ui/` e `components/ui/layout/` para componentes reutilizáveis (render puro/UI).
+  - `services/` para integrações externas (API, persistência, comunicação).
+  - `hooks/` para lógica reutilizável do frontend (estado/efeitos) quando fizer sentido abstrair.
+  - `utils/` para helpers puros (transformações, validações, formatações).
+  - `types/` para tipos compartilhados/estáveis do domínio.
+  - `constants/` para constantes do app (tokens, chaves de enums, valores repetidos).
+- Em `screens/<dominio>/<Feature>/`, mantenha coesão: `index.tsx` + `styles.ts` (e testes quando existirem) no mesmo “Feature folder”.
+- Evite lógica de negócio/integração dentro de componentes de UI: componente deve “montar UI”, e serviços/utilitários devem fazer o resto.
+- Prefira imports por alias (ex.: `@/screens/...`, `@/services/...`) em vez de caminhos relativos profundos.
+- Ao mover/introduzir código, use “camada” como critério: se a mudança não é só de render, ela provavelmente pertence a `services/`, `hooks/` ou `utils/`.
