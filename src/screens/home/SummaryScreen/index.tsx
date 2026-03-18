@@ -243,7 +243,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
       if (result.solutionIds.length === 1) {
         const only = result.solutionIds[0];
         if (only === 'products') setSelectedSolutionTab('products');
-        else if (only === 'services') setSelectedSolutionTab('professionals');
+        else if (only === 'services') setSelectedSolutionTab('products');
         else if (only === 'professionals') setSelectedSolutionTab('professionals');
         else if (only === 'programs') setSelectedSolutionTab('programs');
         else if (only === 'communities') setSelectedSolutionTab('communities');
