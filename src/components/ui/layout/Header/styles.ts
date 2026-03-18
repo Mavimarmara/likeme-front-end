@@ -2,6 +2,10 @@ import { StyleSheet } from 'react-native';
 import { SPACING, COLORS } from '@/constants';
 
 export const styles = StyleSheet.create({
+  container: {
+    backgroundColor: COLORS.BACKGROUND_SECONDARY,
+    paddingBottom: SPACING.MD,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

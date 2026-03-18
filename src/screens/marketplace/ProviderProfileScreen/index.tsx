@@ -1,9 +1,8 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Header, HeroImage } from '@/components/ui/layout';
+import { HeroImage, ScreenWithHeader } from '@/components/ui/layout';
 import { ToggleTabs } from '@/components/ui/tabs';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { JoinCommunityCard, type JoinCommunity } from '@/components/sections/community';
@@ -214,8 +213,10 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Header showBackButton={true} onBackPress={handleBackPress} />
+    <ScreenWithHeader
+      headerProps={{ showBackButton: true, onBackPress: handleBackPress }}
+      contentContainerStyle={styles.container}
+    >
       {loadingProvider && !providerData && (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size='large' color='#001137' />
@@ -323,7 +324,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
           </View>
         </ScrollView>
       )}
-    </SafeAreaView>
+    </ScreenWithHeader>
   );
 };
 

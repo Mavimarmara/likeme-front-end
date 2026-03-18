@@ -1,12 +1,11 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { View, Text, ScrollView, Image } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { RouteProp } from '@react-navigation/native';
 import { SearchBar } from '@/components/ui/inputs';
 import { IconButton } from '@/components/ui/buttons';
 import { FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
-import { Header } from '@/components/ui/layout';
+import { ScreenWithHeader } from '@/components/ui/layout';
 import { GradientBackgroundByCategory } from '@/components/sections';
 import { FilterCategoryModal, type FilterCategoryResult, type SolutionId } from '@/components/ui/modals';
 import { WeekHighlightCard, AdsList } from '@/components/sections/marketplace';
@@ -365,16 +364,18 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <ScreenWithHeader
+      headerProps={{
+        showBackButton: false,
+        showMenuWithAvatar: true,
+        onMenuPress: handleMenuPress,
+        userAvatarUri,
+        showCartButton: true,
+        onCartPress: handleCartPress,
+      }}
+      contentContainerStyle={styles.container}
+    >
       <GradientBackgroundByCategory category={selectedCategoryName} />
-      <Header
-        showBackButton={false}
-        showMenuWithAvatar={true}
-        onMenuPress={handleMenuPress}
-        userAvatarUri={userAvatarUri}
-        showCartButton={true}
-        onCartPress={handleCartPress}
-      />
       <View style={styles.content}>
         {renderCustomHeader()}
         <ScrollView
@@ -386,7 +387,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
           {renderAllAds()}
         </ScrollView>
       </View>
-    </SafeAreaView>
+    </ScreenWithHeader>
   );
 };
 

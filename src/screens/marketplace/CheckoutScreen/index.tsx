@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Header } from '@/components/ui/layout';
-import { Background } from '@/components/ui/layout';
+import { ScreenWithHeader } from '@/components/ui/layout';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { Stepper } from '@/components/ui/tabs';
 import { storageService, orderService, userService } from '@/services';
@@ -288,10 +287,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Background />
-      <Header onBackPress={() => navigation.goBack()} />
-
+    <ScreenWithHeader headerProps={{ onBackPress: () => navigation.goBack() }} contentContainerStyle={styles.container}>
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
@@ -410,7 +406,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
           />
         )}
       </View>
-    </SafeAreaView>
+    </ScreenWithHeader>
   );
 };
 

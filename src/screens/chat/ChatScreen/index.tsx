@@ -15,7 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, useFocusEffect, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Header, Background } from '@/components/ui/layout';
+import { ScreenWithHeader } from '@/components/ui/layout';
 import { IconButton } from '@/components/ui/buttons';
 import { MessageBubble } from '@/components/ui/chat';
 import { COLORS } from '@/constants';
@@ -232,48 +232,44 @@ const ChatScreen: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.headerWrapper}>
-        <Background />
-        <SafeAreaView edges={['top']}>
-          <Header
-            showBackButton={false}
-            showMenuWithAvatar
-            onMenuPress={handleMenuPress}
-            userAvatarUri={userAvatarUri}
-            showCartButton
-            onCartPress={handleCartPress}
-            showBellButton
-          />
-
-          <View style={styles.chatHeader}>
-            <IconButton icon='chevron-left' onPress={() => navigation.goBack()} backgroundSize='medium' />
-            <TouchableOpacity
-              style={styles.headerInfo}
-              activeOpacity={0.7}
-              onPress={channelId ? navigateToDetails : undefined}
-              disabled={!channelId}
-            >
-              {channelAvatar ? (
-                <Image source={{ uri: channelAvatar }} style={styles.headerAvatar} />
-              ) : (
-                <View style={styles.headerAvatarPlaceholder}>
-                  <Icon name='person' size={28} color={COLORS.TEXT_LIGHT} />
-                </View>
-              )}
-              <View style={styles.headerTextContainer}>
-                <Text style={styles.headerName} numberOfLines={1}>
-                  {channelName}
-                </Text>
-                {channelDescription ? (
-                  <Text style={styles.headerDescription} numberOfLines={1}>
-                    {channelDescription}
-                  </Text>
-                ) : null}
-              </View>
-            </TouchableOpacity>
+    <ScreenWithHeader
+      headerProps={{
+        showBackButton: false,
+        showMenuWithAvatar: true,
+        onMenuPress: handleMenuPress,
+        userAvatarUri,
+        showCartButton: true,
+        onCartPress: handleCartPress,
+        showBellButton: true,
+      }}
+      contentContainerStyle={styles.container}
+    >
+      <View style={styles.chatHeader}>
+        <IconButton icon='chevron-left' onPress={() => navigation.goBack()} backgroundSize='medium' />
+        <TouchableOpacity
+          style={styles.headerInfo}
+          activeOpacity={0.7}
+          onPress={channelId ? navigateToDetails : undefined}
+          disabled={!channelId}
+        >
+          {channelAvatar ? (
+            <Image source={{ uri: channelAvatar }} style={styles.headerAvatar} />
+          ) : (
+            <View style={styles.headerAvatarPlaceholder}>
+              <Icon name='person' size={28} color={COLORS.TEXT_LIGHT} />
+            </View>
+          )}
+          <View style={styles.headerTextContainer}>
+            <Text style={styles.headerName} numberOfLines={1}>
+              {channelName}
+            </Text>
+            {channelDescription ? (
+              <Text style={styles.headerDescription} numberOfLines={1}>
+                {channelDescription}
+              </Text>
+            ) : null}
           </View>
-        </SafeAreaView>
+        </TouchableOpacity>
       </View>
 
       <KeyboardAvoidingView
@@ -331,7 +327,7 @@ const ChatScreen: React.FC = () => {
           />
         </View>
       </KeyboardAvoidingView>
-    </View>
+    </ScreenWithHeader>
   );
 };
 

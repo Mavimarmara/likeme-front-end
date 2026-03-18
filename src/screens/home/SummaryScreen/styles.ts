@@ -5,13 +5,13 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
     position: 'relative',
-    backgroundColor: 'transparent',
+    backgroundColor: COLORS.BACKGROUND_SECONDARY,
   },
   content: {
     flex: 1,
     zIndex: 1,
     paddingBottom: SPACING.XXL,
-    backgroundColor: 'transparent',
+    backgroundColor: COLORS.BACKGROUND,
   },
   scrollView: {
     backgroundColor: 'transparent',

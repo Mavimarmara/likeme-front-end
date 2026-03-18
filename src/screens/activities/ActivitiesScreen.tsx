@@ -1,10 +1,9 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Image, Modal, Alert, Linking } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
-import { Header, Background } from '@/components/ui/layout';
+import { ScreenWithHeader } from '@/components/ui/layout';
 import { Toggle, PrimaryButton, Badge } from '@/components/ui';
 import { CreateActivityModal } from '@/components/sections/activity';
 import { DoneIcon, CloseIcon } from '@/assets/ui';
@@ -670,9 +669,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
   const plans: Plan[] = [];
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Background />
-      <Header showBackButton={false} />
+    <ScreenWithHeader headerProps={{ showBackButton: false }} contentContainerStyle={styles.container}>
       <View style={styles.content}>
         {renderTabs()}
         {renderFilters()}
@@ -861,7 +858,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
           )}
         </TouchableOpacity>
       </Modal>
-    </SafeAreaView>
+    </ScreenWithHeader>
   );
 };
 

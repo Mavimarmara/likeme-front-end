@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Header, Background } from '@/components/ui/layout';
+import { ScreenWithHeader } from '@/components/ui/layout';
 import { IconButton } from '@/components/ui/buttons';
 import { COLORS } from '@/constants';
 import { chatService } from '@/services';
@@ -117,18 +117,18 @@ const ChatDetailsScreen: React.FC = () => {
   const isLeaveActionBusy = actionLoading === 'leave';
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <Background />
-      <Header
-        showBackButton={false}
-        showMenuWithAvatar
-        onMenuPress={handleMenuPress}
-        userAvatarUri={userAvatarUri}
-        showCartButton
-        onCartPress={handleCartPress}
-        showBellButton
-      />
-
+    <ScreenWithHeader
+      headerProps={{
+        showBackButton: false,
+        showMenuWithAvatar: true,
+        onMenuPress: handleMenuPress,
+        userAvatarUri,
+        showCartButton: true,
+        onCartPress: handleCartPress,
+        showBellButton: true,
+      }}
+      contentContainerStyle={styles.container}
+    >
       <View style={styles.subHeader}>
         <IconButton icon='chevron-left' onPress={() => navigation.goBack()} backgroundSize='medium' />
         <Text style={styles.title}>{t('chat.details.title')}</Text>
@@ -168,7 +168,7 @@ const ChatDetailsScreen: React.FC = () => {
           )}
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </ScreenWithHeader>
   );
 };
 

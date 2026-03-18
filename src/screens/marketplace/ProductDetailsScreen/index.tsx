@@ -3,7 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Image, typ
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Header, HeroImage } from '@/components/ui/layout';
+import { HeroImage, ScreenWithHeader } from '@/components/ui/layout';
 import { Toggle } from '@/components/ui';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { ProductsCarousel, type Product } from '@/components/sections/product';
@@ -261,8 +261,10 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Header showBackButton={true} onBackPress={handleBackPress} />
+    <ScreenWithHeader
+      headerProps={{ showBackButton: true, onBackPress: handleBackPress }}
+      contentContainerStyle={styles.container}
+    >
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Hero Section with Image */}
         <HeroImage imageUri={backgroundImage} heightRatio={0.6}>
@@ -410,7 +412,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
         </View>
       </ScrollView>
       {renderAddToCartButton()}
-    </SafeAreaView>
+    </ScreenWithHeader>
   );
 
   function renderAddToCartButton() {

@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { View, ScrollView, Text, TouchableOpacity, StatusBar, Share } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Header, ProgressHeaderLogo } from '@/components/ui/layout';
+import { ScreenWithHeader, ProgressHeaderLogo } from '@/components/ui/layout';
 import { SecondaryButton, IconButton } from '@/components/ui/buttons';
 import { PeriodSelector } from '@/components/ui/inputs';
 import { CTACard } from '@/components/ui/cards';
@@ -357,9 +357,11 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
   }, [markers, t]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <ScreenWithHeader
+      headerProps={{ showBackButton: true, onBackPress: handleBackPress, customLogo: <ProgressHeaderLogo /> }}
+      contentContainerStyle={styles.container}
+    >
       <StatusBar barStyle='dark-content' backgroundColor={COLORS.BACKGROUND} />
-      <Header showBackButton={true} onBackPress={handleBackPress} customLogo={<ProgressHeaderLogo />} />
       <View style={styles.content}>
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.topSection}>
@@ -519,7 +521,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
           </View>
         </ScrollView>
       </View>
-    </SafeAreaView>
+    </ScreenWithHeader>
   );
 };
 

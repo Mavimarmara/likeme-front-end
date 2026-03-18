@@ -6,7 +6,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SearchBar } from '@/components/ui';
-import { Header, Background } from '@/components/ui/layout';
+import { ScreenWithHeader } from '@/components/ui/layout';
 import { useTranslation } from '@/hooks/i18n';
 import { useChat, useMenuItems } from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
@@ -93,16 +93,17 @@ const ChatListScreen: React.FC<Props> = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <Background />
-      <Header
-        showBackButton={false}
-        showMenuWithAvatar
-        onMenuPress={handleMenuPress}
-        userAvatarUri={userAvatarUri}
-        showCartButton={true}
-        onCartPress={handleCartPress}
-      />
+    <ScreenWithHeader
+      headerProps={{
+        showBackButton: false,
+        showMenuWithAvatar: true,
+        onMenuPress: handleMenuPress,
+        userAvatarUri,
+        showCartButton: true,
+        onCartPress: handleCartPress,
+      }}
+      contentContainerStyle={styles.container}
+    >
       <View style={styles.searchBarContainer}>
         <SearchBar
           placeholder='Search'
@@ -192,7 +193,7 @@ const ChatListScreen: React.FC<Props> = () => {
           </View>
         )}
       </ScrollView>
-    </SafeAreaView>
+    </ScreenWithHeader>
   );
 };
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import { Header, Background } from '@/components/ui/layout';
+import { ScreenWithHeader } from '@/components/ui/layout';
 import { useTranslation } from '@/hooks/i18n';
 import { PostCard } from '@/components/sections/community';
 import type { Post } from '@/types';
@@ -64,9 +64,10 @@ const CommunityPreviewScreen: React.FC<CommunityPreviewScreenProps> = ({ navigat
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Background />
-      <Header showBackButton={true} onBackPress={handleBackPress} />
+    <ScreenWithHeader
+      headerProps={{ showBackButton: true, onBackPress: handleBackPress }}
+      contentContainerStyle={styles.container}
+    >
       <View style={styles.content}>
         <View style={styles.headerSection}>
           <Text style={styles.screenTitle}>{t('marketplace.communityPreview')}</Text>
@@ -83,7 +84,7 @@ const CommunityPreviewScreen: React.FC<CommunityPreviewScreenProps> = ({ navigat
           )}
         </ScrollView>
       </View>
-    </SafeAreaView>
+    </ScreenWithHeader>
   );
 };
 

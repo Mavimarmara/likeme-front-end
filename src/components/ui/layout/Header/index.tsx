@@ -54,56 +54,60 @@ const Header: React.FC<HeaderProps> = ({
   const rootNavigation = (navigation?.getParent?.() ?? navigation) as any;
   const hasRightLabel = Boolean(rightLabel && onRightPress);
   return (
-    <View style={styles.header}>
-      {showMenuWithAvatar && onMenuPress && (
-        <TouchableOpacity style={styles.menuWithAvatarPill} onPress={onMenuPress} activeOpacity={0.7}>
-          <Icon name='menu' size={22} color='#0F1B33' style={styles.menuIcon} />
-          {userAvatarUri ? (
-            <Image source={{ uri: userAvatarUri }} style={styles.headerAvatar} />
-          ) : (
-            <View style={styles.headerAvatarPlaceholder}>
-              <Icon name='person' size={18} color='#0F1B33' />
-            </View>
-          )}
-        </TouchableOpacity>
-      )}
-      {!showMenuWithAvatar && showBackButton && (
-        <IconButton
-          icon='chevron-left'
-          onPress={onBackPress ?? noop}
-          backgroundSize='medium'
-          containerStyle={styles.leftButton}
-        />
-      )}
-      <TouchableOpacity
-        onPress={onLogoPress ?? (() => rootNavigation.navigate('Summary' as never))}
-        activeOpacity={0.7}
-        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-      >
-        {customLogo || <LogoMini width={87} height={16} />}
-      </TouchableOpacity>
-      {hasRightLabel && (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        {showMenuWithAvatar && onMenuPress && (
+          <TouchableOpacity style={styles.menuWithAvatarPill} onPress={onMenuPress} activeOpacity={0.7}>
+            <Icon name='menu' size={22} color='#0F1B33' style={styles.menuIcon} />
+            {userAvatarUri ? (
+              <Image source={{ uri: userAvatarUri }} style={styles.headerAvatar} />
+            ) : (
+              <View style={styles.headerAvatarPlaceholder}>
+                <Icon name='person' size={18} color='#0F1B33' />
+              </View>
+            )}
+          </TouchableOpacity>
+        )}
+        {!showMenuWithAvatar && showBackButton && (
+          <IconButton
+            icon='chevron-left'
+            onPress={onBackPress ?? noop}
+            backgroundSize='medium'
+            containerStyle={styles.leftButton}
+          />
+        )}
         <TouchableOpacity
-          style={styles.rightLabelButton}
-          onPress={onRightPress}
+          onPress={onLogoPress ?? (() => rootNavigation.navigate('Summary' as never))}
           activeOpacity={0.7}
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Text style={styles.rightLabelText}>{rightLabel}</Text>
+          {customLogo || <LogoMini width={87} height={16} />}
         </TouchableOpacity>
-      )}
-      {!hasRightLabel && (
-        <View style={styles.rightButtons}>
-          {showBellButton && <IconButton icon='notifications' onPress={onBellPress ?? noop} backgroundSize='medium' />}
-          {showCartButton && onCartPress && (
-            <IconButton icon='shopping-cart' onPress={onCartPress} backgroundSize='medium' />
-          )}
-          {showLogoutButton && onLogoutPress && (
-            <IconButton icon='logout' onPress={onLogoutPress} backgroundSize='medium' />
-          )}
-          {showRating && <IconButton icon='star' onPress={onRatingPress ?? noop} backgroundSize='medium' />}
-        </View>
-      )}
+        {hasRightLabel && (
+          <TouchableOpacity
+            style={styles.rightLabelButton}
+            onPress={onRightPress}
+            activeOpacity={0.7}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          >
+            <Text style={styles.rightLabelText}>{rightLabel}</Text>
+          </TouchableOpacity>
+        )}
+        {!hasRightLabel && (
+          <View style={styles.rightButtons}>
+            {showBellButton && (
+              <IconButton icon='notifications' onPress={onBellPress ?? noop} backgroundSize='medium' />
+            )}
+            {showCartButton && onCartPress && (
+              <IconButton icon='shopping-cart' onPress={onCartPress} backgroundSize='medium' />
+            )}
+            {showLogoutButton && onLogoutPress && (
+              <IconButton icon='logout' onPress={onLogoutPress} backgroundSize='medium' />
+            )}
+            {showRating && <IconButton icon='star' onPress={onRatingPress ?? noop} backgroundSize='medium' />}
+          </View>
+        )}
+      </View>
     </View>
   );
 };

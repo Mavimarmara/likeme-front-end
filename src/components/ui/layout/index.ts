@@ -7,4 +7,5 @@ export { default as ProgressHeaderLogo } from './ProgressHeaderLogo';
 export { default as IconSilhouette } from './IconSilhouette';
 export { default as Icon } from './Icon';
 export { default as HeroImage } from './HeroImage';
+export { default as ScreenWithHeader } from './ScreenWithHeader';
 export type { HeroImageProps } from './HeroImage';

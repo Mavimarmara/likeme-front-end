@@ -1,8 +1,7 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { Alert, View, ScrollView, Text } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 // import { useFocusEffect } from '@react-navigation/native';
-import { Header, Background } from '@/components/ui/layout';
+import { ScreenWithHeader } from '@/components/ui/layout';
 import { SearchBar } from '@/components/ui/inputs';
 import { FilterMenu } from '@/components/ui/menu';
 import { FilterCategoryModal, type FilterCategoryResult, type SolutionId } from '@/components/ui/modals';
@@ -321,16 +320,17 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   // const handleYourCommunityPostPress = (post: Post) => {};
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Background />
-      <Header
-        showBackButton={false}
-        showMenuWithAvatar
-        onMenuPress={handleMenuPress}
-        userAvatarUri={userAvatarUri}
-        showCartButton={true}
-        onCartPress={handleCartPress}
-      />
+    <ScreenWithHeader
+      headerProps={{
+        showBackButton: false,
+        showMenuWithAvatar: true,
+        onMenuPress: handleMenuPress,
+        userAvatarUri,
+        showCartButton: true,
+        onCartPress: handleCartPress,
+      }}
+      contentContainerStyle={styles.content}
+    >
       <View style={styles.content}>
         <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
           <View style={styles.searchAndFilters}>
@@ -477,7 +477,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
           )}
         </ScrollView>
       </View>
-    </SafeAreaView>
+    </ScreenWithHeader>
   );
 };
 
