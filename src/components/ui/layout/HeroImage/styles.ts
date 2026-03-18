@@ -36,6 +36,7 @@ export const styles = StyleSheet.create({
     paddingBottom: SPACING.XS,
     borderBottomLeftRadius: 40,
     borderBottomRightRadius: 40,
+    position: 'relative',
   },
   gradient: {
     position: 'absolute',
@@ -46,6 +47,7 @@ export const styles = StyleSheet.create({
     borderBottomRightRadius: 40,
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
+    zIndex: 0,
   },
   blur: {
     position: 'absolute',
@@ -57,9 +59,10 @@ export const styles = StyleSheet.create({
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
     overflow: 'hidden',
+    zIndex: 0,
   },
   content: {
-    zIndex: 1,
+    zIndex: 2,
   },
   badgesContainer: {
     flexDirection: 'row',
