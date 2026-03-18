@@ -65,6 +65,8 @@ const Carousel: React.FC<Props> = ({
       <ScrollView
         ref={scrollViewRef}
         horizontal
+        nestedScrollEnabled
+        directionalLockEnabled
         showsHorizontalScrollIndicator={false}
         onScroll={handleScroll}
         onMomentumScrollEnd={handleMomentumScrollEnd}

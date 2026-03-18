@@ -187,6 +187,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       <View style={styles.filterMenuContainer}>
         <FilterMenu
           filterButtonLabel={categoryFilterButtonLabel}
+          filterButtonSelected={selectedCategoryName != null || selectedSolutionIds.length > 0}
           onFilterButtonPress={() => setIsFilterCategoryModalVisible(true)}
           carouselOptions={categoryOptions}
           selectedCarouselId={selectedCategory}

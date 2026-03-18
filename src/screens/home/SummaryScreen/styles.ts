@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { SPACING } from '@/constants';
+import { SPACING, FONT_SIZES, COLORS } from '@/constants';
 
 export const styles = StyleSheet.create({
   container: {
@@ -16,6 +16,18 @@ export const styles = StyleSheet.create({
   scrollView: {
     backgroundColor: 'transparent',
   },
+  searchAndFilters: {
+    paddingVertical: SPACING.MD,
+    paddingHorizontal: SPACING.MD,
+  },
+  sectionTitle: {
+    paddingHorizontal: SPACING.MD,
+    fontFamily: 'DM Sans',
+    fontSize: FONT_SIZES.SM,
+    fontWeight: '500',
+    color: COLORS.NEUTRAL.LOW.PURE,
+    marginBottom: SPACING.MD,
+  },
   avatarContainer: {
     paddingTop: SPACING.MD,
     paddingHorizontal: SPACING.MD,
@@ -29,17 +41,16 @@ export const styles = StyleSheet.create({
   eventsContainer: {
     padding: SPACING.MD,
   },
-  providersContainer: {
-    paddingTop: SPACING.LG,
-  },
-  joinCommunityContainer: {
-    paddingTop: SPACING.LG,
-    paddingHorizontal: SPACING.MD,
-  },
   productsContainer: {
     paddingTop: SPACING.LG,
   },
   otherCommunitiesContainer: {
     paddingTop: SPACING.LG,
+  },
+  sectionContainer: {
+    paddingHorizontal: SPACING.MD,
+  },
+  sectionDivider: {
+    paddingBottom: SPACING.MD,
   },
 });

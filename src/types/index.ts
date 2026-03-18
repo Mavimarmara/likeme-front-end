@@ -12,6 +12,7 @@ export * from './activity';
 export * from './order';
 export * from './cart';
 export * from './category';
+export * from './solution';
 
 export interface User {
   id: string;

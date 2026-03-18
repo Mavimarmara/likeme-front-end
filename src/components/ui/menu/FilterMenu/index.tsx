@@ -7,6 +7,8 @@ import { styles } from './styles';
 type Props<T = string> = {
   filterButtonLabel?: string;
   filterButtonIcon?: string;
+  /** Quando true, o botão de filtro de categoria fica azul (filtro ativo). */
+  filterButtonSelected?: boolean;
   filterModalTitle?: string;
   filterModalContent?: React.ReactNode;
   onFilterButtonPress?: () => void;
@@ -21,6 +23,7 @@ type Props<T = string> = {
 const FilterMenu = <T extends string | number = string>({
   filterButtonLabel,
   filterButtonIcon = 'arrow-drop-down',
+  filterButtonSelected = false,
   filterModalTitle,
   filterModalContent,
   onFilterButtonPress,
@@ -39,6 +42,7 @@ const FilterMenu = <T extends string | number = string>({
           label={filterButtonLabel}
           icon={filterButtonIcon}
           iconPosition='right'
+          selected={filterButtonSelected}
           modalTitle={filterModalTitle}
           modalContent={filterModalContent}
           onPress={onFilterButtonPress}

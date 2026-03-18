@@ -3,9 +3,20 @@ import { communityService, chatService } from '@/services';
 import type { Community, CommunityCategory, ListCommunitiesParams } from '@/types/community';
 import type { Event } from '@/types';
 import type { LiveBannerData } from '@/components/sections/community';
+import type { CategoryName } from '@/types/category';
 import { mapChannelsToEvents } from '@/utils';
 import { PAGINATION } from '@/constants';
 import { logger } from '@/utils/logger';
+
+/** Formato do item exibido no card de comunidade recomendada (compatível com JoinCommunityCard) */
+export interface JoinCommunityItem {
+  id: string;
+  title: string;
+  badge: string;
+  image: string;
+}
+
+const DEFAULT_COMMUNITY_IMAGE = 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800';
 
 interface UseCommunitiesOptions {
   enabled?: boolean;
@@ -13,6 +24,16 @@ interface UseCommunitiesOptions {
   params?: Partial<ListCommunitiesParams>;
   /** Quando true, carrega canais live/broadcast e community para liveBanner e events */
   loadLiveChannels?: boolean;
+  /** Texto para filtrar joinCommunities por título/badge (opcional) */
+  searchQuery?: string;
+  /** Se 'all' ou 'communities', filteredJoinCommunities inclui as comunidades; caso contrário, lista vazia */
+  solutionTab?: string;
+  /** Nome da categoria selecionada para o badge do primeiro card */
+  selectedCategoryName?: CategoryName | null;
+  /** Função para obter o label da categoria (usado no primeiro card) */
+  getCategoryName?: (id: CategoryName) => string;
+  /** URL da imagem do primeiro card (ex.: comunidade Dr. Diogo) */
+  firstCardImageUrl?: string;
 }
 
 const DEFAULT_PAGE_SIZE = PAGINATION.DEFAULT_PAGE_SIZE;
@@ -20,6 +41,10 @@ const DEFAULT_PAGE_SIZE = PAGINATION.DEFAULT_PAGE_SIZE;
 interface UseCommunitiesReturn {
   communities: Community[];
   categories: CommunityCategory[];
+  /** Lista no formato do card de comunidade recomendada (para JoinCommunityCard) */
+  joinCommunities: JoinCommunityItem[];
+  /** joinCommunities filtrado por solutionTab e searchQuery */
+  filteredJoinCommunities: JoinCommunityItem[];
   loading: boolean;
   loadingMore: boolean;
   error: string | null;
@@ -39,7 +64,17 @@ interface UseCommunitiesReturn {
 }
 
 export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunitiesReturn => {
-  const { enabled = true, pageSize = DEFAULT_PAGE_SIZE, params = {}, loadLiveChannels = false } = options;
+  const {
+    enabled = true,
+    pageSize = DEFAULT_PAGE_SIZE,
+    params = {},
+    loadLiveChannels = false,
+    searchQuery = '',
+    solutionTab = 'all',
+    selectedCategoryName = null,
+    getCategoryName,
+    firstCardImageUrl,
+  } = options;
 
   const [communities, setCommunities] = useState<Community[]>([]);
   const [categories, setCategories] = useState<CommunityCategory[]>([]);
@@ -240,9 +275,41 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
     loadChannels();
   }, [loadLiveChannels]);
 
+  const joinCommunities = useMemo((): JoinCommunityItem[] => {
+    const list: JoinCommunityItem[] = communities.map((community) => {
+      const category = categories.length > 0 ? categories[0] : undefined;
+      return {
+        id: community.communityId,
+        title: community.displayName,
+        badge: category?.name ?? 'Community',
+        image: DEFAULT_COMMUNITY_IMAGE,
+      };
+    });
+    if (list.length > 0 && (firstCardImageUrl != null || (getCategoryName != null && selectedCategoryName != null))) {
+      list[0] = {
+        ...list[0],
+        badge:
+          getCategoryName != null && selectedCategoryName != null
+            ? getCategoryName(selectedCategoryName)
+            : list[0].badge,
+        image: firstCardImageUrl ?? list[0].image,
+      };
+    }
+    return list;
+  }, [communities, categories, selectedCategoryName, getCategoryName, firstCardImageUrl]);
+
+  const filteredJoinCommunities = useMemo((): JoinCommunityItem[] => {
+    const base = solutionTab === 'all' || solutionTab === 'communities' ? joinCommunities : [];
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return base;
+    return base.filter((c) => c.title.toLowerCase().includes(q) || c.badge.toLowerCase().includes(q));
+  }, [joinCommunities, searchQuery, solutionTab]);
+
   return {
     communities,
     categories,
+    joinCommunities,
+    filteredJoinCommunities,
     loading,
     loadingMore,
     error,
