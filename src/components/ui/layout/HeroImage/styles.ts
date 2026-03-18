@@ -9,7 +9,6 @@ export const styles = StyleSheet.create({
     height: SCREEN_HEIGHT * 0.6,
     position: 'relative',
   },
-  /** Container para cardContent (ex.: card de produto no canto inferior direito) */
   cardContainer: {
     position: 'absolute',
     bottom: SPACING.LG,
@@ -33,8 +32,8 @@ export const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     justifyContent: 'flex-end',
-    paddingHorizontal: 32,
-    paddingBottom: 30,
+    paddingHorizontal: SPACING.LG,
+    paddingBottom: SPACING.XS,
     borderBottomLeftRadius: 40,
     borderBottomRightRadius: 40,
   },
@@ -74,9 +73,9 @@ export const styles = StyleSheet.create({
     letterSpacing: 0.2,
   },
   title: {
-    fontSize: 16,
+    fontSize: 20,
     fontFamily: 'DM Sans',
-    fontWeight: '500',
+    fontWeight: '700',
     color: '#FFFFFF',
     marginTop: 10,
   },

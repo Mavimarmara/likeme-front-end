@@ -35,7 +35,7 @@ const HeroImage: React.FC<HeroImageProps> = ({
   footer,
   children,
   cardContent,
-  heightRatio = 0.6,
+  heightRatio = 0.5,
   offsetTop = 0,
 }) => {
   const source = { uri: imageUri || DEFAULT_IMAGE_URI };
