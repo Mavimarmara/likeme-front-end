@@ -20,7 +20,8 @@ export const styles = StyleSheet.create({
     zIndex: 1,
   },
   scrollContent: {
-    paddingBottom: SPACING.XL,
+    flexGrow: 1,
+    paddingBottom: 0,
   },
   screenTitle: {
     fontSize: FONT_SIZES.XL,
@@ -180,16 +181,23 @@ export const styles = StyleSheet.create({
     textAlign: 'right',
   },
   buyButton: {
-    width: 330,
+    width: '100%',
     alignSelf: 'center',
     marginTop: SPACING.LG,
-    marginBottom: SPACING.XL,
+    marginBottom: 0,
     borderRadius: 24,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  buyButtonContainer: {
+    marginHorizontal: SPACING.MD,
+    marginVertical: SPACING.MD,
+  },
+  bottomSpacer: {
+    flex: 1,
   },
   loadingContainer: {
     padding: SPACING.XL,

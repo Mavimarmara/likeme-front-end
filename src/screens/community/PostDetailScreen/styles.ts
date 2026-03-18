@@ -10,6 +10,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'transparent',
     zIndex: 1,
+    paddingTop: SPACING.MD,
   },
   header: {
     marginBottom: SPACING.MD,

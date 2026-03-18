@@ -1,14 +1,13 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, TextInput, View } from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 import { GradientBackground, ScreenWithHeader } from '@/components/ui/layout';
 import { PostCard, PostReplies } from '@/components/sections/community';
-import { IconButton } from '@/components/ui/buttons';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
-import { COLORS, SPACING } from '@/constants';
-import type { Comment, Post } from '@/types';
-import { useTranslation } from '@/hooks/i18n';
+import { COLORS } from '@/constants';
+import type { Post } from '@/types';
 import { useFloatingMenu } from '@/contexts/FloatingMenuContext';
+import { useMenuItems } from '@/hooks';
 
 type Props = {
   navigation: any;
@@ -19,17 +18,26 @@ type Props = {
 
 const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   const { post } = route.params;
-  const [comments, setComments] = useState<Post['comments']>(post.comments);
-  const [messageText, setMessageText] = useState('');
-  const [sending, setSending] = useState(false);
+  // Composer de comentários desativado por enquanto.
+  // Quando reativar, você provavelmente vai querer reintroduzir `setComments`, `messageText`, `sending`, `t` e `handleSendComment`.
+  // const [comments, setComments] = useState<Post['comments']>(post.comments);
+  const [comments] = useState<Post['comments']>(post.comments);
+  // const [messageText, setMessageText] = useState('');
+  // const [sending, setSending] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
 
-  const { t } = useTranslation();
-  const { clearMenu } = useFloatingMenu();
+  const menuItems = useMenuItems(navigation);
+  const { clearMenu, setMenu } = useFloatingMenu();
 
   useEffect(() => {
+    // Esconde o menu enquanto o usuário está em PostDetail.
+    // Ao voltar, restauramos o menu para não ficar "apagado" no estado global.
     clearMenu();
-  }, [clearMenu]);
+
+    return () => {
+      setMenu(menuItems, 'community');
+    };
+  }, [clearMenu, menuItems, setMenu]);
 
   const postForRendering = useMemo(() => {
     return {
@@ -39,9 +47,9 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     };
   }, [post, comments]);
 
-  const isSendDisabled = sending || messageText.trim().length === 0;
+  //const isSendDisabled = sending || messageText.trim().length === 0;
 
-  const handleSendComment = useCallback(async () => {
+  /*const handleSendComment = useCallback(async () => {
     if (isSendDisabled) return;
 
     const trimmed = messageText.trim();
@@ -63,7 +71,7 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     } finally {
       setSending(false);
     }
-  }, [isSendDisabled, messageText, sending, post.id]);
+  }, [isSendDisabled, messageText, sending, post.id]);*/
 
   useEffect(() => {
     if (!comments.length) return;
@@ -94,15 +102,22 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
         <ScrollView
           ref={scrollViewRef}
           style={styles.scroll}
-          contentContainerStyle={{ padding: SPACING.MD, paddingBottom: 120 }}
+          contentContainerStyle={{ paddingBottom: 120 }}
           showsVerticalScrollIndicator={false}
         >
-          <PostCard post={postForRendering} forceContentExpanded />
+          <PostCard
+            post={postForRendering}
+            forceContentExpanded
+            styles={{
+              borderBottomLeftRadius: 0,
+              borderBottomRightRadius: 0,
+            }}
+          />
 
           {!post.poll && <PostReplies postId={post.id} comments={postForRendering.comments} />}
         </ScrollView>
 
-        {!post.poll && (
+        {/*!post.poll && (
           <View style={styles.inputContainer}>
             <View style={[styles.textInputWrapper]}>
               <TextInput
@@ -123,7 +138,7 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
               disabled={isSendDisabled}
             />
           </View>
-        )}
+        )*/}
       </KeyboardAvoidingView>
     </ScreenWithHeader>
   );

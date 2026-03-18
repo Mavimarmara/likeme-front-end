@@ -11,7 +11,6 @@ export const styles = StyleSheet.create({
     paddingTop: SPACING.MD,
     paddingBottom: SPACING.LG,
     paddingHorizontal: SPACING.MD,
-    marginBottom: SPACING.MD,
     shadowColor: COLORS.BLACK,
     shadowOffset: {
       width: 0,

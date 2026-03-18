@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { Image, StyleProp, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Badge } from '@/components/ui';
 import { PollCard } from '@/components/sections/community';
 import { useTranslation } from '@/hooks/i18n';
-import { styles } from './styles';
+import { styles as cardStyles } from './styles';
 import { COLORS } from '@/constants';
 import type { Post } from '@/types';
 import communityService from '@/services/community/communityService';
@@ -17,6 +17,11 @@ type Props = {
   initialContentExpanded?: boolean;
   initialCommentsOpen?: boolean;
   onCommentsOpenChange?: (open: boolean) => void;
+  /**
+   * Permite sobrescrever o estilo do container principal do card.
+   * Usado pela `PostDetailScreen` para ajustar cantos/arredondamento.
+   */
+  styles?: StyleProp<ViewStyle>;
   /**
    * Quando true, força o conteúdo sempre expandido e oculta o botão see more/see less.
    * Usado na `PostDetailScreen`.
@@ -31,6 +36,7 @@ const PostCard: React.FC<Props> = ({
   initialContentExpanded = false,
   initialCommentsOpen = false,
   onCommentsOpenChange,
+  styles: containerStyles,
   forceContentExpanded = false,
 }) => {
   const { t } = useTranslation();
@@ -182,39 +188,39 @@ const PostCard: React.FC<Props> = ({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[cardStyles.container, containerStyles]}>
       <TouchableOpacity
         onPress={onPress != null ? handlePostPress : undefined}
         activeOpacity={0.85}
         disabled={onPress == null}
       >
-        <View style={styles.contentContainer}>
+        <View style={cardStyles.contentContainer}>
           {badgeLabel && (
-            <View style={styles.badgeContainer}>
+            <View style={cardStyles.badgeContainer}>
               <Badge label={badgeLabel} />
             </View>
           )}
 
           <View>
-            <View style={styles.authorSection}>
+            <View style={cardStyles.authorSection}>
               {post.userAvatar ? (
-                <Image source={{ uri: post.userAvatar }} style={styles.avatar} />
+                <Image source={{ uri: post.userAvatar }} style={cardStyles.avatar} />
               ) : (
-                <View style={styles.avatarPlaceholder}>
+                <View style={cardStyles.avatarPlaceholder}>
                   <Icon name='person' size={12} color={COLORS.TEXT_LIGHT} />
                 </View>
               )}
-              {post.userName && <Text style={styles.authorName}>{capitalizeWords(post.userName)}</Text>}
+              {post.userName && <Text style={cardStyles.authorName}>{capitalizeWords(post.userName)}</Text>}
             </View>
 
             {title ? (
-              <View style={styles.titleContainer}>
-                <Text style={styles.title}>{title}</Text>
+              <View style={cardStyles.titleContainer}>
+                <Text style={cardStyles.title}>{title}</Text>
               </View>
             ) : null}
 
             {content ? (
-              <Text style={styles.description} numberOfLines={isContentExpanded ? undefined : 3}>
+              <Text style={cardStyles.description} numberOfLines={isContentExpanded ? undefined : 3}>
                 {content}
               </Text>
             ) : null}
@@ -224,21 +230,21 @@ const PostCard: React.FC<Props> = ({
 
       {post.poll && <PollCard poll={post.poll} onVote={handlePollVote} disabled={false} />}
 
-      <View style={styles.footer}>
-        <View style={styles.footerLeft}>
+      <View style={cardStyles.footer}>
+        <View style={cardStyles.footerLeft}>
           {!post.poll && content && !forceContentExpanded && (
-            <TouchableOpacity style={styles.seeMoreButton} onPress={handleSeeMorePress} activeOpacity={0.7}>
-              <Text style={styles.seeMoreButtonText}>
+            <TouchableOpacity style={cardStyles.seeMoreButton} onPress={handleSeeMorePress} activeOpacity={0.7}>
+              <Text style={cardStyles.seeMoreButtonText}>
                 {isContentExpanded ? t('common.seeLess') : t('avatar.seeMore')}
               </Text>
             </TouchableOpacity>
           )}
         </View>
 
-        <View style={styles.footerRight}>
+        <View style={cardStyles.footerRight}>
           {!post.poll && (
             <TouchableOpacity
-              style={[styles.likeButton, isLiking && styles.likeButtonDisabled]}
+              style={[cardStyles.likeButton, isLiking && cardStyles.likeButtonDisabled]}
               onPress={handleLikePress}
               activeOpacity={0.7}
               disabled={isLiking || isLiked}
@@ -246,15 +252,15 @@ const PostCard: React.FC<Props> = ({
               accessibilityLabel='Like'
             >
               <Icon name={isLiked ? 'thumb-up' : 'thumb-up-off-alt'} size={18} color='#0154f8' />
-              <Text style={styles.likeCount}>{likeCount}</Text>
+              <Text style={cardStyles.likeCount}>{likeCount}</Text>
             </TouchableOpacity>
           )}
 
           {/* Não mostrar botão de comentários quando for uma enquete */}
           {!post.poll && (
-            <TouchableOpacity style={styles.commentsInfo} onPress={handleCommentsPress} activeOpacity={0.7}>
+            <TouchableOpacity style={cardStyles.commentsInfo} onPress={handleCommentsPress} activeOpacity={0.7}>
               <Icon name='chat-bubble-outline' size={18} color='#0154f8' />
-              <Text style={styles.commentsCount}>{commentsCount}</Text>
+              <Text style={cardStyles.commentsCount}>{commentsCount}</Text>
             </TouchableOpacity>
           )}
         </View>

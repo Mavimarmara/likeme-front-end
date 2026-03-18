@@ -5,6 +5,7 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: SPACING.MD,
+    gap: SPACING.MD,
   },
   header: {
     paddingVertical: SPACING.MD,

@@ -9,7 +9,7 @@ import type { Event } from '@/types';
 import { SPACING } from '@/constants';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
-import { useUserFeed, useCommunities, useSuggestedProducts, useAdvertiser, useMenuItems, useUserAvatar } from '@/hooks';
+import { useUserFeed, useCommunities, useSuggestedProducts, useAdvertiser, useMenuItems } from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen } from '@/analytics';
@@ -33,7 +33,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   const { t } = useTranslation();
   const toggleOptions = useMemo(() => getToggleOptions(t), [t]);
   const rootNavigation = navigation.getParent()?.getParent?.() ?? navigation.getParent();
-  const userAvatarUri = useUserAvatar();
   const [selectedMode, setSelectedMode] = useState<CommunityMode>('Feed');
   const [welcomeDismissed, setWelcomeDismissed] = useState(true);
 
@@ -52,10 +51,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleCartPress = () => {
     rootNavigation?.navigate('Cart' as never);
-  };
-
-  const handleMenuPress = () => {
-    rootNavigation?.navigate('Profile' as never);
   };
 
   const {
@@ -180,10 +175,9 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     <ScreenWithHeader
       navigation={rootNavigation}
       headerProps={{
-        showBackButton: false,
-        showMenuWithAvatar: true,
-        onMenuPress: handleMenuPress,
-        userAvatarUri,
+        showBackButton: true,
+        showMenuWithAvatar: false,
+        onBackPress: () => navigation?.goBack?.(),
         showCartButton: true,
         onCartPress: handleCartPress,
       }}

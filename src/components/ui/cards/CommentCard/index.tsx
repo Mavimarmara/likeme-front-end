@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Image, ImageSourcePropType } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { CommentReactions } from '@/components/sections/community';
 import { styles } from './styles';
 import communityService from '@/services/community/communityService';
 import { logger } from '@/utils/logger';
@@ -39,17 +38,18 @@ const CommentCard: React.FC<Props> = ({
   comment,
   onReply,
   onUpvote,
-  onDownvote,
+  onDownvote: _onDownvote,
   showReplies = false,
   onToggleReplies,
   level = 0,
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
+  const [isContentExpanded, setIsContentExpanded] = useState(false);
   const hasReplies = comment.replies && comment.replies.length > 0;
   const isAvatarUri = comment.author.avatar && typeof comment.author.avatar === 'string';
   const [currentReaction, setCurrentReaction] = useState<'like' | 'dislike' | null>(comment.userReaction || null);
   const [upvotes, setUpvotes] = useState(comment.upvotes || 0);
-  const [downvotes, setDownvotes] = useState(comment.downvotes || 0);
+  const [, setDownvotes] = useState(comment.downvotes || 0);
   const [reactionLoading, setReactionLoading] = useState(false);
 
   useEffect(() => {
@@ -92,40 +92,6 @@ const CommentCard: React.FC<Props> = ({
     }
   };
 
-  const handleDownvotePress = async () => {
-    if (reactionLoading) return;
-
-    setReactionLoading(true);
-    const previousReaction = currentReaction;
-    setCurrentReaction(previousReaction === 'dislike' ? null : 'dislike');
-
-    if (previousReaction === 'dislike') {
-      setDownvotes((prev) => Math.max(prev - 1, 0));
-    } else {
-      setDownvotes((prev) => prev + 1);
-      if (previousReaction === 'like') {
-        setUpvotes((prev) => Math.max(prev - 1, 0));
-      }
-    }
-
-    onDownvote?.(comment.id);
-
-    try {
-      if (previousReaction === 'dislike') {
-        await communityService.removeCommentReaction(comment.id, 'dislike');
-      } else {
-        if (previousReaction === 'like') {
-          await communityService.removeCommentReaction(comment.id, 'like');
-        }
-        await communityService.addCommentReaction(comment.id, 'dislike');
-      }
-    } catch (error) {
-      logger.warn('Erro ao aplicar dislike (ignorado):', error);
-    } finally {
-      setReactionLoading(false);
-    }
-  };
-
   const handleToggleReplies = () => {
     setIsExpanded(!isExpanded);
     if (onToggleReplies) {
@@ -139,6 +105,25 @@ const CommentCard: React.FC<Props> = ({
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(' ');
   };
+
+  const formatRelativeTime = (iso: string): string => {
+    const created = new Date(iso);
+    const diffMs = Date.now() - created.getTime();
+    if (Number.isNaN(diffMs) || diffMs < 0) return '';
+
+    const totalMinutes = Math.floor(diffMs / (1000 * 60));
+    if (totalMinutes < 60) return `${Math.max(totalMinutes, 1)} min`;
+
+    const totalHours = Math.floor(totalMinutes / 60);
+    if (totalHours < 24) return `${Math.max(totalHours, 1)}h`;
+
+    return '';
+  };
+
+  const CONTENT_COLLAPSED_LIMIT = 120;
+  const shouldTruncate = comment.content.length > CONTENT_COLLAPSED_LIMIT;
+  const collapsedContent = comment.content.substring(0, CONTENT_COLLAPSED_LIMIT).trim();
+  const displayedContent = isContentExpanded || !shouldTruncate ? comment.content : collapsedContent;
 
   return (
     <View style={[styles.container, level > 0 && styles.replyContainer]}>
@@ -157,19 +142,47 @@ const CommentCard: React.FC<Props> = ({
         <Text style={styles.authorName}>{capitalizeWords(comment.author.name)}</Text>
       </View>
 
-      <Text style={styles.content}>{comment.content}</Text>
+      <Text style={styles.content}>
+        {displayedContent}
+        {shouldTruncate && (
+          <>
+            {!isContentExpanded && '... '}
+            <Text style={styles.verMore} onPress={() => setIsContentExpanded((v) => !v)}>
+              Ver mais
+            </Text>
+          </>
+        )}
+      </Text>
 
-      <CommentReactions
-        upvotes={upvotes}
-        downvotes={downvotes}
-        commentsCount={comment.commentsCount}
-        selectedReaction={currentReaction}
-        disabled={reactionLoading}
-        onUpvote={handleUpvotePress}
-        onDownvote={handleDownvotePress}
-        onReply={() => onReply?.(comment)}
-        onToggle={hasReplies ? handleToggleReplies : undefined}
-      />
+      <View style={styles.footerRow}>
+        <View style={styles.footerLeft}>
+          <Text style={styles.timeText}>{formatRelativeTime(comment.createdAt)}</Text>
+          <View style={styles.actionsRow}>
+            <TouchableOpacity
+              onPress={handleUpvotePress}
+              activeOpacity={0.7}
+              disabled={reactionLoading}
+              accessibilityRole='button'
+              accessibilityLabel='Curtir'
+            >
+              <Text style={[styles.actionText, currentReaction === 'like' && styles.actionTextSelected]}>Curtir</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => onReply?.(comment)}
+              activeOpacity={0.7}
+              accessibilityRole='button'
+              accessibilityLabel='Responder'
+            >
+              <Text style={styles.actionText}>Responder</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={styles.likeBubble}>
+          <Icon name='thumb-up' size={18} color='#0154f8' />
+          <Text style={styles.likeCount}>{upvotes}</Text>
+        </View>
+      </View>
 
       {hasReplies && (
         <TouchableOpacity style={styles.hideButton} onPress={handleToggleReplies} activeOpacity={0.7}>
@@ -185,7 +198,7 @@ const CommentCard: React.FC<Props> = ({
               comment={reply}
               onReply={onReply}
               onUpvote={onUpvote}
-              onDownvote={onDownvote}
+              onDownvote={_onDownvote}
               showReplies={showReplies}
               level={level + 1}
             />

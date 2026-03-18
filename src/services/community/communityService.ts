@@ -12,6 +12,7 @@ class CommunityService {
   private readonly pollDetailEndpoint = '/api/v3/polls';
   private readonly commentReactionEndpoint = '/api/communities/comments';
   private readonly postReactionEndpoint = '/api/communities/posts';
+  private readonly amityCommentsEndpoint = '/api/communities/comments';
   private readonly communitiesEndpoint = '/api/communities';
 
   async getUserFeed(params: UserFeedParams = {}): Promise<UserFeedApiResponse> {
@@ -211,6 +212,24 @@ class CommunityService {
       logger.warn('Error removing comment reaction (ignored):', error);
       return false;
     }
+  }
+
+  /**
+   * Busca comentários do Amity por referência.
+   *
+   * Observacao: o endpoint da Amity espera query params como `referenceId` e `referenceType`.
+   */
+  async getAmityComments(referenceId: string, referenceType: 'post' | 'content' | 'story' = 'post'): Promise<any> {
+    const trimmedId = referenceId?.trim();
+    if (!trimmedId) {
+      throw new Error('referenceId é obrigatório para buscar comentários');
+    }
+
+    // LikeMe backend proxy: GET /api/communities/comments?referenceId=...&referenceType=...
+    return apiClient.get<any>(this.amityCommentsEndpoint, {
+      referenceId: trimmedId,
+      referenceType,
+    });
   }
 
   async listCommunities(params: ListCommunitiesParams = {}): Promise<ListCommunitiesApiResponse> {

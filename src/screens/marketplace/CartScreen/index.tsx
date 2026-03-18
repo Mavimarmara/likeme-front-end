@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useEffect, useRef } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput, Linking } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import { Background, ScreenWithHeader } from '@/components/ui/layout';
+import { GradientBackground, ScreenWithHeader } from '@/components/ui/layout';
 import type { RootStackParamList } from '@/types/navigation';
 import { formatPrice } from '@/utils';
 import { Alert } from 'react-native';
@@ -137,7 +137,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
   );
   const renderBackground = () => (
     <View pointerEvents='none' style={styles.backgroundLayer}>
-      <Background />
+      <GradientBackground />
     </View>
   );
 
@@ -235,7 +235,10 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
             <View style={styles.cartItemsList}>{cartItems.map((item) => renderCartItem(item))}</View>
             {renderShippingSection()}
             {renderOrderSummary()}
-            <SecondaryButton label={t('common.buy')} onPress={handleBuy} style={styles.buyButton} size='large' />
+            <View style={styles.bottomSpacer} />
+            <View style={styles.buyButtonContainer}>
+              <SecondaryButton label={t('common.buy')} onPress={handleBuy} style={styles.buyButton} size='large' />
+            </View>
           </>
         ) : (
           <View style={styles.emptyCartContainer}>
