@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, ImageBackground, Dimensions } from 'react-native';
+import React, { useCallback, useRef, useState } from 'react';
+import { View, Text, ImageBackground, Dimensions, type LayoutChangeEvent } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { styles } from './styles';
@@ -43,6 +43,15 @@ const HeroImage: React.FC<HeroImageProps> = ({
   const useProfileMode = !children && !cardContent && name != null;
   const useCustomOverlay = Boolean(children);
   const useCardContent = Boolean(cardContent);
+  const [overlayContentHeight, setOverlayContentHeight] = useState(0);
+  const overlayContentHeightRef = useRef(0);
+
+  const handleOverlayContentLayout = useCallback((e: LayoutChangeEvent) => {
+    const next = Math.ceil(e.nativeEvent.layout.height);
+    if (Math.abs(next - overlayContentHeightRef.current) <= 2) return;
+    overlayContentHeightRef.current = next;
+    setOverlayContentHeight(next);
+  }, []);
   const availableHeight = SCREEN_HEIGHT - offsetTop;
   const sectionHeight = Math.max(0, availableHeight * heightRatio);
 
@@ -55,15 +64,19 @@ const HeroImage: React.FC<HeroImageProps> = ({
           <View style={styles.overlay}>
             {(useProfileMode || useCustomOverlay) && (
               <>
-                <BlurView intensity={10} tint='dark' style={styles.blur} />
+                <BlurView
+                  intensity={10}
+                  tint='dark'
+                  style={[styles.blur, { height: overlayContentHeight > 0 ? overlayContentHeight : 60 }]}
+                />
                 <LinearGradient
                   colors={['rgba(48, 48, 48, 0)', 'rgba(41, 41, 41, 1)']}
                   locations={[0.64, 1]}
-                  style={styles.gradient}
+                  style={[styles.gradient, { height: overlayContentHeight > 0 ? overlayContentHeight : 60 }]}
                 />
               </>
             )}
-            <View style={styles.content}>
+            <View style={styles.content} onLayout={handleOverlayContentLayout}>
               {useProfileMode && (
                 <>
                   {badges.length > 0 && (
