@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, TouchableOpacity, Text, Image } from 'react-native';
+import { View, TouchableOpacity, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { TwoDotsIcon } from '@/assets/ui';
+import { ColoredTwoDotsIcon } from '@/assets/ui';
 import { BlurView } from 'expo-blur';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { styles } from './styles';
@@ -41,7 +41,7 @@ const FloatingMenu: React.FC<Props> = ({ items, selectedId }) => {
           accessibilityRole='button'
           accessibilityLabel='Home'
         >
-          <Image source={TwoDotsIcon} style={styles.homeIcon} />
+          <ColoredTwoDotsIcon width={18} height={18} />
           {selectedId === 'home' && <Text style={styles.pillLabel}>Home</Text>}
         </TouchableOpacity>
 

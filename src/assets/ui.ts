@@ -6,6 +6,7 @@ import LogoMiniSvg from '../../assets/ui/LogoFullMini.svg';
 import LogoPartialMiniSvg from '../../assets/ui/LogoPartialMini.svg';
 import RightArrowSvg from '../../assets/ui/RightArrow.svg';
 import BackgroundIconSvg from '../../assets/icons/BackgroundIcon.svg';
+import ColoredTwoDotsSvg from '../../assets/icons/ColoredTwoDots.svg';
 
 // Ícones em bitmap / fundos
 import BackgroundIconButtonPng from '../../assets/ui/BackgroundIconButton.png';
@@ -25,3 +26,4 @@ export const BackgroundWithGradient = BackgroundWithGradientPng;
 export const DoneIcon = DoneIconPng;
 export const CloseIcon = CloseIconPng;
 export const TwoDotsIcon = TwoDotsPng;
+export const ColoredTwoDotsIcon = ColoredTwoDotsSvg;

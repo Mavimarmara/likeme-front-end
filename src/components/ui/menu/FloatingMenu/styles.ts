@@ -34,8 +34,6 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 12,
-    borderRadius: 48,
-    backgroundColor: SURFACE_WHITE,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
@@ -47,6 +45,8 @@ export const styles = StyleSheet.create({
   pillSelected: {
     gap: 4,
     paddingHorizontal: 16,
+    backgroundColor: SURFACE_WHITE,
+    borderRadius: 48,
   },
   pillLabel: {
     fontFamily: 'DM Sans',
