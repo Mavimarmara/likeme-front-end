@@ -12,7 +12,7 @@ export const styles = StyleSheet.create({
   },
 
   scrollContent: {
-    paddingBottom: 120,
+    paddingBottom: 170,
     paddingHorizontal: SPACING.MD,
   },
 
@@ -78,7 +78,8 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.BACKGROUND,
     paddingHorizontal: SPACING.MD,
     paddingTop: SPACING.MD,
-    paddingBottom: SPACING.XL,
+    zIndex: 2,
+    elevation: 2,
   },
 
   saveButton: {

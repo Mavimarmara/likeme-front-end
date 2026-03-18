@@ -4,13 +4,19 @@ import { COLORS, SPACING, FONT_SIZES } from '@/constants';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.BACKGROUND,
+    backgroundColor: 'transparent',
+    position: 'relative',
   },
   scrollView: {
     flex: 1,
+    zIndex: 1,
   },
   scrollContent: {
     paddingBottom: 120,
+  },
+  gradientBackground: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 0,
   },
   content: {
     paddingHorizontal: SPACING.MD,
@@ -75,6 +81,8 @@ export const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
+    zIndex: 2,
+    elevation: 2,
     backgroundColor: COLORS.BACKGROUND,
     paddingHorizontal: SPACING.MD,
     paddingTop: SPACING.MD,
@@ -84,8 +92,7 @@ export const styles = StyleSheet.create({
     fontFamily: 'DM Sans',
     fontSize: FONT_SIZES.XS,
     fontStyle: 'italic',
-    color: COLORS.TEXT_LIGHT,
-    marginBottom: SPACING.MD,
-    textAlign: 'center',
+    paddingVertical: SPACING.XL,
+    textAlign: 'left',
   },
 });

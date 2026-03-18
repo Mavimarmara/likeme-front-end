@@ -11,7 +11,6 @@ import { personalObjectivesService, storageService } from '@/services';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen, logEvent } from '@/analytics';
 import { CUSTOM_EVENTS, ANALYTICS_PARAMS } from '@/analytics/constants';
-import { SPACING } from '@/constants';
 import type { RootStackParamList } from '@/types/navigation';
 import { getNextOnboardingScreen } from '@/utils';
 import { useMarkers, objectiveNameToMarkerId } from './useMarkers';
@@ -103,7 +102,7 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: 170 + Math.max(insets.bottom, 0) }]}
       >
         <View style={styles.content}>
           <Image source={GradientSplash6} style={[styles.titleAdornment, adornmentStyle]} resizeMode='contain' />
@@ -138,7 +137,7 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
         </View>
       </ScrollView>
 
-      <View style={[styles.footer, { paddingBottom: SPACING.XL + insets.bottom }]}>
+      <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 0) }]}>
         <PrimaryButton
           label={t('common.save')}
           onPress={handleSubmit}

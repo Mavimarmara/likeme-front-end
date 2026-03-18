@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { PrimaryButton } from '@/components/ui';
-import { ScreenWithHeader } from '@/components/ui/layout';
+import { GradientBackground, ScreenWithHeader } from '@/components/ui/layout';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen } from '@/analytics';
 import { AuthService, storageService } from '@/services';
@@ -85,6 +85,9 @@ const PrivacyPoliciesScreen: React.FC<Props> = ({ navigation, route }) => {
       headerProps={{ onBackPress: () => navigation.goBack() }}
       contentContainerStyle={styles.container}
     >
+      <View pointerEvents='none' style={styles.gradientBackground}>
+        <GradientBackground />
+      </View>
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
@@ -143,16 +146,17 @@ const PrivacyPoliciesScreen: React.FC<Props> = ({ navigation, route }) => {
               </View>
             );
           })}
+          <Text style={styles.disclaimer}>{t('privacyPolicies.disclaimer')}</Text>
         </View>
       </ScrollView>
 
       <View style={styles.footer}>
-        <Text style={styles.disclaimer}>{t('privacyPolicies.disclaimer')}</Text>
         <PrimaryButton
           label={t('privacyPolicies.agreeButton')}
           onPress={handleAgree}
           disabled={isSubmitting}
           loading={isSubmitting}
+          size='large'
         />
       </View>
     </ScreenWithHeader>
