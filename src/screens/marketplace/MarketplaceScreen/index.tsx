@@ -156,6 +156,8 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     setSelectedSolutionIds([]);
     setSelectedSolutionTab('products');
     setSelectedCategoryName(null);
+    setSearchQuery('');
+    setAppliedSearchQuery('');
     setPage(1);
   };
 
@@ -357,6 +359,8 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       orderOptions={orderOptions}
       selectedOrder={selectedOrder}
       onOrderSelect={handleOrderSelect}
+      emptyActionLabel={t('home.clearFilters')}
+      onEmptyActionPress={handleClearFilterCategory}
     />
   );
 

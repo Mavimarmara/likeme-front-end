@@ -46,6 +46,10 @@ type AdsListProps = {
   /** Modo controlado (ex.: Marketplace): tab selecionada e callback vêm do pai; o conteúdo é a lista ads. */
   selectedTabId?: string;
   onTabChange?: (tabId: string) => void;
+  /** Label do botão de ação no empty state (ex.: "Limpar filtros"). */
+  emptyActionLabel?: string;
+  /** Ação ao clicar no botão do empty state. */
+  onEmptyActionPress?: () => void;
 };
 
 const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
@@ -73,6 +77,8 @@ const AdsList: React.FC<AdsListProps> = ({
   tabsContainerStyle,
   selectedTabId: selectedTabIdProp,
   onTabChange,
+  emptyActionLabel,
+  onEmptyActionPress,
 }) => {
   const { t } = useTranslation();
   const { categories } = useCategories({ enabled: true });
@@ -136,6 +142,8 @@ const AdsList: React.FC<AdsListProps> = ({
         title={t('marketplace.noAdsFound')}
         description={t('marketplace.noAdsFoundDescription')}
         iconName='storefront'
+        actionLabel={emptyActionLabel}
+        onActionPress={onEmptyActionPress}
       />
     </View>
   );

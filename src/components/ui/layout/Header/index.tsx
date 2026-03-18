@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { LogoMini } from '@/assets/ui';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { IconButton } from '@/components/ui/buttons';
@@ -19,6 +20,8 @@ interface HeaderProps {
   onRatingPress?: () => void;
   showRating?: boolean;
   customLogo?: ReactNode;
+  /** Callback ao tocar na logo central. Ex.: voltar para a Home. */
+  onLogoPress?: () => void;
   /** Texto do botão à direita (ex. "Pular"). Quando definido, exibe em vez dos botões de ícone. */
   rightLabel?: string;
   onRightPress?: () => void;
@@ -40,12 +43,15 @@ const Header: React.FC<HeaderProps> = ({
   onRatingPress,
   showRating = false,
   customLogo,
+  onLogoPress,
   rightLabel,
   onRightPress,
   showMenuWithAvatar = false,
   onMenuPress,
   userAvatarUri,
 }) => {
+  const navigation = useNavigation<any>();
+  const rootNavigation = (navigation?.getParent?.() ?? navigation) as any;
   const hasRightLabel = Boolean(rightLabel && onRightPress);
   return (
     <View style={styles.header}>
@@ -69,7 +75,13 @@ const Header: React.FC<HeaderProps> = ({
           containerStyle={styles.leftButton}
         />
       )}
-      {customLogo || <LogoMini width={87} height={16} />}
+      <TouchableOpacity
+        onPress={onLogoPress ?? (() => rootNavigation.navigate('Summary' as never))}
+        activeOpacity={0.7}
+        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+      >
+        {customLogo || <LogoMini width={87} height={16} />}
+      </TouchableOpacity>
       {hasRightLabel && (
         <TouchableOpacity
           style={styles.rightLabelButton}
