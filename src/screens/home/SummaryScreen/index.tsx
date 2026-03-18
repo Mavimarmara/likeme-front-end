@@ -43,6 +43,7 @@ import { EmptyState } from '@/components/ui/feedback';
 import type { SolutionTab } from '@/types/solution';
 import { solutionOptions } from '@/types/solution';
 import { useAnalyticsScreen } from '@/analytics';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { styles } from './styles';
 
 const DEFAULT_CARD_IMAGE = 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800';
@@ -63,6 +64,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   useAnalyticsScreen({ screenName: 'Summary', screenClass: 'SummaryScreen' });
   useNotifications();
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   const rootNavigation = navigation.getParent() ?? navigation;
   const [userAvatarUri, setUserAvatarUri] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -333,7 +335,12 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
       contentContainerStyle={styles.content}
     >
       <View style={styles.content}>
-        <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          style={styles.scrollView}
+          contentContainerStyle={[styles.scrollContent, { paddingBottom: Math.max(insets.bottom, 0) + 180 }]}
+          scrollIndicatorInsets={{ bottom: Math.max(insets.bottom, 0) + 180 }}
+        >
           <View style={styles.searchAndFilters}>
             <SearchBar
               placeholder='Buscar'
@@ -452,7 +459,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
               {filteredProducts.length > 0 && (
                 <View style={[styles.productsContainer, styles.sectionDivider]}>
                   <Text style={styles.sectionTitle}>{t('home.recommendedProductsTitle')}</Text>
-                  <View style={styles.sectionContainer}>
+                  <View style={[styles.sectionContainer, styles.sectionRetreatedContainer]}>
                     <ProductsCarousel
                       title={t('home.productsRecommended', { provider: '' })}
                       subtitle={t('home.discoverProducts')}

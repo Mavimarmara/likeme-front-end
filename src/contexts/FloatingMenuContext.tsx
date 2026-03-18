@@ -23,110 +23,108 @@ type ContextValue = {
 
 const FloatingMenuContext = createContext<ContextValue | null>(null);
 
-/** Rotas em que o menu flutuante não deve aparecer (root ou nested) */
-const ROUTES_HIDE_MENU = [
-  // Onboarding / auth flow
-  'Loading',
-  'Unauthenticated',
-  'Authenticated',
-  'Welcome',
-  'AppPresentation',
-  'Register',
-  'Plans',
-  'Anamnesis',
-  'AnamnesisHome',
-  'AnamnesisBody',
-  'AnamnesisMind',
-  'AnamnesisHabits',
-  'AnamnesisCompletion',
-  'PersonalObjectives',
-  'AppLoading',
-  'Error',
-  'PrivacyPolicies',
-  // Detail flows
-  'ProductDetails',
-  'ProviderProfile',
-  'Cart',
-  'Checkout',
-];
-
-/** Nomes de telas em que o menu deve ficar escondido (rota focada em qualquer nível) */
-const FOCUSED_ROUTES_HIDE_MENU = ['Chat', 'ChatDetails'];
-
-/** Rota focada na stack de Chat que deve mostrar o menu (lista de conversas) */
 const CHAT_STACK_LIST_ROUTE = 'ChatList';
 
-/** Retorna o nome da rota ativa no fim da árvore (rota "focada") a partir do state dado */
-function getFocusedRouteName(
-  state: { routes: { name: string; state?: any }[]; index: number } | undefined,
-): string | undefined {
-  if (!state?.routes?.length || state.index == null) return undefined;
-  let route = state.routes[state.index];
-  if (!route) return undefined;
-  while (route.state?.routes?.length && route.state?.index != null) {
-    route = route.state.routes[route.state.index];
+type NavState = {
+  routes: Array<{ name: string; state?: NavState }>;
+  index: number;
+};
+
+const ROUTES_SHOW_MENU = new Set<string>([
+  'Home',
+  'Summary',
+  'Activities',
+  'AvatarProgress',
+  'MarkerDetails',
+  'Community',
+  'Marketplace',
+  'CommunityPreview',
+  'Profile',
+  'Chat',
+]);
+
+const ROUTE_TO_SELECTED_ID: Record<string, string> = {
+  Home: 'home',
+  Summary: 'home',
+  Activities: 'activities',
+  AvatarProgress: 'home',
+  MarkerDetails: 'activities',
+  Community: 'community',
+  Chat: 'chat',
+  Marketplace: 'marketplace',
+  ProductDetails: 'marketplace',
+  AffiliateProduct: 'marketplace',
+  Cart: 'marketplace',
+  Checkout: 'marketplace',
+  CommunityPreview: 'marketplace',
+  ProviderProfile: 'marketplace',
+  Profile: 'profile',
+};
+
+function asNavState(state: unknown): NavState | undefined {
+  const s = state as Partial<NavState> | undefined;
+  if (!s?.routes || !Array.isArray(s.routes)) return undefined;
+  if (typeof s.index !== 'number') return undefined;
+  if (s.routes.length === 0) return undefined;
+  return s as NavState;
+}
+
+function getRouteAtIndex(state: NavState | undefined): { name: string; state?: NavState } | undefined {
+  if (!state) return undefined;
+  return state.routes[state.index];
+}
+
+function getFocusedRouteNameFromState(state: NavState | undefined): string | undefined {
+  let route = getRouteAtIndex(state);
+  while (route?.state) {
+    const nextState = asNavState(route.state);
+    const nextRoute = getRouteAtIndex(nextState);
+    if (!nextRoute) break;
+    route = nextRoute;
   }
   return route?.name;
 }
 
-/** Na stack Chat: índice 0 = ChatList, 1 = Chat, 2 = ChatDetails. Retorna -1 se não for a stack Chat. */
-function getChatStackFocusedIndex(
-  state: { routes: { name: string; state?: any }[]; index: number } | undefined,
-): number {
-  if (!state?.routes?.length || state.index == null) return -1;
-  const route = state.routes[state.index];
-  if (route?.name !== 'Chat' || !route?.state?.routes?.length || route.state?.index == null) return -1;
-  return route.state.index as number;
+function getChatStackFocusedIndex(state: NavState | undefined): number {
+  const root = getRouteAtIndex(state);
+  if (!root || root.name !== 'Chat') return -1;
+  const nested = asNavState(root.state);
+  return nested ? nested.index : -1;
 }
 
-/** Retorna se o menu deve ser escondido com base no state de navegação */
-function shouldHideMenu(state: { routes: { name: string; state?: any }[]; index: number } | undefined): boolean {
-  const focusedName = getFocusedRouteName(state);
+function isMenuAllowedByRouteName(routeName: string | undefined): boolean {
+  return routeName == null || ROUTES_SHOW_MENU.has(routeName);
+}
+
+function shouldShowMenu(state: NavState | undefined): boolean {
+  const focusedName = getFocusedRouteNameFromState(state);
   const chatStackIndex = getChatStackFocusedIndex(state);
+  const rootName = getRouteAtIndex(state)?.name;
 
-  // Estamos na stack de Chat: índice 0 = ChatList (mostrar menu), 1 = Chat, 2 = ChatDetails (esconder)
-  if (chatStackIndex === 0) return false;
-  if (chatStackIndex === 1 || chatStackIndex === 2) return true;
-  // Primeira vez na stack Chat: state aninhado pode não existir ainda (chatStackIndex -1) -> mostrar menu
-  if (chatStackIndex === -1 && state?.routes?.[state?.index ?? -1]?.name === 'Chat') return false;
+  if (chatStackIndex === 0) return true;
+  if (chatStackIndex === 1 || chatStackIndex === 2) return false;
+  if (chatStackIndex === -1 && rootName === 'Chat') return true;
 
-  if (focusedName === CHAT_STACK_LIST_ROUTE) return false;
-  if (focusedName && FOCUSED_ROUTES_HIDE_MENU.includes(focusedName)) return true;
-  if (!state?.routes?.length || state.index == null) return false;
-  const route = state.routes[state.index];
-  if (!route) return false;
-  return ROUTES_HIDE_MENU.includes(route.name);
+  if (focusedName === CHAT_STACK_LIST_ROUTE) return true;
+  if (rootName && ROUTES_SHOW_MENU.has(rootName) && rootName !== 'Chat') return true;
+  return isMenuAllowedByRouteName(focusedName ?? rootName);
 }
 
-/** Mapeia nome da rota (root) para o selectedId do menu */
 function getSelectedIdFromRoute(routeName: string | undefined): string | undefined {
   if (!routeName) return undefined;
-  const map: Record<string, string> = {
-    Home: 'home',
-    Summary: 'home',
-    Activities: 'activities',
-    AvatarProgress: 'home',
-    MarkerDetails: 'activities',
-    Community: 'community',
-    Chat: 'chat',
-    Marketplace: 'marketplace',
-    ProductDetails: 'marketplace',
-    AffiliateProduct: 'marketplace',
-    Cart: 'marketplace',
-    Checkout: 'marketplace',
-    CommunityPreview: 'marketplace',
-    ProviderProfile: 'marketplace',
-    Profile: 'profile',
-  };
-  return map[routeName];
+  return ROUTE_TO_SELECTED_ID[routeName];
 }
 
 export const FloatingMenuProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [menu, setMenuState] = useState<MenuState>(null);
 
   const currentRouteName = useNavigationState((state) => state?.routes?.[state?.index]?.name);
-  const hideMenu = useNavigationState(shouldHideMenu);
-  const selectedIdFromRoute = useMemo(() => getSelectedIdFromRoute(currentRouteName), [currentRouteName]);
+  const focusedRouteName = useNavigationState((state) => getFocusedRouteNameFromState(asNavState(state)));
+  const showMenuByRoute = useNavigationState((state) => shouldShowMenu(asNavState(state)));
+  const selectedIdFromRoute = useMemo(
+    () => getSelectedIdFromRoute(focusedRouteName) ?? getSelectedIdFromRoute(currentRouteName),
+    [currentRouteName, focusedRouteName],
+  );
 
   const setMenu = useCallback((items: FloatingMenuItem[], selectedId?: string) => {
     setMenuState({ items, selectedId });
@@ -138,7 +136,7 @@ export const FloatingMenuProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const effectiveSelectedId = selectedIdFromRoute ?? menu?.selectedId;
 
-  const showMenu = menu && !hideMenu;
+  const showMenu = menu && showMenuByRoute;
 
   return (
     <FloatingMenuContext.Provider value={{ setMenu, clearMenu }}>
@@ -158,12 +156,6 @@ export const useFloatingMenu = (): ContextValue => {
   return ctx;
 };
 
-/**
- * Define o menu flutuante para a tela atual. O menu fica em overlay e não
- * é afetado pela animação de transição. Ao trocar de tela, a nova tela
- * chama setMenu e substitui o conteúdo (não limpamos no unmount para
- * evitar race ao alternar telas rápido).
- */
 export const useSetFloatingMenu = (items: FloatingMenuItem[], selectedId?: string): void => {
   const { setMenu } = useFloatingMenu();
 

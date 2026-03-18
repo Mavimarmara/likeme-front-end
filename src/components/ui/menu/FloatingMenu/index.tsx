@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, TouchableOpacity, Text } from 'react-native';
+import { View, TouchableOpacity, Text, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { IconButton } from '@/components/ui/buttons';
 import { TwoDotsIcon } from '@/assets/ui';
+import { BlurView } from 'expo-blur';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { styles } from './styles';
 
 type MenuItem = {
@@ -21,49 +22,45 @@ type Props = {
 
 const FloatingMenu: React.FC<Props> = ({ items, selectedId }) => {
   const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
 
   const handleHomePress = () => {
     navigation.navigate('Home' as never);
   };
 
-  const isHomeSelected = selectedId === 'home';
-
   return (
-    <View style={styles.container}>
-      <View style={styles.menuWrapper}>
-        <View style={[styles.selectedPill, isHomeSelected && styles.selectedPillWithLabel]}>
-          <IconButton
-            onPress={handleHomePress}
-            showBackground
-            backgroundTintColor='#0154F8CC'
-            iconImageSource={TwoDotsIcon}
-            iconImageStyle={styles.menuHomeIconImage}
-            containerStyle={styles.menuHomeButtonContainer}
-          />
-          {isHomeSelected && (
-            <TouchableOpacity onPress={handleHomePress} activeOpacity={0.8} style={styles.selectedPillLabelTouchable}>
-              <Text style={styles.selectedPillLabel}>Home</Text>
+    <View style={[styles.container, { paddingBottom: Math.max(insets.bottom, 8) }]}>
+      <BlurView intensity={10} tint='light' style={styles.blur} />
+      <View style={styles.overlay} />
+
+      <View style={styles.row}>
+        <TouchableOpacity
+          onPress={handleHomePress}
+          activeOpacity={0.8}
+          style={[styles.pill, selectedId === 'home' && styles.pillSelected]}
+          accessibilityRole='button'
+          accessibilityLabel='Home'
+        >
+          <Image source={TwoDotsIcon} style={styles.homeIcon} />
+          {selectedId === 'home' && <Text style={styles.pillLabel}>Home</Text>}
+        </TouchableOpacity>
+
+        {items.map((item) => {
+          const isSelected = item.id === selectedId;
+          return (
+            <TouchableOpacity
+              key={item.id}
+              style={[styles.pill, isSelected && styles.pillSelected]}
+              onPress={item.onPress}
+              activeOpacity={0.8}
+              accessibilityRole='button'
+              accessibilityLabel={item.fullLabel || item.label}
+            >
+              <Icon name={item.icon} size={20} color={isSelected ? '#0154F8' : '#001137'} />
+              {isSelected && <Text style={styles.pillLabel}>{item.fullLabel || item.label}</Text>}
             </TouchableOpacity>
-          )}
-        </View>
-        <View style={styles.actionsPill}>
-          {items.map((item) => {
-            const isSelected = item.id === selectedId;
-            return (
-              <TouchableOpacity
-                key={item.id}
-                style={[styles.iconButton, isSelected && styles.iconButtonSelected]}
-                onPress={item.onPress}
-                activeOpacity={0.8}
-                accessibilityRole='button'
-                accessibilityLabel={item.fullLabel || item.label}
-              >
-                <Icon name={item.icon} size={20} color={isSelected ? '#0154F8' : '#001137'} />
-                {isSelected && <Text style={styles.selectedLabel}>{item.fullLabel || item.label}</Text>}
-              </TouchableOpacity>
-            );
-          })}
-        </View>
+          );
+        })}
       </View>
     </View>
   );

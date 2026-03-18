@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { LogBox } from 'react-native';
 import { useFonts } from 'expo-font';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { RootNavigator } from './src/navigation';
 import { AUTH0_CONFIG } from './src/config/environment';
 // Importar i18n antes de qualquer componente que use useTranslation
@@ -54,7 +55,11 @@ const App: React.FC = () => {
     return null;
   }
 
-  return <RootNavigator />;
+  return (
+    <SafeAreaProvider>
+      <RootNavigator />
+    </SafeAreaProvider>
+  );
 };
 
 export default App;

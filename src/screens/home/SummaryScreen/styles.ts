@@ -10,11 +10,13 @@ export const styles = StyleSheet.create({
   content: {
     flex: 1,
     zIndex: 1,
-    paddingBottom: SPACING.XXL,
     backgroundColor: COLORS.BACKGROUND,
   },
   scrollView: {
     backgroundColor: 'transparent',
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
   searchAndFilters: {
     paddingVertical: SPACING.MD,
@@ -49,6 +51,9 @@ export const styles = StyleSheet.create({
   },
   sectionContainer: {
     paddingHorizontal: SPACING.MD,
+  },
+  sectionRetreatedContainer: {
+    marginHorizontal: -SPACING.MD,
   },
   sectionDivider: {
     paddingBottom: SPACING.MD,
