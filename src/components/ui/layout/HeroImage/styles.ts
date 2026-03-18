@@ -1,12 +1,11 @@
 import { StyleSheet, Dimensions } from 'react-native';
 import { SPACING } from '@/constants';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
   section: {
     width: SCREEN_WIDTH,
-    height: SCREEN_HEIGHT * 0.6,
     position: 'relative',
   },
   cardContainer: {
@@ -33,16 +32,28 @@ export const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end',
     paddingHorizontal: SPACING.LG,
-    paddingBottom: SPACING.XS,
     borderBottomLeftRadius: 40,
     borderBottomRightRadius: 40,
     position: 'relative',
   },
-  gradient: {
+  effectsContainer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
+    overflow: 'hidden',
+    zIndex: 0,
+    borderBottomLeftRadius: 40,
+    borderBottomRightRadius: 40,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+  },
+  gradient: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
     borderBottomLeftRadius: 40,
     borderBottomRightRadius: 40,
     borderTopLeftRadius: 12,
@@ -51,9 +62,10 @@ export const styles = StyleSheet.create({
   },
   blur: {
     position: 'absolute',
-    bottom: 0,
     left: 0,
     right: 0,
+    top: 0,
+    bottom: 0,
     borderBottomLeftRadius: 40,
     borderBottomRightRadius: 40,
     borderTopLeftRadius: 12,
@@ -63,6 +75,7 @@ export const styles = StyleSheet.create({
   },
   content: {
     zIndex: 2,
+    paddingBottom: SPACING.XS,
   },
   badgesContainer: {
     flexDirection: 'row',

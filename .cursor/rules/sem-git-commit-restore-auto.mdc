@@ -1,0 +1,9 @@
+---
+description: Evitar commits e restores automáticos
+globs: **/*
+alwaysApply: true
+---
+
+- Não executar `git add`, `git commit` nem `git push` sem o usuário pedir explicitamente.
+- Não executar `git restore` (ou qualquer revert/desfazimento) sem o usuário pedir explicitamente.
+- Antes de qualquer integração/artefato remoto (push/commit) ou ação potencialmente destrutiva (restore), pedir confirmação ao usuário.

@@ -49,26 +49,26 @@ const HeroImage = ({
     setOverlayContentHeight(next);
   }, []);
 
-  const overlayHeight = overlayContentHeight > 0 ? overlayContentHeight : 60;
-  const dynamicHeightStyle = useMemo(() => ({ height: overlayHeight }), [overlayHeight]);
-
   const availableHeight = SCREEN_HEIGHT - offsetTop;
   const sectionHeight = Math.max(0, availableHeight * heightRatio);
+  const overlayHeight = overlayContentHeight > 0 ? overlayContentHeight : 60;
+  const dynamicHeightStyle = useMemo(() => ({ height: overlayHeight }), [overlayHeight]);
+  const sectionStyle = { height: sectionHeight };
 
   return (
-    <View style={[styles.section, { height: sectionHeight }]}>
+    <View style={[styles.section, sectionStyle]}>
       <ImageBackground source={source} style={styles.image} imageStyle={styles.imageStyle}>
         {shouldRenderCard ? (
           <View style={styles.cardContainer}>{cardContent}</View>
         ) : (
           <View style={styles.overlay}>
             {shouldRenderOverlay && (
-              <View>
-                <BlurView intensity={10} tint='dark' style={[styles.blur, dynamicHeightStyle]} />
+              <View style={[styles.effectsContainer, dynamicHeightStyle]}>
+                <BlurView intensity={10} tint='dark' style={styles.blur} />
                 <LinearGradient
                   colors={['rgba(48, 48, 48, 0)', 'rgba(41, 41, 41, 1)']}
                   locations={[0.64, 1]}
-                  style={[styles.gradient, dynamicHeightStyle]}
+                  style={styles.gradient}
                 />
               </View>
             )}

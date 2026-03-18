@@ -1,3 +1,4 @@
+import { COLORS, SPACING } from '@/constants';
 import { StyleSheet } from 'react-native';
 
 const SURFACE_WHITE = '#FFFFFF';
@@ -11,7 +12,7 @@ export const styles = StyleSheet.create({
     right: 0,
     zIndex: 1000,
     paddingHorizontal: 12,
-    paddingTop: 8,
+    paddingVertical: SPACING.SM,
     backgroundColor: 'transparent',
     borderTopLeftRadius: 32,
     borderTopRightRadius: 32,
@@ -45,7 +46,7 @@ export const styles = StyleSheet.create({
   pillSelected: {
     gap: 4,
     paddingHorizontal: 16,
-    backgroundColor: SURFACE_WHITE,
+    backgroundColor: COLORS.SECONDARY.PURE,
     borderRadius: 48,
   },
   pillLabel: {

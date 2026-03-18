@@ -4,7 +4,6 @@ import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ColoredTwoDotsIcon } from '@/assets/ui';
 import { BlurView } from 'expo-blur';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { styles } from './styles';
 
 type MenuItem = {
@@ -22,14 +21,13 @@ type Props = {
 
 const FloatingMenu: React.FC<Props> = ({ items, selectedId }) => {
   const navigation = useNavigation();
-  const insets = useSafeAreaInsets();
 
   const handleHomePress = () => {
     navigation.navigate('Home' as never);
   };
 
   return (
-    <View style={[styles.container, { paddingBottom: Math.max(insets.bottom, 8) }]}>
+    <View style={[styles.container]}>
       <BlurView intensity={10} tint='light' style={styles.blur} />
       <View style={styles.overlay} />
 
@@ -41,7 +39,7 @@ const FloatingMenu: React.FC<Props> = ({ items, selectedId }) => {
           accessibilityRole='button'
           accessibilityLabel='Home'
         >
-          <ColoredTwoDotsIcon width={20} height={20} />
+          <ColoredTwoDotsIcon width={30} height={30} />
           {selectedId === 'home' && <Text style={styles.pillLabel}>Home</Text>}
         </TouchableOpacity>
 
