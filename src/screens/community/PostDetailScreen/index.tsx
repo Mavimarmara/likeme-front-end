@@ -1,13 +1,14 @@
-import React, { useMemo, useState } from 'react';
-import { Image, ScrollView, Text, View } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { KeyboardAvoidingView, Platform, ScrollView, TextInput, View } from 'react-native';
 import { GradientBackground, ScreenWithHeader } from '@/components/ui/layout';
-import { Badge } from '@/components/ui';
 import { PostCard, PostReplies } from '@/components/sections/community';
+import { IconButton } from '@/components/ui/buttons';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
 import { COLORS, SPACING } from '@/constants';
-import type { Post } from '@/types';
+import type { Comment, Post } from '@/types';
+import { useTranslation } from '@/hooks/i18n';
+import { useFloatingMenu } from '@/contexts/FloatingMenuContext';
 
 type Props = {
   navigation: any;
@@ -18,43 +19,58 @@ type Props = {
 
 const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   const { post } = route.params;
-  const [isCommentsOpen] = useState(true);
+  const [comments, setComments] = useState<Post['comments']>(post.comments);
+  const [messageText, setMessageText] = useState('');
+  const [sending, setSending] = useState(false);
+  const scrollViewRef = useRef<ScrollView>(null);
 
-  const badgeLabel = useMemo((): string | null => {
-    if (!post.tags) return null;
+  const { t } = useTranslation();
+  const { clearMenu } = useFloatingMenu();
 
-    if (Array.isArray(post.tags)) {
-      const validTag = post.tags.find((tag) => tag && typeof tag === 'string' && tag.toLowerCase() !== 'tags');
-      return validTag ?? null;
+  useEffect(() => {
+    clearMenu();
+  }, [clearMenu]);
+
+  const postForRendering = useMemo(() => {
+    return {
+      ...post,
+      comments,
+      commentsCount: comments.length,
+    };
+  }, [post, comments]);
+
+  const isSendDisabled = sending || messageText.trim().length === 0;
+
+  const handleSendComment = useCallback(async () => {
+    if (isSendDisabled) return;
+
+    const trimmed = messageText.trim();
+    if (trimmed.length === 0 || sending) return;
+
+    setSending(true);
+    try {
+      const optimisticComment: Comment = {
+        id: `temp-${Date.now()}`,
+        userId: 'me',
+        content: trimmed,
+        createdAt: new Date(),
+        userName: 'Você',
+        userAvatar: undefined,
+      };
+
+      setComments((prev) => [...prev, optimisticComment]);
+      setMessageText('');
+    } finally {
+      setSending(false);
     }
+  }, [isSendDisabled, messageText, sending, post.id]);
 
-    if (typeof post.tags === 'string' && post.tags.toLowerCase() !== 'tags') {
-      return post.tags;
-    }
-
-    return null;
-  }, [post.tags]);
-
-  const title = useMemo(() => {
-    const p: Post = post;
-    if (p.title) return p.title;
-
-    const lines = p.content.split('\n').filter((line) => line.trim());
-    if (lines.length > 0) {
-      const firstLine = lines[0].trim();
-      if (firstLine.length > 30 && firstLine.length < 150) return firstLine;
-    }
-
-    return p.content.substring(0, 120).trim();
-  }, [post]);
-
-  const capitalizeWords = (text: string): string =>
-    text
-      .split(' ')
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(' ');
-
-  const authorName = post.userName ? capitalizeWords(post.userName) : '';
+  useEffect(() => {
+    if (!comments.length) return;
+    setTimeout(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }, 100);
+  }, [comments.length]);
 
   return (
     <ScreenWithHeader
@@ -70,37 +86,45 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
         <GradientBackground />
       </View>
 
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={{ padding: SPACING.MD, paddingBottom: SPACING.XL }}
-        showsVerticalScrollIndicator={false}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={0}
       >
-        <View style={styles.header}>
-          {badgeLabel && (
-            <View style={{ marginBottom: SPACING.XS }}>
-              <Badge label={badgeLabel} />
+        <ScrollView
+          ref={scrollViewRef}
+          style={styles.scroll}
+          contentContainerStyle={{ padding: SPACING.MD, paddingBottom: 120 }}
+          showsVerticalScrollIndicator={false}
+        >
+          <PostCard post={postForRendering} forceContentExpanded />
+
+          {!post.poll && <PostReplies postId={post.id} comments={postForRendering.comments} />}
+        </ScrollView>
+
+        {!post.poll && (
+          <View style={styles.inputContainer}>
+            <View style={[styles.textInputWrapper]}>
+              <TextInput
+                style={styles.textInput}
+                placeholder={t('chat.messagePlaceholder')}
+                placeholderTextColor='rgba(110,106,106,0.6)'
+                value={messageText}
+                onChangeText={setMessageText}
+                multiline
+              />
             </View>
-          )}
 
-          <View style={styles.headerRow}>
-            {post.userAvatar ? (
-              <Image source={{ uri: post.userAvatar }} style={styles.avatar} />
-            ) : (
-              <View style={styles.avatarPlaceholder}>
-                <Icon name='person' size={16} color={COLORS.TEXT_LIGHT} />
-              </View>
-            )}
-            {!!authorName && <Text style={styles.authorName}>{authorName}</Text>}
+            <IconButton
+              icon='send'
+              variant='dark'
+              onPress={handleSendComment}
+              backgroundSize='medium'
+              disabled={isSendDisabled}
+            />
           </View>
-
-          {!!post.overline && <Text style={styles.overline}>{post.overline}</Text>}
-          {!!title && <Text style={styles.title}>{title}</Text>}
-        </View>
-
-        <PostCard post={post} initialCommentsOpen={isCommentsOpen} forceContentExpanded />
-
-        {!post.poll && isCommentsOpen && <PostReplies postId={post.id} comments={post.comments} />}
-      </ScrollView>
+        )}
+      </KeyboardAvoidingView>
     </ScreenWithHeader>
   );
 };
