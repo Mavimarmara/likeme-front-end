@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, ImageBackground, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 import { styles } from './styles';
 
 const DEFAULT_IMAGE_URI = 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400';
@@ -53,11 +54,14 @@ const HeroImage: React.FC<HeroImageProps> = ({
         ) : (
           <View style={styles.overlay}>
             {(useProfileMode || useCustomOverlay) && (
-              <LinearGradient
-                colors={['rgba(48, 48, 48, 0)', 'rgba(41, 41, 41, 1)']}
-                locations={[0.64, 1]}
-                style={styles.gradient}
-              />
+              <>
+                <BlurView intensity={10} tint='dark' style={styles.blur} />
+                <LinearGradient
+                  colors={['rgba(48, 48, 48, 0)', 'rgba(41, 41, 41, 1)']}
+                  locations={[0.64, 1]}
+                  style={styles.gradient}
+                />
+              </>
             )}
             <View style={styles.content}>
               {useProfileMode && (

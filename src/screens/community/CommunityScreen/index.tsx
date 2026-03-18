@@ -209,7 +209,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
             imageUri={communityIntro.imageUri ?? DEFAULT_COMMUNITY_IMAGE}
             name={communityIntro.title}
             badges={communityIntroBadges}
-            heightRatio={0.68}
             footer={
               communityIntro.description ? (
                 <View style={styles.heroFooter}>
