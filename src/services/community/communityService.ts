@@ -13,6 +13,7 @@ class CommunityService {
   private readonly commentReactionEndpoint = '/api/communities/comments';
   private readonly postReactionEndpoint = '/api/communities/posts';
   private readonly amityCommentsEndpoint = '/api/communities/comments';
+  private readonly addCommentEndpoint = '/api/communities/comments';
   private readonly communitiesEndpoint = '/api/communities';
 
   async getUserFeed(params: UserFeedParams = {}): Promise<UserFeedApiResponse> {
@@ -230,6 +231,36 @@ class CommunityService {
       referenceId: trimmedId,
       referenceType,
     });
+  }
+
+  async addPostComment(postId: string, text: string, parentId?: string): Promise<any> {
+    try {
+      if (!postId || postId.trim() === '') {
+        throw new Error('Post ID is required');
+      }
+
+      const trimmedText = text?.trim();
+      if (!trimmedText) {
+        throw new Error('Text is required');
+      }
+
+      const response = await apiClient.post<any>(
+        this.addCommentEndpoint,
+        {
+          postId: postId.trim(),
+          text: trimmedText,
+          referenceType: 'post',
+          parentId,
+        },
+        true,
+      );
+
+      logger.debug('Post comment added:', { postId, hasParentId: !!parentId });
+      return response;
+    } catch (error) {
+      logger.error('Error adding post comment:', error);
+      throw error;
+    }
   }
 
   async listCommunities(params: ListCommunitiesParams = {}): Promise<ListCommunitiesApiResponse> {

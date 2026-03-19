@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { styles } from './styles';
 import type { Poll } from '@/types';
 
@@ -36,12 +36,18 @@ const PollCard: React.FC<Props> = ({ poll, onVote, disabled = false }) => {
         {poll.options.map((option) => {
           const isSelected = selectedOptionId === option.id;
           return (
-            <TouchableOpacity
+            <Pressable
               key={option.id}
-              style={[styles.option, isSelected && styles.optionSelected]}
-              onPress={() => handleOptionPress(option.id)}
+              style={({ pressed }) => [
+                styles.option,
+                isSelected && styles.optionSelected,
+                pressed ? { opacity: 0.85 } : undefined,
+              ]}
+              onPress={(e) => {
+                e.stopPropagation();
+                handleOptionPress(option.id);
+              }}
               disabled={disabled || poll.isFinished}
-              activeOpacity={disabled || poll.isFinished ? 1 : 0.7}
             >
               <View style={styles.optionHeader}>
                 <View style={styles.optionContent}>
@@ -62,7 +68,7 @@ const PollCard: React.FC<Props> = ({ poll, onVote, disabled = false }) => {
                   ]}
                 />
               </View>
-            </TouchableOpacity>
+            </Pressable>
           );
         })}
       </View>

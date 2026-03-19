@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, TextInput, View } from 'react-native';
 import { GradientBackground, ScreenWithHeader } from '@/components/ui/layout';
 import { PostCard, PostReplies } from '@/components/sections/community';
 import { styles } from './styles';
@@ -7,7 +7,8 @@ import type { CommunityStackParamList } from '@/types/navigation';
 import { COLORS } from '@/constants';
 import type { Post } from '@/types';
 import { useFloatingMenu } from '@/contexts/FloatingMenuContext';
-import { useMenuItems } from '@/hooks';
+import { IconButton } from '@/components/ui/buttons';
+import { useMenuItems, usePostReplies, useTranslation } from '@/hooks';
 
 type Props = {
   navigation: any;
@@ -18,12 +19,15 @@ type Props = {
 
 const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   const { post } = route.params;
-  // Composer de comentários desativado por enquanto.
-  // Quando reativar, você provavelmente vai querer reintroduzir `setComments`, `messageText`, `sending`, `t` e `handleSendComment`.
-  // const [comments, setComments] = useState<Post['comments']>(post.comments);
   const [comments] = useState<Post['comments']>(post.comments);
-  // const [messageText, setMessageText] = useState('');
-  // const [sending, setSending] = useState(false);
+  const [messageText, setMessageText] = useState('');
+  const { t } = useTranslation();
+
+  const { replyCardComments, addPostComment, isAddingPostComment } = usePostReplies({
+    postId: post.id,
+    comments,
+    enabled: !post.poll,
+  });
   const scrollViewRef = useRef<ScrollView>(null);
 
   const menuItems = useMenuItems(navigation);
@@ -43,42 +47,31 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     return {
       ...post,
       comments,
-      commentsCount: comments.length,
+      commentsCount: replyCardComments.length,
     };
-  }, [post, comments]);
+  }, [post, comments, replyCardComments.length]);
 
-  //const isSendDisabled = sending || messageText.trim().length === 0;
+  const isSendDisabled = isAddingPostComment || messageText.trim().length === 0;
 
-  /*const handleSendComment = useCallback(async () => {
+  const handleSendComment = async () => {
     if (isSendDisabled) return;
 
-    const trimmed = messageText.trim();
-    if (trimmed.length === 0 || sending) return;
-
-    setSending(true);
     try {
-      const optimisticComment: Comment = {
-        id: `temp-${Date.now()}`,
-        userId: 'me',
-        content: trimmed,
-        createdAt: new Date(),
-        userName: 'Você',
-        userAvatar: undefined,
-      };
-
-      setComments((prev) => [...prev, optimisticComment]);
-      setMessageText('');
-    } finally {
-      setSending(false);
+      const ok = await addPostComment(messageText);
+      if (ok) {
+        setMessageText('');
+      }
+    } catch {
+      // Mantém o texto caso falhe.
     }
-  }, [isSendDisabled, messageText, sending, post.id]);*/
+  };
 
   useEffect(() => {
-    if (!comments.length) return;
+    if (!replyCardComments.length) return;
     setTimeout(() => {
       scrollViewRef.current?.scrollToEnd({ animated: true });
     }, 100);
-  }, [comments.length]);
+  }, [replyCardComments.length]);
 
   return (
     <ScreenWithHeader
@@ -114,10 +107,10 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
             }}
           />
 
-          {!post.poll && <PostReplies postId={post.id} comments={postForRendering.comments} />}
+          {!post.poll && <PostReplies replyCardComments={replyCardComments} />}
         </ScrollView>
 
-        {/*!post.poll && (
+        {!post.poll && (
           <View style={styles.inputContainer}>
             <View style={[styles.textInputWrapper]}>
               <TextInput
@@ -138,7 +131,7 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
               disabled={isSendDisabled}
             />
           </View>
-        )*/}
+        )}
       </KeyboardAvoidingView>
     </ScreenWithHeader>
   );

@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { Post } from '@/types';
 import { communityService } from '@/services';
+import { logger } from '@/utils/logger';
 
 export type PostReplyCardComment = {
   id: string;
@@ -32,13 +33,17 @@ type UsePostRepliesOptions = {
 
 export const usePostReplies = ({ postId, comments, enabled = true }: UsePostRepliesOptions) => {
   const [remoteReplyCardComments, setRemoteReplyCardComments] = useState<PostReplyCardComment[] | null>(null);
-  const hasFetchedRef = useRef(false);
+  const [localOptimisticComments, setLocalOptimisticComments] = useState<PostReplyCardComment[]>([]);
+  const [fetchNonce, setFetchNonce] = useState(0);
+  const [isAddingPostComment, setIsAddingPostComment] = useState(false);
+
+  const refresh = useCallback(() => {
+    setFetchNonce((v) => v + 1);
+  }, []);
 
   useEffect(() => {
     if (!enabled) return;
     if (!postId) return;
-    if (hasFetchedRef.current) return;
-    hasFetchedRef.current = true;
 
     const run = async () => {
       try {
@@ -152,13 +157,14 @@ export const usePostReplies = ({ postId, comments, enabled = true }: UsePostRepl
         );
 
         setRemoteReplyCardComments(merged);
-      } catch {
-        // Silencioso: mantemos os comentários vindos do feed como fallback.
+      } catch (error) {
+        // Mantemos fallback do feed quando falhar.
+        logger.warn('Erro ao sincronizar replies do post:', error);
       }
     };
 
     run();
-  }, [enabled, postId, comments]);
+  }, [enabled, postId, comments, fetchNonce]);
 
   const replyFromProps = (postIdValue: Post['id'], initialComments: Post['comments']) => {
     return initialComments.map((comment) => {
@@ -230,5 +236,71 @@ export const usePostReplies = ({ postId, comments, enabled = true }: UsePostRepl
     });
   }, [comments, postId]);
 
-  return { replyCardComments: remoteReplyCardComments ?? replyCardComments };
+  const addPostComment = useCallback(
+    async (text: string, parentId?: string) => {
+      if (!postId) return false;
+      if (isAddingPostComment) return false;
+
+      const trimmedText = text?.trim();
+      if (!trimmedText) return false;
+
+      setIsAddingPostComment(true);
+
+      const optimisticId = `temp-${Date.now()}`;
+      const nowIso = new Date().toISOString();
+
+      const optimisticComment: PostReplyCardComment = {
+        id: optimisticId,
+        postId: String(postId),
+        author: {
+          id: 'me',
+          name: 'Você',
+          avatar: undefined,
+        },
+        content: trimmedText,
+        upvotes: 0,
+        downvotes: 0,
+        reactionsCount: 0,
+        commentsCount: undefined,
+        createdAt: nowIso,
+        replies: [],
+        userReaction: undefined,
+      };
+
+      setLocalOptimisticComments((prev) => [...prev, optimisticComment]);
+
+      try {
+        await communityService.addPostComment(String(postId), trimmedText, parentId);
+
+        // Após confirmar no backend, removemos o optimistic e refazemos a lista.
+        setLocalOptimisticComments((prev) => prev.filter((c) => c.id !== optimisticId));
+        refresh();
+        return true;
+      } catch (error) {
+        logger.warn('Erro ao adicionar comentário do post (optimistic removido):', error);
+        setLocalOptimisticComments((prev) => prev.filter((c) => c.id !== optimisticId));
+        return false;
+      } finally {
+        setIsAddingPostComment(false);
+      }
+    },
+    [isAddingPostComment, postId, refresh],
+  );
+
+  const mergedForRender = useMemo(() => {
+    const base = remoteReplyCardComments ?? replyCardComments;
+    if (!localOptimisticComments.length) return base;
+
+    return [...base, ...localOptimisticComments].reduce<PostReplyCardComment[]>((acc, item) => {
+      const exists = acc.some((x) => x.id === item.id);
+      if (!exists) acc.push(item);
+      return acc;
+    }, []);
+  }, [replyCardComments, remoteReplyCardComments, localOptimisticComments]);
+
+  return {
+    replyCardComments: mergedForRender,
+    addPostComment,
+    isAddingPostComment,
+  };
 };

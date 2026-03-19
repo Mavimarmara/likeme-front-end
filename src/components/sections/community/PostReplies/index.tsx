@@ -1,16 +1,13 @@
 import React from 'react';
 import { View } from 'react-native';
 import { CommentCard } from '@/components/ui';
-import type { Post } from '@/types';
+import type { PostReplyCardComment } from '@/hooks/community/usePostReplies';
 import { styles } from './styles';
-import { usePostReplies } from '@/hooks';
 
 type Props = {
-  postId: Post['id'];
-  comments: Post['comments'];
+  replyCardComments: PostReplyCardComment[];
 };
-const PostReplies: React.FC<Props> = ({ postId, comments }) => {
-  const { replyCardComments } = usePostReplies({ postId, comments });
+const PostReplies: React.FC<Props> = ({ replyCardComments }) => {
   return (
     <View style={styles.commentsSection}>
       {replyCardComments.map((comment) => (
