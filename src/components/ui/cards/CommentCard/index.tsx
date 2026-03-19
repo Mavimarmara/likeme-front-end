@@ -127,84 +127,78 @@ const CommentCard: React.FC<Props> = ({
 
   return (
     <View style={[styles.container, level > 0 && styles.replyContainer]}>
-      <View style={styles.commentHeader}>
-        {comment.author.avatar ? (
-          isAvatarUri ? (
-            <Image source={{ uri: comment.author.avatar as string }} style={styles.avatar} />
+      <View style={styles.bodyRow}>
+        {/* Coluna 1: imagem/avatar */}
+        <View style={styles.imageColumn}>
+          {comment.author.avatar ? (
+            isAvatarUri ? (
+              <Image source={{ uri: comment.author.avatar as string }} style={styles.avatar} />
+            ) : (
+              <Image source={comment.author.avatar as ImageSourcePropType} style={styles.avatar} />
+            )
           ) : (
-            <Image source={comment.author.avatar as ImageSourcePropType} style={styles.avatar} />
-          )
-        ) : (
-          <View style={styles.avatarPlaceholder}>
-            <Icon name='person' size={16} color='#666' />
-          </View>
-        )}
-        <Text style={styles.authorName}>{capitalizeWords(comment.author.name)}</Text>
-      </View>
+            <View style={styles.avatarPlaceholder}>
+              <Icon name='person' size={16} color='#666' />
+            </View>
+          )}
+        </View>
 
-      <Text style={styles.content}>
-        {displayedContent}
-        {shouldTruncate && (
-          <>
-            {!isContentExpanded && '... '}
-            <Text style={styles.verMore} onPress={() => setIsContentExpanded((v) => !v)}>
-              Ver mais
-            </Text>
-          </>
-        )}
-      </Text>
+        {/* Coluna 2: conteúdo */}
+        <View style={styles.contentColumn}>
+          <Text style={styles.authorName}>{capitalizeWords(comment.author.name)}</Text>
 
-      <View style={styles.footerRow}>
-        <View style={styles.footerLeft}>
+          <Text style={styles.content}>
+            {displayedContent}
+            {shouldTruncate && (
+              <>
+                {!isContentExpanded && '... '}
+                <Text style={styles.verMore} onPress={() => setIsContentExpanded((v) => !v)}>
+                  Ver mais
+                </Text>
+              </>
+            )}
+          </Text>
+
           <Text style={styles.timeText}>{formatRelativeTime(comment.createdAt)}</Text>
-          <View style={styles.actionsRow}>
-            <TouchableOpacity
-              onPress={handleUpvotePress}
-              activeOpacity={0.7}
-              disabled={reactionLoading}
-              accessibilityRole='button'
-              accessibilityLabel='Curtir'
-            >
-              <Text style={[styles.actionText, currentReaction === 'like' && styles.actionTextSelected]}>Curtir</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => onReply?.(comment)}
-              activeOpacity={0.7}
-              accessibilityRole='button'
-              accessibilityLabel='Responder'
-            >
-              <Text style={styles.actionText}>Responder</Text>
-            </TouchableOpacity>
-          </View>
         </View>
 
-        <View style={styles.likeBubble}>
-          <Icon name='thumb-up' size={18} color='#0154f8' />
-          <Text style={styles.likeCount}>{upvotes}</Text>
+        {/* Coluna 3: replies */}
+        <View style={styles.metaColumn}>
+          <TouchableOpacity
+            style={styles.likeBubble}
+            onPress={handleUpvotePress}
+            activeOpacity={0.7}
+            disabled={reactionLoading}
+            accessibilityRole='button'
+            accessibilityLabel='Curtir'
+          >
+            <Icon name={currentReaction === 'like' ? 'thumb-up' : 'thumb-up-off-alt'} size={18} color='#0154f8' />
+            <Text style={styles.likeCount}>{upvotes}</Text>
+          </TouchableOpacity>
+
+          {hasReplies && (
+            <TouchableOpacity style={styles.hideButton} onPress={handleToggleReplies} activeOpacity={0.7}>
+              <Text style={styles.hideText}>{isExpanded ? 'hide' : 'show'}</Text>
+            </TouchableOpacity>
+          )}
+
+          {hasReplies && isExpanded && showReplies && (
+            <View style={styles.repliesContainer}>
+              {comment.replies?.map((reply) => (
+                <CommentCard
+                  key={reply.id}
+                  comment={reply}
+                  onReply={onReply}
+                  onUpvote={onUpvote}
+                  onDownvote={_onDownvote}
+                  showReplies={showReplies}
+                  level={level + 1}
+                />
+              ))}
+            </View>
+          )}
         </View>
       </View>
-
-      {hasReplies && (
-        <TouchableOpacity style={styles.hideButton} onPress={handleToggleReplies} activeOpacity={0.7}>
-          <Text style={styles.hideText}>{isExpanded ? 'hide' : 'show'}</Text>
-        </TouchableOpacity>
-      )}
-
-      {hasReplies && isExpanded && showReplies && (
-        <View style={styles.repliesContainer}>
-          {comment.replies?.map((reply) => (
-            <CommentCard
-              key={reply.id}
-              comment={reply}
-              onReply={onReply}
-              onUpvote={onUpvote}
-              onDownvote={_onDownvote}
-              showReplies={showReplies}
-              level={level + 1}
-            />
-          ))}
-        </View>
-      )}
     </View>
   );
 };

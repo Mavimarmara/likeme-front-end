@@ -23,15 +23,10 @@ export type PostReplyCardComment = {
 
 type UsePostRepliesOptions = {
   postId: Post['id'];
-  comments: Post['comments'];
-  /**
-   * Quando true, tenta puxar os comentários reais do backend (Amity).
-   * Mantemos o `comments` como fallback para renderizar instantaneamente.
-   */
   enabled?: boolean;
 };
 
-export const usePostReplies = ({ postId, comments, enabled = true }: UsePostRepliesOptions) => {
+export const usePostReplies = ({ postId, enabled = true }: UsePostRepliesOptions) => {
   const [remoteReplyCardComments, setRemoteReplyCardComments] = useState<PostReplyCardComment[] | null>(null);
   const [localOptimisticComments, setLocalOptimisticComments] = useState<PostReplyCardComment[]>([]);
   const [fetchNonce, setFetchNonce] = useState(0);
@@ -52,14 +47,28 @@ export const usePostReplies = ({ postId, comments, enabled = true }: UsePostRepl
 
         const amityComments = Array.isArray(data?.comments) ? data.comments : [];
         const amityChildren = Array.isArray(data?.commentChildren) ? data.commentChildren : [];
+        // `communityUsers` é relação de membership e não necessariamente contém `displayName`/`avatar`.
+        // Para renderizar nome e foto, preferimos `users`.
         const amityUsers = (() => {
-          if (Array.isArray(data?.communityUsers)) return data.communityUsers;
           if (Array.isArray(data?.users)) return data.users;
+          if (Array.isArray(data?.communityUsers)) return data.communityUsers;
           return [];
         })();
         const amityFiles = Array.isArray(data?.files) ? data.files : [];
 
-        const getUser = (userId: string) => amityUsers.find((u: any) => u?.userId === userId);
+        const getUser = (amityCommentNode: any) => {
+          const commentUserId = amityCommentNode?.userId;
+          const commentUserPublicId = amityCommentNode?.userPublicId;
+          const commentUserInternalId = amityCommentNode?.userInternalId;
+
+          return amityUsers.find((u: any) => {
+            if (commentUserId && u?.userId === commentUserId) return true;
+            if (commentUserPublicId && u?.userPublicId === commentUserPublicId) return true;
+            if (commentUserInternalId && u?.userInternalId === commentUserInternalId) return true;
+            return false;
+          });
+        };
+
         const getAvatarUrl = (user: any) => {
           const avatarFileId = user?.avatarFileId;
           if (!avatarFileId) return undefined;
@@ -85,8 +94,8 @@ export const usePostReplies = ({ postId, comments, enabled = true }: UsePostRepl
 
         const buildNode = (amityComment: any, postIdValue: string): PostReplyCardComment => {
           const commentId = amityComment?.commentId ?? amityComment?._id;
-          const userId = amityComment?.userId ?? '';
-          const user = getUser(userId);
+          const userId = amityComment?.userId ?? amityComment?.userPublicId ?? amityComment?.userInternalId ?? '';
+          const user = getUser(amityComment);
           const avatar = getAvatarUrl(user);
 
           const createdAtIso = amityComment?.createdAt
@@ -107,7 +116,7 @@ export const usePostReplies = ({ postId, comments, enabled = true }: UsePostRepl
             postId: postIdValue,
             author: {
               id: userId,
-              name: user?.displayName ?? `User ${String(userId).slice(0, 8)}`,
+              name: user?.displayName ?? (userId ? `User ${String(userId).slice(0, 8)}` : 'Usuário'),
               avatar,
             },
             content,
@@ -132,29 +141,25 @@ export const usePostReplies = ({ postId, comments, enabled = true }: UsePostRepl
         const nodesById = new Map<string, PostReplyCardComment>();
         [...rootNodes, ...childrenNodes].forEach((n) => nodesById.set(String(n.id), n));
 
+        const orphans: PostReplyCardComment[] = [];
         childrenNodes.forEach((child: any, idx: number) => {
           // parentId vem da schema do Amity
           const original = amityChildren[idx];
           const parentId = original?.parentId;
-          if (!parentId) return;
           const parent = nodesById.get(String(parentId));
-          if (!parent) return;
+          if (!parentId || !parent) {
+            orphans.push(child);
+            return;
+          }
           if (!parent.replies) parent.replies = [];
           parent.replies.push(child);
         });
 
-        const optimisticById = new Map<string, PostReplyCardComment>(
-          replyFromProps(postId, comments).map((c) => [c.id, c]),
-        );
-
-        const merged = [...rootNodes, ...Array.from(optimisticById.values())].reduce<PostReplyCardComment[]>(
-          (acc, item) => {
-            const exists = acc.some((x) => x.id === item.id);
-            if (!exists) acc.push(item);
-            return acc;
-          },
-          [],
-        );
+        const merged = [...rootNodes, ...orphans].reduce<PostReplyCardComment[]>((acc, item) => {
+          const exists = acc.some((x) => x.id === item.id);
+          if (!exists) acc.push(item);
+          return acc;
+        }, []);
 
         setRemoteReplyCardComments(merged);
       } catch (error) {
@@ -164,77 +169,7 @@ export const usePostReplies = ({ postId, comments, enabled = true }: UsePostRepl
     };
 
     run();
-  }, [enabled, postId, comments, fetchNonce]);
-
-  const replyFromProps = (postIdValue: Post['id'], initialComments: Post['comments']) => {
-    return initialComments.map((comment) => {
-      const countUpvotes = (reactions: Post['comments'][number]['reactions'] | undefined): number => {
-        if (!reactions) return 0;
-        return reactions.filter((r) => r.type === 'like' || r.type === 'upvote' || r.type === '👍').length || 0;
-      };
-
-      const countDownvotes = (reactions: Post['comments'][number]['reactions'] | undefined): number => {
-        if (!reactions) return 0;
-        return reactions.filter((r) => r.type === 'dislike' || r.type === 'downvote' || r.type === '👎').length || 0;
-      };
-
-      const safeCreatedAt =
-        comment.createdAt instanceof Date ? comment.createdAt.toISOString() : new Date(comment.createdAt).toISOString();
-
-      const authorName = comment.userName || `User ${comment.userId.slice(0, 8)}`;
-
-      return {
-        id: comment.id,
-        postId: postIdValue,
-        author: {
-          id: comment.userId,
-          name: authorName,
-          avatar: comment.userAvatar,
-        },
-        content: comment.content,
-        upvotes: countUpvotes(comment.reactions),
-        downvotes: countDownvotes(comment.reactions),
-        reactionsCount: comment.reactionsCount,
-        commentsCount: comment.commentsCount,
-        createdAt: safeCreatedAt,
-      } satisfies PostReplyCardComment;
-    });
-  };
-
-  const replyCardComments = useMemo(() => {
-    const countUpvotes = (reactions: Post['comments'][number]['reactions'] | undefined): number => {
-      if (!reactions) return 0;
-      return reactions.filter((r) => r.type === 'like' || r.type === 'upvote' || r.type === '👍').length || 0;
-    };
-
-    const countDownvotes = (reactions: Post['comments'][number]['reactions'] | undefined): number => {
-      if (!reactions) return 0;
-      return reactions.filter((r) => r.type === 'dislike' || r.type === 'downvote' || r.type === '👎').length || 0;
-    };
-
-    return comments.map((comment) => {
-      const safeCreatedAt =
-        comment.createdAt instanceof Date ? comment.createdAt.toISOString() : new Date(comment.createdAt).toISOString();
-
-      const authorName = comment.userName || `User ${comment.userId.slice(0, 8)}`;
-
-      return {
-        id: comment.id,
-        postId,
-        author: {
-          id: comment.userId,
-          name: authorName,
-          avatar: comment.userAvatar,
-        },
-        content: comment.content,
-        upvotes: countUpvotes(comment.reactions),
-        downvotes: countDownvotes(comment.reactions),
-        reactionsCount: comment.reactionsCount,
-        commentsCount: comment.commentsCount,
-        createdAt: safeCreatedAt,
-      } satisfies PostReplyCardComment;
-    });
-  }, [comments, postId]);
+  }, [enabled, postId, fetchNonce]);
 
   const addPostComment = useCallback(
     async (text: string, parentId?: string) => {
@@ -288,15 +223,16 @@ export const usePostReplies = ({ postId, comments, enabled = true }: UsePostRepl
   );
 
   const mergedForRender = useMemo(() => {
-    const base = remoteReplyCardComments ?? replyCardComments;
-    if (!localOptimisticComments.length) return base;
+    const baseNodes = remoteReplyCardComments ?? [];
 
-    return [...base, ...localOptimisticComments].reduce<PostReplyCardComment[]>((acc, item) => {
+    if (!localOptimisticComments.length) return baseNodes;
+
+    return [...baseNodes, ...localOptimisticComments].reduce<PostReplyCardComment[]>((acc, item) => {
       const exists = acc.some((x) => x.id === item.id);
       if (!exists) acc.push(item);
       return acc;
     }, []);
-  }, [replyCardComments, remoteReplyCardComments, localOptimisticComments]);
+  }, [remoteReplyCardComments, localOptimisticComments]);
 
   return {
     replyCardComments: mergedForRender,

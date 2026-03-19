@@ -11,16 +11,11 @@ export const styles = StyleSheet.create({
     marginLeft: SPACING.LG,
     marginTop: SPACING.SM,
   },
-  commentHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: SPACING.XS,
-  },
   avatar: {
     width: 26,
     height: 26,
     borderRadius: 13,
-    marginRight: SPACING.XS,
+    marginRight: 0,
   },
   avatarPlaceholder: {
     width: 26,
@@ -29,7 +24,30 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.BACKGROUND,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: SPACING.XS,
+    marginRight: 0,
+  },
+  bodyRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  imageColumn: {
+    marginRight: SPACING.MD,
+    paddingTop: 2,
+  },
+  contentColumn: {
+    flex: 1,
+  },
+  metaColumn: {
+    width: 110,
+    alignItems: 'flex-end',
+    alignSelf: 'stretch',
+    justifyContent: 'flex-end',
+  },
+  metaTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    gap: SPACING.XS,
   },
   authorName: {
     fontSize: 12,
@@ -45,21 +63,12 @@ export const styles = StyleSheet.create({
     lineHeight: 20,
     letterSpacing: 0.2,
     marginBottom: SPACING.SM,
+    paddingLeft: 0,
   },
   verMore: {
     fontSize: 14,
     fontWeight: '600',
     color: '#001137',
-  },
-  footerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    gap: SPACING.SM,
-    marginTop: SPACING.XS,
-  },
-  footerLeft: {
-    flex: 1,
   },
   timeText: {
     fontSize: 12,
@@ -67,21 +76,6 @@ export const styles = StyleSheet.create({
     color: '#6E6A6A',
     letterSpacing: 0.2,
     lineHeight: 20,
-    marginBottom: 2,
-  },
-  actionsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-  },
-  actionText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#001137',
-    letterSpacing: 0.2,
-  },
-  actionTextSelected: {
-    color: '#0154f8',
   },
   likeBubble: {
     flexDirection: 'row',

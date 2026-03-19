@@ -19,13 +19,11 @@ type Props = {
 
 const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   const { post } = route.params;
-  const [comments] = useState<Post['comments']>(post.comments);
   const [messageText, setMessageText] = useState('');
   const { t } = useTranslation();
 
   const { replyCardComments, addPostComment, isAddingPostComment } = usePostReplies({
     postId: post.id,
-    comments,
     enabled: !post.poll,
   });
   const scrollViewRef = useRef<ScrollView>(null);
@@ -46,10 +44,10 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   const postForRendering = useMemo(() => {
     return {
       ...post,
-      comments,
+      comments: [] as Post['comments'],
       commentsCount: replyCardComments.length,
     };
-  }, [post, comments, replyCardComments.length]);
+  }, [post, replyCardComments.length]);
 
   const isSendDisabled = isAddingPostComment || messageText.trim().length === 0;
 
