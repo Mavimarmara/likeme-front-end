@@ -1,10 +1,19 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import ptBR from './locales/pt-BR.json';
+
+const fallbackPtBRTranslation = {
+  auth: {
+    // Fallback para a animacao do LoadingScreen, caso o dicionario completo
+    // ainda nao tenha sido hidratado (cache/backend).
+    taglineRhythm: 'SEU RITMO',
+    taglineJourney: 'SUA JORNADA',
+    taglineRoutine: 'SUA ROTINA',
+  },
+} as const;
 
 const resources = {
   'pt-BR': {
-    translation: ptBR,
+    translation: fallbackPtBRTranslation,
   },
 };
 

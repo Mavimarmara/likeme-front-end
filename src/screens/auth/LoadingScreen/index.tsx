@@ -7,6 +7,7 @@ import { storageService } from '@/services';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen } from '@/analytics';
 import { getApiUrl } from '@/config';
+import { ensureI18nHydrated, startI18nHydration } from '@/i18n/hydration';
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 const GRADIENT_SOURCES = [GradientSplash7, GradientSplash8, GradientSplash9];
 
@@ -54,6 +55,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
 
   useEffect(() => {
     const run = async () => {
+      void startI18nHydration('pt-BR');
       const timing = (anim: Animated.Value, toValue: number, duration: number) =>
         new Promise<void>((resolve) => {
           Animated.timing(anim, { toValue, duration, useNativeDriver: true }).start(() => resolve());
@@ -109,6 +111,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
             if (data.token || data.accessToken) {
               await storageService.setToken(data.token || data.accessToken);
             }
+            await ensureI18nHydrated({ lang: 'pt-BR', timeoutMs: 2500 });
             navigation.replace('Authenticated');
             return;
           }
@@ -118,6 +121,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
       }
 
       // Se não houver token ou a renovação falhar, redirecionar para Unauthenticated
+      await ensureI18nHydrated({ lang: 'pt-BR', timeoutMs: 2500 });
       navigation.replace('Unauthenticated');
     };
 
