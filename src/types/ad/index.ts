@@ -4,6 +4,7 @@ import type { Product } from '@/types/product';
 export interface Advertiser {
   id: string;
   userId?: string;
+  communityId?: string;
   name: string;
   description?: string;
   logo?: string;

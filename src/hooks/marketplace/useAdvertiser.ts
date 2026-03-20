@@ -7,6 +7,7 @@ export interface UseAdvertiserListOptions {
   page?: number;
   limit?: number;
   status?: string;
+  communityId?: string;
 }
 
 export interface UseAdvertiserParams {
@@ -62,11 +63,11 @@ export const useAdvertiser = (params: UseAdvertiserParams = {}): UseAdvertiserRe
     if (!listOptions) {
       return Promise.resolve();
     }
-    const { page = 1, limit = 50, status = 'active' } = listOptions;
+    const { page = 1, limit = 50, status = 'active', communityId } = listOptions;
     setLoading(true);
     setError(null);
     try {
-      const response = await advertiserService.getAdvertisers({ page, limit, status });
+      const response = await advertiserService.getAdvertisers({ page, limit, status, communityId });
       if (cancelledRef.current) return;
       if (response.success && response.data?.advertisers?.length) {
         const list = response.data.advertisers;
@@ -85,7 +86,7 @@ export const useAdvertiser = (params: UseAdvertiserParams = {}): UseAdvertiserRe
     } finally {
       if (!cancelledRef.current) setLoading(false);
     }
-  }, [listOptions?.page, listOptions?.limit, listOptions?.status]);
+  }, [listOptions?.page, listOptions?.limit, listOptions?.status, listOptions?.communityId]);
 
   const refresh = useCallback(async (): Promise<void> => {
     if (listOptions != null && (advertiserId == null || advertiserId === '')) {
@@ -98,6 +99,7 @@ export const useAdvertiser = (params: UseAdvertiserParams = {}): UseAdvertiserRe
   const listPage = listOptions?.page;
   const listLimit = listOptions?.limit;
   const listStatus = listOptions?.status;
+  const listCommunityId = listOptions?.communityId;
 
   useEffect(() => {
     cancelledRef.current = false;
@@ -128,7 +130,17 @@ export const useAdvertiser = (params: UseAdvertiserParams = {}): UseAdvertiserRe
     return () => {
       cancelledRef.current = true;
     };
-  }, [advertiserId, initialAdvertiser, hasListOptions, listPage, listLimit, listStatus, loadList, loadById]);
+  }, [
+    advertiserId,
+    initialAdvertiser,
+    hasListOptions,
+    listPage,
+    listLimit,
+    listStatus,
+    listCommunityId,
+    loadList,
+    loadById,
+  ]);
 
   return {
     advertiser,

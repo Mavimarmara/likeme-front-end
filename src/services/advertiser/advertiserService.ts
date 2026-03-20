@@ -13,12 +13,14 @@ class AdvertiserService {
     page?: number;
     limit?: number;
     status?: string;
+    communityId?: string;
   }): Promise<ListAdvertisersApiResponse> {
     try {
       const queryParams: Record<string, string> = {};
       if (params?.page != null) queryParams.page = String(params.page);
       if (params?.limit != null) queryParams.limit = String(params.limit);
       if (params?.status) queryParams.status = params.status;
+      if (params?.communityId) queryParams.communityId = params.communityId;
 
       const response = await apiClient.get<ListAdvertisersApiResponse>(
         this.advertisersEndpoint,

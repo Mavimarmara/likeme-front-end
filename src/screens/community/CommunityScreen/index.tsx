@@ -45,10 +45,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     storageService.setCommunityWelcomeDismissed(true);
   }, []);
 
-  const { advertiser: featuredAdvertiser, advertisers: advertisersList } = useAdvertiser({
-    listOptions: { page: 1, limit: 50, status: 'active' },
-  });
-
   const handleCartPress = () => {
     rootNavigation?.navigate('Cart' as never);
   };
@@ -72,6 +68,12 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
       includeDeleted: false,
     },
     loadLiveChannels: true,
+  });
+
+  const selectedCommunityId = rawCommunities[0]?.communityId;
+
+  const { advertiser: featuredAdvertiser, advertisers: advertisersList } = useAdvertiser({
+    listOptions: { page: 1, limit: 50, status: 'active', communityId: selectedCommunityId },
   });
 
   const feedFilterParams = useMemo(() => ({}), []);
