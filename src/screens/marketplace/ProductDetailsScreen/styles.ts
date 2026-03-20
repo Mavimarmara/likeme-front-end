@@ -111,11 +111,19 @@ export const styles = StyleSheet.create({
     marginTop: 10,
   },
   heroPrice: {
-    fontSize: 18,
+    fontSize: 24,
     fontFamily: 'DM Sans',
-    fontWeight: '700',
+    fontStyle: 'normal',
+    fontWeight: '400',
     color: '#FFFFFF',
-    marginTop: 8,
+    lineHeight: 24,
+    marginTop: 0,
+  },
+  heroFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingBottom: SPACING.MD,
   },
   paginationContainer: {
     flexDirection: 'row',
@@ -374,6 +382,8 @@ export const styles = StyleSheet.create({
   tabsContainerInCard: {
     marginBottom: SPACING.LG,
     paddingHorizontal: 0,
+    // O ScrollView horizontal do ButtonCarousel aplica padding interno; compensamos aqui para alinhar à esquerda.
+    marginLeft: -SPACING.SM,
   },
   tabsContainer: {
     marginBottom: SPACING.LG,

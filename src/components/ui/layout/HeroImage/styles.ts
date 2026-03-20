@@ -81,6 +81,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
     marginBottom: 10,
+    paddingTop: SPACING.XXL,
   },
   badge: {
     backgroundColor: 'rgba(0, 17, 55, 0.64)',
@@ -101,14 +102,16 @@ export const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontFamily: 'DM Sans',
-    fontWeight: '700',
+    fontStyle: 'normal',
+    fontWeight: '500',
     color: '#FFFFFF',
     marginTop: 10,
   },
   name: {
-    fontSize: 24,
+    fontSize: 20,
     fontFamily: 'DM Sans',
-    fontWeight: '700',
+    fontStyle: 'normal',
+    fontWeight: '500',
     color: '#FFFFFF',
     marginTop: 8,
   },
@@ -117,5 +120,6 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 16,
+    width: '100%',
   },
 });
