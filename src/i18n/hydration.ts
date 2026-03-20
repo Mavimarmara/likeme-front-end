@@ -22,8 +22,10 @@ type I18nCachePayload = {
 
 const DEFAULT_LANGUAGE = 'pt-BR';
 const STORAGE_KEY_PREFIX = '@likeme:i18n:translations:';
+const MIN_FETCH_INTERVAL_MS = 60_000;
 
 let hydrationPromise: Promise<void> | null = null;
+let lastFetchAtMs = 0;
 
 const buildStorageKey = (lang: string) => `${STORAGE_KEY_PREFIX}${lang}`;
 
@@ -60,10 +62,19 @@ const saveToCache = async (lang: string, payload: I18nCachePayload): Promise<voi
   }
 };
 
-export const startI18nHydration = (lang: string = DEFAULT_LANGUAGE): Promise<void> => {
-  if (hydrationPromise) {
+export const startI18nHydration = (lang: string = DEFAULT_LANGUAGE, options?: { force?: boolean }): Promise<void> => {
+  const force = options?.force === true;
+  const now = Date.now();
+
+  if (!force && hydrationPromise) {
     return hydrationPromise;
   }
+
+  if (!force && now - lastFetchAtMs < MIN_FETCH_INTERVAL_MS) {
+    return Promise.resolve();
+  }
+
+  lastFetchAtMs = now;
 
   hydrationPromise = (async () => {
     // 1) aplica cache primeiro (para reduzir chance de exibir keys)
@@ -87,9 +98,14 @@ export const startI18nHydration = (lang: string = DEFAULT_LANGUAGE): Promise<voi
       updatedAt: payload.updatedAt,
       translation: payload.translation,
     });
-  })().catch((error) => {
-    logger.warn('[i18n] Falha ao hidratar traducoes:', error);
-  });
+  })()
+    .then(() => {
+      hydrationPromise = null;
+    })
+    .catch((error) => {
+      logger.warn('[i18n] Falha ao hidratar traducoes:', error);
+      hydrationPromise = null;
+    });
 
   return hydrationPromise;
 };

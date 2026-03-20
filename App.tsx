@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
-import { LogBox, Platform } from 'react-native';
+import { AppState, LogBox, Platform } from 'react-native';
 import { useFonts } from 'expo-font';
 import * as NavigationBar from 'expo-navigation-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { RootNavigator } from './src/navigation';
 import { AUTH0_CONFIG } from './src/config/environment';
+import { startI18nHydration } from './src/i18n/hydration';
 // Importar i18n antes de qualquer componente que use useTranslation
 import './src/i18n';
 
@@ -15,6 +16,18 @@ const App: React.FC = () => {
   const [fontsLoaded, fontError] = useFonts({
     'Bricolage Grotesque': require('./assets/fonts/BricolageGrotesque-Regular.ttf'),
   });
+
+  useEffect(() => {
+    void startI18nHydration('pt-BR');
+
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'active') {
+        void startI18nHydration('pt-BR', { force: true });
+      }
+    });
+
+    return () => subscription.remove();
+  }, []);
 
   useEffect(() => {
     // Debug: Log das variáveis de ambiente carregadas
