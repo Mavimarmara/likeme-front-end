@@ -23,6 +23,7 @@ import { useBlockedUser, useUserAvatar, useTranslation, useChat } from '@/hooks'
 import type { ChatStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface ChatMessage {
   id: string;
@@ -57,11 +58,13 @@ const ChatScreen: React.FC = () => {
   const isComposeMode = !channelId && !!targetAdvertiserId;
 
   const { refresh: refreshChatList } = useChat();
+  const { top: topInset, bottom: bottomInset } = useSafeAreaInsets();
   const scrollViewRef = useRef<ScrollView>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(!isComposeMode);
   const [resolvingChannel, setResolvingChannel] = useState(isComposeMode);
   const [messageText, setMessageText] = useState(isComposeMode ? initialMessage ?? '' : '');
+  const [chatHeaderHeight, setChatHeaderHeight] = useState(0);
   const resolvingChannelRef = useRef(false);
 
   // Se entrou em modo "conversar com" (targetAdvertiserId), resolve o canal (existente ou novo) e carrega o chat
@@ -244,7 +247,7 @@ const ChatScreen: React.FC = () => {
       }}
       contentContainerStyle={styles.container}
     >
-      <View style={styles.chatHeader}>
+      <View style={styles.chatHeader} onLayout={(e) => setChatHeaderHeight(e.nativeEvent.layout.height)}>
         <IconButton icon='chevron-left' onPress={() => navigation.goBack()} backgroundSize='medium' />
         <TouchableOpacity
           style={styles.headerInfo}
@@ -274,14 +277,16 @@ const ChatScreen: React.FC = () => {
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={0}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={chatHeaderHeight}
       >
         <ScrollView
           ref={scrollViewRef}
           style={styles.messagesContainer}
           contentContainerStyle={styles.messagesContent}
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps='handled'
+          keyboardDismissMode='on-drag'
         >
           {(loading || resolvingChannel) && (
             <View style={styles.centerContainer}>
@@ -305,7 +310,13 @@ const ChatScreen: React.FC = () => {
             ))}
         </ScrollView>
 
-        <View style={[styles.inputContainer, isBlocked && styles.inputContainerDisabled]}>
+        <View
+          style={[
+            styles.inputContainer,
+            bottomInset > 0 ? { paddingBottom: bottomInset } : null,
+            isBlocked && styles.inputContainerDisabled,
+          ]}
+        >
           <View style={[styles.textInputWrapper, isBlocked && styles.textInputWrapperDisabled]}>
             <TextInput
               style={styles.textInput}

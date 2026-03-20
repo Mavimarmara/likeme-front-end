@@ -190,6 +190,7 @@ module.exports = {
       package: 'com.likeme.app',
       googleServicesFile: './google-services.json',
       versionCode: 2,
+      softwareKeyboardLayoutMode: 'resize',
       adaptiveIcon: {
         foregroundImage: './assets/ui/LogoFull.png',
         backgroundColor: '#FFFFFF',

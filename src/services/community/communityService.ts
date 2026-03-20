@@ -167,6 +167,30 @@ class CommunityService {
     }
   }
 
+  async removePostReaction(postId: string, reactionName: 'like' | 'dislike' = 'like'): Promise<boolean> {
+    try {
+      if (!postId || postId.trim() === '') {
+        throw new Error('Post ID is required');
+      }
+
+      const endpoint = `${this.postReactionEndpoint}/${postId.trim()}/reactions`;
+
+      await apiClient.delete(
+        endpoint,
+        {
+          reactionName,
+        },
+        true,
+      );
+
+      logger.debug('Post reaction removed:', { postId, reactionName });
+      return true;
+    } catch (error) {
+      logger.warn('Error removing post reaction (ignored):', error);
+      return false;
+    }
+  }
+
   async addCommentReaction(commentId: string, reactionName: 'like' | 'dislike' = 'like'): Promise<boolean> {
     try {
       if (!commentId || commentId.trim() === '') {

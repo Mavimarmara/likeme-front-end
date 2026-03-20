@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
-import { LogBox } from 'react-native';
+import { LogBox, Platform } from 'react-native';
 import { useFonts } from 'expo-font';
+import * as NavigationBar from 'expo-navigation-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { RootNavigator } from './src/navigation';
 import { AUTH0_CONFIG } from './src/config/environment';
@@ -49,6 +50,23 @@ const App: React.FC = () => {
     } catch (error) {
       console.warn('[App] Erro ao acessar Constants:', error);
     }
+  }, []);
+
+  useEffect(() => {
+    const configureAndroidSystemUI = async () => {
+      if (Platform.OS !== 'android') {
+        return;
+      }
+
+      try {
+        await NavigationBar.setBehaviorAsync('overlay-swipe');
+        await NavigationBar.setVisibilityAsync('hidden');
+      } catch (error) {
+        console.warn('[App] Falha ao ocultar barra de navegacao do Android:', error);
+      }
+    };
+
+    void configureAndroidSystemUI();
   }, []);
 
   if (!fontsLoaded && !fontError) {

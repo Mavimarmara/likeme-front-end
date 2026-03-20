@@ -84,6 +84,7 @@
     "expo-file-system": "^19.0.17",
     "expo-font": "~14.0.9",
     "expo-linear-gradient": "~15.0.7",
+    "expo-navigation-bar": "^55.0.9",
     "i18next": "^25.8.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",

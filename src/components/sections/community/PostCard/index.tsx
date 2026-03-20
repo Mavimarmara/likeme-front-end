@@ -92,17 +92,20 @@ const PostCard: React.FC<Props> = ({
   const likeCount = (post.likes ?? 0) + likeDelta;
 
   const handleLikePress = async () => {
-    if (isLiking || isLiked) return;
+    if (isLiking) return;
 
     setIsLiking(true);
     try {
-      const ok = await communityService.addPostReaction(post.id, 'like');
+      const ok = isLiked
+        ? await communityService.removePostReaction(post.id, 'like')
+        : await communityService.addPostReaction(post.id, 'like');
+
       if (ok) {
-        setLikeDelta((d) => d + 1);
-        setIsLiked(true);
+        setLikeDelta((d) => (isLiked ? Math.max(d - 1, 0) : d + 1));
+        setIsLiked((prev) => !prev);
       }
     } catch (error) {
-      logger.error('Erro ao dar like no post:', error);
+      logger.error('Erro ao aplicar reação no post:', error);
     } finally {
       setIsLiking(false);
     }
@@ -184,13 +187,13 @@ const PostCard: React.FC<Props> = ({
               style={({ pressed }) => [
                 cardStyles.likeButton,
                 isLiking && cardStyles.likeButtonDisabled,
-                pressed && !isLiking && !isLiked ? { opacity: 0.85 } : undefined,
+                pressed && !isLiking ? { opacity: 0.85 } : undefined,
               ]}
               onPress={(e) => {
                 e.stopPropagation();
                 void handleLikePress();
               }}
-              disabled={isLiking || isLiked}
+              disabled={isLiking}
               accessibilityRole='button'
               accessibilityLabel='Like'
             >
