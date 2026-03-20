@@ -58,7 +58,7 @@ const ChatScreen: React.FC = () => {
   const isComposeMode = !channelId && !!targetAdvertiserId;
 
   const { refresh: refreshChatList } = useChat();
-  const { top: topInset, bottom: bottomInset } = useSafeAreaInsets();
+  const { bottom: bottomInset } = useSafeAreaInsets();
   const scrollViewRef = useRef<ScrollView>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(!isComposeMode);
