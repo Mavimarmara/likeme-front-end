@@ -18,6 +18,8 @@ interface HeaderProps {
   showBellButton?: boolean;
   onRatingPress?: () => void;
   showRating?: boolean;
+  /** Quando definido, alterna ícone cheio (star) e contorno (star-border). Omitir mantém só `star` (comportamento anterior). */
+  favoriteActive?: boolean;
   customLogo?: ReactNode;
   /** Callback ao tocar na logo central. Ex.: voltar para a Home. */
   onLogoPress?: () => void;
@@ -41,6 +43,7 @@ const Header: React.FC<HeaderProps> = ({
   showBellButton = false,
   onRatingPress,
   showRating = false,
+  favoriteActive,
   customLogo,
   onLogoPress,
   rightLabel,
@@ -50,6 +53,7 @@ const Header: React.FC<HeaderProps> = ({
   userAvatarUri,
 }) => {
   const hasRightLabel = Boolean(rightLabel && onRightPress);
+  const ratingIconName = favoriteActive === undefined ? 'star' : favoriteActive ? 'star' : 'star-border';
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -101,7 +105,7 @@ const Header: React.FC<HeaderProps> = ({
             {showLogoutButton && onLogoutPress && (
               <IconButton icon='logout' onPress={onLogoutPress} backgroundSize='medium' />
             )}
-            {showRating && <IconButton icon='star' onPress={onRatingPress ?? noop} backgroundSize='medium' />}
+            {showRating && <IconButton icon={ratingIconName} onPress={onRatingPress ?? noop} backgroundSize='medium' />}
           </View>
         )}
       </View>

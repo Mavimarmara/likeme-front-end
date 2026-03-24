@@ -14,6 +14,7 @@ import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen } from '@/analytics';
 import { storageService } from '@/services';
+import { logger } from '@/utils/logger';
 import type { Advertiser } from '@/types/ad';
 import Toggle from '@/components/ui/buttons/Toggle';
 
@@ -35,6 +36,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   const rootNavigation = navigation.getParent()?.getParent?.() ?? navigation.getParent();
   const [selectedMode, setSelectedMode] = useState<CommunityMode>('Feed');
   const [welcomeDismissed, setWelcomeDismissed] = useState(true);
+  const [isCommunityFavorite, setIsCommunityFavorite] = useState(false);
 
   useEffect(() => {
     storageService.getCommunityWelcomeDismissed().then(setWelcomeDismissed);
@@ -44,10 +46,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     setWelcomeDismissed(true);
     storageService.setCommunityWelcomeDismissed(true);
   }, []);
-
-  const handleCartPress = () => {
-    rootNavigation?.navigate('Cart' as never);
-  };
 
   const {
     communities: rawCommunities,
@@ -71,6 +69,20 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   });
 
   const selectedCommunityId = rawCommunities[0]?.communityId;
+
+  useEffect(() => {
+    if (!selectedCommunityId) {
+      setIsCommunityFavorite(false);
+      return;
+    }
+    let cancelled = false;
+    storageService.isCommunityFavorite(selectedCommunityId).then((fav) => {
+      if (!cancelled) setIsCommunityFavorite(fav);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedCommunityId]);
 
   const { advertiser: featuredAdvertiser, advertisers: advertisersList } = useAdvertiser({
     listOptions: { page: 1, limit: 50, status: 'active', communityId: selectedCommunityId },
@@ -173,6 +185,20 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     };
   }, [featuredAdvertiser, t]);
 
+  const handleCommunityFavoritePress = useCallback(() => {
+    if (!selectedCommunityId) return;
+    const next = !isCommunityFavorite;
+    setIsCommunityFavorite(next);
+    storageService.setCommunityFavorite(selectedCommunityId, next).catch((error) => {
+      logger.error('Falha ao persistir favorito da comunidade', {
+        communityId: selectedCommunityId,
+        favorite: next,
+        cause: error,
+      });
+      setIsCommunityFavorite(!next);
+    });
+  }, [selectedCommunityId, isCommunityFavorite]);
+
   return (
     <ScreenWithHeader
       navigation={rootNavigation}
@@ -180,8 +206,9 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
         showBackButton: true,
         showMenuWithAvatar: false,
         onBackPress: () => navigation?.goBack?.(),
-        showCartButton: true,
-        onCartPress: handleCartPress,
+        showRating: true,
+        favoriteActive: isCommunityFavorite,
+        onRatingPress: handleCommunityFavoritePress,
       }}
       contentContainerStyle={styles.container}
     >

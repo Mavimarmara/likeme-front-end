@@ -13,6 +13,7 @@ const CART_ITEMS_KEY = '@likeme:cart_items';
 const PRIVACY_POLICY_ACCEPTED_AT_KEY = '@likeme:privacy_policy_accepted_at';
 const COMMUNITY_WELCOME_DISMISSED_KEY = '@likeme:community_welcome_dismissed';
 const COMMUNITY_SHOPPING_TIP_DISMISSED_KEY = '@likeme:community_shopping_tip_dismissed';
+const COMMUNITY_FAVORITE_IDS_KEY = '@likeme:community_favorite_ids';
 
 class StorageService {
   async setToken(token: string): Promise<void> {
@@ -299,6 +300,49 @@ class StorageService {
     }
   }
 
+  async getFavoriteCommunityIds(): Promise<string[]> {
+    try {
+      const raw = await AsyncStorage.getItem(COMMUNITY_FAVORITE_IDS_KEY);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw) as unknown;
+      return Array.isArray(parsed) ? parsed.filter((id): id is string => typeof id === 'string' && id.length > 0) : [];
+    } catch (error) {
+      logger.error('Error getting favorite community ids:', error);
+      return [];
+    }
+  }
+
+  async isCommunityFavorite(communityId: string): Promise<boolean> {
+    if (!communityId) return false;
+    const ids = await this.getFavoriteCommunityIds();
+    return ids.includes(communityId);
+  }
+
+  async setCommunityFavorite(communityId: string, favorite: boolean): Promise<void> {
+    if (!communityId) {
+      logger.warn('setCommunityFavorite chamado sem communityId');
+      return;
+    }
+    try {
+      const ids = await this.getFavoriteCommunityIds();
+      const set = new Set(ids);
+      if (favorite) {
+        set.add(communityId);
+      } else {
+        set.delete(communityId);
+      }
+      const next = [...set];
+      if (next.length === 0) {
+        await AsyncStorage.removeItem(COMMUNITY_FAVORITE_IDS_KEY);
+      } else {
+        await AsyncStorage.setItem(COMMUNITY_FAVORITE_IDS_KEY, JSON.stringify(next));
+      }
+    } catch (error) {
+      logger.error('Error saving community favorite:', { communityId, favorite, error });
+      throw error;
+    }
+  }
+
   async clearAll(): Promise<void> {
     try {
       await this.removeToken();
@@ -311,6 +355,7 @@ class StorageService {
       await AsyncStorage.removeItem(PRIVACY_POLICY_ACCEPTED_AT_KEY);
       await AsyncStorage.removeItem(COMMUNITY_WELCOME_DISMISSED_KEY);
       await AsyncStorage.removeItem(COMMUNITY_SHOPPING_TIP_DISMISSED_KEY);
+      await AsyncStorage.removeItem(COMMUNITY_FAVORITE_IDS_KEY);
       await this.clearCart();
     } catch (error) {
       logger.error('Error clearing storage:', error);
