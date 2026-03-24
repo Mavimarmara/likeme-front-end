@@ -6,16 +6,18 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.BACKGROUND,
   },
-  keyboardAvoidingView: {
-    flex: 1,
-  },
 
-  main: {
-    flex: 1,
+  scrollContentContainer: {
+    flexGrow: 1,
     width: 362,
     alignSelf: 'center',
     paddingTop: 60,
-    justifyContent: 'space-between',
+    paddingVertical: SPACING.LG,
+  },
+
+  main: {
+    flexGrow: 1,
+    width: '100%',
   },
 
   content: {
@@ -77,23 +79,25 @@ export const styles = StyleSheet.create({
     marginBottom: 5,
   },
 
+  inputSection: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    marginTop: SPACING.XXL,
+    width: '100%',
+  },
+
   inputContainer: {
     alignItems: 'flex-start',
     display: 'flex',
-    flex: 1,
     flexDirection: 'column',
     gap: 8,
     position: 'relative',
     width: '100%',
-    justifyContent: 'center',
   },
 
   footer: {
     width: '100%',
-    paddingBottom: 24,
-  },
-
-  primaryButton: {
-    width: '100%',
+    paddingHorizontal: SPACING.MD,
+    paddingBottom: SPACING.XXL,
   },
 });

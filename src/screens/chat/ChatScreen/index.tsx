@@ -1,20 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-  TextInput,
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-  Alert,
-} from 'react-native';
+import { View, Text, ScrollView, Image, TouchableOpacity, TextInput, ActivityIndicator, Alert } from 'react-native';
 import { useNavigation, useRoute, useFocusEffect, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { ScreenWithHeader } from '@/components/ui/layout';
+import { KeyboardAwareScreen, ScreenWithHeader } from '@/components/ui/layout';
 import { IconButton } from '@/components/ui/buttons';
 import { MessageBubble } from '@/components/ui/chat';
 import { COLORS } from '@/constants';
@@ -275,69 +264,63 @@ const ChatScreen: React.FC = () => {
         </TouchableOpacity>
       </View>
 
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      <KeyboardAwareScreen
         keyboardVerticalOffset={chatHeaderHeight}
-      >
-        <ScrollView
-          ref={scrollViewRef}
-          style={styles.messagesContainer}
-          contentContainerStyle={styles.messagesContent}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps='handled'
-          keyboardDismissMode='on-drag'
-        >
-          {(loading || resolvingChannel) && (
-            <View style={styles.centerContainer}>
-              <ActivityIndicator size='large' color={COLORS.PRIMARY.PURE} />
-              {resolvingChannel ? (
-                <Text style={[styles.emptyText, { marginTop: 12 }]}>{t('chat.loadingChannel')}</Text>
-              ) : null}
+        scrollViewStyle={styles.messagesContainer}
+        scrollContentContainerStyle={styles.messagesContent}
+        includeBottomSafeAreaOnFooter={false}
+        scrollRef={scrollViewRef}
+        footer={
+          <View
+            style={[
+              styles.inputContainer,
+              bottomInset > 0 ? { paddingBottom: bottomInset } : null,
+              isBlocked && styles.inputContainerDisabled,
+            ]}
+          >
+            <View style={[styles.textInputWrapper, isBlocked && styles.textInputWrapperDisabled]}>
+              <TextInput
+                style={styles.textInput}
+                placeholder={isBlocked ? t('chat.blockedPlaceholder') : t('chat.messagePlaceholder')}
+                placeholderTextColor={isBlocked ? 'rgba(110,106,106,0.6)' : 'rgba(253,251,238,0.8)'}
+                value={messageText}
+                onChangeText={setMessageText}
+                multiline
+                editable={!isBlocked}
+              />
             </View>
-          )}
 
-          {!loading && !resolvingChannel && messages.length === 0 && (
-            <View style={styles.centerContainer}>
-              <Icon name='chat-bubble-outline' size={48} color={COLORS.TEXT_LIGHT} />
-              <Text style={styles.emptyText}>{t('chat.noMessages')}</Text>
-            </View>
-          )}
-
-          {!resolvingChannel &&
-            messages.map((msg) => (
-              <MessageBubble key={msg.id} text={msg.text} timestamp={msg.timestamp} isOwn={msg.isOwn} />
-            ))}
-        </ScrollView>
-
-        <View
-          style={[
-            styles.inputContainer,
-            bottomInset > 0 ? { paddingBottom: bottomInset } : null,
-            isBlocked && styles.inputContainerDisabled,
-          ]}
-        >
-          <View style={[styles.textInputWrapper, isBlocked && styles.textInputWrapperDisabled]}>
-            <TextInput
-              style={styles.textInput}
-              placeholder={isBlocked ? t('chat.blockedPlaceholder') : t('chat.messagePlaceholder')}
-              placeholderTextColor={isBlocked ? 'rgba(110,106,106,0.6)' : 'rgba(253,251,238,0.8)'}
-              value={messageText}
-              onChangeText={setMessageText}
-              multiline
-              editable={!isBlocked}
+            <IconButton
+              icon='send'
+              variant='dark'
+              onPress={handleSendMessage}
+              backgroundSize='medium'
+              disabled={isSendDisabled}
             />
           </View>
+        }
+      >
+        {(loading || resolvingChannel) && (
+          <View style={styles.centerContainer}>
+            <ActivityIndicator size='large' color={COLORS.PRIMARY.PURE} />
+            {resolvingChannel ? (
+              <Text style={[styles.emptyText, { marginTop: 12 }]}>{t('chat.loadingChannel')}</Text>
+            ) : null}
+          </View>
+        )}
 
-          <IconButton
-            icon='send'
-            variant='dark'
-            onPress={handleSendMessage}
-            backgroundSize='medium'
-            disabled={isSendDisabled}
-          />
-        </View>
-      </KeyboardAvoidingView>
+        {!loading && !resolvingChannel && messages.length === 0 && (
+          <View style={styles.centerContainer}>
+            <Icon name='chat-bubble-outline' size={48} color={COLORS.TEXT_LIGHT} />
+            <Text style={styles.emptyText}>{t('chat.noMessages')}</Text>
+          </View>
+        )}
+
+        {!resolvingChannel &&
+          messages.map((msg) => (
+            <MessageBubble key={msg.id} text={msg.text} timestamp={msg.timestamp} isOwn={msg.isOwn} />
+          ))}
+      </KeyboardAwareScreen>
     </ScreenWithHeader>
   );
 };

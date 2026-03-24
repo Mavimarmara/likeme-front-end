@@ -6,6 +6,7 @@ jest.mock('react-native-safe-area-context', () => {
   const ReactNative = require('react-native');
   return {
     SafeAreaView: ReactNative.View,
+    useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
   };
 });
 
@@ -37,9 +38,15 @@ jest.mock('@/components/ui', () => {
 });
 
 jest.mock('@/components/ui/layout', () => {
-  const { View } = require('react-native');
+  const { View, ScrollView } = require('react-native');
   return {
     ScreenWithHeader: ({ children }: any) => <View>{children}</View>,
+    KeyboardAwareScreen: ({ children, footer }: any) => (
+      <View>
+        <ScrollView>{children}</ScrollView>
+        {footer}
+      </View>
+    ),
   };
 });
 

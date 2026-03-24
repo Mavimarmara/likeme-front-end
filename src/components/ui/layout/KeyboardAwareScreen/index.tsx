@@ -19,16 +19,23 @@ type Props = React.PropsWithChildren<{
   scrollViewStyle?: StyleProp<ViewStyle>;
   scrollContentContainerStyle?: ScrollViewProps['contentContainerStyle'];
   footerContainerStyle?: StyleProp<ViewStyle>;
+  scrollRef?: React.RefObject<ScrollView | null>;
   scrollProps?: Omit<
     ScrollViewProps,
     | 'style'
     | 'contentContainerStyle'
     | 'children'
+    | 'ref'
     | 'keyboardShouldPersistTaps'
     | 'keyboardDismissMode'
     | 'showsVerticalScrollIndicator'
   >;
   includeBottomSafeAreaOnFooter?: boolean;
+  /**
+   * Android: eleva o footer com `marginBottom` = altura do teclado. Se o botão “sobe demais” com
+   * `softwareKeyboardLayoutMode: resize`, passe `false` (janela já encolhe). Com teclado atrás do conteúdo, mantenha `true` (padrão).
+   */
+  translateFooterWithKeyboardOnAndroid?: boolean;
 }>;
 
 const KeyboardAwareScreen: React.FC<Props> = ({
@@ -39,8 +46,10 @@ const KeyboardAwareScreen: React.FC<Props> = ({
   scrollViewStyle,
   scrollContentContainerStyle,
   footerContainerStyle,
+  scrollRef,
   scrollProps,
   includeBottomSafeAreaOnFooter = true,
+  translateFooterWithKeyboardOnAndroid = true,
 }) => {
   const { bottom: bottomInset } = useSafeAreaInsets();
   const [keyboardHeight, setKeyboardHeight] = React.useState(0);
@@ -62,7 +71,7 @@ const KeyboardAwareScreen: React.FC<Props> = ({
     };
   }, []);
 
-  const keyboardCompensation = Platform.OS === 'android' ? keyboardHeight : 0;
+  const keyboardCompensation = Platform.OS === 'android' && translateFooterWithKeyboardOnAndroid ? keyboardHeight : 0;
 
   return (
     <KeyboardAvoidingView
@@ -72,8 +81,9 @@ const KeyboardAwareScreen: React.FC<Props> = ({
       keyboardVerticalOffset={keyboardVerticalOffset}
     >
       <ScrollView
+        ref={scrollRef}
         testID='keyboard-aware-scroll'
-        style={scrollViewStyle}
+        style={[footer ? styles.scrollFill : null, scrollViewStyle]}
         contentContainerStyle={scrollContentContainerStyle}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps='handled'
@@ -101,6 +111,9 @@ const KeyboardAwareScreen: React.FC<Props> = ({
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  scrollFill: {
     flex: 1,
   },
 });

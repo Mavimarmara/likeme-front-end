@@ -1,13 +1,14 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { PrimaryButton } from '@/components/ui';
 import { GradientBackground, ScreenWithHeader } from '@/components/ui/layout';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen } from '@/analytics';
 import { AuthService, storageService } from '@/services';
-import { COLORS } from '@/constants';
-import { styles } from './styles';
+import { COLORS, SPACING } from '@/constants';
+import { PRIVACY_POLICIES_FOOTER_SCROLL_CLEARANCE, styles } from './styles';
 
 /** Parse "text **bold** more" into segments for rendering bold in React Native Text */
 function parseBoldSegments(str: string): { text: string; bold: boolean }[] {
@@ -53,6 +54,7 @@ type Props = {
 const PrivacyPoliciesScreen: React.FC<Props> = ({ navigation, route }) => {
   useAnalyticsScreen({ screenName: 'PrivacyPolicies', screenClass: 'PrivacyPoliciesScreen' });
   const { t } = useTranslation();
+  const { bottom: bottomInset } = useSafeAreaInsets();
   const userName = route.params?.userName || 'Usuário';
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -91,7 +93,9 @@ const PrivacyPoliciesScreen: React.FC<Props> = ({ navigation, route }) => {
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={{
+          paddingBottom: PRIVACY_POLICIES_FOOTER_SCROLL_CLEARANCE + bottomInset,
+        }}
       >
         <View style={styles.content}>
           <Text style={styles.title}>{t('privacyPolicies.title')}</Text>
@@ -150,7 +154,7 @@ const PrivacyPoliciesScreen: React.FC<Props> = ({ navigation, route }) => {
         </View>
       </ScrollView>
 
-      <View style={styles.footer}>
+      <View style={[styles.footer, { paddingBottom: SPACING.XL + bottomInset }]}>
         <PrimaryButton
           label={t('privacyPolicies.agreeButton')}
           onPress={handleAgree}

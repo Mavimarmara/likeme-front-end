@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, KeyboardAvoidingView, Platform, Alert, TextInput as RNTextInput, Image, Text } from 'react-native';
+import { View, Alert, TextInput as RNTextInput, Image, Text } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TextInput, PrimaryButton } from '@/components/ui';
-import { ScreenWithHeader } from '@/components/ui/layout';
+import { KeyboardAwareScreen, ScreenWithHeader } from '@/components/ui/layout';
 import { GradientSplash4 } from '@/assets/auth';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen, logButtonClick, logFormSubmit, logNavigation } from '@/analytics';
 import { getNextOnboardingScreen } from '@/utils';
 import { storageService } from '@/services';
+import { SPACING } from '@/constants';
 import { styles } from './styles';
 
 type Props = { navigation: any };
@@ -14,6 +16,7 @@ type Props = { navigation: any };
 const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
   useAnalyticsScreen({ screenName: 'Welcome', screenClass: 'WelcomeScreen' });
   const { t } = useTranslation();
+  const { bottom: bottomInset } = useSafeAreaInsets();
   const [name, setName] = useState('');
   const inputRef = useRef<RNTextInput>(null);
 
@@ -26,14 +29,6 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
       }
     };
     init();
-  }, []);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      inputRef.current?.focus();
-    }, 300);
-
-    return () => clearTimeout(timer);
   }, []);
 
   const handleContinue = () => {
@@ -82,7 +77,16 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
       headerProps={{ onBackPress: handleBack }}
       contentContainerStyle={styles.container}
     >
-      <KeyboardAvoidingView style={styles.keyboardAvoidingView} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <KeyboardAwareScreen
+        keyboardVerticalOffset={bottomInset + SPACING.XXL}
+        scrollContentContainerStyle={styles.scrollContentContainer}
+        includeBottomSafeAreaOnFooter={false}
+        footer={
+          <View style={[styles.footer, bottomInset > 0 ? { paddingBottom: bottomInset } : null]}>
+            <PrimaryButton label='Próximo' onPress={handleContinue} size='large' />
+          </View>
+        }
+      >
         <View style={styles.main}>
           <View style={styles.content}>
             <View style={styles.welcomeTitleBlock}>
@@ -96,25 +100,22 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
               <Text style={[styles.welcomeTitleText, styles.welcomeTitleLarge]}>{t('auth.welcomeTitleLine2')}</Text>
             </View>
             <Text style={styles.welcomeSubtitle}>{t('auth.welcomeSubtitle')}</Text>
+          </View>
+          <View style={styles.inputSection}>
             <View style={styles.inputContainer}>
               <TextInput
                 ref={inputRef}
                 value={name}
                 onChangeText={setName}
                 placeholder={t('auth.yourNamePlaceholder')}
-                autoFocus
                 returnKeyType='next'
                 onSubmitEditing={handleContinue}
                 onPressIn={() => inputRef.current?.focus()}
               />
             </View>
           </View>
-
-          <View style={styles.footer}>
-            <PrimaryButton label='Próximo' onPress={handleContinue} style={styles.primaryButton} size='large' />
-          </View>
         </View>
-      </KeyboardAvoidingView>
+      </KeyboardAwareScreen>
     </ScreenWithHeader>
   );
 };
