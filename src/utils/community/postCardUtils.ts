@@ -1,3 +1,4 @@
+import type { TFunction } from 'i18next';
 import type { Post } from '@/types';
 
 export const capitalizeWords = (text: string): string => {
@@ -49,17 +50,81 @@ export const getContentPreviewFromPost = (post: Post): string => {
   return remaining.length > 0 ? remaining : '';
 };
 
+const normalizeKey = (s: string) => s.trim().toLowerCase();
+
+const SPECIALIST_TAG_MARKERS = ['especialista', 'specialist', 'expert'] as const;
+
+const postTagsAsList = (post: Post): string[] => {
+  if (!post.tags) return [];
+  return Array.isArray(post.tags) ? post.tags : [post.tags];
+};
+
+const isSpecialistTagPost = (post: Post): boolean =>
+  postTagsAsList(post).some((tag) => {
+    if (!tag || typeof tag !== 'string') return false;
+    const n = normalizeKey(tag);
+    if (n === 'tags') return false;
+    return SPECIALIST_TAG_MARKERS.some((m) => n === m || n.includes(m));
+  });
+
+const firstDisplayTag = (post: Post): string | null => {
+  const valid = postTagsAsList(post).find((tag) => tag && typeof tag === 'string' && normalizeKey(tag) !== 'tags');
+  return valid ?? null;
+};
+
+const GENERIC_AMITY_TYPE_KEYS = new Set(['community', 'user', 'post']);
+
+const FEED_TYPE_I18N_KEYS: Record<string, string> = {
+  poll: 'community.postType.poll',
+  text: 'community.postType.forum',
+  forum: 'community.postType.forum',
+  livestream: 'community.postType.live',
+  live: 'community.postType.live',
+  image: 'community.postType.image',
+  file: 'community.postType.file',
+  video: 'community.postType.video',
+  audio: 'community.postType.audio',
+  story: 'community.postType.story',
+  content: 'community.postType.content',
+  specialist: 'community.specialistLabel',
+  expert: 'community.specialistLabel',
+};
+
+export const getPostContentTypeLabel = (post: Post, t: TFunction): string => {
+  const overline = post.overline?.trim();
+  if (overline) return overline;
+
+  if (post.poll) return t('community.postType.poll');
+
+  if (isSpecialistTagPost(post)) return t('community.specialistLabel');
+
+  const typeKey = post.feedPostType?.trim().toLowerCase() ?? '';
+  if (typeKey && !GENERIC_AMITY_TYPE_KEYS.has(typeKey) && FEED_TYPE_I18N_KEYS[typeKey]) {
+    return t(FEED_TYPE_I18N_KEYS[typeKey]);
+  }
+
+  const tag = firstDisplayTag(post);
+  if (tag) return tag;
+
+  if (typeKey && !GENERIC_AMITY_TYPE_KEYS.has(typeKey)) {
+    return typeKey.charAt(0).toUpperCase() + typeKey.slice(1).toLowerCase();
+  }
+
+  return t('community.postType.general');
+};
+
+export type PostTypeBadgeColor = 'blue' | 'orange' | 'lime' | 'beige';
+
+export const getPostTypeBadgeColor = (post: Post): PostTypeBadgeColor => {
+  if (post.poll) return 'orange';
+  const k = post.feedPostType?.toLowerCase() ?? '';
+  if (k === 'poll') return 'orange';
+  if (k === 'livestream' || k === 'live') return 'lime';
+  if (k === 'text' || k === 'forum') return 'blue';
+  if (isSpecialistTagPost(post)) return 'blue';
+  return 'beige';
+};
+
 export const getFirstTagLabelFromPost = (post: Post): string | null => {
-  if (!post.tags) return null;
-
-  if (Array.isArray(post.tags)) {
-    const validTag = post.tags.find((tag) => tag && typeof tag === 'string' && tag.toLowerCase() !== 'tags');
-    return validTag || null;
-  }
-
-  if (typeof post.tags === 'string' && post.tags.toLowerCase() !== 'tags') {
-    return post.tags;
-  }
-
-  return null;
+  return firstDisplayTag(post);
 };

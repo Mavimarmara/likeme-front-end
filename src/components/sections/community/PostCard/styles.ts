@@ -25,7 +25,7 @@ export const styles = StyleSheet.create({
     marginBottom: SPACING.SM,
   },
   badgeContainer: {
-    width: 110,
+    alignSelf: 'flex-start',
   },
   authorSection: {
     flexDirection: 'row',

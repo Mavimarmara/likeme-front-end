@@ -7,6 +7,7 @@ export interface CommunityPost {
   targetId?: string;
   targetType?: string;
   structureType?: string;
+  dataType?: string;
   tags?: string | string[];
   childrenPosts?: CommunityPost[];
   pollOptions?: CommunityPost[]; // Opções de poll agrupadas (nova estrutura do backend)

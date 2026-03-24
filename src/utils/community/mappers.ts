@@ -50,6 +50,19 @@ const mapCommunityCommentToComment = (
   };
 };
 
+const resolveFeedPostTypeKey = (communityPost: CommunityPost): string | undefined => {
+  const fromData =
+    typeof communityPost.data === 'object' &&
+    communityPost.data != null &&
+    'type' in communityPost.data &&
+    (communityPost.data as { type?: unknown }).type != null
+      ? String((communityPost.data as { type?: unknown }).type)
+      : undefined;
+  const raw = communityPost.structureType || communityPost.dataType || fromData;
+  const trimmed = raw?.trim();
+  return trimmed ? trimmed.toLowerCase() : undefined;
+};
+
 const mapCommunityPostToPoll = (communityPost: CommunityPost, _postChildren?: CommunityPost[]): Poll | undefined => {
   if (communityPost.structureType !== 'poll') {
     return undefined;
@@ -233,6 +246,8 @@ export const mapCommunityPostToPost = (
 
   const commentsCount = communityPost.commentsCount !== undefined ? communityPost.commentsCount : postComments.length;
 
+  const feedPostType = resolveFeedPostTypeKey(communityPost);
+
   const post: Post = {
     id: postId,
     userId: userId,
@@ -243,6 +258,7 @@ export const mapCommunityPostToPost = (
     commentsCount,
     createdAt: new Date(communityPost.createdAt),
     category: (communityPost as any).category || (communityPost as any).dataType || undefined,
+    feedPostType,
     tags,
     overline: (communityPost as any).overline || undefined,
     title,

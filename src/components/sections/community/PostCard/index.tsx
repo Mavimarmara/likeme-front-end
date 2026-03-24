@@ -12,7 +12,8 @@ import { logger } from '@/utils/logger';
 import {
   capitalizeWords,
   getContentPreviewFromPost,
-  getFirstTagLabelFromPost,
+  getPostContentTypeLabel,
+  getPostTypeBadgeColor,
   getTitleFromPost,
 } from '@/utils/community/postCardUtils';
 
@@ -44,7 +45,8 @@ const PostCard: React.FC<Props> = ({
   const [isLiking, setIsLiking] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
 
-  const badgeLabel = getFirstTagLabelFromPost(post);
+  const contentTypeLabel = getPostContentTypeLabel(post, t);
+  const typeBadgeColor = getPostTypeBadgeColor(post);
   const postTitle = getTitleFromPost(post);
   const postPreviewContent = getContentPreviewFromPost(post);
   const commentsCount = post.commentsCount !== undefined ? post.commentsCount : post.comments?.length || 0;
@@ -128,11 +130,9 @@ const PostCard: React.FC<Props> = ({
       accessibilityLabel='Ver detalhes do post'
     >
       <View style={cardStyles.contentContainer}>
-        {badgeLabel && (
-          <View style={cardStyles.badgeContainer}>
-            <Badge label={badgeLabel} />
-          </View>
-        )}
+        <View style={cardStyles.badgeContainer}>
+          <Badge label={contentTypeLabel} color={typeBadgeColor} />
+        </View>
 
         <View>
           <View style={cardStyles.authorSection}>

@@ -98,6 +98,8 @@ export interface Post {
   commentsCount?: number;
   createdAt: Date;
   category?: string;
+  /** structureType / dataType / data.type da API (normalizado em minúsculas) para label de tipo no feed */
+  feedPostType?: string;
   tags?: string | string[];
   overline?: string;
   title?: string;
