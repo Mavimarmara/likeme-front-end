@@ -1,9 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { COLORS, SPACING, FONT_SIZES } from '@/constants';
 
-/** Reserva vertical para o scroll não ficar sob o footer fixo; o safe area inferior é somado na tela. */
-export const PRIVACY_POLICIES_FOOTER_SCROLL_CLEARANCE = 120;
-
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -13,6 +10,9 @@ export const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     zIndex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 120,
   },
   gradientBackground: {
     ...StyleSheet.absoluteFillObject,
@@ -86,6 +86,7 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.BACKGROUND,
     paddingHorizontal: SPACING.MD,
     paddingTop: SPACING.MD,
+    paddingBottom: SPACING.XL,
   },
   disclaimer: {
     fontFamily: 'DM Sans',
