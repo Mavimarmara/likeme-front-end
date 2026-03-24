@@ -1,5 +1,7 @@
-import type { TFunction } from 'i18next';
 import type { Post } from '@/types';
+
+/** Compatível com `t` do `useTranslation()` (react-i18next) sem acoplar ao brand do i18next `TFunction`. */
+export type PostFeedTranslateFn = (key: string) => string;
 
 export const capitalizeWords = (text: string): string => {
   return text
@@ -90,7 +92,7 @@ const FEED_TYPE_I18N_KEYS: Record<string, string> = {
   expert: 'community.specialistLabel',
 };
 
-export const getPostContentTypeLabel = (post: Post, t: TFunction): string => {
+export const getPostContentTypeLabel = (post: Post, t: PostFeedTranslateFn): string => {
   const overline = post.overline?.trim();
   if (overline) return overline;
 
