@@ -195,7 +195,7 @@ module.exports = {
         foregroundImage: './assets/ui/LogoFull.png',
         backgroundColor: '#FFFFFF',
       },
-      permissions: [],
+      permissions: ['com.google.android.gms.permission.AD_ID'],
       intentFilters: [
         {
           action: 'VIEW',

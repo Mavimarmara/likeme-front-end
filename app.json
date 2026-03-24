@@ -10,7 +10,11 @@
     "sdkVersion": "54.0.0",
     "plugins": ["expo-font", ["react-native-auth0", { "domain": "likeme.us.auth0.com" }]],
     "scheme": "likeme",
-    "android": { "package": "com.likeme.app", "versionCode": 2 },
+    "android": {
+      "package": "com.likeme.app",
+      "versionCode": 2,
+      "permissions": ["com.google.android.gms.permission.AD_ID"]
+    },
     "ios": {
       "bundleIdentifier": "app.likeme.com",
       "buildNumber": "8",
