@@ -1,5 +1,6 @@
 import apiClient from '../infrastructure/apiClient';
 import { logger } from '@/utils/logger';
+import type { ApiResponse } from '@/types/infrastructure';
 import type {
   UserFeedApiResponse,
   UserFeedParams,
@@ -9,10 +10,9 @@ import type {
 
 class CommunityService {
   private readonly userFeeEndpoint = '/api/communities/feed';
-  private readonly pollDetailEndpoint = '/api/v3/polls';
+  private readonly pollsBasePath = '/api/communities/polls';
   private readonly commentReactionEndpoint = '/api/communities/comments';
   private readonly postReactionEndpoint = '/api/communities/posts';
-  private readonly amityCommentsEndpoint = '/api/communities/comments';
   private readonly addCommentEndpoint = '/api/communities/comments';
   private readonly communitiesEndpoint = '/api/communities';
 
@@ -84,31 +84,33 @@ class CommunityService {
     }
   }
 
-  async getPollDetail(pollId: string): Promise<any> {
+  async getPollDetail(pollId: string): Promise<unknown> {
     try {
       if (!pollId || pollId.trim() === '') {
         throw new Error('Poll ID is required');
       }
 
-      const endpoint = `${this.pollDetailEndpoint}/${pollId.trim()}`;
+      const endpoint = `${this.pollsBasePath}/${encodeURIComponent(pollId.trim())}`;
 
-      const pollResponse = await apiClient.get<any>(endpoint, undefined, true, false);
+      const pollResponse = await apiClient.get<ApiResponse<unknown>>(endpoint, undefined, true, false);
 
       logger.debug('Poll detail response:', {
         pollId,
         success: pollResponse.success,
         hasData: !!pollResponse.data,
-        hasPoll: !!pollResponse.poll,
       });
 
-      return pollResponse;
+      if (!pollResponse.success) {
+        throw new Error(pollResponse.message || 'Falha ao carregar enquete');
+      }
+      return pollResponse.data;
     } catch (error) {
       logger.error('Error fetching poll detail:', error);
       throw error;
     }
   }
 
-  async votePoll(pollId: string, answerIds: string[]): Promise<any> {
+  async votePoll(pollId: string, answerIds: string[]): Promise<ApiResponse<unknown>> {
     try {
       if (!pollId || pollId.trim() === '') {
         throw new Error('Poll ID is required');
@@ -121,7 +123,7 @@ class CommunityService {
       // Endpoint fixo, pollId vai no body
       const endpoint = `/api/communities/polls/${pollId.trim()}/votes`;
 
-      const voteResponse = await apiClient.put<any>(
+      const voteResponse = await apiClient.put<ApiResponse<unknown>>(
         endpoint,
         {
           pollId: pollId.trim(),
@@ -130,10 +132,14 @@ class CommunityService {
         true,
       );
 
+      if (!voteResponse.success) {
+        throw new Error(voteResponse.message || 'Falha ao registrar voto na enquete');
+      }
+
       logger.debug('Poll vote response:', {
         pollId,
         answerIds,
-        success: !!voteResponse,
+        success: voteResponse.success,
       });
 
       return voteResponse;
@@ -240,18 +246,19 @@ class CommunityService {
   }
 
   /**
-   * Busca comentários do Amity por referência.
-   *
-   * Observacao: o endpoint da Amity espera query params como `referenceId` e `referenceType`.
+   * Lista comentários por referência (post, content ou story).
+   * Proxy: GET /api/communities/comments?referenceId=...&referenceType=...
    */
-  async getAmityComments(referenceId: string, referenceType: 'post' | 'content' | 'story' = 'post'): Promise<any> {
+  async getCommentsByReference(
+    referenceId: string,
+    referenceType: 'post' | 'content' | 'story' = 'post',
+  ): Promise<any> {
     const trimmedId = referenceId?.trim();
     if (!trimmedId) {
       throw new Error('referenceId é obrigatório para buscar comentários');
     }
 
-    // LikeMe backend proxy: GET /api/communities/comments?referenceId=...&referenceType=...
-    return apiClient.get<any>(this.amityCommentsEndpoint, {
+    return apiClient.get<any>(this.commentReactionEndpoint, {
       referenceId: trimmedId,
       referenceType,
     });

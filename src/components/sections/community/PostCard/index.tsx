@@ -3,12 +3,11 @@ import { Image, Pressable, StyleProp, Text, View, ViewStyle } from 'react-native
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Badge } from '@/components/ui';
 import { PollCard } from '@/components/sections/community';
+import { usePost, usePostLikeEngagement, type PostLikeEngagement } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import { styles as cardStyles } from './styles';
 import { COLORS } from '@/constants';
 import type { Post } from '@/types';
-import communityService from '@/services/community/communityService';
-import { logger } from '@/utils/logger';
 import {
   capitalizeWords,
   getContentPreviewFromPost,
@@ -26,9 +25,13 @@ type Props = {
   onCommentsOpenChange?: (open: boolean) => void;
   styles?: StyleProp<ViewStyle>;
   forceContentExpanded?: boolean;
+  /** Quando definido (ex.: tela de detalhe com `usePostReplies`), evita segunda instância de likes. */
+  postEngagement?: PostLikeEngagement;
 };
 
-const PostCard: React.FC<Props> = ({
+type ViewProps = Props & { engagement: PostLikeEngagement };
+
+const PostCardView: React.FC<ViewProps> = ({
   post,
   onPress,
   category: _category,
@@ -37,13 +40,14 @@ const PostCard: React.FC<Props> = ({
   onCommentsOpenChange,
   styles: containerStyles,
   forceContentExpanded = false,
+  engagement,
 }) => {
   const { t } = useTranslation();
   const [, setIsCommentsOpen] = useState(initialCommentsOpen);
   const [isContentExpanded, setIsContentExpanded] = useState(forceContentExpanded ? true : initialContentExpanded);
-  const [likeDelta, setLikeDelta] = useState(0);
-  const [isLiking, setIsLiking] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
+  const { activePoll, submitPollVote } = usePost(post);
+
+  const { likeCount, isLiked, isLiking, togglePostLike } = engagement;
 
   const contentTypeLabel = getPostContentTypeLabel(post, t);
   const typeBadgeColor = getPostTypeBadgeColor(post);
@@ -65,54 +69,6 @@ const PostCard: React.FC<Props> = ({
     setIsContentExpanded((prev) => !prev);
   };
 
-  const handlePollVote = async (pollId: string, optionId: string) => {
-    try {
-      const realPollId = post.poll?.pollId;
-
-      if (!realPollId) {
-        logger.error('Poll ID não encontrado na enquete', {
-          postId: post.id,
-          pollId: post.poll?.id,
-          pollData: post.poll,
-        });
-        return;
-      }
-
-      logger.debug('Votando na enquete:', {
-        pollId: realPollId,
-        optionId,
-        postId: post.id,
-      });
-
-      await communityService.votePoll(realPollId, [optionId]);
-      logger.info('Voto registrado com sucesso:', { pollId: realPollId, optionId });
-    } catch (error) {
-      logger.error('Erro ao votar na enquete:', error);
-    }
-  };
-
-  const likeCount = (post.likes ?? 0) + likeDelta;
-
-  const handleLikePress = async () => {
-    if (isLiking) return;
-
-    setIsLiking(true);
-    try {
-      const ok = isLiked
-        ? await communityService.removePostReaction(post.id, 'like')
-        : await communityService.addPostReaction(post.id, 'like');
-
-      if (ok) {
-        setLikeDelta((d) => (isLiked ? Math.max(d - 1, 0) : d + 1));
-        setIsLiked((prev) => !prev);
-      }
-    } catch (error) {
-      logger.error('Erro ao aplicar reação no post:', error);
-    } finally {
-      setIsLiking(false);
-    }
-  };
-
   const handlePostPress = () => {
     onPress?.(post);
   };
@@ -125,9 +81,8 @@ const PostCard: React.FC<Props> = ({
         pressed && onPress != null ? { opacity: 0.92 } : undefined,
       ]}
       onPress={onPress != null ? handlePostPress : undefined}
-      disabled={onPress == null}
-      accessibilityRole='button'
-      accessibilityLabel='Ver detalhes do post'
+      accessibilityRole={onPress != null ? 'button' : undefined}
+      accessibilityLabel={onPress != null ? 'Ver detalhes do post' : undefined}
     >
       <View style={cardStyles.contentContainer}>
         <View style={cardStyles.badgeContainer}>
@@ -160,11 +115,11 @@ const PostCard: React.FC<Props> = ({
         </View>
       </View>
 
-      {post.poll && <PollCard poll={post.poll} onVote={handlePollVote} disabled={false} />}
+      {activePoll && <PollCard poll={activePoll} onVote={submitPollVote} disabled={false} />}
 
       <View style={cardStyles.footer}>
         <View style={cardStyles.footerLeft}>
-          {!post.poll && postPreviewContent && !forceContentExpanded && (
+          {!activePoll && postPreviewContent && !forceContentExpanded && (
             <Pressable
               style={({ pressed }) => [cardStyles.seeMoreButton, pressed ? { opacity: 0.85 } : undefined]}
               onPress={(e) => {
@@ -182,7 +137,7 @@ const PostCard: React.FC<Props> = ({
         </View>
 
         <View style={cardStyles.footerRight}>
-          {!post.poll && (
+          {!activePoll && (
             <Pressable
               style={({ pressed }) => [
                 cardStyles.likeButton,
@@ -191,7 +146,7 @@ const PostCard: React.FC<Props> = ({
               ]}
               onPress={(e) => {
                 e.stopPropagation();
-                void handleLikePress();
+                void togglePostLike();
               }}
               disabled={isLiking}
               accessibilityRole='button'
@@ -202,7 +157,7 @@ const PostCard: React.FC<Props> = ({
             </Pressable>
           )}
 
-          {!post.poll && (
+          {!activePoll && (
             <Pressable
               style={({ pressed }) => [cardStyles.commentsInfo, pressed ? { opacity: 0.85 } : undefined]}
               onPress={(e) => {
@@ -220,6 +175,21 @@ const PostCard: React.FC<Props> = ({
       </View>
     </Pressable>
   );
+};
+
+const PostCardWithInternalEngagement: React.FC<Omit<Props, 'postEngagement'>> = (props) => {
+  const engagement = usePostLikeEngagement({
+    postId: props.post.id,
+    initialLikes: props.post.likes ?? 0,
+  });
+  return <PostCardView {...props} engagement={engagement} />;
+};
+
+const PostCard: React.FC<Props> = (props) => {
+  if (props.postEngagement) {
+    return <PostCardView {...props} engagement={props.postEngagement} />;
+  }
+  return <PostCardWithInternalEngagement {...props} />;
 };
 
 export default PostCard;

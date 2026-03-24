@@ -3,6 +3,54 @@ import type { Post } from '@/types';
 import { communityService } from '@/services';
 import { logger } from '@/utils/logger';
 
+export type PostLikeEngagement = {
+  likeCount: number;
+  isLiked: boolean;
+  isLiking: boolean;
+  togglePostLike: () => Promise<void>;
+};
+
+export function usePostLikeEngagement({
+  postId,
+  initialLikes = 0,
+}: {
+  postId: Post['id'];
+  initialLikes?: number;
+}): PostLikeEngagement {
+  const [likeDelta, setLikeDelta] = useState(0);
+  const [isLiked, setIsLiked] = useState(false);
+  const [isLiking, setIsLiking] = useState(false);
+
+  useEffect(() => {
+    setLikeDelta(0);
+    setIsLiked(false);
+  }, [postId]);
+
+  const likeCount = initialLikes + likeDelta;
+
+  const togglePostLike = useCallback(async () => {
+    if (!postId || isLiking) return;
+
+    setIsLiking(true);
+    try {
+      const ok = isLiked
+        ? await communityService.removePostReaction(String(postId), 'like')
+        : await communityService.addPostReaction(String(postId), 'like');
+
+      if (ok) {
+        setLikeDelta((d) => (isLiked ? Math.max(d - 1, 0) : d + 1));
+        setIsLiked((prev) => !prev);
+      }
+    } catch (error) {
+      logger.error('Erro ao aplicar reação no post:', error);
+    } finally {
+      setIsLiking(false);
+    }
+  }, [postId, isLiked, isLiking]);
+
+  return { likeCount, isLiked, isLiking, togglePostLike };
+}
+
 export type PostReplyCardComment = {
   id: string;
   postId: string;
@@ -24,9 +72,14 @@ export type PostReplyCardComment = {
 type UsePostRepliesOptions = {
   postId: Post['id'];
   enabled?: boolean;
+  initialLikes?: number;
 };
 
-export const usePostReplies = ({ postId, enabled = true }: UsePostRepliesOptions) => {
+export const usePostReplies = ({ postId, enabled = true, initialLikes = 0 }: UsePostRepliesOptions) => {
+  const { likeCount, isLiked, isLiking, togglePostLike } = usePostLikeEngagement({
+    postId,
+    initialLikes,
+  });
   const [remoteReplyCardComments, setRemoteReplyCardComments] = useState<PostReplyCardComment[] | null>(null);
   const [localOptimisticComments, setLocalOptimisticComments] = useState<PostReplyCardComment[]>([]);
   const [fetchNonce, setFetchNonce] = useState(0);
@@ -42,26 +95,26 @@ export const usePostReplies = ({ postId, enabled = true }: UsePostRepliesOptions
 
     const run = async () => {
       try {
-        const raw = await communityService.getAmityComments(String(postId), 'post');
+        const raw = await communityService.getCommentsByReference(String(postId), 'post');
         const data = raw?.data ?? raw;
 
-        const amityComments = Array.isArray(data?.comments) ? data.comments : [];
-        const amityChildren = Array.isArray(data?.commentChildren) ? data.commentChildren : [];
+        const rootComments = Array.isArray(data?.comments) ? data.comments : [];
+        const childComments = Array.isArray(data?.commentChildren) ? data.commentChildren : [];
         // `communityUsers` é relação de membership e não necessariamente contém `displayName`/`avatar`.
         // Para renderizar nome e foto, preferimos `users`.
-        const amityUsers = (() => {
+        const commentUsers = (() => {
           if (Array.isArray(data?.users)) return data.users;
           if (Array.isArray(data?.communityUsers)) return data.communityUsers;
           return [];
         })();
-        const amityFiles = Array.isArray(data?.files) ? data.files : [];
+        const commentFiles = Array.isArray(data?.files) ? data.files : [];
 
-        const getUser = (amityCommentNode: any) => {
-          const commentUserId = amityCommentNode?.userId;
-          const commentUserPublicId = amityCommentNode?.userPublicId;
-          const commentUserInternalId = amityCommentNode?.userInternalId;
+        const getUser = (commentNode: any) => {
+          const commentUserId = commentNode?.userId;
+          const commentUserPublicId = commentNode?.userPublicId;
+          const commentUserInternalId = commentNode?.userInternalId;
 
-          return amityUsers.find((u: any) => {
+          return commentUsers.find((u: any) => {
             if (commentUserId && u?.userId === commentUserId) return true;
             if (commentUserPublicId && u?.userPublicId === commentUserPublicId) return true;
             if (commentUserInternalId && u?.userInternalId === commentUserInternalId) return true;
@@ -72,7 +125,7 @@ export const usePostReplies = ({ postId, enabled = true }: UsePostRepliesOptions
         const getAvatarUrl = (user: any) => {
           const avatarFileId = user?.avatarFileId;
           if (!avatarFileId) return undefined;
-          return amityFiles.find((f: any) => f?.fileId === avatarFileId)?.fileUrl;
+          return commentFiles.find((f: any) => f?.fileId === avatarFileId)?.fileUrl;
         };
 
         const computeUpvotes = (reactions: Record<string, number> | undefined): number => {
@@ -92,24 +145,24 @@ export const usePostReplies = ({ postId, enabled = true }: UsePostRepliesOptions
           return undefined;
         };
 
-        const buildNode = (amityComment: any, postIdValue: string): PostReplyCardComment => {
-          const commentId = amityComment?.commentId ?? amityComment?._id;
-          const userId = amityComment?.userId ?? amityComment?.userPublicId ?? amityComment?.userInternalId ?? '';
-          const user = getUser(amityComment);
+        const buildNode = (remoteComment: any, postIdValue: string): PostReplyCardComment => {
+          const commentId = remoteComment?.commentId ?? remoteComment?._id;
+          const userId = remoteComment?.userId ?? remoteComment?.userPublicId ?? remoteComment?.userInternalId ?? '';
+          const user = getUser(remoteComment);
           const avatar = getAvatarUrl(user);
 
-          const createdAtIso = amityComment?.createdAt
-            ? new Date(amityComment.createdAt).toISOString()
+          const createdAtIso = remoteComment?.createdAt
+            ? new Date(remoteComment.createdAt).toISOString()
             : new Date().toISOString();
 
           const content =
-            amityComment?.data?.text ?? (typeof amityComment?.data === 'string' ? amityComment.data : '') ?? '';
+            remoteComment?.data?.text ?? (typeof remoteComment?.data === 'string' ? remoteComment.data : '') ?? '';
 
-          const reactions = amityComment?.reactions as Record<string, number> | undefined;
+          const reactions = remoteComment?.reactions as Record<string, number> | undefined;
           const upvotes = computeUpvotes(reactions);
           const downvotes = computeDownvotes(reactions);
 
-          const myReactions = amityComment?.myReactions as string[] | undefined;
+          const myReactions = remoteComment?.myReactions as string[] | undefined;
 
           return {
             id: String(commentId),
@@ -122,7 +175,7 @@ export const usePostReplies = ({ postId, enabled = true }: UsePostRepliesOptions
             content,
             upvotes,
             downvotes,
-            reactionsCount: amityComment?.reactionsCount,
+            reactionsCount: remoteComment?.reactionsCount,
             commentsCount: undefined,
             createdAt: createdAtIso,
             replies: [],
@@ -132,8 +185,8 @@ export const usePostReplies = ({ postId, enabled = true }: UsePostRepliesOptions
 
         // Observacao: o tipo PostReplyCardComment nao tem `userReaction`,
         // mas o CommentCard aceita por tipagem estrutural (campo extra).
-        const rootNodes: PostReplyCardComment[] = amityComments.map((c: any) => buildNode(c, String(postId)));
-        const childrenNodes: PostReplyCardComment[] = amityChildren.map((c: any) => {
+        const rootNodes: PostReplyCardComment[] = rootComments.map((c: any) => buildNode(c, String(postId)));
+        const childrenNodes: PostReplyCardComment[] = childComments.map((c: any) => {
           const node = buildNode(c, String(postId));
           return node;
         });
@@ -143,8 +196,7 @@ export const usePostReplies = ({ postId, enabled = true }: UsePostRepliesOptions
 
         const orphans: PostReplyCardComment[] = [];
         childrenNodes.forEach((child: any, idx: number) => {
-          // parentId vem da schema do Amity
-          const original = amityChildren[idx];
+          const original = childComments[idx];
           const parentId = original?.parentId;
           const parent = nodesById.get(String(parentId));
           if (!parentId || !parent) {
@@ -235,6 +287,10 @@ export const usePostReplies = ({ postId, enabled = true }: UsePostRepliesOptions
   }, [remoteReplyCardComments, localOptimisticComments]);
 
   return {
+    likeCount,
+    isLiked,
+    isLiking,
+    togglePostLike,
     replyCardComments: mergedForRender,
     addPostComment,
     isAddingPostComment,

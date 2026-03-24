@@ -22,10 +22,12 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   const [messageText, setMessageText] = useState('');
   const { t } = useTranslation();
 
-  const { replyCardComments, addPostComment, isAddingPostComment } = usePostReplies({
-    postId: post.id,
-    enabled: !post.poll,
-  });
+  const { replyCardComments, addPostComment, isAddingPostComment, likeCount, isLiked, isLiking, togglePostLike } =
+    usePostReplies({
+      postId: post.id,
+      enabled: !post.poll,
+      initialLikes: post.likes ?? 0,
+    });
   const scrollViewRef = useRef<ScrollView>(null);
 
   const menuItems = useMenuItems(navigation);
@@ -98,6 +100,7 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
         >
           <PostCard
             post={postForRendering}
+            postEngagement={{ likeCount, isLiked, isLiking, togglePostLike }}
             forceContentExpanded
             styles={{
               borderBottomLeftRadius: 0,

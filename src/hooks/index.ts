@@ -6,7 +6,9 @@ export { useOnboardingRedirect } from './auth/useOnboardingRedirect';
 // Community hooks
 export { useUserFeed } from './community/useUserFeed';
 export { useCommunities } from './community/useCommunities';
-export { usePostReplies } from './community/usePostReplies';
+export { usePostReplies, usePostLikeEngagement } from './community/usePostReplies';
+export type { PostLikeEngagement } from './community/usePostReplies';
+export { usePost } from './community/usePost';
 
 // Category hooks
 export { useCategories, useCategoryDisplayLabel, getMarkerIdForCategory } from './category';

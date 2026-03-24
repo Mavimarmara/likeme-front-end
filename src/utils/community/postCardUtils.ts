@@ -74,7 +74,8 @@ const firstDisplayTag = (post: Post): string | null => {
   return valid ?? null;
 };
 
-const GENERIC_AMITY_TYPE_KEYS = new Set(['community', 'user', 'post']);
+/** Tipos genéricos do feed que não devem virar rótulo de “tipo de post” */
+const GENERIC_FEED_TYPE_KEYS = new Set(['community', 'user', 'post']);
 
 const FEED_TYPE_I18N_KEYS: Record<string, string> = {
   poll: 'community.postType.poll',
@@ -101,14 +102,14 @@ export const getPostContentTypeLabel = (post: Post, t: PostFeedTranslateFn): str
   if (isSpecialistTagPost(post)) return t('community.specialistLabel');
 
   const typeKey = post.feedPostType?.trim().toLowerCase() ?? '';
-  if (typeKey && !GENERIC_AMITY_TYPE_KEYS.has(typeKey) && FEED_TYPE_I18N_KEYS[typeKey]) {
+  if (typeKey && !GENERIC_FEED_TYPE_KEYS.has(typeKey) && FEED_TYPE_I18N_KEYS[typeKey]) {
     return t(FEED_TYPE_I18N_KEYS[typeKey]);
   }
 
   const tag = firstDisplayTag(post);
   if (tag) return tag;
 
-  if (typeKey && !GENERIC_AMITY_TYPE_KEYS.has(typeKey)) {
+  if (typeKey && !GENERIC_FEED_TYPE_KEYS.has(typeKey)) {
     return typeKey.charAt(0).toUpperCase() + typeKey.slice(1).toLowerCase();
   }
 

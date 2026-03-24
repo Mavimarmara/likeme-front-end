@@ -114,11 +114,25 @@ const mapCommunityPostToPoll = (communityPost: CommunityPost, _postChildren?: Co
 
     const votes = option.reactionsCount || 0;
 
+    const optionKey = option.postId || option._id || `option-${index}`;
+    const dataAnswerId =
+      typeof option.data === 'object' && option.data != null && 'answerId' in option.data
+        ? String((option.data as { answerId?: unknown }).answerId ?? '').trim() || undefined
+        : undefined;
+
+    const dataIsVotedByUser =
+      typeof option.data === 'object' &&
+      option.data != null &&
+      'isVotedByUser' in option.data &&
+      (option.data as { isVotedByUser?: unknown }).isVotedByUser === true;
+
     return {
-      id: option.postId || option._id || `option-${index}`,
+      id: optionKey,
+      answerId: dataAnswerId ?? optionKey,
       text: text || `Opção ${index + 1}`,
       votes: Number(votes),
       percentage: 0,
+      isSelected: dataIsVotedByUser,
     };
   });
 

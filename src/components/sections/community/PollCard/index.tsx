@@ -5,7 +5,7 @@ import type { Poll } from '@/types';
 
 type Props = {
   poll: Poll;
-  onVote?: (pollId: string, optionId: string) => void;
+  onVote?: (pollId: string, answerId: string) => void | Promise<void>;
   disabled?: boolean;
 };
 
@@ -13,7 +13,7 @@ const PollCard: React.FC<Props> = ({ poll, onVote, disabled = false }) => {
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
 
   useEffect(() => {
-    const preselected = poll.options.find((option: any) => option.isSelected)?.id;
+    const preselected = poll.options.find((option) => option.isSelected)?.id;
     setSelectedOptionId(preselected ?? null);
   }, [poll]);
   const formatDate = (date: Date): string => {
@@ -24,10 +24,15 @@ const PollCard: React.FC<Props> = ({ poll, onVote, disabled = false }) => {
     return `${day} ${month}. ${year}`;
   };
 
-  const handleOptionPress = (optionId: string) => {
+  const handleOptionPress = async (optionId: string, answerId: string) => {
     if (disabled || poll.isFinished || !onVote) return;
+    const previous = selectedOptionId;
     setSelectedOptionId(optionId);
-    onVote(poll.id, optionId);
+    try {
+      await Promise.resolve(onVote(poll.id, answerId));
+    } catch {
+      setSelectedOptionId(previous);
+    }
   };
 
   return (
@@ -45,7 +50,7 @@ const PollCard: React.FC<Props> = ({ poll, onVote, disabled = false }) => {
               ]}
               onPress={(e) => {
                 e.stopPropagation();
-                handleOptionPress(option.id);
+                void handleOptionPress(option.id, option.answerId ?? option.id);
               }}
               disabled={disabled || poll.isFinished}
             >

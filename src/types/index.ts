@@ -72,14 +72,17 @@ export interface Product {
 
 export interface PollOption {
   id: string;
+  /** Identificador da opção no backend (voto); costuma coincidir com `id` */
+  answerId?: string;
   text: string;
   votes: number;
   percentage: number;
+  isSelected?: boolean;
 }
 
 export interface Poll {
   id: string;
-  pollId?: string; // ID real da enquete (data.pollId)
+  pollId?: string;
   question: string;
   options: PollOption[];
   totalVotes: number;
