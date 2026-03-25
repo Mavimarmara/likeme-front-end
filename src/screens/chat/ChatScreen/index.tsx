@@ -53,7 +53,6 @@ const ChatScreen: React.FC = () => {
   const [loading, setLoading] = useState(!isComposeMode);
   const [resolvingChannel, setResolvingChannel] = useState(isComposeMode);
   const [messageText, setMessageText] = useState(isComposeMode ? initialMessage ?? '' : '');
-  const [chatHeaderHeight, setChatHeaderHeight] = useState(0);
   const resolvingChannelRef = useRef(false);
 
   // Se entrou em modo "conversar com" (targetAdvertiserId), resolve o canal (existente ou novo) e carrega o chat
@@ -236,7 +235,7 @@ const ChatScreen: React.FC = () => {
       }}
       contentContainerStyle={styles.container}
     >
-      <View style={styles.chatHeader} onLayout={(e) => setChatHeaderHeight(e.nativeEvent.layout.height)}>
+      <View style={styles.chatHeader}>
         <IconButton icon='chevron-left' onPress={() => navigation.goBack()} backgroundSize='medium' />
         <TouchableOpacity
           style={styles.headerInfo}
@@ -265,7 +264,6 @@ const ChatScreen: React.FC = () => {
       </View>
 
       <KeyboardAwareScreen
-        keyboardVerticalOffset={chatHeaderHeight}
         scrollViewStyle={styles.messagesContainer}
         scrollContentContainerStyle={styles.messagesContent}
         includeBottomSafeAreaOnFooter={false}

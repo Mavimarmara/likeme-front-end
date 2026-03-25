@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, TextInput, View } from 'react-native';
-import { GradientBackground, ScreenWithHeader } from '@/components/ui/layout';
+import { ScrollView, TextInput, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { GradientBackground, KeyboardAwareScreen, ScreenWithHeader } from '@/components/ui/layout';
 import { PostCard, PostReplies } from '@/components/sections/community';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
-import { COLORS } from '@/constants';
+import { COLORS, KEYBOARD_AWARE_SCROLL } from '@/constants';
 import type { Post } from '@/types';
 import { useFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { IconButton } from '@/components/ui/buttons';
@@ -72,6 +73,7 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
       myReactions: likeBootstrap.myReactions,
     });
   const scrollViewRef = useRef<ScrollView>(null);
+  const { bottom: bottomInset } = useSafeAreaInsets();
 
   const menuItems = useMenuItems(navigation);
   const { clearMenu, setMenu } = useFloatingMenu();
@@ -130,53 +132,48 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
         <GradientBackground />
       </View>
 
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={0}
-      >
-        <ScrollView
-          ref={scrollViewRef}
-          style={styles.scroll}
-          contentContainerStyle={{ paddingBottom: 120 }}
-          showsVerticalScrollIndicator={false}
-        >
-          <PostCard
-            post={postForRendering}
-            postEngagement={{ likeCount, isLiked, isLiking, togglePostLike }}
-            forceContentExpanded
-            styles={{
-              borderBottomLeftRadius: 0,
-              borderBottomRightRadius: 0,
-            }}
-          />
+      <KeyboardAwareScreen
+        scrollViewStyle={styles.scroll}
+        scrollContentContainerStyle={{ paddingBottom: KEYBOARD_AWARE_SCROLL.CONTENT_FALLBACK_PADDING_BOTTOM }}
+        includeBottomSafeAreaOnFooter={false}
+        scrollRef={scrollViewRef}
+        footer={
+          !post.poll ? (
+            <View style={[styles.inputContainer, bottomInset > 0 ? { paddingBottom: bottomInset } : null]}>
+              <View style={[styles.textInputWrapper]}>
+                <TextInput
+                  style={styles.textInput}
+                  placeholder={t('chat.messagePlaceholder')}
+                  placeholderTextColor='rgba(110,106,106,0.6)'
+                  value={messageText}
+                  onChangeText={setMessageText}
+                  multiline
+                />
+              </View>
 
-          {!post.poll && <PostReplies replyCardComments={replyCardComments} />}
-        </ScrollView>
-
-        {!post.poll && (
-          <View style={styles.inputContainer}>
-            <View style={[styles.textInputWrapper]}>
-              <TextInput
-                style={styles.textInput}
-                placeholder={t('chat.messagePlaceholder')}
-                placeholderTextColor='rgba(110,106,106,0.6)'
-                value={messageText}
-                onChangeText={setMessageText}
-                multiline
+              <IconButton
+                icon='send'
+                variant='dark'
+                onPress={handleSendComment}
+                backgroundSize='medium'
+                disabled={isSendDisabled}
               />
             </View>
+          ) : null
+        }
+      >
+        <PostCard
+          post={postForRendering}
+          postEngagement={{ likeCount, isLiked, isLiking, togglePostLike }}
+          forceContentExpanded
+          styles={{
+            borderBottomLeftRadius: 0,
+            borderBottomRightRadius: 0,
+          }}
+        />
 
-            <IconButton
-              icon='send'
-              variant='dark'
-              onPress={handleSendComment}
-              backgroundSize='medium'
-              disabled={isSendDisabled}
-            />
-          </View>
-        )}
-      </KeyboardAvoidingView>
+        {!post.poll && <PostReplies replyCardComments={replyCardComments} />}
+      </KeyboardAwareScreen>
     </ScreenWithHeader>
   );
 };

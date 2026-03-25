@@ -32,6 +32,9 @@ export { usePayment } from './marketplace/usePayment';
 export { useCart } from './marketplace/useCart';
 export type { UseCartOptions, UseCartReturn } from './marketplace/useCart';
 
+// Layout
+export { useKeyboardInset } from './useKeyboardInset';
+
 // Formatted input hook
 export { useFormattedInput } from './useFormattedInput';
 export type { FormattedInputType } from './useFormattedInput';

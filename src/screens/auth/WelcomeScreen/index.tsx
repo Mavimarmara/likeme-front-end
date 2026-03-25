@@ -8,7 +8,6 @@ import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen, logButtonClick, logFormSubmit, logNavigation } from '@/analytics';
 import { getNextOnboardingScreen } from '@/utils';
 import { storageService } from '@/services';
-import { SPACING } from '@/constants';
 import { styles } from './styles';
 
 type Props = { navigation: any };
@@ -78,7 +77,6 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
       contentContainerStyle={styles.container}
     >
       <KeyboardAwareScreen
-        keyboardVerticalOffset={bottomInset + SPACING.XXL}
         scrollContentContainerStyle={styles.scrollContentContainer}
         includeBottomSafeAreaOnFooter={false}
         footer={

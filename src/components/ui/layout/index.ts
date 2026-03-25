@@ -9,4 +9,5 @@ export { default as Icon } from './Icon';
 export { default as HeroImage } from './HeroImage';
 export { default as ScreenWithHeader } from './ScreenWithHeader';
 export { default as KeyboardAwareScreen } from './KeyboardAwareScreen';
+export type { KeyboardFooterOverrides } from './KeyboardAwareScreen';
 export type { HeroImageProps } from './HeroImage';

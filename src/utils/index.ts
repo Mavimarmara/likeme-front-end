@@ -152,3 +152,6 @@ export * from './community/mappers';
 
 // Anamnesis utilities
 export * from './anamnesis/avatarSizeMapper';
+
+// Layout (teclado / scroll)
+export * from './layout/keyboardAwareLayout';

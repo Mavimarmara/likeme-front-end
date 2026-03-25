@@ -17,20 +17,10 @@ describe('KeyboardAwareScreen', () => {
     mockedInsets = { top: 0, bottom: 0, left: 0, right: 0 };
   });
 
-  it('usa comportamento height no Android', () => {
-    Object.defineProperty(Platform, 'OS', { value: 'android' });
-
-    const { UNSAFE_getByType } = render(<KeyboardAwareScreen />);
-    const keyboardAvoidingView = UNSAFE_getByType(require('react-native').KeyboardAvoidingView);
-    expect(keyboardAvoidingView.props.behavior).toBeUndefined();
-  });
-
-  it('usa comportamento padding no iOS', () => {
-    Object.defineProperty(Platform, 'OS', { value: 'ios' });
-
-    const { UNSAFE_getByType } = render(<KeyboardAwareScreen />);
-    const keyboardAvoidingView = UNSAFE_getByType(require('react-native').KeyboardAvoidingView);
-    expect(keyboardAvoidingView.props.behavior).toBe('padding');
+  it('usa container View em vez de KeyboardAvoidingView', () => {
+    const { getByTestId } = render(<KeyboardAwareScreen />);
+    const container = getByTestId('keyboard-aware-container');
+    expect(container.type).toBe('View');
   });
 
   it('aplica defaults seguros no ScrollView', () => {
@@ -53,7 +43,7 @@ describe('KeyboardAwareScreen', () => {
     expect(footerStyle.paddingBottom).toBe(24);
   });
 
-  it('compensa footer no Android quando teclado abre', () => {
+  it('aplica bottom no footer quando o evento de teclado abre', () => {
     Object.defineProperty(Platform, 'OS', { value: 'android' });
 
     const listeners: Record<string, (event?: any) => void> = {};
@@ -68,7 +58,7 @@ describe('KeyboardAwareScreen', () => {
     });
 
     const footerStyle = StyleSheet.flatten(rendered.getByTestId('keyboard-aware-footer').props.style);
-    expect(footerStyle.marginBottom).toBe(180);
+    expect(footerStyle.bottom).toBe(180);
 
     addListenerSpy.mockRestore();
   });

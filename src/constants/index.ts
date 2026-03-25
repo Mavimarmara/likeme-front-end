@@ -96,5 +96,9 @@ export const PAGINATION = {
   MAX_PAGE_SIZE: 100,
 } as const;
 
+export const KEYBOARD_AWARE_SCROLL = {
+  CONTENT_FALLBACK_PADDING_BOTTOM: 120,
+} as const;
+
 export { AUTH_ONBOARDING_SCREENS_ORDER } from './authOnboarding';
 export type { AuthOnboardingScreenName } from './authOnboarding';

@@ -73,17 +73,8 @@ const PostCardView: React.FC<ViewProps> = ({
     onPress?.(post);
   };
 
-  return (
-    <Pressable
-      style={({ pressed }) => [
-        cardStyles.container,
-        containerStyles,
-        pressed && onPress != null ? { opacity: 0.92 } : undefined,
-      ]}
-      onPress={onPress != null ? handlePostPress : undefined}
-      accessibilityRole={onPress != null ? 'button' : undefined}
-      accessibilityLabel={onPress != null ? 'Ver detalhes do post' : undefined}
-    >
+  const cardInner = (
+    <>
       <View style={cardStyles.contentContainer}>
         <View style={cardStyles.badgeContainer}>
           <Badge label={contentTypeLabel} color={typeBadgeColor} />
@@ -146,7 +137,7 @@ const PostCardView: React.FC<ViewProps> = ({
               ]}
               onPress={(e) => {
                 e.stopPropagation();
-                void togglePostLike();
+                togglePostLike();
               }}
               disabled={isLiking}
               accessibilityRole='button'
@@ -173,8 +164,23 @@ const PostCardView: React.FC<ViewProps> = ({
           )}
         </View>
       </View>
-    </Pressable>
+    </>
   );
+
+  if (onPress != null) {
+    return (
+      <Pressable
+        style={({ pressed }) => [cardStyles.container, containerStyles, pressed ? { opacity: 0.92 } : undefined]}
+        onPress={handlePostPress}
+        accessibilityRole='button'
+        accessibilityLabel='Ver detalhes do post'
+      >
+        {cardInner}
+      </Pressable>
+    );
+  }
+
+  return <View style={[cardStyles.container, containerStyles]}>{cardInner}</View>;
 };
 
 const PostCardWithRepliesLikes: React.FC<Omit<Props, 'postEngagement'>> = (props) => {
