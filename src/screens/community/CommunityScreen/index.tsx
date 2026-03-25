@@ -9,7 +9,14 @@ import type { Event } from '@/types';
 import { SPACING, COMMUNITY_FEED_POSTS_PAGE_SIZE } from '@/constants';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
-import { useUserFeed, useCommunities, useSuggestedProducts, useAdvertiser, useMenuItems } from '@/hooks';
+import {
+  useUserFeed,
+  useCommunities,
+  useSuggestedProducts,
+  SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS,
+  useAdvertiser,
+  useMenuItems,
+} from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen } from '@/analytics';
@@ -113,8 +120,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const { products: suggestedProducts } = useSuggestedProducts({
-    limit: 20,
-    status: 'active',
+    ...SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS,
     enabled: true,
   });
   const { products: suggestedServices } = useSuggestedProducts({

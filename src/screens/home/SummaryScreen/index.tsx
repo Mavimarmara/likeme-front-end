@@ -9,6 +9,7 @@ import {
   useCommunities,
   useCategories,
   useSuggestedProducts,
+  SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS,
   useMenuItems,
   useNotifications,
   useCategoryDisplayLabel,
@@ -183,8 +184,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   }, []);
 
   const { products: recommendedProducts } = useSuggestedProducts({
-    limit: 4,
-    status: 'active',
+    ...SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS,
     enabled: true,
     categoryId: selectedCategoryId ?? null,
   });

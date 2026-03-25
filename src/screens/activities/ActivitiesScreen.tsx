@@ -13,7 +13,12 @@ import { orderService, activityService } from '@/services';
 import { storageService } from '@/services';
 import { formatPrice, getDateFromDatetime, getTimeFromDatetime, sortByDateTime, sortByDateField } from '@/utils';
 import { COLORS } from '@/constants';
-import { useActivities, useSuggestedProducts, useMenuItems } from '@/hooks';
+import {
+  useActivities,
+  useSuggestedProducts,
+  SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS,
+  useMenuItems,
+} from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 // import { AnamnesisPromptCard } from '@/components/sections/anamnesis';
@@ -92,8 +97,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
   }, []);
 
   const { products: suggestedProducts } = useSuggestedProducts({
-    limit: 4,
-    status: 'active',
+    ...SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS,
     enabled: true,
   });
 

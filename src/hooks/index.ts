@@ -27,7 +27,7 @@ export { useProductDetails } from './marketplace/useProductDetails';
 export { useAdvertiser } from './marketplace/useAdvertiser';
 export { useMarketplaceAds } from './marketplace/useMarketplaceAds';
 export { useProviderAds } from './marketplace/useProviderAds';
-export { useSuggestedProducts } from './marketplace/useSuggestedProducts';
+export { useSuggestedProducts, SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS } from './marketplace/useSuggestedProducts';
 export { usePayment } from './marketplace/usePayment';
 export { useCart } from './marketplace/useCart';
 export type { UseCartOptions, UseCartReturn } from './marketplace/useCart';

@@ -2,6 +2,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { productService, categoryService } from '@/services';
 import type { Product } from '@/components/sections/product';
 
+/** Lista padrão de produtos sugeridos (Home Summary, Activities, Comunidade sem filtro extra). */
+export const SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS = {
+  limit: 4,
+  status: 'active' as const,
+};
+
 interface UseSuggestedProductsOptions {
   limit?: number;
   status?: 'active' | 'inactive';

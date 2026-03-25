@@ -4,6 +4,8 @@ import Carousel from '../Carousel';
 import ProductCard, { Product } from '../ProductCard';
 import { styles } from './styles';
 
+const VISIBLE_PRODUCTS_PER_PAGE = 2;
+
 type Props = {
   title: string;
   subtitle: string;
@@ -33,6 +35,7 @@ const ProductsCarousel: React.FC<Props> = ({ title, subtitle, products, onProduc
           keyExtractor={(product) => product.id}
           itemWidth={170}
           gap={10}
+          itemsPerPage={VISIBLE_PRODUCTS_PER_PAGE}
           showPagination={true}
           paginationSize='Large'
         />
