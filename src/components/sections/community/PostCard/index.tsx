@@ -3,7 +3,7 @@ import { Image, Pressable, StyleProp, Text, View, ViewStyle } from 'react-native
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Badge } from '@/components/ui';
 import { PollCard } from '@/components/sections/community';
-import { usePost, usePostLikeEngagement, type PostLikeEngagement } from '@/hooks';
+import { usePost, usePostReplies, type PostLikeEngagement } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import { styles as cardStyles } from './styles';
 import { COLORS } from '@/constants';
@@ -177,19 +177,23 @@ const PostCardView: React.FC<ViewProps> = ({
   );
 };
 
-const PostCardWithInternalEngagement: React.FC<Omit<Props, 'postEngagement'>> = (props) => {
-  const engagement = usePostLikeEngagement({
+const PostCardWithRepliesLikes: React.FC<Omit<Props, 'postEngagement'>> = (props) => {
+  const { likeCount, isLiked, isLiking, togglePostLike } = usePostReplies({
     postId: props.post.id,
+    enabled: false, // só queremos o estado do like, sem buscar comentários
     initialLikes: props.post.likes ?? 0,
+    isLiked: props.post.isLiked ?? false,
+    myReactions: props.post.myReactions,
   });
-  return <PostCardView {...props} engagement={engagement} />;
+
+  return <PostCardView {...props} engagement={{ likeCount, isLiked, isLiking, togglePostLike }} />;
 };
 
 const PostCard: React.FC<Props> = (props) => {
   if (props.postEngagement) {
     return <PostCardView {...props} engagement={props.postEngagement} />;
   }
-  return <PostCardWithInternalEngagement {...props} />;
+  return <PostCardWithRepliesLikes {...props} />;
 };
 
 export default PostCard;

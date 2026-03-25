@@ -2,6 +2,7 @@ import apiClient from '../infrastructure/apiClient';
 import { logger } from '@/utils/logger';
 import type { ApiResponse } from '@/types/infrastructure';
 import type {
+  CommunityFeedData,
   UserFeedApiResponse,
   UserFeedParams,
   ListCommunitiesParams,
@@ -110,6 +111,18 @@ class CommunityService {
     }
   }
 
+  async getCommunityPostSnapshot(postId: string): Promise<CommunityFeedData> {
+    if (!postId || postId.trim() === '') {
+      throw new Error('Post ID is required');
+    }
+    const endpoint = `${this.postReactionEndpoint}/${encodeURIComponent(postId.trim())}`;
+    const res = await apiClient.get<ApiResponse<CommunityFeedData>>(endpoint, undefined, true, false);
+    if (!res.success || !res.data) {
+      throw new Error(res.message || 'Falha ao carregar o post');
+    }
+    return res.data;
+  }
+
   async votePoll(pollId: string, answerIds: string[]): Promise<ApiResponse<unknown>> {
     try {
       if (!pollId || pollId.trim() === '') {
@@ -149,7 +162,7 @@ class CommunityService {
     }
   }
 
-  async addPostReaction(postId: string, reactionName: 'like' | 'dislike' = 'like'): Promise<boolean> {
+  async addPostReaction(postId: string, reactionName = 'like'): Promise<boolean> {
     try {
       if (!postId || postId.trim() === '') {
         throw new Error('Post ID is required');
@@ -173,7 +186,7 @@ class CommunityService {
     }
   }
 
-  async removePostReaction(postId: string, reactionName: 'like' | 'dislike' = 'like'): Promise<boolean> {
+  async removePostReaction(postId: string, reactionName = 'like'): Promise<boolean> {
     try {
       if (!postId || postId.trim() === '') {
         throw new Error('Post ID is required');
@@ -197,7 +210,7 @@ class CommunityService {
     }
   }
 
-  async addCommentReaction(commentId: string, reactionName: 'like' | 'dislike' = 'like'): Promise<boolean> {
+  async addCommentReaction(commentId: string, reactionName = 'like'): Promise<boolean> {
     try {
       if (!commentId || commentId.trim() === '') {
         throw new Error('Comment ID is required');
@@ -221,7 +234,7 @@ class CommunityService {
     }
   }
 
-  async removeCommentReaction(commentId: string, reactionName: 'like' | 'dislike' = 'like'): Promise<boolean> {
+  async removeCommentReaction(commentId: string, reactionName = 'like'): Promise<boolean> {
     try {
       if (!commentId || commentId.trim() === '') {
         throw new Error('Comment ID is required');

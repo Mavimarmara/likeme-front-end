@@ -9,6 +9,9 @@ import type { Post } from '@/types';
 import { useFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { IconButton } from '@/components/ui/buttons';
 import { useMenuItems, usePostReplies, useTranslation } from '@/hooks';
+import { communityService } from '@/services';
+import { mapCommunityPostToPost } from '@/utils';
+import { logger } from '@/utils/logger';
 
 type Props = {
   navigation: any;
@@ -22,11 +25,51 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   const [messageText, setMessageText] = useState('');
   const { t } = useTranslation();
 
+  const [likeBootstrap, setLikeBootstrap] = useState({
+    initialLikes: post.likes ?? 0,
+    isLiked: post.isLiked ?? false,
+    myReactions: post.myReactions,
+  });
+
+  useEffect(() => {
+    setLikeBootstrap({
+      initialLikes: post.likes ?? 0,
+      isLiked: post.isLiked ?? false,
+      myReactions: post.myReactions,
+    });
+  }, [post.id]);
+
+  useEffect(() => {
+    if (post.poll) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const feed = await communityService.getCommunityPostSnapshot(post.id);
+        const raw = feed.posts?.[0];
+        if (cancelled || !raw) return;
+        const mapped = mapCommunityPostToPost(raw, feed.files, feed.users, feed.comments, feed.postChildren);
+        if (cancelled || !mapped) return;
+        setLikeBootstrap({
+          initialLikes: mapped.likes ?? 0,
+          isLiked: mapped.isLiked ?? false,
+          myReactions: mapped.myReactions,
+        });
+      } catch (error) {
+        logger.warn('Sincronização do like no detalhe do post falhou:', { postId: post.id, cause: error });
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [post.id, post.poll]);
+
   const { replyCardComments, addPostComment, isAddingPostComment, likeCount, isLiked, isLiking, togglePostLike } =
     usePostReplies({
       postId: post.id,
       enabled: !post.poll,
-      initialLikes: post.likes ?? 0,
+      initialLikes: likeBootstrap.initialLikes,
+      isLiked: likeBootstrap.isLiked,
+      myReactions: likeBootstrap.myReactions,
     });
   const scrollViewRef = useRef<ScrollView>(null);
 

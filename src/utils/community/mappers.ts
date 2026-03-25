@@ -168,6 +168,28 @@ const mapCommunityPostToPoll = (communityPost: CommunityPost, _postChildren?: Co
   };
 };
 
+const mapRawMyReactionsToStrings = (raw: unknown): string[] => {
+  if (!Array.isArray(raw) || raw.length === 0) return [];
+
+  const out: string[] = [];
+  for (const item of raw) {
+    if (typeof item === 'string') {
+      const t = item.trim();
+      if (t) out.push(t);
+      continue;
+    }
+    if (item && typeof item === 'object') {
+      const obj = item as Record<string, unknown>;
+      const v = obj.reactionName ?? obj.type ?? obj.reaction ?? obj.name;
+      if (typeof v === 'string') {
+        const t = v.trim();
+        if (t) out.push(t);
+      }
+    }
+  }
+  return out;
+};
+
 export const mapCommunityPostToPost = (
   communityPost: CommunityPost,
   files?: CommunityFile[],
@@ -198,6 +220,11 @@ export const mapCommunityPostToPost = (
   const user = users?.find((u) => u.userId === userId);
   const userName = user?.displayName || undefined;
   const userAvatar = user?.avatarFileId ? files?.find((f) => f.fileId === user.avatarFileId)?.fileUrl : undefined;
+
+  const myReactionsRaw = (communityPost as any).myReactions as unknown;
+  const myReactions = mapRawMyReactionsToStrings(myReactionsRaw);
+
+  const isLiked = myReactions.some((name) => name.toLowerCase() !== 'dislike');
 
   const likes = communityPost.reactionsCount || 0;
 
@@ -278,6 +305,8 @@ export const mapCommunityPostToPost = (
     title,
     userName,
     userAvatar,
+    isLiked,
+    myReactions: myReactions.length ? myReactions : undefined,
     poll,
   };
 

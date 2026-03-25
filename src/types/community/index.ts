@@ -24,6 +24,7 @@ export interface CommunityPost {
     [key: string]: unknown;
   };
   reactionsCount?: number;
+  myReactions?: string[];
   commentsCount?: number;
   createdAt: string;
   updatedAt?: string;

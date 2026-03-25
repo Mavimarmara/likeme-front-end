@@ -13,42 +13,65 @@ export type PostLikeEngagement = {
 export function usePostLikeEngagement({
   postId,
   initialLikes = 0,
+  isLiked = false,
+  myReactions,
 }: {
   postId: Post['id'];
   initialLikes?: number;
+  isLiked?: boolean;
+  myReactions?: string[];
 }): PostLikeEngagement {
   const [likeDelta, setLikeDelta] = useState(0);
-  const [isLiked, setIsLiked] = useState(false);
+  const positiveReactions = (myReactions ?? []).filter((r) => r?.toLowerCase() !== 'dislike');
+  const derivedIsLiked = positiveReactions.length > 0;
+  const hasMyReactions = myReactions !== undefined;
+  const myReactionsKey = (myReactions ?? []).join('|');
+  const [isLikedState, setIsLikedState] = useState(myReactions ? derivedIsLiked : isLiked);
+  const [activeReactionName, setActiveReactionName] = useState<string | undefined>(positiveReactions[0] ?? undefined);
   const [isLiking, setIsLiking] = useState(false);
 
   useEffect(() => {
     setLikeDelta(0);
-    setIsLiked(false);
-  }, [postId]);
+    if (hasMyReactions) {
+      setIsLikedState(derivedIsLiked);
+      setActiveReactionName(positiveReactions[0] ?? undefined);
+    } else {
+      setIsLikedState(isLiked);
+      setActiveReactionName(isLiked ? 'like' : undefined);
+    }
+  }, [postId, initialLikes, isLiked, hasMyReactions, derivedIsLiked, myReactionsKey]);
 
-  const likeCount = initialLikes + likeDelta;
+  const likeCount = Math.max(0, initialLikes + likeDelta);
 
   const togglePostLike = useCallback(async () => {
     if (!postId || isLiking) return;
 
     setIsLiking(true);
     try {
-      const ok = isLiked
-        ? await communityService.removePostReaction(String(postId), 'like')
+      const ok = isLikedState
+        ? await communityService.removePostReaction(String(postId), activeReactionName ?? 'like')
         : await communityService.addPostReaction(String(postId), 'like');
 
       if (ok) {
-        setLikeDelta((d) => (isLiked ? Math.max(d - 1, 0) : d + 1));
-        setIsLiked((prev) => !prev);
+        // Como `reactionsCount` agrega reações (não apenas `like`), removendo reduzimos 1 unidade.
+        // A UI trata o contador como "número de curtidas/reações" e não deve ficar preso em 0.
+        setLikeDelta((d) => (isLikedState ? d - 1 : d + 1));
+        setIsLikedState((prev) => !prev);
+        setActiveReactionName((prev) => (isLikedState ? undefined : prev ?? 'like'));
+      } else {
+        logger.warn('Toggle de like falhou (nenhuma atualização local)', {
+          postId,
+          action: isLikedState ? 'remove_like' : 'add_like',
+        });
       }
     } catch (error) {
       logger.error('Erro ao aplicar reação no post:', error);
     } finally {
       setIsLiking(false);
     }
-  }, [postId, isLiked, isLiking]);
+  }, [postId, isLikedState, isLiking, activeReactionName]);
 
-  return { likeCount, isLiked, isLiking, togglePostLike };
+  return { likeCount, isLiked: isLikedState, isLiking, togglePostLike };
 }
 
 export type PostReplyCardComment = {
@@ -73,12 +96,27 @@ type UsePostRepliesOptions = {
   postId: Post['id'];
   enabled?: boolean;
   initialLikes?: number;
+  isLiked?: boolean;
+  myReactions?: string[];
 };
 
-export const usePostReplies = ({ postId, enabled = true, initialLikes = 0 }: UsePostRepliesOptions) => {
-  const { likeCount, isLiked, isLiking, togglePostLike } = usePostLikeEngagement({
+export const usePostReplies = ({
+  postId,
+  enabled = true,
+  initialLikes = 0,
+  isLiked = false,
+  myReactions,
+}: UsePostRepliesOptions) => {
+  const {
+    likeCount,
+    isLiked: isLikedValue,
+    isLiking,
+    togglePostLike,
+  } = usePostLikeEngagement({
     postId,
     initialLikes,
+    isLiked,
+    myReactions,
   });
   const [remoteReplyCardComments, setRemoteReplyCardComments] = useState<PostReplyCardComment[] | null>(null);
   const [localOptimisticComments, setLocalOptimisticComments] = useState<PostReplyCardComment[]>([]);
@@ -288,7 +326,7 @@ export const usePostReplies = ({ postId, enabled = true, initialLikes = 0 }: Use
 
   return {
     likeCount,
-    isLiked,
+    isLiked: isLikedValue,
     isLiking,
     togglePostLike,
     replyCardComments: mergedForRender,

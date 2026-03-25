@@ -96,6 +96,9 @@ export interface Post {
   content: string;
   image?: string;
   likes?: number;
+  isLiked?: boolean;
+  /** Nomes das reações do usuário atual neste post (cópia do backend, sem filtrar tipo). */
+  myReactions?: string[];
   reactionsCount?: number;
   comments: Comment[];
   commentsCount?: number;

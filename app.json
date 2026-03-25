@@ -8,8 +8,15 @@
     "platforms": ["ios", "android", "web"],
     "jsEngine": "hermes",
     "sdkVersion": "54.0.0",
-    "plugins": ["expo-font", ["react-native-auth0", { "domain": "likeme.us.auth0.com" }]],
+    "plugins": [
+      "expo-font",
+      "expo-navigation-bar",
+      ["react-native-auth0", { "domain": "likeme.us.auth0.com" }]
+    ],
     "scheme": "likeme",
+    "androidNavigationBar": {
+      "visibility": "hidden"
+    },
     "android": {
       "package": "com.likeme.app",
       "versionCode": 2,
