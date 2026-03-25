@@ -133,7 +133,7 @@ const SocialList: React.FC<Props> = ({
       )}
 
       {products && products.length > 0 && (
-        <View>
+        <View style={styles.recommendedSection}>
           <ProductsCarousel
             title={t('home.productsRecommended', { provider: '' })}
             subtitle={t('home.discoverProducts')}

@@ -30,4 +30,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: SPACING.MD,
     marginTop: SPACING.XL,
   },
+  recommendedSection: {
+    marginTop: SPACING.XL,
+  },
 });
