@@ -142,6 +142,7 @@ vite.config.ts.timestamp-*
 .expo/
 .expo-shared/
 dist/
+build-*.apk
 
 # Android/iOS (gerados pelo expo prebuild)
 android/

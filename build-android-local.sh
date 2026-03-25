@@ -286,6 +286,12 @@ case $build_type in
     else
       echo "✅ Modo não-interativo: continuando automaticamente..."
     fi
+
+    export JAVA_HOME=$(/usr/libexec/java_home -v 17 2>/dev/null || /usr/libexec/java_home -v 21 2>/dev/null || true)
+    if [ -n "$JAVA_HOME" ]; then
+      export PATH="$JAVA_HOME/bin:$PATH"
+      echo "✓ JAVA_HOME=$JAVA_HOME"
+    fi
     
     eas build --local --platform android --profile staging
     ;;
@@ -304,6 +310,12 @@ case $build_type in
       fi
     else
       echo "✅ Modo não-interativo: continuando automaticamente..."
+    fi
+
+    export JAVA_HOME=$(/usr/libexec/java_home -v 17 2>/dev/null || /usr/libexec/java_home -v 21 2>/dev/null || true)
+    if [ -n "$JAVA_HOME" ]; then
+      export PATH="$JAVA_HOME/bin:$PATH"
+      echo "✓ JAVA_HOME=$JAVA_HOME"
     fi
     
     eas build --local --platform android --profile production-apk
