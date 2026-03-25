@@ -15,15 +15,20 @@ type Props = {
   onLoadMore: () => void;
 };
 
-const PostsSection: React.FC<Props> = ({ posts, loading, loadingMore, error, onLoadMore }) => {
+const PostsSection: React.FC<Props> = ({ posts, loading, loadingMore, error, onLoadMore: _onLoadMore }) => {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
 
-  const renderLoadingFooter = () => {
-    if (!loadingMore) return null;
+  const renderFeedFooter = () => {
+    if (posts.length === 0 || !loadingMore) return null;
     return (
-      <View style={styles.loadingFooter}>
+      <View
+        style={styles.loadingFooter}
+        accessibilityRole='progressbar'
+        accessibilityLabel={t('community.loadingMorePosts')}
+      >
         <ActivityIndicator size='small' color='#4CAF50' />
+        <Text style={styles.loadingMoreLabel}>{t('community.loadingMorePosts')}</Text>
       </View>
     );
   };
@@ -79,7 +84,7 @@ const PostsSection: React.FC<Props> = ({ posts, loading, loadingMore, error, onL
                 }}
               />
             ))}
-            {renderLoadingFooter()}
+            {renderFeedFooter()}
           </>
         )}
       </View>

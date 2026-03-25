@@ -96,6 +96,9 @@ export const PAGINATION = {
   MAX_PAGE_SIZE: 100,
 } as const;
 
+/** Posts por requisição no feed da Comunidade (cada “load more” pede mais esta quantidade). */
+export const COMMUNITY_FEED_POSTS_PAGE_SIZE = PAGINATION.DEFAULT_PAGE_SIZE;
+
 export const KEYBOARD_AWARE_SCROLL = {
   CONTENT_FALLBACK_PADDING_BOTTOM: 120,
 } as const;

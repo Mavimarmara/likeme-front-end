@@ -27,6 +27,11 @@ export const styles = StyleSheet.create({
   loadingFooter: {
     paddingVertical: SPACING.MD,
     alignItems: 'center',
+    gap: SPACING.SM,
+  },
+  loadingMoreLabel: {
+    fontSize: FONT_SIZES.SM,
+    color: COLORS.TEXT_LIGHT,
   },
   emptyContainer: {
     flex: 1,

@@ -38,6 +38,8 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const currentPageRef = useRef(1);
+
   const paramsKey = JSON.stringify(params ?? {});
   const memoizedParams = useMemo(() => params ?? {}, [paramsKey]);
 
@@ -116,8 +118,24 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
         }
 
         setCurrentPage(page);
+        currentPageRef.current = page;
 
-        const hasMorePages = pagination ? page < pagination.totalPages : feedData.paging?.next !== undefined;
+        const receivedCount = mappedPosts.length;
+        let hasMorePages = false;
+        if (receivedCount === 0 && page === 1) {
+          hasMorePages = false;
+        } else if (
+          pagination &&
+          typeof pagination.page === 'number' &&
+          typeof pagination.totalPages === 'number' &&
+          pagination.totalPages > 0
+        ) {
+          hasMorePages = pagination.page < pagination.totalPages;
+        } else if (feedData.paging?.next != null && String(feedData.paging.next).length > 0) {
+          hasMorePages = true;
+        } else {
+          hasMorePages = receivedCount >= pageSize;
+        }
         setHasMore(hasMorePages);
       } catch (err) {
         hasErrorRef.current = true;
@@ -139,14 +157,15 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
 
   const loadMore = useCallback(() => {
     if (!loadingMore && hasMore && !loading && enabled) {
-      loadPosts(currentPage + 1, searchQuery, true);
+      loadPosts(currentPageRef.current + 1, searchQuery, true);
     }
-  }, [currentPage, hasMore, loadingMore, loading, searchQuery, enabled, loadPosts]);
+  }, [hasMore, loadingMore, loading, searchQuery, enabled, loadPosts]);
 
   const refresh = useCallback(() => {
     hasLoadedInitially.current = false;
     previousSearchQuery.current = '';
     setCurrentPage(1);
+    currentPageRef.current = 1;
     setHasMore(true);
     loadPosts(1, searchQuery);
   }, [searchQuery, loadPosts]);
@@ -156,6 +175,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
       previousSearchQuery.current = query;
       hasLoadedInitially.current = false;
       setCurrentPage(1);
+      currentPageRef.current = 1;
       setHasMore(true);
       loadPosts(1, query);
     },
@@ -183,6 +203,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
 
       if (searchChanged || paramsChanged) {
         setCurrentPage(1);
+        currentPageRef.current = 1;
         setHasMore(true);
       }
       loadPosts(1, searchQuery);

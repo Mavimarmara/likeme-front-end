@@ -1,12 +1,12 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { View, ScrollView, Text } from 'react-native';
+import { View, ScrollView, Text, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { SocialList, ShoppingList, LiveBannerData } from '@/components/sections/community';
 import type { SpecialistCardProps } from '@/components/sections/community/SpecialistCard';
 import { Product } from '@/components/sections/product';
 import { GradientBackground, HeroImage, ScreenWithHeader } from '@/components/ui/layout';
 import type { Event } from '@/types';
-import { SPACING } from '@/constants';
+import { SPACING, COMMUNITY_FEED_POSTS_PAGE_SIZE } from '@/constants';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
 import { useUserFeed, useCommunities, useSuggestedProducts, useAdvertiser, useMenuItems } from '@/hooks';
@@ -28,6 +28,9 @@ type Props = { navigation: NavigationProp };
 
 /** Mesma imagem padrão do CommunityIntroSection para manter consistência. */
 const DEFAULT_COMMUNITY_IMAGE = 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400';
+
+/** Distância do fim do conteúdo para disparar próxima página do feed (evita depender só de onMomentumScrollEnd). */
+const FEED_END_THRESHOLD_PX = 120;
 
 const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   useAnalyticsScreen({ screenName: 'CommunityList', screenClass: 'CommunityScreen' });
@@ -90,16 +93,10 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
 
   const feedFilterParams = useMemo(() => ({}), []);
 
-  const {
-    posts,
-    loading,
-    loadingMore,
-    error,
-    hasMore: _hasMore,
-    loadMore,
-  } = useUserFeed({
+  const { posts, loading, loadingMore, error, loadMore } = useUserFeed({
     enabled: selectedMode === 'Feed',
     searchQuery: '',
+    pageSize: COMMUNITY_FEED_POSTS_PAGE_SIZE,
     params: feedFilterParams,
   });
 
@@ -157,6 +154,18 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
       loadMore();
     }
   }, [selectedMode, loadMore]);
+
+  const handleScroll = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      if (selectedMode !== 'Feed') return;
+      const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+      const distanceFromBottom = contentSize.height - layoutMeasurement.height - contentOffset.y;
+      if (distanceFromBottom <= FEED_END_THRESHOLD_PX) {
+        handleLoadMore();
+      }
+    },
+    [selectedMode, handleLoadMore],
+  );
 
   const communityIntro = useMemo(() => {
     const first = rawCommunities[0];
@@ -219,13 +228,8 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
         style={[{ flex: 1 }, { zIndex: 1 }]}
         contentContainerStyle={{ paddingBottom: SPACING.XL }}
         showsVerticalScrollIndicator={false}
-        onMomentumScrollEnd={(e) => {
-          const { layoutMeasurement, contentOffset, contentSize } = e.nativeEvent;
-          if (selectedMode === 'Feed' && layoutMeasurement.height + contentOffset.y >= contentSize.height - 20) {
-            handleLoadMore();
-          }
-        }}
-        scrollEventThrottle={400}
+        onScroll={handleScroll}
+        scrollEventThrottle={100}
       >
         {communityIntro?.title != null && (
           <HeroImage
