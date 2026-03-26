@@ -85,13 +85,6 @@ function getFocusedRouteNameFromState(state: NavState | undefined): string | und
   return route?.name;
 }
 
-function getChatStackFocusedIndex(state: NavState | undefined): number {
-  const root = getRouteAtIndex(state);
-  if (!root || root.name !== 'Chat') return -1;
-  const nested = asNavState(root.state);
-  return nested ? nested.index : -1;
-}
-
 function isMenuAllowedByRouteName(routeName: string | undefined): boolean {
   return routeName == null || ROUTES_SHOW_MENU.has(routeName);
 }
