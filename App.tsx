@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { AppState, LogBox, Platform } from 'react-native';
+import { AppState, LogBox, Platform, StatusBar } from 'react-native';
 import { useFonts } from 'expo-font';
 import * as NavigationBar from 'expo-navigation-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -72,6 +72,7 @@ const App: React.FC = () => {
       }
 
       try {
+        await NavigationBar.setBehaviorAsync('overlay-swipe');
         await NavigationBar.setVisibilityAsync('hidden');
       } catch (error) {
         console.warn('[App] Falha ao ocultar barra de navegacao do Android:', error);
@@ -79,6 +80,14 @@ const App: React.FC = () => {
     };
 
     void configureAndroidSystemUI();
+
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'active') {
+        void configureAndroidSystemUI();
+      }
+    });
+
+    return () => subscription.remove();
   }, []);
 
   if (!fontsLoaded && !fontError) {
@@ -87,6 +96,7 @@ const App: React.FC = () => {
 
   return (
     <SafeAreaProvider>
+      <StatusBar hidden={Platform.OS === 'android'} />
       <RootNavigator />
     </SafeAreaProvider>
   );
