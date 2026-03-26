@@ -98,7 +98,6 @@ function isMenuAllowedByRouteName(routeName: string | undefined): boolean {
 
 function shouldShowMenu(state: NavState | undefined): boolean {
   const focusedName = getFocusedRouteNameFromState(state);
-  const chatStackIndex = getChatStackFocusedIndex(state);
   const rootName = getRouteAtIndex(state)?.name;
 
   if (rootName === 'Chat') {
