@@ -184,6 +184,7 @@ module.exports = {
       '@react-native-firebase/app',
       '@react-native-firebase/messaging',
       './plugins/withPodfileModularHeaders.js',
+      './plugins/withAdIdPermission.js',
     ],
     scheme: 'likeme',
     android: {
