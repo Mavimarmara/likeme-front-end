@@ -1,6 +1,8 @@
 import { render, fireEvent } from '@testing-library/react-native';
 import ProviderProfileScreen from './index';
 
+const mockUseAdvertiser = jest.fn();
+
 jest.mock('react-native-safe-area-context', () => {
   const ReactNative = require('react-native');
   return {
@@ -118,22 +120,7 @@ jest.mock('@/hooks', () => ({
     loading: false,
     loadCommunities: jest.fn(),
   }),
-  useAdvertiser: jest.fn(
-    (opts: { initialAdvertiser?: { id: string; name: string; description?: string; logo?: string } }) => {
-      if (opts?.initialAdvertiser) {
-        return { advertiser: undefined, loading: false };
-      }
-      return {
-        advertiser: {
-          id: 'provider-1',
-          name: 'Marcela Ferraz',
-          description: '',
-          logo: undefined,
-        },
-        loading: false,
-      };
-    },
-  ),
+  useAdvertiser: (...args: any[]) => mockUseAdvertiser(...args),
   useProviderAds: () => ({
     ads: [],
     loading: false,
@@ -141,6 +128,18 @@ jest.mock('@/hooks', () => ({
     loadAds: jest.fn(),
   }),
   useCategories: () => ({ categories: [] }),
+}));
+
+jest.mock('@/services', () => ({
+  communityService: {
+    joinCommunity: jest.fn(),
+  },
+  advertiserService: {
+    getAdvertiserProfiles: jest.fn().mockResolvedValue({
+      success: true,
+      data: { profiles: [] },
+    }),
+  },
 }));
 
 jest.mock('@/utils', () => ({
@@ -193,6 +192,10 @@ describe('ProviderProfileScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     console.log = jest.fn();
+    mockUseAdvertiser.mockReturnValue({
+      advertiser: null,
+      loading: false,
+    });
   });
 
   it('renders correctly with provider data', () => {
@@ -206,6 +209,16 @@ describe('ProviderProfileScreen', () => {
   });
 
   it('renders correctly with default provider data when not provided', () => {
+    mockUseAdvertiser.mockReturnValue({
+      advertiser: {
+        id: 'provider-1',
+        name: 'Marcela Ferraz',
+        description: '',
+        logo: undefined,
+      },
+      loading: false,
+    });
+
     const { getByText } = render(
       <ProviderProfileScreen navigation={mockNavigation} route={mockRouteWithoutProvider} />,
     );
