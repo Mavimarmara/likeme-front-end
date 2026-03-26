@@ -190,7 +190,6 @@ module.exports = {
     android: {
       package: 'com.likeme.app',
       googleServicesFile: './google-services.json',
-      versionCode: 2,
       softwareKeyboardLayoutMode: 'resize',
       adaptiveIcon: {
         foregroundImage: './assets/ui/LogoFull.png',
@@ -213,7 +212,6 @@ module.exports = {
     ios: {
       bundleIdentifier: 'app.likeme.com',
       googleServicesFile: './GoogleService-Info.plist',
-      buildNumber: '46',
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
         UIBackgroundModes: ['remote-notification'],

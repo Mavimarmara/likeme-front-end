@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { productService, categoryService } from '@/services';
 import type { Product } from '@/components/sections/product';
+import { getMarkerIdForCategory } from '@/hooks/category';
+import { CATEGORY_NAMES, type CategoryName } from '@/types/category';
 
 /** Lista padrão de produtos sugeridos (Home Summary, Activities, Comunidade sem filtro extra). */
 export const SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS = {
@@ -50,14 +52,21 @@ export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}):
       ]);
 
       if (productsResponse.success && productsResponse.data) {
-        const mappedProducts: Product[] = productsResponse.data.products.map((p) => ({
-          id: p.id,
-          title: p.name,
-          price: p.price || 0,
-          tag: categoriesList.find((c) => c.categoryId === p.categoryId)?.name ?? 'Product',
-          image: p.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
-          likes: 0,
-        }));
+        const mappedProducts: Product[] = productsResponse.data.products.map((p) => {
+          const category = categoriesList.find((c) => String(c.categoryId) === String(p.categoryId));
+          const name = category?.name ?? '';
+          const markerId = getMarkerIdForCategory(String(p.categoryId ?? ''), name);
+          const categoryLabel = markerId ? CATEGORY_NAMES[markerId as CategoryName] : name;
+
+          return {
+            id: p.id,
+            title: p.name,
+            price: p.price || 0,
+            tag: categoryLabel,
+            image: p.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
+            likes: 0,
+          };
+        });
         setProducts(mappedProducts);
       } else {
         setProducts([]);
