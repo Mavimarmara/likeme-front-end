@@ -101,11 +101,11 @@ function shouldShowMenu(state: NavState | undefined): boolean {
   const chatStackIndex = getChatStackFocusedIndex(state);
   const rootName = getRouteAtIndex(state)?.name;
 
-  if (chatStackIndex === 0) return true;
-  if (chatStackIndex === 1 || chatStackIndex === 2) return false;
-  if (chatStackIndex === -1 && rootName === 'Chat') return true;
+  if (rootName === 'Chat') {
+    if (focusedName === CHAT_STACK_LIST_ROUTE) return true;
+    return false;
+  }
 
-  if (focusedName === CHAT_STACK_LIST_ROUTE) return true;
   if (rootName && ROUTES_SHOW_MENU.has(rootName) && rootName !== 'Chat') return true;
   return isMenuAllowedByRouteName(focusedName ?? rootName);
 }
