@@ -121,7 +121,7 @@
         "ascApiKeyId": "6QJ886URZD"
       },
       "android": {
-        "track": "production",
+        "track": "beta",
         "releaseStatus": "completed",
         "serviceAccountKeyPath": "./google-service-account.json"
       }
