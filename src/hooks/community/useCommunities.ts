@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { communityService, chatService } from '@/services';
-import type { Community, CommunityCategory, ListCommunitiesParams } from '@/types/community';
+import type { Community, CommunityCategory, CommunityUserRelation, ListCommunitiesParams } from '@/types/community';
 import type { Event } from '@/types';
 import type { LiveBannerData } from '@/components/sections/community';
 import type { CategoryName } from '@/types/category';
@@ -41,6 +41,7 @@ const DEFAULT_PAGE_SIZE = PAGINATION.DEFAULT_PAGE_SIZE;
 interface UseCommunitiesReturn {
   communities: Community[];
   categories: CommunityCategory[];
+  communityUsers: CommunityUserRelation[];
   /** Lista no formato do card de comunidade recomendada (para JoinCommunityCard) */
   joinCommunities: JoinCommunityItem[];
   /** joinCommunities filtrado por solutionTab e searchQuery */
@@ -78,6 +79,7 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
 
   const [communities, setCommunities] = useState<Community[]>([]);
   const [categories, setCategories] = useState<CommunityCategory[]>([]);
+  const [communityUsers, setCommunityUsers] = useState<CommunityUserRelation[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -129,6 +131,7 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
 
         const communitiesList = response.data.communities || [];
         const categoriesList = response.data.categories || [];
+        const communityUsersList = response.data.communityUsers || [];
         const pagingData = response.data.paging || null;
 
         logger.debug('Communities list response:', {
@@ -148,6 +151,7 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
           // Categories são atualizadas apenas na primeira página
           setCategories(categoriesList);
         }
+        setCommunityUsers(communityUsersList);
 
         setCurrentPage(page);
         setPaging(
@@ -174,6 +178,7 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
         if (page === 1) {
           setCommunities([]);
           setCategories([]);
+          setCommunityUsers([]);
           setPaging(null);
         }
       } finally {
@@ -308,6 +313,7 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
   return {
     communities,
     categories,
+    communityUsers,
     joinCommunities,
     filteredJoinCommunities,
     loading,

@@ -1,4 +1,5 @@
 import type { Ad } from '@/types/ad';
+import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import { formatPrice } from '@/utils';
 
 interface Navigation {
@@ -7,7 +8,7 @@ interface Navigation {
 }
 
 export const navigateToAmazonProduct = (ad: Ad, navigation: Navigation): boolean => {
-  const isAmazonProduct = ad.product?.type === 'amazon product';
+  const isAmazonProduct = ad.product?.type === PRODUCT_CATALOG_TYPE.AMAZON;
   if (!isAmazonProduct) {
     return false;
   }

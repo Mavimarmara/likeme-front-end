@@ -164,6 +164,7 @@ export interface ListCommunitiesApiResponse {
   data?: {
     communities?: Community[];
     categories?: CommunityCategory[];
+    communityUsers?: CommunityUserRelation[];
     paging?: {
       next?: string | null;
       previous?: string | null;

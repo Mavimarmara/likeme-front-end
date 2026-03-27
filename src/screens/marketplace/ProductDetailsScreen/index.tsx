@@ -20,6 +20,7 @@ import {
   logError,
 } from '@/analytics';
 import type { RootStackParamList } from '@/types/navigation';
+import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import { styles } from './styles';
 
 type ProductDetailsScreenProps = {
@@ -138,7 +139,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     };
   }, [ad?.advertiser, advertiserId, product, route.params?.product]);
 
-  const isProductType = product?.type === 'physical product';
+  const isProductType = product?.type === PRODUCT_CATALOG_TYPE.PHYSICAL;
 
   const handleHeroCartPress = () => {
     logAddToCart({

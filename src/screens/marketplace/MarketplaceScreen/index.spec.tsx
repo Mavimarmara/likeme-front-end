@@ -1,6 +1,7 @@
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import MarketplaceScreen from './index';
 import { storageService } from '@/services';
+import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 
 const mockLoadAds = jest.fn();
 const mockUseMarketplaceAds = jest.fn();
@@ -140,13 +141,13 @@ const mockAds = [
     id: '1',
     title: 'Test Product',
     productId: 'product-1',
-    type: 'physical product',
+    type: PRODUCT_CATALOG_TYPE.PHYSICAL,
     product: {
       id: 'product-1',
       name: 'Test Product',
       price: 29.99,
       image: 'https://example.com/image.jpg',
-      type: 'physical product',
+      type: PRODUCT_CATALOG_TYPE.PHYSICAL,
       description: 'Test description',
       quantity: 10,
       status: 'active',
@@ -161,13 +162,13 @@ const mockAds = [
     id: '2',
     title: 'Amazon Product',
     productId: 'product-2',
-    type: 'amazon product',
+    type: PRODUCT_CATALOG_TYPE.AMAZON,
     product: {
       id: 'product-2',
       name: 'Amazon Product',
       price: 19.99,
       image: 'https://example.com/amazon.jpg',
-      type: 'amazon product',
+      type: PRODUCT_CATALOG_TYPE.AMAZON,
       description: 'Amazon description',
       quantity: 5,
       status: 'active',

@@ -21,6 +21,7 @@ import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 import { handleAdNavigation } from '@/utils';
 import type { Ad, Advertiser } from '@/types/ad';
+import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import type { RootStackParamList } from '@/types/navigation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SecondaryButton } from '@/components/ui/buttons';
@@ -242,11 +243,11 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
 
       switch (selectedSolutionTab) {
         case 'products':
-          return hasProduct && type !== 'program' && type !== 'service';
+          return hasProduct && type !== PRODUCT_CATALOG_TYPE.PROGRAM && type !== 'service';
         case 'services':
           return hasProduct && type === 'service';
         case 'programs':
-          return hasProduct && type === 'program';
+          return hasProduct && type === PRODUCT_CATALOG_TYPE.PROGRAM;
         case 'professionals':
           return false;
         default:

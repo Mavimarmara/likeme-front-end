@@ -1,8 +1,6 @@
 import type { Product } from '@/types/product';
 
-/**
- * Tipo do produto (amazon product, physical product, program) - alinhado a Product.type
- */
+/** Alinhado a `Product.type` (catálogo + extensões ex.: `service`). */
 export type ProductType = Product['type'];
 
 /**
@@ -23,7 +21,7 @@ export interface CartItem {
   price: number;
   quantity: number;
   rating?: number;
-  /** Tipo do produto (Product.type): amazon product, physical product, program */
+  /** `Product.type` (catálogo + extensões) */
   type?: ProductType;
   /** Categoria de domínio (Product.categoryId), ex.: Estresse, Sono */
   categoryId?: string;

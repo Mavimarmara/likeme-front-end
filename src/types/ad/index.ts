@@ -1,5 +1,5 @@
 import type { ApiResponse } from '@/types/infrastructure';
-import type { Product } from '@/types/product';
+import type { Product, ProductCatalogType } from '@/types/product';
 
 export interface Advertiser {
   id: string;
@@ -47,7 +47,8 @@ export interface ListAdsParams {
   advertiserId?: string;
   productId?: string;
   status?: string;
-  type?: 'amazon product' | 'physical product' | 'program';
+  /** Um tipo ou vários separados por vírgula (ex.: listagem marketplace) */
+  type?: string;
   categoryId?: string; // domain category (Estresse, Sono, etc.)
   activeOnly?: boolean;
   search?: string;
@@ -85,7 +86,7 @@ export interface CreateAdData {
     image?: string;
     price?: number;
     quantity?: number;
-    type?: 'amazon product' | 'physical product' | 'program';
+    type?: ProductCatalogType;
     externalUrl?: string;
     status?: 'active' | 'inactive' | 'out_of_stock';
   };

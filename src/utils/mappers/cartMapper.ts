@@ -1,4 +1,5 @@
 import type { Product as ApiProduct } from '@/types/product';
+import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import type { CartItem } from '@/types/cart';
 
 export const mapProductToCartItem = (product: ApiProduct): CartItem => {
@@ -15,7 +16,7 @@ export const mapProductToCartItem = (product: ApiProduct): CartItem => {
     rating: 5,
     type: product.type,
     categoryId: product.categoryId,
-    category: product.type === 'program' ? 'Programs' : 'Product',
+    category: product.type === PRODUCT_CATALOG_TYPE.PROGRAM ? 'Programs' : 'Product',
     tags: product.type ? [product.type] : [],
   };
 };

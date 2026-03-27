@@ -4,6 +4,7 @@ import { useTranslation } from '@/hooks/i18n';
 import { productService, adService, storageService } from '@/services';
 import { mapProductToCartItem, formatPrice } from '@/utils';
 import type { Product as ApiProduct } from '@/types/product';
+import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import type { Ad } from '@/types/ad';
 
 interface UseProductDetailsParams {
@@ -60,7 +61,7 @@ export const useProductDetails = ({
 
       const productData = response.data;
 
-      if (productData.type === 'amazon product') {
+      if (productData.type === PRODUCT_CATALOG_TYPE.AMAZON) {
         await handleAmazonProductRedirect(productData, productId, navigation);
         return;
       }

@@ -7,7 +7,7 @@ import { ToggleTabs } from '@/components/ui/tabs';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { JoinCommunityCard, type JoinCommunity } from '@/components/sections/community';
 import { AdsList } from '@/components/sections/marketplace';
-import { useAdvertisers, useProviderAds, useCommunities } from '@/hooks';
+import { useAdvertiser, useProviderAds, useCommunities } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import type { RootStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
@@ -94,10 +94,9 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
     loadProfiles();
   }, [providerId]);
 
-  const { advertisers, loading: loadingProvider } = useAdvertisers({
+  const { advertiser, loading: loadingProvider } = useAdvertiser({
     advertiserId: providerId || undefined,
   });
-  const advertiser = advertisers[0] ?? null;
 
   const providerData = useMemo(() => {
     if (advertiser) {
@@ -159,7 +158,14 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
   });
 
   const joinCommunities = useMemo((): JoinCommunity[] => {
-    return rawCommunities.map((community) => {
+    const targetCommunityId = advertiser?.communityId?.trim();
+    if (!targetCommunityId) {
+      return [];
+    }
+
+    const filteredCommunities = rawCommunities.filter((community) => community.communityId === targetCommunityId);
+
+    return filteredCommunities.map((community) => {
       const category = categories.length > 0 ? categories[0] : undefined;
       return {
         id: community.communityId,
@@ -168,7 +174,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
         image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
       };
     });
-  }, [rawCommunities, categories]);
+  }, [rawCommunities, categories, advertiser]);
 
   const handleJoinCommunity = useCallback(
     async (community: JoinCommunity) => {

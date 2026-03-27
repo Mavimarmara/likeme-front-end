@@ -31,6 +31,7 @@ export const useMarketplaceAds = ({
     const params: any = {
       page,
       limit: 20,
+      activeOnly: true,
     };
 
     const apiCategory = mapUICategoryToApiCategory(selectedCategory);

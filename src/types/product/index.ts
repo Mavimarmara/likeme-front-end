@@ -1,4 +1,7 @@
 import type { ApiResponse } from '@/types/infrastructure';
+import type { ProductCatalogType } from './productCatalogType';
+
+export { PRODUCT_CATALOG_TYPE, PRODUCT_CATALOG_TYPE_VALUES, type ProductCatalogType } from './productCatalogType';
 
 export interface Advertiser {
   id: string;
@@ -40,7 +43,7 @@ export interface Product {
   cost?: number;
   quantity?: number; // Optional when externalUrl is provided
   image?: string;
-  type?: 'amazon product' | 'physical product' | 'program' | string; // product type
+  type?: ProductCatalogType | string;
   categoryId?: string; // FK to Category (Estresse, Sono, etc.)
   brand?: string;
   status: 'active' | 'inactive' | 'out_of_stock';
@@ -56,7 +59,7 @@ export interface Product {
 export interface ListProductsParams {
   page?: number;
   limit?: number;
-  type?: string; // product type: amazon product, physical product, program
+  type?: ProductCatalogType | string;
   categoryId?: string; // domain category (Estresse, Sono, etc.)
   status?: string;
   search?: string;
@@ -85,7 +88,7 @@ export interface CreateProductData {
   cost?: number;
   quantity?: number; // Optional when externalUrl is provided
   image?: string;
-  type?: 'amazon product' | 'physical product' | 'program' | string;
+  type?: ProductCatalogType | string;
   categoryId?: string;
   brand?: string;
   status?: 'active' | 'inactive' | 'out_of_stock';

@@ -1,5 +1,6 @@
 import { render, waitFor } from '@testing-library/react-native';
 import ProductDetailsScreen from './index';
+import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 
 const mockUseProductDetails = jest.fn();
 const mockUseUserFeed = jest.fn();
@@ -152,7 +153,7 @@ const mockProduct = {
   description: 'Test description',
   price: 29.99,
   image: 'https://example.com/image.jpg',
-  type: 'physical product',
+  type: PRODUCT_CATALOG_TYPE.PHYSICAL,
   quantity: 10,
   status: 'active' as const,
   createdAt: '2023-01-01',

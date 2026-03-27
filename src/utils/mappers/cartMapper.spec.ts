@@ -7,6 +7,7 @@
 
 import { mapProductToCartItem } from './cartMapper';
 import type { Product as ApiProduct } from '@/types/product';
+import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 
 describe('cartMapper', () => {
   const mockApiProduct: ApiProduct = {
@@ -15,7 +16,7 @@ describe('cartMapper', () => {
     description: 'Test description',
     price: 29.99,
     image: 'https://example.com/image.jpg',
-    type: 'physical product',
+    type: PRODUCT_CATALOG_TYPE.PHYSICAL,
     quantity: 10,
     status: 'active',
     createdAt: '2023-01-01',
@@ -34,10 +35,10 @@ describe('cartMapper', () => {
         price: 29.99,
         quantity: 1,
         rating: 5,
-        type: 'physical product',
+        type: PRODUCT_CATALOG_TYPE.PHYSICAL,
         categoryId: undefined,
         category: 'Product',
-        tags: ['physical product'],
+        tags: [PRODUCT_CATALOG_TYPE.PHYSICAL],
       });
     });
 
@@ -97,7 +98,7 @@ describe('cartMapper', () => {
     });
 
     it('deve usar category "Programs" quando type é program', () => {
-      const programProduct = { ...mockApiProduct, type: 'program' as const };
+      const programProduct = { ...mockApiProduct, type: PRODUCT_CATALOG_TYPE.PROGRAM };
       const result = mapProductToCartItem(programProduct);
       expect(result.category).toBe('Programs');
     });

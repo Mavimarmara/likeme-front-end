@@ -1,6 +1,7 @@
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import AffiliateProductScreen from './index';
 import { adService, productService } from '@/services';
+import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 
 jest.mock('react-native-safe-area-context', () => {
   const ReactNative = require('react-native');
@@ -59,7 +60,7 @@ const mockAd = {
   title: 'Amazon Product',
   description: 'Amazon description',
   image: 'https://example.com/amazon.jpg',
-  type: 'amazon product',
+  type: PRODUCT_CATALOG_TYPE.AMAZON,
   externalUrl: 'https://amazon.com/product',
   status: 'active',
   createdAt: '2023-01-01',
@@ -70,7 +71,7 @@ const mockAd = {
     description: 'Amazon description',
     price: 19.99,
     image: 'https://example.com/amazon.jpg',
-    type: 'amazon product',
+    type: PRODUCT_CATALOG_TYPE.AMAZON,
     quantity: 5,
     status: 'active',
     externalUrl: 'https://amazon.com/product',
@@ -261,7 +262,7 @@ describe('AffiliateProductScreen', () => {
           title: 'Fallback Product',
           price: '$19.99',
           image: 'https://example.com/fallback.jpg',
-          type: 'amazon product',
+          type: PRODUCT_CATALOG_TYPE.AMAZON,
           description: 'Fallback description',
         },
       },

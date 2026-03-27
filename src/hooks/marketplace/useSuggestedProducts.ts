@@ -15,7 +15,7 @@ interface UseSuggestedProductsOptions {
   status?: 'active' | 'inactive';
   enabled?: boolean;
   categoryId?: string | null; // domain category filter (Estresse, Sono, etc.)
-  /** Filtro por tipo: 'physical product' | 'program' | 'service' etc. */
+  /** Filtro por `Product.type` (catálogo ou ex.: `service`). */
   type?: string;
 }
 

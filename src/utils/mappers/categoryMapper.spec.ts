@@ -1,3 +1,4 @@
+import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import { mapUICategoryToApiCategory } from './categoryMapper';
 
 describe('categoryMapper', () => {
@@ -7,19 +8,19 @@ describe('categoryMapper', () => {
       expect(result).toBeUndefined();
     });
 
-    it('deve mapear "products" para "physical product"', () => {
+    it('deve mapear "products" para tipos de varejo (físico + Amazon)', () => {
       const result = mapUICategoryToApiCategory('products');
-      expect(result).toBe('physical product');
+      expect(result).toBe([PRODUCT_CATALOG_TYPE.PHYSICAL, PRODUCT_CATALOG_TYPE.AMAZON].join(','));
     });
 
-    it('deve mapear "programs" para "program"', () => {
+    it('deve mapear "programs" para programa', () => {
       const result = mapUICategoryToApiCategory('programs');
-      expect(result).toBe('program');
+      expect(result).toBe(PRODUCT_CATALOG_TYPE.PROGRAM);
     });
 
-    it('deve mapear "specialists" para "program"', () => {
+    it('deve mapear "specialists" para programa', () => {
       const result = mapUICategoryToApiCategory('specialists');
-      expect(result).toBe('program');
+      expect(result).toBe(PRODUCT_CATALOG_TYPE.PROGRAM);
     });
 
     it('deve retornar undefined para "services"', () => {

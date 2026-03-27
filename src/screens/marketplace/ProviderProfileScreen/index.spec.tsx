@@ -123,6 +123,13 @@ jest.mock('@/hooks', () => ({
     loadCommunities: jest.fn(),
   }),
   useAdvertisers: (...args: any[]) => mockUseAdvertisers(...args),
+  useAdvertiser: (...args: any[]) => {
+    const base = mockUseAdvertisers(...args);
+    return {
+      ...base,
+      advertiser: base.advertisers?.[0] ?? null,
+    };
+  },
   useProviderAds: () => ({
     ads: [],
     loading: false,

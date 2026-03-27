@@ -23,6 +23,7 @@ import { useAnalyticsScreen } from '@/analytics';
 import { storageService } from '@/services';
 import { logger } from '@/utils/logger';
 import type { Advertiser } from '@/types/ad';
+import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import Toggle from '@/components/ui/buttons/Toggle';
 
 type CommunityMode = 'Feed' | 'Solutions';
@@ -132,7 +133,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     limit: 20,
     status: 'active',
     enabled: selectedMode === 'Solutions',
-    type: 'program',
+    type: PRODUCT_CATALOG_TYPE.PROGRAM,
   });
 
   const menuItems = useMenuItems(navigation);
