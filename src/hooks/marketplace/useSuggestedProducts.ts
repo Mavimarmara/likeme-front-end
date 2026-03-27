@@ -26,6 +26,69 @@ interface UseSuggestedProductsReturn {
   refresh: () => Promise<void>;
 }
 
+type ProductApiLike = {
+  categoryId?: string | null;
+  category?: string | { id?: string; name?: string } | null;
+  categoryName?: string | null;
+  category_id?: string | null;
+};
+
+const resolveCategoryReference = (
+  product: ProductApiLike,
+  categoriesList: Array<{ categoryId: string; name: string }>,
+): { categoryId: string; categoryName: string } => {
+  const rawCategory = product.category;
+  const categoryFromObject =
+    rawCategory && typeof rawCategory === 'object'
+      ? {
+          id: typeof rawCategory.id === 'string' ? rawCategory.id : '',
+          name: typeof rawCategory.name === 'string' ? rawCategory.name : '',
+        }
+      : { id: '', name: '' };
+
+  const categoryIdCandidates = [
+    product.categoryId,
+    product.category_id,
+    categoryFromObject.id,
+    typeof rawCategory === 'string' ? rawCategory : undefined,
+  ]
+    .map((value) => (typeof value === 'string' ? value.trim() : ''))
+    .filter(Boolean);
+
+  const categoryNameCandidates = [
+    product.categoryName,
+    categoryFromObject.name,
+    typeof rawCategory === 'string' ? rawCategory : undefined,
+  ]
+    .map((value) => (typeof value === 'string' ? value.trim() : ''))
+    .filter(Boolean);
+
+  const matchedById = categoriesList.find((category) =>
+    categoryIdCandidates.some((candidate) => String(category.categoryId) === String(candidate)),
+  );
+  if (matchedById) {
+    return {
+      categoryId: String(matchedById.categoryId),
+      categoryName: matchedById.name,
+    };
+  }
+
+  const matchedByName = categoriesList.find((category) =>
+    categoryNameCandidates.some((candidate) => candidate.toLowerCase() === category.name.toLowerCase()),
+  );
+  if (matchedByName) {
+    return {
+      categoryId: String(matchedByName.categoryId),
+      categoryName: matchedByName.name,
+    };
+  }
+
+  return {
+    categoryId: categoryIdCandidates[0] ?? '',
+    categoryName: categoryNameCandidates[0] ?? '',
+  };
+};
+
 export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}): UseSuggestedProductsReturn => {
   const { limit = 4, status = 'active', enabled = true, categoryId, type } = options;
   const [products, setProducts] = useState<Product[]>([]);
@@ -53,10 +116,12 @@ export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}):
 
       if (productsResponse.success && productsResponse.data) {
         const mappedProducts: Product[] = productsResponse.data.products.map((p) => {
-          const category = categoriesList.find((c) => String(c.categoryId) === String(p.categoryId));
-          const name = category?.name ?? '';
-          const markerId = getMarkerIdForCategory(String(p.categoryId ?? ''), name);
-          const categoryLabel = markerId ? CATEGORY_NAMES[markerId as CategoryName] : name;
+          const { categoryId: resolvedCategoryId, categoryName } = resolveCategoryReference(
+            p as ProductApiLike,
+            categoriesList,
+          );
+          const markerId = getMarkerIdForCategory(resolvedCategoryId, categoryName);
+          const categoryLabel = markerId ? CATEGORY_NAMES[markerId as CategoryName] : categoryName;
 
           return {
             id: p.id,

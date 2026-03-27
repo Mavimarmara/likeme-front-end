@@ -22,11 +22,12 @@ type Props = {
 };
 
 const ProductCard: React.FC<Props> = ({ product, onPress, onLike }) => {
-  const topSection = (
+  const normalizedTag = product.tag?.trim() ?? '';
+  const topSection = normalizedTag ? (
     <View style={styles.tagBadge}>
-      <Text style={styles.tagText}>{product.tag}</Text>
+      <Text style={styles.tagText}>{normalizedTag}</Text>
     </View>
-  );
+  ) : undefined;
 
   const footerSection = (
     <View style={styles.bottomInfo}>
