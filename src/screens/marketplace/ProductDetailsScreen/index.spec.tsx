@@ -223,6 +223,35 @@ describe('ProductDetailsScreen', () => {
     });
   });
 
+  it('uses physical-style detail layout (tabs card) for program products', async () => {
+    mockUseProductDetails.mockReturnValue({
+      product: { ...mockProduct, type: PRODUCT_CATALOG_TYPE.PROGRAM },
+      ad: null,
+      advertiserId: undefined,
+      relatedProducts: [],
+      loading: false,
+      isFavorite: false,
+      setIsFavorite: jest.fn(),
+      handleAddToCart: jest.fn(),
+      loadAd: jest.fn(),
+    });
+
+    const mockRoute = {
+      params: {
+        productId: 'product-1',
+      },
+    };
+
+    const { getByTestId, getAllByText } = render(
+      <ProductDetailsScreen navigation={mockNavigation as any} route={mockRoute as any} />,
+    );
+
+    await waitFor(() => {
+      expect(getByTestId('button-carousel')).toBeTruthy();
+      expect(getAllByText('Test Product').length).toBeGreaterThan(0);
+    });
+  });
+
   it('shows product not found when product is null', async () => {
     mockUseProductDetails.mockReturnValue({
       product: null,

@@ -14,6 +14,7 @@ class AdvertiserService {
     limit?: number;
     status?: string;
     communityId?: string;
+    search?: string;
   }): Promise<ListAdvertisersApiResponse> {
     try {
       const queryParams: Record<string, string> = {};
@@ -21,6 +22,8 @@ class AdvertiserService {
       if (params?.limit != null) queryParams.limit = String(params.limit);
       if (params?.status) queryParams.status = params.status;
       if (params?.communityId) queryParams.communityId = params.communityId;
+      const trimmedSearch = params?.search?.trim();
+      if (trimmedSearch) queryParams.search = trimmedSearch;
 
       const response = await apiClient.get<ListAdvertisersApiResponse>(
         this.advertisersEndpoint,

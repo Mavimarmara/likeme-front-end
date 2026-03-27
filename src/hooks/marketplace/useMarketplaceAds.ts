@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { adService } from '@/services';
 import { mapUICategoryToApiCategory } from '@/utils';
 import { logger } from '@/utils/logger';
-import type { Ad } from '@/types/ad';
+import type { Ad, ListAdsParams } from '@/types/ad';
 
 interface UseMarketplaceAdsParams {
   selectedCategory: string;
@@ -28,17 +28,12 @@ export const useMarketplaceAds = ({
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
 
-  const buildParams = useCallback(() => {
-    const params: any = {
+  const buildParams = useCallback((): ListAdsParams => {
+    const params: ListAdsParams = {
       page,
       limit: 20,
       activeOnly: true,
     };
-
-    const apiCategory = mapUICategoryToApiCategory(selectedCategory);
-    if (apiCategory) {
-      params.type = apiCategory;
-    }
 
     if (selectedCategoryId != null && selectedCategoryId !== '') {
       params.categoryId = selectedCategoryId;
@@ -47,6 +42,11 @@ export const useMarketplaceAds = ({
     const trimmedSearch = searchQuery?.trim();
     if (trimmedSearch) {
       params.search = trimmedSearch;
+    } else {
+      const apiCategory = mapUICategoryToApiCategory(selectedCategory);
+      if (apiCategory) {
+        params.type = apiCategory;
+      }
     }
 
     return params;

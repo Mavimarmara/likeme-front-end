@@ -82,8 +82,13 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
 
   const { categories } = useCategories({ enabled: true });
   const { getCategoryName } = useCategoryDisplayLabel();
+  const professionalsSearch = appliedSearchQuery.trim();
   const { advertisers: professionals } = useAdvertisers({
-    listOptions: { status: 'active', limit: 50 },
+    listOptions: {
+      status: 'active',
+      limit: 50,
+      ...(professionalsSearch ? { search: professionalsSearch } : {}),
+    },
   });
 
   const categoryOptions = useMemo(() => getCategoryOptions(t), [t]);

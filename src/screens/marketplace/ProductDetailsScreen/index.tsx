@@ -139,7 +139,8 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     };
   }, [ad?.advertiser, advertiserId, product, route.params?.product]);
 
-  const isProductType = product?.type === PRODUCT_CATALOG_TYPE.PHYSICAL;
+  const usesPhysicalProductDetailLayout =
+    product?.type === PRODUCT_CATALOG_TYPE.PHYSICAL || product?.type === PRODUCT_CATALOG_TYPE.PROGRAM;
 
   const handleHeroCartPress = () => {
     logAddToCart({
@@ -253,7 +254,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
           </View>
         )}
         <View style={styles.content}>
-          {isProductType ? (
+          {usesPhysicalProductDetailLayout ? (
             <>
               <View style={styles.contentCard}>
                 <View style={styles.tabsContainerInCard}>
