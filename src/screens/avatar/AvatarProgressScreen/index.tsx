@@ -15,13 +15,8 @@ import { getMarkerColor, getMarkerGradient, hasMarkerGradient, MARKER_NAMES } fr
 import { COLORS } from '@/constants';
 import { useTranslation } from '@/hooks/i18n';
 import type { Event } from '@/types/event';
-import {
-  NextEventsSection,
-  PopularProvidersSection,
-  JoinCommunityCard,
-  type Provider,
-  type JoinCommunity,
-} from '@/components/sections/community';
+import { NextEventsSection, PopularProvidersSection, type Provider } from '@/components/sections/community';
+import { JoinCard, type JoinCardItem } from '@/components/ui/cards';
 import { ProductsCarousel, type Product } from '@/components/sections/product';
 import Carousel from '@/components/sections/product/Carousel';
 import { useAnalyticsScreen } from '@/analytics';
@@ -70,7 +65,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
     },
   });
 
-  const joinCommunities = useMemo((): JoinCommunity[] => {
+  const joinCommunities = useMemo((): JoinCardItem[] => {
     return rawCommunities.map((community) => {
       const category = categories.length > 0 ? categories[0] : undefined;
       return {
@@ -249,7 +244,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
     console.log('Like product:', product.id);
   };
 
-  const handleJoinCommunityPress = (community: JoinCommunity) => {
+  const handleJoinCommunityPress = (community: JoinCardItem) => {
     rootNavigation.navigate('Community' as never);
   };
 
@@ -509,7 +504,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
             </View>
           )}
 
-          <JoinCommunityCard communities={joinCommunities} onCommunityPress={handleJoinCommunityPress} />
+          <JoinCard items={joinCommunities} onItemPress={handleJoinCommunityPress} />
 
           <View style={styles.addWidgetsContainer}>
             <SecondaryButton

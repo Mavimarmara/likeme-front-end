@@ -3,3 +3,4 @@ export { default as BlurCard, type BlurCardProps } from './BlurCard';
 export { default as EventReminder, type EventReminderProps } from './EventReminder';
 export { default as CTACard } from './CTACard';
 export { default as ProductItemCard, type ProductItemCardProps } from './ProductItemCard';
+export { JoinCard, type JoinCardItem, type JoinCardProps } from './JoinCard';

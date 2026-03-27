@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { adService } from '@/services';
 import { mapUICategoryToApiCategory } from '@/utils';
+import { logger } from '@/utils/logger';
 import type { Ad } from '@/types/ad';
 
 interface UseMarketplaceAdsParams {
@@ -66,6 +67,13 @@ export const useMarketplaceAds = ({
       updateAds(adsArray);
       updatePagination(response.data.pagination, adsArray.length, params.limit);
     } catch (error) {
+      logger.error('useMarketplaceAds: falha ao listar anúncios', {
+        error,
+        page,
+        search: searchQuery,
+        categoryId: selectedCategoryId,
+        selectedCategory,
+      });
       handleEmptyResponse();
     } finally {
       setLoading(false);

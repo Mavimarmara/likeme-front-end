@@ -99,8 +99,14 @@ jest.mock('@/components/sections/community', () => {
         <Text>{post.content}</Text>
       </View>
     ),
-    JoinCommunityCard: () => <View testID='join-community-card' />,
     NextEventsSection: ({ events }: any) => <View testID='next-events' />,
+  };
+});
+
+jest.mock('@/components/ui/cards', () => {
+  const { View } = require('react-native');
+  return {
+    JoinCard: () => <View testID='join-card' />,
   };
 });
 
@@ -124,7 +130,7 @@ jest.mock('@/hooks', () => ({
   }),
   useAdvertisers: (...args: any[]) => mockUseAdvertisers(...args),
   useAdvertiser: (...args: any[]) => {
-    const base = mockUseAdvertisers(...args);
+    const base: any = mockUseAdvertisers(...args);
     return {
       ...base,
       advertiser: base.advertisers?.[0] ?? null,

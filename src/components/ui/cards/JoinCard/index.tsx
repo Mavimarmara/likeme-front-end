@@ -1,40 +1,41 @@
-import React from 'react';
 import { View, Text, TouchableOpacity, ImageBackground, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import BlurCard from '@/components/ui/cards/BlurCard';
+import BlurCard from '../BlurCard';
 import { BackgroundIconButton } from '@/assets/ui';
 import { styles } from './styles';
 
-export type JoinCommunity = {
+export type JoinCardItem = {
   id: string;
   title: string;
   badge: string;
   image: string;
 };
 
-type Props = {
-  communities: JoinCommunity[];
-  onCommunityPress?: (community: JoinCommunity) => void;
+export type JoinCardProps<T extends JoinCardItem = JoinCardItem> = {
+  items: readonly T[];
+  onItemPress?: (item: T) => void;
 };
 
-const JoinCommunityCard: React.FC<Props> = ({ communities, onCommunityPress }) => {
-  if (!communities || communities.length === 0) return null;
+export function JoinCard<T extends JoinCardItem>({ items, onItemPress }: JoinCardProps<T>) {
+  if (!items || items.length === 0) return null;
 
-  const renderCard = (community: JoinCommunity) => {
-    const handlePress = () => onCommunityPress?.(community);
-
+  const renderCard = (item: T) => {
+    const handlePress = () => onItemPress?.(item);
+    const badgeLabel = item.badge.trim();
     const topSection = (
       <View style={styles.badgeContainer}>
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>{community.badge}</Text>
-        </View>
+        {badgeLabel.length > 0 ? (
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>{badgeLabel}</Text>
+          </View>
+        ) : null}
       </View>
     );
 
     const footerSection = (
       <View style={styles.bottom}>
         <Text style={styles.title} numberOfLines={2}>
-          {community.title}
+          {item.title}
         </Text>
         <TouchableOpacity style={styles.seeMoreButton} activeOpacity={0.8} onPress={handlePress}>
           <ImageBackground
@@ -49,9 +50,9 @@ const JoinCommunityCard: React.FC<Props> = ({ communities, onCommunityPress }) =
     );
 
     return (
-      <View key={community.id} style={styles.cardWrapper}>
+      <View key={item.id} style={styles.cardWrapper}>
         <BlurCard
-          backgroundImage={community.image}
+          backgroundImage={item.image}
           topSection={topSection}
           footerSection={footerSection}
           onPress={handlePress}
@@ -61,15 +62,15 @@ const JoinCommunityCard: React.FC<Props> = ({ communities, onCommunityPress }) =
     );
   };
 
-  if (communities.length === 1) {
-    return <View style={styles.container}>{renderCard(communities[0])}</View>;
+  if (items.length === 1) {
+    return <View style={styles.container}>{renderCard(items[0])}</View>;
   }
 
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-      {communities.map(renderCard)}
+      {items.map(renderCard)}
     </ScrollView>
   );
-};
+}
 
-export default JoinCommunityCard;
+export default JoinCard;

@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { HeroImage, ScreenWithHeader } from '@/components/ui/layout';
 import { ToggleTabs } from '@/components/ui/tabs';
 import { SecondaryButton } from '@/components/ui/buttons';
-import { JoinCommunityCard, type JoinCommunity } from '@/components/sections/community';
+import { JoinCard, type JoinCardItem } from '@/components/ui/cards';
 import { AdsList } from '@/components/sections/marketplace';
 import { useAdvertiser, useProviderAds, useCommunities } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
@@ -157,7 +157,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
     pageSize: 10,
   });
 
-  const joinCommunities = useMemo((): JoinCommunity[] => {
+  const joinCommunities = useMemo((): JoinCardItem[] => {
     const targetCommunityId = advertiser?.communityId?.trim();
     if (!targetCommunityId) {
       return [];
@@ -177,7 +177,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
   }, [rawCommunities, categories, advertiser]);
 
   const handleJoinCommunity = useCallback(
-    async (community: JoinCommunity) => {
+    async (community: JoinCardItem) => {
       try {
         await communityService.joinCommunity(community.id);
         rootNavigation.navigate('Community' as never);
@@ -303,7 +303,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
             {activeTab === 'communities' && (
               <View style={styles.communityPreviewContainer}>
                 <Text style={styles.communitiesSectionTitle}>{t('marketplace.curatedSpecialty')}</Text>
-                <JoinCommunityCard communities={joinCommunities} onCommunityPress={handleJoinCommunity} />
+                <JoinCard items={joinCommunities} onItemPress={handleJoinCommunity} />
                 <View style={styles.talkButtonContainer}>
                   <SecondaryButton
                     label={t('marketplace.talkToProvider', { provider: providerData.name })}

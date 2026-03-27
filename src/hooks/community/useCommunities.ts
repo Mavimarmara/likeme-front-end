@@ -8,7 +8,7 @@ import { mapChannelsToEvents } from '@/utils';
 import { PAGINATION } from '@/constants';
 import { logger } from '@/utils/logger';
 
-/** Formato do item exibido no card de comunidade recomendada (compatível com JoinCommunityCard) */
+/** Formato do item exibido no JoinCard (ui/cards; comunidade recomendada) */
 export interface JoinCommunityItem {
   id: string;
   title: string;
@@ -42,7 +42,7 @@ interface UseCommunitiesReturn {
   communities: Community[];
   categories: CommunityCategory[];
   communityUsers: CommunityUserRelation[];
-  /** Lista no formato do card de comunidade recomendada (para JoinCommunityCard) */
+  /** Lista no formato esperado pelo JoinCard */
   joinCommunities: JoinCommunityItem[];
   /** joinCommunities filtrado por solutionTab e searchQuery */
   filteredJoinCommunities: JoinCommunityItem[];

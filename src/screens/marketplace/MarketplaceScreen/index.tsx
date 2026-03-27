@@ -113,6 +113,18 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   }, [navigation]);
 
   useEffect(() => {
+    const handle = setTimeout(() => {
+      const next = searchQuery.trim();
+      setAppliedSearchQuery((prev) => {
+        if (prev === next) return prev;
+        Promise.resolve().then(() => setPage(1));
+        return next;
+      });
+    }, 450);
+    return () => clearTimeout(handle);
+  }, [searchQuery]);
+
+  useEffect(() => {
     loadAds();
   }, [loadAds, selectedCategory, selectedCategoryId, page, appliedSearchQuery]);
 

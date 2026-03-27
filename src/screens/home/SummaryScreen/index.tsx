@@ -17,23 +17,16 @@ import {
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 // import {
-//   mapCommunityToOtherCommunity,
-//   mapCommunityPostToPost,
 //   mapChannelsToEvents,
 //   sortByDateObject,
 // } from '@/utils';
 import { communityService, storageService, advertiserService } from '@/services';
 import {
   // NextEventsSection,
-  // OtherCommunitiesSection,
   PopularProvidersSection,
-  // YourCommunitiesSection,
-  JoinCommunityCard,
-  // type OtherCommunity,
   type Provider,
-  // type YourCommunity,
-  type JoinCommunity,
 } from '@/components/sections/community';
+import { JoinCard, type JoinCardItem } from '@/components/ui/cards';
 import { ProductsCarousel, type Product } from '@/components/sections/product';
 import { EmptyState } from '@/components/ui/feedback';
 // TODO: Temporariamente desabilitados
@@ -43,18 +36,10 @@ import { EmptyState } from '@/components/ui/feedback';
 // import type { Post } from '@/types';
 import type { SolutionTab } from '@/types/solution';
 import { solutionOptions } from '@/types/solution';
+import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import { useAnalyticsScreen } from '@/analytics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { styles } from './styles';
-
-const DEFAULT_CARD_IMAGE = 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800';
-
-const RECOMMENDED_PROGRAM: JoinCommunity = {
-  id: 'recommended-program',
-  title: 'Vivência Curativa em Grupo',
-  badge: 'Relacionamentos',
-  image: DEFAULT_CARD_IMAGE,
-};
 
 type Props = {
   navigation: any;
@@ -144,12 +129,6 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   });
 
   const { allCategoryOptions } = useCategories({ enabled: true });
-
-  // const firstCommunity = rawCommunities.length > 0 ? rawCommunities[0] : null;
-
-  // TODO: Temporariamente desabilitado (YourCommunitiesSection)
-  // const [communityPosts, setCommunityPosts] = useState<Post[]>([]);
-  // const [_loadingCommunityPosts, setLoadingCommunityPosts] = useState(false);
   const [popularProviders, setPopularProviders] = useState<Provider[]>([]);
   const [_loadingProviders, setLoadingProviders] = useState(false);
   // const [events, setEvents] = useState<Event[]>([]);
@@ -189,8 +168,12 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
     categoryId: selectedCategoryId ?? null,
   });
 
-  // TODO: Temporariamente desabilitado
-  // const yourCommunity = useMemo((): YourCommunity | null => { ... }, [firstCommunity, communityPosts]);
+  const { products: suggestedPrograms } = useSuggestedProducts({
+    ...SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS,
+    enabled: true,
+    categoryId: selectedCategoryId ?? null,
+    type: PRODUCT_CATALOG_TYPE.PROGRAM,
+  });
 
   const filteredProviders = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -206,6 +189,15 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
     return base.filter((p) => p.title?.toLowerCase?.().includes?.(q));
   }, [recommendedProducts, searchQuery, selectedSolutionTab]);
 
+  const recommendedProgramCards = useMemo((): JoinCardItem[] => {
+    return suggestedPrograms.map((p) => ({
+      id: p.id,
+      title: p.title,
+      badge: p.tag,
+      image: p.image,
+    }));
+  }, [suggestedPrograms]);
+
   const hasActiveSearchOrFilter =
     searchQuery.trim() !== '' || selectedCategoryName != null || selectedSolutionIds.length > 0;
 
@@ -219,10 +211,15 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
       case 'professionals':
         return filteredProviders.length === 0;
       case 'programs':
-        return filteredJoinCommunities.length === 0;
+        return suggestedPrograms.length === 0;
       case 'all':
       default:
-        return filteredJoinCommunities.length === 0 && filteredProviders.length === 0 && filteredProducts.length === 0;
+        return (
+          filteredJoinCommunities.length === 0 &&
+          filteredProviders.length === 0 &&
+          filteredProducts.length === 0 &&
+          suggestedPrograms.length === 0
+        );
     }
   }, [
     hasActiveSearchOrFilter,
@@ -230,6 +227,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
     filteredJoinCommunities.length,
     filteredProviders.length,
     filteredProducts.length,
+    suggestedPrograms.length,
   ]);
 
   const showEmptyState = hasActiveSearchOrFilter && hasNoResultsForCurrentTab;
@@ -264,21 +262,12 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
 
   const categoryFilterButtonLabel = selectedCategoryName != null ? getCategoryName(selectedCategoryName) : 'Autoestima';
 
-  // TODO: Temporariamente desabilitado
-  // const otherCommunities = useMemo(() => {
-  //   return rawCommunities.map((community) => {
-  //     const category = categories.length > 0 ? categories[0] : undefined;
-  //     return mapCommunityToOtherCommunity(community, category);
-  //   });
-  // }, [rawCommunities, categories]);
-
   const menuItems = useMenuItems(navigation);
   useSetFloatingMenu(menuItems, 'home');
 
   // TODO: Temporariamente desabilitados
   // const handleEventPress = (event: Event) => {};
   // const handleEventSave = (event: Event) => {};
-  // const handleOtherCommunityPress = (community: OtherCommunity) => {};
   // const handleSearchChange = (text: string) => {};
   // const handleSearchPress = () => {};
   // const handleFilterPress = () => {};
@@ -301,7 +290,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleJoinCommunity = useCallback(
-    async (community: JoinCommunity) => {
+    async (community: JoinCardItem) => {
       try {
         await communityService.joinCommunity(community.id);
         rootNavigation.navigate('Community' as never);
@@ -313,15 +302,13 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   );
 
   const handleProgramPress = useCallback(
-    (_program: JoinCommunity) => {
-      rootNavigation.navigate('Community' as never);
+    (program: JoinCardItem) => {
+      rootNavigation.navigate('ProductDetails', {
+        productId: program.id,
+      } as never);
     },
     [rootNavigation],
   );
-
-  // TODO: Temporariamente desabilitados
-  // const handleYourCommunityPress = (community: YourCommunity) => {};
-  // const handleYourCommunityPostPress = (post: Post) => {};
 
   return (
     <ScreenWithHeader
@@ -397,30 +384,20 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
                 <View style={styles.sectionDivider}>
                   <Text style={styles.sectionTitle}>Comunidade recomendada</Text>
                   <View style={styles.sectionContainer}>
-                    <JoinCommunityCard communities={filteredJoinCommunities} onCommunityPress={handleJoinCommunity} />
+                    <JoinCard items={filteredJoinCommunities} onItemPress={handleJoinCommunity} />
                   </View>
                 </View>
               )}
 
-              {(selectedSolutionTab === 'all' || selectedSolutionTab === 'programs') && (
-                <View style={styles.sectionDivider}>
-                  <Text style={styles.sectionTitle}>Programa recomendado</Text>
-                  <View style={styles.sectionContainer}>
-                    <JoinCommunityCard communities={[RECOMMENDED_PROGRAM]} onCommunityPress={handleProgramPress} />
+              {(selectedSolutionTab === 'all' || selectedSolutionTab === 'programs') &&
+                recommendedProgramCards.length > 0 && (
+                  <View style={styles.sectionDivider}>
+                    <Text style={styles.sectionTitle}>Programa recomendado</Text>
+                    <View style={styles.sectionContainer}>
+                      <JoinCard items={recommendedProgramCards} onItemPress={handleProgramPress} />
+                    </View>
                   </View>
-                </View>
-              )}
-              {/* TODO: Temporariamente desabilitado
-          {yourCommunity && (
-            <View style={styles.yourCommunitiesContainer}>
-              <YourCommunitiesSection
-                community={yourCommunity}
-                onCommunityPress={handleYourCommunityPress}
-                onPostPress={handleYourCommunityPostPress}
-              />
-            </View>
-          )}
-          */}
+                )}
               {/* TODO: Avatar e Anamnese temporariamente desabilitados
           {(hasAnyAnamnesisAnswers || hasCompletedAnamnesis) && (
             <View style={styles.avatarContainer}>
@@ -475,17 +452,6 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
                   </View>
                 </View>
               )}
-              {/* TODO: Temporariamente desabilitado
-          <View style={styles.otherCommunitiesContainer}>
-            <OtherCommunitiesSection
-              communities={otherCommunities}
-              onCommunityPress={handleOtherCommunityPress}
-              onSearchChange={handleSearchChange}
-              onSearchPress={handleSearchPress}
-              onFilterPress={handleFilterPress}
-            />
-          </View>
-          */}
             </>
           )}
         </ScrollView>
