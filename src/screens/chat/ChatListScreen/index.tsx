@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -8,7 +8,7 @@ import { SearchBar } from '@/components/ui';
 import { GradientBackground, ScreenWithHeader } from '@/components/ui/layout';
 import { useTranslation } from '@/hooks/i18n';
 import { useChat, useMenuItems } from '@/hooks';
-import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
+import { useFloatingMenu } from '@/contexts/FloatingMenuContext';
 import type { ChatConversation } from '@/hooks';
 import { LogoMini } from '@/assets/ui';
 import { COLORS } from '@/constants';
@@ -33,7 +33,14 @@ const ChatListScreen: React.FC<Props> = () => {
 
   const { conversations, loading, refresh } = useChat({ searchQuery });
   const menuItems = useMenuItems(navigation);
-  useSetFloatingMenu(menuItems, 'chat');
+  const { setMenu } = useFloatingMenu();
+
+  useFocusEffect(
+    useCallback(() => {
+      setMenu(menuItems, 'chat');
+    }, [menuItems, setMenu]),
+  );
+
   const [refreshing, setRefreshing] = useState(false);
 
   const handleRefresh = async () => {

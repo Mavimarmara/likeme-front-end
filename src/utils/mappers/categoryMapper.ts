@@ -18,7 +18,7 @@ export const mapUICategoryToApiCategory = (uiCategory: string): string | undefin
   }
 
   if (uiCategory === 'services') {
-    return undefined;
+    return 'service';
   }
 
   return undefined;

@@ -23,9 +23,9 @@ describe('categoryMapper', () => {
       expect(result).toBe(PRODUCT_CATALOG_TYPE.PROGRAM);
     });
 
-    it('deve retornar undefined para "services"', () => {
+    it('deve mapear "services" para serviço', () => {
       const result = mapUICategoryToApiCategory('services');
-      expect(result).toBeUndefined();
+      expect(result).toBe('service');
     });
 
     it('deve retornar undefined para categoria desconhecida', () => {

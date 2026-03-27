@@ -122,7 +122,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       const next = searchQuery.trim();
       setAppliedSearchQuery((prev) => {
         if (prev === next) return prev;
-        Promise.resolve().then(() => setPage(1));
+        setPage(1);
         return next;
       });
     }, 450);
@@ -273,10 +273,13 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     });
   }, [sortedAds, selectedSolutionTab]);
 
-  const listAdsForCurrentTab = useMemo(
-    () => (page === 1 ? filteredAdsBySolution.slice(1) : filteredAdsBySolution),
-    [filteredAdsBySolution, page],
-  );
+  const listAdsForCurrentTab = useMemo(() => {
+    const isSearching = appliedSearchQuery.trim().length > 0;
+    if (isSearching) {
+      return filteredAdsBySolution;
+    }
+    return page === 1 ? filteredAdsBySolution.slice(1) : filteredAdsBySolution;
+  }, [filteredAdsBySolution, page, appliedSearchQuery]);
 
   const handleProfessionalPress = (advertiser: Advertiser) => {
     navigation.navigate('ProviderProfile', {
@@ -336,6 +339,10 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
 
   const renderWeekHighlights = () => {
     if (selectedSolutionTab === 'professionals') {
+      return null;
+    }
+
+    if (appliedSearchQuery.trim().length > 0) {
       return null;
     }
 

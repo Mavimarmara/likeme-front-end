@@ -187,12 +187,13 @@ module.exports = {
       './plugins/withAdIdPermission.js',
     ],
     scheme: 'likeme',
+    icon: './assets/app/icon.png',
     android: {
       package: 'com.likeme.app',
       googleServicesFile: './google-services.json',
       softwareKeyboardLayoutMode: 'resize',
       adaptiveIcon: {
-        foregroundImage: './assets/ui/LogoFull.png',
+        foregroundImage: './assets/app/icon.png',
         backgroundColor: '#FFFFFF',
       },
       permissions: ['com.google.android.gms.permission.AD_ID'],

@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useNavigationState } from '@react-navigation/native';
+import { findFocusedRoute, useNavigationState, type NavigationState } from '@react-navigation/native';
 import { FloatingMenu } from '@/components/ui/menu';
 
 export type FloatingMenuItem = {
@@ -25,11 +25,6 @@ const FloatingMenuContext = createContext<ContextValue | null>(null);
 
 const CHAT_STACK_LIST_ROUTE = 'ChatList';
 
-type NavState = {
-  routes: Array<{ name: string; state?: NavState }>;
-  index: number;
-};
-
 const ROUTES_SHOW_MENU = new Set<string>([
   'Home',
   'Summary',
@@ -40,7 +35,7 @@ const ROUTES_SHOW_MENU = new Set<string>([
   'Marketplace',
   'CommunityPreview',
   'Profile',
-  'Chat',
+  'ChatList',
 ]);
 
 const ROUTE_TO_SELECTED_ID: Record<string, string> = {
@@ -51,6 +46,7 @@ const ROUTE_TO_SELECTED_ID: Record<string, string> = {
   MarkerDetails: 'activities',
   Community: 'community',
   Chat: 'chat',
+  ChatList: 'chat',
   Marketplace: 'marketplace',
   ProductDetails: 'marketplace',
   AffiliateProduct: 'marketplace',
@@ -61,37 +57,47 @@ const ROUTE_TO_SELECTED_ID: Record<string, string> = {
   Profile: 'profile',
 };
 
-function asNavState(state: unknown): NavState | undefined {
-  const s = state as Partial<NavState> | undefined;
-  if (!s?.routes || !Array.isArray(s.routes)) return undefined;
-  if (typeof s.index !== 'number') return undefined;
-  if (s.routes.length === 0) return undefined;
-  return s as NavState;
+function getActiveChildRouteName(navState: NavigationState | undefined): string | undefined {
+  if (!navState?.routes?.length) return undefined;
+  const i = typeof navState.index === 'number' ? navState.index : 0;
+  return navState.routes[i]?.name;
 }
 
-function getRouteAtIndex(state: NavState | undefined): { name: string; state?: NavState } | undefined {
-  if (!state) return undefined;
-  return state.routes[state.index];
-}
+function getChatStackActiveRouteName(state: NavigationState | undefined): string | undefined {
+  if (!state?.routes?.length) return undefined;
+  const rootIdx = typeof state.index === 'number' ? state.index : 0;
+  const rootRoute = state.routes[rootIdx];
+  if (rootRoute?.name !== 'Chat') return undefined;
 
-function getFocusedRouteNameFromState(state: NavState | undefined): string | undefined {
-  let route = getRouteAtIndex(state);
-  while (route?.state) {
-    const nextState = asNavState(route.state);
-    const nextRoute = getRouteAtIndex(nextState);
-    if (!nextRoute) break;
-    route = nextRoute;
+  if (!rootRoute.state) {
+    return CHAT_STACK_LIST_ROUTE;
   }
-  return route?.name;
+
+  return getActiveChildRouteName(rootRoute.state as NavigationState) ?? CHAT_STACK_LIST_ROUTE;
+}
+
+function getFocusedRouteNameFromNavState(state: NavigationState | undefined): string | undefined {
+  const chatLeaf = getChatStackActiveRouteName(state);
+  if (chatLeaf !== undefined) {
+    return chatLeaf;
+  }
+  if (!state) return undefined;
+  return findFocusedRoute(state)?.name;
+}
+
+function getRootRouteName(state: NavigationState | undefined): string | undefined {
+  if (!state?.routes?.length) return undefined;
+  const i = typeof state.index === 'number' ? state.index : 0;
+  return state.routes[i]?.name;
 }
 
 function isMenuAllowedByRouteName(routeName: string | undefined): boolean {
   return routeName == null || ROUTES_SHOW_MENU.has(routeName);
 }
 
-function shouldShowMenu(state: NavState | undefined): boolean {
-  const focusedName = getFocusedRouteNameFromState(state);
-  const rootName = getRouteAtIndex(state)?.name;
+function shouldShowMenu(state: NavigationState | undefined): boolean {
+  const focusedName = getFocusedRouteNameFromNavState(state);
+  const rootName = getRootRouteName(state);
 
   if (rootName === 'Chat') {
     if (focusedName === CHAT_STACK_LIST_ROUTE) return true;
@@ -110,9 +116,9 @@ function getSelectedIdFromRoute(routeName: string | undefined): string | undefin
 export const FloatingMenuProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [menu, setMenuState] = useState<MenuState>(null);
 
-  const currentRouteName = useNavigationState((state) => state?.routes?.[state?.index]?.name);
-  const focusedRouteName = useNavigationState((state) => getFocusedRouteNameFromState(asNavState(state)));
-  const showMenuByRoute = useNavigationState((state) => shouldShowMenu(asNavState(state)));
+  const currentRouteName = useNavigationState((state) => getRootRouteName(state));
+  const focusedRouteName = useNavigationState((state) => getFocusedRouteNameFromNavState(state));
+  const showMenuByRoute = useNavigationState((state) => shouldShowMenu(state));
   const selectedIdFromRoute = useMemo(
     () => getSelectedIdFromRoute(focusedRouteName) ?? getSelectedIdFromRoute(currentRouteName),
     [currentRouteName, focusedRouteName],
@@ -134,7 +140,7 @@ export const FloatingMenuProvider: React.FC<{ children: React.ReactNode }> = ({ 
     <FloatingMenuContext.Provider value={{ setMenu, clearMenu }}>
       {children}
       {showMenu && (
-        <View style={StyleSheet.absoluteFill} pointerEvents='box-none'>
+        <View style={[StyleSheet.absoluteFill, { zIndex: 10000, elevation: 10000 }]} pointerEvents='box-none'>
           <FloatingMenu items={menu.items} selectedId={effectiveSelectedId} />
         </View>
       )}

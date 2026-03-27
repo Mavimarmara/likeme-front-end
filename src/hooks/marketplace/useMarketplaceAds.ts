@@ -42,11 +42,10 @@ export const useMarketplaceAds = ({
     const trimmedSearch = searchQuery?.trim();
     if (trimmedSearch) {
       params.search = trimmedSearch;
-    } else {
-      const apiCategory = mapUICategoryToApiCategory(selectedCategory);
-      if (apiCategory) {
-        params.type = apiCategory;
-      }
+    }
+    const apiCategory = mapUICategoryToApiCategory(selectedCategory);
+    if (apiCategory) {
+      params.type = apiCategory;
     }
 
     return params;

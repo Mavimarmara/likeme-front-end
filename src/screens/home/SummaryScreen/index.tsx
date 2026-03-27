@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { Alert, View, ScrollView, Text } from 'react-native';
-// import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import { GradientBackground, ScreenWithHeader } from '@/components/ui/layout';
 import { SearchBar } from '@/components/ui/inputs';
 import { FilterMenu } from '@/components/ui/menu';
@@ -14,7 +14,7 @@ import {
   useNotifications,
   useCategoryDisplayLabel,
 } from '@/hooks';
-import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
+import { useFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 // import {
 //   mapChannelsToEvents,
@@ -263,7 +263,13 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   const categoryFilterButtonLabel = selectedCategoryName != null ? getCategoryName(selectedCategoryName) : 'Autoestima';
 
   const menuItems = useMenuItems(navigation);
-  useSetFloatingMenu(menuItems, 'home');
+  const { setMenu } = useFloatingMenu();
+
+  useFocusEffect(
+    useCallback(() => {
+      setMenu(menuItems, 'home');
+    }, [menuItems, setMenu]),
+  );
 
   // TODO: Temporariamente desabilitados
   // const handleEventPress = (event: Event) => {};
