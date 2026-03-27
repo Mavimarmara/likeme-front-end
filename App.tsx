@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { AppState, LogBox, Platform, StatusBar } from 'react-native';
 import { useFonts } from 'expo-font';
 import * as NavigationBar from 'expo-navigation-bar';
@@ -13,6 +13,7 @@ import './src/i18n';
 LogBox.ignoreAllLogs(true);
 
 const App: React.FC = () => {
+  const navBarHideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [fontsLoaded, fontError] = useFonts({
     'Bricolage Grotesque': require('./assets/fonts/BricolageGrotesque-Regular.ttf'),
   });
@@ -72,7 +73,6 @@ const App: React.FC = () => {
       }
 
       try {
-        await NavigationBar.setBehaviorAsync('overlay-swipe');
         await NavigationBar.setVisibilityAsync('hidden');
       } catch (error) {
         console.warn('[App] Falha ao ocultar barra de navegacao do Android:', error);
@@ -87,7 +87,28 @@ const App: React.FC = () => {
       }
     });
 
-    return () => subscription.remove();
+    const visibilitySubscription =
+      Platform.OS === 'android'
+        ? NavigationBar.addVisibilityListener(({ visibility }) => {
+            if (visibility !== 'visible') {
+              return;
+            }
+            if (navBarHideTimeoutRef.current) {
+              clearTimeout(navBarHideTimeoutRef.current);
+            }
+            navBarHideTimeoutRef.current = setTimeout(() => {
+              void configureAndroidSystemUI();
+            }, 300);
+          })
+        : null;
+
+    return () => {
+      subscription.remove();
+      visibilitySubscription?.remove();
+      if (navBarHideTimeoutRef.current) {
+        clearTimeout(navBarHideTimeoutRef.current);
+      }
+    };
   }, []);
 
   if (!fontsLoaded && !fontError) {
