@@ -1,7 +1,9 @@
+import React from 'react';
+import { jest, describe, it, expect, beforeEach } from '@jest/globals';
 import { render, fireEvent } from '@testing-library/react-native';
 import ProviderProfileScreen from './index';
 
-const mockUseAdvertiser = jest.fn();
+const mockUseAdvertisers = jest.fn();
 
 jest.mock('react-native-safe-area-context', () => {
   const ReactNative = require('react-native');
@@ -120,7 +122,7 @@ jest.mock('@/hooks', () => ({
     loading: false,
     loadCommunities: jest.fn(),
   }),
-  useAdvertiser: (...args: any[]) => mockUseAdvertiser(...args),
+  useAdvertisers: (...args: any[]) => mockUseAdvertisers(...args),
   useProviderAds: () => ({
     ads: [],
     loading: false,
@@ -135,7 +137,7 @@ jest.mock('@/services', () => ({
     joinCommunity: jest.fn(),
   },
   advertiserService: {
-    getAdvertiserProfiles: jest.fn().mockResolvedValue({
+    getAdvertiserProfiles: (jest.fn() as any).mockResolvedValue({
       success: true,
       data: { profiles: [] },
     }),
@@ -192,8 +194,8 @@ describe('ProviderProfileScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     console.log = jest.fn();
-    mockUseAdvertiser.mockReturnValue({
-      advertiser: null,
+    mockUseAdvertisers.mockReturnValue({
+      advertisers: [],
       loading: false,
     });
   });
@@ -209,13 +211,15 @@ describe('ProviderProfileScreen', () => {
   });
 
   it('renders correctly with default provider data when not provided', () => {
-    mockUseAdvertiser.mockReturnValue({
-      advertiser: {
-        id: 'provider-1',
-        name: 'Marcela Ferraz',
-        description: '',
-        logo: undefined,
-      },
+    mockUseAdvertisers.mockReturnValue({
+      advertisers: [
+        {
+          id: 'provider-1',
+          name: 'Marcela Ferraz',
+          description: '',
+          logo: undefined,
+        },
+      ],
       loading: false,
     });
 

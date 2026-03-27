@@ -14,7 +14,7 @@ import {
   useCommunities,
   useSuggestedProducts,
   SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS,
-  useAdvertiser,
+  useAdvertisers,
   useMenuItems,
 } from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
@@ -94,9 +94,8 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     };
   }, [selectedCommunityId]);
 
-  const { advertiser: featuredAdvertiser, advertisers: advertisersList } = useAdvertiser({
-    listOptions: { page: 1, limit: 50, status: 'active', communityId: selectedCommunityId },
-  });
+  const { advertisers: advertisersList } = useAdvertisers({ communityId: selectedCommunityId });
+  const advertiser = advertisersList[0] ?? null;
 
   const feedFilterParams = useMemo(() => ({}), []);
 
@@ -190,15 +189,17 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   }, [categories]);
 
   const specialistData: SpecialistCardProps | null = useMemo(() => {
-    if (!featuredAdvertiser) return null;
+    if (!advertiser) return null;
+    const advertiserName = advertiser.name?.trim();
+    if (!advertiserName) return null;
     return {
-      name: featuredAdvertiser.name ?? '',
+      name: advertiserName,
       subtitle: t('community.specialistLabel'),
       rating: 5,
       tags: [],
-      avatarUri: featuredAdvertiser.logo ?? undefined,
+      avatarUri: advertiser.logo ?? undefined,
     };
-  }, [featuredAdvertiser, t]);
+  }, [advertiser]);
 
   const handleCommunityFavoritePress = useCallback(() => {
     if (!selectedCommunityId) return;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TouchableOpacity, Text } from 'react-native';
+import { Platform, View, TouchableOpacity, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ColoredTwoDotsIcon } from '@/assets/ui';
@@ -21,6 +21,7 @@ type Props = {
 
 const HOME_ICON_SIZE = 32;
 const MENU_ICON_SIZE = 20;
+const BLUR_INTENSITY = 24;
 
 const FloatingMenu: React.FC<Props> = ({ items, selectedId }) => {
   const navigation = useNavigation();
@@ -31,7 +32,12 @@ const FloatingMenu: React.FC<Props> = ({ items, selectedId }) => {
 
   return (
     <View style={[styles.container]}>
-      <BlurView intensity={10} tint='light' style={styles.blur} />
+      <BlurView
+        intensity={BLUR_INTENSITY}
+        tint='light'
+        style={styles.blur}
+        experimentalBlurMethod={Platform.OS === 'android' ? 'dimezisBlurView' : undefined}
+      />
       <View style={styles.overlay} />
 
       <View style={styles.row}>

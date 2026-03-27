@@ -19,6 +19,11 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
   tags = [],
   avatarUri,
 }) => {
+  const normalizedName = name.trim();
+  if (!normalizedName) {
+    return null;
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.row}>
@@ -32,7 +37,7 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({
         <View style={styles.info}>
           <View style={styles.nameRow}>
             <Text style={styles.name} numberOfLines={1}>
-              {name}
+              {normalizedName}
             </Text>
             {rating != null && (
               <View style={styles.rating}>

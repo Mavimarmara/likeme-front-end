@@ -15,7 +15,7 @@ import {
   useCategories,
   useCategoryDisplayLabel,
   useUserAvatar,
-  useAdvertiser,
+  useAdvertisers,
 } from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
@@ -81,7 +81,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
 
   const { categories } = useCategories({ enabled: true });
   const { getCategoryName } = useCategoryDisplayLabel();
-  const { advertisers: professionals } = useAdvertiser({
+  const { advertisers: professionals } = useAdvertisers({
     listOptions: { status: 'active', limit: 50 },
   });
 

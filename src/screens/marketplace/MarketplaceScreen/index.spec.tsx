@@ -102,8 +102,7 @@ jest.mock('@/hooks', () => ({
   useCategories: () => ({ categories: [] }),
   useCategoryDisplayLabel: () => ({ getCategoryName: (id: string) => id || 'Category' }),
   useUserAvatar: () => null,
-  useAdvertiser: () => ({
-    advertiser: null,
+  useAdvertisers: () => ({
     advertisers: [],
     loading: false,
     error: null,

@@ -7,7 +7,7 @@ import { ToggleTabs } from '@/components/ui/tabs';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { JoinCommunityCard, type JoinCommunity } from '@/components/sections/community';
 import { AdsList } from '@/components/sections/marketplace';
-import { useAdvertiser, useProviderAds, useCommunities } from '@/hooks';
+import { useAdvertisers, useProviderAds, useCommunities } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import type { RootStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
@@ -94,23 +94,10 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
     loadProfiles();
   }, [providerId]);
 
-  const initialAdvertiser = useMemo(() => {
-    if (!providerFromParams) return null;
-    return {
-      id: providerId,
-      name: providerFromParams.name,
-      description: providerFromParams.description ?? undefined,
-      logo: providerFromParams.avatar ?? undefined,
-      status: 'active',
-      createdAt: '',
-      updatedAt: '',
-    };
-  }, [providerId, providerFromParams]);
-
-  const { advertiser, loading: loadingProvider } = useAdvertiser({
+  const { advertisers, loading: loadingProvider } = useAdvertisers({
     advertiserId: providerId || undefined,
-    initialAdvertiser: initialAdvertiser ?? undefined,
   });
+  const advertiser = advertisers[0] ?? null;
 
   const providerData = useMemo(() => {
     if (advertiser) {

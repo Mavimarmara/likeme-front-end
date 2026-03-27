@@ -103,5 +103,6 @@ export const KEYBOARD_AWARE_SCROLL = {
   CONTENT_FALLBACK_PADDING_BOTTOM: 120,
 } as const;
 
+export { ADVERTISER_STATUS } from './advertiser';
 export { AUTH_ONBOARDING_SCREENS_ORDER } from './authOnboarding';
 export type { AuthOnboardingScreenName } from './authOnboarding';
