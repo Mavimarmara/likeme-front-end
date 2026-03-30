@@ -4,7 +4,7 @@ import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '@/constants';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.WHITE,
+    backgroundColor: '#F4F3EC',
   },
   headerWrapper: {
     borderBottomLeftRadius: BORDER_RADIUS.ROUND,
@@ -15,8 +15,12 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: SPACING.MD,
-    paddingVertical: SPACING.LG,
+    paddingTop: SPACING.MD,
+    paddingBottom: SPACING.SM,
     gap: SPACING.MD,
+    backgroundColor: COLORS.PRIMARY.LIGHT,
+    borderBottomLeftRadius: 34,
+    borderBottomRightRadius: 34,
   },
   headerInfo: {
     flexDirection: 'row',
@@ -25,7 +29,7 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   headerAvatar: {
-    width: 48,
+    width: 52,
     height: 48,
     borderRadius: 24,
   },
@@ -46,6 +50,7 @@ export const styles = StyleSheet.create({
     color: COLORS.NEUTRAL.LOW.PURE,
     fontFamily: 'DM Sans',
     lineHeight: 22,
+    letterSpacing: 0.2,
   },
   headerDescription: {
     fontSize: FONT_SIZES.XS,
@@ -53,10 +58,11 @@ export const styles = StyleSheet.create({
     color: COLORS.NEUTRAL.LOW.DARK,
     fontFamily: 'DM Sans',
     lineHeight: 22,
+    letterSpacing: 0.2,
   },
   messagesContainer: {
     flex: 1,
-    backgroundColor: COLORS.WHITE,
+    backgroundColor: '#F4F3EC',
   },
   messagesContent: {
     paddingHorizontal: SPACING.MD,
@@ -66,8 +72,9 @@ export const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: SPACING.LG,
-    paddingVertical: SPACING.LG,
+    paddingHorizontal: SPACING.MD,
+    paddingTop: SPACING.MD,
+    paddingBottom: SPACING.MD,
     gap: SPACING.SM,
     backgroundColor: COLORS.PRIMARY.LIGHT,
   },
@@ -87,7 +94,7 @@ export const styles = StyleSheet.create({
   textInputWrapper: {
     flex: 1,
     backgroundColor: COLORS.NEUTRAL.LOW.PURE,
-    borderRadius: 18,
+    borderRadius: 20,
     paddingHorizontal: SPACING.MD,
     paddingVertical: 12,
     shadowColor: '#000',
@@ -103,6 +110,7 @@ export const styles = StyleSheet.create({
     color: COLORS.SECONDARY.LIGHT,
     letterSpacing: 0.2,
     padding: 0,
+    minHeight: 20,
   },
   inputContainerDisabled: {
     opacity: 0.5,

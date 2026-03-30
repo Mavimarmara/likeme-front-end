@@ -7,7 +7,7 @@ import { KeyboardAwareScreen, ScreenWithHeader } from '@/components/ui/layout';
 import { IconButton } from '@/components/ui/buttons';
 import { MessageBubble } from '@/components/ui/chat';
 import { COLORS } from '@/constants';
-import { chatService } from '@/services';
+import { chatService, storageService } from '@/services';
 import { useBlockedUser, useUserAvatar, useTranslation, useChat } from '@/hooks';
 import type { ChatStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
@@ -138,11 +138,52 @@ const ChatScreen: React.FC = () => {
   };
 
   const [sending, setSending] = useState(false);
+  const [currentUserName, setCurrentUserName] = useState('');
 
   const isSendDisabled = useMemo(
     () => isBlocked || sending || resolvingChannel || messageText.trim().length === 0,
     [isBlocked, sending, resolvingChannel, messageText],
   );
+
+  useEffect(() => {
+    const loadCurrentUser = async () => {
+      const user = await storageService.getUser();
+      setCurrentUserName(user?.name?.trim() || user?.nickname?.trim() || '');
+    };
+    loadCurrentUser();
+  }, []);
+
+  const displayChannelName = useMemo(() => {
+    if (!channelName) return '';
+    const nameParts = channelName
+      .split('/')
+      .map((part) => part.trim())
+      .filter(Boolean);
+
+    if (nameParts.length < 2) return channelName;
+
+    const normalizedCurrentUserName = currentUserName
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+
+    const otherParticipant = nameParts.find((namePart) => {
+      const normalizedNamePart = namePart
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase();
+      return normalizedNamePart !== normalizedCurrentUserName;
+    });
+
+    return otherParticipant || nameParts[0];
+  }, [channelName, currentUserName]);
+
+  const displayChannelDescription = useMemo(() => {
+    if (channelDescription?.trim()) {
+      return channelDescription.trim();
+    }
+    return t('community.specialistLabel');
+  }, [channelDescription, t]);
 
   const handleSendMessage = useCallback(async () => {
     const trimmed = messageText.trim();
@@ -252,13 +293,11 @@ const ChatScreen: React.FC = () => {
           )}
           <View style={styles.headerTextContainer}>
             <Text style={styles.headerName} numberOfLines={1}>
-              {channelName}
+              {displayChannelName}
             </Text>
-            {channelDescription ? (
-              <Text style={styles.headerDescription} numberOfLines={1}>
-                {channelDescription}
-              </Text>
-            ) : null}
+            <Text style={styles.headerDescription} numberOfLines={1}>
+              {displayChannelDescription}
+            </Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -276,6 +315,13 @@ const ChatScreen: React.FC = () => {
               isBlocked && styles.inputContainerDisabled,
             ]}
           >
+            <IconButton
+              icon='add'
+              variant='dark'
+              onPress={() => undefined}
+              backgroundSize='medium'
+              disabled={isBlocked}
+            />
             <View style={[styles.textInputWrapper, isBlocked && styles.textInputWrapperDisabled]}>
               <TextInput
                 style={styles.textInput}
@@ -289,7 +335,7 @@ const ChatScreen: React.FC = () => {
             </View>
 
             <IconButton
-              icon='send'
+              icon='photo-camera'
               variant='dark'
               onPress={handleSendMessage}
               backgroundSize='medium'
