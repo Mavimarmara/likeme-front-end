@@ -286,6 +286,9 @@ export const styles = StyleSheet.create({
     minHeight: 36,
     gap: SPACING.MD,
   },
+  quantitySelectorWrapper: {
+    position: 'relative',
+  },
   quantityLabel: {
     fontSize: 14,
     fontFamily: 'DM Sans',
@@ -299,6 +302,30 @@ export const styles = StyleSheet.create({
     height: 36,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#001137',
+    borderRadius: 18,
+  },
+  quantityDropdown: {
+    position: 'absolute',
+    top: 42,
+    right: 0,
+    minWidth: 86,
+    borderRadius: 16,
+    backgroundColor: '#001137',
+    overflow: 'hidden',
+    zIndex: 20,
+    elevation: 6,
+  },
+  quantityDropdownOption: {
+    paddingHorizontal: SPACING.MD,
+    paddingVertical: SPACING.SM,
+  },
+  quantityDropdownOptionLabel: {
+    fontSize: 14,
+    fontFamily: 'DM Sans',
+    fontWeight: '500',
+    color: COLORS.SECONDARY.LIGHT,
+    textAlign: 'center',
   },
   paymentLinkRow: {
     flexDirection: 'row',
