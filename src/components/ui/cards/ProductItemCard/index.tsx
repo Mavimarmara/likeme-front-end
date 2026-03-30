@@ -60,7 +60,7 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
 }) => {
   const imageSource = image ? { uri: image } : fallbackImage ?? { uri: DEFAULT_PLACEHOLDER_URI };
   const handleAddPress = useCallback(() => onAddPress?.(), [onAddPress]);
-  const badges = badgesProp ?? [];
+  const badges = (badgesProp ?? []).map((label) => (typeof label === 'string' ? label.trim() : '')).filter(Boolean);
   const iconColor = COLORS.TEXT;
   const hasQuantityCallbacks = typeof onIncreaseQuantity === 'function' && typeof onDecreaseQuantity === 'function';
   const showQuantityRow = hasQuantityCallbacks && (quantity !== undefined || showDelete);
@@ -71,13 +71,15 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
       <Image source={imageSource} style={styles.image} resizeMode='cover' />
       <View style={styles.content}>
         <View style={styles.topRow}>
-          <View style={styles.badgesWrap}>
-            {badges.map((label, index) => (
-              <View key={`${label}-${index}`} style={styles.badge}>
-                <Text style={styles.badgeText}>{label}</Text>
-              </View>
-            ))}
-          </View>
+          {badges.length > 0 ? (
+            <View style={styles.badgesWrap}>
+              {badges.map((label, index) => (
+                <View key={`${label}-${index}`} style={styles.badge}>
+                  <Text style={styles.badgeText}>{label}</Text>
+                </View>
+              ))}
+            </View>
+          ) : null}
           <View style={styles.topRowRight}>
             {showDelete && onRemove && (
               <TouchableOpacity

@@ -5,6 +5,8 @@ import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 
 const mockLoadAds = jest.fn();
 const mockUseMarketplaceAds = jest.fn();
+const mockLoadProducts = jest.fn();
+const mockUseProducts = jest.fn();
 
 jest.mock('@/contexts/FloatingMenuContext', () => ({
   useSetFloatingMenu: () => jest.fn(),
@@ -99,6 +101,7 @@ jest.mock('@/components/sections', () => {
 
 jest.mock('@/hooks', () => ({
   useMarketplaceAds: (...args: any[]) => mockUseMarketplaceAds(...args),
+  useProducts: (...args: any[]) => mockUseProducts(...args),
   useMenuItems: () => [],
   useCategories: () => ({ categories: [] }),
   useCategoryDisplayLabel: () => ({ getCategoryName: (id: string) => id || 'Category' }),
@@ -198,11 +201,18 @@ describe('MarketplaceScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockLoadAds.mockClear();
+    mockLoadProducts.mockClear();
     mockUseMarketplaceAds.mockReturnValue({
       ads: mockAds,
       loading: false,
       hasMore: false,
       loadAds: mockLoadAds,
+    });
+    mockUseProducts.mockReturnValue({
+      ads: [],
+      loading: false,
+      hasMore: false,
+      loadProducts: mockLoadProducts,
     });
   });
 

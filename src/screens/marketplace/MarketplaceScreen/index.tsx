@@ -11,6 +11,7 @@ import { FilterCategoryModal, type FilterCategoryResult, type SolutionId } from 
 import { WeekHighlightCard, AdsList } from '@/components/sections/marketplace';
 import {
   useMarketplaceAds,
+  useProducts,
   useMenuItems,
   useCategories,
   useCategoryDisplayLabel,
@@ -95,12 +96,36 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   const solutionTabs = useMemo(() => getSolutionTabs(t), [t]);
   const orderOptions = useMemo(() => getOrderOptions(t), [t]);
 
-  const { ads, loading, hasMore, loadAds } = useMarketplaceAds({
+  const isProgramsTab = selectedSolutionTab === 'programs';
+
+  const {
+    ads: listingAds,
+    loading: adsLoading,
+    hasMore: adsHasMore,
+    loadAds,
+  } = useMarketplaceAds({
     selectedCategory,
     selectedCategoryId,
     page,
     searchQuery: appliedSearchQuery || undefined,
+    enabled: !isProgramsTab,
   });
+
+  const {
+    ads: programCatalogAds,
+    loading: programsLoading,
+    hasMore: programsHasMore,
+    loadProducts,
+  } = useProducts({
+    categoryId: selectedCategoryId,
+    page,
+    searchQuery: appliedSearchQuery || undefined,
+    enabled: isProgramsTab,
+  });
+
+  const ads = isProgramsTab ? programCatalogAds : listingAds;
+  const loading = isProgramsTab ? programsLoading : adsLoading;
+  const hasMore = isProgramsTab ? programsHasMore : adsHasMore;
 
   const handleCartPress = () => {
     navigation.navigate('Cart');
@@ -130,8 +155,12 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   }, [searchQuery]);
 
   useEffect(() => {
+    if (isProgramsTab) {
+      loadProducts();
+      return;
+    }
     loadAds();
-  }, [loadAds, selectedCategory, selectedCategoryId, page, appliedSearchQuery]);
+  }, [isProgramsTab, loadAds, loadProducts, selectedCategory, selectedCategoryId, page, appliedSearchQuery]);
 
   const handleAdPress = (ad: Ad) => {
     handleAdNavigation(ad, navigation);
@@ -255,16 +284,17 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   const filteredAdsBySolution = useMemo(() => {
     return sortedAds.filter((ad) => {
       const product = ad.product;
-      const type = (product?.type ?? '').toLowerCase();
+      const type = (product?.type ?? '').trim().toLowerCase();
       const hasProduct = !!product;
+      const isProgramType = type === PRODUCT_CATALOG_TYPE.PROGRAM;
 
       switch (selectedSolutionTab) {
         case 'products':
-          return hasProduct && type !== PRODUCT_CATALOG_TYPE.PROGRAM && type !== 'service';
+          return hasProduct && !isProgramType && type !== 'service';
         case 'services':
           return hasProduct && type === 'service';
         case 'programs':
-          return hasProduct && type === PRODUCT_CATALOG_TYPE.PROGRAM;
+          return hasProduct && isProgramType;
         case 'professionals':
           return false;
         default:
@@ -275,11 +305,12 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
 
   const listAdsForCurrentTab = useMemo(() => {
     const isSearching = appliedSearchQuery.trim().length > 0;
-    if (isSearching) {
+    const skipHighlightSlice = isSearching || selectedSolutionTab === 'programs' || selectedSolutionTab === 'services';
+    if (skipHighlightSlice) {
       return filteredAdsBySolution;
     }
     return page === 1 ? filteredAdsBySolution.slice(1) : filteredAdsBySolution;
-  }, [filteredAdsBySolution, page, appliedSearchQuery]);
+  }, [filteredAdsBySolution, page, appliedSearchQuery, selectedSolutionTab]);
 
   const handleProfessionalPress = (advertiser: Advertiser) => {
     navigation.navigate('ProviderProfile', {
@@ -339,6 +370,10 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
 
   const renderWeekHighlights = () => {
     if (selectedSolutionTab === 'professionals') {
+      return null;
+    }
+
+    if (selectedSolutionTab === 'programs' || selectedSolutionTab === 'services') {
       return null;
     }
 

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { adService } from '@/services';
 import { mapUICategoryToApiCategory } from '@/utils';
 import { logger } from '@/utils/logger';
@@ -9,6 +9,7 @@ interface UseMarketplaceAdsParams {
   selectedCategoryId?: string | null;
   page: number;
   searchQuery?: string;
+  enabled?: boolean;
 }
 
 interface UseMarketplaceAdsReturn {
@@ -23,10 +24,19 @@ export const useMarketplaceAds = ({
   selectedCategoryId,
   page,
   searchQuery,
+  enabled = true,
 }: UseMarketplaceAdsParams): UseMarketplaceAdsReturn => {
   const [ads, setAds] = useState<Ad[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
+
+  useEffect(() => {
+    if (!enabled) {
+      setAds([]);
+      setLoading(false);
+      setHasMore(false);
+    }
+  }, [enabled]);
 
   const buildParams = useCallback((): ListAdsParams => {
     const params: ListAdsParams = {
@@ -52,6 +62,10 @@ export const useMarketplaceAds = ({
   }, [selectedCategory, selectedCategoryId, page, searchQuery]);
 
   const loadAds = useCallback(async () => {
+    if (!enabled) {
+      return;
+    }
+
     try {
       setLoading(true);
       const params = buildParams();
@@ -77,7 +91,7 @@ export const useMarketplaceAds = ({
     } finally {
       setLoading(false);
     }
-  }, [buildParams]);
+  }, [buildParams, enabled]);
 
   const handleEmptyResponse = () => {
     if (page === 1) {
