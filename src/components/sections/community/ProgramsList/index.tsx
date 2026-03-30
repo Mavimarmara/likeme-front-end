@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { ModuleAccordion } from '@/components/sections/program';
-import { FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
+import { StickyFilterCarouselRow, type ButtonCarouselOption } from '@/components/ui/menu';
 import { styles } from './styles';
 import type { Program, ProgramDetail } from '@/types/program';
 
@@ -45,7 +45,7 @@ const ProgramsList: React.FC<Props> = ({ programs, programDetails, onProgramPres
     <View style={styles.container}>
       {programs.length > 0 && (
         <View style={styles.selectorContainer}>
-          <FilterMenu
+          <StickyFilterCarouselRow
             carouselOptions={filterOptions}
             selectedCarouselId={selectedProgramId}
             onCarouselSelect={handleSelect}

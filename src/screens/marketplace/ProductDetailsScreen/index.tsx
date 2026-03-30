@@ -5,7 +5,7 @@ import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { HeroImage, ScreenWithHeader } from '@/components/ui/layout';
 import { SecondaryButton } from '@/components/ui/buttons';
-import { ProductsCarousel, type Product } from '@/components/sections/product';
+import { ProductsCarousel } from '@/components/sections/product';
 import { ProductHeroFooter } from '@/components/sections/marketplace';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
 import { useProductDetails, useSuggestedProducts, useCategories } from '@/hooks';
@@ -66,6 +66,11 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   });
 
   const { categories } = useCategories({ enabled: true });
+
+  const recommendedProducts = useMemo(
+    () => (suggestedProducts || []).filter((p) => p.id !== product?.id).slice(0, 5),
+    [suggestedProducts, product?.id],
+  );
 
   const displayData = useMemo(() => {
     if (!product) {
@@ -413,7 +418,6 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   function renderRecommendedProducts() {
     const providerName = partnerData.name;
     const recommendedTitle = t('marketplace.recommendedProductsForJourney', { provider: providerName });
-    const recommendedProducts: Product[] = (suggestedProducts || []).filter((p) => p.id !== product?.id).slice(0, 5);
 
     if (loadingSuggested && recommendedProducts.length === 0) return null;
     if (recommendedProducts.length === 0) return null;

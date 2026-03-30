@@ -4,6 +4,8 @@ import SecondaryButton from '../Secondary';
 import { ModalBase } from '@/components/ui/modals/shared';
 import { COLORS } from '@/constants';
 
+type ModalContentRender = (api: { close: () => void }) => React.ReactNode;
+
 type Props = {
   label: string;
   icon?: string;
@@ -13,7 +15,7 @@ type Props = {
   /** Quando true, o botão é exibido em azul (estado selecionado). */
   selected?: boolean;
   modalTitle?: string;
-  modalContent?: React.ReactNode;
+  modalContent?: React.ReactNode | ModalContentRender;
   onPress?: () => void;
   onModalClose?: () => void;
   onModalOpen?: () => void;
@@ -43,7 +45,7 @@ const FilterButton: React.FC<Props> = ({
   onModalOpen,
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const hasModal = !!modalContent;
+  const hasModal = modalContent != null;
 
   const handlePress = () => {
     if (hasModal) {
@@ -58,6 +60,8 @@ const FilterButton: React.FC<Props> = ({
     setIsModalVisible(false);
     onModalClose?.();
   };
+
+  const resolvedModalContent = typeof modalContent === 'function' ? modalContent({ close: handleClose }) : modalContent;
 
   return (
     <>
@@ -74,7 +78,7 @@ const FilterButton: React.FC<Props> = ({
       />
       {hasModal && (
         <ModalBase visible={isModalVisible} onClose={handleClose} title={modalTitle}>
-          {modalContent}
+          {resolvedModalContent}
         </ModalBase>
       )}
     </>

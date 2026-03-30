@@ -2,7 +2,9 @@ import React, { useState, useMemo } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, StyleProp, ViewStyle } from 'react-native';
 import { ProductItemCard } from '@/components/ui/cards';
 import { ToggleTabs } from '@/components/ui/tabs';
-import { FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
+import type { ButtonCarouselOption } from '@/components/ui/carousel';
+import { StickyFilterCarouselRow } from '@/components/ui/menu';
+import { FilterPickerModal } from '@/components/ui/modals';
 import { EmptyState } from '@/components/ui/feedback';
 import { useCategories } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
@@ -216,12 +218,23 @@ const AdsList: React.FC<AdsListProps> = ({
           )}
           {orderOptions.length > 0 && showOrderFilter && (
             <View style={styles.mOrderFilterMenuContainer}>
-              <FilterMenu
+              <StickyFilterCarouselRow
                 filterButtonLabel={t('marketplace.orderBy')}
-                onFilterButtonPress={() => undefined}
+                filterModalTitle={t('marketplace.orderBy')}
+                filterModalContent={({ close }) => (
+                  <FilterPickerModal
+                    options={orderOptions}
+                    selectedId={selectedOrder}
+                    onOptionPress={(id) => {
+                      onOrderSelect?.(String(id));
+                      close();
+                    }}
+                  />
+                )}
                 carouselOptions={orderOptions}
                 selectedCarouselId={selectedOrder}
-                onCarouselSelect={onOrderSelect ?? (() => undefined)}
+                onCarouselSelect={(id) => onOrderSelect?.(String(id))}
+                carouselDisplay='selectedOnly'
               />
             </View>
           )}
