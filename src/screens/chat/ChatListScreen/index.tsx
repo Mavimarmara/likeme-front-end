@@ -122,10 +122,7 @@ const ChatListScreen: React.FC<Props> = () => {
           onSearchPress={() => {
             /* noop */
           }}
-          onFilterPress={() => {
-            /* noop */
-          }}
-          showFilterButton={true}
+          showFilterButton={false}
         />
       </View>
 
