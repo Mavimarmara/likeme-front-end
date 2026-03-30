@@ -30,6 +30,7 @@ const ChatListScreen: React.FC<Props> = () => {
   const rootNavigation = navigation.getParent() ?? navigation;
   const [searchQuery, setSearchQuery] = useState('');
   const [userAvatarUri, setUserAvatarUri] = useState<string | null>(null);
+  const [currentUserName, setCurrentUserName] = useState('');
 
   const { conversations, loading, refresh } = useChat({ searchQuery });
   const menuItems = useMenuItems(navigation);
@@ -53,9 +54,34 @@ const ChatListScreen: React.FC<Props> = () => {
     const loadUser = async () => {
       const user = await storageService.getUser();
       setUserAvatarUri(user?.picture ?? null);
+      setCurrentUserName(user?.name?.trim() || user?.nickname?.trim() || '');
     };
     loadUser();
   }, []);
+
+  const getConversationDisplayName = (conversationName: string) => {
+    const nameParts = conversationName
+      .split('/')
+      .map((part) => part.trim())
+      .filter(Boolean);
+
+    if (nameParts.length < 2) return conversationName;
+
+    const normalizedCurrentUserName = currentUserName
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+
+    const otherParticipant = nameParts.find((namePart) => {
+      const normalizedNamePart = namePart
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase();
+      return normalizedNamePart !== normalizedCurrentUserName;
+    });
+
+    return otherParticipant || nameParts[0];
+  };
 
   const handleCartPress = () => {
     rootNavigation.navigate('Cart' as never);
@@ -122,10 +148,7 @@ const ChatListScreen: React.FC<Props> = () => {
           onSearchPress={() => {
             /* noop */
           }}
-          onFilterPress={() => {
-            /* noop */
-          }}
-          showFilterButton={true}
+          showFilterButton={false}
         />
       </View>
 
@@ -173,7 +196,7 @@ const ChatListScreen: React.FC<Props> = () => {
                         </View>
                       )}
                       <Text style={styles.conversationName} numberOfLines={1}>
-                        {conversation.name}
+                        {getConversationDisplayName(conversation.name)}
                       </Text>
                     </View>
                     <Text style={styles.conversationTimestamp}>{conversation.timestamp}</Text>

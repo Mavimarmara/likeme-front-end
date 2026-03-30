@@ -31,7 +31,7 @@ export const styles = StyleSheet.create({
     fontFamily: 'DM Sans',
   },
   conversationsContainer: {
-    paddingHorizontal: 30,
+    paddingHorizontal: SPACING.MD,
     borderRadius: BORDER_RADIUS.MD,
     shadowColor: '#000',
     shadowOffset: {
@@ -45,7 +45,7 @@ export const styles = StyleSheet.create({
   },
   conversationItem: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     paddingHorizontal: 0,
     paddingVertical: SPACING.MD,
     gap: SPACING.SM,
@@ -81,8 +81,8 @@ export const styles = StyleSheet.create({
   },
   conversationInfo: {
     flex: 1,
-    gap: SPACING.SM,
-    maxWidth: 254,
+    gap: 6,
+    minWidth: 0,
   },
   conversationHeader: {
     flexDirection: 'row',
@@ -95,6 +95,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     marginRight: SPACING.SM,
+    minWidth: 0,
   },
   likemeLogoContainer: {
     marginRight: SPACING.XS,
@@ -121,13 +122,13 @@ export const styles = StyleSheet.create({
   },
   conversationMessageContainer: {
     flex: 1,
-    maxWidth: 226,
+    minWidth: 0,
   },
   conversationMessage: {
     fontSize: FONT_SIZES.XS,
     fontWeight: '500',
     color: '#6e6a6a',
-    lineHeight: 22,
+    lineHeight: 18,
     fontFamily: 'DM Sans',
   },
   conversationMessageUnread: {
