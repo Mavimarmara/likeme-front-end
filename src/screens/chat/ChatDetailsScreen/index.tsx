@@ -44,6 +44,10 @@ const ChatDetailsScreen: React.FC = () => {
     (navigation.getParent() ?? navigation).navigate('Cart' as never);
   };
 
+  const handleBellPress = () => {
+    (navigation.getParent() ?? navigation).navigate('Activities' as never);
+  };
+
   const confirmAndExecute = (
     title: string,
     message: string,
@@ -126,6 +130,7 @@ const ChatDetailsScreen: React.FC = () => {
         showCartButton: true,
         onCartPress: handleCartPress,
         showBellButton: true,
+        onBellPress: handleBellPress,
       }}
       contentContainerStyle={styles.container}
     >

@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { View, Text, ImageBackground, Dimensions, type LayoutChangeEvent } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
+import { PlatformBlurView } from '@/components/ui/PlatformBlurView';
 import { styles } from './styles';
 
 const DEFAULT_IMAGE_URI = 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400';
@@ -64,7 +64,7 @@ const HeroImage = ({
           <View style={styles.overlay}>
             {shouldRenderOverlay && (
               <View style={[styles.effectsContainer, dynamicHeightStyle]}>
-                <BlurView intensity={10} tint='dark' style={styles.blur} />
+                <PlatformBlurView intensity={10} tint='dark' style={styles.blur} />
                 <LinearGradient
                   colors={['rgba(48, 48, 48, 0)', 'rgba(41, 41, 41, 1)']}
                   locations={[0.64, 1]}

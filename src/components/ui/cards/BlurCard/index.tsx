@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { Image, StyleProp, TouchableOpacity, View, ViewStyle, LayoutChangeEvent } from 'react-native';
-import { BlurView } from 'expo-blur';
+import { PlatformBlurView } from '@/components/ui/PlatformBlurView';
 import {
   styles,
   BLUR_INTENSITY,
@@ -43,7 +43,7 @@ const BlurCard: React.FC<BlurCardProps> = ({ backgroundImage, topSection, footer
         {topSection && <View style={styles.topSection}>{topSection}</View>}
 
         <View style={[styles.footerSection, getFooterSectionStyle(radii)]}>
-          <BlurView intensity={BLUR_INTENSITY} style={getBlurStyle(footerHeight, radii)} />
+          <PlatformBlurView intensity={BLUR_INTENSITY} style={getBlurStyle(footerHeight, radii)} />
           <View style={styles.footerContent} onLayout={handleFooterLayout}>
             {footerSection}
           </View>

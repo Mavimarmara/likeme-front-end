@@ -328,6 +328,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
         showCartButton: true,
         onCartPress: handleCartPress,
         showBellButton: true,
+        onBellPress: () => rootNavigation.navigate('Activities' as never),
       }}
       contentContainerStyle={styles.content}
     >
