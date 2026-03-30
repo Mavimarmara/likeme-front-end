@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, type ImageSourcePropType, type ImageStyle } from 'react-native';
 import { FilterButton } from '@/components/ui/buttons';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
 import { styles } from './styles';
@@ -7,6 +7,8 @@ import { styles } from './styles';
 type Props<T = string> = {
   filterButtonLabel?: string;
   filterButtonIcon?: string;
+  filterButtonIconImage?: ImageSourcePropType;
+  filterButtonIconImageStyle?: ImageStyle;
   /** Quando true, o botão de filtro de categoria fica azul (filtro ativo). */
   filterButtonSelected?: boolean;
   filterModalTitle?: string;
@@ -23,6 +25,8 @@ type Props<T = string> = {
 const FilterMenu = <T extends string | number = string>({
   filterButtonLabel,
   filterButtonIcon = 'arrow-drop-down',
+  filterButtonIconImage,
+  filterButtonIconImageStyle,
   filterButtonSelected = false,
   filterModalTitle,
   filterModalContent,
@@ -41,6 +45,8 @@ const FilterMenu = <T extends string | number = string>({
         <FilterButton
           label={filterButtonLabel}
           icon={filterButtonIcon}
+          iconImage={filterButtonIconImage}
+          iconImageStyle={filterButtonIconImageStyle}
           iconPosition='right'
           selected={filterButtonSelected}
           modalTitle={filterModalTitle}

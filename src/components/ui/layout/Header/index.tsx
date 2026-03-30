@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
-import { View, Text, TouchableOpacity, Image } from 'react-native';
+import { View, Text, TouchableOpacity, Image, type ImageSourcePropType } from 'react-native';
+import { HOME_MVP_ASSETS } from '@/assets/homeMvp';
 import { LogoMini } from '@/assets/ui';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { IconButton } from '@/components/ui/buttons';
@@ -30,6 +31,9 @@ interface HeaderProps {
   showMenuWithAvatar?: boolean;
   onMenuPress?: () => void;
   userAvatarUri?: string | null;
+  headerLogoImageSource?: ImageSourcePropType;
+  headerLogoImageWidth?: number;
+  headerLogoImageHeight?: number;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -51,6 +55,9 @@ const Header: React.FC<HeaderProps> = ({
   showMenuWithAvatar = false,
   onMenuPress,
   userAvatarUri,
+  headerLogoImageSource,
+  headerLogoImageWidth = 87,
+  headerLogoImageHeight = 16,
 }) => {
   const hasRightLabel = Boolean(rightLabel && onRightPress);
   const ratingIconName = favoriteActive === undefined ? 'star' : favoriteActive ? 'star' : 'star-border';
@@ -59,7 +66,7 @@ const Header: React.FC<HeaderProps> = ({
       <View style={styles.header}>
         {showMenuWithAvatar && onMenuPress && (
           <TouchableOpacity style={styles.menuWithAvatarPill} onPress={onMenuPress} activeOpacity={0.7}>
-            <Icon name='menu' size={22} color='#0F1B33' style={styles.menuIcon} />
+            <Image source={HOME_MVP_ASSETS.menu} style={styles.menuIconImage} resizeMode='contain' />
             {userAvatarUri ? (
               <Image source={{ uri: userAvatarUri }} style={styles.headerAvatar} />
             ) : (
@@ -82,7 +89,16 @@ const Header: React.FC<HeaderProps> = ({
           activeOpacity={0.7}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          {customLogo || <LogoMini width={87} height={16} />}
+          {customLogo ||
+            (headerLogoImageSource != null ? (
+              <Image
+                source={headerLogoImageSource}
+                style={{ width: headerLogoImageWidth, height: headerLogoImageHeight }}
+                resizeMode='contain'
+              />
+            ) : (
+              <LogoMini width={87} height={16} />
+            ))}
         </TouchableOpacity>
         {hasRightLabel && (
           <TouchableOpacity
@@ -97,10 +113,20 @@ const Header: React.FC<HeaderProps> = ({
         {!hasRightLabel && (
           <View style={styles.rightButtons}>
             {showBellButton && (
-              <IconButton icon='notifications' onPress={onBellPress ?? noop} backgroundSize='medium' />
+              <IconButton
+                iconImageSource={HOME_MVP_ASSETS.bell}
+                iconSize={22}
+                onPress={onBellPress ?? noop}
+                backgroundSize='medium'
+              />
             )}
             {showCartButton && onCartPress && (
-              <IconButton icon='shopping-cart' onPress={onCartPress} backgroundSize='medium' />
+              <IconButton
+                iconImageSource={HOME_MVP_ASSETS.cart}
+                iconSize={22}
+                onPress={onCartPress}
+                backgroundSize='medium'
+              />
             )}
             {showLogoutButton && onLogoutPress && (
               <IconButton icon='logout' onPress={onLogoutPress} backgroundSize='medium' />

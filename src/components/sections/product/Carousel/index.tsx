@@ -12,6 +12,8 @@ type Props = {
   itemsPerPage?: number;
   showPagination?: boolean;
   paginationSize?: 'Small' | 'Large';
+  /** Se definido, substitui as bolinhas padrão (ex.: arte do Figma). */
+  renderPaginationDot?: (isActive: boolean) => React.ReactNode;
 };
 
 const Carousel: React.FC<Props> = ({
@@ -23,6 +25,7 @@ const Carousel: React.FC<Props> = ({
   itemsPerPage: itemsPerPageProp = 1,
   showPagination = true,
   paginationSize = 'Large',
+  renderPaginationDot,
 }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
@@ -62,18 +65,22 @@ const Carousel: React.FC<Props> = ({
       return null;
     }
 
+    const dotStyle = paginationSize === 'Small' ? styles.paginationDotSmall : styles.paginationDotLarge;
+
     return (
       <View style={styles.paginationContainer}>
-        {Array.from({ length: dotCount }, (_, pageIndex) => (
-          <View
-            key={`carousel-page-${pageIndex}`}
-            style={[
-              styles.paginationDot,
-              paginationSize === 'Small' ? styles.paginationDotSmall : styles.paginationDotLarge,
-              activeIndex === pageIndex && styles.paginationDotActive,
-            ]}
-          />
-        ))}
+        {Array.from({ length: dotCount }, (_, pageIndex) =>
+          renderPaginationDot != null ? (
+            <React.Fragment key={`carousel-page-${pageIndex}`}>
+              {renderPaginationDot(activeIndex === pageIndex)}
+            </React.Fragment>
+          ) : (
+            <View
+              key={`carousel-page-${pageIndex}`}
+              style={[styles.paginationDot, dotStyle, activeIndex === pageIndex && styles.paginationDotActive]}
+            />
+          ),
+        )}
       </View>
     );
   };

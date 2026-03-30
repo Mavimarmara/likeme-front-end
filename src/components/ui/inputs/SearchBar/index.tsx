@@ -2,6 +2,7 @@ import React from 'react';
 import { View, TouchableOpacity, TextInput as RNTextInput, ImageBackground } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { BackgroundIconButton } from '@/assets/ui';
+import { IconButton } from '@/components/ui/buttons';
 import { styles } from './styles';
 
 interface SearchBarProps {
@@ -37,15 +38,14 @@ const SearchBar: React.FC<SearchBarProps> = ({
           returnKeyType='search'
           style={styles.searchInput}
         />
-        <TouchableOpacity style={styles.searchButtonInside} activeOpacity={0.7} onPress={handleSearchPress}>
-          <ImageBackground
-            source={BackgroundIconButton}
-            style={styles.searchButtonBackground}
-            imageStyle={styles.searchButtonImage}
-          >
-            <Icon name='search' size={15.5} color='#001137' />
-          </ImageBackground>
-        </TouchableOpacity>
+        <IconButton
+          icon='search'
+          iconSize={16}
+          iconColor='#001137'
+          onPress={handleSearchPress}
+          backgroundSize='medium'
+          containerStyle={styles.searchIconButton}
+        />
       </View>
       {showFilterButton && (
         <TouchableOpacity style={styles.filterButton} activeOpacity={0.7} onPress={onFilterPress}>

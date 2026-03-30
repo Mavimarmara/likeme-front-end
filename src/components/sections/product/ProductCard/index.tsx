@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Pressable } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import { BlurCard } from '@/components/ui/cards';
 import { IconButton } from '@/components/ui/buttons';
 import { formatPrice } from '@/utils';
+import HeartSuggested from '../../../../../assets/home-mvp/heart.svg';
 import { styles } from './styles';
 
 export interface Product {
@@ -33,7 +33,7 @@ const ProductCard: React.FC<Props> = ({ product, onPress, onLike }) => {
     <View style={styles.bottomInfo}>
       <Text style={styles.price}>{formatPrice(product.price)}</Text>
       <TouchableOpacity style={styles.likeButton} onPress={() => onLike?.(product)} activeOpacity={0.7}>
-        <Icon name='favorite-border' size={20} color='#f6cffb' />
+        <HeartSuggested width={20} height={20} />
         <Text style={styles.likesCount}>{product.likes}</Text>
       </TouchableOpacity>
     </View>
@@ -56,7 +56,13 @@ const ProductCard: React.FC<Props> = ({ product, onPress, onLike }) => {
         <Text style={styles.title} numberOfLines={1}>
           {product.title}
         </Text>
-        <IconButton icon='chevron-right' iconColor='#001137' onPress={() => onPress?.(product)} />
+        <IconButton
+          icon='chevron-right'
+          iconColor='#001137'
+          iconSize={22}
+          onPress={() => onPress?.(product)}
+          backgroundSize='medium'
+        />
       </View>
     </Pressable>
   );

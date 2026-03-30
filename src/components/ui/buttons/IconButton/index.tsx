@@ -30,7 +30,8 @@ type Props = {
   showBackground?: boolean;
   backgroundSize?: IconSilhouetteSize;
   backgroundSource?: ImageSourcePropType;
-  backgroundTintColor?: string | readonly string[];
+  /** `null` desativa o tint no fundo (ex.: PNG do Figma já colorido). */
+  backgroundTintColor?: string | readonly string[] | null;
   containerStyle?: ViewStyle;
   iconContainerStyle?: ViewStyle;
 };
@@ -47,7 +48,6 @@ const IconButton: React.FC<Props> = (props) => {
     showBackground = true,
     backgroundSize = 'large',
     backgroundSource,
-    backgroundTintColor,
     containerStyle,
     iconContainerStyle,
   } = props;
@@ -56,6 +56,9 @@ const IconButton: React.FC<Props> = (props) => {
   const defaults = SIZE_DEFAULTS[backgroundSize];
   const iconSize = props.iconSize ?? defaults?.iconSize;
   const iconColor = props.iconColor ?? variantConfig.iconColor;
+
+  const silhouetteTint =
+    props.backgroundTintColor === null ? null : props.backgroundTintColor ?? variantConfig.tintColor;
 
   const iconElement = (
     <Icon name={icon} size={iconSize} color={iconColor} imageSource={iconImageSource} imageStyle={iconImageStyle} />
@@ -71,7 +74,7 @@ const IconButton: React.FC<Props> = (props) => {
       {showBackground ? (
         <IconSilhouette
           source={backgroundSource}
-          tintColor={backgroundTintColor ?? variantConfig.tintColor}
+          tintColor={silhouetteTint}
           size={backgroundSize}
           style={iconContainerStyle}
         >

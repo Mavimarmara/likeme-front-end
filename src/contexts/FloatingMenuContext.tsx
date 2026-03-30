@@ -1,11 +1,12 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, type ImageSourcePropType } from 'react-native';
 import { findFocusedRoute, useNavigationState, type NavigationState } from '@react-navigation/native';
 import { FloatingMenu } from '@/components/ui/menu';
 
 export type FloatingMenuItem = {
   id: string;
-  icon: string;
+  icon?: string;
+  iconImage?: ImageSourcePropType;
   label: string;
   fullLabel?: string;
   onPress: () => void;

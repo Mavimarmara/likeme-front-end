@@ -7,6 +7,9 @@ import {
   TextStyle,
   ActivityIndicator,
   View,
+  Image,
+  type ImageSourcePropType,
+  type ImageStyle,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { COLORS } from '@/constants';
@@ -23,6 +26,8 @@ type Props = {
   disabled?: boolean;
   size?: Size;
   icon?: string;
+  iconImage?: ImageSourcePropType;
+  iconImageStyle?: ImageStyle;
   iconSize?: number;
   iconColor?: string;
   iconPosition?: 'left' | 'right';
@@ -39,6 +44,8 @@ const SecondaryButton: React.FC<Props> = ({
   disabled = false,
   size = 'medium',
   icon,
+  iconImage,
+  iconImageStyle,
   iconSize = 16,
   iconColor,
   iconPosition = 'right',
@@ -61,6 +68,19 @@ const SecondaryButton: React.FC<Props> = ({
   };
 
   const renderIcon = () => {
+    if (iconImage != null) {
+      return (
+        <Image
+          source={iconImage}
+          style={[
+            iconPosition === 'left' ? styles.iconLeft : styles.iconRight,
+            { width: iconSize, height: iconSize },
+            iconImageStyle,
+          ]}
+          resizeMode='contain'
+        />
+      );
+    }
     if (!icon) return null;
 
     return (

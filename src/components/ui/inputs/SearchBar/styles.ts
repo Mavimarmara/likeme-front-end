@@ -39,34 +39,8 @@ export const styles = StyleSheet.create({
     textAlignVertical: 'center',
     includeFontPadding: false,
   },
-  searchButtonInside: {
-    width: 39,
-    height: 35,
-    justifyContent: 'center',
-    alignItems: 'center',
+  searchIconButton: {
     marginRight: 0,
-    marginTop: 0.5,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  searchButtonBackground: {
-    width: 39,
-    height: 35,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-  },
-  searchButtonImage: {
-    width: 39,
-    height: 35,
-    resizeMode: 'cover',
   },
   filterButton: {
     width: 40,

@@ -1,8 +1,11 @@
 import { useMemo } from 'react';
+import type { ImageSourcePropType } from 'react-native';
+import { HOME_MVP_ASSETS } from '@/assets/homeMvp';
 
 type MenuItem = {
   id: string;
-  icon: string;
+  icon?: string;
+  iconImage?: ImageSourcePropType;
   label: string;
   fullLabel: string;
   onPress: () => void;
@@ -16,6 +19,7 @@ export const useMenuItems = (navigation: any): MenuItem[] => {
       {
         id: 'activities',
         icon: 'fitness-center',
+        iconImage: HOME_MVP_ASSETS.navActivities,
         label: 'Atividades',
         fullLabel: 'Atividades',
         onPress: () => rootNavigation.navigate('Activities' as never),
@@ -23,6 +27,7 @@ export const useMenuItems = (navigation: any): MenuItem[] => {
       {
         id: 'community',
         icon: 'group',
+        iconImage: HOME_MVP_ASSETS.navCommunity,
         label: 'Comunidade',
         fullLabel: 'Comunidade',
         onPress: () =>
@@ -33,6 +38,7 @@ export const useMenuItems = (navigation: any): MenuItem[] => {
       {
         id: 'chat',
         icon: 'chat',
+        iconImage: HOME_MVP_ASSETS.navChat,
         label: 'Chat',
         fullLabel: 'Chat',
         onPress: () => rootNavigation.navigate('Chat' as never),
@@ -40,6 +46,7 @@ export const useMenuItems = (navigation: any): MenuItem[] => {
       {
         id: 'marketplace',
         icon: 'store',
+        iconImage: HOME_MVP_ASSETS.navMarketplace,
         label: 'Marketplace',
         fullLabel: 'Marketplace',
         onPress: () => rootNavigation.navigate('Marketplace' as never),

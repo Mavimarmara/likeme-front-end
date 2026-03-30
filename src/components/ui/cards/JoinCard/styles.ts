@@ -1,5 +1,5 @@
 import { StyleSheet, Dimensions } from 'react-native';
-import { SPACING, FONT_SIZES, BORDER_RADIUS } from '@/constants';
+import { SPACING, FONT_SIZES } from '@/constants';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const CARD_WIDTH = SCREEN_WIDTH - SPACING.MD * 2 - SPACING.SM;
@@ -57,22 +57,7 @@ export const styles = StyleSheet.create({
     color: '#FFFFFF',
     lineHeight: 24,
   },
-  seeMoreButton: {
-    width: 54,
-    height: 48,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  buttonBackground: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonImage: {
-    borderRadius: BORDER_RADIUS.MD,
+  ctaIconButton: {
+    alignSelf: 'flex-end',
   },
 });

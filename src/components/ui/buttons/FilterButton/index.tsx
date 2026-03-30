@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, type ImageSourcePropType, type ImageStyle } from 'react-native';
 import SecondaryButton from '../Secondary';
 import { ModalBase } from '@/components/ui/modals/shared';
 import { COLORS } from '@/constants';
@@ -7,6 +7,8 @@ import { COLORS } from '@/constants';
 type Props = {
   label: string;
   icon?: string;
+  iconImage?: ImageSourcePropType;
+  iconImageStyle?: ImageStyle;
   iconPosition?: 'left' | 'right';
   /** Quando true, o botão é exibido em azul (estado selecionado). */
   selected?: boolean;
@@ -30,6 +32,8 @@ const selectedButtonStyle = StyleSheet.create({
 const FilterButton: React.FC<Props> = ({
   label,
   icon = 'arrow-drop-down',
+  iconImage,
+  iconImageStyle,
   iconPosition = 'right',
   selected = false,
   modalTitle,
@@ -60,7 +64,9 @@ const FilterButton: React.FC<Props> = ({
       <SecondaryButton
         label={label}
         onPress={handlePress}
-        icon={icon}
+        icon={iconImage != null ? undefined : icon}
+        iconImage={iconImage}
+        iconImageStyle={iconImageStyle}
         iconPosition={iconPosition}
         style={selected ? selectedButtonStyle.root : undefined}
         labelStyle={selected ? selectedButtonStyle.label : undefined}

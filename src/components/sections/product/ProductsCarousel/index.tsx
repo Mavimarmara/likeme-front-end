@@ -2,9 +2,13 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import Carousel from '../Carousel';
 import ProductCard, { Product } from '../ProductCard';
+import PaginationActive from '../../../../../assets/home-mvp/pagination-active.svg';
+import PaginationDefault from '../../../../../assets/home-mvp/pagination-default.svg';
 import { styles } from './styles';
 
 const VISIBLE_PRODUCTS_PER_PAGE = 2;
+
+const PAGINATION_DOT_LARGE = { width: 10 as const, height: 9 as const };
 
 type Props = {
   title: string;
@@ -38,6 +42,9 @@ const ProductsCarousel: React.FC<Props> = ({ title, subtitle, products, onProduc
           itemsPerPage={VISIBLE_PRODUCTS_PER_PAGE}
           showPagination={true}
           paginationSize='Large'
+          renderPaginationDot={(isActive) =>
+            isActive ? <PaginationActive {...PAGINATION_DOT_LARGE} /> : <PaginationDefault {...PAGINATION_DOT_LARGE} />
+          }
         />
       </View>
     </View>

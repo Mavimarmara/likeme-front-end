@@ -34,6 +34,11 @@ export const styles = StyleSheet.create({
   menuIcon: {
     marginRight: 8,
   },
+  menuIconImage: {
+    width: 22,
+    height: 22,
+    marginRight: 8,
+  },
   headerAvatar: {
     width: 32,
     height: 32,

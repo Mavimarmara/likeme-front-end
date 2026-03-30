@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform, View, TouchableOpacity, Text } from 'react-native';
+import { Platform, View, TouchableOpacity, Text, Image, type ImageSourcePropType } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ColoredTwoDotsIcon } from '@/assets/ui';
@@ -8,7 +8,8 @@ import { styles } from './styles';
 
 type MenuItem = {
   id: string;
-  icon: string;
+  icon?: string;
+  iconImage?: ImageSourcePropType;
   label: string;
   fullLabel?: string;
   onPress: () => void;
@@ -19,8 +20,8 @@ type Props = {
   selectedId?: string;
 };
 
-const HOME_ICON_SIZE = 32;
-const MENU_ICON_SIZE = 20;
+const HOME_MARK_SIZE = 32;
+const MENU_VECTOR_SIZE = 20;
 const BLUR_INTENSITY = 24;
 
 const FloatingMenu: React.FC<Props> = ({ items, selectedId }) => {
@@ -48,7 +49,7 @@ const FloatingMenu: React.FC<Props> = ({ items, selectedId }) => {
           accessibilityRole='button'
           accessibilityLabel='Home'
         >
-          <ColoredTwoDotsIcon width={HOME_ICON_SIZE} height={HOME_ICON_SIZE} />
+          <ColoredTwoDotsIcon width={HOME_MARK_SIZE} height={HOME_MARK_SIZE} />
           {selectedId === 'home' && <Text style={styles.pillLabel}>Home</Text>}
         </TouchableOpacity>
 
@@ -63,7 +64,15 @@ const FloatingMenu: React.FC<Props> = ({ items, selectedId }) => {
               accessibilityRole='button'
               accessibilityLabel={item.fullLabel || item.label}
             >
-              <Icon name={item.icon} size={MENU_ICON_SIZE} color={isSelected ? '#0154F8' : '#001137'} />
+              {item.iconImage != null ? (
+                <Image source={item.iconImage} style={styles.menuIconImage} resizeMode='contain' />
+              ) : (
+                <Icon
+                  name={item.icon ?? 'help-outline'}
+                  size={MENU_VECTOR_SIZE}
+                  color={isSelected ? '#0154F8' : '#001137'}
+                />
+              )}
               {isSelected && <Text style={styles.pillLabel}>{item.fullLabel || item.label}</Text>}
             </TouchableOpacity>
           );

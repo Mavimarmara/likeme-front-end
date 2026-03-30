@@ -1,7 +1,6 @@
-import { View, Text, TouchableOpacity, ImageBackground, ScrollView } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { View, Text, ScrollView } from 'react-native';
 import BlurCard from '../BlurCard';
-import { BackgroundIconButton } from '@/assets/ui';
+import { IconButton } from '@/components/ui/buttons';
 import { styles } from './styles';
 
 export type JoinCardItem = {
@@ -37,15 +36,14 @@ export function JoinCard<T extends JoinCardItem>({ items, onItemPress }: JoinCar
         <Text style={styles.title} numberOfLines={2}>
           {item.title}
         </Text>
-        <TouchableOpacity style={styles.seeMoreButton} activeOpacity={0.8} onPress={handlePress}>
-          <ImageBackground
-            source={BackgroundIconButton}
-            style={styles.buttonBackground}
-            imageStyle={styles.buttonImage}
-          >
-            <Icon name='chevron-right' size={30} color='#001137' />
-          </ImageBackground>
-        </TouchableOpacity>
+        <IconButton
+          icon='chevron-right'
+          iconColor='#001137'
+          iconSize={28}
+          onPress={handlePress}
+          backgroundSize='large'
+          containerStyle={styles.ctaIconButton}
+        />
       </View>
     );
 

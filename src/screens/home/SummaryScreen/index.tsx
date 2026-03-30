@@ -39,6 +39,7 @@ import { solutionOptions } from '@/types/solution';
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import { useAnalyticsScreen } from '@/analytics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { HOME_MVP_ASSETS } from '@/assets/homeMvp';
 import { styles } from './styles';
 
 type Props = {
@@ -326,6 +327,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
         userAvatarUri,
         showCartButton: true,
         onCartPress: handleCartPress,
+        showBellButton: true,
       }}
       contentContainerStyle={styles.content}
     >
@@ -349,6 +351,10 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
             />
             <FilterMenu<SolutionTab>
               filterButtonLabel={categoryFilterButtonLabel}
+              filterButtonIconImage={HOME_MVP_ASSETS.filterChevron}
+              filterButtonIconImageStyle={{
+                tintColor: selectedCategoryName != null || selectedSolutionIds.length > 0 ? '#FFFFFF' : '#001137',
+              }}
               filterButtonSelected={selectedCategoryName != null || selectedSolutionIds.length > 0}
               onFilterButtonPress={() => setIsFilterCategoryModalVisible(true)}
               carouselOptions={[...solutionOptions]}
