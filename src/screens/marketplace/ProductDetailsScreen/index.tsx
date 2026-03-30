@@ -51,6 +51,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   const { t } = useTranslation();
   const [activeProductTab, setActiveProductTab] = useState<'goal' | 'description' | 'composition'>('goal');
   const [quantity, setQuantity] = useState(1);
+  const [isQuantityDropdownOpen, setIsQuantityDropdownOpen] = useState(false);
 
   const { product, ad, advertiserId, loading, handleAddToCart, loadAd } = useProductDetails({
     productId: route.params?.productId,
@@ -142,6 +143,11 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   const usesPhysicalProductDetailLayout =
     product?.type === PRODUCT_CATALOG_TYPE.PHYSICAL || product?.type === PRODUCT_CATALOG_TYPE.PROGRAM;
 
+  const quantityOptions = useMemo(() => {
+    const maxQuantity = Math.max(1, Math.min(product?.quantity ?? 10, 10));
+    return Array.from({ length: maxQuantity }, (_, index) => index + 1);
+  }, [product?.quantity]);
+
   const handleHeroCartPress = () => {
     logAddToCart({
       item_id: product?.id ?? route.params?.productId ?? '',
@@ -180,6 +186,14 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       loadAd();
     }
   }, [product?.id, route.params?.productId, loadAd]);
+
+  useEffect(() => {
+    const firstOption = quantityOptions[0] ?? 1;
+    const lastOption = quantityOptions[quantityOptions.length - 1] ?? 1;
+    if (quantity < firstOption || quantity > lastOption) {
+      setQuantity(firstOption);
+    }
+  }, [quantity, quantityOptions]);
 
   // Obter imagem do produto para o background e hero section
   const backgroundImage = useMemo(() => {
@@ -272,17 +286,38 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                   <Text style={styles.contentPrice}>
                     {displayData.price != null ? formatPrice(displayData.price * quantity) : ''}
                   </Text>
-                  <View style={styles.quantitySelector}>
-                    <Text style={styles.quantityLabel}>{quantity}</Text>
-                    <TouchableOpacity
-                      style={styles.quantityButton}
-                      onPress={() => setQuantity((q) => Math.max(1, q - 1))}
-                    >
-                      <Icon name='keyboard-arrow-down' size={20} color='#FDFBEE' />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.quantityButton} onPress={() => setQuantity((q) => q + 1)}>
-                      <Icon name='keyboard-arrow-up' size={20} color='#FDFBEE' />
-                    </TouchableOpacity>
+                  <View style={styles.quantitySelectorWrapper}>
+                    <View style={styles.quantitySelector}>
+                      <Text style={styles.quantityLabel}>{quantity}</Text>
+                      <TouchableOpacity
+                        style={styles.quantityButton}
+                        onPress={() => setIsQuantityDropdownOpen((currentState) => !currentState)}
+                        activeOpacity={0.8}
+                      >
+                        <Icon
+                          name={isQuantityDropdownOpen ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
+                          size={20}
+                          color='#FDFBEE'
+                        />
+                      </TouchableOpacity>
+                    </View>
+                    {isQuantityDropdownOpen && (
+                      <View style={styles.quantityDropdown}>
+                        {quantityOptions.map((option) => (
+                          <TouchableOpacity
+                            key={option}
+                            style={styles.quantityDropdownOption}
+                            onPress={() => {
+                              setQuantity(option);
+                              setIsQuantityDropdownOpen(false);
+                            }}
+                            activeOpacity={0.7}
+                          >
+                            <Text style={styles.quantityDropdownOptionLabel}>{option}</Text>
+                          </TouchableOpacity>
+                        ))}
+                      </View>
+                    )}
                   </View>
                 </View>
                 <TouchableOpacity style={styles.paymentLinkRow} onPress={() => undefined} activeOpacity={0.7}>
