@@ -1,5 +1,5 @@
 export { default as CategoryModal } from './CategoryModal';
-export { FilterPickerModal } from './FilterPickerModal';
+export { FilterPickerModal, type FilterPickerSection, type FilterPickerOptionPressContext } from './FilterPickerModal';
 export {
   default as FilterCategoryModal,
   type FilterCategoryResult,

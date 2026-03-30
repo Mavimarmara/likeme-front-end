@@ -221,11 +221,13 @@ const AdsList: React.FC<AdsListProps> = ({
               <StickyFilterCarouselRow
                 filterButtonLabel={t('marketplace.orderBy')}
                 filterModalTitle={t('marketplace.orderBy')}
-                filterModalContent={({ close }) => (
+                filterModalContent={({ close, visible }) => (
                   <FilterPickerModal
-                    options={orderOptions}
+                    visible={visible}
+                    sections={[{ options: orderOptions }]}
                     selectedId={selectedOrder}
-                    onOptionPress={(id) => {
+                    confirmLabel={t('filterCategory.filter')}
+                    onConfirm={(id) => {
                       onOrderSelect?.(String(id));
                       close();
                     }}

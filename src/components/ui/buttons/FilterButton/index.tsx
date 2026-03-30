@@ -4,7 +4,7 @@ import SecondaryButton from '../Secondary';
 import { ModalBase } from '@/components/ui/modals/shared';
 import { COLORS } from '@/constants';
 
-type ModalContentRender = (api: { close: () => void }) => React.ReactNode;
+type ModalContentRender = (api: { close: () => void; visible: boolean }) => React.ReactNode;
 
 type Props = {
   label: string;
@@ -61,7 +61,8 @@ const FilterButton: React.FC<Props> = ({
     onModalClose?.();
   };
 
-  const resolvedModalContent = typeof modalContent === 'function' ? modalContent({ close: handleClose }) : modalContent;
+  const resolvedModalContent =
+    typeof modalContent === 'function' ? modalContent({ close: handleClose, visible: isModalVisible }) : modalContent;
 
   return (
     <>

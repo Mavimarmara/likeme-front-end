@@ -4,7 +4,7 @@ import { FilterButton } from '@/components/ui/buttons';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
 import { styles } from './styles';
 
-type ModalContentRender = (api: { close: () => void }) => ReactNode;
+type ModalContentRender = (api: { close: () => void; visible: boolean }) => ReactNode;
 
 type Props<T = string> = {
   filterButtonLabel?: string;
