@@ -2,7 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Image, Modal, Alert, Linking } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
+import { StickyFilterCarouselRow, type ButtonCarouselOption } from '@/components/ui/menu';
 import { GradientBackground, ScreenWithHeader } from '@/components/ui/layout';
 import { Toggle, PrimaryButton, Badge } from '@/components/ui';
 import { CreateActivityModal } from '@/components/sections/activity';
@@ -455,7 +455,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
 
   const renderFilters = () => (
     <View style={styles.filtersContainer}>
-      <FilterMenu
+      <StickyFilterCarouselRow
         filterButtonLabel={t('activities.day')}
         onFilterButtonPress={handleDaySortToggle}
         filterButtonIcon={daySortOrder === 'asc' ? 'arrow-drop-up' : 'arrow-drop-down'}

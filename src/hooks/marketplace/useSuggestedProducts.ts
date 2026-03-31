@@ -130,6 +130,8 @@ export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}):
             tag: categoryLabel,
             image: p.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
             likes: 0,
+            createdAt: p.createdAt,
+            updatedAt: p.updatedAt,
           };
         });
         setProducts(mappedProducts);

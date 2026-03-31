@@ -3,7 +3,7 @@ import { Alert, View, ScrollView, Text } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { GradientBackground, ScreenWithHeader } from '@/components/ui/layout';
 import { SearchBar } from '@/components/ui/inputs';
-import { FilterMenu } from '@/components/ui/menu';
+import { StickyFilterCarouselRow } from '@/components/ui/menu';
 import { FilterCategoryModal, type FilterCategoryResult, type SolutionId } from '@/components/ui/modals';
 import {
   useCommunities,
@@ -328,6 +328,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
         showCartButton: true,
         onCartPress: handleCartPress,
         showBellButton: true,
+        onBellPress: () => rootNavigation.navigate('Activities' as never),
       }}
       contentContainerStyle={styles.content}
     >
@@ -349,7 +350,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
               onSearchPress={() => undefined}
               showFilterButton={false}
             />
-            <FilterMenu<SolutionTab>
+            <StickyFilterCarouselRow<SolutionTab>
               filterButtonLabel={categoryFilterButtonLabel}
               filterButtonIconImage={HOME_MVP_ASSETS.filterChevron}
               filterButtonIconImageStyle={{

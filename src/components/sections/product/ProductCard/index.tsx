@@ -13,6 +13,8 @@ export interface Product {
   tag: string;
   image: string;
   likes: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 type Props = {

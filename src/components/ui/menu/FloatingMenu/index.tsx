@@ -1,9 +1,9 @@
 import React from 'react';
-import { Platform, View, TouchableOpacity, Text, Image, type ImageSourcePropType } from 'react-native';
+import { View, TouchableOpacity, Text, Image, type ImageSourcePropType } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ColoredTwoDotsIcon } from '@/assets/ui';
-import { BlurView } from 'expo-blur';
+import { PlatformBlurView } from '@/components/ui/PlatformBlurView';
 import { styles } from './styles';
 
 type MenuItem = {
@@ -33,12 +33,7 @@ const FloatingMenu: React.FC<Props> = ({ items, selectedId }) => {
 
   return (
     <View style={[styles.container]}>
-      <BlurView
-        intensity={BLUR_INTENSITY}
-        tint='light'
-        style={styles.blur}
-        experimentalBlurMethod={Platform.OS === 'android' ? 'dimezisBlurView' : undefined}
-      />
+      <PlatformBlurView intensity={BLUR_INTENSITY} tint='light' style={styles.blur} />
       <View style={styles.overlay} />
 
       <View style={styles.row}>

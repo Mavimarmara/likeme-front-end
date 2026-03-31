@@ -6,7 +6,10 @@ import { SecondaryButton } from '@/components/ui/buttons';
 import { EmptyState } from '@/components/ui/feedback';
 import { CommunityIntroSection, SpecialistCard } from '@/components/sections/community';
 import { AdsList } from '@/components/sections/marketplace';
-import type { ButtonCarouselOption } from '@/components/ui/menu';
+import type { ButtonCarouselOption } from '@/components/ui/carousel';
+import { DEFAULT_MARKETPLACE_SORT_ORDER, type MarketplaceSortOrderId } from '@/constants/marketplaceSortOrder';
+import { getMarketplaceSortOptions } from '@/utils/marketplace/sortOptions';
+import { sortShopProductsByMarketplaceOrder } from '@/utils/marketplace/sorting';
 import type { SpecialistCardProps } from '@/components/sections/community/SpecialistCard';
 import { useTranslation } from '@/hooks/i18n';
 import { storageService } from '@/services';
@@ -19,19 +22,6 @@ export type CommunityIntroData = {
   title: string;
   description: string;
   imageUri?: string | null;
-};
-
-type OrderTab = 'best' | 'above100';
-
-const applyOrder = <T extends Product>(list: T[], order: OrderTab): T[] => {
-  let result = [...list];
-  if (order === 'above100') {
-    result = result.filter((p) => (p.price ?? 0) >= 100) as T[];
-  }
-  if (order === 'best') {
-    result = result.slice().sort((a, b) => (b.likes ?? 0) - (a.likes ?? 0)) as T[];
-  }
-  return result;
 };
 
 type Props = {
@@ -63,7 +53,7 @@ const ShoppingList: React.FC<Props> = ({
   embedInParentScroll = false,
 }) => {
   const { t } = useTranslation();
-  const [activeOrder, setActiveOrder] = useState<OrderTab>('best');
+  const [activeOrder, setActiveOrder] = useState<MarketplaceSortOrderId>(DEFAULT_MARKETPLACE_SORT_ORDER);
   const [shoppingTipDismissed, setShoppingTipDismissed] = useState(true);
 
   useEffect(() => {
@@ -100,17 +90,20 @@ const ShoppingList: React.FC<Props> = ({
     [programs, t],
   );
 
-  const orderedProducts = useMemo(() => applyOrder(productsWithTag, activeOrder), [productsWithTag, activeOrder]);
-  const orderedServices = useMemo(() => applyOrder(servicesWithTag, activeOrder), [servicesWithTag, activeOrder]);
-  const orderedPrograms = useMemo(() => applyOrder(programsWithTag, activeOrder), [programsWithTag, activeOrder]);
-
-  const orderOptions: ButtonCarouselOption<OrderTab>[] = useMemo(
-    () => [
-      { id: 'best', label: t('marketplace.bestRated') },
-      { id: 'above100', label: t('marketplace.above100') },
-    ],
-    [t],
+  const orderedProducts = useMemo(
+    () => sortShopProductsByMarketplaceOrder(productsWithTag, activeOrder),
+    [productsWithTag, activeOrder],
   );
+  const orderedServices = useMemo(
+    () => sortShopProductsByMarketplaceOrder(servicesWithTag, activeOrder),
+    [servicesWithTag, activeOrder],
+  );
+  const orderedPrograms = useMemo(
+    () => sortShopProductsByMarketplaceOrder(programsWithTag, activeOrder),
+    [programsWithTag, activeOrder],
+  );
+
+  const orderOptions: ButtonCarouselOption<string>[] = useMemo(() => getMarketplaceSortOptions(t), [t]);
 
   const solutionTabs: { id: string; label: string }[] = useMemo(
     () => [
@@ -221,7 +214,7 @@ const ShoppingList: React.FC<Props> = ({
         onProductPress={onProductPress}
         orderOptions={orderOptions}
         selectedOrder={activeOrder}
-        onOrderSelect={(id) => setActiveOrder(id as OrderTab)}
+        onOrderSelect={(id) => setActiveOrder(id as MarketplaceSortOrderId)}
         tabsContainerStyle={styles.solutionsTabsRow}
       />
     </>

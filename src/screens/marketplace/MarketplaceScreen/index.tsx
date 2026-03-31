@@ -4,7 +4,10 @@ import type { StackNavigationProp } from '@react-navigation/stack';
 import type { RouteProp } from '@react-navigation/native';
 import { SearchBar } from '@/components/ui/inputs';
 import { IconButton } from '@/components/ui/buttons';
-import { FilterMenu, type ButtonCarouselOption } from '@/components/ui/menu';
+import { StickyFilterCarouselRow, type ButtonCarouselOption } from '@/components/ui/menu';
+import { DEFAULT_MARKETPLACE_SORT_ORDER, type MarketplaceSortOrderId } from '@/constants/marketplaceSortOrder';
+import { getMarketplaceSortOptions } from '@/utils/marketplace/sortOptions';
+import { sortAdsByMarketplaceOrder } from '@/utils/marketplace/sorting';
 import { ScreenWithHeader } from '@/components/ui/layout';
 import { GradientBackgroundByCategory } from '@/components/sections';
 import { FilterCategoryModal, type FilterCategoryResult, type SolutionId } from '@/components/ui/modals';
@@ -35,8 +38,6 @@ import { CategoryName } from '@/types';
 const CATEGORY_ALL = 'all';
 const CATEGORY_PRODUCTS = 'products';
 const CATEGORY_SPECIALISTS = 'specialists';
-const ORDER_BEST_RATED = 'best-rated';
-const ORDER_ABOVE_100 = 'above-100';
 const SOLUTION_PRODUCTS = 'products';
 const SOLUTION_PROFESSIONALS = 'professionals';
 
@@ -55,11 +56,6 @@ const getSolutionTabs = (t: (key: string) => string) => [
   { id: 'professionals', label: t('filterCategory.solutions.professionals') },
 ];
 
-const getOrderOptions = (t: (key: string) => string): ButtonCarouselOption<string>[] => [
-  { id: ORDER_BEST_RATED, label: t('marketplace.bestRated') },
-  { id: ORDER_ABOVE_100, label: t('marketplace.above100') },
-];
-
 type MarketplaceScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'Marketplace'>;
   route?: RouteProp<RootStackParamList, 'Marketplace'>;
@@ -75,7 +71,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   const [selectedSolutionTab, setSelectedSolutionTab] = useState<string>('products');
   const selectedCategory = selectedSolutionTab === 'professionals' ? CATEGORY_SPECIALISTS : selectedSolutionTab;
   const [selectedCategoryName, setSelectedCategoryName] = useState<CategoryName | null>(null);
-  const [selectedOrder, setSelectedOrder] = useState<string>(ORDER_BEST_RATED);
+  const [selectedOrder, setSelectedOrder] = useState<string>(DEFAULT_MARKETPLACE_SORT_ORDER);
   const [page, setPage] = useState(1);
   const [isFilterCategoryModalVisible, setIsFilterCategoryModalVisible] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>(undefined);
@@ -94,7 +90,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
 
   const categoryOptions = useMemo(() => getCategoryOptions(t), [t]);
   const solutionTabs = useMemo(() => getSolutionTabs(t), [t]);
-  const orderOptions = useMemo(() => getOrderOptions(t), [t]);
+  const orderOptions = useMemo(() => getMarketplaceSortOptions(t), [t]);
 
   const isProgramsTab = selectedSolutionTab === 'programs';
 
@@ -233,7 +229,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
         </View>
       </View>
       <View style={styles.filterMenuContainer}>
-        <FilterMenu
+        <StickyFilterCarouselRow
           filterButtonLabel={categoryFilterButtonLabel}
           filterButtonSelected={selectedCategoryName != null || selectedSolutionIds.length > 0}
           onFilterButtonPress={() => setIsFilterCategoryModalVisible(true)}
@@ -264,21 +260,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   );
 
   const sortedAds = useMemo(() => {
-    return [...ads].sort((a, b) => {
-      const priceA = a.product?.price ?? 0;
-      const priceB = b.product?.price ?? 0;
-      const nameA = (a.product?.name ?? '').toLowerCase();
-      const nameB = (b.product?.name ?? '').toLowerCase();
-
-      if (selectedOrder === ORDER_ABOVE_100) {
-        const aAbove = priceA >= 100 ? 1 : 0;
-        const bAbove = priceB >= 100 ? 1 : 0;
-        if (bAbove !== aAbove) return bAbove - aAbove;
-        return priceB - priceA;
-      }
-
-      return nameA.localeCompare(nameB);
-    });
+    return sortAdsByMarketplaceOrder(ads, selectedOrder as MarketplaceSortOrderId);
   }, [ads, selectedOrder]);
 
   const filteredAdsBySolution = useMemo(() => {

@@ -48,7 +48,7 @@ jest.mock('@/components/ui/menu', () => {
   const { View } = require('react-native');
   return {
     FloatingMenu: () => <View testID='floating-menu' />,
-    FilterMenu: ({
+    StickyFilterCarouselRow: ({
       filterButtonLabel,
       onFilterButtonPress,
       carouselOptions,
