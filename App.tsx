@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { AppState, LogBox, Platform, StatusBar } from 'react-native';
 import { useFonts } from 'expo-font';
 import * as NavigationBar from 'expo-navigation-bar';
@@ -12,11 +12,19 @@ import './src/i18n';
 // Desabilitar todos os logs que aparecem na tela
 LogBox.ignoreAllLogs(true);
 
+const FONT_LOAD_MAX_WAIT_MS = 10_000;
+
 const App: React.FC = () => {
   const navBarHideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [fontLoadDeadlinePassed, setFontLoadDeadlinePassed] = useState(false);
   const [fontsLoaded, fontError] = useFonts({
     'Bricolage Grotesque': require('./assets/fonts/BricolageGrotesque-Regular.ttf'),
   });
+
+  useEffect(() => {
+    const t = setTimeout(() => setFontLoadDeadlinePassed(true), FONT_LOAD_MAX_WAIT_MS);
+    return () => clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     void startI18nHydration('pt-BR');
@@ -111,7 +119,7 @@ const App: React.FC = () => {
     };
   }, []);
 
-  if (!fontsLoaded && !fontError) {
+  if (!fontsLoaded && !fontError && !fontLoadDeadlinePassed) {
     return null;
   }
 
