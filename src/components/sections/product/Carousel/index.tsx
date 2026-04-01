@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { View, ScrollView, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import { View, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { styles } from './styles';
 
 type Props = {

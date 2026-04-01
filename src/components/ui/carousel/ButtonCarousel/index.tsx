@@ -1,4 +1,5 @@
-import { ScrollView, ViewStyle } from 'react-native';
+import { ViewStyle } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { PrimaryButton } from '@/components/ui/buttons';
 import { styles } from './styles';
 
