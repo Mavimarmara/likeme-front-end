@@ -34,11 +34,8 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 2,
+    backgroundColor: 'transparent',
+    borderRadius: 24,
     minHeight: 48,
     minWidth: 48,
   },
@@ -47,6 +44,11 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 16,
     backgroundColor: COLORS.SECONDARY.PURE,
     borderRadius: 48,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 2,
   },
   pillLabel: {
     fontFamily: 'DM Sans',
@@ -64,6 +66,7 @@ export const styles = StyleSheet.create({
   menuIconImage: {
     width: 32,
     height: 32,
+    backgroundColor: 'transparent',
   },
 
   shopIconWrap: {
