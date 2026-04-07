@@ -1,18 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { AppState, LogBox, Platform, StatusBar } from 'react-native';
+import { AppState, LogBox, Platform, StatusBar, View } from 'react-native';
 import { useFonts } from 'expo-font';
 import * as NavigationBar from 'expo-navigation-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { RootNavigator } from './src/navigation';
 import { AUTH0_CONFIG } from './src/config/environment';
 import { startI18nHydration } from './src/i18n/hydration';
+import { COLORS } from './src/constants';
 // Importar i18n antes de qualquer componente que use useTranslation
 import './src/i18n';
 
 // Desabilitar todos os logs que aparecem na tela
 LogBox.ignoreAllLogs(true);
 
-const FONT_LOAD_MAX_WAIT_MS = 10_000;
+const FONT_LOAD_MAX_WAIT_MS = 5_000;
 
 const App: React.FC = () => {
   const navBarHideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -120,7 +121,7 @@ const App: React.FC = () => {
   }, []);
 
   if (!fontsLoaded && !fontError && !fontLoadDeadlinePassed) {
-    return null;
+    return <View style={{ flex: 1, backgroundColor: COLORS.BACKGROUND }} />;
   }
 
   return (

@@ -58,6 +58,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
 
   useEffect(() => {
     const run = async () => {
+      let shouldAuthenticate = false;
       void startI18nHydration('pt-BR');
       const timing = (anim: Animated.Value, toValue: number, duration: number) =>
         new Promise<void>((resolve) => {
@@ -80,62 +81,68 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
           });
         });
 
-      await timing(fadeAnim, 1, 300);
-      await delay(300);
-
-      const firstOffset = cumulativeOffsets[0] ?? -GRADIENT_STRIP_HEIGHT;
-
-      await Promise.all([timing(scrollAnim, firstOffset, 1200), fadeTagToStep(1, 160, 1040)]);
-      await delay(240);
-
-      const secondOffset = cumulativeOffsets[1] ?? cumulativeOffsets[0] ?? -GRADIENT_STRIP_HEIGHT;
-
-      await Promise.all([timing(scrollAnim, secondOffset, 1200), fadeTagToStep(2, 160, 1040)]);
-
-      await delay(360);
-
       try {
-        const token = await storageService.getToken();
-        if (token) {
-          const response = await fetchWithTimeout(
-            getApiUrl('/api/auth/token'),
-            {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-              },
-            },
-            AUTH_TOKEN_VALIDATE_TIMEOUT_MS,
-          );
+        await timing(fadeAnim, 1, 300);
+        await delay(300);
 
-          if (response.ok) {
-            const data = await response.json();
-            if (data.token || data.accessToken) {
-              await storageService.setToken(data.token || data.accessToken);
+        const firstOffset = cumulativeOffsets[0] ?? -GRADIENT_STRIP_HEIGHT;
+
+        await Promise.all([timing(scrollAnim, firstOffset, 1200), fadeTagToStep(1, 160, 1040)]);
+        await delay(240);
+
+        const secondOffset = cumulativeOffsets[1] ?? cumulativeOffsets[0] ?? -GRADIENT_STRIP_HEIGHT;
+
+        await Promise.all([timing(scrollAnim, secondOffset, 1200), fadeTagToStep(2, 160, 1040)]);
+
+        await delay(360);
+
+        try {
+          const token = await storageService.getToken();
+          if (token) {
+            const response = await fetchWithTimeout(
+              getApiUrl('/api/auth/token'),
+              {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${token}`,
+                },
+              },
+              AUTH_TOKEN_VALIDATE_TIMEOUT_MS,
+            );
+
+            if (response.ok) {
+              const data = await response.json();
+              if (data.token || data.accessToken) {
+                await storageService.setToken(data.token || data.accessToken);
+              }
+              shouldAuthenticate = true;
             }
-            await ensureI18nHydrated({ lang: 'pt-BR', timeoutMs: 2500 });
-            navigation.replace('Authenticated');
-            return;
+          }
+        } catch (error) {
+          const err = error as Error & { name?: string };
+          const aborted = err?.name === 'AbortError' || (error instanceof Error && error.message?.includes('aborted'));
+          console.error('Erro ao renovar token:', error);
+          if (aborted) {
+            await storageService.removeToken();
           }
         }
       } catch (error) {
-        const err = error as Error & { name?: string };
-        const aborted = err?.name === 'AbortError' || (error instanceof Error && error.message?.includes('aborted'));
-        console.error('Erro ao renovar token:', error);
-        if (aborted) {
-          await storageService.removeToken();
-        }
+        console.error('[LoadingScreen] Falha no fluxo inicial (animacao ou bootstrap):', error);
       }
 
-      // Se não houver token ou a renovação falhar, redirecionar para Unauthenticated
-      await ensureI18nHydrated({ lang: 'pt-BR', timeoutMs: 2500 });
-      navigation.replace('Unauthenticated');
+      try {
+        await ensureI18nHydrated({ lang: 'pt-BR', timeoutMs: 2500 });
+      } catch (hydrationError) {
+        console.error('[LoadingScreen] Falha ao aguardar i18n:', hydrationError);
+      }
+
+      navigation.replace(shouldAuthenticate ? 'Authenticated' : 'Unauthenticated');
     };
 
     const timer = setTimeout(run, 300);
     return () => clearTimeout(timer);
-  }, [navigation, scrollAnim, fadeAnim, taglineOpacity]);
+  }, [navigation, scrollAnim, fadeAnim, taglineOpacity, cumulativeOffsets]);
 
   return (
     <SafeAreaView style={styles.container}>
