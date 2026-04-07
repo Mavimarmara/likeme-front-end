@@ -3,7 +3,7 @@ import { View, Text, ScrollView, Image } from 'react-native';
 import { LogoutButton, Title } from '@/components/ui';
 import { ScreenWithHeader } from '@/components/ui/layout';
 import { storageService } from '@/services';
-import { useMenuItems } from '@/hooks';
+import { useMenuItems, useUserAvatar } from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 import type { StoredUser } from '@/types/auth';
@@ -20,6 +20,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   useAnalyticsScreen({ screenName: 'Profile', screenClass: 'ProfileScreen' });
   const { t } = useTranslation();
   const rootNavigation = navigation.getParent() ?? navigation;
+  const userAvatarUri = useUserAvatar();
   const [user, setUser] = useState<StoredUser | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -48,10 +49,31 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
     });
   };
 
+  const handleMenuPress = () => {
+    rootNavigation.navigate('Summary' as never);
+  };
+
+  const handleCartPress = () => {
+    rootNavigation.navigate('Cart' as never);
+  };
+
+  const handleBellPress = () => {
+    rootNavigation.navigate('Activities' as never);
+  };
+
   return (
     <ScreenWithHeader
       navigation={navigation}
-      headerProps={{ showBackButton: false }}
+      headerProps={{
+        showBackButton: false,
+        showMenuWithAvatar: true,
+        onMenuPress: handleMenuPress,
+        userAvatarUri,
+        showCartButton: true,
+        onCartPress: handleCartPress,
+        showBellButton: true,
+        onBellPress: handleBellPress,
+      }}
       contentBackgroundColor={COLORS.BACKGROUND}
       contentContainerStyle={styles.container}
     >

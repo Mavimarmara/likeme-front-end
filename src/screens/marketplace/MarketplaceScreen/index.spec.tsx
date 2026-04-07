@@ -10,6 +10,7 @@ const mockUseProducts = jest.fn();
 
 jest.mock('@/contexts/FloatingMenuContext', () => ({
   useSetFloatingMenu: () => jest.fn(),
+  useIsFloatingMenuVisible: () => false,
 }));
 
 jest.mock('react-native-safe-area-context', () => {

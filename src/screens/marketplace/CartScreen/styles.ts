@@ -7,6 +7,9 @@ export const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     position: 'relative',
   },
+  contentFloatingMenuReserve: {
+    paddingBottom: SPACING.XXL * 1.5,
+  },
   backgroundLayer: {
     position: 'absolute',
     top: 0,

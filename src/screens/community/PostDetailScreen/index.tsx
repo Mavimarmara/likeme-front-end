@@ -7,9 +7,8 @@ import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
 import { COLORS, KEYBOARD_AWARE_SCROLL } from '@/constants';
 import type { Post } from '@/types';
-import { useFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { IconButton } from '@/components/ui/buttons';
-import { useMenuItems, usePostReplies, useTranslation } from '@/hooks';
+import { usePostReplies, useTranslation } from '@/hooks';
 import { communityService } from '@/services';
 import { mapCommunityPostToPost } from '@/utils';
 import { logger } from '@/utils/logger';
@@ -74,19 +73,6 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     });
   const scrollViewRef = useRef<ScrollView>(null);
   const { bottom: bottomInset } = useSafeAreaInsets();
-
-  const menuItems = useMenuItems(navigation);
-  const { clearMenu, setMenu } = useFloatingMenu();
-
-  useEffect(() => {
-    // Esconde o menu enquanto o usuário está em PostDetail.
-    // Ao voltar, restauramos o menu para não ficar "apagado" no estado global.
-    clearMenu();
-
-    return () => {
-      setMenu(menuItems, 'community');
-    };
-  }, [clearMenu, menuItems, setMenu]);
 
   const postForRendering = useMemo(() => {
     return {

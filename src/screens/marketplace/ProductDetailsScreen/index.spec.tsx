@@ -135,6 +135,7 @@ jest.mock('@/hooks', () => ({
 
 jest.mock('@/contexts/FloatingMenuContext', () => ({
   useSetFloatingMenu: jest.fn(),
+  useIsFloatingMenuVisible: () => false,
 }));
 
 jest.mock('@/analytics', () => ({

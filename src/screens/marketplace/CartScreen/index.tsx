@@ -219,7 +219,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
         showCartButton: false,
         showMenuWithAvatar: false,
       }}
-      contentContainerStyle={styles.container}
+      contentContainerStyle={[styles.container, styles.contentFloatingMenuReserve]}
       contentBackgroundColor='transparent'
     >
       {renderBackground()}

@@ -63,6 +63,7 @@ jest.mock('@/analytics', () => ({
 
 jest.mock('@/contexts/FloatingMenuContext', () => ({
   useSetFloatingMenu: jest.fn(),
+  useIsFloatingMenuVisible: () => false,
 }));
 
 jest.mock('@/services/auth/storageService', () => {

@@ -6,8 +6,13 @@ import { activityService, orderService } from '@/services';
 
 jest.mock('@/contexts/FloatingMenuContext', () => ({
   FloatingMenuProvider: ({ children }: { children: React.ReactNode }) => children,
-  useFloatingMenu: () => ({ setMenu: jest.fn(), clearMenu: jest.fn() }),
+  useFloatingMenu: () => ({
+    setMenu: jest.fn(),
+    clearMenu: jest.fn(),
+    isFloatingMenuVisible: false,
+  }),
   useSetFloatingMenu: () => jest.fn(),
+  useIsFloatingMenuVisible: () => false,
 }));
 
 function renderWithProvider(ui: React.ReactElement) {

@@ -129,7 +129,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
     getCategoryName,
   });
 
-  const { allCategoryOptions } = useCategories({ enabled: true });
+  const { allCategoryOptions, categories } = useCategories({ enabled: true });
   const [popularProviders, setPopularProviders] = useState<Provider[]>([]);
   const [_loadingProviders, setLoadingProviders] = useState(false);
   // const [events, setEvents] = useState<Event[]>([]);
@@ -251,7 +251,15 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
     setSelectedSolutionTab('all');
   }, []);
 
-  const categoryFilterButtonLabel = selectedCategoryName != null ? getCategoryName(selectedCategoryName) : 'Autoestima';
+  const selectedCategoryFromId =
+    selectedCategoryId != null
+      ? categories.find((category) => String(category.categoryId) === String(selectedCategoryId))
+      : null;
+
+  const categoryFilterButtonLabel =
+    selectedCategoryName != null
+      ? getCategoryName(selectedCategoryName)
+      : selectedCategoryFromId?.name ?? t('marketplace.category');
   const carouselSolutionOptions = useMemo(
     () => solutionOptions.map((option) => ({ id: option.id, label: t(option.labelKey) })),
     [t],
@@ -338,7 +346,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
         >
           <View style={styles.searchAndFilters}>
             <SearchBar
-              placeholder='Buscar'
+              placeholder={t('common.search')}
               value={searchQuery}
               onChangeText={setSearchQuery}
               onSearchPress={() => undefined}
@@ -389,7 +397,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
             <>
               {filteredJoinCommunities.length > 0 && (
                 <View style={styles.sectionDivider}>
-                  <Text style={styles.sectionTitle}>Comunidade recomendada</Text>
+                  <Text style={styles.sectionTitle}>{t('home.recommendedCommunitySectionTitle')}</Text>
                   <View style={styles.sectionContainer}>
                     <JoinCard items={filteredJoinCommunities} onItemPress={handleJoinCommunity} />
                   </View>
@@ -399,7 +407,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
               {(selectedSolutionTab === 'all' || selectedSolutionTab === 'programs') &&
                 recommendedProgramCards.length > 0 && (
                   <View style={styles.sectionDivider}>
-                    <Text style={styles.sectionTitle}>Programa recomendado</Text>
+                    <Text style={styles.sectionTitle}>{t('home.recommendedProgramSectionTitle')}</Text>
                     <View style={styles.sectionContainer}>
                       <JoinCard items={recommendedProgramCards} onItemPress={handleProgramPress} />
                     </View>
