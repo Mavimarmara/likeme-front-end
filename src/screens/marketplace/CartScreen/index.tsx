@@ -1,13 +1,15 @@
 import React, { useCallback, useState, useEffect, useRef } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput, Linking } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GradientBackground, ScreenWithHeader } from '@/components/ui/layout';
 import type { RootStackParamList } from '@/types/navigation';
 import { formatPrice } from '@/utils';
 import { Alert } from 'react-native';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { ProductItemCard } from '@/components/ui/cards';
-import { useTranslation, useCart, useFormattedInput } from '@/hooks';
+import { useMenuItems, useTranslation, useCart, useFormattedInput } from '@/hooks';
+import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useAnalyticsScreen } from '@/analytics';
 import { isValidZipCodeFormat, formatZipCodeDisplay } from '@/services/address/cepService';
 import { getShippingQuote } from '@/services/shipping/shippingService';
@@ -23,7 +25,10 @@ const CORREIOS_CEP_URL = 'https://buscacepinter.correios.com.br/app/endereco/ind
 
 const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
   useAnalyticsScreen({ screenName: 'Cart', screenClass: 'CartScreen' });
+  const { bottom: bottomInset } = useSafeAreaInsets();
   const { t } = useTranslation();
+  const menuItems = useMenuItems(navigation);
+  useSetFloatingMenu(menuItems, 'marketplace');
   const { cartItems, loading, loadAndValidateCartItems, increaseQuantity, decreaseQuantity, removeItem, subtotal } =
     useCart();
 
@@ -220,10 +225,10 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
       {renderBackground()}
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent]}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.screenTitle}>{t('cart.yourCart')}</Text>
+        <Text style={styles.screenTitle}>{t('cart.screenTitle')}</Text>
         {renderWarningBanner()}
         {loading ? (
           <View style={styles.loadingContainer}>
@@ -235,9 +240,13 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
             <View style={styles.cartItemsList}>{cartItems.map((item) => renderCartItem(item))}</View>
             {renderShippingSection()}
             {renderOrderSummary()}
-            <View style={styles.bottomSpacer} />
             <View style={styles.buyButtonContainer}>
-              <SecondaryButton label={t('common.buy')} onPress={handleBuy} style={styles.buyButton} size='large' />
+              <SecondaryButton
+                label={t('cart.finalizePurchase')}
+                onPress={handleBuy}
+                style={styles.buyButton}
+                size='large'
+              />
             </View>
           </>
         ) : (

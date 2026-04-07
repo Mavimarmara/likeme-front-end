@@ -61,6 +61,10 @@ jest.mock('@/analytics', () => ({
   useAnalyticsScreen: jest.fn(),
 }));
 
+jest.mock('@/contexts/FloatingMenuContext', () => ({
+  useSetFloatingMenu: jest.fn(),
+}));
+
 jest.mock('@/services/auth/storageService', () => {
   const getCartItems = jest.fn();
   const setCartItems = jest.fn();
@@ -136,6 +140,7 @@ describe('CartScreen', () => {
   const mockNavigation = {
     navigate: jest.fn(),
     goBack: jest.fn(),
+    getParent: jest.fn(() => undefined),
     addListener: jest.fn((event: string, callback: () => void) => {
       // Não chama o callback automaticamente - apenas registra
       // O loadCartItems será chamado pelo useEffect diretamente
@@ -230,12 +235,12 @@ describe('CartScreen', () => {
     await waitFor(
       () => {
         expect(queryByText('cart.loadingCart')).toBeNull();
-        expect(getByText('common.buy')).toBeTruthy();
+        expect(getByText('cart.finalizePurchase')).toBeTruthy();
       },
       { timeout: 3000 },
     );
 
-    const buyButton = getByText('common.buy');
+    const buyButton = getByText('cart.finalizePurchase');
     fireEvent.press(buyButton);
 
     expect(mockNavigation.navigate).toHaveBeenCalledWith('Checkout', undefined);

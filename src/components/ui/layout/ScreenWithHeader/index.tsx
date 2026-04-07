@@ -2,7 +2,7 @@ import React from 'react';
 import { View, type ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Header from '../Header';
-import { COLORS } from '@/constants';
+import { COLORS, SPACING } from '@/constants';
 
 type HeaderProps = React.ComponentProps<typeof Header>;
 
@@ -30,7 +30,17 @@ const ScreenWithHeader: React.FC<Props> = ({
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: headerBackgroundColor }} edges={['top']}>
       <Header {...headerProps} onLogoPress={headerProps?.onLogoPress ?? defaultOnLogoPress} />
-      <View style={[{ flex: 1, backgroundColor: contentBackgroundColor, position: 'relative' }, contentContainerStyle]}>
+      <View
+        style={[
+          {
+            flex: 1,
+            backgroundColor: contentBackgroundColor,
+            position: 'relative',
+            paddingBottom: SPACING.XXL * 1.5,
+          },
+          contentContainerStyle,
+        ]}
+      >
         {children}
       </View>
     </SafeAreaView>

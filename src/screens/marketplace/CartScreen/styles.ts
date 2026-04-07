@@ -21,7 +21,6 @@ export const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingBottom: 0,
   },
   screenTitle: {
     fontSize: FONT_SIZES.XL,
@@ -195,9 +194,6 @@ export const styles = StyleSheet.create({
   buyButtonContainer: {
     marginHorizontal: SPACING.MD,
     marginVertical: SPACING.MD,
-  },
-  bottomSpacer: {
-    flex: 1,
   },
   loadingContainer: {
     padding: SPACING.XL,
