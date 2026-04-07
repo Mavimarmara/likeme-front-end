@@ -5,7 +5,7 @@ import { View, Text, ScrollView, Image, useWindowDimensions, Alert } from 'react
 import { IconSilhouette, PrimaryButton, SelectionButtonQuiz } from '@/components/ui';
 import { ScreenWithHeader } from '@/components/ui/layout';
 import { CTACard } from '@/components/ui/cards';
-import { COLORS } from '@/constants';
+import { COLORS, SPACING } from '@/constants';
 import { GradientSplash6 } from '@/assets/auth';
 import { personalObjectivesService, storageService } from '@/services';
 import { useTranslation } from '@/hooks/i18n';
@@ -27,6 +27,7 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
   const { markers } = useMarkers();
   const [selectedMarkers, setSelectedMarkers] = useState<Set<string>>(new Set());
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [betaBannerVisible, setBetaBannerVisible] = useState(true);
   const { width: windowWidth } = useWindowDimensions();
 
   const adornmentStyle = useMemo(() => {
@@ -102,19 +103,29 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={[styles.scrollContent, { paddingBottom: 170 + Math.max(insets.bottom, 0) }]}
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingBottom: SPACING.XXL + Math.max(insets.bottom, SPACING.MD) },
+        ]}
       >
         <View style={styles.content}>
           <Image source={GradientSplash6} style={[styles.titleAdornment, adornmentStyle]} resizeMode='contain' />
           <Text style={styles.greeting}>{firstName},</Text>
-          <CTACard
-            highlightText={t('auth.personalObjectivesCardTitle')}
-            description={t('auth.personalObjectivesCardDescription')}
-            backgroundColor={COLORS.HIGHLIGHT.LIGHT}
-            style={styles.ctaCard}
-          />
-          <Text style={styles.question}>{t('auth.personalObjectivesQuestion')}</Text>
-          <Text style={styles.description}>{t('auth.personalObjectivesQuestioDescription')}</Text>
+          {betaBannerVisible && (
+            <CTACard
+              title={t('auth.personalObjectivesCardTitle')}
+              titleStyle={styles.betaCardTitle}
+              highlightText={t('auth.personalObjectivesCardHighlightText')}
+              description={t('auth.personalObjectivesCardDescription')}
+              backgroundColor={COLORS.HIGHLIGHT.LIGHT}
+              style={styles.ctaCard}
+              onClose={() => setBetaBannerVisible(false)}
+            />
+          )}
+          <View style={styles.instructionBlock}>
+            <Text style={styles.question}>{t('auth.personalObjectivesQuestion')}</Text>
+            <Text style={styles.description}>{t('auth.personalObjectivesQuestioDescription')}</Text>
+          </View>
 
           <View style={styles.markersList}>
             {markers.map((marker) => {
@@ -134,19 +145,17 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
               );
             })}
           </View>
+
+          <PrimaryButton
+            label={t('auth.personalObjectivesStart')}
+            onPress={handleSubmit}
+            disabled={isSubmitting}
+            loading={isSubmitting}
+            style={styles.saveButton}
+            size='large'
+          />
         </View>
       </ScrollView>
-
-      <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 0) }]}>
-        <PrimaryButton
-          label={t('common.save')}
-          onPress={handleSubmit}
-          disabled={isSubmitting}
-          loading={isSubmitting}
-          style={styles.saveButton}
-          size='large'
-        />
-      </View>
     </ScreenWithHeader>
   );
 };

@@ -20,6 +20,9 @@ const t = (key: string, opts?: Record<string, string>) => {
     'auth.objectiveEnvironment': 'Ambiente',
     'common.next': 'Próximo',
     'common.save': 'Salvar',
+    'auth.personalObjectivesStart': 'Iniciar',
+    'auth.personalObjectivesCardTitle': 'Versão beta',
+    'auth.personalObjectivesCardDescription': 'Descrição do card.',
     'common.skip': 'Pular',
     'common.error': 'Erro',
     'common.skipInformation': 'Pular Informação',
@@ -170,12 +173,12 @@ describe('PersonalObjectivesScreen', () => {
     await waitFor(() => {
       expect(getByText('John,')).toBeTruthy();
       expect(getByText('Quais são os principais pontos onde podemos te ajudar?')).toBeTruthy();
-      expect(getByText('Salvar')).toBeTruthy();
+      expect(getByText('Iniciar')).toBeTruthy();
       expect(getByText('Pular')).toBeTruthy();
     });
   });
 
-  it('navigates to Home when Salvar button is pressed with at least one objective selected', async () => {
+  it('navigates to Home when Iniciar button is pressed with at least one objective selected', async () => {
     const mockNavigation = {
       navigate: jest.fn(),
       goBack: jest.fn(),
@@ -189,11 +192,11 @@ describe('PersonalObjectivesScreen', () => {
     const { getByText } = render(<PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />);
 
     await waitFor(() => {
-      expect(getByText('Salvar')).toBeTruthy();
+      expect(getByText('Iniciar')).toBeTruthy();
     });
 
     fireEvent.press(getByText('Sono'));
-    fireEvent.press(getByText('Salvar'));
+    fireEvent.press(getByText('Iniciar'));
 
     await waitFor(() => {
       expect(getServices().storageService.setSelectedObjectivesIds).toHaveBeenCalledWith(['sleep']);
@@ -270,15 +273,15 @@ describe('PersonalObjectivesScreen', () => {
     expect(row).toBeTruthy();
   });
 
-  it('shows alert when Salvar is pressed without selecting any marker', async () => {
+  it('shows alert when Iniciar is pressed without selecting any marker', async () => {
     const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
     const mockRoute = { params: { firstName: 'John' } };
     const alertSpy = jest.spyOn(require('react-native').Alert, 'alert');
 
     const { getByText } = render(<PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />);
 
-    await waitFor(() => expect(getByText('Salvar')).toBeTruthy());
-    fireEvent.press(getByText('Salvar'));
+    await waitFor(() => expect(getByText('Iniciar')).toBeTruthy());
+    fireEvent.press(getByText('Iniciar'));
 
     expect(alertSpy).toHaveBeenCalledWith('Campo obrigatório', 'Selecione ao menos um objetivo para continuar.');
     expect(getServices().storageService.setSelectedObjectivesIds).not.toHaveBeenCalled();
@@ -295,9 +298,9 @@ describe('PersonalObjectivesScreen', () => {
 
     const { getByText } = render(<PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />);
 
-    await waitFor(() => expect(getByText('Salvar')).toBeTruthy());
+    await waitFor(() => expect(getByText('Iniciar')).toBeTruthy());
     fireEvent.press(getByText('Sono'));
-    fireEvent.press(getByText('Salvar'));
+    fireEvent.press(getByText('Iniciar'));
 
     await waitFor(() => {
       expect(alertSpy).toHaveBeenCalledWith('Erro', 'Não foi possível salvar os objetivos. Tente novamente.');
@@ -307,7 +310,7 @@ describe('PersonalObjectivesScreen', () => {
     alertSpy.mockRestore();
   });
 
-  it('does not double-submit when Salvar is pressed twice while submit is in progress', async () => {
+  it('does not double-submit when Iniciar is pressed twice while submit is in progress', async () => {
     const submitPromise = new Promise<void>(() => {
       /* noop */
     });
@@ -319,10 +322,10 @@ describe('PersonalObjectivesScreen', () => {
 
     const { getByText } = render(<PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />);
 
-    await waitFor(() => expect(getByText('Salvar')).toBeTruthy());
+    await waitFor(() => expect(getByText('Iniciar')).toBeTruthy());
     fireEvent.press(getByText('Sono'));
-    fireEvent.press(getByText('Salvar'));
-    fireEvent.press(getByText('Salvar'));
+    fireEvent.press(getByText('Iniciar'));
+    fireEvent.press(getByText('Iniciar'));
 
     await waitFor(() => {
       expect(getServices().storageService.setSelectedObjectivesIds).toHaveBeenCalledTimes(1);

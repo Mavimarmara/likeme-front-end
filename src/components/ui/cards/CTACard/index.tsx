@@ -73,7 +73,7 @@ const CTACard: React.FC<Props> = ({
           accessibilityRole='button'
           accessibilityLabel='Fechar'
         >
-          <Icon name='close' size={18} color={COLORS.TEXT} />
+          <Icon name='close' size={22} color={COLORS.TEXT} />
         </TouchableOpacity>
       )}
       {children != null ? (

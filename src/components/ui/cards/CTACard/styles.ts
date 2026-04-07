@@ -67,7 +67,9 @@ export const styles = StyleSheet.create({
     top: SPACING.MD,
     right: SPACING.MD,
     zIndex: 1,
-    paddingHorizontal: SPACING.MD,
-    paddingVertical: SPACING.XS,
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

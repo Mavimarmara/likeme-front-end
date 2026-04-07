@@ -12,14 +12,21 @@ export const styles = StyleSheet.create({
   },
 
   scrollContent: {
-    paddingBottom: 170,
     paddingHorizontal: SPACING.MD,
   },
 
   content: {
-    paddingTop: SPACING.XXL,
+    paddingTop: SPACING.LG,
     position: 'relative',
     width: '100%',
+  },
+
+  instructionBlock: {
+    width: '100%',
+    maxWidth: 305,
+    alignSelf: 'center',
+    gap: SPACING.XS,
+    marginBottom: SPACING.LG,
   },
 
   titleAdornment: {
@@ -29,19 +36,25 @@ export const styles = StyleSheet.create({
 
   greeting: {
     color: COLORS.TEXT,
-    fontFamily: 'DM Sans',
+    fontFamily: 'Bricolage Grotesque',
     fontSize: 48,
     fontWeight: '700',
-    marginBottom: SPACING.MD,
+    lineHeight: 52,
+    marginBottom: SPACING.XL,
+  },
+
+  betaCardTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    lineHeight: 28,
   },
 
   question: {
     color: COLORS.TEXT,
     fontFamily: 'DM Sans',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '700',
     lineHeight: 22,
-    marginBottom: SPACING.LG,
     width: '100%',
   },
 
@@ -49,40 +62,34 @@ export const styles = StyleSheet.create({
     color: COLORS.NEUTRAL.LOW.PURE,
     fontFamily: 'DM Sans',
     fontSize: 14,
-    fontWeight: 400,
+    fontWeight: '400',
     letterSpacing: 0.2,
+    lineHeight: 22,
   },
 
   markersList: {
     width: '100%',
+    maxWidth: 300,
+    alignSelf: 'center',
     gap: SPACING.MD,
-    paddingHorizontal: SPACING.MD,
-    paddingTop: SPACING.XL,
+    marginBottom: SPACING.XL,
   },
 
   markerButton: {
     width: '100%',
+    maxWidth: 300,
+    alignSelf: 'center',
   },
 
   ctaCard: {
-    marginTop: SPACING.MD,
-    marginBottom: SPACING.XL,
     marginHorizontal: -SPACING.MD,
-  },
-
-  footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: COLORS.BACKGROUND,
-    paddingHorizontal: SPACING.MD,
-    paddingTop: SPACING.MD,
-    zIndex: 2,
-    elevation: 2,
+    marginBottom: SPACING.XL,
   },
 
   saveButton: {
     width: '100%',
+    maxWidth: 362,
+    alignSelf: 'center',
+    marginTop: SPACING.XL,
   },
 });
