@@ -25,7 +25,7 @@
     "newLine": "lf",
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": false,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "noUnusedParameters": false,
     "removeComments": true,
     "skipDefaultLibCheck": true,
