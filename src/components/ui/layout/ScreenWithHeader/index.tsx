@@ -25,9 +25,10 @@ const ScreenWithHeader: React.FC<Props> = ({
 }) => {
   const rootNavigation = navigation?.getParent?.() ?? navigation;
   const defaultOnLogoPress = rootNavigation?.navigate != null ? () => rootNavigation.navigate('Summary') : undefined;
+  const headerBackgroundColor = headerProps?.backgroundColor ?? COLORS.BACKGROUND_SECONDARY;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.BACKGROUND_SECONDARY }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: headerBackgroundColor }} edges={['top']}>
       <Header {...headerProps} onLogoPress={headerProps?.onLogoPress ?? defaultOnLogoPress} />
       <View style={[{ flex: 1, backgroundColor: contentBackgroundColor, position: 'relative' }, contentContainerStyle]}>
         {children}

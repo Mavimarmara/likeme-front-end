@@ -34,6 +34,7 @@ interface HeaderProps {
   headerLogoImageSource?: ImageSourcePropType;
   headerLogoImageWidth?: number;
   headerLogoImageHeight?: number;
+  backgroundColor?: string;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -58,11 +59,12 @@ const Header: React.FC<HeaderProps> = ({
   headerLogoImageSource,
   headerLogoImageWidth = 87,
   headerLogoImageHeight = 16,
+  backgroundColor,
 }) => {
   const hasRightLabel = Boolean(rightLabel && onRightPress);
   const ratingIconName = favoriteActive === undefined ? 'star' : favoriteActive ? 'star' : 'star-border';
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, backgroundColor ? { backgroundColor } : null]}>
       <View style={styles.header}>
         {showMenuWithAvatar && onMenuPress && (
           <TouchableOpacity style={styles.menuWithAvatarPill} onPress={onMenuPress} activeOpacity={0.7}>

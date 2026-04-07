@@ -31,11 +31,11 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
   const { width: windowWidth } = useWindowDimensions();
 
   const adornmentStyle = useMemo(() => {
-    const size = windowWidth * 0.45;
+    const size = windowWidth * 0.5;
     return {
       width: size,
       height: size,
-      top: -size * 0.1,
+      top: -size * 0.25,
     };
   }, [windowWidth]);
 
