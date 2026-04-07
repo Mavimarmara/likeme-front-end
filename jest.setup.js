@@ -1,6 +1,10 @@
 // Mock para react-native-vector-icons
 jest.mock('react-native-vector-icons/MaterialIcons', () => 'MaterialIcons');
 
+// Defaults de ambiente para evitar warnings ruidosos nos testes
+process.env.EXPO_PUBLIC_AUTH_PROXY_URL = process.env.EXPO_PUBLIC_AUTH_PROXY_URL || 'http://localhost/mock-auth-proxy';
+process.env.EXPO_PUBLIC_AUTH_PROXY_PROJECT = process.env.EXPO_PUBLIC_AUTH_PROXY_PROJECT || 'likeme-front-end-test';
+
 // Mock para expo-linear-gradient (evita carregar expo-modules-core ESM no Jest)
 jest.mock('expo-linear-gradient', () => {
   const React = require('react');
