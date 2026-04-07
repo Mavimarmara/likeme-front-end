@@ -130,6 +130,11 @@ jest.mock('@/hooks', () => ({
   useUserFeed: (...args: any[]) => mockUseUserFeed(...args),
   useSuggestedProducts: (...args: any[]) => mockUseSuggestedProducts(...args),
   useCategories: (...args: any[]) => mockUseCategories(...args),
+  useMenuItems: () => [],
+}));
+
+jest.mock('@/contexts/FloatingMenuContext', () => ({
+  useSetFloatingMenu: jest.fn(),
 }));
 
 jest.mock('@/analytics', () => ({

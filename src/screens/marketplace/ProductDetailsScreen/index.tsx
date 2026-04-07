@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Image, type ImageStyle } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { HeroImage, ScreenWithHeader } from '@/components/ui/layout';
@@ -8,7 +8,9 @@ import { SecondaryButton, PillButtonWithIcon } from '@/components/ui/buttons';
 import { ProductsCarousel } from '@/components/sections/product';
 import { ProductHeroFooter } from '@/components/sections/marketplace';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
-import { useProductDetails, useSuggestedProducts, useCategories } from '@/hooks';
+import { useMenuItems, useProductDetails, useSuggestedProducts, useCategories } from '@/hooks';
+import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
+import { FLOATING_NAV_MENU_BAR_OFFSET } from '@/constants';
 import { useTranslation } from '@/hooks/i18n';
 import { formatPrice } from '@/utils';
 import {
@@ -48,7 +50,10 @@ type ProductDetailsScreenProps = {
 
 const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation, route }) => {
   useAnalyticsScreen({ screenName: 'ProductDetails', screenClass: 'ProductDetailsScreen' });
+  const { bottom: bottomInset } = useSafeAreaInsets();
   const { t } = useTranslation();
+  const menuItems = useMenuItems(navigation);
+  useSetFloatingMenu(menuItems, 'marketplace');
   const [activeProductTab, setActiveProductTab] = useState<'goal' | 'description' | 'composition'>('goal');
   const [quantity, setQuantity] = useState(1);
   const [isQuantityDropdownOpen, setIsQuantityDropdownOpen] = useState(false);
@@ -361,7 +366,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     }
 
     return (
-      <View style={styles.floatingButtonContainer}>
+      <View style={[styles.floatingButtonContainer, { bottom: FLOATING_NAV_MENU_BAR_OFFSET + bottomInset }]}>
         <PillButtonWithIcon
           label={t('marketplace.addToCart')}
           onPress={() => {

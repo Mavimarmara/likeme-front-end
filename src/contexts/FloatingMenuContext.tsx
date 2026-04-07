@@ -34,6 +34,7 @@ const ROUTES_SHOW_MENU = new Set<string>([
   'MarkerDetails',
   'Community',
   'Marketplace',
+  'ProductDetails',
   'CommunityPreview',
   'Profile',
   'ChatList',

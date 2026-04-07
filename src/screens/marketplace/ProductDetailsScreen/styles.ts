@@ -1,5 +1,5 @@
 import { StyleSheet, Dimensions } from 'react-native';
-import { BORDER_RADIUS, COLORS, SPACING } from '@/constants';
+import { BORDER_RADIUS, COLORS, FLOATING_NAV_MENU_BAR_OFFSET, SPACING } from '@/constants';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -176,7 +176,7 @@ export const styles = StyleSheet.create({
     borderRadius: 20,
   },
   scrollContent: {
-    paddingBottom: 100, // Espaço para o botão flutuante
+    paddingBottom: 100 + FLOATING_NAV_MENU_BAR_OFFSET,
   },
   heroCardTags: {
     flexDirection: 'row',

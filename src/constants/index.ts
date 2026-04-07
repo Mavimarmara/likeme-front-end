@@ -75,6 +75,9 @@ export const SPACING = {
   XXL: 48,
 } as const;
 
+/** Altura ocupada pela barra do `FloatingMenu` (pills + padding) para posicionar CTAs acima do menu. */
+export const FLOATING_NAV_MENU_BAR_OFFSET = SPACING.SM * 2;
+
 export const FONT_SIZES = {
   XS: 12,
   SM: 14,
