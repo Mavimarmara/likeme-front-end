@@ -34,8 +34,8 @@ import { EmptyState } from '@/components/ui/feedback';
 // import { AvatarSection } from '@/components/sections/avatar';
 // import type { Event } from '@/types/event';
 // import type { Post } from '@/types';
-import type { SolutionTab } from '@/types/solution';
-import { solutionOptions } from '@/types/solution';
+import type { SolutionTab, SolutionFilterId } from '@/types/solution';
+import { solutionOptions, resolveSolutionTabFromFilters } from '@/types/solution';
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import { useAnalyticsScreen } from '@/analytics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -239,17 +239,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
       setSelectedCategoryName(result.categoryName ?? null);
       setSelectedSolutionIds(result.solutionIds);
 
-      if (result.solutionIds.length === 1) {
-        const only = result.solutionIds[0];
-        if (only === 'products') setSelectedSolutionTab('products');
-        else if (only === 'services') setSelectedSolutionTab('products');
-        else if (only === 'professionals') setSelectedSolutionTab('professionals');
-        else if (only === 'programs') setSelectedSolutionTab('programs');
-        else if (only === 'communities') setSelectedSolutionTab('communities');
-        else setSelectedSolutionTab('all');
-      } else {
-        setSelectedSolutionTab('all');
-      }
+      setSelectedSolutionTab(resolveSolutionTabFromFilters(result.solutionIds as SolutionFilterId[]));
     },
     [setSelectedCategoryId, setSelectedCategoryName],
   );
@@ -262,6 +252,10 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   }, []);
 
   const categoryFilterButtonLabel = selectedCategoryName != null ? getCategoryName(selectedCategoryName) : 'Autoestima';
+  const carouselSolutionOptions = useMemo(
+    () => solutionOptions.map((option) => ({ id: option.id, label: t(option.labelKey) })),
+    [t],
+  );
 
   const menuItems = useMenuItems(navigation);
   const { setMenu } = useFloatingMenu();
@@ -350,7 +344,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
               onSearchPress={() => undefined}
               showFilterButton={false}
             />
-            <StickyFilterCarouselRow<SolutionTab>
+            <StickyFilterCarouselRow<SolutionFilterId>
               filterButtonLabel={categoryFilterButtonLabel}
               filterButtonIconImage={HOME_MVP_ASSETS.filterChevron}
               filterButtonIconImageStyle={{
@@ -358,9 +352,9 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
               }}
               filterButtonSelected={selectedCategoryName != null || selectedSolutionIds.length > 0}
               onFilterButtonPress={() => setIsFilterCategoryModalVisible(true)}
-              carouselOptions={[...solutionOptions]}
-              selectedCarouselId={selectedSolutionTab}
-              onCarouselSelect={setSelectedSolutionTab}
+              carouselOptions={carouselSolutionOptions}
+              selectedCarouselId={selectedSolutionTab === 'all' ? undefined : selectedSolutionTab}
+              onCarouselSelect={(solutionId) => setSelectedSolutionTab(resolveSolutionTabFromFilters([solutionId]))}
             />
           </View>
           <FilterCategoryModal

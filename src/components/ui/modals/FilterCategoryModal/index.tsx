@@ -6,6 +6,12 @@ import { IconSilhouette } from '@/components/ui/layout';
 import { FilterModalButton, PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import { getMarkerColor, getMarkerGradient, hasMarkerGradient, MARKER_NAMES } from '@/constants/markers';
 import { getMarkerIdForCategory } from '@/hooks/category';
+import {
+  resolveSolutionTabFromFilters,
+  solutionOptions,
+  type SolutionFilterId,
+  type SolutionOption as SharedSolutionOption,
+} from '@/types/solution';
 import { styles } from './styles';
 import type { CommunityCategory } from '@/types/community';
 import type { CategoryName } from '@/types';
@@ -18,20 +24,8 @@ const FALLBACK_CATEGORIES: CommunityCategory[] = (Object.entries(MARKER_NAMES) a
   }),
 );
 
-export type SolutionId = 'products' | 'services' | 'professionals' | 'programs' | 'communities';
-
-export interface SolutionOption {
-  id: SolutionId;
-  labelKey: string;
-}
-
-const DEFAULT_SOLUTION_OPTIONS: SolutionOption[] = [
-  { id: 'products', labelKey: 'filterCategory.solutions.products' },
-  { id: 'services', labelKey: 'filterCategory.solutions.services' },
-  { id: 'professionals', labelKey: 'filterCategory.solutions.professionals' },
-  { id: 'programs', labelKey: 'filterCategory.solutions.programs' },
-  { id: 'communities', labelKey: 'filterCategory.solutions.communities' },
-];
+export type SolutionId = SolutionFilterId;
+export type SolutionOption = SharedSolutionOption;
 
 export type FilterCategoryResult = {
   categoryId: string | null;
@@ -94,6 +88,10 @@ const FilterCategoryModal: React.FC<Props> = ({
   };
 
   const handleFilter = () => {
+    const resolvedSolutionTab = resolveSolutionTabFromFilters(selectedSolutionIds);
+    const solutionIdsToApply =
+      resolvedSolutionTab === 'all' && selectedSolutionIds.length === 0 ? [] : [...selectedSolutionIds];
+
     const resolvedName: CategoryName | null =
       localSelectedCategoryName ??
       (() => {
@@ -104,7 +102,7 @@ const FilterCategoryModal: React.FC<Props> = ({
     onFilter({
       categoryId: localSelectedCategoryId ?? null,
       categoryName: resolvedName,
-      solutionIds: [...selectedSolutionIds],
+      solutionIds: solutionIdsToApply,
     });
     onClose();
   };
@@ -165,7 +163,7 @@ const FilterCategoryModal: React.FC<Props> = ({
 
             <Text style={styles.sectionTitle}>{t('filterCategory.solutionsTitle')}</Text>
             <View style={styles.solutionsGrid}>
-              {DEFAULT_SOLUTION_OPTIONS.map((opt) => {
+              {solutionOptions.map((opt) => {
                 const isSelected = selectedSolutionIds.includes(opt.id);
                 return (
                   <FilterModalButton

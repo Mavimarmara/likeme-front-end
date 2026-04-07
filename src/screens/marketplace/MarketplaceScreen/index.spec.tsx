@@ -62,10 +62,14 @@ jest.mock('@/components/ui/inputs', () => {
 });
 
 jest.mock('@/components/ui/menu', () => {
-  const { View } = require('react-native');
+  const { View, Text } = require('react-native');
   return {
     FloatingMenu: () => <View testID='floating-menu' />,
-    StickyFilterCarouselRow: () => <View testID='filter-menu' />,
+    StickyFilterCarouselRow: ({ filterButtonLabel }: any) => (
+      <View testID='filter-menu'>
+        <Text testID='filter-button-label'>{filterButtonLabel}</Text>
+      </View>
+    ),
   };
 });
 
@@ -99,11 +103,31 @@ jest.mock('@/components/sections', () => {
   };
 });
 
+jest.mock('@/components/ui/modals', () => {
+  const { TouchableOpacity, Text } = require('react-native');
+  return {
+    FilterCategoryModal: ({ onFilter }: any) => (
+      <TouchableOpacity
+        testID='apply-filter-category'
+        onPress={() =>
+          onFilter({
+            categoryId: 'cat-1',
+            categoryName: null,
+            solutionIds: ['products'],
+          })
+        }
+      >
+        <Text>Aplicar filtro</Text>
+      </TouchableOpacity>
+    ),
+  };
+});
+
 jest.mock('@/hooks', () => ({
   useMarketplaceAds: (...args: any[]) => mockUseMarketplaceAds(...args),
   useProducts: (...args: any[]) => mockUseProducts(...args),
   useMenuItems: () => [],
-  useCategories: () => ({ categories: [] }),
+  useCategories: () => ({ categories: [{ categoryId: 'cat-1', name: 'Autoestima' }] }),
   useCategoryDisplayLabel: () => ({ getCategoryName: (id: string) => id || 'Category' }),
   useUserAvatar: () => null,
   useAdvertisers: () => ({
@@ -278,5 +302,21 @@ describe('MarketplaceScreen', () => {
     });
 
     expect(mockUseMarketplaceAds).toHaveBeenCalled();
+  });
+
+  it('keeps selected category context after applying filters', async () => {
+    const { getByTestId } = render(<MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />);
+
+    fireEvent.press(getByTestId('apply-filter-category'));
+
+    await waitFor(() => {
+      expect(getByTestId('filter-button-label').props.children).toBe('Autoestima');
+    });
+
+    expect(mockUseMarketplaceAds).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        selectedCategoryId: 'cat-1',
+      }),
+    );
   });
 });

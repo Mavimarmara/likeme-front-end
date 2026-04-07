@@ -1,17 +1,42 @@
-/** Abas de solução na Home (Todos, Produtos, Profissionais, Programas, Comunidades). */
-export type SolutionTab = 'all' | 'communities' | 'products' | 'professionals' | 'programs';
+/** Soluções que podem ser escolhidas nos filtros. */
+export type SolutionFilterId = 'communities' | 'products' | 'professionals' | 'programs' | 'services';
 
-/** Opção do carrossel de soluções (id + label). Compatível com ButtonCarouselOption<SolutionTab>. */
+/** Abas de solução da Home. "all" é estado derivado quando nenhum filtro de solução está ativo. */
+export type SolutionTab = 'all' | Exclude<SolutionFilterId, 'services'>;
+
+/** Opção do carrossel de soluções (sem "all"). */
 export interface SolutionOption {
-  id: SolutionTab;
-  label: string;
+  id: SolutionFilterId;
+  labelKey: string;
 }
 
-/** Opções padrão do filtro por solução (ids e labels fixos). */
+/** Opções padrão do carrossel (sem "all"). */
 export const solutionOptions: readonly SolutionOption[] = [
-  { id: 'all', label: 'Todos' },
-  { id: 'products', label: 'Produtos' },
-  { id: 'professionals', label: 'Profissionais' },
-  { id: 'programs', label: 'Programas' },
-  { id: 'communities', label: 'Comunidades' },
+  { id: 'products', labelKey: 'filterCategory.solutions.products' },
+  { id: 'services', labelKey: 'filterCategory.solutions.services' },
+  { id: 'professionals', labelKey: 'filterCategory.solutions.professionals' },
+  { id: 'programs', labelKey: 'filterCategory.solutions.programs' },
+  { id: 'communities', labelKey: 'filterCategory.solutions.communities' },
 ] as const;
+
+/**
+ * Regra de consistência:
+ * - sem seleção de solução => comportamento equivalente a "all"
+ * - "services" reaproveita tab de "products"
+ * - múltiplas soluções => "all"
+ */
+export function resolveSolutionTabFromFilters(solutionIds: readonly SolutionFilterId[]): SolutionTab {
+  if (solutionIds.length === 0) {
+    return 'all';
+  }
+  if (solutionIds.length > 1) {
+    return 'all';
+  }
+
+  const [only] = solutionIds;
+  if (only === 'services') {
+    return 'products';
+  }
+
+  return only;
+}
