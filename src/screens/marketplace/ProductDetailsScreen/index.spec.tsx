@@ -26,6 +26,13 @@ jest.mock('@/assets', () => ({
   LogoMini: () => null,
 }));
 
+jest.mock('@/components/ui/PlatformBlurView', () => {
+  const { View } = require('react-native');
+  return {
+    PlatformBlurView: ({ children, ...props }: any) => <View {...props}>{children}</View>,
+  };
+});
+
 jest.mock('@/components/ui/layout', () => {
   const { View, Text } = require('react-native');
   const Header = () => null;
@@ -68,6 +75,11 @@ jest.mock('@/components/ui/buttons', () => {
   return {
     SecondaryButton: ({ label, onPress }: any) => (
       <TouchableOpacity onPress={onPress} testID={`button-${label}`}>
+        <Text>{label}</Text>
+      </TouchableOpacity>
+    ),
+    PillButtonWithIcon: ({ label, onPress }: any) => (
+      <TouchableOpacity onPress={onPress} testID='pill-button-with-icon'>
         <Text>{label}</Text>
       </TouchableOpacity>
     ),

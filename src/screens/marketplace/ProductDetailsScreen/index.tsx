@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { HeroImage, ScreenWithHeader } from '@/components/ui/layout';
-import { SecondaryButton } from '@/components/ui/buttons';
+import { SecondaryButton, PillButtonWithIcon } from '@/components/ui/buttons';
 import { ProductsCarousel } from '@/components/sections/product';
 import { ProductHeroFooter } from '@/components/sections/marketplace';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
@@ -356,27 +356,23 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   );
 
   function renderAddToCartButton() {
+    if (displayData.isOutOfStock) {
+      return null;
+    }
+
     return (
       <View style={styles.floatingButtonContainer}>
-        {!displayData.isOutOfStock && (
-          <TouchableOpacity
-            style={styles.floatingAddToCartButton}
-            onPress={() => {
-              logAddToCart({
-                item_id: product?.id ?? route.params?.productId ?? '',
-                item_name: displayData?.title,
-                item_category: productCategory,
-              });
-              handleAddToCart();
-            }}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.floatingAddToCartText}>{t('marketplace.addToCart')}</Text>
-            <View style={styles.floatingCartIconContainer}>
-              <Icon name='shopping-cart' size={20} color='#FFFFFF' />
-            </View>
-          </TouchableOpacity>
-        )}
+        <PillButtonWithIcon
+          label={t('marketplace.addToCart')}
+          onPress={() => {
+            logAddToCart({
+              item_id: product?.id ?? route.params?.productId ?? '',
+              item_name: displayData?.title,
+              item_category: productCategory,
+            });
+            handleAddToCart();
+          }}
+        />
       </View>
     );
   }

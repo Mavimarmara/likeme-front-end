@@ -30,6 +30,8 @@ export const COLORS = {
     },
     LOW: {
       PURE: '#001137',
+      PURE_TRANSLUCENT: '#001137CC',
+      DEEP: '#000A23',
       LIGHT: '#D9D9D9',
       MEDIUM: '#B2B2B2',
       DARK: '#6E6A6A',
