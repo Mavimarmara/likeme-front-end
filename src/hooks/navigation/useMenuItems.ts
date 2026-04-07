@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import type { ImageSourcePropType } from 'react-native';
 import { HOME_MVP_ASSETS } from '@/assets/homeMvp';
+import { useTranslation } from '@/hooks/i18n';
 
 type MenuItem = {
   id: string;
@@ -13,6 +14,8 @@ type MenuItem = {
 
 export const useMenuItems = (navigation: any): MenuItem[] => {
   const rootNavigation = navigation.getParent() ?? navigation;
+  const { t } = useTranslation();
+  const shopLabel = t('community.solutions');
 
   return useMemo(
     () => [
@@ -47,11 +50,11 @@ export const useMenuItems = (navigation: any): MenuItem[] => {
         id: 'marketplace',
         icon: 'store',
         iconImage: HOME_MVP_ASSETS.navMarketplace,
-        label: 'Marketplace',
-        fullLabel: 'Marketplace',
+        label: shopLabel,
+        fullLabel: shopLabel,
         onPress: () => rootNavigation.navigate('Marketplace' as never),
       },
     ],
-    [rootNavigation],
+    [rootNavigation, shopLabel],
   );
 };
