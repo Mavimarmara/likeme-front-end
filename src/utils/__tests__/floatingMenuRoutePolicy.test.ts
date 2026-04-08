@@ -1,6 +1,5 @@
 import type { NavigationState } from '@react-navigation/native';
 import {
-  CHAT_STACK_LIST_ROUTE,
   getFocusedRouteNameFromNavState,
   getRootRouteName,
   getSelectedIdFromRoute,
@@ -63,24 +62,24 @@ describe('floatingMenuRoutePolicy', () => {
       expect(shouldShowFloatingMenuByRoute(state)).toBe(true);
     });
 
-    it('hides menu on conversation screen (inner route name Chat)', () => {
-      const nested = makeStack(1, ['ChatList', 'Chat']);
+    it('hides menu on conversation screen (inner route name ChatConversation)', () => {
+      const nested = makeStack(1, ['ChatList', 'ChatConversation']);
       const state = makeChatRoot(nested);
-      expect(getFocusedRouteNameFromNavState(state)).toBe('Chat');
+      expect(getFocusedRouteNameFromNavState(state)).toBe('ChatConversation');
       expect(shouldShowFloatingMenuByRoute(state)).toBe(false);
     });
 
     it('hides menu on ChatDetails', () => {
-      const nested = makeStack(2, ['ChatList', 'Chat', 'ChatDetails']);
+      const nested = makeStack(2, ['ChatList', 'ChatConversation', 'ChatDetails']);
       const state = makeChatRoot(nested);
       expect(getFocusedRouteNameFromNavState(state)).toBe('ChatDetails');
       expect(shouldShowFloatingMenuByRoute(state)).toBe(false);
     });
 
-    it('treats missing nested state as ChatList for policy', () => {
+    it('hides menu while Chat nested state is unresolved', () => {
       const state = makeChatRoot(undefined);
-      expect(getFocusedRouteNameFromNavState(state)).toBe(CHAT_STACK_LIST_ROUTE);
-      expect(shouldShowFloatingMenuByRoute(state)).toBe(true);
+      expect(getFocusedRouteNameFromNavState(state)).toBe('Chat');
+      expect(shouldShowFloatingMenuByRoute(state)).toBe(false);
     });
   });
 

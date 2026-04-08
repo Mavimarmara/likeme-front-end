@@ -22,7 +22,7 @@ const ChatStackNavigator: React.FC = () => {
       }}
     >
       <Stack.Screen name='ChatList' component={ChatListScreen} />
-      <Stack.Screen name='Chat' component={ChatScreen} />
+      <Stack.Screen name='ChatConversation' component={ChatScreen} />
       <Stack.Screen name='ChatDetails' component={ChatDetailsScreen} />
     </Stack.Navigator>
   );

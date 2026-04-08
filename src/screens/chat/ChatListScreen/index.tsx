@@ -92,7 +92,7 @@ const ChatListScreen: React.FC<Props> = () => {
   };
 
   const handleConversationPress = (conversation: ChatConversation) => {
-    navigation.navigate('Chat', {
+    navigation.navigate('ChatConversation', {
       channelId: conversation.id,
       channelName: conversation.name,
       channelAvatar: conversation.avatar,

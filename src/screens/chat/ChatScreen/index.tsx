@@ -21,7 +21,7 @@ interface ChatMessage {
   isOwn: boolean;
 }
 
-type ChatNavigation = StackNavigationProp<ChatStackParamList, 'Chat'>;
+type ChatNavigation = StackNavigationProp<ChatStackParamList, 'ChatConversation'>;
 
 function mapRawMessage(msg: any, currentUserId: string): ChatMessage {
   return {
@@ -40,7 +40,7 @@ const ChatScreen: React.FC = () => {
   useAnalyticsScreen({ screenName: 'Chat', screenClass: 'ChatScreen' });
   const { t } = useTranslation();
   const navigation = useNavigation<ChatNavigation>();
-  const route = useRoute<RouteProp<ChatStackParamList, 'Chat'>>();
+  const route = useRoute<RouteProp<ChatStackParamList, 'ChatConversation'>>();
   const { channelId, channelName, channelAvatar, channelDescription, targetAdvertiserId, initialMessage } =
     route.params;
 
@@ -66,7 +66,7 @@ const ChatScreen: React.FC = () => {
         if (result.success && result.data?.channelId) {
           resolvingChannelRef.current = false;
           refreshChatList();
-          navigation.replace('Chat', {
+          navigation.replace('ChatConversation', {
             channelId: result.data.channelId,
             channelName,
             channelAvatar,
@@ -200,7 +200,7 @@ const ChatScreen: React.FC = () => {
         if (result.success && result.data?.channelId) {
           setMessageText('');
           refreshChatList();
-          navigation.replace('Chat', {
+          navigation.replace('ChatConversation', {
             channelId: result.data.channelId,
             channelName,
             channelAvatar,

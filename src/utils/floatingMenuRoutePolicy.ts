@@ -51,7 +51,7 @@ export function getChatNestedFocusedRouteName(state: NavigationState | undefined
   if (rootRoute?.name !== 'Chat') return undefined;
 
   if (!rootRoute.state) {
-    return CHAT_STACK_LIST_ROUTE;
+    return undefined;
   }
 
   const nested = rootRoute.state as NavigationState;

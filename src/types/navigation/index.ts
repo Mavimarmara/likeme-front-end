@@ -84,7 +84,7 @@ export type CommunityStackParamList = {
 
 export type ChatStackParamList = {
   ChatList: { chat?: import('@/types').ProviderChat };
-  Chat: {
+  ChatConversation: {
     channelId?: string;
     channelName: string;
     channelAvatar?: string;

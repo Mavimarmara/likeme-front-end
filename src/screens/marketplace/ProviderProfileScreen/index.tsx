@@ -195,7 +195,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
   const handleTalkToProvider = () => {
     if (!providerData) return;
     (rootNavigation as any).navigate('Chat', {
-      screen: 'Chat',
+      screen: 'ChatConversation',
       params: {
         targetAdvertiserId: providerId,
         channelName: providerData.name,
