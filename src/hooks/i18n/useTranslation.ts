@@ -1,4 +1,5 @@
 import * as ReactI18Next from 'react-i18next';
+import { markdownToPlainText } from '@/utils/parseMarkdown';
 
 const useI18nTranslation =
   typeof ReactI18Next?.useTranslation === 'function'
@@ -24,17 +25,17 @@ const useI18nTranslation =
  * @example Com interpolação
  * const { t } = useTranslation();
  * <Text>{t('auth.introGreeting', { userName: 'João' })}</Text>
+ *
+ * Markdown leve nos labels (`**`, `*`, `__`) é removido; o retorno é texto plano (quebras `\\n` preservadas).
  */
 export const useTranslation = () => {
   const { t, i18n } = useI18nTranslation();
 
   return {
     t: (key: string, options?: Record<string, any>): string => {
-      // Obter a tradução base
       const raw = t(key, options);
       let result = typeof raw === 'string' ? raw : String(raw);
 
-      // Se houver opções e o resultado contém chaves, fazer interpolação manual
       if (options && Object.keys(options).length > 0 && result.includes('{')) {
         Object.keys(options).forEach((optionKey) => {
           const value = options[optionKey];
@@ -42,7 +43,7 @@ export const useTranslation = () => {
         });
       }
 
-      return result;
+      return markdownToPlainText(result);
     },
     changeLanguage: (lng: string) => i18n.changeLanguage(lng),
     currentLanguage: i18n.language,
