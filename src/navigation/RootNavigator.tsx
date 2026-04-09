@@ -1,5 +1,5 @@
 import React from 'react';
-import { Easing } from 'react-native';
+import { Easing, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import { FloatingMenuProvider } from '@/contexts/FloatingMenuContext';
@@ -41,6 +41,7 @@ import { HomeScreen, SummaryScreen } from '@/screens/home';
 import { AvatarProgressScreen, MarkerDetailsScreen } from '@/screens/avatar';
 
 const Stack = createStackNavigator();
+const STACK_GESTURE_ENABLED = Platform.OS !== 'android';
 
 const RootNavigator: React.FC = () => {
   return (
@@ -51,7 +52,7 @@ const RootNavigator: React.FC = () => {
           screenOptions={{
             headerShown: false,
             animationEnabled: true,
-            gestureEnabled: true,
+            gestureEnabled: STACK_GESTURE_ENABLED,
             cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter,
             transitionSpec: {
               open: {
