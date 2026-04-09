@@ -1,11 +1,12 @@
 import React from 'react';
-import { Easing } from 'react-native';
+import { Easing, Platform } from 'react-native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import { CommunityScreen } from '@/screens/community';
 import { PostDetailScreen } from '@/screens/community';
 import type { CommunityStackParamList } from '@/types/navigation';
 
 const Stack = createStackNavigator<CommunityStackParamList>();
+const STACK_GESTURE_ENABLED = Platform.OS !== 'android';
 
 const fastFadeTransition = {
   open: { animation: 'timing' as const, config: { duration: 200, easing: Easing.out(Easing.ease) } },
@@ -17,7 +18,7 @@ const CommunityStackNavigator: React.FC = () => {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-        gestureEnabled: true,
+        gestureEnabled: STACK_GESTURE_ENABLED,
         cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter,
         transitionSpec: fastFadeTransition,
       }}

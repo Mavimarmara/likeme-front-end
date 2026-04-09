@@ -13,6 +13,7 @@ import { fetchWithTimeout } from '@/utils/network/fetchWithTimeout';
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 const GRADIENT_SOURCES = [GradientSplash7, GradientSplash8, GradientSplash9];
 const AUTH_TOKEN_VALIDATE_TIMEOUT_MS = 12_000;
+const BOOTSTRAP_MAX_WAIT_MS = 8_000;
 
 type Props = { navigation: any };
 
@@ -23,6 +24,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const taglineOpacity = useRef(new Animated.Value(1)).current;
   const [step, setStep] = useState(0);
+  const hasNavigatedRef = useRef(false);
 
   const TAGLINES = [t('auth.taglineRhythm'), t('auth.taglineJourney'), t('auth.taglineRoutine')];
 
@@ -57,6 +59,19 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
   );
 
   useEffect(() => {
+    const replaceOnce = (routeName: string, params?: Record<string, unknown>) => {
+      if (hasNavigatedRef.current) {
+        return;
+      }
+
+      hasNavigatedRef.current = true;
+      if (params === undefined) {
+        navigation.replace(routeName);
+        return;
+      }
+      navigation.replace(routeName, params);
+    };
+
     const run = async () => {
       let shouldAuthenticate = false;
       void startI18nHydration('pt-BR');
@@ -137,11 +152,21 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
         console.error('[LoadingScreen] Falha ao aguardar i18n:', hydrationError);
       }
 
-      navigation.replace(shouldAuthenticate ? 'Authenticated' : 'Unauthenticated');
+      replaceOnce(shouldAuthenticate ? 'Authenticated' : 'Unauthenticated');
     };
 
+    const bootstrapWatchdog = setTimeout(() => {
+      console.error('[LoadingScreen] Timeout de bootstrap inicial.');
+      replaceOnce('Error', {
+        errorMessage: 'Conexao com a internet necessaria para continuar.',
+      });
+    }, BOOTSTRAP_MAX_WAIT_MS);
+
     const timer = setTimeout(run, 300);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(bootstrapWatchdog);
+    };
   }, [navigation, scrollAnim, fadeAnim, taglineOpacity, cumulativeOffsets]);
 
   return (

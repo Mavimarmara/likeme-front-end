@@ -111,3 +111,5 @@ export const KEYBOARD_AWARE_SCROLL = {
 export { ADVERTISER_STATUS } from './advertiser';
 export { AUTH_ONBOARDING_SCREENS_ORDER } from './authOnboarding';
 export type { AuthOnboardingScreenName } from './authOnboarding';
+export { FEATURE_FLAGS, FEATURE_FLAG_DEFAULTS } from './featureFlags';
+export type { FeatureFlagKey } from './featureFlags';

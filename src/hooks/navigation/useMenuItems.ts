@@ -2,6 +2,8 @@ import { useMemo } from 'react';
 import type { ImageSourcePropType } from 'react-native';
 import { HOME_MVP_ASSETS } from '@/assets/homeMvp';
 import { useTranslation } from '@/hooks/i18n';
+import { FEATURE_FLAGS } from '@/constants';
+import { useFeatureFlag } from '@/hooks/featureFlags/useFeatureFlag';
 
 type MenuItem = {
   id: string;
@@ -16,9 +18,10 @@ export const useMenuItems = (navigation: any): MenuItem[] => {
   const rootNavigation = navigation.getParent() ?? navigation;
   const { t } = useTranslation();
   const shopLabel = t('community.solutions');
+  const { isEnabled: isChatEnabled } = useFeatureFlag(FEATURE_FLAGS.CHAT_ENABLED);
 
-  return useMemo(
-    () => [
+  return useMemo(() => {
+    const items: MenuItem[] = [
       {
         id: 'activities',
         icon: 'fitness-center',
@@ -39,14 +42,6 @@ export const useMenuItems = (navigation: any): MenuItem[] => {
           }),
       },
       {
-        id: 'chat',
-        icon: 'chat',
-        iconImage: HOME_MVP_ASSETS.navChat,
-        label: 'Chat',
-        fullLabel: 'Chat',
-        onPress: () => rootNavigation.navigate('Chat' as never),
-      },
-      {
         id: 'marketplace',
         icon: 'store',
         iconImage: HOME_MVP_ASSETS.navMarketplace,
@@ -54,7 +49,19 @@ export const useMenuItems = (navigation: any): MenuItem[] => {
         fullLabel: shopLabel,
         onPress: () => rootNavigation.navigate('Marketplace' as never),
       },
-    ],
-    [rootNavigation, shopLabel],
-  );
+    ];
+
+    if (isChatEnabled) {
+      items.splice(2, 0, {
+        id: 'chat',
+        icon: 'chat',
+        iconImage: HOME_MVP_ASSETS.navChat,
+        label: 'Chat',
+        fullLabel: 'Chat',
+        onPress: () => rootNavigation.navigate('Chat' as never),
+      });
+    }
+
+    return items;
+  }, [isChatEnabled, rootNavigation, shopLabel]);
 };
