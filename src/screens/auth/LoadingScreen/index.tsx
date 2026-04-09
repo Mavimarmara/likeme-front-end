@@ -65,6 +65,10 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
       }
 
       hasNavigatedRef.current = true;
+      if (params === undefined) {
+        navigation.replace(routeName);
+        return;
+      }
       navigation.replace(routeName, params);
     };
 
