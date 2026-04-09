@@ -143,6 +143,7 @@ jest.mock('@/hooks', () => ({
     loadAds: jest.fn(),
   }),
   useCategories: () => ({ categories: [] }),
+  useFeatureFlag: () => ({ isEnabled: true, isLoading: false }),
 }));
 
 jest.mock('@/services', () => ({
