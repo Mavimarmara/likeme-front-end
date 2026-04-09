@@ -171,7 +171,6 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
 
   const handleSolutionTabChange = (tabId: string) => {
     setSelectedSolutionTab(tabId);
-    setSelectedCategoryName(null);
     setPage(1);
   };
 
