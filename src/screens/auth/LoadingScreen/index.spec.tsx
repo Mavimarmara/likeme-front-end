@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react-native';
+import { act, render, waitFor } from '@testing-library/react-native';
 import { Animated, Image } from 'react-native';
 import LoadingScreen from './index';
 
@@ -49,6 +49,7 @@ describe('LoadingScreen', () => {
   let consoleErrorSpy: jest.SpiedFunction<typeof console.error>;
 
   beforeEach(() => {
+    jest.useFakeTimers();
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.clearAllMocks();
     mockGetToken.mockResolvedValue(null);
@@ -73,12 +74,17 @@ describe('LoadingScreen', () => {
   afterEach(() => {
     consoleErrorSpy.mockRestore();
     (Animated.timing as unknown as jest.Mock).mockRestore?.();
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
   });
 
   it('navega para Unauthenticated quando não há token', async () => {
     const replace = jest.fn();
 
     render(<LoadingScreen navigation={{ replace, navigate: jest.fn() }} />);
+    await act(async () => {
+      await jest.runAllTimersAsync();
+    });
 
     await waitFor(
       () => {
@@ -98,6 +104,9 @@ describe('LoadingScreen', () => {
 
     const replace = jest.fn();
     render(<LoadingScreen navigation={{ replace, navigate: jest.fn() }} />);
+    await act(async () => {
+      await jest.runAllTimersAsync();
+    });
 
     await waitFor(
       () => {
@@ -125,6 +134,9 @@ describe('LoadingScreen', () => {
 
     const replace = jest.fn();
     render(<LoadingScreen navigation={{ replace, navigate: jest.fn() }} />);
+    await act(async () => {
+      await jest.runAllTimersAsync();
+    });
 
     await waitFor(
       () => {
@@ -141,6 +153,9 @@ describe('LoadingScreen', () => {
 
     const replace = jest.fn();
     render(<LoadingScreen navigation={{ replace, navigate: jest.fn() }} />);
+    await act(async () => {
+      await jest.runAllTimersAsync();
+    });
 
     await waitFor(
       () => {
@@ -160,6 +175,9 @@ describe('LoadingScreen', () => {
 
     const replace = jest.fn();
     render(<LoadingScreen navigation={{ replace, navigate: jest.fn() }} />);
+    await act(async () => {
+      await jest.runAllTimersAsync();
+    });
 
     await waitFor(
       () => {
