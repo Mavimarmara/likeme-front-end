@@ -7,13 +7,14 @@ import { ToggleTabs } from '@/components/ui/tabs';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { JoinCard, type JoinCardItem } from '@/components/ui/cards';
 import { AdsList } from '@/components/sections/marketplace';
-import { useAdvertiser, useProviderAds, useCommunities } from '@/hooks';
+import { useAdvertiser, useProviderAds, useCommunities, useFeatureFlag } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import type { RootStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
 import { communityService, advertiserService } from '@/services';
 import type { AdvertiserProfile } from '@/types/ad';
+import { FEATURE_FLAGS } from '@/constants';
 
 type ProviderProfileScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'ProviderProfile'>;
@@ -36,6 +37,7 @@ type ProviderProfileScreenProps = {
 const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigation, route }) => {
   useAnalyticsScreen({ screenName: 'ProviderProfile', screenClass: 'ProviderProfileScreen' });
   const { t } = useTranslation();
+  const { isEnabled: isChatEnabled } = useFeatureFlag(FEATURE_FLAGS.CHAT_ENABLED);
   const { providerId, provider: providerFromParams } = route.params;
   const [activeTab, setActiveTab] = useState<'about' | 'communities'>('about');
   const [_isFavorite, _setIsFavorite] = useState(false);
@@ -194,6 +196,11 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
 
   const handleTalkToProvider = () => {
     if (!providerData) return;
+    if (!isChatEnabled) {
+      Alert.alert('Chat indisponivel', 'Esta funcionalidade esta desativada no momento.');
+      return;
+    }
+
     (rootNavigation as any).navigate('Chat', {
       screen: 'ChatConversation',
       params: {
@@ -288,15 +295,17 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
                   title={t('marketplace.allProducts')}
                 />
 
-                <View style={styles.talkButtonContainer}>
-                  <SecondaryButton
-                    label={t('marketplace.talkToProvider', { provider: providerData.name })}
-                    onPress={handleTalkToProvider}
-                    icon='arrow-forward'
-                    iconPosition='right'
-                    style={styles.talkButton}
-                  />
-                </View>
+                {isChatEnabled && (
+                  <View style={styles.talkButtonContainer}>
+                    <SecondaryButton
+                      label={t('marketplace.talkToProvider', { provider: providerData.name })}
+                      onPress={handleTalkToProvider}
+                      icon='arrow-forward'
+                      iconPosition='right'
+                      style={styles.talkButton}
+                    />
+                  </View>
+                )}
               </>
             )}
 
@@ -304,15 +313,17 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
               <View style={styles.communityPreviewContainer}>
                 <Text style={styles.communitiesSectionTitle}>{t('marketplace.curatedSpecialty')}</Text>
                 <JoinCard items={joinCommunities} onItemPress={handleJoinCommunity} />
-                <View style={styles.talkButtonContainer}>
-                  <SecondaryButton
-                    label={t('marketplace.talkToProvider', { provider: providerData.name })}
-                    onPress={handleTalkToProvider}
-                    icon='arrow-forward'
-                    iconPosition='right'
-                    style={styles.talkButton}
-                  />
-                </View>
+                {isChatEnabled && (
+                  <View style={styles.talkButtonContainer}>
+                    <SecondaryButton
+                      label={t('marketplace.talkToProvider', { provider: providerData.name })}
+                      onPress={handleTalkToProvider}
+                      icon='arrow-forward'
+                      iconPosition='right'
+                      style={styles.talkButton}
+                    />
+                  </View>
+                )}
               </View>
             )}
           </View>

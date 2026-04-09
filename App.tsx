@@ -7,6 +7,7 @@ import { RootNavigator } from './src/navigation';
 import { AUTH0_CONFIG } from './src/config/environment';
 import { startI18nHydration } from './src/i18n/hydration';
 import { COLORS } from './src/constants';
+import { featureFlagService } from './src/services';
 // Importar i18n antes de qualquer componente que use useTranslation
 import './src/i18n';
 
@@ -29,10 +30,12 @@ const App: React.FC = () => {
 
   useEffect(() => {
     void startI18nHydration('pt-BR');
+    void featureFlagService.initialize();
 
     const subscription = AppState.addEventListener('change', (nextState) => {
       if (nextState === 'active') {
         void startI18nHydration('pt-BR', { force: true });
+        void featureFlagService.refresh();
       }
     });
 

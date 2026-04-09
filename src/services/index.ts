@@ -21,3 +21,4 @@ export { default as categoryService } from './category/categoryService';
 
 export { default as notificationService } from './notification/notificationService';
 export { default as notificationApiService } from './notification/notificationApiService';
+export { default as featureFlagService } from './featureFlags/featureFlagService';

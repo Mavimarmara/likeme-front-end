@@ -1,5 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, ScrollView, Image, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+  ActivityIndicator,
+  RefreshControl,
+  Alert,
+} from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -7,11 +16,11 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SearchBar } from '@/components/ui';
 import { GradientBackground, ScreenWithHeader } from '@/components/ui/layout';
 import { useTranslation } from '@/hooks/i18n';
-import { useChat, useMenuItems } from '@/hooks';
+import { useChat, useFeatureFlag, useMenuItems } from '@/hooks';
 import { useFloatingMenu } from '@/contexts/FloatingMenuContext';
 import type { ChatConversation } from '@/hooks';
 import { LogoMini } from '@/assets/ui';
-import { COLORS } from '@/constants';
+import { COLORS, FEATURE_FLAGS } from '@/constants';
 import { storageService } from '@/services';
 import type { ChatStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
@@ -28,6 +37,7 @@ const ChatListScreen: React.FC<Props> = () => {
   const { t } = useTranslation();
   const navigation = useNavigation<ChatListNavigationProp>();
   const rootNavigation = navigation.getParent() ?? navigation;
+  const { isEnabled: isChatEnabled, isLoading: isChatFlagLoading } = useFeatureFlag(FEATURE_FLAGS.CHAT_ENABLED);
   const [searchQuery, setSearchQuery] = useState('');
   const [userAvatarUri, setUserAvatarUri] = useState<string | null>(null);
   const [currentUserName, setCurrentUserName] = useState('');
@@ -49,6 +59,13 @@ const ChatListScreen: React.FC<Props> = () => {
     await refresh();
     setRefreshing(false);
   };
+
+  useEffect(() => {
+    if (!isChatFlagLoading && !isChatEnabled) {
+      Alert.alert('Chat indisponivel', 'Esta funcionalidade esta desativada no momento.');
+      rootNavigation.navigate('Community' as never);
+    }
+  }, [isChatEnabled, isChatFlagLoading, rootNavigation]);
 
   useEffect(() => {
     const loadUser = async () => {

@@ -6,9 +6,9 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { KeyboardAwareScreen, ScreenWithHeader } from '@/components/ui/layout';
 import { IconButton } from '@/components/ui/buttons';
 import { MessageBubble } from '@/components/ui/chat';
-import { COLORS } from '@/constants';
+import { COLORS, FEATURE_FLAGS } from '@/constants';
 import { chatService, storageService } from '@/services';
-import { useBlockedUser, useUserAvatar, useTranslation, useChat } from '@/hooks';
+import { useBlockedUser, useUserAvatar, useTranslation, useChat, useFeatureFlag } from '@/hooks';
 import type { ChatStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
@@ -40,6 +40,7 @@ const ChatScreen: React.FC = () => {
   useAnalyticsScreen({ screenName: 'Chat', screenClass: 'ChatScreen' });
   const { t } = useTranslation();
   const navigation = useNavigation<ChatNavigation>();
+  const { isEnabled: isChatEnabled, isLoading: isChatFlagLoading } = useFeatureFlag(FEATURE_FLAGS.CHAT_ENABLED);
   const route = useRoute<RouteProp<ChatStackParamList, 'ChatConversation'>>();
   const { channelId, channelName, channelAvatar, channelDescription, targetAdvertiserId, initialMessage } =
     route.params;
@@ -90,6 +91,13 @@ const ChatScreen: React.FC = () => {
       recheckBlocked();
     }, [recheckBlocked]),
   );
+
+  useEffect(() => {
+    if (!isChatFlagLoading && !isChatEnabled) {
+      Alert.alert('Chat indisponivel', 'Esta funcionalidade esta desativada no momento.');
+      (navigation.getParent() ?? navigation).navigate('Community' as never);
+    }
+  }, [isChatEnabled, isChatFlagLoading, navigation]);
 
   const loadMessages = useCallback(async () => {
     if (!channelId) return;
@@ -340,7 +348,7 @@ const ChatScreen: React.FC = () => {
             </View>
 
             <IconButton
-              icon='photo-camera'
+              icon='send'
               variant='dark'
               onPress={handleSendMessage}
               backgroundSize='medium'
