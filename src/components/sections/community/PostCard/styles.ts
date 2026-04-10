@@ -67,6 +67,36 @@ export const styles = StyleSheet.create({
     color: '#6e6a6a',
     letterSpacing: 0.2,
   },
+  mediaContainer: {
+    marginTop: SPACING.SM,
+    borderRadius: 16,
+    overflow: 'hidden',
+    backgroundColor: '#e8e4d4',
+    maxHeight: 320,
+  },
+  mediaImage: {
+    width: '100%',
+    height: 200,
+  },
+  mediaImageExpanded: {
+    width: '100%',
+    height: 240,
+  },
+  videoPosterInner: {
+    position: 'relative',
+    width: '100%',
+  },
+  playOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+  },
+  videoPlaceholder: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#2a2a2a',
+  },
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',

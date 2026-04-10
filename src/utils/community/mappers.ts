@@ -9,6 +9,7 @@ import type {
 import type { Post, Comment, Poll } from '@/types';
 import type { Program } from '@/types/program';
 import { logger } from '@/utils/logger';
+import { resolveCommunityPostMediaWithChildren } from '@/utils/community/resolvePostMedia';
 
 const mapCommunityCommentToComment = (
   communityComment: CommunityComment,
@@ -196,6 +197,7 @@ export const mapCommunityPostToPost = (
   users?: CommunityUser[],
   comments?: CommunityComment[],
   postChildren?: CommunityPost[],
+  feedPosts?: CommunityPost[],
 ): Post | null => {
   const postId = communityPost.postId || communityPost._id || '';
   const userId = communityPost.postedUserId || communityPost.userId || '';
@@ -210,12 +212,7 @@ export const mapCommunityPostToPost = (
     return null;
   }
 
-  let imageUrl: string | undefined;
-
-  if (communityPost.data?.fileId && files) {
-    const file = files.find((f) => f.fileId === communityPost.data?.fileId);
-    imageUrl = file?.fileUrl;
-  }
+  const { imageUrl, videoUrl } = resolveCommunityPostMediaWithChildren(communityPost, files, postChildren, feedPosts);
 
   const user = users?.find((u) => u.userId === userId);
   const userName = user?.displayName || undefined;
@@ -294,6 +291,7 @@ export const mapCommunityPostToPost = (
     userId: userId,
     content,
     image: imageUrl,
+    videoUrl,
     likes,
     comments: postComments,
     commentsCount,

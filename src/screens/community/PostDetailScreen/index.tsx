@@ -30,6 +30,7 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     isLiked: post.isLiked ?? false,
     myReactions: post.myReactions,
   });
+  const [snapshotMedia, setSnapshotMedia] = useState<{ image?: string; videoUrl?: string } | null>(null);
 
   useEffect(() => {
     setLikeBootstrap({
@@ -37,6 +38,7 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
       isLiked: post.isLiked ?? false,
       myReactions: post.myReactions,
     });
+    setSnapshotMedia(null);
   }, [post.id]);
 
   useEffect(() => {
@@ -47,13 +49,21 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
         const feed = await communityService.getCommunityPostSnapshot(post.id);
         const raw = feed.posts?.[0];
         if (cancelled || !raw) return;
-        const mapped = mapCommunityPostToPost(raw, feed.files, feed.users, feed.comments, feed.postChildren);
+        const mapped = mapCommunityPostToPost(
+          raw,
+          feed.files,
+          feed.users,
+          feed.comments,
+          feed.postChildren,
+          feed.posts,
+        );
         if (cancelled || !mapped) return;
         setLikeBootstrap({
           initialLikes: mapped.likes ?? 0,
           isLiked: mapped.isLiked ?? false,
           myReactions: mapped.myReactions,
         });
+        setSnapshotMedia({ image: mapped.image, videoUrl: mapped.videoUrl });
       } catch (error) {
         logger.warn('Sincronização do like no detalhe do post falhou:', { postId: post.id, cause: error });
       }
@@ -74,13 +84,22 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   const scrollViewRef = useRef<ScrollView>(null);
   const { bottom: bottomInset } = useSafeAreaInsets();
 
+  const postWithMedia = useMemo(
+    () => ({
+      ...post,
+      image: snapshotMedia?.image ?? post.image,
+      videoUrl: snapshotMedia?.videoUrl ?? post.videoUrl,
+    }),
+    [post, snapshotMedia],
+  );
+
   const postForRendering = useMemo(() => {
     return {
-      ...post,
+      ...postWithMedia,
       comments: [] as Post['comments'],
       commentsCount: replyCardComments.length,
     };
-  }, [post, replyCardComments.length]);
+  }, [postWithMedia, replyCardComments.length]);
 
   const isSendDisabled = isAddingPostComment || messageText.trim().length === 0;
 

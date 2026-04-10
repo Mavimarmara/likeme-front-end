@@ -104,8 +104,16 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
           firstPostRaw: feedData.posts?.[0] || null,
         });
 
-        const mappedPostsPromises = (feedData.posts || []).map((communityPost) =>
-          mapCommunityPostToPost(communityPost, feedData.files, feedData.users, feedData.comments),
+        const feedPosts = feedData.posts ?? [];
+        const mappedPostsPromises = feedPosts.map((communityPost) =>
+          mapCommunityPostToPost(
+            communityPost,
+            feedData.files,
+            feedData.users,
+            feedData.comments,
+            feedData.postChildren,
+            feedPosts,
+          ),
         );
 
         const mappedPostsResults = await Promise.all(mappedPostsPromises);

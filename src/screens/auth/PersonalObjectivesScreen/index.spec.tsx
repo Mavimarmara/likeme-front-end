@@ -22,6 +22,7 @@ const t = (key: string, opts?: Record<string, string>) => {
     'common.save': 'Salvar',
     'auth.personalObjectivesStart': 'Iniciar',
     'auth.personalObjectivesCardTitle': 'Versão beta',
+    'auth.personalObjectivesCardHighlightText': 'Destaque do card.',
     'auth.personalObjectivesCardDescription': 'Descrição do card.',
     'common.skip': 'Pular',
     'common.error': 'Erro',

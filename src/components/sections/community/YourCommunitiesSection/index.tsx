@@ -101,6 +101,21 @@ const YourCommunitiesSection: React.FC<Props> = ({ community, onCommunityPress, 
                   </Text>
                 )}
 
+                {(post.image || post.videoUrl) && (
+                  <View style={styles.postMediaWrap}>
+                    {post.image ? (
+                      <Image source={{ uri: post.image }} style={styles.postMedia} resizeMode='cover' />
+                    ) : (
+                      <View style={[styles.postMedia, styles.postMediaVideoFallback]} />
+                    )}
+                    {post.videoUrl ? (
+                      <View style={styles.postMediaPlay} pointerEvents='none'>
+                        <Icon name='play-circle-outline' size={28} color='rgba(255,255,255,0.95)' />
+                      </View>
+                    ) : null}
+                  </View>
+                )}
+
                 <View style={styles.postFooter}>
                   <View style={styles.postAction}>
                     <Icon name='chat-bubble-outline' size={20} color='#0154f8' />

@@ -180,6 +180,26 @@ export const styles = StyleSheet.create({
     lineHeight: 12,
     marginTop: SPACING.XS,
   },
+  postMediaWrap: {
+    marginTop: SPACING.XS,
+    borderRadius: BORDER_RADIUS.MD,
+    overflow: 'hidden',
+    maxHeight: 120,
+    backgroundColor: COLORS.BACKGROUND,
+  },
+  postMedia: {
+    width: '100%',
+    height: 100,
+  },
+  postMediaVideoFallback: {
+    backgroundColor: '#2a2a2a',
+  },
+  postMediaPlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+  },
   postFooter: {
     flexDirection: 'row',
     justifyContent: 'flex-end',

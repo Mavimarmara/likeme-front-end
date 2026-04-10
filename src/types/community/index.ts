@@ -1,5 +1,7 @@
 export interface CommunityPost {
   _id?: string;
+  /** ID interno de evento/realtime; alguns payloads usam em `parentPostId`. */
+  path?: string;
   postId?: string;
   parentPostId?: string;
   postedUserId?: string;
@@ -12,11 +14,16 @@ export interface CommunityPost {
   childrenPosts?: CommunityPost[];
   pollOptions?: CommunityPost[]; // Opções de poll agrupadas (nova estrutura do backend)
   sequenceNumber?: number; // Para ordenação das opções de poll
+  /** Arquivos embutidos no post (algumas respostas Amity enviam junto do post). */
+  files?: CommunityFile[];
+  /** Filhos inline quando a API retorna objetos completos (além do array global `postChildren`). */
+  children?: CommunityPost[] | string[];
   data?: {
     text?: string;
     title?: string;
     fileId?: string;
     thumbnailFileId?: string;
+    videoFileId?: string | Record<string, string | undefined>;
     pollId?: string;
     endedAt?: string;
     endDate?: string;
@@ -33,7 +40,14 @@ export interface CommunityPost {
 export interface CommunityFile {
   fileId: string;
   fileUrl: string;
+  /** URLs por resolução quando `type` é vídeo transcoded (Amity). */
+  videoUrl?: Record<string, string>;
   type?: string;
+  attributes?: {
+    mimeType?: string;
+    metadata?: { thumbnail?: boolean; [key: string]: unknown };
+    [key: string]: unknown;
+  };
   createdAt?: string;
   updatedAt?: string;
 }

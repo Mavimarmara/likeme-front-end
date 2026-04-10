@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Image, Pressable, StyleProp, Text, View, ViewStyle } from 'react-native';
+import { Image, Linking, Pressable, StyleProp, Text, View, ViewStyle } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Badge } from '@/components/ui';
-import { PollCard } from '@/components/sections/community';
+import PollCard from '../PollCard';
 import { usePost, usePostReplies, type PostLikeEngagement } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import { styles as cardStyles } from './styles';
@@ -15,6 +15,7 @@ import {
   getPostTypeBadgeColor,
   getTitleFromPost,
 } from '@/utils/community/postCardUtils';
+import { logger } from '@/utils/logger';
 
 type Props = {
   post: Post;
@@ -55,6 +56,10 @@ const PostCardView: React.FC<ViewProps> = ({
   const postPreviewContent = getContentPreviewFromPost(post);
   const commentsCount = post.commentsCount !== undefined ? post.commentsCount : post.comments?.length || 0;
 
+  const imageUri = post.image?.trim() ? post.image.trim() : undefined;
+  const videoUri = post.videoUrl?.trim() ? post.videoUrl.trim() : undefined;
+  const showMediaBlock = Boolean((imageUri || videoUri) && !activePoll);
+
   const handleCommentsPress = () => {
     setIsCommentsOpen((prev) => {
       const next = !prev;
@@ -71,6 +76,16 @@ const PostCardView: React.FC<ViewProps> = ({
 
   const handlePostPress = () => {
     onPress?.(post);
+  };
+
+  const openVideoUrl = (url: string) => {
+    Linking.openURL(url).catch((cause) => {
+      logger.warn('Falha ao abrir URL do vídeo do post', { url, cause });
+    });
+  };
+
+  const onPostImageError = () => {
+    logger.warn('Falha ao carregar imagem do post', { postId: post.id, uri: imageUri });
   };
 
   const cardInner = (
@@ -102,6 +117,57 @@ const PostCardView: React.FC<ViewProps> = ({
             <Text style={cardStyles.description} numberOfLines={isContentExpanded ? undefined : 3}>
               {postPreviewContent}
             </Text>
+          ) : null}
+
+          {showMediaBlock ? (
+            <View style={cardStyles.mediaContainer}>
+              {videoUri ? (
+                <Pressable
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    openVideoUrl(videoUri);
+                  }}
+                  accessibilityRole='button'
+                  accessibilityLabel='Abrir vídeo'
+                >
+                  <View style={cardStyles.videoPosterInner}>
+                    {imageUri ? (
+                      <Image
+                        testID='post-card-video-poster'
+                        accessibilityLabel='Imagem do post'
+                        source={{ uri: imageUri }}
+                        style={forceContentExpanded ? cardStyles.mediaImageExpanded : cardStyles.mediaImage}
+                        resizeMode='cover'
+                        onError={onPostImageError}
+                      />
+                    ) : (
+                      <View
+                        style={[
+                          forceContentExpanded ? cardStyles.mediaImageExpanded : cardStyles.mediaImage,
+                          cardStyles.videoPlaceholder,
+                        ]}
+                      />
+                    )}
+                    <View style={cardStyles.playOverlay} pointerEvents='none'>
+                      <Icon
+                        name='play-circle-outline'
+                        size={forceContentExpanded ? 56 : 44}
+                        color='rgba(255,255,255,0.95)'
+                      />
+                    </View>
+                  </View>
+                </Pressable>
+              ) : imageUri ? (
+                <Image
+                  testID='post-card-image-only'
+                  accessibilityLabel='Imagem do post'
+                  source={{ uri: imageUri }}
+                  style={forceContentExpanded ? cardStyles.mediaImageExpanded : cardStyles.mediaImage}
+                  resizeMode='cover'
+                  onError={onPostImageError}
+                />
+              ) : null}
+            </View>
           ) : null}
         </View>
       </View>

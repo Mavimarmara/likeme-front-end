@@ -95,6 +95,8 @@ export interface Post {
   userId?: string;
   content: string;
   image?: string;
+  /** URL de reprodução quando o post é vídeo (feed Amity / arquivo com mime vídeo). */
+  videoUrl?: string;
   likes?: number;
   isLiked?: boolean;
   /** Nomes das reações do usuário atual neste post (cópia do backend, sem filtrar tipo). */
