@@ -150,6 +150,11 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     };
   }, [ad?.advertiser, advertiserId, product, route.params?.product]);
 
+  const hasSpecialistPartner = useMemo(() => {
+    if (ad?.advertiser?.id) return true;
+    return Boolean(partnerData.name?.trim());
+  }, [ad?.advertiser?.id, partnerData.name]);
+
   const usesPhysicalProductDetailLayout =
     product?.type === PRODUCT_CATALOG_TYPE.PHYSICAL || product?.type === PRODUCT_CATALOG_TYPE.PROGRAM;
 
@@ -334,7 +339,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                   <Text style={styles.paymentLinkText}>{t('marketplace.paymentOptionsText')} </Text>
                   <Text style={styles.paymentLinkAnchor}>{t('marketplace.learnMore')}</Text>
                 </TouchableOpacity>
-                {renderPartnerSection()}
+                {hasSpecialistPartner ? renderPartnerSection() : null}
               </View>
               {renderRecommendedProducts()}
             </>
