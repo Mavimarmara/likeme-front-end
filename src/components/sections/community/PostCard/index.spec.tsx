@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import PostCard from './index';
 import type { Post } from '@/types';
 
@@ -77,5 +77,19 @@ describe('PostCard', () => {
 
     const img = getByTestId('post-card-video-poster');
     expect(img.props.source).toEqual({ uri: poster });
+  });
+
+  it('ao tocar no poster, abre player de vídeo embutido', () => {
+    const poster = 'https://cdn.example.com/thumb.jpg';
+    const video = 'https://cdn.example.com/video.mp4';
+    const { getByLabelText, getByTestId } = render(
+      <PostCard
+        post={{ ...basePost(), image: poster, videoUrl: video }}
+        postEngagement={{ likeCount: 0, isLiked: false, isLiking: false, togglePostLike: jest.fn() }}
+      />,
+    );
+
+    fireEvent.press(getByLabelText('Reproduzir vídeo'));
+    expect(getByTestId('post-card-embedded-video')).toBeTruthy();
   });
 });

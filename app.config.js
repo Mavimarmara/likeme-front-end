@@ -175,6 +175,7 @@ module.exports = {
     sdkVersion: '54.0.0',
     plugins: [
       'expo-font',
+      'expo-video',
       [
         'react-native-auth0',
         {
@@ -212,6 +213,7 @@ module.exports = {
     },
     ios: {
       bundleIdentifier: 'app.likeme.com',
+      supportsTablet: false,
       googleServicesFile: './GoogleService-Info.plist',
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
