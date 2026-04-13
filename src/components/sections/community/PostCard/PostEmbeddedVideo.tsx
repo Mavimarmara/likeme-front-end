@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
-import { useVideoPlayer, VideoView } from 'expo-video';
+import { ResizeMode, Video, type Video as ExpoVideoRef } from 'expo-av';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 type Props = {
@@ -10,31 +10,46 @@ type Props = {
 };
 
 export const PostEmbeddedVideo: React.FC<Props> = ({ videoUri, onCollapse, containerStyle }) => {
-  const player = useVideoPlayer(videoUri, (p) => {
-    p.loop = false;
-  });
+  const videoRef = useRef<ExpoVideoRef>(null);
+
+  const pauseAndUnload = useCallback(async () => {
+    const v = videoRef.current;
+    if (!v) return;
+    try {
+      await v.pauseAsync();
+    } catch {
+      /* ignore */
+    }
+    try {
+      await v.unloadAsync();
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   useEffect(() => {
-    player.play();
     return () => {
-      player.pause();
+      void pauseAndUnload();
     };
-  }, [player]);
+  }, [pauseAndUnload]);
 
   return (
     <View style={containerStyle}>
-      <VideoView
-        player={player}
+      <Video
+        key={videoUri}
+        ref={videoRef}
         style={styles.video}
-        nativeControls
-        contentFit='cover'
-        fullscreenOptions={{ enable: true }}
+        source={{ uri: videoUri }}
+        useNativeControls
+        resizeMode={ResizeMode.COVER}
+        isLooping={false}
+        shouldPlay
       />
       <Pressable
         style={styles.collapseTouch}
         onPress={(e) => {
           e?.stopPropagation?.();
-          player.pause();
+          void pauseAndUnload();
           onCollapse();
         }}
         accessibilityRole='button'

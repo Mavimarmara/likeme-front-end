@@ -48,15 +48,14 @@ jest.mock('expo-file-system', () => ({
   cacheDirectory: 'file:///mock/cache/',
 }));
 
-jest.mock('expo-video', () => {
+jest.mock('expo-av', () => {
   const React = require('react');
   const { View } = require('react-native');
   return {
-    useVideoPlayer: () => ({
-      play: jest.fn(),
-      pause: jest.fn(),
-    }),
-    VideoView: (props) => React.createElement(View, { testID: 'post-card-embedded-video', ...props }),
+    ResizeMode: { COVER: 'cover', CONTAIN: 'contain' },
+    Video: React.forwardRef((props, ref) =>
+      React.createElement(View, { testID: 'post-card-embedded-video', ...props, ref }),
+    ),
   };
 });
 
