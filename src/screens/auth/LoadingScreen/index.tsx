@@ -3,7 +3,7 @@ import { View, Text, Animated, Image, ImageStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PartialLogo, GradientSplash7, GradientSplash8, GradientSplash9 } from '@/assets/auth';
 import { styles, GRADIENT_STRIP_HEIGHT, GRADIENT_STRIP_WIDTH } from './styles';
-import { storageService } from '@/services';
+import { AuthService, storageService } from '@/services';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen } from '@/analytics';
 import { getApiUrl } from '@/config';
@@ -154,13 +154,30 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
         console.error('[LoadingScreen] Falha no fluxo inicial (animacao ou bootstrap):', error);
       }
 
+      if (!shouldAuthenticate) {
+        try {
+          const authResult = await AuthService.login();
+          await AuthService.validateToken(authResult);
+          shouldAuthenticate = true;
+        } catch (error) {
+          console.error('[LoadingScreen] Falha no login automatico pelo splash:', error);
+        }
+      }
+
       try {
         await ensureI18nHydrated({ lang: 'pt-BR', timeoutMs: 2500 });
       } catch (hydrationError) {
         console.error('[LoadingScreen] Falha ao aguardar i18n:', hydrationError);
       }
 
-      replaceOnce(shouldAuthenticate ? 'Authenticated' : 'Unauthenticated');
+      if (shouldAuthenticate) {
+        replaceOnce('Authenticated');
+        return;
+      }
+
+      replaceOnce('Error', {
+        errorMessage: 'Nao foi possivel autenticar automaticamente. Tente novamente.',
+      });
     };
 
     const scheduleBootstrapWatchdog = (retryAttempt: number) => {
