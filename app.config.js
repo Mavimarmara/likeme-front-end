@@ -171,7 +171,7 @@ module.exports = {
     orientation: 'portrait',
     userInterfaceStyle: 'light',
     platforms: ['ios', 'android', 'web'],
-    jsEngine: 'jsc',
+    jsEngine: 'hermes',
     sdkVersion: '54.0.0',
     plugins: [
       'expo-font',
@@ -179,7 +179,7 @@ module.exports = {
         'expo-build-properties',
         {
           ios: { newArchEnabled: false },
-          android: { newArchEnabled: false },
+          android: { newArchEnabled: true },
         },
       ],
       'react-native-video',
