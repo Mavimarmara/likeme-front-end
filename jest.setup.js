@@ -48,15 +48,12 @@ jest.mock('expo-file-system', () => ({
   cacheDirectory: 'file:///mock/cache/',
 }));
 
-jest.mock('expo-av', () => {
+jest.mock('react-native-video', () => {
   const React = require('react');
   const { View } = require('react-native');
-  return {
-    ResizeMode: { COVER: 'cover', CONTAIN: 'contain' },
-    Video: React.forwardRef((props, ref) =>
-      React.createElement(View, { testID: 'post-card-embedded-video', ...props, ref }),
-    ),
-  };
+  return React.forwardRef((props, ref) =>
+    React.createElement(View, { testID: 'post-card-embedded-video', ...props, ref }),
+  );
 });
 
 // Mock global para react-native-safe-area-context

@@ -171,11 +171,18 @@ module.exports = {
     orientation: 'portrait',
     userInterfaceStyle: 'light',
     platforms: ['ios', 'android', 'web'],
-    jsEngine: 'hermes',
+    jsEngine: 'jsc',
     sdkVersion: '54.0.0',
     plugins: [
       'expo-font',
-      'expo-av',
+      [
+        'expo-build-properties',
+        {
+          ios: { newArchEnabled: false },
+          android: { newArchEnabled: false },
+        },
+      ],
+      'react-native-video',
       [
         'react-native-auth0',
         {
@@ -184,7 +191,6 @@ module.exports = {
       ],
       '@react-native-firebase/app',
       '@react-native-firebase/messaging',
-      './plugins/withPodfileModularHeaders.js',
       './plugins/withAdIdPermission.js',
     ],
     scheme: 'likeme',
