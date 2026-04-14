@@ -4,10 +4,11 @@
   "description": "React Native app for health and wellness",
   "main": "index.js",
   "scripts": {
-    "start": "npm run run:emulator:ios && npm run start:tunnel",
+    "start": "npm run run:emulator:ios && npm run start:dev:tunnel",
     "start:clear": "expo start --clear",
     "start:reset": "expo start --clear --reset-cache",
     "start:tunnel": "npx expo start --reset-cache --clear --tunnel",
+    "start:dev:tunnel": "npx expo start --dev-client --reset-cache --clear --tunnel",
     "start:staging": "env-cmd -f .env.staging npx expo start",
     "start:production": "env-cmd -f .env.production npx expo start",
     "start:local": "cp .env.local .env && npx expo start --reset-cache --clear --tunnel",
@@ -59,7 +60,7 @@
     "clean:all": "rm -rf node_modules/.cache .expo dist android/build ios/build android/app/build ios/Pods ios/Podfile.lock",
     "clean:android": "cd android && ./gradlew clean && cd ..",
     "clean:ios": "cd ios && rm -rf Pods Podfile.lock build && pod install && cd ..",
-    "postinstall": "if [ -d ios ] && [ -f ios/Podfile ] && [ \"$SKIP_IOS_POD_INSTALL\" != \"true\" ]; then cd ios && pod install && cd ..; fi",
+    "postinstall": "node scripts/patch-slider-podspec.js && if [ -d ios ] && [ -f ios/Podfile ] && [ \"$SKIP_IOS_POD_INSTALL\" != \"true\" ]; then cd ios && pod install && cd ..; fi",
     "run:emulator:ios": "open -a Simulator",
     "prepare": "husky || true"
   },
@@ -67,7 +68,7 @@
     "@expo/metro-runtime": "~6.1.2",
     "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-native-community/datetimepicker": "^8.5.1",
-    "@react-native-community/slider": "^5.1.2",
+    "@react-native-community/slider": "5.0.1",
     "@react-native-firebase/analytics": "^23.8.5",
     "@react-native-firebase/app": "^23.8.5",
     "@react-native-firebase/messaging": "^23.8.5",
@@ -78,8 +79,8 @@
     "expo": "54.0.22",
     "expo-asset": "^12.0.9",
     "expo-auth-session": "^7.0.8",
-    "expo-av": "~16.0.8",
     "expo-blur": "~15.0.7",
+    "expo-build-properties": "~1.0.10",
     "expo-constants": "^18.0.10",
     "expo-crypto": "^15.0.7",
     "expo-dev-client": "~6.0.17",
@@ -100,6 +101,7 @@
     "react-native-svg": "15.12.1",
     "react-native-svg-transformer": "^1.5.1",
     "react-native-vector-icons": "^10.0.2",
+    "react-native-video": "^6.19.1",
     "react-native-web": "^0.21.2"
   },
   "devDependencies": {
@@ -131,7 +133,7 @@
   "jest": {
     "preset": "react-native",
     "transformIgnorePatterns": [
-      "node_modules/(?!(react-native|@react-native|react-native-vector-icons|expo|@expo|expo-auth-session|@react-navigation|@react-native-community)/)"
+      "node_modules/(?!(react-native|@react-native|react-native-vector-icons|react-native-video|expo|@expo|expo-auth-session|@react-navigation|@react-native-community)/)"
     ],
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/src/$1",

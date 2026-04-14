@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
-import { ResizeMode, Video, type Video as ExpoVideoRef } from 'expo-av';
+import Video, { type VideoRef } from 'react-native-video';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 type Props = {
@@ -9,48 +9,31 @@ type Props = {
   containerStyle: StyleProp<ViewStyle>;
 };
 
-export const PostEmbeddedVideo: React.FC<Props> = ({ videoUri, onCollapse, containerStyle }) => {
-  const videoRef = useRef<ExpoVideoRef>(null);
+const PostEmbeddedVideoInner: React.FC<Props> = ({ videoUri, onCollapse, containerStyle }) => {
+  const videoRef = useRef<VideoRef>(null);
 
-  const pauseAndUnload = useCallback(async () => {
-    const v = videoRef.current;
-    if (!v) return;
-    try {
-      await v.pauseAsync();
-    } catch {
-      /* ignore */
-    }
-    try {
-      await v.unloadAsync();
-    } catch {
-      /* ignore */
-    }
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      void pauseAndUnload();
-    };
-  }, [pauseAndUnload]);
+  const collapse = useCallback(() => {
+    videoRef.current?.pause();
+    onCollapse();
+  }, [onCollapse]);
 
   return (
     <View style={containerStyle}>
       <Video
-        key={videoUri}
         ref={videoRef}
-        style={styles.video}
         source={{ uri: videoUri }}
-        useNativeControls
-        resizeMode={ResizeMode.COVER}
-        isLooping={false}
-        shouldPlay
+        style={styles.video}
+        controls
+        resizeMode='cover'
+        repeat={false}
+        ignoreSilentSwitch='ignore'
+        playInBackground={false}
       />
       <Pressable
         style={styles.collapseTouch}
         onPress={(e) => {
           e?.stopPropagation?.();
-          void pauseAndUnload();
-          onCollapse();
+          collapse();
         }}
         accessibilityRole='button'
         accessibilityLabel='Voltar à capa do vídeo'
@@ -62,6 +45,8 @@ export const PostEmbeddedVideo: React.FC<Props> = ({ videoUri, onCollapse, conta
     </View>
   );
 };
+
+export const PostEmbeddedVideo: React.FC<Props> = (props) => <PostEmbeddedVideoInner key={props.videoUri} {...props} />;
 
 const styles = StyleSheet.create({
   video: {

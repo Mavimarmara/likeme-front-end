@@ -1,3 +1,5 @@
+import 'expo/src/Expo.fx';
+
 // i18n deve ser inicializado antes de qualquer componente que use useTranslation
 import './src/i18n';
 
