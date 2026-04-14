@@ -33,6 +33,22 @@ type AffiliateProductScreenProps = {
 };
 
 type TabType = 'goal' | 'description' | 'composition';
+const HTTPS_PROTOCOL = 'https:';
+const AMAZON_ALLOWED_HOSTS = ['amazon.com', 'amazon.com.br'];
+
+function isAllowedAffiliateUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== HTTPS_PROTOCOL) {
+      return false;
+    }
+
+    const normalizedHost = parsed.hostname.toLowerCase();
+    return AMAZON_ALLOWED_HOSTS.some((host) => normalizedHost === host || normalizedHost.endsWith(`.${host}`));
+  } catch {
+    return false;
+  }
+}
 
 const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigation, route }) => {
   useAnalyticsScreen({ screenName: 'AffiliateProduct', screenClass: 'AffiliateProductScreen' });
@@ -329,9 +345,20 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
   const handleBuyOnAmazon = () => {
     // Prioridade: ad.product > product carregado > product dos params
     const externalUrl = ad?.product?.externalUrl || product?.externalUrl || route.params?.product?.externalUrl;
-    if (externalUrl) {
-      Linking.openURL(externalUrl);
+    if (!externalUrl) {
+      return;
     }
+
+    if (!isAllowedAffiliateUrl(externalUrl)) {
+      console.warn('[AffiliateProductScreen] URL de afiliado bloqueada por domínio/protocolo inválido.', {
+        externalUrl,
+      });
+      return;
+    }
+
+    Linking.openURL(externalUrl).catch((error: Error) => {
+      console.error('[AffiliateProductScreen] Falha ao abrir URL de afiliado.', { externalUrl, error });
+    });
   };
 
   // Prioridade: ad.product > product carregado > params.product

@@ -48,11 +48,15 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
           setSelectedMarkers(new Set(ids));
           return;
         }
-      } catch {}
+      } catch (error) {
+        console.error('[PersonalObjectivesScreen] Falha ao carregar objetivos do backend.', error);
+      }
       try {
         const ids = await storageService.getSelectedObjectivesIds();
         if (ids.length > 0) setSelectedMarkers(new Set(ids));
-      } catch {}
+      } catch (error) {
+        console.error('[PersonalObjectivesScreen] Falha ao carregar objetivos salvos localmente.', error);
+      }
     };
     loadSelection();
   }, []);

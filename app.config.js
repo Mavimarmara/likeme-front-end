@@ -12,7 +12,6 @@ function findOriginalEnvFile() {
   const possiblePaths = [
     path.resolve(__dirname, '.env'), // Diretório do app.config.js
     path.join(__dirname, '..', '.env'), // Um nível acima
-    '/Users/weber/Projetos/likeme/likeme-front-end/.env', // Caminho absoluto do projeto
     path.join(process.cwd(), '..', '.env'), // Um nível acima do cwd
   ];
 
@@ -192,7 +191,6 @@ module.exports = {
       './plugins/withPodfileModularHeaders.js',
       '@react-native-firebase/app',
       '@react-native-firebase/messaging',
-      './plugins/withAdIdPermission.js',
     ],
     scheme: 'likeme',
     icon: './assets/app/icon.png',
@@ -204,7 +202,6 @@ module.exports = {
         foregroundImage: './assets/app/icon.png',
         backgroundColor: '#FFFFFF',
       },
-      permissions: ['com.google.android.gms.permission.AD_ID'],
       intentFilters: [
         {
           action: 'VIEW',

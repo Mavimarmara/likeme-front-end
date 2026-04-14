@@ -3,7 +3,6 @@ import 'expo/src/Expo.fx';
 // i18n deve ser inicializado antes de qualquer componente que use useTranslation
 import './src/i18n';
 
-import { LogBox } from 'react-native';
 import { registerRootComponent } from 'expo';
 import App from './App';
 
@@ -18,7 +17,5 @@ try {
 } catch {
   // Firebase Messaging não disponível (ex: web ou Expo Go)
 }
-
-LogBox.ignoreAllLogs(true);
 
 registerRootComponent(App);

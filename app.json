@@ -20,8 +20,7 @@
     },
     "android": {
       "package": "com.likeme.app",
-      "googleServicesFile": "./google-services.json",
-      "permissions": ["com.google.android.gms.permission.AD_ID"]
+      "googleServicesFile": "./google-services.json"
     },
     "ios": {
       "bundleIdentifier": "app.likeme.com",
