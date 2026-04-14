@@ -13,7 +13,8 @@ import { fetchWithTimeout } from '@/utils/network/fetchWithTimeout';
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 const GRADIENT_SOURCES = [GradientSplash7, GradientSplash8, GradientSplash9];
 const AUTH_TOKEN_VALIDATE_TIMEOUT_MS = 12_000;
-const BOOTSTRAP_MAX_WAIT_MS = 8_000;
+const BOOTSTRAP_WATCHDOG_INTERVAL_MS = 8_000;
+const BOOTSTRAP_WATCHDOG_MAX_RETRIES = 2;
 
 type Props = { navigation: any };
 
@@ -25,6 +26,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
   const taglineOpacity = useRef(new Animated.Value(1)).current;
   const [step, setStep] = useState(0);
   const hasNavigatedRef = useRef(false);
+  const bootstrapWatchdogTimersRef = useRef<Array<ReturnType<typeof setTimeout>>>([]);
 
   const TAGLINES = [t('auth.taglineRhythm'), t('auth.taglineJourney'), t('auth.taglineRoutine')];
 
@@ -59,12 +61,18 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
   );
 
   useEffect(() => {
+    const clearBootstrapWatchdogTimers = () => {
+      bootstrapWatchdogTimersRef.current.forEach((timerId) => clearTimeout(timerId));
+      bootstrapWatchdogTimersRef.current = [];
+    };
+
     const replaceOnce = (routeName: string, params?: Record<string, unknown>) => {
       if (hasNavigatedRef.current) {
         return;
       }
 
       hasNavigatedRef.current = true;
+      clearBootstrapWatchdogTimers();
       if (params === undefined) {
         navigation.replace(routeName);
         return;
@@ -155,17 +163,37 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
       replaceOnce(shouldAuthenticate ? 'Authenticated' : 'Unauthenticated');
     };
 
-    const bootstrapWatchdog = setTimeout(() => {
-      console.error('[LoadingScreen] Timeout de bootstrap inicial.');
-      replaceOnce('Error', {
-        errorMessage: 'Conexao com a internet necessaria para continuar.',
-      });
-    }, BOOTSTRAP_MAX_WAIT_MS);
+    const scheduleBootstrapWatchdog = (retryAttempt: number) => {
+      const watchdogTimer = setTimeout(() => {
+        if (hasNavigatedRef.current) {
+          return;
+        }
+
+        if (retryAttempt < BOOTSTRAP_WATCHDOG_MAX_RETRIES) {
+          console.warn(
+            `[LoadingScreen] Bootstrap ainda em andamento. Retentativa ${
+              retryAttempt + 1
+            }/${BOOTSTRAP_WATCHDOG_MAX_RETRIES}.`,
+          );
+          scheduleBootstrapWatchdog(retryAttempt + 1);
+          return;
+        }
+
+        console.error('[LoadingScreen] Timeout de bootstrap inicial.');
+        replaceOnce('Error', {
+          errorMessage: 'Conexao com a internet necessaria para continuar.',
+        });
+      }, BOOTSTRAP_WATCHDOG_INTERVAL_MS);
+
+      bootstrapWatchdogTimersRef.current.push(watchdogTimer);
+    };
+
+    scheduleBootstrapWatchdog(0);
 
     const timer = setTimeout(run, 300);
     return () => {
       clearTimeout(timer);
-      clearTimeout(bootstrapWatchdog);
+      clearBootstrapWatchdogTimers();
     };
   }, [navigation, scrollAnim, fadeAnim, taglineOpacity, cumulativeOffsets]);
 

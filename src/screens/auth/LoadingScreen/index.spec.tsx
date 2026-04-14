@@ -47,10 +47,12 @@ jest.mock('@/config', () => ({
 
 describe('LoadingScreen', () => {
   let consoleErrorSpy: jest.SpiedFunction<typeof console.error>;
+  let consoleWarnSpy: jest.SpiedFunction<typeof console.warn>;
 
   beforeEach(() => {
     jest.useFakeTimers();
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
     jest.clearAllMocks();
     mockGetToken.mockResolvedValue(null);
     mockEnsureI18nHydrated.mockResolvedValue(undefined);
@@ -73,6 +75,7 @@ describe('LoadingScreen', () => {
 
   afterEach(() => {
     consoleErrorSpy.mockRestore();
+    consoleWarnSpy.mockRestore();
     (Animated.timing as unknown as jest.Mock).mockRestore?.();
     jest.runOnlyPendingTimers();
     jest.useRealTimers();
@@ -186,5 +189,28 @@ describe('LoadingScreen', () => {
       { timeout: 12_000 },
     );
     expect(mockRemoveToken).not.toHaveBeenCalled();
+  });
+
+  it('aguarda retentativas do watchdog antes de exibir erro de internet', async () => {
+    mockGetToken.mockImplementation(() => new Promise(() => {}));
+    const replace = jest.fn();
+
+    render(<LoadingScreen navigation={{ replace, navigate: jest.fn() }} />);
+
+    await act(async () => {
+      await jest.advanceTimersByTimeAsync(23_999);
+    });
+
+    expect(replace).not.toHaveBeenCalled();
+
+    await act(async () => {
+      await jest.advanceTimersByTimeAsync(1);
+    });
+
+    await waitFor(() => {
+      expect(replace).toHaveBeenCalledWith('Error', {
+        errorMessage: 'Conexao com a internet necessaria para continuar.',
+      });
+    });
   });
 });
