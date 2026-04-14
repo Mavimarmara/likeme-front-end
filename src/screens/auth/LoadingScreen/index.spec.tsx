@@ -6,6 +6,8 @@ const mockFetchWithTimeout = jest.fn();
 const mockGetToken = jest.fn();
 const mockSetToken = jest.fn();
 const mockRemoveToken = jest.fn();
+const mockAuthLogin = jest.fn();
+const mockAuthValidateToken = jest.fn();
 const mockEnsureI18nHydrated = jest.fn();
 const mockStartI18nHydration = jest.fn();
 
@@ -34,6 +36,10 @@ jest.mock('@/analytics', () => ({
 }));
 
 jest.mock('@/services', () => ({
+  AuthService: {
+    login: (...args: unknown[]) => mockAuthLogin(...args),
+    validateToken: (...args: unknown[]) => mockAuthValidateToken(...args),
+  },
   storageService: {
     getToken: (...args: unknown[]) => mockGetToken(...args),
     setToken: (...args: unknown[]) => mockSetToken(...args),
@@ -59,6 +65,8 @@ describe('LoadingScreen', () => {
     mockStartI18nHydration.mockResolvedValue(undefined);
     mockSetToken.mockResolvedValue(undefined);
     mockRemoveToken.mockResolvedValue(undefined);
+    mockAuthLogin.mockResolvedValue({ accessToken: 'fresh-login-token' });
+    mockAuthValidateToken.mockResolvedValue(undefined);
 
     (Image.resolveAssetSource as any) = jest.fn().mockReturnValue({ width: 100, height: 200, uri: 'mock' });
     jest.spyOn(Animated, 'timing').mockImplementation((value: any, config: any) => {
@@ -81,7 +89,7 @@ describe('LoadingScreen', () => {
     jest.useRealTimers();
   });
 
-  it('navega para Unauthenticated quando não há token', async () => {
+  it('navega para Authenticated quando não há token e o login automático funciona', async () => {
     const replace = jest.fn();
 
     render(<LoadingScreen navigation={{ replace, navigate: jest.fn() }} />);
@@ -91,7 +99,7 @@ describe('LoadingScreen', () => {
 
     await waitFor(
       () => {
-        expect(replace).toHaveBeenCalledWith('Unauthenticated');
+        expect(replace).toHaveBeenCalledWith('Authenticated');
       },
       { timeout: 12_000 },
     );
@@ -130,7 +138,7 @@ describe('LoadingScreen', () => {
     expect(mockRemoveToken).not.toHaveBeenCalled();
   });
 
-  it('em timeout da validação (AbortError), remove o token e segue para Unauthenticated', async () => {
+  it('em timeout da validação (AbortError), remove token e autentica por login automático', async () => {
     mockGetToken.mockResolvedValue('slow-network-token');
     const abortError = new DOMException('The operation was aborted.', 'AbortError');
     mockFetchWithTimeout.mockRejectedValue(abortError);
@@ -144,13 +152,13 @@ describe('LoadingScreen', () => {
     await waitFor(
       () => {
         expect(mockRemoveToken).toHaveBeenCalledTimes(1);
-        expect(replace).toHaveBeenCalledWith('Unauthenticated');
+        expect(replace).toHaveBeenCalledWith('Authenticated');
       },
       { timeout: 12_000 },
     );
   });
 
-  it('em erro de rede que não é abort, não remove o token e segue para Unauthenticated', async () => {
+  it('em erro de rede não-abort, tenta login automático e navega para Authenticated', async () => {
     mockGetToken.mockResolvedValue('some-token');
     mockFetchWithTimeout.mockRejectedValue(new Error('Network request failed'));
 
@@ -162,14 +170,14 @@ describe('LoadingScreen', () => {
 
     await waitFor(
       () => {
-        expect(replace).toHaveBeenCalledWith('Unauthenticated');
+        expect(replace).toHaveBeenCalledWith('Authenticated');
       },
       { timeout: 12_000 },
     );
     expect(mockRemoveToken).not.toHaveBeenCalled();
   });
 
-  it('quando a API responde não-OK, não remove o token e segue para Unauthenticated', async () => {
+  it('quando a API responde não-OK, tenta login automático e navega para Authenticated', async () => {
     mockGetToken.mockResolvedValue('expired-token');
     mockFetchWithTimeout.mockResolvedValue({
       ok: false,
@@ -184,11 +192,31 @@ describe('LoadingScreen', () => {
 
     await waitFor(
       () => {
-        expect(replace).toHaveBeenCalledWith('Unauthenticated');
+        expect(replace).toHaveBeenCalledWith('Authenticated');
       },
       { timeout: 12_000 },
     );
     expect(mockRemoveToken).not.toHaveBeenCalled();
+  });
+
+  it('quando login automático falha, navega para Error', async () => {
+    mockGetToken.mockResolvedValue(null);
+    mockAuthLogin.mockRejectedValue(new Error('Login failed'));
+
+    const replace = jest.fn();
+    render(<LoadingScreen navigation={{ replace, navigate: jest.fn() }} />);
+    await act(async () => {
+      await jest.runAllTimersAsync();
+    });
+
+    await waitFor(
+      () => {
+        expect(replace).toHaveBeenCalledWith('Error', {
+          errorMessage: 'Nao foi possivel autenticar automaticamente. Tente novamente.',
+        });
+      },
+      { timeout: 12_000 },
+    );
   });
 
   it('aguarda retentativas do watchdog antes de exibir erro de internet', async () => {
