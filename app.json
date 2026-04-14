@@ -20,11 +20,13 @@
     },
     "android": {
       "package": "com.likeme.app",
+      "googleServicesFile": "./google-services.json",
       "permissions": ["com.google.android.gms.permission.AD_ID"]
     },
     "ios": {
       "bundleIdentifier": "app.likeme.com",
       "supportsTablet": true,
+      "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": { "ITSAppUsesNonExemptEncryption": false }
     },
     "owner": "pixelpulselab",

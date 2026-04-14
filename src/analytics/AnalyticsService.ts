@@ -10,14 +10,47 @@ import type { AnalyticsEventParams } from './types';
 type FirebaseAnalyticsModule = {
   (): { logEvent: (name: string, params?: Record<string, unknown>) => void };
 };
+type FirebaseAppModule = {
+  app(name?: string): unknown;
+  apps?: unknown[];
+};
 let firebaseAnalytics: FirebaseAnalyticsModule | null = null;
 let initialized = false;
+
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
+function hasConfiguredFirebaseApp(): boolean {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires -- optional dependency
+    const firebaseAppModule = require('@react-native-firebase/app').default as FirebaseAppModule;
+    const apps = firebaseAppModule?.apps;
+    if (Array.isArray(apps) && apps.length > 0) {
+      return true;
+    }
+
+    firebaseAppModule?.app();
+    return true;
+  } catch (error) {
+    if (__DEV__) {
+      console.warn('[Analytics] Firebase App não inicializado. Analytics será ignorado.', error);
+    }
+    return false;
+  }
+}
 
 function getFirebaseAnalytics(): FirebaseAnalyticsModule | null {
   if (initialized) {
     return firebaseAnalytics;
   }
   initialized = true;
+
+  if (!hasConfiguredFirebaseApp()) {
+    firebaseAnalytics = null;
+    return null;
+  }
+
   try {
     // eslint-disable-next-line @typescript-eslint/no-var-requires -- optional dependency
     const analytics = require('@react-native-firebase/analytics').default as FirebaseAnalyticsModule;
@@ -37,9 +70,16 @@ export function logScreenView(screenName: string, screenClass?: string): void {
   const analytics = getFirebaseAnalytics();
   if (!analytics) return;
 
+  if (!isNonEmptyString(screenName)) {
+    if (__DEV__) {
+      console.warn('[Analytics] screen_view ignorado: screen_name inválido.');
+    }
+    return;
+  }
+
   const params: AnalyticsEventParams = {
-    [ANALYTICS_PARAMS.SCREEN_NAME]: screenName,
-    ...(screenClass && { [ANALYTICS_PARAMS.SCREEN_CLASS]: screenClass }),
+    [ANALYTICS_PARAMS.SCREEN_NAME]: screenName.trim(),
+    ...(isNonEmptyString(screenClass) && { [ANALYTICS_PARAMS.SCREEN_CLASS]: screenClass.trim() }),
   };
 
   try {
@@ -57,12 +97,20 @@ export function logEvent(eventName: string, params?: AnalyticsEventParams): void
   const analytics = getFirebaseAnalytics();
   if (!analytics) return;
 
+  if (!isNonEmptyString(eventName)) {
+    if (__DEV__) {
+      console.warn('[Analytics] evento ignorado: eventName inválido.');
+    }
+    return;
+  }
+
   const safeParams = params ? sanitizeParams(params) : undefined;
+  const sanitizedEventName = eventName.trim();
 
   try {
-    analytics().logEvent(eventName, safeParams);
+    analytics().logEvent(sanitizedEventName, safeParams);
   } catch (e) {
-    if (__DEV__) console.warn('[Analytics] logEvent error:', e);
+    if (__DEV__) console.warn('[Analytics] logEvent error:', { eventName: sanitizedEventName, params: safeParams, e });
   }
 }
 
@@ -71,8 +119,26 @@ function sanitizeParams(params: AnalyticsEventParams): AnalyticsEventParams {
   const out: AnalyticsEventParams = {};
   for (const [key, value] of Object.entries(params)) {
     if (value === undefined || value === null) continue;
-    if (typeof value === 'string' && looksLikePII(key, value)) continue;
-    out[key] = value;
+    if (!isNonEmptyString(key)) continue;
+    const trimmedKey = key.trim();
+
+    if (typeof value === 'string') {
+      const trimmedValue = value.trim();
+      if (!trimmedValue) continue;
+      if (looksLikePII(trimmedKey, trimmedValue)) continue;
+      out[trimmedKey] = trimmedValue;
+      continue;
+    }
+
+    if (typeof value === 'number') {
+      if (!Number.isFinite(value)) continue;
+      out[trimmedKey] = value;
+      continue;
+    }
+
+    if (typeof value === 'boolean') {
+      out[trimmedKey] = value;
+    }
   }
   return out;
 }
