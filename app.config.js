@@ -189,6 +189,7 @@ module.exports = {
           domain: getEnvVar('EXPO_PUBLIC_AUTH0_DOMAIN', 'likeme.us.auth0.com'),
         },
       ],
+      './plugins/withPodfileModularHeaders.js',
       '@react-native-firebase/app',
       '@react-native-firebase/messaging',
       './plugins/withAdIdPermission.js',
