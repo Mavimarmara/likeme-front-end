@@ -47,6 +47,8 @@ type Props = {
   route: any;
 };
 
+type SummarySolutionCarouselId = SolutionFilterId | 'all';
+
 const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   useAnalyticsScreen({ screenName: 'Summary', screenClass: 'SummaryScreen' });
   useNotifications();
@@ -261,9 +263,19 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
       ? getCategoryName(selectedCategoryName)
       : selectedCategoryFromId?.name ?? t('marketplace.category');
   const carouselSolutionOptions = useMemo(
-    () => solutionOptions.map((option) => ({ id: option.id, label: t(option.labelKey) })),
+    () => [
+      { id: 'all' as const, label: t('common.all') },
+      ...solutionOptions.map((option) => ({ id: option.id, label: t(option.labelKey) })),
+    ],
     [t],
   );
+  const selectedCarouselSolutionId = useMemo<SummarySolutionCarouselId>(() => {
+    if (selectedSolutionIds.length === 1) {
+      return selectedSolutionIds[0] as SummarySolutionCarouselId;
+    }
+
+    return selectedSolutionTab;
+  }, [selectedSolutionIds, selectedSolutionTab]);
 
   const menuItems = useMenuItems(navigation);
   const { setMenu } = useFloatingMenu();
@@ -352,7 +364,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
               onSearchPress={() => undefined}
               showFilterButton={false}
             />
-            <StickyFilterCarouselRow<SolutionFilterId>
+            <StickyFilterCarouselRow<SummarySolutionCarouselId>
               filterButtonLabel={categoryFilterButtonLabel}
               filterButtonIconImage={HOME_MVP_ASSETS.filterChevron}
               filterButtonIconImageStyle={{
@@ -361,8 +373,17 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
               filterButtonSelected={selectedCategoryName != null || selectedSolutionIds.length > 0}
               onFilterButtonPress={() => setIsFilterCategoryModalVisible(true)}
               carouselOptions={carouselSolutionOptions}
-              selectedCarouselId={selectedSolutionTab === 'all' ? undefined : selectedSolutionTab}
-              onCarouselSelect={(solutionId) => setSelectedSolutionTab(resolveSolutionTabFromFilters([solutionId]))}
+              selectedCarouselId={selectedCarouselSolutionId}
+              onCarouselSelect={(solutionId) => {
+                if (solutionId === 'all') {
+                  setSelectedSolutionIds([]);
+                  setSelectedSolutionTab('all');
+                  return;
+                }
+
+                setSelectedSolutionIds([solutionId]);
+                setSelectedSolutionTab(resolveSolutionTabFromFilters([solutionId]));
+              }}
             />
           </View>
           <FilterCategoryModal
