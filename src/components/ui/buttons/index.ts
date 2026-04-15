@@ -9,3 +9,4 @@ export { default as FilterButton } from './FilterButton';
 export { default as FilterModalButton } from './FilterModalButton';
 export { default as IconButton } from './IconButton';
 export { default as PillButtonWithIcon } from './PillButtonWithIcon';
+export { default as SupportFloatingButton } from './SupportFloatingButton';

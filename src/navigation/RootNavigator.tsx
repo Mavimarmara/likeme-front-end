@@ -3,6 +3,7 @@ import { Easing, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import { FloatingMenuProvider } from '@/contexts/FloatingMenuContext';
+import { SupportFloatingButton } from '@/components/ui';
 
 import {
   UnauthenticatedScreen,
@@ -139,6 +140,7 @@ const RootNavigator: React.FC = () => {
             options={{ title: 'Detalhes do Marker' }}
           />
         </Stack.Navigator>
+        <SupportFloatingButton />
       </FloatingMenuProvider>
     </NavigationContainer>
   );
