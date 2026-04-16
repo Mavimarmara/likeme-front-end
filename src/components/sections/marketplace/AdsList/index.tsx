@@ -8,7 +8,7 @@ import { FilterPickerModal } from '@/components/ui/modals';
 import { EmptyState } from '@/components/ui/feedback';
 import { useCategories } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
-import { formatPrice, handleAdNavigation, mapProductToCartItem } from '@/utils';
+import { formatPrice, getProductModeTranslationKey, handleAdNavigation, mapProductToCartItem } from '@/utils';
 import { storageService } from '@/services';
 import type { Ad } from '@/types/ad';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -157,6 +157,8 @@ const AdsList: React.FC<AdsListProps> = ({
     const displayCategory = product?.categoryId
       ? categories.find((c) => c.categoryId === product.categoryId)?.name
       : undefined;
+    const modeTranslationKey = getProductModeTranslationKey(product);
+    const displayMode = modeTranslationKey ? t(`marketplace.productMode.${modeTranslationKey}`) : undefined;
     const productPrice = product?.price;
 
     return (
@@ -164,7 +166,7 @@ const AdsList: React.FC<AdsListProps> = ({
         key={ad.id}
         image={displayImage}
         title={displayName}
-        badges={[displayCategory]}
+        badges={[displayCategory, displayMode].filter(Boolean) as string[]}
         price={productPrice}
         outOfStock={product?.status === 'out_of_stock'}
         outOfStockLabel={t('marketplace.outOfStock', {

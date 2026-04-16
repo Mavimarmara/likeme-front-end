@@ -149,6 +149,7 @@ jest.mock('@/analytics', () => ({
 
 jest.mock('@/utils', () => ({
   formatPrice: jest.fn((price) => `$${price?.toFixed(2) || '0.00'}`),
+  getProductModeTranslationKey: jest.fn(() => null),
 }));
 
 jest.mock('@/services', () => ({

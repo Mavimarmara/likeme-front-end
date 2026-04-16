@@ -12,7 +12,7 @@ import { useMenuItems, useProductDetails, useSuggestedProducts, useCategories } 
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { FLOATING_NAV_MENU_BAR_OFFSET } from '@/constants';
 import { useTranslation } from '@/hooks/i18n';
-import { formatPrice } from '@/utils';
+import { formatPrice, getProductModeTranslationKey } from '@/utils';
 import {
   useAnalyticsScreen,
   logButtonClick,
@@ -85,16 +85,18 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     const categoryName = product.categoryId
       ? categories.find((c) => c.categoryId === product.categoryId)?.name
       : undefined;
+    const modeTranslationKey = getProductModeTranslationKey(product);
+    const modeLabel = modeTranslationKey ? t(`marketplace.productMode.${modeTranslationKey}`) : undefined;
 
     return {
       title: ad?.product?.name || product.name,
       description: ad?.product?.description || product.description,
       image: ad?.product?.image || product.image,
       price: product.price,
-      tags: categoryName ? [categoryName] : [],
+      tags: [categoryName, modeLabel].filter(Boolean) as string[],
       isOutOfStock: product.status === 'out_of_stock' || product.quantity === 0,
     };
-  }, [product, ad, categories]);
+  }, [product, ad, categories, t]);
 
   const productTabOptions: ButtonCarouselOption<'goal' | 'description' | 'composition'>[] = useMemo(
     () => [

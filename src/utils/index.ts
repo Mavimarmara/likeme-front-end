@@ -155,3 +155,4 @@ export * from './anamnesis/avatarSizeMapper';
 
 // Layout (teclado / scroll)
 export * from './layout/keyboardAwareLayout';
+export * from './marketplace/productModeLabel';

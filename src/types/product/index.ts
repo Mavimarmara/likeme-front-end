@@ -45,6 +45,14 @@ export interface Product {
   image?: string;
   type?: ProductCatalogType | string;
   categoryId?: string; // FK to Category (Estresse, Sono, etc.)
+  modes?: Array<{
+    modeId?: string;
+    mode?: {
+      code?: string;
+      label?: string | null;
+    } | null;
+  }>;
+  modeCodes?: string[];
   brand?: string;
   status: 'active' | 'inactive' | 'out_of_stock';
   weight?: number;
