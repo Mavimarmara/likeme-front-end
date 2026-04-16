@@ -65,29 +65,37 @@ const ShoppingList: React.FC<Props> = ({
     storageService.setCommunityShoppingTipDismissed(true);
   }, []);
 
+  const mergeTags = useCallback((primaryTag: string, product: Product): string[] => {
+    const combinedTags = [primaryTag, ...(product.tags ?? []), product.tag].filter(Boolean);
+    return combinedTags.filter((tag, index) => combinedTags.indexOf(tag) === index);
+  }, []);
+
   const productsWithTag = useMemo(
     () =>
       (products ?? []).map((p) => ({
         ...p,
         tag: t('filterCategory.solutions.products'),
+        tags: mergeTags(t('filterCategory.solutions.products'), p),
       })),
-    [products, t],
+    [mergeTags, products, t],
   );
   const servicesWithTag = useMemo(
     () =>
       (services ?? []).map((p) => ({
         ...p,
         tag: t('filterCategory.solutions.services'),
+        tags: mergeTags(t('filterCategory.solutions.services'), p),
       })),
-    [services, t],
+    [mergeTags, services, t],
   );
   const programsWithTag = useMemo(
     () =>
       (programs ?? []).map((p) => ({
         ...p,
         tag: t('filterCategory.solutions.programs'),
+        tags: mergeTags(t('filterCategory.solutions.programs'), p),
       })),
-    [programs, t],
+    [mergeTags, programs, t],
   );
 
   const orderedProducts = useMemo(

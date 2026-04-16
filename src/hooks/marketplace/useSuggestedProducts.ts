@@ -3,6 +3,7 @@ import { productService, categoryService } from '@/services';
 import type { Product } from '@/components/sections/product';
 import { getMarkerIdForCategory } from '@/hooks/category';
 import { CATEGORY_NAMES, type CategoryName } from '@/types/category';
+import { getProductModeTranslationKey } from '@/utils';
 
 /** Lista padrão de produtos sugeridos (Home Summary, Activities, Comunidade sem filtro extra). */
 export const SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS = {
@@ -122,12 +123,15 @@ export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}):
           );
           const markerId = getMarkerIdForCategory(resolvedCategoryId, categoryName);
           const categoryLabel = markerId ? CATEGORY_NAMES[markerId as CategoryName] : categoryName;
+          const modeTranslationKey = getProductModeTranslationKey(p);
+          const tags = [categoryLabel, modeTranslationKey].filter(Boolean) as string[];
 
           return {
             id: p.id,
             title: p.name,
             price: p.price || 0,
             tag: categoryLabel,
+            tags,
             image: p.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
             likes: 0,
             createdAt: p.createdAt,

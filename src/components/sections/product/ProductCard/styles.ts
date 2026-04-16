@@ -11,6 +11,11 @@ export const styles = StyleSheet.create({
     height: 164,
     borderRadius: 22,
   },
+  tagsWrap: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
   tagBadge: {
     backgroundColor: 'rgba(0, 17, 55, 0.64)',
     alignSelf: 'flex-start',

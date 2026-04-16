@@ -22,6 +22,7 @@ export type SimpleProductItem = {
   image: string;
   price?: number | null;
   tag?: string;
+  tags?: string[];
 };
 
 type AdsListProps = {
@@ -185,7 +186,7 @@ const AdsList: React.FC<AdsListProps> = ({
       key={product.id}
       image={product.image || DEFAULT_IMAGE}
       title={product.title}
-      badges={product.tag ? [product.tag] : []}
+      badges={product.tags?.length ? product.tags : product.tag ? [product.tag] : []}
       price={product.price ?? undefined}
       onPress={() => onProductPress?.(product)}
       onAddPress={undefined}
