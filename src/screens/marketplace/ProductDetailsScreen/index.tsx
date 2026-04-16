@@ -98,14 +98,24 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     };
   }, [product, ad, categories, t]);
 
-  const productTabOptions: ButtonCarouselOption<'goal' | 'description' | 'composition'>[] = useMemo(
-    () => [
+  const productTabContent = useMemo(
+    () => ({
+      goal: product?.targetAudience?.trim() ?? '',
+      description: displayData?.description?.trim() ?? product?.description?.trim() ?? '',
+      composition: product?.technicalSpecifications?.trim() ?? '',
+    }),
+    [displayData?.description, product?.description, product?.targetAudience, product?.technicalSpecifications],
+  );
+
+  const productTabOptions: ButtonCarouselOption<'goal' | 'description' | 'composition'>[] = useMemo(() => {
+    const allTabs: ButtonCarouselOption<'goal' | 'description' | 'composition'>[] = [
       { id: 'goal', label: t('marketplace.goal') },
       { id: 'description', label: t('marketplace.description') },
       { id: 'composition', label: t('marketplace.composition') },
-    ],
-    [t],
-  );
+    ];
+
+    return allTabs.filter((tab) => productTabContent[tab.id].length > 0);
+  }, [productTabContent, t]);
 
   // Categoria do produto para badges/tags (nome da categoria); tipo do produto para layout
   const productCategory = displayData?.tags?.[0] || 'Product';
@@ -212,6 +222,16 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     }
   }, [quantity, quantityOptions]);
 
+  useEffect(() => {
+    if (productTabOptions.length === 0) {
+      return;
+    }
+
+    if (!productTabOptions.some((tab) => tab.id === activeProductTab)) {
+      setActiveProductTab(productTabOptions[0].id);
+    }
+  }, [activeProductTab, productTabOptions]);
+
   // Obter imagem do produto para o background e hero section
   const backgroundImage = useMemo(() => {
     if (displayData?.image) return displayData.image;
@@ -288,16 +308,18 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
           {usesPhysicalProductDetailLayout ? (
             <>
               <View style={styles.contentCard}>
-                <View style={styles.tabsContainerInCard}>
-                  <ButtonCarousel
-                    options={productTabOptions}
-                    selectedId={activeProductTab}
-                    onSelect={(tabId) => {
-                      logTabSelect({ screen_name: 'product_details', tab_id: tabId });
-                      setActiveProductTab(tabId);
-                    }}
-                  />
-                </View>
+                {productTabOptions.length > 0 && (
+                  <View style={styles.tabsContainerInCard}>
+                    <ButtonCarousel
+                      options={productTabOptions}
+                      selectedId={activeProductTab}
+                      onSelect={(tabId) => {
+                        logTabSelect({ screen_name: 'product_details', tab_id: tabId });
+                        setActiveProductTab(tabId);
+                      }}
+                    />
+                  </View>
+                )}
                 {renderProductTabContent()}
                 <View style={styles.priceQuantityRow}>
                   <Text style={styles.contentPrice}>
@@ -476,21 +498,8 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   }
 
   function renderProductTabContent() {
-    let tabText = '';
-    switch (activeProductTab) {
-      case 'goal':
-        tabText = product.targetAudience ?? '';
-        break;
-      case 'description':
-        tabText = displayData?.description ?? product.description ?? '';
-        break;
-      case 'composition':
-        tabText = product.technicalSpecifications ?? '';
-        break;
-      default:
-        tabText = '';
-        break;
-    }
+    const fallbackTabId = productTabOptions[0]?.id ?? 'description';
+    const tabText = productTabContent[activeProductTab] || productTabContent[fallbackTabId] || '';
 
     const tabLines = tabText.split('\n').filter((line) => line.trim().length > 0);
 

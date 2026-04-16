@@ -271,6 +271,42 @@ describe('ProductDetailsScreen', () => {
     });
   });
 
+  it('renderiza apenas abas com conteúdo disponível', async () => {
+    mockUseProductDetails.mockReturnValue({
+      product: {
+        ...mockProduct,
+        type: PRODUCT_CATALOG_TYPE.PROGRAM,
+        targetAudience: '',
+        technicalSpecifications: '',
+        description: 'Apenas descrição disponível',
+      },
+      ad: null,
+      advertiserId: undefined,
+      relatedProducts: [],
+      loading: false,
+      isFavorite: false,
+      setIsFavorite: jest.fn(),
+      handleAddToCart: jest.fn(),
+      loadAd: jest.fn(),
+    });
+
+    const mockRoute = {
+      params: {
+        productId: 'product-1',
+      },
+    };
+
+    const { getByText, queryByText } = render(
+      <ProductDetailsScreen navigation={mockNavigation as any} route={mockRoute as any} />,
+    );
+
+    await waitFor(() => {
+      expect(getByText('marketplace.description')).toBeTruthy();
+      expect(queryByText('marketplace.goal')).toBeNull();
+      expect(queryByText('marketplace.composition')).toBeNull();
+    });
+  });
+
   it('shows product not found when product is null', async () => {
     mockUseProductDetails.mockReturnValue({
       product: null,
