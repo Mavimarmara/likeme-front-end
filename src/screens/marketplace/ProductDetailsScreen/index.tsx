@@ -337,7 +337,6 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                 </View>
                 <TouchableOpacity style={styles.paymentLinkRow} onPress={() => undefined} activeOpacity={0.7}>
                   <Text style={styles.paymentLinkText}>{t('marketplace.paymentOptionsText')} </Text>
-                  <Text style={styles.paymentLinkAnchor}>{t('marketplace.learnMore')}</Text>
                 </TouchableOpacity>
                 {hasSpecialistPartner ? renderPartnerSection() : null}
               </View>

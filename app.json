@@ -24,7 +24,7 @@
     },
     "ios": {
       "bundleIdentifier": "app.likeme.com",
-      "supportsTablet": true,
+      "supportsTablet": false,
       "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": { "ITSAppUsesNonExemptEncryption": false }
     },

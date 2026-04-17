@@ -189,6 +189,7 @@ module.exports = {
         },
       ],
       './plugins/withPodfileModularHeaders.js',
+      './plugins/withIosIphoneOnlyDestinations.js',
       '@react-native-firebase/app',
       '@react-native-firebase/messaging',
     ],
@@ -217,7 +218,7 @@ module.exports = {
     },
     ios: {
       bundleIdentifier: 'app.likeme.com',
-      supportsTablet: true,
+      supportsTablet: false,
       googleServicesFile: './GoogleService-Info.plist',
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
