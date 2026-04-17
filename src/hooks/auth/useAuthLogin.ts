@@ -18,7 +18,10 @@ export const useAuthLogin = (navigation: any) => {
       const authResult = await AuthService.login();
       await AuthService.validateToken(authResult);
 
-      navigation.navigate('Authenticated' as never);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Authenticated' as never }],
+      });
     } catch (error) {
       logger.error('Login error:', error);
       if (error instanceof Error) {

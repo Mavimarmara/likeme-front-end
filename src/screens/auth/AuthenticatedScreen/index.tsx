@@ -13,7 +13,10 @@ const AuthenticatedScreen: React.FC<Props> = ({ navigation }) => {
 
   const replace = useCallback(
     (screen: string, params?: object) => {
-      navigation.replace(screen as never, params as never);
+      navigation.reset({
+        index: 0,
+        routes: [params != null ? { name: screen as never, params } : { name: screen as never }],
+      });
     },
     [navigation],
   );

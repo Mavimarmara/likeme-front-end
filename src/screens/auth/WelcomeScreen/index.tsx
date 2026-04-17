@@ -67,7 +67,9 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
       destination_screen: 'unauthenticated',
       action_name: 'go_back',
     });
-    navigation.goBack();
+    if (navigation.canGoBack?.()) {
+      navigation.goBack();
+    }
   };
 
   return (
