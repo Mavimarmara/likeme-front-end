@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { SafeAreaView } from 'react-native';
 import { UnauthenticatedStep1 } from './components';
 import { useAuthLogin } from '@/hooks';
@@ -13,10 +13,6 @@ type Props = {
 const UnauthenticatedScreen: React.FC<Props> = ({ navigation }) => {
   useAnalyticsScreen({ screenName: 'Unauthenticated', screenClass: 'UnauthenticatedScreen' });
   const { handleLogin: authLogin, isLoading } = useAuthLogin(navigation);
-
-  useEffect(() => {
-    authLogin();
-  }, [authLogin]);
 
   const handleLogin = () => {
     logButtonClick({
