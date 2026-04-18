@@ -20,7 +20,7 @@ on:
       submit_to_stores:
         description: 'Enviar para TestFlight/Play Store?'
         required: false
-        default: 'true'
+        default: 'false'
         type: boolean
 
 jobs:
@@ -77,12 +77,12 @@ jobs:
       - name: Build Android (Production)
         id: build
         run: |
-          OUTPUT=$(eas build --platform android --profile production --non-interactive --json 2>/dev/null || true)
+          OUTPUT=$(eas build --platform android --profile production --non-interactive --clear-cache --json 2>/dev/null || true)
           BUILD_ID=$(echo "$OUTPUT" | jq -r '.[0].id // empty')
           echo "build_id=$BUILD_ID" >> "$GITHUB_OUTPUT"
           if [ -z "$BUILD_ID" ]; then
             echo "Build falhou ou não retornou ID"
-            eas build --platform android --profile production --non-interactive
+            eas build --platform android --profile production --non-interactive --clear-cache
           fi
 
   build-ios:
@@ -115,12 +115,12 @@ jobs:
       - name: Build iOS (Production)
         id: build
         run: |
-          OUTPUT=$(eas build --platform ios --profile production --non-interactive --json 2>/dev/null || true)
+          OUTPUT=$(eas build --platform ios --profile production --non-interactive --clear-cache --json 2>/dev/null || true)
           BUILD_ID=$(echo "$OUTPUT" | jq -r '.[0].id // empty')
           echo "build_id=$BUILD_ID" >> "$GITHUB_OUTPUT"
           if [ -z "$BUILD_ID" ]; then
             echo "Build falhou ou não retornou ID"
-            eas build --platform ios --profile production --non-interactive
+            eas build --platform ios --profile production --non-interactive --clear-cache
           fi
 
   approve:

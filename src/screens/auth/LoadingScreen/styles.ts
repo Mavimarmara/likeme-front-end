@@ -12,11 +12,10 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.BACKGROUND,
   },
   splashContainer: {
+    flex: 1,
+    width: '100%',
     backgroundColor: COLORS.BACKGROUND,
-    height: height,
-    minWidth: 393,
     position: 'relative',
-    width: width,
   },
   gradientEffect: {
     height: 247,

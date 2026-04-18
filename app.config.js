@@ -166,7 +166,7 @@ module.exports = {
   expo: {
     name: 'LikeMe',
     slug: 'likeme-front-end',
-    version: '1.0.49',
+    version: '1.0.50',
     orientation: 'portrait',
     userInterfaceStyle: 'light',
     platforms: ['ios', 'android', 'web'],
@@ -174,11 +174,12 @@ module.exports = {
     sdkVersion: '54.0.0',
     plugins: [
       'expo-font',
+      'expo-splash-screen',
       [
         'expo-build-properties',
         {
           ios: { newArchEnabled: false },
-          android: { newArchEnabled: true },
+          android: { newArchEnabled: false },
         },
       ],
       'react-native-video',
@@ -218,7 +219,7 @@ module.exports = {
     },
     ios: {
       bundleIdentifier: 'app.likeme.com',
-      supportsTablet: false,
+      supportsTablet: true,
       googleServicesFile: './GoogleService-Info.plist',
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
@@ -243,6 +244,13 @@ module.exports = {
         EXPO_PUBLIC_USE_AUTH_PROXY: getEnvVar('EXPO_PUBLIC_USE_AUTH_PROXY', 'false'),
         EXPO_PUBLIC_AUTH_SCHEME: getEnvVar('EXPO_PUBLIC_AUTH_SCHEME', 'likeme'),
         EXPO_PUBLIC_AUTH_REDIRECT_PATH: getEnvVar('EXPO_PUBLIC_AUTH_REDIRECT_PATH', 'auth'),
+        EXPO_PUBLIC_SUPPORT_WHATSAPP_URL: getEnvVar('EXPO_PUBLIC_SUPPORT_WHATSAPP_URL', ''),
+        EXPO_PUBLIC_SUPPORT_WHATSAPP_PHONE: getEnvVar('EXPO_PUBLIC_SUPPORT_WHATSAPP_PHONE', '5511994592992'),
+        EXPO_PUBLIC_SUPPORT_WHATSAPP_MESSAGE: getEnvVar(
+          'EXPO_PUBLIC_SUPPORT_WHATSAPP_MESSAGE',
+          'Olá! Vim pelo app e gostaria de tirar uma dúvida.',
+        ),
+        EXPO_PUBLIC_LOGGER_ON_DEVICE: getEnvVar('EXPO_PUBLIC_LOGGER_ON_DEVICE', ''),
       },
     },
   },

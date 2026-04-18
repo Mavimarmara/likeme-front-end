@@ -83,6 +83,15 @@ export const AUTH_CONFIG = {
   redirectPath: getEnvVar('EXPO_PUBLIC_AUTH_REDIRECT_PATH', 'auth'),
 };
 
+export const SUPPORT_CONFIG = {
+  whatsappUrl: getEnvVar('EXPO_PUBLIC_SUPPORT_WHATSAPP_URL', ''),
+  whatsappPhone: getEnvVar('EXPO_PUBLIC_SUPPORT_WHATSAPP_PHONE', '5511994592992'),
+  whatsappDefaultMessage: getEnvVar(
+    'EXPO_PUBLIC_SUPPORT_WHATSAPP_MESSAGE',
+    'Olá! Vim pelo app e gostaria de tirar uma dúvida.',
+  ),
+};
+
 export const getApiUrl = (endpoint: string) => {
   const base = (BACKEND_CONFIG.baseUrl || '').replace(/\/+$/, '');
   if (endpoint.startsWith('/api')) {

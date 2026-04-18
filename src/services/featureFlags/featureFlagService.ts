@@ -1,5 +1,7 @@
 import { FEATURE_FLAG_DEFAULTS, type FeatureFlagKey } from '@/constants';
 
+const REMOTE_CONFIG_FETCH_TIMEOUT_MS = 12_000;
+
 type RemoteConfigInstance = {
   setConfigSettings(settings: { fetchTimeMillis?: number; minimumFetchIntervalMillis?: number }): Promise<void>;
   setDefaults(defaults: Record<string, string | number | boolean>): Promise<void>;
@@ -16,11 +18,50 @@ type FirebaseRemoteConfigModule = () => RemoteConfigInstance;
 
 function getRemoteConfigInstance(): RemoteConfigInstance | null {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires -- dependency opcional em runtime
+    // eslint-disable-next-line @typescript-eslint/no-var-requires -- dependência opcional em runtime
     const remoteConfigModule = require('@react-native-firebase/remote-config').default as FirebaseRemoteConfigModule;
     return remoteConfigModule();
   } catch {
     return null;
+  }
+}
+
+function runFetchAndActivateInBackground(remoteConfig: RemoteConfigInstance, context: string): void {
+  const pending = remoteConfig.fetchAndActivate();
+  const slowLogTimer = setTimeout(() => {
+    console.warn(
+      `[FeatureFlags] ${context}: fetchAndActivate ainda em andamento após ${REMOTE_CONFIG_FETCH_TIMEOUT_MS}ms; UI segue com defaults/cache.`,
+    );
+  }, REMOTE_CONFIG_FETCH_TIMEOUT_MS);
+
+  void pending
+    .catch((error) => {
+      console.warn(`[FeatureFlags] ${context}: fetchAndActivate falhou:`, error);
+    })
+    .finally(() => {
+      clearTimeout(slowLogTimer);
+    });
+}
+
+async function awaitFetchWithTimeout(remoteConfig: RemoteConfigInstance, context: string): Promise<void> {
+  const fetchPromise = remoteConfig.fetchAndActivate();
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeoutId = setTimeout(() => reject(new Error(`${context} timeout`)), REMOTE_CONFIG_FETCH_TIMEOUT_MS);
+  });
+
+  try {
+    await Promise.race([
+      fetchPromise.finally(() => {
+        if (timeoutId !== undefined) {
+          clearTimeout(timeoutId);
+        }
+      }),
+      timeoutPromise,
+    ]);
+  } catch (error) {
+    console.warn(`[FeatureFlags] ${context}:`, error);
+    void fetchPromise.catch(() => undefined);
   }
 }
 
@@ -45,11 +86,7 @@ class FeatureFlagService {
           console.warn('[FeatureFlags] Erro ao aplicar defaults locais:', error);
         }
 
-        try {
-          await remoteConfig.fetchAndActivate();
-        } catch (error) {
-          console.warn('[FeatureFlags] Erro ao inicializar Remote Config:', error);
-        }
+        runFetchAndActivateInBackground(remoteConfig, 'init');
       })();
     }
 
@@ -72,12 +109,7 @@ class FeatureFlagService {
     }
 
     await this.ensureInitialized(remoteConfig);
-
-    try {
-      await remoteConfig.fetchAndActivate();
-    } catch (error) {
-      console.warn('[FeatureFlags] Erro ao atualizar flags:', error);
-    }
+    await awaitFetchWithTimeout(remoteConfig, 'refresh');
   }
 
   async getBoolean(flagKey: FeatureFlagKey): Promise<boolean> {

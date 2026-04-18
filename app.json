@@ -2,7 +2,7 @@
   "expo": {
     "name": "LikeMe",
     "slug": "likeme-front-end",
-    "version": "1.0.49",
+    "version": "1.0.50",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "platforms": ["ios", "android", "web"],
@@ -24,7 +24,7 @@
     },
     "ios": {
       "bundleIdentifier": "app.likeme.com",
-      "supportsTablet": false,
+      "supportsTablet": true,
       "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": { "ITSAppUsesNonExemptEncryption": false }
     },
