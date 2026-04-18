@@ -1,3 +1,6 @@
+// Deve carregar antes de qualquer teste importar RNGH (mocks internos do pacote).
+require('react-native-gesture-handler/jestSetup');
+
 // Mock para react-native-vector-icons
 jest.mock('react-native-vector-icons/MaterialIcons', () => 'MaterialIcons');
 
