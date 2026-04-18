@@ -1,7 +1,7 @@
 export const APP_CONFIG = {
   NAME: 'LIKE:ME',
   TAGLINE: 'LIKE YOUR LIFE',
-  VERSION: '1.0.50',
+  VERSION: '1.0.51',
 } as const;
 
 export const COLORS = {

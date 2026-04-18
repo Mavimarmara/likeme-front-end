@@ -166,7 +166,7 @@ module.exports = {
   expo: {
     name: 'LikeMe',
     slug: 'likeme-front-end',
-    version: '1.0.50',
+    version: '1.0.51',
     orientation: 'portrait',
     userInterfaceStyle: 'light',
     platforms: ['ios', 'android', 'web'],
@@ -219,7 +219,7 @@ module.exports = {
     },
     ios: {
       bundleIdentifier: 'app.likeme.com',
-      supportsTablet: true,
+      supportsTablet: false,
       googleServicesFile: './GoogleService-Info.plist',
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,

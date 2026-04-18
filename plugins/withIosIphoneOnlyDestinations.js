@@ -2,7 +2,7 @@ const { withXcodeProject } = require('@expo/config-plugins');
 
 /**
  * Desativa destinos "Designed for iPhone/iPad" em Mac e visionOS (build settings da Apple).
- * Independente de `ios.supportsTablet`; não altera suporte a iPad no App Store.
+ * Complementa `ios.supportsTablet: false` / TARGETED_DEVICE_FAMILY = 1.
  */
 module.exports = function withIosIphoneOnlyDestinations(config) {
   return withXcodeProject(config, (config) => {
