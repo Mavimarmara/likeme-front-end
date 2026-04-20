@@ -1,27 +1,64 @@
-import React, { useEffect, useRef } from 'react';
-import { AppState, Platform, StatusBar } from 'react-native';
+import React, { useCallback, useEffect, useRef } from 'react';
+import { AppState, Platform, StatusBar, StyleSheet, View } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import * as NavigationBar from 'expo-navigation-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { RootNavigator } from './src/navigation';
 import { RootErrorBoundary } from './src/components/infrastructure/RootErrorBoundary';
+import { COLORS, ROOT_SPLASH_FONT_LOAD_FALLBACK_MS } from './src/constants';
 import { AUTH0_CONFIG } from './src/config/environment';
 import { startI18nHydration } from './src/i18n/hydration';
-import { featureFlagService } from './src/services';
+import featureFlagService from './src/services/featureFlags/featureFlagService';
 import { logger } from './src/utils/logger';
 // Importar i18n antes de qualquer componente que use useTranslation
 import './src/i18n';
 
+const styles = StyleSheet.create({
+  rootSurface: {
+    flex: 1,
+    backgroundColor: COLORS.BACKGROUND,
+  },
+});
+
 const App: React.FC = () => {
   const navBarHideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  void useFonts({
+  const splashHiddenRef = useRef(false);
+  const [fontsLoaded, fontError] = useFonts({
     'Bricolage Grotesque': require('./assets/fonts/BricolageGrotesque-Regular.ttf'),
   });
 
-  useEffect(() => {
-    void SplashScreen.hideAsync().catch(() => undefined);
+  const hideSplashOnce = useCallback(async () => {
+    if (splashHiddenRef.current) {
+      return;
+    }
+    splashHiddenRef.current = true;
+    try {
+      await SplashScreen.hideAsync();
+    } catch {
+      /* splash já oculto ou indisponível */
+    }
   }, []);
+
+  useEffect(() => {
+    if (!fontsLoaded && !fontError) {
+      return;
+    }
+    hideSplashOnce().catch(() => undefined);
+  }, [fontError, fontsLoaded, hideSplashOnce]);
+
+  const onLayoutRootView = useCallback(() => {
+    if (fontsLoaded || fontError) {
+      hideSplashOnce().catch(() => undefined);
+    }
+  }, [fontError, fontsLoaded, hideSplashOnce]);
+
+  useEffect(() => {
+    const fallbackTimer = setTimeout(() => {
+      hideSplashOnce().catch(() => undefined);
+    }, ROOT_SPLASH_FONT_LOAD_FALLBACK_MS);
+    return () => clearTimeout(fallbackTimer);
+  }, [hideSplashOnce]);
 
   useEffect(() => {
     void startI18nHydration('pt-BR');
@@ -116,12 +153,14 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <SafeAreaProvider style={{ flex: 1 }}>
-      <StatusBar hidden={Platform.OS === 'android'} />
-      <RootErrorBoundary>
-        <RootNavigator />
-      </RootErrorBoundary>
-    </SafeAreaProvider>
+    <View style={styles.rootSurface} onLayout={onLayoutRootView}>
+      <SafeAreaProvider style={styles.rootSurface}>
+        <StatusBar hidden={Platform.OS === 'android'} />
+        <RootErrorBoundary>
+          <RootNavigator />
+        </RootErrorBoundary>
+      </SafeAreaProvider>
+    </View>
   );
 };
 

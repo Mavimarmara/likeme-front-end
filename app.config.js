@@ -196,13 +196,19 @@ module.exports = {
     ],
     scheme: 'likeme',
     icon: './assets/app/icon.png',
+    // Mesma base que `COLORS.BACKGROUND` no app — evita flash branco antes do JS.
+    splash: {
+      image: './assets/app/icon.png',
+      resizeMode: 'contain',
+      backgroundColor: '#F4F3EC',
+    },
     android: {
       package: 'com.likeme.app',
       googleServicesFile: './google-services.json',
       softwareKeyboardLayoutMode: 'resize',
       adaptiveIcon: {
         foregroundImage: './assets/app/icon.png',
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#F4F3EC',
       },
       intentFilters: [
         {
@@ -227,6 +233,7 @@ module.exports = {
       },
       entitlements: {
         'aps-environment': 'production',
+        'com.apple.developer.applesignin': ['Default'],
       },
     },
     owner: 'pixelpulselab',

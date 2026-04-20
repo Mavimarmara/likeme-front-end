@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { getApiUrl } from '@/config';
+import { AUTH_BOOTSTRAP_HTTP_TIMEOUT_MS } from '@/constants';
 import { getNextOnboardingDestination } from '@/utils';
+import { fetchWithTimeout } from '@/utils/network/fetchWithTimeout';
 import { storageService, userService } from '@/services';
 import { logger } from '@/utils/logger';
 
@@ -14,13 +16,17 @@ async function syncOnboardingStateFromBackend(): Promise<void> {
   const token = await storageService.getToken();
   if (!token) return;
   try {
-    const response = await fetch(getApiUrl('/api/auth/token'), {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+    const response = await fetchWithTimeout(
+      getApiUrl('/api/auth/token'),
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
       },
-    });
+      AUTH_BOOTSTRAP_HTTP_TIMEOUT_MS,
+    );
     if (!response.ok) return;
     const data = (await response.json()) as Record<string, unknown>;
     const payload = data.data ?? data;
@@ -36,8 +42,10 @@ async function syncOnboardingStateFromBackend(): Promise<void> {
         await storageService.setPrivacyPolicyAcceptedAt(p.privacyPolicyAcceptedAt as string);
       }
     }
-  } catch {
-    // Ignora erro; usamos apenas o que está no storage
+  } catch (error) {
+    logger.warn('[useOnboardingRedirect] syncOnboardingStateFromBackend falhou; segue com flags do storage', {
+      cause: error,
+    });
   }
 }
 
@@ -51,7 +59,16 @@ async function getLoggedInUserDisplayName(): Promise<string | null> {
   const fromStorage = stored?.name?.trim() || stored?.nickname?.trim();
   if (fromStorage) return fromStorage;
   try {
-    const response = await userService.getProfile();
+    const response = await Promise.race([
+      userService.getProfile(),
+      new Promise<'timeout'>((resolve) => {
+        setTimeout(() => resolve('timeout'), AUTH_BOOTSTRAP_HTTP_TIMEOUT_MS);
+      }),
+    ]);
+    if (response === 'timeout') {
+      logger.warn('[useOnboardingRedirect] Timeout ao buscar perfil; segue onboarding sem nome da API');
+      return null;
+    }
     if (response.success && response.data) {
       const person = response.data.person;
       if (person?.firstName) {
@@ -60,8 +77,8 @@ async function getLoggedInUserDisplayName(): Promise<string | null> {
       }
       return response.data.name?.trim() || null;
     }
-  } catch {
-    // Ignora; fallback "Usuário" será usado
+  } catch (error) {
+    logger.warn('[useOnboardingRedirect] getProfile falhou; fallback de nome no onboarding', { cause: error });
   }
   return null;
 }

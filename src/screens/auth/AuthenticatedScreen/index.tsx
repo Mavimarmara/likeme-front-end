@@ -1,7 +1,8 @@
 import React, { useCallback } from 'react';
-import { SafeAreaView } from 'react-native';
+import { ActivityIndicator, SafeAreaView, View } from 'react-native';
 import type { StackScreenProps } from '@react-navigation/stack';
 import { useAnalyticsScreen } from '@/analytics';
+import { COLORS } from '@/constants';
 import type { RootStackParamList } from '@/types/navigation';
 import { useOnboardingRedirect } from '@/hooks';
 import { styles } from './styles';
@@ -22,7 +23,13 @@ const AuthenticatedScreen: React.FC<Props> = ({ navigation }) => {
   );
   useOnboardingRedirect(replace);
 
-  return <SafeAreaView style={styles.container} />;
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.loadingArea} accessibilityLabel='Carregando'>
+        <ActivityIndicator size='large' color={COLORS.PRIMARY.PURE} />
+      </View>
+    </SafeAreaView>
+  );
 };
 
 export default AuthenticatedScreen;

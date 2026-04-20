@@ -12,7 +12,12 @@
       }
     },
     "preview": {
-      "distribution": "internal"
+      "extends": "staging",
+      "distribution": "internal",
+      "autoIncrement": false,
+      "env": {
+        "EXPO_NO_CAPABILITY_SYNC": "1"
+      }
     },
     "staging": {
       "distribution": "store",
@@ -39,6 +44,11 @@
           "SKIP_IOS_POD_INSTALL": "true"
         }
       }
+    },
+    "production-internal": {
+      "extends": "production",
+      "distribution": "internal",
+      "autoIncrement": false
     },
     "production": {
       "distribution": "store",

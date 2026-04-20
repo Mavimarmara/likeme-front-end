@@ -7,12 +7,12 @@ import { storageService } from '@/services';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen } from '@/analytics';
 import { getApiUrl } from '@/config';
+import { AUTH_BOOTSTRAP_HTTP_TIMEOUT_MS } from '@/constants';
 import { ensureI18nHydrated, startI18nHydration } from '@/i18n/hydration';
 import { fetchWithTimeout } from '@/utils/network/fetchWithTimeout';
 
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 const GRADIENT_SOURCES = [GradientSplash7, GradientSplash8, GradientSplash9];
-const AUTH_TOKEN_VALIDATE_TIMEOUT_MS = 12_000;
 const BOOTSTRAP_WATCHDOG_INTERVAL_MS = 8_000;
 const BOOTSTRAP_WATCHDOG_MAX_RETRIES = 2;
 
@@ -136,7 +136,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
                   Authorization: `Bearer ${token}`,
                 },
               },
-              AUTH_TOKEN_VALIDATE_TIMEOUT_MS,
+              AUTH_BOOTSTRAP_HTTP_TIMEOUT_MS,
             );
 
             if (response.ok) {
