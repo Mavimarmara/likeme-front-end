@@ -35,7 +35,7 @@
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md}\"",
-    "doctor": "expo doctor",
+    "doctor": "npx expo-doctor",
     "prebuild": "expo prebuild",
     "prebuild:clean": "expo prebuild --clean",
     "build:android": "eas build --platform android --clear-cache",
@@ -50,7 +50,12 @@
     "build:ios:local": "./build-ios-local.sh",
     "build:ios:auto": "echo '3\ny' | ./build-ios-local.sh",
     "build:ios:simulator": "npx expo run:ios",
+    "ios:xcode:clean-build": "cd ios && xcodebuild -workspace LikeMe.xcworkspace -scheme LikeMe -configuration Debug -sdk iphonesimulator clean build",
     "build:ios:device": "npx expo run:ios --device",
+    "ios:run:device:production": "npx expo run:ios --device --configuration Production",
+    "ios:run:device:production:no-bundler": "npx expo run:ios --device --configuration Production --no-bundler",
+    "ios:run:device:release": "npx expo run:ios --device --configuration Release",
+    "ios:run:device:release:no-bundler": "npx expo run:ios --device --configuration Release --no-bundler",
     "build:all": "eas build --platform all --clear-cache",
     "submit:android": "eas submit --platform android --latest --profile production",
     "submit:ios": "eas submit --platform ios",
@@ -66,10 +71,13 @@
     "run:emulator:ios": "open -a Simulator",
     "prepare": "husky || true"
   },
+  "engines": {
+    "node": ">=20.19.4"
+  },
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",
-    "@react-native-async-storage/async-storage": "^2.2.0",
-    "@react-native-community/datetimepicker": "^8.5.1",
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-native-community/datetimepicker": "8.4.4",
     "@react-native-community/slider": "5.0.1",
     "@react-native-firebase/analytics": "^23.8.5",
     "@react-native-firebase/app": "^23.8.5",
@@ -78,18 +86,18 @@
     "@react-navigation/bottom-tabs": "^6.5.11",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/stack": "^6.3.20",
-    "expo": "54.0.22",
-    "expo-asset": "^12.0.9",
-    "expo-auth-session": "^7.0.8",
-    "expo-blur": "~15.0.7",
+    "expo": "~54.0.33",
+    "expo-asset": "~12.0.12",
+    "expo-auth-session": "~7.0.10",
+    "expo-blur": "~15.0.8",
     "expo-build-properties": "~1.0.10",
-    "expo-constants": "^18.0.10",
-    "expo-crypto": "^15.0.7",
-    "expo-dev-client": "~6.0.17",
-    "expo-file-system": "^19.0.17",
-    "expo-font": "~14.0.9",
-    "expo-linear-gradient": "~15.0.7",
-    "expo-navigation-bar": "^55.0.9",
+    "expo-constants": "~18.0.13",
+    "expo-crypto": "~15.0.8",
+    "expo-dev-client": "~6.0.20",
+    "expo-file-system": "~19.0.21",
+    "expo-font": "~14.0.11",
+    "expo-linear-gradient": "~15.0.8",
+    "expo-navigation-bar": "~5.0.10",
     "expo-splash-screen": "~31.0.13",
     "i18next": "^25.8.0",
     "react": "19.1.0",
@@ -112,8 +120,8 @@
     "@babel/preset-env": "^7.20.0",
     "@babel/runtime": "^7.20.0",
     "@react-native/babel-preset": "^0.81.0",
-    "@react-native/eslint-config": "^0.72.2",
-    "@react-native/metro-config": "^0.72.11",
+    "@react-native/eslint-config": "^0.81.0",
+    "@react-native/metro-config": "^0.81.0",
     "@testing-library/react-native": "^13.3.3",
     "@tsconfig/react-native": "^3.0.0",
     "@types/jest": "29.5.14",
@@ -154,11 +162,5 @@
     "*.{spec,test}.{ts,tsx}": [
       "prettier --write"
     ]
-  },
-  "overrides": {
-    "react-native-appwrite": {
-      "expo-file-system": "18.*.*",
-      "react-native": ">=0.81.0 <1.0.0"
-    }
   }
 }

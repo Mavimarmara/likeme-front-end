@@ -101,13 +101,98 @@ yarn web
 npx expo start --web
 ```
 
+## Comandos principais
+
+Resumo dos scripts em `package.json` e **quando usar**. Comandos são executados na raiz de `likeme-front-end`, salvo indicação em contrário.
+
+### Desenvolvimento (Metro + JS)
+
+| Comando | Quando usar |
+|--------|-------------|
+| `npm run start` | Abre o Simulator iOS e sobe o Expo com **tunnel** (fluxo habitual no Mac com iOS). |
+| `npm run start:dev` | Metro com **dev client**, sem tunnel. |
+| `npm run start:dev:tunnel` | Metro + dev client + **tunnel** (útil quando iPhone/Android não alcançam o Mac na LAN ou há firewall/VPN). |
+| `npm run start:clear` / `npm run start:reset` | Problemas de cache do Metro/Expo. |
+| `npm run start:staging` / `npm run start:production` | Subir o bundler com variáveis de `.env.staging` / `.env.production` (`env-cmd`). |
+| `npm run start:local` | Copia `.env.local` → `.env` e sobe com tunnel (**sobrescreve** `.env` na raiz). |
+
+**iPhone com build de desenvolvimento (dev client):** o binário Debug espera o **Metro**. Deixe `npm run start:dev` ou `npm run start:dev:tunnel` a correr e, noutro terminal, use `npm run build:ios:device`, ou abra o app instalado e ligue ao servidor mostrado no terminal. Sem Metro, aparece a UI de “development servers”, não o fluxo completo da app.
+
+**Teste no físico sem depender do Metro** (bundle `main.jsbundle` embutido; não deve ficar preso ao ecrã de servidores de dev):
+
+```bash
+npm run ios:run:device:release
+```
+
+Configuração Xcode **`Release`** é a que o projeto no repositório define por omissão para builds “sem Metro”.
+
+Se usarem uma configuração **`Production`** criada à mão no Xcode (`npm run ios:run:device:production`), ela tem de **copiar as flags de `Release`**, não as de `Debug`. Se `Production` ainda tiver `DEBUG` (por exemplo `SWIFT_ACTIVE_COMPILATION_CONDITIONS` com `DEBUG` ou definições herdadas de Debug), o `AppDelegate` continua a pedir o Metro → no telemóvel vê-se **tela branca** e no terminal do `expo` só aparece *“Logs for your project will appear below”* (Metro à espera de ligação que o dispositivo não consegue usar como no simulador).
+
+**Como confirmar no Xcode:** Project → Info → Configurations → linha **Production** → `Based on Release` (ou duplicar a partir de **Release**) e, no target LikeMe, comparar **Build Settings** de `Production` com `Release` (especialmente *Swift Compiler - Custom Flags* e *Preprocessor Macros*).
+
+**Release e mesmo assim tela branca + Metro “Logs below”:** o `expo run:ios` **arranca o Metro por defeito**; em **Release** o binário deve carregar o **`main.jsbundle`** dentro do `.app` (o script “Bundle React Native code and images” corre na build). A mensagem do Metro **não prova** que o iPhone esteja ligado ao bundler.
+
+1. Use **`npm run ios:run:device:release:no-bundler`** (`--no-bundler`) para instalar/compilar **sem** subir o Metro — elimina ruído e confirma que estão a testar o fluxo “só nativo + bundle embutido”.
+2. No **Xcode** (iPhone ligado): **Window → Devices and Simulators** → abrir **Console** e filtrar por `LikeMe`, `JavaScriptCore`, `RCTFatal`, `Unhandled` — erros de JS em Release aparecem muitas vezes aí, não no terminal do Metro.
+3. Confirme que o `.app` instalado contém **`main.jsbundle`** (no Mac, após build: `DerivedData/.../Release-iphoneos/LikeMe.app/main.jsbundle`). Se faltar, o passo “Bundle React Native code and images” falhou (ver relatório de build no Xcode).
+
+### Run nativo (Expo / Xcode)
+
+| Comando | Quando usar |
+|--------|-------------|
+| `npm run ios` | `expo run:ios` — compila e corre iOS (simulador ou dispositivo conforme o Expo pedir). |
+| `npm run build:ios:simulator` | Atalho para `expo run:ios` (fluxo típico simulador). |
+| `npm run build:ios:device` | Instala no **iPhone** em **Debug** com **dev client** (combinar com Metro, ver acima). |
+| `npm run ios:run:device:release` | `expo run:ios` no **dispositivo** com **Release** (bundle embutido; uso recomendado no repo). |
+| `npm run ios:run:device:release:no-bundler` | Igual, mas **sem** iniciar o Metro (`--no-bundler`); útil quando a tela branca não está ligada ao bundler. |
+| `npm run ios:run:device:production` | Igual, mas com configuração **Production** (só se existir no Xcode e for equivalente a **Release**; ver nota acima sobre tela branca). |
+| `npm run android` | `expo run:android`. |
+| `npm run ios:xcode:clean-build` | Só **valida** compilação nativa: `xcodebuild` **clean + build** para **simulador** Debug. Não instala no telemóvel nem substitui EAS. Requer `ios/` com `pod install` já feito. |
+
+### Qualidade (local / CI)
+
+| Comando | Quando usar |
+|--------|-------------|
+| `npm run build` | `tsc --noEmit` + ESLint. |
+| `npm run lint` / `npm run lint:fix` | ESLint. |
+| `npm run format:check` / `npm run format` | Prettier. |
+| `npm test` / `npm run test:coverage` / `npm run test:watch` | Jest. |
+
+### EAS (nuvem / lojas)
+
+| Comando | Quando usar |
+|--------|-------------|
+| `npm run build:ios` / `npm run build:android` / `npm run build:all` | Build na infraestrutura EAS. |
+| `npm run build:ios:production-internal` / `npm run build:ios:preview` | Perfis definidos em `eas.json`. |
+| `npm run submit:android` / `npm run submit:ios` | Submeter o último artefato (ou fluxo definido no script) às lojas. |
+
+### Limpeza e diagnóstico
+
+| Comando | Quando usar |
+|--------|-------------|
+| `npm run clean` | Remove caches comuns (Metro, `.expo`, builds locais). |
+| `npm run clean:ios` | Remove e reinstala **Pods** (mais lento). |
+| `npm run clean:all` | Limpeza mais agressiva (inclui `Pods` e `Podfile.lock` em `ios/`). |
+| `npm run doctor` | `expo-doctor` quando o ambiente Expo estiver suspeito. |
+| `npm run prebuild` / `npm run prebuild:clean` | Regenerar `ios/` e `android/` a partir de `app.config.js`. |
+
+### E2E (Maestro)
+
+Os scripts `test:e2e*` e `export:screenshots*` assumem o CLI do Maestro no PATH (no projeto há referência a `~/.maestro/bin/maestro`). Use quando quiser regressão UI em simulador/dispositivo com flows em `maestro/`.
+
 ## 📱 Executando no Dispositivo
 
-### Usando Expo Go (Recomendado para desenvolvimento)
+Este projeto usa **Expo dev client** e módulos nativos (Auth0, Firebase, etc.). **Expo Go** costuma **não** ser suficiente para tudo; o fluxo recomendado é **dev client** + Metro ou **EAS build** para instalação sem Metro.
 
-1. Instale o app **Expo Go** no seu dispositivo
-2. Execute `npx expo start`
-3. Escaneie o QR code com o Expo Go (Android) ou Camera (iOS)
+### Expo Go (limitado)
+
+1. Instale o **Expo Go** no dispositivo.
+2. `npx expo start` (sem garantir compatibilidade com todas as APIs nativas do repo).
+
+### Dev client + dispositivo físico
+
+1. `npm run start:dev` ou `npm run start:dev:tunnel`.
+2. `npm run build:ios:device` (ou `npx expo run:ios --device`) e escolher o iPhone quando pedido.
 
 ### Usando EAS Build (Para produção)
 
@@ -198,7 +283,7 @@ likeme-front-end/
 │   ├── utils/             # Funções utilitárias
 │   └── hooks/             # Custom hooks
 ├── App.tsx                # Componente principal
-├── app.json              # Configuração do Expo
+├── app.config.js         # Configuração do Expo (única fonte; variáveis EXPO_PUBLIC_*)
 └── package.json          # Dependências
 ```
 
@@ -235,18 +320,11 @@ O app utiliza React Navigation com:
 
 ### Scripts Disponíveis
 
-```bash
-npm start          # Inicia o servidor de desenvolvimento
-npm run android    # Executa no Android
-npm run ios        # Executa no iOS
-npm run web        # Executa no navegador
-npm test           # Executa os testes
-npm run lint       # Executa o linter
-```
+Lista completa e contexto de uso: ver secção **[Comandos principais](#comandos-principais)**.
 
 ### Configurações
 
-- **Expo**: Configuração completa do Expo SDK 52
+- **Expo**: Configuração em `app.config.js` (SDK 54 no `package.json`)
 - **Metro**: Configurado para Expo
 - **Babel**: Preset para Expo
 - **TypeScript**: Configuração para Expo
@@ -502,11 +580,11 @@ eas build --clear-cache
 
 ### Requisitos do Sistema
 
-- **Node.js**: 18.x ou superior
-- **npm**: 8.x ou superior
-- **Expo CLI**: Última versão
-- **iOS**: Xcode 14+ (para iOS)
-- **Android**: Android Studio (para Android)
+- **Node.js**: conforme `engines` em `package.json` (atualmente `>=20.19.4`)
+- **npm**: compatível com o Node acima
+- **EAS CLI**: para builds/submits na nuvem (`npm i -g eas-cli` ou `npx eas`)
+- **iOS**: Xcode recente + CocoaPods (`pod`) para pastas `ios/` nativas
+- **Android**: Android Studio / SDK para `expo run:android` e builds locais
 
 ## 📚 Documentação
 

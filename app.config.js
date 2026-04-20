@@ -173,8 +173,10 @@ module.exports = {
     jsEngine: 'hermes',
     sdkVersion: '54.0.0',
     plugins: [
+      'expo-asset',
       'expo-font',
-      'expo-splash-screen',
+      'expo-navigation-bar',
+      '@react-native-community/datetimepicker',
       [
         'expo-build-properties',
         {
@@ -182,7 +184,6 @@ module.exports = {
           android: { newArchEnabled: false },
         },
       ],
-      'react-native-video',
       [
         'react-native-auth0',
         {
@@ -190,12 +191,14 @@ module.exports = {
         },
       ],
       './plugins/withPodfileModularHeaders.js',
-      './plugins/withIosIphoneOnlyDestinations.js',
       '@react-native-firebase/app',
       '@react-native-firebase/messaging',
     ],
     scheme: 'likeme',
     icon: './assets/app/icon.png',
+    androidNavigationBar: {
+      visibility: 'hidden',
+    },
     // Mesma base que `COLORS.BACKGROUND` no app — evita flash branco antes do JS.
     splash: {
       image: './assets/app/icon.png',

@@ -17,7 +17,7 @@ Seu projeto já está configurado com:
 
 Arquivos onde está configurado:
 
-- `app.json` → `ios.bundleIdentifier`
+- `app.config.js` → `expo.ios.bundleIdentifier`
 - `app.config.js` → `ios.bundleIdentifier`
 
 ## 🔧 Passo 1: Registrar Bundle ID no Apple Developer
@@ -45,7 +45,7 @@ Arquivos onde está configurado:
    - **Description**: `LikeMe App` (nome descritivo)
    - **Bundle ID**: Selecione **Explicit**
    - **Bundle ID**: Digite `app.likeme.com` (iOS)
-   - ⚠️ **IMPORTANTE**: Deve ser EXATAMENTE igual ao configurado no `app.json`
+   - ⚠️ **IMPORTANTE**: Deve ser EXATAMENTE igual ao configurado no `app.config.js`
 
 5. **Selecionar Capabilities (Recursos)**
 
@@ -131,7 +131,7 @@ Após registrar o Bundle ID, você precisa criar o app no App Store Connect:
 
 ## 🔍 Passo 3: Verificar Configuração no Projeto
 
-### Verificar app.json
+### Verificar app.config.js
 
 ```json
 {
@@ -266,7 +266,7 @@ Após configurar o Bundle ID:
 ### Erro: "Bundle ID mismatch"
 
 - **Causa**: Bundle ID no projeto não corresponde ao registrado
-- **Solução**: Verifique se `app.json` e `app.config.js` têm o mesmo Bundle ID
+- **Solução**: Verifique se `app.config.js` (bloco `expo.ios`) reflete o Bundle ID esperado
 
 ### Erro: "Invalid Bundle ID format"
 

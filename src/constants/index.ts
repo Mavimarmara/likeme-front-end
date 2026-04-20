@@ -114,4 +114,9 @@ export type { AuthOnboardingScreenName } from './authOnboarding';
 export { FEATURE_FLAGS, FEATURE_FLAG_DEFAULTS } from './featureFlags';
 export type { FeatureFlagKey } from './featureFlags';
 export { SUPPORT_FLOATING_HIDDEN_ROOT_ROUTES, isRouteNameHiddenForSupportFloating } from './supportFloatingVisibility';
-export { AUTH_BOOTSTRAP_HTTP_TIMEOUT_MS, ROOT_SPLASH_FONT_LOAD_FALLBACK_MS } from './networkTimeouts';
+export {
+  API_HTTP_REQUEST_TIMEOUT_MS,
+  AUTH_BOOTSTRAP_HTTP_TIMEOUT_MS,
+  AUTH_LOGOUT_AND_POLICY_HTTP_TIMEOUT_MS,
+  ROOT_SPLASH_FONT_LOAD_FALLBACK_MS,
+} from './networkTimeouts';

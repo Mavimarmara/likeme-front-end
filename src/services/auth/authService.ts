@@ -1,5 +1,7 @@
 import * as AuthSession from 'expo-auth-session';
 import { AUTH0_CONFIG, AUTH_CONFIG, getApiUrl } from '@/config';
+import { AUTH_LOGOUT_AND_POLICY_HTTP_TIMEOUT_MS } from '@/constants';
+import { invalidateApiClientAuthTokenMemoryCache } from '@/services/infrastructure/apiClient';
 import { fetchWithTimeout } from '@/utils/network/fetchWithTimeout';
 import storageService from './storageService';
 import { logger } from '@/utils/logger';
@@ -402,6 +404,8 @@ class AuthService {
       await storageService.setRegisterCompletedAt(registerCompletedAt);
       await storageService.setObjectivesSelectedAt(objectivesSelectedAt);
 
+      invalidateApiClientAuthTokenMemoryCache();
+
       return backendResponse;
     } catch (error) {
       logger.error('Backend communication error:', error);
@@ -417,24 +421,35 @@ class AuthService {
       try {
         const token = await storageService.getToken();
         if (token) {
-          await fetch(getApiUrl('/api/auth/logout'), {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-          }).catch(() => {
-            /* noop */
-          });
+          try {
+            const response = await fetchWithTimeout(
+              getApiUrl('/api/auth/logout'),
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${token}`,
+                },
+              },
+              AUTH_LOGOUT_AND_POLICY_HTTP_TIMEOUT_MS,
+            );
+            if (!response.ok) {
+              logger.warn('Backend logout retornou status não-sucesso', { status: response.status });
+            }
+          } catch (error) {
+            logger.warn('Erro ao fazer logout no backend (rede ou timeout)', { cause: error });
+          }
         }
       } catch (error) {
-        logger.warn('Erro ao fazer logout no backend:', error);
+        logger.warn('Erro ao preparar logout no backend:', { cause: error });
       }
 
       await storageService.clearAll();
+      invalidateApiClientAuthTokenMemoryCache();
     } catch (error) {
       logger.error('Logout error:', error);
       await storageService.clearAll();
+      invalidateApiClientAuthTokenMemoryCache();
     }
   }
 
@@ -451,14 +466,18 @@ class AuthService {
     if (!token) {
       throw new Error('Usuário não autenticado');
     }
-    const response = await fetch(getApiUrl('/api/auth/accept-privacy-policy'), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+    const response = await fetchWithTimeout(
+      getApiUrl('/api/auth/accept-privacy-policy'),
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ acceptedAt }),
       },
-      body: JSON.stringify({ acceptedAt }),
-    });
+      AUTH_LOGOUT_AND_POLICY_HTTP_TIMEOUT_MS,
+    );
     if (!response.ok) {
       const data = await response.json().catch(() => ({}));
       throw new Error(data.message || 'Não foi possível registrar o aceite da política de privacidade.');

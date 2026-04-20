@@ -44,6 +44,7 @@ module.exports = {
         project: './tsconfig.json',
       },
       rules: {
+        '@typescript-eslint/no-explicit-any': 'warn',
         '@typescript-eslint/default-param-last': 'error',
         '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
         'react-native/no-inline-styles': 'warn',

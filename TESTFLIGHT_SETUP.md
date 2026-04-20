@@ -21,7 +21,7 @@ Este guia explica como configurar e publicar o app LikeMe no TestFlight.
 5. Preencha:
    - **Description**: `LikeMe App`
    - **Bundle ID**: Selecione **Explicit**
-   - **Bundle ID**: Digite `app.likeme.com` (iOS; deve ser EXATAMENTE igual ao `app.json`)
+   - **Bundle ID**: Digite `app.likeme.com` (iOS; deve ser EXATAMENTE igual ao `app.config.js`)
 6. Selecione as **Capabilities** necessárias (Push Notifications, etc.)
 7. Clique em **Continue** → **Register**
 

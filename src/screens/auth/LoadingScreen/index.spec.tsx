@@ -39,6 +39,7 @@ jest.mock('@/services', () => ({
     setToken: (...args: unknown[]) => mockSetToken(...args),
     removeToken: (...args: unknown[]) => mockRemoveToken(...args),
   },
+  invalidateApiClientAuthTokenMemoryCache: jest.fn(),
 }));
 
 jest.mock('@/config', () => ({

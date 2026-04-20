@@ -3,7 +3,7 @@ import { View, Text, Animated, Image, ImageStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PartialLogo, GradientSplash7, GradientSplash8, GradientSplash9 } from '@/assets/auth';
 import { styles, GRADIENT_STRIP_HEIGHT, GRADIENT_STRIP_WIDTH } from './styles';
-import { storageService } from '@/services';
+import { invalidateApiClientAuthTokenMemoryCache, storageService } from '@/services';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen } from '@/analytics';
 import { getApiUrl } from '@/config';
@@ -63,13 +63,15 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
   );
 
   useEffect(() => {
+    let isScreenActive = true;
+
     const clearBootstrapWatchdogTimers = () => {
       bootstrapWatchdogTimersRef.current.forEach((timerId) => clearTimeout(timerId));
       bootstrapWatchdogTimersRef.current = [];
     };
 
     const replaceOnce = (routeName: string, params?: Record<string, unknown>) => {
-      if (hasNavigatedRef.current) {
+      if (!isScreenActive || hasNavigatedRef.current) {
         return;
       }
 
@@ -87,6 +89,11 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
       let shouldAuthenticate = false;
       let hadStoredToken = false;
       void startI18nHydration('pt-BR');
+      const safeSetStep = (next: number) => {
+        if (isScreenActive) {
+          setStep(next);
+        }
+      };
       const timing = (anim: Animated.Value, toValue: number, duration: number) =>
         new Promise<void>((resolve) => {
           Animated.timing(anim, { toValue, duration, useNativeDriver: true }).start(() => resolve());
@@ -99,7 +106,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
             duration: fadeOutMs,
             useNativeDriver: true,
           }).start(() => {
-            setStep(next);
+            safeSetStep(next);
             Animated.timing(taglineOpacity, {
               toValue: 1,
               duration: fadeInMs,
@@ -141,8 +148,11 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
 
             if (response.ok) {
               const data = await response.json();
-              if (data.token || data.accessToken) {
-                await storageService.setToken(data.token || data.accessToken);
+              const payload = data?.data ?? data;
+              const sessionToken = payload?.token || payload?.accessToken || data?.token || data?.accessToken;
+              if (sessionToken) {
+                await storageService.setToken(sessionToken);
+                invalidateApiClientAuthTokenMemoryCache();
               }
               shouldAuthenticate = true;
             }
@@ -168,6 +178,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
       if (hadStoredToken) {
         try {
           await storageService.removeToken();
+          invalidateApiClientAuthTokenMemoryCache();
         } catch (removeError) {
           console.error('[LoadingScreen] Falha ao limpar token invalido:', removeError);
         }
@@ -205,6 +216,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
 
     const timer = setTimeout(run, 300);
     return () => {
+      isScreenActive = false;
       clearTimeout(timer);
       clearBootstrapWatchdogTimers();
     };
