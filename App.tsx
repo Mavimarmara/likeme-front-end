@@ -53,11 +53,21 @@ const App: React.FC = () => {
     }
   }, [fontError, fontsLoaded, hideSplashOnce]);
 
+  // Dois safety-nets para garantir que nunca fiquemos presos no splash em nenhum
+  // cenário (inclusive o iPad em compat mode relatado na review da Apple):
+  // 1) um timer curto que sempre tenta esconder o splash após o primeiro layout
+  //    montar o JS; 2) o fallback maior caso `useFonts` não resolva.
   useEffect(() => {
+    const earlyHideTimer = setTimeout(() => {
+      hideSplashOnce().catch(() => undefined);
+    }, 1_500);
     const fallbackTimer = setTimeout(() => {
       hideSplashOnce().catch(() => undefined);
     }, ROOT_SPLASH_FONT_LOAD_FALLBACK_MS);
-    return () => clearTimeout(fallbackTimer);
+    return () => {
+      clearTimeout(earlyHideTimer);
+      clearTimeout(fallbackTimer);
+    };
   }, [hideSplashOnce]);
 
   useEffect(() => {

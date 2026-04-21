@@ -166,7 +166,7 @@ module.exports = {
   expo: {
     name: 'LikeMe',
     slug: 'likeme-front-end',
-    version: '1.0.51',
+    version: '1.0.52',
     orientation: 'portrait',
     userInterfaceStyle: 'light',
     platforms: ['ios', 'android', 'web'],
@@ -175,6 +175,14 @@ module.exports = {
     plugins: [
       'expo-asset',
       'expo-font',
+      [
+        'expo-splash-screen',
+        {
+          image: './assets/app/icon.png',
+          resizeMode: 'contain',
+          backgroundColor: '#F4F3EC',
+        },
+      ],
       'expo-navigation-bar',
       '@react-native-community/datetimepicker',
       [
@@ -191,6 +199,7 @@ module.exports = {
         },
       ],
       './plugins/withPodfileModularHeaders.js',
+      './plugins/withIosIphoneOnlyDestinations.js',
       '@react-native-firebase/app',
       '@react-native-firebase/messaging',
     ],
@@ -228,6 +237,9 @@ module.exports = {
     },
     ios: {
       bundleIdentifier: 'app.likeme.com',
+      // App é iPhone-only. No iPad, a Apple exibe em "iPhone compat mode"
+      // (janela com proporção de iPhone, letterbox no iPad) — comportamento
+      // esperado para apps iPhone-only, não é motivo de rejeição.
       supportsTablet: false,
       googleServicesFile: './GoogleService-Info.plist',
       infoPlist: {
