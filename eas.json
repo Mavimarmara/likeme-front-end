@@ -7,6 +7,9 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
+      "env": {
+        "EXPO_SKIP_DISABLE_CAPABILITIES": "1"
+      },
       "ios": {
         "simulator": true
       }
@@ -24,7 +27,8 @@
         "EXPO_PUBLIC_AUTH_PROXY_PROJECT": "@pixelpulselab/likeme-front-end",
         "EXPO_PUBLIC_AUTH_REDIRECT_PATH": "auth",
         "EXPO_USE_HERMES": "true",
-        "SKIP_IOS_POD_INSTALL": "true"
+        "SKIP_IOS_POD_INSTALL": "true",
+        "EXPO_SKIP_DISABLE_CAPABILITIES": "1"
       },
       "ios": {
         "buildConfiguration": "Release"
@@ -33,10 +37,7 @@
     "preview": {
       "extends": "staging",
       "distribution": "internal",
-      "autoIncrement": false,
-      "env": {
-        "EXPO_NO_CAPABILITY_SYNC": "1"
-      }
+      "autoIncrement": false
     },
     "staging": {
       "extends": "store-common",

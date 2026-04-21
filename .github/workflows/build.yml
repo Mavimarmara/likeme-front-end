@@ -48,6 +48,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Validar Sign in with Apple na config iOS (EAS capability sync)
+        run: npm run assert:ios-apple-signin
+
       - name: Run linter
         run: npm run lint
 
@@ -112,6 +115,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Validar Sign in with Apple na config iOS (EAS capability sync)
+        run: npm run assert:ios-apple-signin
 
       - name: Setup EAS CLI
         uses: expo/expo-github-action@v8
