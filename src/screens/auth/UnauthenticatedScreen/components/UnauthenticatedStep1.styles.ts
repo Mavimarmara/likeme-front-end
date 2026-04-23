@@ -4,8 +4,7 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
   container: {
     backgroundColor: COLORS.BACKGROUND,
-    height: 852,
-    minWidth: 393,
+    flex: 1,
     position: 'relative',
     width: '100%',
   },

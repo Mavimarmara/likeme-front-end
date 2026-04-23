@@ -1,4 +1,4 @@
-import { render, fireEvent } from '@testing-library/react-native';
+import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import UnauthenticatedScreen from './index';
 
 const mockNavigation = {
@@ -44,11 +44,14 @@ describe('UnauthenticatedScreen', () => {
 
   const mockRoute = { key: 'Unauthenticated', name: 'Unauthenticated' as const, params: {} };
 
-  it('renders correctly', () => {
+  it('renders correctly', async () => {
     const { getByText } = render(<UnauthenticatedScreen navigation={mockNavigation} route={mockRoute} />);
 
     expect(getByText('auth.tagline')).toBeTruthy();
     expect(getByText('auth.login')).toBeTruthy();
+    await waitFor(() => {
+      expect(mockNavigation.navigate).toHaveBeenCalledWith('Welcome');
+    });
   });
 
   it('handles login button press', () => {

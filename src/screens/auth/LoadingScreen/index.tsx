@@ -3,16 +3,16 @@ import { View, Text, Animated, Image, ImageStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PartialLogo, GradientSplash7, GradientSplash8, GradientSplash9 } from '@/assets/auth';
 import { styles, GRADIENT_STRIP_HEIGHT, GRADIENT_STRIP_WIDTH } from './styles';
-import { AuthService, storageService } from '@/services';
+import { invalidateApiClientAuthTokenMemoryCache, storageService } from '@/services';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen } from '@/analytics';
 import { getApiUrl } from '@/config';
+import { AUTH_BOOTSTRAP_HTTP_TIMEOUT_MS } from '@/constants';
 import { ensureI18nHydrated, startI18nHydration } from '@/i18n/hydration';
 import { fetchWithTimeout } from '@/utils/network/fetchWithTimeout';
 
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 const GRADIENT_SOURCES = [GradientSplash7, GradientSplash8, GradientSplash9];
-const AUTH_TOKEN_VALIDATE_TIMEOUT_MS = 12_000;
 const BOOTSTRAP_WATCHDOG_INTERVAL_MS = 8_000;
 const BOOTSTRAP_WATCHDOG_MAX_RETRIES = 2;
 
@@ -22,11 +22,13 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
   useAnalyticsScreen({ screenName: 'Loading', screenClass: 'LoadingScreen' });
   const { t } = useTranslation();
   const scrollAnim = useRef(new Animated.Value(0)).current;
-  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const fadeAnim = useRef(new Animated.Value(1)).current;
   const taglineOpacity = useRef(new Animated.Value(1)).current;
   const [step, setStep] = useState(0);
   const hasNavigatedRef = useRef(false);
   const bootstrapWatchdogTimersRef = useRef<Array<ReturnType<typeof setTimeout>>>([]);
+  const navigationRef = useRef(navigation);
+  navigationRef.current = navigation;
 
   const TAGLINES = [t('auth.taglineRhythm'), t('auth.taglineJourney'), t('auth.taglineRoutine')];
 
@@ -61,28 +63,37 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
   );
 
   useEffect(() => {
+    let isScreenActive = true;
+
     const clearBootstrapWatchdogTimers = () => {
       bootstrapWatchdogTimersRef.current.forEach((timerId) => clearTimeout(timerId));
       bootstrapWatchdogTimersRef.current = [];
     };
 
     const replaceOnce = (routeName: string, params?: Record<string, unknown>) => {
-      if (hasNavigatedRef.current) {
+      if (!isScreenActive || hasNavigatedRef.current) {
         return;
       }
 
       hasNavigatedRef.current = true;
       clearBootstrapWatchdogTimers();
+      const nav = navigationRef.current;
       if (params === undefined) {
-        navigation.replace(routeName);
+        nav.replace(routeName);
         return;
       }
-      navigation.replace(routeName, params);
+      nav.replace(routeName, params);
     };
 
     const run = async () => {
       let shouldAuthenticate = false;
+      let hadStoredToken = false;
       void startI18nHydration('pt-BR');
+      const safeSetStep = (next: number) => {
+        if (isScreenActive) {
+          setStep(next);
+        }
+      };
       const timing = (anim: Animated.Value, toValue: number, duration: number) =>
         new Promise<void>((resolve) => {
           Animated.timing(anim, { toValue, duration, useNativeDriver: true }).start(() => resolve());
@@ -95,7 +106,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
             duration: fadeOutMs,
             useNativeDriver: true,
           }).start(() => {
-            setStep(next);
+            safeSetStep(next);
             Animated.timing(taglineOpacity, {
               toValue: 1,
               duration: fadeInMs,
@@ -121,6 +132,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
 
         try {
           const token = await storageService.getToken();
+          hadStoredToken = Boolean(token);
           if (token) {
             const response = await fetchWithTimeout(
               getApiUrl('/api/auth/token'),
@@ -131,37 +143,25 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
                   Authorization: `Bearer ${token}`,
                 },
               },
-              AUTH_TOKEN_VALIDATE_TIMEOUT_MS,
+              AUTH_BOOTSTRAP_HTTP_TIMEOUT_MS,
             );
 
             if (response.ok) {
               const data = await response.json();
-              if (data.token || data.accessToken) {
-                await storageService.setToken(data.token || data.accessToken);
+              const payload = data?.data ?? data;
+              const sessionToken = payload?.token || payload?.accessToken || data?.token || data?.accessToken;
+              if (sessionToken) {
+                await storageService.setToken(sessionToken);
+                invalidateApiClientAuthTokenMemoryCache();
               }
               shouldAuthenticate = true;
             }
           }
         } catch (error) {
-          const err = error as Error & { name?: string };
-          const aborted = err?.name === 'AbortError' || (error instanceof Error && error.message?.includes('aborted'));
           console.error('Erro ao renovar token:', error);
-          if (aborted) {
-            await storageService.removeToken();
-          }
         }
       } catch (error) {
         console.error('[LoadingScreen] Falha no fluxo inicial (animacao ou bootstrap):', error);
-      }
-
-      if (!shouldAuthenticate) {
-        try {
-          const authResult = await AuthService.login();
-          await AuthService.validateToken(authResult);
-          shouldAuthenticate = true;
-        } catch (error) {
-          console.error('[LoadingScreen] Falha no login automatico pelo splash:', error);
-        }
       }
 
       try {
@@ -175,9 +175,16 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
         return;
       }
 
-      replaceOnce('Error', {
-        errorMessage: 'Nao foi possivel autenticar automaticamente. Tente novamente.',
-      });
+      if (hadStoredToken) {
+        try {
+          await storageService.removeToken();
+          invalidateApiClientAuthTokenMemoryCache();
+        } catch (removeError) {
+          console.error('[LoadingScreen] Falha ao limpar token invalido:', removeError);
+        }
+      }
+
+      replaceOnce('Unauthenticated');
     };
 
     const scheduleBootstrapWatchdog = (retryAttempt: number) => {
@@ -209,10 +216,11 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
 
     const timer = setTimeout(run, 300);
     return () => {
+      isScreenActive = false;
       clearTimeout(timer);
       clearBootstrapWatchdogTimers();
     };
-  }, [navigation, scrollAnim, fadeAnim, taglineOpacity, cumulativeOffsets]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps -- bootstrap só na montagem; `navigation` via ref (deps instáveis cancelavam o timer antes de `run()`)
 
   return (
     <SafeAreaView style={styles.container}>

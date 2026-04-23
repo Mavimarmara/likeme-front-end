@@ -20,6 +20,7 @@ import { JoinCard, type JoinCardItem } from '@/components/ui/cards';
 import { ProductsCarousel, type Product } from '@/components/sections/product';
 import Carousel from '@/components/sections/product/Carousel';
 import { useAnalyticsScreen } from '@/analytics';
+import { logger } from '@/utils/logger';
 import { styles } from './styles';
 
 type Props = {
@@ -210,7 +211,9 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
         bodyPercentage: bodyPct,
       });
       await Share.share({ message });
-    } catch (error) {}
+    } catch (error) {
+      logger.warn('[AvatarProgressScreen] Share cancelado ou falhou', { cause: error });
+    }
   };
 
   const handleSeeMarker = (marker?: UserMarker) => {

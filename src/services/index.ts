@@ -1,7 +1,7 @@
 export { default as AuthService } from './auth/authService';
 export { default as storageService } from './auth/storageService';
 
-export { default as apiClient } from './infrastructure/apiClient';
+export { default as apiClient, invalidateApiClientAuthTokenMemoryCache } from './infrastructure/apiClient';
 
 export { default as communityService } from './community/communityService';
 export { default as chatService } from './chat/chatService';

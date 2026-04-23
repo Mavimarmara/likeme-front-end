@@ -10,12 +10,25 @@ type Props = {
   route: any;
 };
 
+const AUTO_LOGIN_DEBOUNCE_MS = 1500;
+let lastUnauthenticatedAutoLoginMs = 0;
+
 const UnauthenticatedScreen: React.FC<Props> = ({ navigation }) => {
   useAnalyticsScreen({ screenName: 'Unauthenticated', screenClass: 'UnauthenticatedScreen' });
   const { handleLogin: authLogin, isLoading } = useAuthLogin(navigation);
 
   useEffect(() => {
-    authLogin();
+    const now = Date.now();
+    if (now - lastUnauthenticatedAutoLoginMs < AUTO_LOGIN_DEBOUNCE_MS) {
+      return;
+    }
+    lastUnauthenticatedAutoLoginMs = now;
+    logNavigation({
+      source_screen: 'unauthenticated',
+      destination_screen: 'authenticated',
+      action_name: 'login_auto_on_mount',
+    });
+    void authLogin();
   }, [authLogin]);
 
   const handleLogin = () => {

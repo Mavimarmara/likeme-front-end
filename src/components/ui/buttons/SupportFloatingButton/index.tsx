@@ -3,7 +3,7 @@ import { Linking, Pressable, Text, View } from 'react-native';
 import { useNavigationState } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ColoredTwoDotsIcon } from '@/assets/ui';
-import { AUTH_ONBOARDING_SCREENS_ORDER, FEATURE_FLAGS } from '@/constants';
+import { AUTH_ONBOARDING_SCREENS_ORDER, FEATURE_FLAGS, isRouteNameHiddenForSupportFloating } from '@/constants';
 import { useFeatureFlag } from '@/hooks';
 import { useIsFloatingMenuVisible } from '@/contexts/FloatingMenuContext';
 import { SUPPORT_CONFIG } from '@/config/environment';
@@ -39,6 +39,11 @@ const SupportFloatingButton: React.FC = () => {
 
   const shouldHideOnboarding = useMemo(
     () => onboardingRouteNames.has(rootRouteName ?? '') || onboardingRouteNames.has(focusedRouteName ?? ''),
+    [focusedRouteName, rootRouteName],
+  );
+
+  const shouldHideSplashOrBootstrap = useMemo(
+    () => isRouteNameHiddenForSupportFloating(rootRouteName) || isRouteNameHiddenForSupportFloating(focusedRouteName),
     [focusedRouteName, rootRouteName],
   );
 
@@ -78,7 +83,7 @@ const SupportFloatingButton: React.FC = () => {
     }
   }, []);
 
-  if (!isSupportFloatingButtonEnabled || shouldHideOnboarding) {
+  if (!isSupportFloatingButtonEnabled || shouldHideOnboarding || shouldHideSplashOrBootstrap) {
     return null;
   }
 

@@ -166,22 +166,32 @@ module.exports = {
   expo: {
     name: 'LikeMe',
     slug: 'likeme-front-end',
-    version: '1.0.49',
+    version: '1.0.52',
     orientation: 'portrait',
     userInterfaceStyle: 'light',
     platforms: ['ios', 'android', 'web'],
     jsEngine: 'hermes',
     sdkVersion: '54.0.0',
     plugins: [
+      'expo-asset',
       'expo-font',
+      [
+        'expo-splash-screen',
+        {
+          image: './assets/app/icon.png',
+          resizeMode: 'contain',
+          backgroundColor: '#F4F3EC',
+        },
+      ],
+      'expo-navigation-bar',
+      '@react-native-community/datetimepicker',
       [
         'expo-build-properties',
         {
           ios: { newArchEnabled: false },
-          android: { newArchEnabled: true },
+          android: { newArchEnabled: false },
         },
       ],
-      'react-native-video',
       [
         'react-native-auth0',
         {
@@ -189,18 +199,28 @@ module.exports = {
         },
       ],
       './plugins/withPodfileModularHeaders.js',
+      './plugins/withIosIphoneOnlyDestinations.js',
       '@react-native-firebase/app',
       '@react-native-firebase/messaging',
     ],
     scheme: 'likeme',
     icon: './assets/app/icon.png',
+    androidNavigationBar: {
+      visibility: 'hidden',
+    },
+    // Mesma base que `COLORS.BACKGROUND` no app — evita flash branco antes do JS.
+    splash: {
+      image: './assets/app/icon.png',
+      resizeMode: 'contain',
+      backgroundColor: '#F4F3EC',
+    },
     android: {
       package: 'com.likeme.app',
       googleServicesFile: './google-services.json',
       softwareKeyboardLayoutMode: 'resize',
       adaptiveIcon: {
         foregroundImage: './assets/app/icon.png',
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#F4F3EC',
       },
       intentFilters: [
         {
@@ -217,7 +237,10 @@ module.exports = {
     },
     ios: {
       bundleIdentifier: 'app.likeme.com',
-      supportsTablet: true,
+      // App é iPhone-only. No iPad, a Apple exibe em "iPhone compat mode"
+      // (janela com proporção de iPhone, letterbox no iPad) — comportamento
+      // esperado para apps iPhone-only, não é motivo de rejeição.
+      supportsTablet: false,
       googleServicesFile: './GoogleService-Info.plist',
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
@@ -225,6 +248,7 @@ module.exports = {
       },
       entitlements: {
         'aps-environment': 'production',
+        'com.apple.developer.applesignin': ['Default'],
       },
     },
     owner: 'pixelpulselab',
@@ -242,6 +266,13 @@ module.exports = {
         EXPO_PUBLIC_USE_AUTH_PROXY: getEnvVar('EXPO_PUBLIC_USE_AUTH_PROXY', 'false'),
         EXPO_PUBLIC_AUTH_SCHEME: getEnvVar('EXPO_PUBLIC_AUTH_SCHEME', 'likeme'),
         EXPO_PUBLIC_AUTH_REDIRECT_PATH: getEnvVar('EXPO_PUBLIC_AUTH_REDIRECT_PATH', 'auth'),
+        EXPO_PUBLIC_SUPPORT_WHATSAPP_URL: getEnvVar('EXPO_PUBLIC_SUPPORT_WHATSAPP_URL', ''),
+        EXPO_PUBLIC_SUPPORT_WHATSAPP_PHONE: getEnvVar('EXPO_PUBLIC_SUPPORT_WHATSAPP_PHONE', '5511994592992'),
+        EXPO_PUBLIC_SUPPORT_WHATSAPP_MESSAGE: getEnvVar(
+          'EXPO_PUBLIC_SUPPORT_WHATSAPP_MESSAGE',
+          'Olá! Vim pelo app e gostaria de tirar uma dúvida.',
+        ),
+        EXPO_PUBLIC_LOGGER_ON_DEVICE: getEnvVar('EXPO_PUBLIC_LOGGER_ON_DEVICE', ''),
       },
     },
   },

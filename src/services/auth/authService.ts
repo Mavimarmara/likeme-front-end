@@ -1,8 +1,38 @@
 import * as AuthSession from 'expo-auth-session';
 import { AUTH0_CONFIG, AUTH_CONFIG, getApiUrl } from '@/config';
+import { AUTH_LOGOUT_AND_POLICY_HTTP_TIMEOUT_MS } from '@/constants';
+import { invalidateApiClientAuthTokenMemoryCache } from '@/services/infrastructure/apiClient';
+import { fetchWithTimeout } from '@/utils/network/fetchWithTimeout';
 import storageService from './storageService';
 import { logger } from '@/utils/logger';
 import type { AuthResult } from '@/types/auth';
+import { LoginUserAbortError, isLoginUserAbortError } from '@/utils/auth/loginUserAbort';
+
+const AUTH0_DISCOVERY_TIMEOUT_MS = 15_000;
+const AUTH0_TOKEN_EXCHANGE_TIMEOUT_MS = 20_000;
+const AUTH0_USERINFO_TIMEOUT_MS = 15_000;
+const AUTH_BACKEND_LOGIN_TIMEOUT_MS = 25_000;
+const AUTH0_REFRESH_TOKEN_TIMEOUT_MS = 20_000;
+
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): Promise<T> {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      promise.finally(() => {
+        if (timeoutId !== undefined) {
+          clearTimeout(timeoutId);
+        }
+      }),
+      new Promise<never>((_, reject) => {
+        timeoutId = setTimeout(() => reject(new Error(`${label} timeout (${timeoutMs}ms)`)), timeoutMs);
+      }),
+    ]);
+  } finally {
+    if (timeoutId !== undefined) {
+      clearTimeout(timeoutId);
+    }
+  }
+}
 
 class AuthService {
   private getTokenUrl(): string {
@@ -42,9 +72,18 @@ class AuthService {
 
       let discovery;
       try {
-        discovery = await AuthSession.fetchDiscoveryAsync(`https://${AUTH0_CONFIG.domain}`);
+        discovery = await withTimeout(
+          AuthSession.fetchDiscoveryAsync(`https://${AUTH0_CONFIG.domain}`),
+          AUTH0_DISCOVERY_TIMEOUT_MS,
+          'Auth0 discovery',
+        );
       } catch (error) {
         logger.error('Discovery error:', error);
+        if (error instanceof Error && error.message.includes('timeout')) {
+          throw new Error(
+            `Auth0 não respondeu a tempo (discovery). Verifique rede, domínio ${AUTH0_CONFIG.domain} e se o emulador tem acesso à internet.`,
+          );
+        }
         if (error instanceof Error && error.message.includes('JSON')) {
           throw new Error(`Erro ao conectar com Auth0. Verifique se o domínio ${AUTH0_CONFIG.domain} está correto.`);
         }
@@ -88,7 +127,7 @@ class AuthService {
 
       if (result.type !== 'success') {
         if (result.type === 'cancel' || result.type === 'dismiss') {
-          throw new Error('Login cancelled');
+          throw new LoginUserAbortError();
         }
         if (result.type === 'error') {
           const error = (result as any).error;
@@ -119,16 +158,20 @@ class AuthService {
         }
         console.log('Code verifier found:', codeVerifier ? 'Yes' : 'No');
 
-        tokenResponse = await AuthSession.exchangeCodeAsync(
-          {
-            clientId: AUTH0_CONFIG.clientId,
-            code: result.params.code,
-            redirectUri: this.getRedirectUri(),
-            extraParams: {
-              code_verifier: codeVerifier,
+        tokenResponse = await withTimeout(
+          AuthSession.exchangeCodeAsync(
+            {
+              clientId: AUTH0_CONFIG.clientId,
+              code: result.params.code,
+              redirectUri: this.getRedirectUri(),
+              extraParams: {
+                code_verifier: codeVerifier,
+              },
             },
-          },
-          discovery,
+            discovery,
+          ),
+          AUTH0_TOKEN_EXCHANGE_TIMEOUT_MS,
+          'Auth0 token exchange',
         );
         console.log('Token exchange successful');
       } catch (error) {
@@ -157,11 +200,15 @@ class AuthService {
       console.log('idToken received, length:', tokenResponse.idToken.length);
       console.log('idToken preview:', tokenResponse.idToken.substring(0, 50) + '...');
 
-      const userInfoResponse = await fetch(this.getUserInfoUrl(), {
-        headers: {
-          Authorization: `Bearer ${tokenResponse.accessToken}`,
+      const userInfoResponse = await fetchWithTimeout(
+        this.getUserInfoUrl(),
+        {
+          headers: {
+            Authorization: `Bearer ${tokenResponse.accessToken}`,
+          },
         },
-      });
+        AUTH0_USERINFO_TIMEOUT_MS,
+      );
 
       if (!userInfoResponse.ok) {
         const errorText = await userInfoResponse.text();
@@ -189,6 +236,9 @@ class AuthService {
         },
       };
     } catch (error) {
+      if (isLoginUserAbortError(error)) {
+        throw error;
+      }
       logger.error('Login error:', error);
       logger.error('Error details:', {
         message: error instanceof Error ? error.message : String(error),
@@ -196,12 +246,6 @@ class AuthService {
       });
 
       if (error instanceof Error) {
-        if (error.message.includes('idToken')) {
-          throw error;
-        }
-        if (error.message.includes('cancelled') || error.message.includes('cancel')) {
-          throw error;
-        }
         throw error;
       }
       throw new Error('Erro desconhecido durante o login');
@@ -242,17 +286,21 @@ class AuthService {
 
   async refreshToken(refreshToken: string): Promise<string> {
     try {
-      const response = await fetch(this.getTokenUrl(), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetchWithTimeout(
+        this.getTokenUrl(),
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            grant_type: 'refresh_token',
+            client_id: AUTH0_CONFIG.clientId,
+            refresh_token: refreshToken,
+          }),
         },
-        body: JSON.stringify({
-          grant_type: 'refresh_token',
-          client_id: AUTH0_CONFIG.clientId,
-          refresh_token: refreshToken,
-        }),
-      });
+        AUTH0_REFRESH_TOKEN_TIMEOUT_MS,
+      );
 
       if (!response.ok) {
         throw new Error('Falha ao renovar token');
@@ -287,16 +335,20 @@ class AuthService {
         console.error('Error decoding token:', decodeError);
       }
 
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetchWithTimeout(
+        url,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            idToken: authResult.idToken,
+            user: authResult.user,
+          }),
         },
-        body: JSON.stringify({
-          idToken: authResult.idToken,
-          user: authResult.user,
-        }),
-      });
+        AUTH_BACKEND_LOGIN_TIMEOUT_MS,
+      );
 
       if (!response.ok) {
         const contentType = response.headers.get('content-type');
@@ -352,6 +404,8 @@ class AuthService {
       await storageService.setRegisterCompletedAt(registerCompletedAt);
       await storageService.setObjectivesSelectedAt(objectivesSelectedAt);
 
+      invalidateApiClientAuthTokenMemoryCache();
+
       return backendResponse;
     } catch (error) {
       logger.error('Backend communication error:', error);
@@ -367,24 +421,35 @@ class AuthService {
       try {
         const token = await storageService.getToken();
         if (token) {
-          await fetch(getApiUrl('/api/auth/logout'), {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-          }).catch(() => {
-            /* noop */
-          });
+          try {
+            const response = await fetchWithTimeout(
+              getApiUrl('/api/auth/logout'),
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${token}`,
+                },
+              },
+              AUTH_LOGOUT_AND_POLICY_HTTP_TIMEOUT_MS,
+            );
+            if (!response.ok) {
+              logger.warn('Backend logout retornou status não-sucesso', { status: response.status });
+            }
+          } catch (error) {
+            logger.warn('Erro ao fazer logout no backend (rede ou timeout)', { cause: error });
+          }
         }
       } catch (error) {
-        logger.warn('Erro ao fazer logout no backend:', error);
+        logger.warn('Erro ao preparar logout no backend:', { cause: error });
       }
 
       await storageService.clearAll();
+      invalidateApiClientAuthTokenMemoryCache();
     } catch (error) {
       logger.error('Logout error:', error);
       await storageService.clearAll();
+      invalidateApiClientAuthTokenMemoryCache();
     }
   }
 
@@ -401,14 +466,18 @@ class AuthService {
     if (!token) {
       throw new Error('Usuário não autenticado');
     }
-    const response = await fetch(getApiUrl('/api/auth/accept-privacy-policy'), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+    const response = await fetchWithTimeout(
+      getApiUrl('/api/auth/accept-privacy-policy'),
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ acceptedAt }),
       },
-      body: JSON.stringify({ acceptedAt }),
-    });
+      AUTH_LOGOUT_AND_POLICY_HTTP_TIMEOUT_MS,
+    );
     if (!response.ok) {
       const data = await response.json().catch(() => ({}));
       throw new Error(data.message || 'Não foi possível registrar o aceite da política de privacidade.');

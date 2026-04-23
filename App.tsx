@@ -1,32 +1,74 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { AppState, LogBox, Platform, StatusBar, View } from 'react-native';
+import React, { useCallback, useEffect, useRef } from 'react';
+import { AppState, Platform, StatusBar, StyleSheet, View } from 'react-native';
+import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import * as NavigationBar from 'expo-navigation-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { RootNavigator } from './src/navigation';
+import { RootErrorBoundary } from './src/components/infrastructure/RootErrorBoundary';
+import { COLORS, ROOT_SPLASH_FONT_LOAD_FALLBACK_MS } from './src/constants';
 import { AUTH0_CONFIG } from './src/config/environment';
 import { startI18nHydration } from './src/i18n/hydration';
-import { COLORS } from './src/constants';
-import { featureFlagService } from './src/services';
+import featureFlagService from './src/services/featureFlags/featureFlagService';
+import { logger } from './src/utils/logger';
 // Importar i18n antes de qualquer componente que use useTranslation
 import './src/i18n';
 
-// Desabilitar todos os logs que aparecem na tela
-LogBox.ignoreAllLogs(true);
-
-const FONT_LOAD_MAX_WAIT_MS = 5_000;
+const styles = StyleSheet.create({
+  rootSurface: {
+    flex: 1,
+    backgroundColor: COLORS.BACKGROUND,
+  },
+});
 
 const App: React.FC = () => {
   const navBarHideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [fontLoadDeadlinePassed, setFontLoadDeadlinePassed] = useState(false);
+  const splashHiddenRef = useRef(false);
   const [fontsLoaded, fontError] = useFonts({
     'Bricolage Grotesque': require('./assets/fonts/BricolageGrotesque-Regular.ttf'),
   });
 
-  useEffect(() => {
-    const t = setTimeout(() => setFontLoadDeadlinePassed(true), FONT_LOAD_MAX_WAIT_MS);
-    return () => clearTimeout(t);
+  const hideSplashOnce = useCallback(async () => {
+    if (splashHiddenRef.current) {
+      return;
+    }
+    splashHiddenRef.current = true;
+    try {
+      await SplashScreen.hideAsync();
+    } catch {
+      /* splash já oculto ou indisponível */
+    }
   }, []);
+
+  useEffect(() => {
+    if (!fontsLoaded && !fontError) {
+      return;
+    }
+    hideSplashOnce().catch(() => undefined);
+  }, [fontError, fontsLoaded, hideSplashOnce]);
+
+  const onLayoutRootView = useCallback(() => {
+    if (fontsLoaded || fontError) {
+      hideSplashOnce().catch(() => undefined);
+    }
+  }, [fontError, fontsLoaded, hideSplashOnce]);
+
+  // Dois safety-nets para garantir que nunca fiquemos presos no splash em nenhum
+  // cenário (inclusive o iPad em compat mode relatado na review da Apple):
+  // 1) um timer curto que sempre tenta esconder o splash após o primeiro layout
+  //    montar o JS; 2) o fallback maior caso `useFonts` não resolva.
+  useEffect(() => {
+    const earlyHideTimer = setTimeout(() => {
+      hideSplashOnce().catch(() => undefined);
+    }, 1_500);
+    const fallbackTimer = setTimeout(() => {
+      hideSplashOnce().catch(() => undefined);
+    }, ROOT_SPLASH_FONT_LOAD_FALLBACK_MS);
+    return () => {
+      clearTimeout(earlyHideTimer);
+      clearTimeout(fallbackTimer);
+    };
+  }, [hideSplashOnce]);
 
   useEffect(() => {
     void startI18nHydration('pt-BR');
@@ -43,38 +85,35 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // Debug: Log das variáveis de ambiente carregadas
-    // Usa try-catch para evitar erros se o runtime não estiver pronto
     try {
-      console.log('═══════════════════════════════════════════════════════════');
-      console.log('  DEBUG - Variáveis de Ambiente');
-      console.log('═══════════════════════════════════════════════════════════');
-      console.log('AUTH0_CONFIG:', {
+      logger.debug('═══════════════════════════════════════════════════════════');
+      logger.debug('  DEBUG - Variáveis de Ambiente');
+      logger.debug('═══════════════════════════════════════════════════════════');
+      logger.debug('AUTH0_CONFIG:', {
         domain: AUTH0_CONFIG.domain,
         clientId: AUTH0_CONFIG.clientId ? `${AUTH0_CONFIG.clientId.substring(0, 10)}...` : 'NÃO ENCONTRADO',
         audience: AUTH0_CONFIG.audience ? 'ENCONTRADO' : 'NÃO ENCONTRADO',
       });
-      console.log('');
+      logger.debug('');
 
-      // Verifica se Constants está disponível antes de acessar (lazy import)
       try {
         const Constants = require('expo-constants').default;
         if (Constants?.expoConfig) {
-          console.log('Constants.expoConfig:', 'existe');
-          console.log('Constants.expoConfig.extra:', Constants.expoConfig?.extra ? 'existe' : 'não existe');
-          console.log('Constants.expoConfig.extra.env:', Constants.expoConfig?.extra?.env ? 'existe' : 'não existe');
+          logger.debug('Constants.expoConfig:', 'existe');
+          logger.debug('Constants.expoConfig.extra:', Constants.expoConfig?.extra ? 'existe' : 'não existe');
+          logger.debug('Constants.expoConfig.extra.env:', Constants.expoConfig?.extra?.env ? 'existe' : 'não existe');
           if (Constants.expoConfig?.extra?.env) {
-            console.log('Variáveis em extra.env:', Object.keys(Constants.expoConfig.extra.env));
+            logger.debug('Variáveis em extra.env:', Object.keys(Constants.expoConfig.extra.env));
           }
         } else {
-          console.log('Constants.expoConfig:', 'não existe (runtime pode não estar pronto)');
+          logger.debug('Constants.expoConfig:', 'não existe (runtime pode não estar pronto)');
         }
-      } catch (error) {
-        console.log('Constants:', 'não disponível ainda');
+      } catch {
+        logger.debug('Constants:', 'não disponível ainda');
       }
-      console.log('═══════════════════════════════════════════════════════════');
+      logger.debug('═══════════════════════════════════════════════════════════');
     } catch (error) {
-      console.warn('[App] Erro ao acessar Constants:', error);
+      logger.warn('[App] Erro ao acessar Constants:', error);
     }
   }, []);
 
@@ -123,15 +162,15 @@ const App: React.FC = () => {
     };
   }, []);
 
-  if (!fontsLoaded && !fontError && !fontLoadDeadlinePassed) {
-    return <View style={{ flex: 1, backgroundColor: COLORS.BACKGROUND }} />;
-  }
-
   return (
-    <SafeAreaProvider>
-      <StatusBar hidden={Platform.OS === 'android'} />
-      <RootNavigator />
-    </SafeAreaProvider>
+    <View style={styles.rootSurface} onLayout={onLayoutRootView}>
+      <SafeAreaProvider style={styles.rootSurface}>
+        <StatusBar hidden={Platform.OS === 'android'} />
+        <RootErrorBoundary>
+          <RootNavigator />
+        </RootErrorBoundary>
+      </SafeAreaProvider>
+    </View>
   );
 };
 

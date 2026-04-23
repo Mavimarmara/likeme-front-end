@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { FEATURE_FLAG_DEFAULTS, type FeatureFlagKey } from '@/constants';
 import { featureFlagService } from '@/services';
+import { logger } from '@/utils/logger';
 
 type UseFeatureFlagsReturn = {
   flags: Record<FeatureFlagKey, boolean>;
@@ -36,14 +37,22 @@ export function useFeatureFlags(flagKeys: FeatureFlagKey[]): UseFeatureFlagsRetu
 
       setIsLoading(true);
       setFlags(defaultFlags);
-      const nextFlags = await featureFlagService.getBooleans(normalizedKeys);
-
-      if (!isMounted) {
-        return;
+      try {
+        const nextFlags = await featureFlagService.getBooleans(normalizedKeys);
+        if (!isMounted) {
+          return;
+        }
+        setFlags(nextFlags);
+      } catch (error) {
+        logger.warn('[useFeatureFlags] Falha ao carregar flags; usando defaults locais', { cause: error });
+        if (isMounted) {
+          setFlags(defaultFlags);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
-
-      setFlags(nextFlags);
-      setIsLoading(false);
     };
 
     void loadFlags();

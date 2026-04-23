@@ -1,147 +1,195 @@
-import React from 'react';
-import { Easing, Platform } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import React, { lazy, Suspense } from 'react';
+import { Easing, Platform, StyleSheet, View } from 'react-native';
+import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import { FloatingMenuProvider } from '@/contexts/FloatingMenuContext';
-import SupportFloatingButton from '@/components/ui/buttons/SupportFloatingButton';
+import { COLORS } from '@/constants';
+import {
+  getLoadingScreen,
+  getUnauthenticatedScreen,
+  getAuthenticatedScreen,
+  getWelcomeScreen,
+  getAppPresentationScreen,
+  getRegisterScreen,
+  getPlansScreen,
+  getAnamnesisStartScreen,
+  getAnamnesisHomeScreen,
+  getAnamnesisBodyScreen,
+  getAnamnesisMindScreen,
+  getAnamnesisHabitsScreen,
+  getAnamnesisCompletionScreen,
+  getPersonalObjectivesScreen,
+  getErrorScreen,
+  getAppLoadingScreen,
+  getCommunityStackNavigator,
+  getChatStackNavigator,
+  getActivitiesScreen,
+  getMarketplaceScreen,
+  getProductDetailsScreen,
+  getAffiliateProductScreen,
+  getCartScreen,
+  getCheckoutScreen,
+  getCommunityPreviewScreen,
+  getProviderProfileScreen,
+  getProfileScreen,
+  getPrivacyPoliciesScreen,
+  getHomeScreen,
+  getSummaryScreen,
+  getAvatarProgressScreen,
+  getMarkerDetailsScreen,
+} from '@/navigation/rootStackScreenLoaders';
 
-import {
-  UnauthenticatedScreen,
-  AuthenticatedScreen,
-  LoadingScreen,
-  WelcomeScreen,
-  AppPresentationScreen,
-  RegisterScreen,
-  PersonalObjectivesScreen,
-} from '@/screens/auth';
-import PlansScreen from '@/screens/plans/PlansScreen';
-import {
-  AnamnesisStartScreen,
-  AnamnesisBodyScreen,
-  AnamnesisHomeScreen,
-  AnamnesisMindScreen,
-  AnamnesisHabitsScreen,
-  AnamnesisCompletionScreen,
-} from '@/screens/anamnesis';
-import ErrorScreen from '@/screens/ErrorScreen';
-import AppLoadingScreen from '@/screens/LoadingScreen';
-import { CommunityStackNavigator, ChatStackNavigator } from '@/navigation';
-import { ActivitiesScreen } from '@/screens/activities';
-import {
-  MarketplaceScreen,
-  ProductDetailsScreen,
-  AffiliateProductScreen,
-  CartScreen,
-  CheckoutScreen,
-  CommunityPreviewScreen,
-  ProviderProfileScreen,
-} from '@/screens/marketplace';
-import { ProfileScreen } from '@/screens/profile';
-import { PrivacyPoliciesScreen } from '@/screens/policies';
-import { HomeScreen, SummaryScreen } from '@/screens/home';
-import { AvatarProgressScreen, MarkerDetailsScreen } from '@/screens/avatar';
+const SupportFloatingButtonLazy = lazy(() => import('@/components/ui/buttons/SupportFloatingButton'));
 
 const Stack = createStackNavigator();
+
+const rootNavigationTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: COLORS.BACKGROUND,
+    card: COLORS.BACKGROUND,
+  },
+};
 const STACK_GESTURE_ENABLED = Platform.OS !== 'android';
+
+const styles = StyleSheet.create({
+  stackWrapper: {
+    flex: 1,
+  },
+});
 
 const RootNavigator: React.FC = () => {
   return (
-    <NavigationContainer>
-      <FloatingMenuProvider>
-        <Stack.Navigator
-          initialRouteName='Loading'
-          screenOptions={{
-            headerShown: false,
-            animationEnabled: true,
-            gestureEnabled: STACK_GESTURE_ENABLED,
-            cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter,
-            transitionSpec: {
-              open: {
-                animation: 'timing',
-                config: { duration: 200, easing: Easing.out(Easing.ease) },
+    <NavigationContainer theme={rootNavigationTheme}>
+      <View style={styles.stackWrapper}>
+        <FloatingMenuProvider>
+          <Stack.Navigator
+            initialRouteName='Loading'
+            screenOptions={{
+              headerShown: false,
+              animationEnabled: true,
+              gestureEnabled: STACK_GESTURE_ENABLED,
+              cardStyle: { flex: 1, backgroundColor: COLORS.BACKGROUND },
+              cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter,
+              transitionSpec: {
+                open: {
+                  animation: 'timing',
+                  config: { duration: 200, easing: Easing.out(Easing.ease) },
+                },
+                close: {
+                  animation: 'timing',
+                  config: { duration: 150, easing: Easing.in(Easing.ease) },
+                },
               },
-              close: {
-                animation: 'timing',
-                config: { duration: 150, easing: Easing.in(Easing.ease) },
-              },
-            },
-          }}
-        >
-          <Stack.Screen name='Loading' component={LoadingScreen} options={{ title: 'Carregando' }} />
-          <Stack.Screen
-            name='Unauthenticated'
-            component={UnauthenticatedScreen}
-            options={{ title: 'Tela Deslogada' }}
-          />
-          <Stack.Screen name='Authenticated' component={AuthenticatedScreen} options={{ title: 'Tela Autenticada' }} />
-          <Stack.Screen name='Welcome' component={WelcomeScreen} options={{ title: 'Boas-vindas' }} />
-          <Stack.Screen name='AppPresentation' component={AppPresentationScreen} options={{ title: 'Apresentação' }} />
-          <Stack.Screen name='Register' component={RegisterScreen} options={{ title: 'Cadastro' }} />
-          <Stack.Screen name='Plans' component={PlansScreen} options={{ title: 'Planos' }} />
-          <Stack.Screen name='Anamnesis' component={AnamnesisStartScreen} options={{ title: 'Anamnesis' }} />
-          <Stack.Screen name='AnamnesisHome' component={AnamnesisHomeScreen} options={{ title: 'Anamnesis Home' }} />
-          <Stack.Screen name='AnamnesisBody' component={AnamnesisBodyScreen} options={{ title: 'Anamnesis Body' }} />
-          <Stack.Screen name='AnamnesisMind' component={AnamnesisMindScreen} options={{ title: 'Anamnesis Mind' }} />
-          <Stack.Screen
-            name='AnamnesisHabits'
-            component={AnamnesisHabitsScreen}
-            options={{ title: 'Anamnesis Habits' }}
-          />
-          <Stack.Screen
-            name='AnamnesisCompletion'
-            component={AnamnesisCompletionScreen}
-            options={{ title: 'Anamnesis Conclusão' }}
-          />
-          <Stack.Screen
-            name='PersonalObjectives'
-            component={PersonalObjectivesScreen}
-            options={{ title: 'Objetivos Pessoais' }}
-          />
-          <Stack.Screen name='Error' component={ErrorScreen} options={{ title: 'Erro' }} />
-          <Stack.Screen name='AppLoading' component={AppLoadingScreen} options={{ title: 'Carregando' }} />
-          <Stack.Screen name='Community' component={CommunityStackNavigator} options={{ title: 'Comunidade' }} />
-          <Stack.Screen name='Chat' component={ChatStackNavigator} options={{ title: 'Chat' }} />
-          <Stack.Screen name='Activities' component={ActivitiesScreen} options={{ title: 'Atividades' }} />
-          <Stack.Screen name='Marketplace' component={MarketplaceScreen} options={{ title: 'Marketplace' }} />
-          <Stack.Screen
-            name='ProductDetails'
-            component={ProductDetailsScreen}
-            options={{ title: 'Detalhes do Produto' }}
-          />
-          <Stack.Screen
-            name='AffiliateProduct'
-            component={AffiliateProductScreen}
-            options={{ title: 'Produto Afiliado' }}
-          />
-          <Stack.Screen name='Cart' component={CartScreen} options={{ title: 'Carrinho' }} />
-          <Stack.Screen name='Checkout' component={CheckoutScreen} options={{ title: 'Checkout' }} />
-          <Stack.Screen
-            name='CommunityPreview'
-            component={CommunityPreviewScreen}
-            options={{ title: 'Community Preview' }}
-          />
-          <Stack.Screen
-            name='ProviderProfile'
-            component={ProviderProfileScreen}
-            options={{ title: 'Provider Profile' }}
-          />
-          <Stack.Screen name='Profile' component={ProfileScreen} options={{ title: 'Perfil' }} />
-          <Stack.Screen
-            name='PrivacyPolicies'
-            component={PrivacyPoliciesScreen}
-            options={{ title: 'Política de Privacidade' }}
-          />
-          <Stack.Screen name='Home' component={HomeScreen} options={{ title: 'Home' }} />
-          <Stack.Screen name='Summary' component={SummaryScreen} options={{ title: 'Resumo' }} />
-          <Stack.Screen name='AvatarProgress' component={AvatarProgressScreen} options={{ title: 'Seu Progresso' }} />
-          <Stack.Screen
-            name='MarkerDetails'
-            component={MarkerDetailsScreen}
-            options={{ title: 'Detalhes do Marker' }}
-          />
-        </Stack.Navigator>
-        <SupportFloatingButton />
-      </FloatingMenuProvider>
+            }}
+          >
+            <Stack.Screen name='Loading' getComponent={getLoadingScreen} options={{ title: 'Carregando' }} />
+            <Stack.Screen
+              name='Unauthenticated'
+              getComponent={getUnauthenticatedScreen}
+              options={{ title: 'Tela Deslogada' }}
+            />
+            <Stack.Screen
+              name='Authenticated'
+              getComponent={getAuthenticatedScreen}
+              options={{ title: 'Tela Autenticada' }}
+            />
+            <Stack.Screen name='Welcome' getComponent={getWelcomeScreen} options={{ title: 'Boas-vindas' }} />
+            <Stack.Screen
+              name='AppPresentation'
+              getComponent={getAppPresentationScreen}
+              options={{ title: 'Apresentação' }}
+            />
+            <Stack.Screen name='Register' getComponent={getRegisterScreen} options={{ title: 'Cadastro' }} />
+            <Stack.Screen name='Plans' getComponent={getPlansScreen} options={{ title: 'Planos' }} />
+            <Stack.Screen name='Anamnesis' getComponent={getAnamnesisStartScreen} options={{ title: 'Anamnesis' }} />
+            <Stack.Screen
+              name='AnamnesisHome'
+              getComponent={getAnamnesisHomeScreen}
+              options={{ title: 'Anamnesis Home' }}
+            />
+            <Stack.Screen
+              name='AnamnesisBody'
+              getComponent={getAnamnesisBodyScreen}
+              options={{ title: 'Anamnesis Body' }}
+            />
+            <Stack.Screen
+              name='AnamnesisMind'
+              getComponent={getAnamnesisMindScreen}
+              options={{ title: 'Anamnesis Mind' }}
+            />
+            <Stack.Screen
+              name='AnamnesisHabits'
+              getComponent={getAnamnesisHabitsScreen}
+              options={{ title: 'Anamnesis Habits' }}
+            />
+            <Stack.Screen
+              name='AnamnesisCompletion'
+              getComponent={getAnamnesisCompletionScreen}
+              options={{ title: 'Anamnesis Conclusão' }}
+            />
+            <Stack.Screen
+              name='PersonalObjectives'
+              getComponent={getPersonalObjectivesScreen}
+              options={{ title: 'Objetivos Pessoais' }}
+            />
+            <Stack.Screen name='Error' getComponent={getErrorScreen} options={{ title: 'Erro' }} />
+            <Stack.Screen name='AppLoading' getComponent={getAppLoadingScreen} options={{ title: 'Carregando' }} />
+            <Stack.Screen
+              name='Community'
+              getComponent={getCommunityStackNavigator}
+              options={{ title: 'Comunidade' }}
+            />
+            <Stack.Screen name='Chat' getComponent={getChatStackNavigator} options={{ title: 'Chat' }} />
+            <Stack.Screen name='Activities' getComponent={getActivitiesScreen} options={{ title: 'Atividades' }} />
+            <Stack.Screen name='Marketplace' getComponent={getMarketplaceScreen} options={{ title: 'Marketplace' }} />
+            <Stack.Screen
+              name='ProductDetails'
+              getComponent={getProductDetailsScreen}
+              options={{ title: 'Detalhes do Produto' }}
+            />
+            <Stack.Screen
+              name='AffiliateProduct'
+              getComponent={getAffiliateProductScreen}
+              options={{ title: 'Produto Afiliado' }}
+            />
+            <Stack.Screen name='Cart' getComponent={getCartScreen} options={{ title: 'Carrinho' }} />
+            <Stack.Screen name='Checkout' getComponent={getCheckoutScreen} options={{ title: 'Checkout' }} />
+            <Stack.Screen
+              name='CommunityPreview'
+              getComponent={getCommunityPreviewScreen}
+              options={{ title: 'Community Preview' }}
+            />
+            <Stack.Screen
+              name='ProviderProfile'
+              getComponent={getProviderProfileScreen}
+              options={{ title: 'Provider Profile' }}
+            />
+            <Stack.Screen name='Profile' getComponent={getProfileScreen} options={{ title: 'Perfil' }} />
+            <Stack.Screen
+              name='PrivacyPolicies'
+              getComponent={getPrivacyPoliciesScreen}
+              options={{ title: 'Política de Privacidade' }}
+            />
+            <Stack.Screen name='Home' getComponent={getHomeScreen} options={{ title: 'Home' }} />
+            <Stack.Screen name='Summary' getComponent={getSummaryScreen} options={{ title: 'Resumo' }} />
+            <Stack.Screen
+              name='AvatarProgress'
+              getComponent={getAvatarProgressScreen}
+              options={{ title: 'Seu Progresso' }}
+            />
+            <Stack.Screen
+              name='MarkerDetails'
+              getComponent={getMarkerDetailsScreen}
+              options={{ title: 'Detalhes do Marker' }}
+            />
+          </Stack.Navigator>
+          <Suspense fallback={null}>
+            <SupportFloatingButtonLazy />
+          </Suspense>
+        </FloatingMenuProvider>
+      </View>
     </NavigationContainer>
   );
 };

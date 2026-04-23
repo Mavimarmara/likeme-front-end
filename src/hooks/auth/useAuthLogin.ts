@@ -1,43 +1,45 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { Alert } from 'react-native';
 import { AuthService } from '@/services';
 import { logger } from '@/utils/logger';
+import { isLoginUserAbortError } from '@/utils/auth/loginUserAbort';
 
 export const useAuthLogin = (navigation: any) => {
   const [isLoading, setIsLoading] = useState(false);
+  const loginInFlightRef = useRef(false);
 
   const handleLogin = useCallback(async () => {
-    if (isLoading) {
+    if (loginInFlightRef.current) {
       return;
     }
 
+    loginInFlightRef.current = true;
     setIsLoading(true);
     try {
       const authResult = await AuthService.login();
       await AuthService.validateToken(authResult);
 
-      navigation.navigate('Authenticated' as never);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Authenticated' as never }],
+      });
     } catch (error) {
+      if (isLoginUserAbortError(error)) {
+        loginInFlightRef.current = false;
+        setIsLoading(false);
+        return;
+      }
       logger.error('Login error:', error);
       if (error instanceof Error) {
-        const errorMessage = error.message.toLowerCase();
-        if (
-          errorMessage.includes('cancelled') ||
-          errorMessage.includes('dismissed') ||
-          errorMessage.includes('user cancelled') ||
-          errorMessage.includes('login cancelled')
-        ) {
-          setIsLoading(false);
-          return;
-        }
         Alert.alert('Erro no Login', error.message || 'Erro ao fazer login');
       } else {
         Alert.alert('Erro no Login', 'Erro ao fazer login');
       }
     } finally {
+      loginInFlightRef.current = false;
       setIsLoading(false);
     }
-  }, [isLoading, navigation]);
+  }, [navigation]);
 
   return { handleLogin, isLoading };
 };

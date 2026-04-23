@@ -1,67 +1,64 @@
-// Helper para obter variável de ambiente com múltiplas estratégias de fallback
+function pickStringFromRecord(record: unknown, key: string): string | undefined {
+  if (!record || typeof record !== 'object') {
+    return undefined;
+  }
+  if (!Object.prototype.hasOwnProperty.call(record, key)) {
+    return undefined;
+  }
+  const value = (record as Record<string, unknown>)[key];
+  return typeof value === 'string' ? value : undefined;
+}
+
+function pickFromExtraEnv(extra: unknown, key: string): string | undefined {
+  const env = pickStringFromRecord((extra as { env?: Record<string, unknown> })?.env ?? null, key);
+  if (env !== undefined) {
+    return env;
+  }
+  return pickStringFromRecord(extra, key);
+}
+
+export const getEnvVarFromConstants = (key: string): string | undefined => {
+  try {
+    const Constants = require('expo-constants').default;
+    const m2 = (Constants as { manifest2?: { extra?: { expoClient?: { extra?: unknown } } } })?.manifest2;
+
+    const extraCandidates: unknown[] = [
+      Constants?.expoConfig?.extra,
+      (Constants as { manifest?: { extra?: unknown } })?.manifest?.extra,
+      m2?.extra?.expoClient?.extra,
+      m2?.extra,
+    ];
+
+    for (const extra of extraCandidates) {
+      const fromEnv = pickFromExtraEnv(extra, key);
+      if (fromEnv !== undefined) {
+        return fromEnv;
+      }
+    }
+  } catch {
+    // Constants indisponível em alguns ambientes
+  }
+
+  return undefined;
+};
+
 const getEnvVar = (key: string, defaultValue?: string): string => {
-  // Estratégia 1: process.env (substituído pelo Metro bundler durante o build)
-  // Esta é a estratégia PRINCIPAL e mais segura - funciona durante a inicialização
   if (typeof process !== 'undefined' && process.env && process.env[key]) {
     return process.env[key] as string;
   }
 
-  // Estratégia 2: Tenta Constants.expoConfig.extra.env (disponível em runtime)
-  // Isso funciona quando as variáveis são injetadas pelo app.config.js
-  try {
-    const Constants = require('expo-constants').default;
-    if (Constants?.expoConfig?.extra?.env?.[key]) {
-      return Constants.expoConfig.extra.env[key];
-    }
-    // Fallback para acesso direto ao extra
-    if (Constants?.expoConfig?.extra?.[key]) {
-      return Constants.expoConfig.extra[key];
-    }
-  } catch (error) {
-    // Silenciosamente ignora erros se Constants não estiver disponível
+  const fromConstants = getEnvVarFromConstants(key);
+  if (fromConstants !== undefined) {
+    return fromConstants;
   }
 
-  // Log de debug quando não encontra (apenas para variáveis críticas sem default)
   if (!defaultValue || defaultValue.includes('your-')) {
-    // Usa console.warn apenas se console estiver disponível
     if (typeof console !== 'undefined' && console.warn) {
       console.warn(`[ENV] ⚠️ Variável ${key} não encontrada. Usando default: ${defaultValue || 'vazio'}`);
     }
   }
 
   return defaultValue || '';
-};
-
-// Função helper para acessar Constants depois da inicialização (quando necessário)
-// Esta função pode ser usada em runtime quando o Constants já estiver disponível
-export const getEnvVarFromConstants = (key: string): string | undefined => {
-  try {
-    const Constants = require('expo-constants').default;
-
-    // Estratégia 2: Constants.expoConfig.extra.env (para desenvolvimento e builds)
-    if (Constants?.expoConfig?.extra?.env?.[key]) {
-      return Constants.expoConfig.extra.env[key];
-    }
-
-    // Estratégia 3: Constants.manifest.extra.env (para builds nativos antigos)
-    if ((Constants as any)?.manifest?.extra?.env?.[key]) {
-      return (Constants as any).manifest.extra.env[key];
-    }
-
-    // Estratégia 4: Constants.manifest2?.extra?.env (para builds nativos mais recentes)
-    if ((Constants as any)?.manifest2?.extra?.env?.[key]) {
-      return (Constants as any).manifest2.extra.env[key];
-    }
-
-    // Estratégia 5: Acesso direto ao extra (sem .env)
-    if (Constants?.expoConfig?.extra?.[key]) {
-      return Constants.expoConfig.extra[key];
-    }
-  } catch (error) {
-    // Silenciosamente ignora erros
-  }
-
-  return undefined;
 };
 
 export const AUTH0_CONFIG = {

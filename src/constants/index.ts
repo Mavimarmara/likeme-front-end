@@ -1,7 +1,7 @@
 export const APP_CONFIG = {
   NAME: 'LIKE:ME',
   TAGLINE: 'LIKE YOUR LIFE',
-  VERSION: '1.0.0',
+  VERSION: '1.0.51',
 } as const;
 
 export const COLORS = {
@@ -113,3 +113,10 @@ export { AUTH_ONBOARDING_SCREENS_ORDER } from './authOnboarding';
 export type { AuthOnboardingScreenName } from './authOnboarding';
 export { FEATURE_FLAGS, FEATURE_FLAG_DEFAULTS } from './featureFlags';
 export type { FeatureFlagKey } from './featureFlags';
+export { SUPPORT_FLOATING_HIDDEN_ROOT_ROUTES, isRouteNameHiddenForSupportFloating } from './supportFloatingVisibility';
+export {
+  API_HTTP_REQUEST_TIMEOUT_MS,
+  AUTH_BOOTSTRAP_HTTP_TIMEOUT_MS,
+  AUTH_LOGOUT_AND_POLICY_HTTP_TIMEOUT_MS,
+  ROOT_SPLASH_FONT_LOAD_FALLBACK_MS,
+} from './networkTimeouts';
