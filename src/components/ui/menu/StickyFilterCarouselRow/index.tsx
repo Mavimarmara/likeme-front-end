@@ -1,5 +1,5 @@
 import { useMemo, type ReactNode } from 'react';
-import { View, type ImageStyle } from 'react-native';
+import { View, type ImageSourcePropType, type ImageStyle } from 'react-native';
 import { HOME_MVP_ASSETS } from '@/assets/homeMvp';
 import { FilterButton } from '@/components/ui/buttons';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
@@ -9,6 +9,9 @@ type ModalContentRender = (api: { close: () => void; visible: boolean }) => Reac
 
 type Props<T = string> = {
   filterButtonLabel?: string;
+  filterButtonIcon?: string;
+  filterButtonIconImage?: ImageSourcePropType;
+  filterButtonIconImageStyle?: ImageStyle;
   filterButtonSelected?: boolean;
   filterModalTitle?: string;
   filterModalContent?: ReactNode | ModalContentRender;
