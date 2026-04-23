@@ -62,6 +62,7 @@ export type { PersonFormData } from './person/useLoadPersonalData';
 export { useNotifications } from './notification/useNotifications';
 export { useFeatureFlag } from './featureFlags/useFeatureFlag';
 export { useFeatureFlags } from './featureFlags/useFeatureFlags';
+export { useSolutions } from './solution/useSolutions';
 
 // Navigation hooks
 export { useMenuItems } from './navigation/useMenuItems';

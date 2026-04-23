@@ -4,7 +4,7 @@ import type { StackNavigationProp } from '@react-navigation/stack';
 import type { RouteProp } from '@react-navigation/native';
 import { SearchBar } from '@/components/ui/inputs';
 import { IconButton } from '@/components/ui/buttons';
-import { StickyFilterCarouselRow, type ButtonCarouselOption } from '@/components/ui/menu';
+import { StickyFilterCarouselRow } from '@/components/ui/menu';
 import { DEFAULT_MARKETPLACE_SORT_ORDER, type MarketplaceSortOrderId } from '@/constants/marketplaceSortOrder';
 import { getMarketplaceSortOptions } from '@/utils/marketplace/sortOptions';
 import { sortAdsByMarketplaceOrder } from '@/utils/marketplace/sorting';
@@ -20,6 +20,7 @@ import {
   useCategoryDisplayLabel,
   useUserAvatar,
   useAdvertisers,
+  useSolutions,
 } from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
@@ -34,31 +35,19 @@ import { styles as shoppingListStyles } from '@/components/sections/community/Sh
 import { styles } from './styles';
 import { useAnalyticsScreen } from '@/analytics';
 import { CategoryName } from '@/types';
+import {
+  marketplaceSolutionOptions,
+  type MarketplaceSolutionFilterId,
+  type SolutionFilterId,
+  type SolutionTab,
+} from '@/types/solution';
 
-const CATEGORY_ALL = 'all';
-const CATEGORY_PRODUCTS = 'products';
 const CATEGORY_SPECIALISTS = 'specialists';
-const SOLUTION_PRODUCTS = 'products';
-const SOLUTION_PROFESSIONALS = 'professionals';
-const SOLUTION_SERVICES = 'services';
-const SOLUTION_PROGRAMS = 'programs';
+const SOLUTION_ALL: SolutionTab = 'all';
+const MARKETPLACE_SOLUTION_ID_SET = new Set<SolutionFilterId>(marketplaceSolutionOptions.map((option) => option.id));
 
 const DEFAULT_HIGHLIGHT_IMAGE = 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
-
-const getCategoryOptions = (t: (key: string) => string): ButtonCarouselOption<string>[] => [
-  { id: CATEGORY_ALL, label: t('marketplace.allCategory') },
-  { id: CATEGORY_PRODUCTS, label: t('marketplace.productsCategory') },
-  { id: CATEGORY_SPECIALISTS, label: t('marketplace.specialistsCategory') },
-];
-
-const getSolutionTabs = (t: (key: string) => string) => [
-  { id: 'products', label: t('filterCategory.solutions.products') },
-  { id: 'services', label: t('filterCategory.solutions.services') },
-  { id: 'programs', label: t('filterCategory.solutions.programs') },
-  { id: 'professionals', label: t('filterCategory.solutions.professionals') },
-];
-
-const SOLUTION_TAB_IDS = new Set([SOLUTION_PRODUCTS, SOLUTION_SERVICES, SOLUTION_PROGRAMS, SOLUTION_PROFESSIONALS]);
+type MarketplaceSolutionTab = SolutionTab | MarketplaceSolutionFilterId;
 
 type MarketplaceScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'Marketplace'>;
@@ -68,12 +57,18 @@ type MarketplaceScreenProps = {
 const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => {
   useAnalyticsScreen({ screenName: 'Marketplace', screenClass: 'MarketplaceScreen' });
   const { t } = useTranslation();
+  const { marketplaceCarouselOptions } = useSolutions();
   const rootNavigation = navigation.getParent() ?? navigation;
   const userAvatarUri = useUserAvatar();
   const [searchQuery, setSearchQuery] = useState('');
   const [appliedSearchQuery, setAppliedSearchQuery] = useState('');
-  const [selectedSolutionTab, setSelectedSolutionTab] = useState<string>('products');
-  const selectedCategory = selectedSolutionTab === 'professionals' ? CATEGORY_SPECIALISTS : selectedSolutionTab;
+  const [selectedSolutionTab, setSelectedSolutionTab] = useState<MarketplaceSolutionTab>(SOLUTION_ALL);
+  const selectedCategory =
+    selectedSolutionTab === 'professionals'
+      ? CATEGORY_SPECIALISTS
+      : selectedSolutionTab === SOLUTION_ALL
+      ? undefined
+      : selectedSolutionTab;
   const [selectedCategoryName, setSelectedCategoryName] = useState<CategoryName | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<string>(DEFAULT_MARKETPLACE_SORT_ORDER);
   const [page, setPage] = useState(1);
@@ -92,8 +87,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     },
   });
 
-  const categoryOptions = useMemo(() => getCategoryOptions(t), [t]);
-  const solutionTabs = useMemo(() => getSolutionTabs(t), [t]);
+  const solutionTabs = useMemo(() => marketplaceCarouselOptions, [marketplaceCarouselOptions]);
   const orderOptions = useMemo(() => getMarketplaceSortOptions(t), [t]);
 
   const isProgramsTab = selectedSolutionTab === 'programs';
@@ -170,7 +164,9 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   useSetFloatingMenu(menuItems, 'marketplace');
 
   const handleSolutionTabChange = (tabId: string) => {
-    setSelectedSolutionTab(tabId);
+    if (tabId === SOLUTION_ALL || MARKETPLACE_SOLUTION_ID_SET.has(tabId as SolutionId)) {
+      setSelectedSolutionTab(tabId as MarketplaceSolutionTab);
+    }
     setPage(1);
   };
 
@@ -183,13 +179,15 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     setSelectedSolutionIds(result.solutionIds);
     setSelectedCategoryName(result.categoryName);
 
-    if (result.solutionIds.length === 1 && SOLUTION_TAB_IDS.has(result.solutionIds[0])) {
+    if (result.solutionIds.length === 1 && MARKETPLACE_SOLUTION_ID_SET.has(result.solutionIds[0])) {
       setSelectedSolutionTab(result.solutionIds[0]);
     } else if (result.solutionIds.length > 1 && !result.solutionIds.includes(selectedSolutionTab as SolutionId)) {
-      const firstSupportedTab = result.solutionIds.find((id) => SOLUTION_TAB_IDS.has(id));
+      const firstSupportedTab = result.solutionIds.find((id) => MARKETPLACE_SOLUTION_ID_SET.has(id));
       if (firstSupportedTab != null) {
         setSelectedSolutionTab(firstSupportedTab);
       }
+    } else if (result.solutionIds.length === 0) {
+      setSelectedSolutionTab(SOLUTION_ALL);
     }
 
     setPage(1);
@@ -198,7 +196,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   const handleClearFilterCategory = () => {
     setSelectedCategoryId(undefined);
     setSelectedSolutionIds([]);
-    setSelectedSolutionTab('products');
+    setSelectedSolutionTab(SOLUTION_ALL);
     setSelectedCategoryName(null);
     setSearchQuery('');
     setAppliedSearchQuery('');
@@ -244,12 +242,17 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
             selectedCategoryId != null || selectedCategoryName != null || selectedSolutionIds.length > 0
           }
           onFilterButtonPress={() => setIsFilterCategoryModalVisible(true)}
-          carouselOptions={categoryOptions}
-          selectedCarouselId={selectedCategory}
-          onCarouselSelect={() => {
-            /* category driven by tabs */
+          carouselOptions={solutionTabs}
+          selectedCarouselId={selectedSolutionTab}
+          onCarouselSelect={(solutionId) => {
+            setSelectedSolutionTab(solutionId);
+            if (solutionId === SOLUTION_ALL) {
+              setSelectedSolutionIds([]);
+            } else {
+              setSelectedSolutionIds([solutionId as SolutionId]);
+            }
+            setPage(1);
           }}
-          showCarousel={false}
         />
       </View>
       <FilterCategoryModal

@@ -19,6 +19,19 @@ export const solutionOptions: readonly SolutionOption[] = [
   { id: 'communities', labelKey: 'filterCategory.solutions.communities' },
 ] as const;
 
+/** Soluções suportadas no marketplace (exclui "communities"). */
+export type MarketplaceSolutionFilterId = Exclude<SolutionFilterId, 'communities'>;
+
+export interface MarketplaceSolutionOption {
+  id: MarketplaceSolutionFilterId;
+  labelKey: string;
+}
+
+/** Opções de solução usadas pelo marketplace. */
+export const marketplaceSolutionOptions: readonly MarketplaceSolutionOption[] = solutionOptions.filter(
+  (option): option is MarketplaceSolutionOption => option.id !== 'communities',
+);
+
 /**
  * Regra de consistência:
  * - sem seleção de solução => comportamento equivalente a "all"

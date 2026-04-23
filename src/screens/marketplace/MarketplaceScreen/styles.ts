@@ -20,12 +20,10 @@ export const styles = StyleSheet.create({
     zIndex: 0,
   },
   customHeader: {
-    paddingTop: SPACING.MD,
+    paddingVertical: SPACING.MD,
     paddingHorizontal: SPACING.MD,
-    paddingBottom: SPACING.SM,
   },
   searchContainer: {
-    marginBottom: SPACING.MD,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -40,7 +38,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   filterMenuContainer: {
-    marginBottom: SPACING.SM,
+    marginTop: 0,
   },
   scrollView: {
     backgroundColor: 'transparent',

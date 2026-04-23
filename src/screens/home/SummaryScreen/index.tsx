@@ -13,6 +13,7 @@ import {
   useMenuItems,
   useNotifications,
   useCategoryDisplayLabel,
+  useSolutions,
 } from '@/hooks';
 import { useFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
@@ -35,11 +36,10 @@ import { EmptyState } from '@/components/ui/feedback';
 // import type { Event } from '@/types/event';
 // import type { Post } from '@/types';
 import type { SolutionTab, SolutionFilterId } from '@/types/solution';
-import { solutionOptions, resolveSolutionTabFromFilters } from '@/types/solution';
+import { resolveSolutionTabFromFilters } from '@/types/solution';
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import { useAnalyticsScreen } from '@/analytics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { HOME_MVP_ASSETS } from '@/assets/homeMvp';
 import { styles } from './styles';
 
 type Props = {
@@ -53,6 +53,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   useAnalyticsScreen({ screenName: 'Summary', screenClass: 'SummaryScreen' });
   useNotifications();
   const { t } = useTranslation();
+  const { homeCarouselOptions } = useSolutions();
   const insets = useSafeAreaInsets();
   const rootNavigation = navigation.getParent() ?? navigation;
   const [userAvatarUri, setUserAvatarUri] = useState<string | null>(null);
@@ -262,13 +263,6 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
     selectedCategoryName != null
       ? getCategoryName(selectedCategoryName)
       : selectedCategoryFromId?.name ?? t('marketplace.category');
-  const carouselSolutionOptions = useMemo(
-    () => [
-      { id: 'all' as const, label: t('common.all') },
-      ...solutionOptions.map((option) => ({ id: option.id, label: t(option.labelKey) })),
-    ],
-    [t],
-  );
   const selectedCarouselSolutionId = useMemo<SummarySolutionCarouselId>(() => {
     if (selectedSolutionIds.length === 1) {
       return selectedSolutionIds[0] as SummarySolutionCarouselId;
@@ -366,13 +360,9 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
             />
             <StickyFilterCarouselRow<SummarySolutionCarouselId>
               filterButtonLabel={categoryFilterButtonLabel}
-              filterButtonIconImage={HOME_MVP_ASSETS.filterChevron}
-              filterButtonIconImageStyle={{
-                tintColor: selectedCategoryName != null || selectedSolutionIds.length > 0 ? '#FFFFFF' : '#001137',
-              }}
               filterButtonSelected={selectedCategoryName != null || selectedSolutionIds.length > 0}
               onFilterButtonPress={() => setIsFilterCategoryModalVisible(true)}
-              carouselOptions={carouselSolutionOptions}
+              carouselOptions={homeCarouselOptions}
               selectedCarouselId={selectedCarouselSolutionId}
               onCarouselSelect={(solutionId) => {
                 if (solutionId === 'all') {
