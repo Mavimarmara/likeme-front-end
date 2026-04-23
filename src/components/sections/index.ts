@@ -4,6 +4,7 @@ export * from './category';
 export * from './product';
 export * from './program';
 export * from './activity';
+export * from './advertiser';
 // export * from './anamnesis'; // AnamnesisPromptCard temporariamente comentado
 export * from './avatar';
 export { PlanDescription, ComparativeTable } from './plans';

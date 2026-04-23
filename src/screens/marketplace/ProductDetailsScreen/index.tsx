@@ -1,16 +1,21 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Image, type ImageStyle } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import { HeroImage, ScreenWithHeader } from '@/components/ui/layout';
-import { SecondaryButton, PillButtonWithIcon } from '@/components/ui/buttons';
+import { Toggle } from '@/components/ui';
+import { SecondaryButton } from '@/components/ui/buttons';
 import { ProductsCarousel } from '@/components/sections/product';
-import { ProductHeroFooter } from '@/components/sections/marketplace';
+import {
+  ProductDetailsPriceQuantityRow,
+  ProductHeroFooter,
+  ProgramParticipationTermsRequiredModal,
+} from '@/components/sections/marketplace';
+import { Checkbox } from '@/components/ui/inputs';
+import { PartnerSection } from '@/components/sections/advertiser';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
 import { useMenuItems, useProductDetails, useSuggestedProducts, useCategories } from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
-import { FLOATING_NAV_MENU_BAR_OFFSET } from '@/constants';
 import { useTranslation } from '@/hooks/i18n';
 import { formatPrice, getProductModeTranslationKey } from '@/utils';
 import {
@@ -50,13 +55,15 @@ type ProductDetailsScreenProps = {
 
 const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation, route }) => {
   useAnalyticsScreen({ screenName: 'ProductDetails', screenClass: 'ProductDetailsScreen' });
-  const { bottom: bottomInset } = useSafeAreaInsets();
   const { t } = useTranslation();
   const menuItems = useMenuItems(navigation);
   useSetFloatingMenu(menuItems, 'marketplace');
-  const [activeProductTab, setActiveProductTab] = useState<'goal' | 'description' | 'composition'>('goal');
+  const [activeProductTab, setActiveProductTab] = useState<'about' | 'agreements'>('about');
+  const [activeSwapperTab, setActiveSwapperTab] = useState<'protocol' | 'shop'>('protocol');
   const [quantity, setQuantity] = useState(1);
   const [isQuantityDropdownOpen, setIsQuantityDropdownOpen] = useState(false);
+  const [programParticipationTermsAccepted, setProgramParticipationTermsAccepted] = useState(false);
+  const [programTermsModalVisible, setProgramTermsModalVisible] = useState(false);
 
   const { product, ad, advertiserId, loading, handleAddToCart, loadAd } = useProductDetails({
     productId: route.params?.productId,
@@ -100,22 +107,31 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
 
   const productTabContent = useMemo(
     () => ({
-      goal: product?.targetAudience?.trim() ?? '',
-      description: displayData?.description?.trim() ?? product?.description?.trim() ?? '',
-      composition: product?.technicalSpecifications?.trim() ?? '',
+      about: [displayData?.description?.trim(), product?.targetAudience?.trim()].filter(Boolean).join('\n\n'),
+      agreements: product?.technicalSpecifications?.trim() ?? '',
     }),
-    [displayData?.description, product?.description, product?.targetAudience, product?.technicalSpecifications],
+    [displayData?.description, product?.targetAudience, product?.technicalSpecifications],
   );
 
-  const productTabOptions: ButtonCarouselOption<'goal' | 'description' | 'composition'>[] = useMemo(() => {
-    const allTabs: ButtonCarouselOption<'goal' | 'description' | 'composition'>[] = [
-      { id: 'goal', label: t('marketplace.goal') },
-      { id: 'description', label: t('marketplace.description') },
-      { id: 'composition', label: t('marketplace.composition') },
+  const isProgramProduct = product?.type === PRODUCT_CATALOG_TYPE.PROGRAM;
+
+  const productTabOptions: ButtonCarouselOption<'about' | 'agreements'>[] = useMemo(() => {
+    const allTabs: ButtonCarouselOption<'about' | 'agreements'>[] = [
+      { id: 'about', label: 'Sobre' },
+      { id: 'agreements', label: 'Acordos' },
     ];
 
+    if (isProgramProduct) {
+      const tabs: ButtonCarouselOption<'about' | 'agreements'>[] = [];
+      if (productTabContent.about.length > 0) {
+        tabs.push({ id: 'about', label: 'Sobre' });
+      }
+      tabs.push({ id: 'agreements', label: 'Acordos' });
+      return tabs;
+    }
+
     return allTabs.filter((tab) => productTabContent[tab.id].length > 0);
-  }, [productTabContent, t]);
+  }, [productTabContent, isProgramProduct]);
 
   // Categoria do produto para badges/tags (nome da categoria); tipo do produto para layout
   const productCategory = displayData?.tags?.[0] || 'Product';
@@ -175,13 +191,32 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     return Array.from({ length: maxQuantity }, (_, index) => index + 1);
   }, [product?.quantity]);
 
-  const handleHeroCartPress = () => {
+  const runAddToCartFlow = () => {
     logAddToCart({
       item_id: product?.id ?? route.params?.productId ?? '',
       item_name: displayData?.title,
       item_category: productCategory,
     });
-    handleAddToCart();
+    void handleAddToCart();
+  };
+
+  const handleAddToCartPress = () => {
+    if (isProgramProduct && !programParticipationTermsAccepted) {
+      setProgramTermsModalVisible(true);
+      return;
+    }
+    runAddToCartFlow();
+  };
+
+  const handleProgramTermsModalGoToAgreements = () => {
+    logButtonClick({
+      screen_name: 'product_details',
+      button_label: 'program_terms_modal_view_terms',
+      action_name: 'open_agreements_tab',
+    });
+    setProgramTermsModalVisible(false);
+    setActiveProductTab('agreements');
+    logTabSelect({ screen_name: 'product_details', tab_id: 'agreements' });
   };
 
   const handleBackPress = () => {
@@ -221,6 +256,17 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       setQuantity(firstOption);
     }
   }, [quantity, quantityOptions]);
+
+  useEffect(() => {
+    if (isProgramProduct) {
+      setIsQuantityDropdownOpen(false);
+    }
+  }, [isProgramProduct]);
+
+  useEffect(() => {
+    setProgramParticipationTermsAccepted(false);
+    setProgramTermsModalVisible(false);
+  }, [product?.id]);
 
   useEffect(() => {
     if (productTabOptions.length === 0) {
@@ -276,173 +322,165 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   }
 
   return (
-    <ScreenWithHeader
-      navigation={navigation}
-      headerProps={{ showBackButton: true, onBackPress: handleBackPress }}
-      contentContainerStyle={styles.container}
-    >
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* Hero Section with Image */}
-        <HeroImage
-          imageUri={backgroundImage}
-          name={displayData.title}
-          badges={heroBadges}
-          footer={
-            <ProductHeroFooter
-              isOutOfStock={displayData.isOutOfStock}
-              price={displayData.price}
-              onCartPress={handleHeroCartPress}
-            />
-          }
-        />
+    <>
+      <ScreenWithHeader
+        navigation={navigation}
+        headerProps={{ showBackButton: true, onBackPress: handleBackPress }}
+        contentContainerStyle={styles.container}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          {/* Hero Section with Image */}
+          <HeroImage
+            imageUri={backgroundImage}
+            name={displayData.title}
+            badges={heroBadges}
+            footer={
+              <ProductHeroFooter
+                isOutOfStock={displayData.isOutOfStock}
+                price={displayData.price}
+                onCartPress={handleAddToCartPress}
+              />
+            }
+          />
 
-        {/* Pagination Dots - Mostrar apenas se houver mais de uma imagem */}
-        {productImages && productImages.length > 1 && (
-          <View style={styles.paginationContainer}>
-            {productImages.map((_, index) => (
-              <View key={index} style={[styles.paginationDot, index === 0 && styles.paginationDotActive]} />
-            ))}
-          </View>
-        )}
-        <View style={styles.content}>
-          {usesPhysicalProductDetailLayout ? (
-            <>
-              <View style={styles.contentCard}>
-                {productTabOptions.length > 0 && (
-                  <View style={styles.tabsContainerInCard}>
-                    <ButtonCarousel
-                      options={productTabOptions}
-                      selectedId={activeProductTab}
-                      onSelect={(tabId) => {
+          {/* Pagination Dots - Mostrar apenas se houver mais de uma imagem */}
+          {productImages && productImages.length > 1 && (
+            <View style={styles.paginationContainer}>
+              {productImages.map((_, index) => (
+                <View key={index} style={[styles.paginationDot, index === 0 && styles.paginationDotActive]} />
+              ))}
+            </View>
+          )}
+          <View style={styles.content}>
+            {usesPhysicalProductDetailLayout ? (
+              <>
+                {isProgramProduct && (
+                  <View style={styles.swapperSection}>
+                    <Toggle
+                      options={['Protocolo', 'Shop'] as const}
+                      selected={activeSwapperTab === 'protocol' ? 'Protocolo' : 'Shop'}
+                      onSelect={(selectedOption) => {
+                        const tabId = selectedOption === 'Protocolo' ? 'protocol' : 'shop';
                         logTabSelect({ screen_name: 'product_details', tab_id: tabId });
-                        setActiveProductTab(tabId);
+                        setActiveSwapperTab(tabId);
                       }}
                     />
                   </View>
                 )}
-                {renderProductTabContent()}
-                <View style={styles.priceQuantityRow}>
-                  <Text style={styles.contentPrice}>
-                    {displayData.price != null ? formatPrice(displayData.price * quantity) : ''}
-                  </Text>
-                  <View style={styles.quantitySelectorWrapper}>
-                    <View style={styles.quantitySelector}>
-                      <Text style={styles.quantityLabel}>{quantity}</Text>
-                      <TouchableOpacity
-                        style={styles.quantityButton}
-                        onPress={() => setIsQuantityDropdownOpen((currentState) => !currentState)}
-                        activeOpacity={0.8}
-                      >
-                        <Icon
-                          name={isQuantityDropdownOpen ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
-                          size={20}
-                          color='#FDFBEE'
-                        />
-                      </TouchableOpacity>
+                <View style={styles.contentCard}>
+                  {isProgramProduct && hasSpecialistPartner ? (
+                    <PartnerSection
+                      name={partnerData.name}
+                      avatar={partnerData.avatar}
+                      rating={partnerData.rating}
+                      specialistLabel={t('marketplace.specialistLabel')}
+                      profileButtonLabel={t('marketplace.seePartnerProfile')}
+                      onPressProfile={handleSeeProviderProfile}
+                    />
+                  ) : null}
+                  {productTabOptions.length > 0 && (
+                    <View style={styles.tabsContainerInCard}>
+                      <Text style={styles.sectionTitle}>Informações</Text>
+                      <ButtonCarousel
+                        options={productTabOptions}
+                        selectedId={activeProductTab}
+                        onSelect={(tabId) => {
+                          logTabSelect({ screen_name: 'product_details', tab_id: tabId });
+                          setActiveProductTab(tabId);
+                        }}
+                      />
                     </View>
-                    {isQuantityDropdownOpen && (
-                      <View style={styles.quantityDropdown}>
-                        {quantityOptions.map((option) => (
-                          <TouchableOpacity
-                            key={option}
-                            style={styles.quantityDropdownOption}
-                            onPress={() => {
-                              setQuantity(option);
-                              setIsQuantityDropdownOpen(false);
-                            }}
-                            activeOpacity={0.7}
-                          >
-                            <Text style={styles.quantityDropdownOptionLabel}>{option}</Text>
-                          </TouchableOpacity>
-                        ))}
-                      </View>
-                    )}
-                  </View>
+                  )}
+                  {renderProductTabContent()}
+                  {displayData.price == null && !displayData.isOutOfStock ? (
+                    <SecondaryButton
+                      label={t('marketplace.addToCart')}
+                      onPress={handleAddToCartPress}
+                      style={styles.addToCartSecondary}
+                      size='large'
+                      testID='product-details-add-to-cart'
+                    />
+                  ) : null}
+                  {!isProgramProduct && hasSpecialistPartner ? (
+                    <View style={styles.partnerSectionAbovePrice}>
+                      <PartnerSection
+                        name={partnerData.name}
+                        avatar={partnerData.avatar}
+                        rating={partnerData.rating}
+                        specialistLabel={t('marketplace.specialistLabel')}
+                        profileButtonLabel={t('marketplace.seePartnerProfile')}
+                        onPressProfile={handleSeeProviderProfile}
+                        showButton={false}
+                      />
+                    </View>
+                  ) : null}
+                  {!isProgramProduct ? (
+                    <ProductDetailsPriceQuantityRow
+                      formattedPrice={displayData.price != null ? formatPrice(displayData.price * quantity) : ''}
+                      quantity={quantity}
+                      quantityOptions={quantityOptions}
+                      isQuantityDropdownOpen={isQuantityDropdownOpen}
+                      onToggleQuantityDropdown={() => setIsQuantityDropdownOpen((open) => !open)}
+                      onSelectQuantity={(value) => {
+                        setQuantity(value);
+                        setIsQuantityDropdownOpen(false);
+                      }}
+                      paymentLinkLabel={t('marketplace.paymentOptionsText')}
+                      onPaymentLinkPress={() => undefined}
+                    />
+                  ) : null}
+                  {displayData.price != null && !displayData.isOutOfStock ? (
+                    <SecondaryButton
+                      label={t('marketplace.addToCart')}
+                      onPress={handleAddToCartPress}
+                      style={styles.addToCartSecondaryBelowPrice}
+                      size='large'
+                      testID='product-details-add-to-cart'
+                    />
+                  ) : null}
                 </View>
-                <TouchableOpacity style={styles.paymentLinkRow} onPress={() => undefined} activeOpacity={0.7}>
-                  <Text style={styles.paymentLinkText}>{t('marketplace.paymentOptionsText')} </Text>
-                </TouchableOpacity>
-                {hasSpecialistPartner ? renderPartnerSection() : null}
-              </View>
-              {renderRecommendedProducts()}
-            </>
-          ) : (
-            <>
-              <Text style={styles.sectionTitle}>{displayData.title}</Text>
-              <Text style={styles.productDescription}>
-                {displayData.description || t('marketplace.noDescriptionAvailable')}
-              </Text>
-              <View style={styles.productImageContainer}>
-                <Image
-                  source={{ uri: backgroundImage }}
-                  style={styles.productImage as ImageStyle}
-                  resizeMode='contain'
-                />
-              </View>
-              {renderInfoSection()}
-            </>
-          )}
-        </View>
-      </ScrollView>
-      {renderAddToCartButton()}
-    </ScreenWithHeader>
-  );
-
-  function renderAddToCartButton() {
-    if (displayData.isOutOfStock) {
-      return null;
-    }
-
-    return (
-      <View style={[styles.floatingButtonContainer, { bottom: FLOATING_NAV_MENU_BAR_OFFSET + bottomInset }]}>
-        <PillButtonWithIcon
-          label={t('marketplace.addToCart')}
-          onPress={() => {
-            logAddToCart({
-              item_id: product?.id ?? route.params?.productId ?? '',
-              item_name: displayData?.title,
-              item_category: productCategory,
-            });
-            handleAddToCart();
-          }}
-        />
-      </View>
-    );
-  }
-
-  function renderPartnerSection() {
-    const providerName = partnerData.name;
-    const providerAvatar = partnerData.avatar;
-    const providerRating = partnerData.rating;
-
-    return (
-      <View style={styles.partnerSection}>
-        <View style={styles.partnerRow}>
-          {providerAvatar ? (
-            <Image source={{ uri: providerAvatar }} style={styles.partnerAvatar as ImageStyle} />
-          ) : (
-            <View style={[styles.partnerAvatar, styles.partnerAvatarPlaceholder]} />
-          )}
-          <View style={styles.partnerInfo}>
-            <Text style={styles.partnerName}>{providerName}</Text>
-            <Text style={styles.partnerTitle}>{t('marketplace.specialistLabel')}</Text>
+                {renderRecommendedProducts()}
+              </>
+            ) : (
+              <>
+                <Text style={styles.sectionTitle}>{displayData.title}</Text>
+                <Text style={styles.productDescription}>
+                  {displayData.description || t('marketplace.noDescriptionAvailable')}
+                </Text>
+                <View style={styles.productImageContainer}>
+                  <Image
+                    source={{ uri: backgroundImage }}
+                    style={styles.productImage as ImageStyle}
+                    resizeMode='contain'
+                  />
+                </View>
+                {renderInfoSection()}
+                {!displayData.isOutOfStock ? (
+                  <View style={styles.addToCartSecondaryWrapper}>
+                    <SecondaryButton
+                      label={t('marketplace.addToCart')}
+                      onPress={handleAddToCartPress}
+                      style={styles.addToCartSecondary}
+                      size='large'
+                      testID='product-details-add-to-cart'
+                    />
+                  </View>
+                ) : null}
+              </>
+            )}
           </View>
-          {providerRating != null && (
-            <View style={styles.partnerRating}>
-              <Icon name='star' size={24} color='#FFB800' />
-              <Text style={styles.partnerRatingText}>{String(providerRating)}</Text>
-            </View>
-          )}
-        </View>
-        <SecondaryButton
-          label={t('marketplace.seePartnerProfile')}
-          onPress={handleSeeProviderProfile}
-          style={styles.partnerProfileButton}
-          size='large'
-        />
-      </View>
-    );
-  }
+        </ScrollView>
+      </ScreenWithHeader>
+      <ProgramParticipationTermsRequiredModal
+        visible={programTermsModalVisible}
+        title={t('marketplace.programTermsRequiredModalTitle')}
+        body={t('marketplace.programTermsRequiredModalBody')}
+        ctaLabel={t('marketplace.programTermsRequiredModalCta')}
+        onClose={() => setProgramTermsModalVisible(false)}
+        onPressViewTerms={handleProgramTermsModalGoToAgreements}
+      />
+    </>
+  );
 
   function renderRecommendedProducts() {
     const providerName = partnerData.name;
@@ -497,9 +535,37 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   }
 
   function renderProductTabContent() {
-    const fallbackTabId = productTabOptions[0]?.id ?? 'description';
-    const tabText = productTabContent[activeProductTab] || productTabContent[fallbackTabId] || '';
+    const fallbackTabId = productTabOptions[0]?.id ?? 'about';
+    const resolvedTab = productTabOptions.some((tab) => tab.id === activeProductTab) ? activeProductTab : fallbackTabId;
 
+    if (isProgramProduct && resolvedTab === 'agreements') {
+      const agreementsText = productTabContent.agreements;
+      const agreementLines = agreementsText.split('\n').filter((line) => line.trim().length > 0);
+
+      return (
+        <View style={styles.tabContent}>
+          {agreementLines.length > 0 ? (
+            <View style={styles.descriptionContainer}>
+              {agreementLines.map((line, index) => (
+                <View key={index} style={styles.descriptionItem}>
+                  <View style={styles.bulletPoint} />
+                  <Text style={styles.descriptionText}>{line.trim()}</Text>
+                </View>
+              ))}
+            </View>
+          ) : null}
+          <View style={styles.programAgreementsCheckboxRow}>
+            <Checkbox
+              label={t('marketplace.programParticipationTermsCheckbox')}
+              checked={programParticipationTermsAccepted}
+              onPress={() => setProgramParticipationTermsAccepted((current) => !current)}
+            />
+          </View>
+        </View>
+      );
+    }
+
+    const tabText = productTabContent[resolvedTab] || productTabContent[fallbackTabId] || '';
     const tabLines = tabText.split('\n').filter((line) => line.trim().length > 0);
 
     if (tabLines.length === 0) {

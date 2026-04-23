@@ -73,13 +73,8 @@ jest.mock('@/components/ui', () => {
 jest.mock('@/components/ui/buttons', () => {
   const { TouchableOpacity, Text } = require('react-native');
   return {
-    SecondaryButton: ({ label, onPress }: any) => (
-      <TouchableOpacity onPress={onPress} testID={`button-${label}`}>
-        <Text>{label}</Text>
-      </TouchableOpacity>
-    ),
-    PillButtonWithIcon: ({ label, onPress }: any) => (
-      <TouchableOpacity onPress={onPress} testID='pill-button-with-icon'>
+    SecondaryButton: ({ label, onPress, testID }: any) => (
+      <TouchableOpacity onPress={onPress} testID={testID ?? `button-${label}`}>
         <Text>{label}</Text>
       </TouchableOpacity>
     ),
@@ -101,7 +96,11 @@ jest.mock('@/components/ui/carousel', () => {
 
 jest.mock('@/components/sections/marketplace', () => {
   const { View } = require('react-native');
+  const actual = jest.requireActual<typeof import('@/components/sections/marketplace')>(
+    '@/components/sections/marketplace',
+  );
   return {
+    ...actual,
     ProductHeroSection: () => <View testID='product-hero-section' />,
     ProductInfoTabs: () => <View testID='product-info-tabs' />,
   };
@@ -271,7 +270,7 @@ describe('ProductDetailsScreen', () => {
     });
   });
 
-  it('renderiza apenas abas com conteúdo disponível', async () => {
+  it('para programa, mantém aba Acordos (termos) mesmo sem especificações técnicas', async () => {
     mockUseProductDetails.mockReturnValue({
       product: {
         ...mockProduct,
@@ -301,9 +300,8 @@ describe('ProductDetailsScreen', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('marketplace.description')).toBeTruthy();
-      expect(queryByText('marketplace.goal')).toBeNull();
-      expect(queryByText('marketplace.composition')).toBeNull();
+      expect(getByText('Sobre')).toBeTruthy();
+      expect(getByText('Acordos')).toBeTruthy();
     });
   });
 
