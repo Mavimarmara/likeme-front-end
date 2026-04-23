@@ -51,12 +51,6 @@ const PostsSection: React.FC<Props> = ({ posts, loading, loadingMore, error, onL
     return null;
   };
 
-  const renderHeader = () => (
-    <View style={styles.header}>
-      <Text style={styles.title}>Posts</Text>
-    </View>
-  );
-
   if (loading && posts.length === 0) {
     return (
       <View style={styles.container}>
@@ -69,7 +63,6 @@ const PostsSection: React.FC<Props> = ({ posts, loading, loadingMore, error, onL
 
   return (
     <View>
-      {renderHeader()}
       <View style={styles.container}>
         {posts.length === 0 ? (
           renderEmpty()

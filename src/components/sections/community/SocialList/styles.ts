@@ -14,7 +14,8 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: SPACING.XL,
+    paddingBottom: SPACING.MD,
+    rowGap: SPACING.MD,
   },
   sectionContainer: {
     paddingHorizontal: SPACING.MD,

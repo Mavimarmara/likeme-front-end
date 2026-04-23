@@ -270,9 +270,6 @@ export const styles = StyleSheet.create({
   },
   tabsContainerInCard: {
     paddingVertical: SPACING.LG,
-    paddingHorizontal: 0,
-    // O ScrollView horizontal do ButtonCarousel aplica padding interno; compensamos aqui para alinhar à esquerda.
-    marginLeft: -SPACING.SM,
   },
   tabsContainer: {
     marginBottom: SPACING.LG,
@@ -289,7 +286,6 @@ export const styles = StyleSheet.create({
     fontFamily: 'DM Sans',
     fontWeight: '500',
     color: '#001137',
-    paddingHorizontal: SPACING.SM,
     marginBottom: SPACING.MD,
   },
   productDescription: {

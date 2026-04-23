@@ -99,7 +99,8 @@ export const styles = StyleSheet.create({
     marginBottom: SPACING.MD,
   },
   tabContent: {
-    paddingBottom: SPACING.SM,
+    paddingHorizontal: SPACING.MD,
+    paddingBottom: SPACING.MD,
   },
   descriptionContainer: {
     gap: 8,
@@ -125,6 +126,17 @@ export const styles = StyleSheet.create({
     color: '#6e6a6a',
     letterSpacing: 0.2,
     lineHeight: 22,
+  },
+  agreementsCheckboxRow: {
+    marginTop: SPACING.LG,
+  },
+  agreementsTermsCheckboxContainer: {
+    gap: 4,
+  },
+  agreementsTermsCheckboxLabel: {
+    fontSize: 10,
+    lineHeight: 14,
+    flexShrink: 1,
   },
   aboutBodyText: {
     fontSize: 14,

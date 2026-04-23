@@ -20,6 +20,7 @@ import type { CommunityStackParamList } from '@/types/navigation';
 import {
   useUserFeed,
   useCommunities,
+  useCommunity,
   useSuggestedProducts,
   SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS,
   useAdvertisers,
@@ -33,6 +34,7 @@ import { logger } from '@/utils/logger';
 import type { Advertiser } from '@/types/ad';
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import Toggle from '@/components/ui/buttons/Toggle';
+import { Checkbox } from '@/components/ui/inputs';
 
 type CommunityMode = 'Feed' | 'Solutions';
 
@@ -101,6 +103,10 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   });
 
   const selectedCommunityId = rawCommunities[0]?.communityId;
+
+  const { termsAccepted: communityTermsAccepted, toggleTermsAccepted: toggleCommunityTermsAccepted } = useCommunity({
+    communityId: selectedCommunityId,
+  });
 
   useEffect(() => {
     if (!selectedCommunityId) {
@@ -263,11 +269,29 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
                 </View>
               ))}
             </View>
+            <View style={styles.agreementsCheckboxRow}>
+              <Checkbox
+                label={t('community.agreementsParticipationTermsCheckbox')}
+                checked={communityTermsAccepted === true}
+                onPress={toggleCommunityTermsAccepted}
+                disabled={communityTermsAccepted === null}
+                containerStyle={styles.agreementsTermsCheckboxContainer}
+                labelStyle={styles.agreementsTermsCheckboxLabel}
+              />
+            </View>
           </View>
         ) : null}
       </>
     ),
-    [t, communityInfoTabOptions, activeInfoTab, aboutBody, agreementLines],
+    [
+      t,
+      communityInfoTabOptions,
+      activeInfoTab,
+      aboutBody,
+      agreementLines,
+      communityTermsAccepted,
+      toggleCommunityTermsAccepted,
+    ],
   );
 
   const handleCommunityFavoritePress = useCallback(() => {
@@ -355,6 +379,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
                 embedInParentScroll
                 betweenSpecialistAndPosts={feedInformationSlot}
                 renderPostsFeed={activeInfoTab === 'posts'}
+                renderFeedRecommendations={activeInfoTab === 'posts' || activeInfoTab === 'about'}
               />
             </>
           ) : (

@@ -8,7 +8,6 @@ export const styles = StyleSheet.create({
   scrollContent: {
     flexDirection: 'row',
     gap: SPACING.SM,
-    paddingHorizontal: SPACING.SM,
   },
   buttonSelected: {
     backgroundColor: '#0154f8',

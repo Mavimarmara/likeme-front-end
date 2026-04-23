@@ -91,7 +91,6 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
   } | null>(null);
   const [liveBanner, setLiveBanner] = useState<LiveBannerData | undefined>(undefined);
   const [events, setEvents] = useState<Event[]>([]);
-
   const paramsKey = JSON.stringify(params ?? {});
   const memoizedParams = useMemo(() => params ?? {}, [paramsKey]);
 

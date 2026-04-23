@@ -348,6 +348,50 @@ class CommunityService {
     }
   }
 
+  async getMyCommunityTermsAccepted(communityId: string): Promise<boolean> {
+    try {
+      if (!communityId?.trim()) {
+        return false;
+      }
+      const endpoint = `${this.communitiesEndpoint}/${encodeURIComponent(communityId.trim())}/members/me/terms`;
+      const response = await apiClient.get<{
+        success?: boolean;
+        data?: { hasTermsAccepted?: boolean };
+      }>(endpoint, undefined, true, false);
+      const raw = response.data?.hasTermsAccepted;
+      if (typeof raw === 'boolean') {
+        return raw;
+      }
+      if (response.success === false) {
+        logger.warn('Resposta de termos sem payload esperado', { communityId });
+      }
+      return false;
+    } catch (error) {
+      logger.error('Erro ao obter aceite dos termos da comunidade', { communityId, cause: error });
+      return false;
+    }
+  }
+
+  async updateMyCommunityTermsAccepted(communityId: string, hasTermsAccepted: boolean): Promise<boolean> {
+    if (!communityId?.trim()) {
+      throw new Error('Community ID is required');
+    }
+    const endpoint = `${this.communitiesEndpoint}/${encodeURIComponent(communityId.trim())}/members/me/terms`;
+    const response = await apiClient.patch<{
+      success?: boolean;
+      data?: { hasTermsAccepted?: boolean };
+      message?: string;
+    }>(endpoint, { hasTermsAccepted }, true);
+    const raw = response.data?.hasTermsAccepted;
+    if (typeof raw === 'boolean') {
+      return raw;
+    }
+    if (response.success === false) {
+      throw new Error(response.message || 'Falha ao atualizar aceite dos termos');
+    }
+    return Boolean(hasTermsAccepted);
+  }
+
   async joinCommunity(
     communityId: string,
   ): Promise<{ success: boolean; data?: { communityId: string; joined: boolean }; message?: string }> {

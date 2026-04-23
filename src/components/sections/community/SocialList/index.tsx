@@ -24,8 +24,13 @@ type Props = {
   embedInParentScroll?: boolean;
   /** Renderizado antes do feed de posts (ex.: menu Informações), após CommunityDescriptionSection no pai. */
   betweenSpecialistAndPosts?: ReactNode;
-  /** Quando false, omite PostsSection, eventos e carrossel de produtos. */
+  /** Quando false, omite a lista de posts (PostsSection). */
   renderPostsFeed?: boolean;
+  /**
+   * Próximos eventos e carrossel de produtos recomendados.
+   * Se omitido, segue `renderPostsFeed` (comportamento anterior).
+   */
+  renderFeedRecommendations?: boolean;
 };
 
 const SocialList: React.FC<Props> = ({
@@ -45,22 +50,20 @@ const SocialList: React.FC<Props> = ({
   embedInParentScroll = false,
   betweenSpecialistAndPosts,
   renderPostsFeed = true,
+  renderFeedRecommendations: renderFeedRecommendationsProp,
 }) => {
   const { t } = useTranslation();
+  const showFeedRecommendations = renderFeedRecommendationsProp ?? renderPostsFeed;
 
   const listContent = (
-    <>
+    <View style={styles.scrollContent}>
       {betweenSpecialistAndPosts}
       {renderPostsFeed ? (
-        <>
-          <PostsSection
-            posts={posts}
-            loading={loading}
-            loadingMore={loadingMore}
-            error={error}
-            onLoadMore={onLoadMore}
-          />
+        <PostsSection posts={posts} loading={loading} loadingMore={loadingMore} error={error} onLoadMore={onLoadMore} />
+      ) : null}
 
+      {showFeedRecommendations ? (
+        <>
           {events && events.length > 0 && (
             <View style={styles.sectionContainer}>
               <NextEventsSection events={events} onEventPress={onEventPress} onEventSave={onEventSave} />
@@ -80,7 +83,7 @@ const SocialList: React.FC<Props> = ({
           )}
         </>
       ) : null}
-    </>
+    </View>
   );
 
   return (
@@ -91,11 +94,10 @@ const SocialList: React.FC<Props> = ({
         </View>
       )}
       {embedInParentScroll ? (
-        <View style={styles.scrollContent}>{listContent}</View>
+        listContent
       ) : (
         <ScrollView
           style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
           onMomentumScrollEnd={(event) => {
             const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;

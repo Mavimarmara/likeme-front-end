@@ -2,7 +2,7 @@ import React from 'react';
 import { View, type ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Header from '../Header';
-import { COLORS } from '@/constants';
+import { COLORS, SPACING } from '@/constants';
 
 type HeaderProps = React.ComponentProps<typeof Header>;
 
@@ -36,6 +36,7 @@ const ScreenWithHeader: React.FC<Props> = ({
             flex: 1,
             backgroundColor: contentBackgroundColor,
             position: 'relative',
+            paddingBottom: SPACING.XXL,
           },
           contentContainerStyle,
         ]}
