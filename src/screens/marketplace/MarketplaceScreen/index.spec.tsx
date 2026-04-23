@@ -127,6 +127,15 @@ jest.mock('@/components/ui/modals', () => {
 jest.mock('@/hooks', () => ({
   useMarketplaceAds: (...args: any[]) => mockUseMarketplaceAds(...args),
   useProducts: (...args: any[]) => mockUseProducts(...args),
+  useSolutions: () => ({
+    marketplaceCarouselOptions: [
+      { id: 'all', label: 'Todos' },
+      { id: 'products', label: 'Produtos' },
+      { id: 'services', label: 'Servicos' },
+      { id: 'programs', label: 'Programas' },
+      { id: 'professionals', label: 'Profissionais' },
+    ],
+  }),
   useMenuItems: () => [],
   useCategories: () => ({ categories: [{ categoryId: 'cat-1', name: 'Autoestima' }] }),
   useCategoryDisplayLabel: () => ({ getCategoryName: (id: string) => id || 'Category' }),
