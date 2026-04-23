@@ -5,20 +5,10 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  ctaCardContainer: {
-    paddingHorizontal: SPACING.MD,
-  },
-  ctaCard: {
-    marginHorizontal: -SPACING.MD,
-  },
   liveBannerContainer: {
     paddingTop: SPACING.MD,
     paddingBottom: SPACING.SM,
     paddingHorizontal: SPACING.MD,
-  },
-  communityIntroContainer: {
-    paddingTop: SPACING.MD,
-    paddingBottom: SPACING.SM,
   },
   scrollView: {
     flex: 1,

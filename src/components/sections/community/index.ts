@@ -10,6 +10,11 @@ export { default as PostCard } from './PostCard';
 export { default as EventCard } from './EventCard';
 export { default as PollCard } from './PollCard';
 export { default as CommentReactions } from './CommentReactions';
+export {
+  default as CommunityDescriptionSection,
+  type CommunityDescriptionSectionProps,
+  type CommunityDescriptionVariant,
+} from './CommunityDescriptionSection';
 export { default as SocialList } from './SocialList';
 export { default as PostsSection } from './PostsSection';
 export { default as ProgramsList } from './ProgramsList';

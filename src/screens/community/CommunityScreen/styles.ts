@@ -87,12 +87,60 @@ export const styles = StyleSheet.create({
   toggleContainer: {
     flex: 1,
   },
+  tabsContainerInCard: {
+    paddingVertical: SPACING.SM,
+    paddingHorizontal: SPACING.MD,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontFamily: 'DM Sans',
+    fontWeight: '700',
+    color: '#001137',
+    marginBottom: SPACING.MD,
+  },
+  tabContent: {
+    paddingBottom: SPACING.SM,
+  },
+  descriptionContainer: {
+    gap: 8,
+  },
+  descriptionItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  bulletPoint: {
+    width: 5,
+    height: 5,
+    borderRadius: 2.5,
+    backgroundColor: '#6e6a6a',
+    marginTop: 8.5,
+    flexShrink: 0,
+  },
+  descriptionText: {
+    flex: 1,
+    fontSize: 14,
+    fontFamily: 'DM Sans',
+    fontWeight: '400',
+    color: '#6e6a6a',
+    letterSpacing: 0.2,
+    lineHeight: 22,
+  },
+  aboutBodyText: {
+    fontSize: 14,
+    fontFamily: 'DM Sans',
+    fontWeight: '400',
+    color: '#6e6a6a',
+    lineHeight: 22,
+    letterSpacing: 0.2,
+  },
   toggleRow: {
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
     paddingHorizontal: SPACING.MD,
     gap: SPACING.MD,
+    marginBottom: SPACING.MD,
   },
   toggleBackButton: {},
   suggestedSection: {

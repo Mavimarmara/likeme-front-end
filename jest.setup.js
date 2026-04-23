@@ -85,3 +85,20 @@ jest.mock('@/hooks/i18n', () => ({
     },
   }),
 }));
+
+const React = require('react');
+const ReactNative = require('react-native');
+
+// TouchableOpacity anima opacidade via Animated + native driver; no react-test-renderer isso estoura em fireEvent.press.
+// O export de `react-native` usa getter; atribuição direta não substitui — precisa `defineProperty`.
+const TestFriendlyTouchableOpacity = React.forwardRef((props, ref) => {
+  const { activeOpacity: _activeOpacity, tvParallaxProperties: _tvParallaxProperties, ...pressableProps } = props;
+  return React.createElement(ReactNative.Pressable, { ...pressableProps, ref });
+});
+
+Object.defineProperty(ReactNative, 'TouchableOpacity', {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  value: TestFriendlyTouchableOpacity,
+});

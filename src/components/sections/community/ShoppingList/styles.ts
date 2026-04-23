@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { COLORS, SPACING, BORDER_RADIUS } from '@/constants';
+import { COLORS, SPACING } from '@/constants';
 
 export const styles = StyleSheet.create({
   container: {
@@ -9,85 +9,14 @@ export const styles = StyleSheet.create({
     paddingTop: SPACING.MD,
     paddingBottom: SPACING.XL,
   },
-  communityIntroContainer: {},
-  shoppingTipContainer: {},
-  shoppingTip: {
-    borderRadius: BORDER_RADIUS.XL,
-  },
-  shoppingTipTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: COLORS.BLACK,
-  },
-  shoppingTipDescription: {
-    fontSize: 14,
-    fontWeight: '400',
-    color: COLORS.BLACK,
-    lineHeight: 20,
-  },
-  shoppingTipDescriptionBold: {
-    fontWeight: '700',
-  },
-  specialistBlock: {},
-  headerTextContainer: {
-    gap: SPACING.XS,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: COLORS.TEXT,
-  },
-  sectionSubtitle: {
-    fontSize: 12,
-    color: COLORS.TEXT_LIGHT,
-  },
-  ctaCard: {
-    marginTop: SPACING.MD,
-    marginBottom: SPACING.LG,
-    borderRadius: BORDER_RADIUS.XL,
-  },
-  ctaCardTitle: {
-    fontSize: 20,
-  },
   solutionsTabsRow: {
     marginTop: SPACING.MD,
     width: '100%',
     alignSelf: 'stretch',
   },
-  solutionTab: {
-    paddingHorizontal: SPACING.MD,
-    paddingVertical: SPACING.XS,
-    borderRadius: BORDER_RADIUS.ROUND,
-    backgroundColor: COLORS.NEUTRAL.LOW.MEDIUM,
-  },
-  solutionTabActive: {
-    backgroundColor: COLORS.PRIMARY.PURE,
-  },
-  solutionTabLabel: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: COLORS.TEXT,
-  },
-  solutionTabLabelActive: {
-    color: COLORS.WHITE,
-  },
-  orderRow: {
-    marginTop: SPACING.MD,
-    paddingHorizontal: SPACING.MD,
-  },
   list: {
     gap: SPACING.MD,
     paddingHorizontal: SPACING.MD,
-  },
-  cardWrapper: {
-    borderRadius: BORDER_RADIUS.XL,
-    overflow: 'hidden',
-    backgroundColor: COLORS.NEUTRAL.LOW.PURE,
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 3,
   },
   professionalCardWrapper: {
     overflow: 'hidden',

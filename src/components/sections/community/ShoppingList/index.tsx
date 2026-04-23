@@ -1,28 +1,18 @@
-import React, { useMemo, useState, useEffect, useCallback } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { ScrollView, View, Text, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { CTACard } from '@/components/ui/cards';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { EmptyState } from '@/components/ui/feedback';
-import { CommunityIntroSection, SpecialistCard } from '@/components/sections/community';
 import { AdsList } from '@/components/sections/marketplace';
 import type { ButtonCarouselOption } from '@/components/ui/carousel';
 import { DEFAULT_MARKETPLACE_SORT_ORDER, type MarketplaceSortOrderId } from '@/constants/marketplaceSortOrder';
 import { getMarketplaceSortOptions } from '@/utils/marketplace/sortOptions';
 import { sortShopProductsByMarketplaceOrder } from '@/utils/marketplace/sorting';
-import type { SpecialistCardProps } from '@/components/sections/community/SpecialistCard';
 import { useTranslation } from '@/hooks/i18n';
-import { storageService } from '@/services';
 import type { Product } from '@/components/sections/product/ProductCard';
 import type { Advertiser } from '@/types/ad';
 import { COLORS } from '@/constants';
 import { styles } from './styles';
-
-export type CommunityIntroData = {
-  title: string;
-  description: string;
-  imageUri?: string | null;
-};
 
 type Props = {
   products: Product[];
@@ -32,9 +22,6 @@ type Props = {
   onProductPress?: (product: Product) => void;
   onProductLike?: (product: Product) => void;
   onProfessionalPress?: (advertiser: Advertiser) => void;
-  communityIntro?: CommunityIntroData | null;
-  onIntroSeeMore?: () => void;
-  specialist?: SpecialistCardProps | null;
   /** Quando true, não usa ScrollView próprio; o conteúdo é renderizado para ficar dentro do scroll do pai. */
   embedInParentScroll?: boolean;
 };
@@ -47,23 +34,10 @@ const ShoppingList: React.FC<Props> = ({
   onProductPress,
   onProductLike: _onProductLike,
   onProfessionalPress,
-  communityIntro,
-  onIntroSeeMore,
-  specialist,
   embedInParentScroll = false,
 }) => {
   const { t } = useTranslation();
   const [activeOrder, setActiveOrder] = useState<MarketplaceSortOrderId>(DEFAULT_MARKETPLACE_SORT_ORDER);
-  const [shoppingTipDismissed, setShoppingTipDismissed] = useState(true);
-
-  useEffect(() => {
-    storageService.getCommunityShoppingTipDismissed().then(setShoppingTipDismissed);
-  }, []);
-
-  const handleShoppingTipClose = useCallback(() => {
-    setShoppingTipDismissed(true);
-    storageService.setCommunityShoppingTipDismissed(true);
-  }, []);
 
   const mergeTags = useCallback((primaryTag: string, product: Product): string[] => {
     const combinedTags = [primaryTag, ...(product.tags ?? []), product.tag].filter(Boolean);
@@ -171,61 +145,18 @@ const ShoppingList: React.FC<Props> = ({
   }, [professionals, onProfessionalPress, t]);
 
   const listContent = (
-    <>
-      {!shoppingTipDismissed && (
-        <View style={styles.shoppingTipContainer}>
-          <CTACard backgroundColor={COLORS.HIGHLIGHT.LIGHT} style={styles.shoppingTip} onClose={handleShoppingTipClose}>
-            <Text style={styles.shoppingTipTitle}>{t('community.shoppingTipTitle')}</Text>
-            <Text style={styles.shoppingTipDescription}>{t('community.shoppingTipIntro')}</Text>
-            <Text style={styles.shoppingTipDescription}>{t('community.shoppingTipBullet1')}</Text>
-            <Text style={styles.shoppingTipDescription}>{t('community.shoppingTipBullet2')}</Text>
-            <Text style={styles.shoppingTipDescription}>{t('community.shoppingTipBullet3')}</Text>
-            <Text style={styles.shoppingTipDescription}>{t('community.shoppingTipBullet4')}</Text>
-            <Text style={styles.shoppingTipDescription}>{t('community.shoppingTipBullet5')}</Text>
-            <Text style={[styles.shoppingTipDescription, styles.shoppingTipDescriptionBold]}>
-              {t('community.shoppingTipOutro')}
-            </Text>
-          </CTACard>
-        </View>
-      )}
-      {communityIntro && (
-        <View style={styles.communityIntroContainer}>
-          <CommunityIntroSection
-            title={communityIntro.title}
-            description={communityIntro.description}
-            imageUri={communityIntro.imageUri}
-            onSeeMore={onIntroSeeMore}
-            seeMoreLabel={t('community.seeMore')}
-            seeLessLabel={t('community.seeLess')}
-          />
-        </View>
-      )}
-
-      {specialist && (
-        <View style={styles.specialistBlock}>
-          <SpecialistCard
-            name={specialist.name}
-            subtitle={specialist.subtitle}
-            rating={specialist.rating}
-            tags={specialist.tags}
-            avatarUri={specialist.avatarUri}
-          />
-        </View>
-      )}
-
-      <AdsList
-        solutionTabs={solutionTabs}
-        productsList={orderedProducts}
-        servicesList={orderedServices}
-        programsList={orderedPrograms}
-        professionalsContent={professionalsContent}
-        onProductPress={onProductPress}
-        orderOptions={orderOptions}
-        selectedOrder={activeOrder}
-        onOrderSelect={(id) => setActiveOrder(id as MarketplaceSortOrderId)}
-        tabsContainerStyle={styles.solutionsTabsRow}
-      />
-    </>
+    <AdsList
+      solutionTabs={solutionTabs}
+      productsList={orderedProducts}
+      servicesList={orderedServices}
+      programsList={orderedPrograms}
+      professionalsContent={professionalsContent}
+      onProductPress={onProductPress}
+      orderOptions={orderOptions}
+      selectedOrder={activeOrder}
+      onOrderSelect={(id) => setActiveOrder(id as MarketplaceSortOrderId)}
+      tabsContainerStyle={styles.solutionsTabsRow}
+    />
   );
 
   if (embedInParentScroll) {
