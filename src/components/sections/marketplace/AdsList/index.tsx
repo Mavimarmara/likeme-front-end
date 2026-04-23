@@ -8,8 +8,7 @@ import { FilterPickerModal } from '@/components/ui/modals';
 import { EmptyState } from '@/components/ui/feedback';
 import { useCategories } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
-import { formatPrice, getProductModeTranslationKey, handleAdNavigation, mapProductToCartItem } from '@/utils';
-import { storageService } from '@/services';
+import { formatPrice, getProductModeTranslationKey, handleAdNavigation } from '@/utils';
 import type { Ad } from '@/types/ad';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { RootStackParamList } from '@/types/navigation';
@@ -53,6 +52,11 @@ type AdsListProps = {
   emptyActionLabel?: string;
   /** Ação ao clicar no botão do empty state. */
   onEmptyActionPress?: () => void;
+  /**
+   * Quando true com `selectedTabId` + `onTabChange`: lista controlada pelo pai sem `ToggleTabs`
+   * nem fila de ordenação (ex.: Marketplace — filtro de solução e ordenação ficam no header).
+   */
+  suppressInlineListChrome?: boolean;
 };
 
 const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
@@ -82,39 +86,36 @@ const AdsList: React.FC<AdsListProps> = ({
   onTabChange,
   emptyActionLabel,
   onEmptyActionPress,
+  suppressInlineListChrome = false,
 }) => {
   const { t } = useTranslation();
   const { categories } = useCategories({ enabled: true });
-  const hasTabbedMode = solutionTabs != null && solutionTabs.length > 0;
-  const isControlledTabbed = hasTabbedMode && selectedTabIdProp != null && onTabChange != null;
-  const [internalTabId, setInternalTabId] = useState<string>(() => (hasTabbedMode ? solutionTabs![0].id : 'products'));
+  const hasSolutionTabStrip = solutionTabs != null && solutionTabs.length > 0;
+  const isParentTabControlled = selectedTabIdProp != null && onTabChange != null;
+  const marketplaceListWithoutInlineChrome = suppressInlineListChrome && isParentTabControlled;
+  const isControlledTabbed = isParentTabControlled && (hasSolutionTabStrip || marketplaceListWithoutInlineChrome);
+  const [internalTabId, setInternalTabId] = useState<string>(() =>
+    hasSolutionTabStrip ? solutionTabs![0].id : 'products',
+  );
   const selectedTabId = isControlledTabbed ? selectedTabIdProp! : internalTabId;
   const setSelectedTabId = isControlledTabbed ? onTabChange! : setInternalTabId;
 
-  const isSimpleMode = simpleProducts != null || hasTabbedMode;
+  const isSimpleMode = simpleProducts != null || hasSolutionTabStrip || marketplaceListWithoutInlineChrome;
   const currentListFromTabs = useMemo(() => {
-    if (!hasTabbedMode) return [];
+    if (!hasSolutionTabStrip) return [];
     if (selectedTabId === 'products') return productsList;
     if (selectedTabId === 'services') return servicesList;
     if (selectedTabId === 'programs') return programsList;
     return [];
-  }, [hasTabbedMode, selectedTabId, productsList, servicesList, programsList]);
-  const listToShow = hasTabbedMode ? currentListFromTabs : simpleProducts ?? [];
-  const showOrderFilter = hasTabbedMode ? selectedTabId !== 'professionals' : true;
-  const isProfessionalsTab = hasTabbedMode && selectedTabId === 'professionals';
+  }, [hasSolutionTabStrip, selectedTabId, productsList, servicesList, programsList]);
+  const listToShow = hasSolutionTabStrip ? currentListFromTabs : simpleProducts ?? [];
+  const showOrderFilter = !suppressInlineListChrome && (hasSolutionTabStrip ? selectedTabId !== 'professionals' : true);
+  const isProfessionalsTab =
+    selectedTabId === 'professionals' && (hasSolutionTabStrip || marketplaceListWithoutInlineChrome);
   const showAdsListInTabbedMode = isControlledTabbed && !isProfessionalsTab;
 
   const handleAdPress = (ad: Ad) => {
     if (navigation) handleAdNavigation(ad, navigation);
-  };
-
-  const handleAddToCart = async (ad: Ad) => {
-    if (!ad.product || !navigation) return;
-    try {
-      const cartItem = mapProductToCartItem(ad.product);
-      await storageService.addToCart(cartItem);
-      navigation.navigate('Cart');
-    } catch {}
   };
 
   const sectionTitle = title ?? t('marketplace.allProducts');
@@ -130,14 +131,14 @@ const AdsList: React.FC<AdsListProps> = ({
 
   const listLength = showAdsListInTabbedMode
     ? ads.length
-    : hasTabbedMode
+    : hasSolutionTabStrip
     ? listToShow.length
-    : isSimpleMode
-    ? simpleProducts?.length ?? 0
+    : simpleProducts != null
+    ? simpleProducts.length
     : ads.length;
-  const isEmpty = !hasTabbedMode && listLength === 0;
-  const isEmptyTab = hasTabbedMode && !isControlledTabbed && !isProfessionalsTab && listToShow.length === 0;
-  const isEmptyControlledTabbed = hasTabbedMode && isControlledTabbed && ads.length === 0;
+  const isEmpty = !hasSolutionTabStrip && !marketplaceListWithoutInlineChrome && listLength === 0;
+  const isEmptyTab = hasSolutionTabStrip && !isControlledTabbed && !isProfessionalsTab && listToShow.length === 0;
+  const isEmptyControlledTabbed = isControlledTabbed && ads.length === 0;
 
   const renderEmptyState = () => (
     <View style={styles.emptySection}>
@@ -174,8 +175,7 @@ const AdsList: React.FC<AdsListProps> = ({
           defaultValue: 'Out of stock',
         })}
         onPress={() => handleAdPress(ad)}
-        onAddPress={product && !product.externalUrl ? () => handleAddToCart(ad) : undefined}
-        showAddButton={!!(product && !product.externalUrl)}
+        showTrailingChevron={!!product}
         formatPrice={formatPrice}
       />
     );
@@ -189,15 +189,40 @@ const AdsList: React.FC<AdsListProps> = ({
       badges={product.tags?.length ? product.tags : product.tag ? [product.tag] : []}
       price={product.price ?? undefined}
       onPress={() => onProductPress?.(product)}
-      onAddPress={undefined}
-      showAddButton={false}
+      showTrailingChevron={!!onProductPress}
       formatPrice={formatPrice}
     />
   );
 
+  const orderFilterRow =
+    orderOptions.length > 0 && showOrderFilter ? (
+      <View style={styles.mOrderFilterMenuContainer}>
+        <StickyFilterCarouselRow
+          filterButtonLabel={t('marketplace.orderBy')}
+          filterModalTitle={t('marketplace.orderBy')}
+          filterModalContent={({ close, visible }) => (
+            <FilterPickerModal
+              visible={visible}
+              sections={[{ options: orderOptions }]}
+              selectedId={selectedOrder}
+              confirmLabel={t('filterCategory.filter')}
+              onConfirm={(id) => {
+                onOrderSelect?.(String(id));
+                close();
+              }}
+            />
+          )}
+          carouselOptions={orderOptions}
+          selectedCarouselId={selectedOrder}
+          onCarouselSelect={(id) => onOrderSelect?.(String(id))}
+          carouselDisplay='selectedOnly'
+        />
+      </View>
+    ) : null;
+
   return (
     <View style={[styles.section, styles.sectionMarketplace, contentContainerStyle]}>
-      {hasTabbedMode && (
+      {hasSolutionTabStrip && !suppressInlineListChrome && (
         <ToggleTabs
           tabs={solutionTabs!.map((tab) => ({ id: tab.id, label: tab.label }))}
           selectedId={selectedTabId}
@@ -206,55 +231,32 @@ const AdsList: React.FC<AdsListProps> = ({
           fixedWidth={false}
         />
       )}
-      {hasTabbedMode && isProfessionalsTab ? (
+      {orderFilterRow}
+      {isProfessionalsTab ? (
         professionalsContent
-      ) : hasTabbedMode && isEmptyTab ? (
+      ) : hasSolutionTabStrip && isEmptyTab ? (
         renderEmptyState()
-      ) : hasTabbedMode && isEmptyControlledTabbed ? (
+      ) : isEmptyControlledTabbed ? (
         renderEmptyState()
       ) : !isEmpty || showAdsListInTabbedMode ? (
         <>
-          {!isSimpleMode && !hasTabbedMode && (
+          {!isSimpleMode && !hasSolutionTabStrip && !marketplaceListWithoutInlineChrome && (
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>{sectionTitle}</Text>
-            </View>
-          )}
-          {orderOptions.length > 0 && showOrderFilter && (
-            <View style={styles.mOrderFilterMenuContainer}>
-              <StickyFilterCarouselRow
-                filterButtonLabel={t('marketplace.orderBy')}
-                filterModalTitle={t('marketplace.orderBy')}
-                filterModalContent={({ close, visible }) => (
-                  <FilterPickerModal
-                    visible={visible}
-                    sections={[{ options: orderOptions }]}
-                    selectedId={selectedOrder}
-                    confirmLabel={t('filterCategory.filter')}
-                    onConfirm={(id) => {
-                      onOrderSelect?.(String(id));
-                      close();
-                    }}
-                  />
-                )}
-                carouselOptions={orderOptions}
-                selectedCarouselId={selectedOrder}
-                onCarouselSelect={(id) => onOrderSelect?.(String(id))}
-                carouselDisplay='selectedOnly'
-              />
             </View>
           )}
           <View style={styles.mAdsList}>
             {showAdsListInTabbedMode
               ? ads.map(renderAdCard)
-              : hasTabbedMode || (isSimpleMode && simpleProducts)
-              ? (hasTabbedMode ? listToShow : simpleProducts ?? []).map(renderSimpleProductCard)
+              : hasSolutionTabStrip || (isSimpleMode && simpleProducts)
+              ? (hasSolutionTabStrip ? listToShow : simpleProducts ?? []).map(renderSimpleProductCard)
               : ads.map(renderAdCard)}
-            {((!isSimpleMode && !hasTabbedMode) || showAdsListInTabbedMode) && loading && (
+            {((!isSimpleMode && !hasSolutionTabStrip) || showAdsListInTabbedMode) && loading && (
               <View style={styles.loadingMoreContainer}>
                 <ActivityIndicator size='small' color='#2196F3' />
               </View>
             )}
-            {((!isSimpleMode && !hasTabbedMode) || showAdsListInTabbedMode) && hasMore && !loading && (
+            {((!isSimpleMode && !hasSolutionTabStrip) || showAdsListInTabbedMode) && hasMore && !loading && (
               <TouchableOpacity style={styles.loadMoreButton} onPress={onLoadMore} activeOpacity={0.7}>
                 <Text style={styles.loadMoreText}>{t('marketplace.loadMore')}</Text>
               </TouchableOpacity>

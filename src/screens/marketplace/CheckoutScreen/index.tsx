@@ -322,7 +322,6 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
                   price={item.price}
                   formatPrice={formatPrice}
                   onPress={noop}
-                  showAddButton={false}
                   badges={item.tags}
                   subtitle={
                     item.subtitle

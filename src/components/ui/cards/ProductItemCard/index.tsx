@@ -1,5 +1,5 @@
-import React, { useCallback } from 'react';
-import { View, Text, TouchableOpacity, Image, ImageSourcePropType } from 'react-native';
+import React from 'react';
+import { View, Text, Pressable, Image, ImageSourcePropType } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { IconButton } from '@/components/ui/buttons';
 import { COLORS } from '@/constants';
@@ -13,8 +13,8 @@ export type ProductItemCardProps = {
   outOfStock?: boolean;
   outOfStockLabel?: string;
   onPress: () => void;
-  onAddPress?: () => void;
-  showAddButton?: boolean;
+  /** Seta à direita chama o mesmo `onPress` do card (ex.: listagem marketplace/comunidade). */
+  showTrailingChevron?: boolean;
   formatPrice: (value: number) => string;
   fallbackImage?: ImageSourcePropType;
   subtitle?: string;
@@ -41,8 +41,7 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
   outOfStock,
   outOfStockLabel = 'Sem estoque',
   onPress,
-  onAddPress,
-  showAddButton = true,
+  showTrailingChevron = false,
   formatPrice,
   fallbackImage,
   subtitle,
@@ -59,7 +58,6 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
   decreaseQuantityTestID,
 }) => {
   const imageSource = image ? { uri: image } : fallbackImage ?? { uri: DEFAULT_PLACEHOLDER_URI };
-  const handleAddPress = useCallback(() => onAddPress?.(), [onAddPress]);
   const badges = (badgesProp ?? []).map((label) => (typeof label === 'string' ? label.trim() : '')).filter(Boolean);
   const iconColor = COLORS.TEXT;
   const hasQuantityCallbacks = typeof onIncreaseQuantity === 'function' && typeof onDecreaseQuantity === 'function';
@@ -82,16 +80,15 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
           ) : null}
           <View style={styles.topRowRight}>
             {showDelete && onRemove && (
-              <TouchableOpacity
-                style={styles.deleteButton}
+              <Pressable
+                style={({ pressed }) => [styles.deleteButton, pressed && { opacity: 0.7 }]}
                 onPress={onRemove}
-                activeOpacity={0.7}
                 accessibilityRole='button'
                 accessibilityLabel='Remover do carrinho'
                 testID={deleteButtonTestID}
               >
                 <Icon name='delete' size={24} color={iconColor} />
-              </TouchableOpacity>
+              </Pressable>
             )}
           </View>
         </View>
@@ -123,39 +120,36 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
           </View>
           {showQuantityRow ? (
             <View style={styles.quantityRow}>
-              <TouchableOpacity
-                style={styles.quantityButton}
+              <Pressable
+                style={({ pressed }) => [styles.quantityButton, pressed && { opacity: 0.7 }]}
                 onPress={onDecreaseQuantity}
-                activeOpacity={0.7}
                 accessibilityRole='button'
                 accessibilityLabel='Diminuir quantidade'
                 testID={decreaseQuantityTestID}
               >
                 <Icon name='remove-circle-outline' size={24} color={iconColor} />
-              </TouchableOpacity>
+              </Pressable>
               <Text style={styles.quantityText} accessibilityLabel={`Quantidade ${displayQuantity}`}>
                 {String(displayQuantity).padStart(2, '0')}
               </Text>
-              <TouchableOpacity
-                style={styles.quantityButton}
+              <Pressable
+                style={({ pressed }) => [styles.quantityButton, pressed && { opacity: 0.7 }]}
                 onPress={onIncreaseQuantity}
-                activeOpacity={0.7}
                 accessibilityRole='button'
                 accessibilityLabel='Aumentar quantidade'
                 testID={increaseQuantityTestID}
               >
                 <Icon name='add-circle-outline' size={24} color={iconColor} />
-              </TouchableOpacity>
+              </Pressable>
             </View>
           ) : (
-            showAddButton &&
-            onAddPress && (
+            showTrailingChevron && (
               <IconButton
-                icon='add'
+                icon='chevron-right'
                 iconColor={COLORS.TEXT}
-                iconSize={24}
+                iconSize={28}
                 backgroundSize='large'
-                onPress={handleAddPress}
+                onPress={onPress}
               />
             )
           )}
@@ -165,17 +159,16 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
   );
 
   return (
-    <TouchableOpacity
-      style={styles.card}
+    <Pressable
+      style={({ pressed }) => [styles.card, pressed && { opacity: 0.8 }]}
       onPress={onPress}
-      activeOpacity={0.8}
       accessibilityRole='button'
       accessibilityLabel={`${title}${outOfStock ? `, ${outOfStockLabel}` : ''}`}
       accessibilityHint='Toque duas vezes para abrir o produto'
       testID={testID}
     >
       {content}
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 

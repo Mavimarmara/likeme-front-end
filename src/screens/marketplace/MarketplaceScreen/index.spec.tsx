@@ -1,6 +1,5 @@
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import MarketplaceScreen from './index';
-import { storageService } from '@/services';
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 
 const mockLoadAds = jest.fn();
@@ -155,21 +154,11 @@ jest.mock('@/analytics', () => ({
 jest.mock('@/utils', () => ({
   formatPrice: jest.fn((price: number) => `$${price?.toFixed(2) || '0.00'}`),
   handleAdNavigation: jest.fn(),
-  mapProductToCartItem: jest.fn((product: any) => ({
-    id: product.id,
-    title: product.name,
-    price: product.price,
-    image: product.image,
-    quantity: 1,
-  })),
 }));
 
 jest.mock('@/services', () => ({
   adService: {
     listAds: jest.fn(),
-  },
-  storageService: {
-    addToCart: jest.fn(),
   },
 }));
 
@@ -291,16 +280,13 @@ describe('MarketplaceScreen', () => {
     });
   });
 
-  it('adds product to cart and navigates to cart when add button is pressed', async () => {
-    (storageService.addToCart as jest.Mock).mockResolvedValue(undefined);
-
+  it('exibe lista de anúncios para navegação ao detalhe do produto', async () => {
     const { getByTestId } = render(<MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(getByTestId('ads-list')).toBeTruthy();
     });
 
-    expect(storageService.addToCart).toBeDefined();
     expect(mockNavigation.navigate).toBeDefined();
   });
 

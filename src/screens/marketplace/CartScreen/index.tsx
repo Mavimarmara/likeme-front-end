@@ -117,7 +117,6 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
       price={item.price}
       formatPrice={formatPrice}
       onPress={noop}
-      showAddButton={false}
       badges={item.tags}
       subtitle={
         item.subtitle

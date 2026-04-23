@@ -6,7 +6,6 @@ import { SearchBar } from '@/components/ui/inputs';
 import { IconButton } from '@/components/ui/buttons';
 import { StickyFilterCarouselRow } from '@/components/ui/menu';
 import { DEFAULT_MARKETPLACE_SORT_ORDER, type MarketplaceSortOrderId } from '@/constants/marketplaceSortOrder';
-import { getMarketplaceSortOptions } from '@/utils/marketplace/sortOptions';
 import { sortAdsByMarketplaceOrder } from '@/utils/marketplace/sorting';
 import { ScreenWithHeader } from '@/components/ui/layout';
 import { GradientBackgroundByCategory } from '@/components/sections';
@@ -70,7 +69,6 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       ? undefined
       : selectedSolutionTab;
   const [selectedCategoryName, setSelectedCategoryName] = useState<CategoryName | null>(null);
-  const [selectedOrder, setSelectedOrder] = useState<string>(DEFAULT_MARKETPLACE_SORT_ORDER);
   const [page, setPage] = useState(1);
   const [isFilterCategoryModalVisible, setIsFilterCategoryModalVisible] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>(undefined);
@@ -88,7 +86,6 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   });
 
   const solutionTabs = useMemo(() => marketplaceCarouselOptions, [marketplaceCarouselOptions]);
-  const orderOptions = useMemo(() => getMarketplaceSortOptions(t), [t]);
 
   const isProgramsTab = selectedSolutionTab === 'programs';
 
@@ -168,10 +165,6 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       setSelectedSolutionTab(tabId as MarketplaceSolutionTab);
     }
     setPage(1);
-  };
-
-  const handleOrderSelect = (orderId: string) => {
-    setSelectedOrder(orderId);
   };
 
   const handleFilterCategoryApply = (result: FilterCategoryResult) => {
@@ -274,8 +267,8 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   );
 
   const sortedAds = useMemo(() => {
-    return sortAdsByMarketplaceOrder(ads, selectedOrder as MarketplaceSortOrderId);
-  }, [ads, selectedOrder]);
+    return sortAdsByMarketplaceOrder(ads, DEFAULT_MARKETPLACE_SORT_ORDER as MarketplaceSortOrderId);
+  }, [ads]);
 
   const filteredAdsBySolution = useMemo(() => {
     return sortedAds.filter((ad) => {
@@ -402,7 +395,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
 
   const renderAllAds = () => (
     <AdsList
-      solutionTabs={solutionTabs}
+      suppressInlineListChrome
       selectedTabId={selectedSolutionTab}
       onTabChange={handleSolutionTabChange}
       ads={listAdsForCurrentTab}
@@ -411,9 +404,6 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       hasMore={hasMore}
       onLoadMore={() => setPage((prev) => prev + 1)}
       navigation={navigation}
-      orderOptions={orderOptions}
-      selectedOrder={selectedOrder}
-      onOrderSelect={handleOrderSelect}
       emptyActionLabel={t('home.clearFilters')}
       onEmptyActionPress={handleClearFilterCategory}
     />
