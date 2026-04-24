@@ -97,12 +97,12 @@ jobs:
           echo "build_id=$BUILD_ID" >> "$GITHUB_OUTPUT"
 
   build-ios:
-    name: Build iOS
-    runs-on: ubuntu-latest
+    name: Build iOS (Xcode Production)
+    runs-on: macos-latest
     needs: test
     if: ${{ !failure() && !cancelled() }}
-    outputs:
-      build_id: ${{ steps.build.outputs.build_id }}
+    env:
+      SKIP_IOS_POD_INSTALL: 'false'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -119,24 +119,18 @@ jobs:
       - name: Validar Sign in with Apple na config iOS (EAS capability sync)
         run: npm run assert:ios-apple-signin
 
-      - name: Setup EAS CLI
-        uses: expo/expo-github-action@v8
-        with:
-          eas-version: 18.7.0
-          token: ${{ secrets.EXPO_TOKEN }}
-          packager: npm
+      - name: Xcode — build (Production)
+        run: npm run ios:xcode:build:production
 
-      - name: Build iOS (Production)
-        id: build
-        run: |
-          set -euo pipefail
-          OUTPUT=$(eas build --platform ios --profile production --non-interactive --clear-cache --json)
-          BUILD_ID=$(echo "$OUTPUT" | jq -r '.[0].id // empty')
-          if [ -z "$BUILD_ID" ] || [ "$BUILD_ID" = "null" ]; then
-            echo "::error::eas build (iOS) não retornou id de build."
-            exit 1
-          fi
-          echo "build_id=$BUILD_ID" >> "$GITHUB_OUTPUT"
+      - name: Xcode — archive (Production)
+        run: npm run ios:xcode:archive:production
+
+      - name: Upload Xcode archive (.xcarchive)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-xcarchive
+          path: ios/build/LikeMe.xcarchive
+          if-no-files-found: error
 
   approve:
     name: Aprovar envio para lojas
@@ -149,6 +143,57 @@ jobs:
     steps:
       - name: Aguardando aprovação
         run: echo "Deploy aprovado. Seguindo para submit."
+
+  export-ios-ipa:
+    name: iOS — export IPA (pós-aprovação)
+    runs-on: macos-latest
+    needs: [approve, build-ios]
+    if: >-
+      ${{ !failure() && !cancelled() &&
+          (github.event_name == 'push' || github.event.inputs.submit_to_stores != 'false') }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.19.4'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download Xcode archive
+        uses: actions/download-artifact@v4
+        with:
+          name: ios-xcarchive
+          path: archive-dl
+
+      - name: Colocar .xcarchive no path do export
+        run: |
+          set -euo pipefail
+          mkdir -p ios/build
+          rm -rf ios/build/LikeMe.xcarchive
+          if [ -d archive-dl/LikeMe.xcarchive ]; then
+            mv archive-dl/LikeMe.xcarchive ios/build/LikeMe.xcarchive
+          elif [ -d archive-dl/ios/build/LikeMe.xcarchive ]; then
+            mv archive-dl/ios/build/LikeMe.xcarchive ios/build/LikeMe.xcarchive
+          else
+            echo "::error::LikeMe.xcarchive não encontrado no artefato ios-xcarchive."
+            find archive-dl -maxdepth 5 -type d
+            exit 1
+          fi
+
+      - name: Xcode — export IPA (App Store)
+        run: npm run ios:xcode:export
+
+      - name: Upload IPA (iOS)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-ipa
+          path: ios/build/export/*.ipa
+          if-no-files-found: error
 
   submit-android:
     name: Submit Android → Play Store
@@ -193,7 +238,7 @@ jobs:
   submit-ios:
     name: Submit iOS → TestFlight
     runs-on: ubuntu-latest
-    needs: [approve, build-ios]
+    needs: [approve, export-ios-ipa]
     if: >-
       ${{ !failure() && !cancelled() &&
           (github.event_name == 'push' || github.event.inputs.submit_to_stores != 'false') }}
@@ -210,6 +255,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Download IPA (export pós-aprovação)
+        uses: actions/download-artifact@v4
+        with:
+          name: ios-ipa
+          path: ios-ipa
+
       - name: Setup EAS CLI
         uses: expo/expo-github-action@v8
         with:
@@ -220,12 +271,13 @@ jobs:
       - name: Create App Store Connect API Key file
         run: echo '${{ secrets.ASC_API_KEY_P8 }}' > ./AuthKey_6QJ886URZD.p8
 
-      - name: Submit to TestFlight
+      - name: Submit to TestFlight (IPA local do workflow)
         run: |
           set -euo pipefail
-          BUILD_ID='${{ needs.build-ios.outputs.build_id }}'
-          if [ -z "$BUILD_ID" ]; then
-            echo "::error::build_id do job build-ios está vazio; não use submit sem artefato deste pipeline."
+          IPA="$(find ios-ipa -name '*.ipa' -print | head -n 1)"
+          if [ -z "$IPA" ]; then
+            echo "::error::Nenhum .ipa encontrado no artefato ios-ipa."
             exit 1
           fi
-          eas submit --platform ios --profile production --id "$BUILD_ID" --non-interactive
+          echo "Submetendo: $IPA"
+          eas submit --platform ios --profile production --path "$IPA" --non-interactive

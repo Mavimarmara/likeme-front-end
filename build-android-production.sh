@@ -67,7 +67,8 @@ elif [ -n "$ANDROID_KEYSTORE_STORE_PASSWORD" ]; then
 	echo ""
 fi
 
-# Prebuild
+# Prebuild (sem expo-dev-client — alinhado a builds de loja / eas store-common)
+export EXCLUDE_EXPO_DEV_CLIENT=1
 echo ""
 echo "📦 Executando prebuild..."
 npx expo prebuild --platform android --clean

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "340329517876",
+    "project_id": "likeme-2a401",
+    "storage_bucket": "likeme-2a401.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:340329517876:android:2092efc418910dc28b0b61",
+        "android_client_info": {
+          "package_name": "com.likeme.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBX5Lb6UPt5Vfe6sBp1ufE4Kdspm1Jilss"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

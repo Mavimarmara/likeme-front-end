@@ -144,9 +144,22 @@ vite.config.ts.timestamp-*
 dist/
 build-*.apk
 
-# Android/iOS (gerados pelo expo prebuild)
-android/
-ios/
+# Android — versionar o projeto; ignorar saídas, IDE local e segredos
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/.idea/
+android/*.iml
+android/captures/
+
+# iOS — versionar o projeto; ignorar Pods, builds e estado local do Xcode
+ios/Pods/
+ios/build/
+ios/**/xcuserdata/
+ios/**/*.xcuserstate
+ios/.xcode.env.local
+
 devices.json
 
 # Keystore de produção (NUNCA commitar!)
