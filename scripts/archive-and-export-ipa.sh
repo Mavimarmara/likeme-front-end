@@ -26,6 +26,9 @@ usage() {
   echo "  SKIP_ARCHIVE=1       só exporta (archive já existe em IOS_ARCHIVE_PATH)"
   echo "  SKIP_EXPORT=1        só gera o .xcarchive (não exporta IPA)"
   echo ""
+  echo "IPA de loja (sem expo-dev-client): na raiz do front-end, rode antes:"
+  echo "  npm run ios:pod-install:store"
+  echo ""
   echo "Submit para a App Store: use Xcode Organizer, Transporter, ou npm run submit:ios (EAS)."
 }
 

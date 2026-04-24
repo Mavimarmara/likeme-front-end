@@ -119,9 +119,6 @@ jobs:
       - name: Validar Sign in with Apple na config iOS (EAS capability sync)
         run: npm run assert:ios-apple-signin
 
-      - name: CocoaPods (ios)
-        run: cd ios && pod install
-
       - name: Xcode — build (Production)
         run: npm run ios:xcode:build:production
 
