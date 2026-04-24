@@ -40,12 +40,6 @@
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="com.likeme.app.auth0" android:pathPrefix="/android/com.likeme.app/callback" android:host="likeme.us.auth0.com"/>
-        <data android:scheme="com.likeme.app.auth0" android:pathPrefix="/android/com.likeme.app/callback" android:host="likeme.us.auth0.com"/>
-        <data android:scheme="com.likeme.app.auth0" android:pathPrefix="/android/com.likeme.app/callback" android:host="likeme.us.auth0.com"/>
-        <data android:scheme="com.likeme.app.auth0" android:pathPrefix="/android/com.likeme.app/callback" android:host="likeme.us.auth0.com"/>
-        <data android:scheme="com.likeme.app.auth0" android:pathPrefix="/android/com.likeme.app/callback" android:host="likeme.us.auth0.com"/>
-        <data android:scheme="com.likeme.app.auth0" android:pathPrefix="/android/com.likeme.app/callback" android:host="likeme.us.auth0.com"/>
-        <data android:scheme="com.likeme.app.auth0" android:pathPrefix="/android/com.likeme.app/callback" android:host="likeme.us.auth0.com"/>
       </intent-filter>
     </activity>
   </application>

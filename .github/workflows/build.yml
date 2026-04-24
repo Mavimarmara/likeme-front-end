@@ -189,7 +189,7 @@ jobs:
           fi
 
       - name: Xcode — export IPA (App Store)
-        run: npm run ios:xcode:distribute
+        run: npm run ios:xcode:export
 
       - name: Upload IPA (iOS)
         uses: actions/upload-artifact@v4
