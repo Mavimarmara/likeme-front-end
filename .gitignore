@@ -146,7 +146,8 @@ build-*.apk
 
 # Android/iOS (gerados pelo expo prebuild)
 android/
-ios/
+ios/**
+!ios/ExportOptions-AppStore.plist
 devices.json
 
 # Keystore de produção (NUNCA commitar!)
