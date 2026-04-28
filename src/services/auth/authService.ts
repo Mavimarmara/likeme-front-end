@@ -102,6 +102,8 @@ class AuthService {
 
       const baseExtraParams: Record<string, string> = {
         ui_locales: 'pt-BR',
+        prompt: 'login',
+        max_age: '0',
       };
 
       const extraParams =
@@ -121,7 +123,9 @@ class AuthService {
       console.log('Auth request redirect URI:', request.redirectUri);
 
       console.log('Prompting for authentication...');
-      const result = await request.promptAsync(discovery);
+      const result = await request.promptAsync(discovery, {
+        preferEphemeralSession: true,
+      });
       console.log('Auth result type:', result.type);
       console.log('Auth result:', JSON.stringify(result, null, 2));
 
@@ -239,6 +243,14 @@ class AuthService {
       if (isLoginUserAbortError(error)) {
         throw error;
       }
+
+      try {
+        await storageService.clearAll();
+        invalidateApiClientAuthTokenMemoryCache();
+      } catch (clearError) {
+        logger.warn('Falha ao limpar sessão local após erro de login', { cause: clearError });
+      }
+
       logger.error('Login error:', error);
       logger.error('Error details:', {
         message: error instanceof Error ? error.message : String(error),
