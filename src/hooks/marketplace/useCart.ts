@@ -2,6 +2,7 @@ import { useState, useCallback, useMemo } from 'react';
 import storageService from '@/services/auth/storageService';
 import productService from '@/services/product/productService';
 import type { CartItem } from '@/types/cart';
+import { logger } from '@/utils/logger';
 
 export type UseCartOptions = {
   /** Chamado quando o carrinho fica vazio após remover item (ex.: navegar para Cart) */
@@ -32,7 +33,7 @@ export function useCart(options: UseCartOptions = {}): UseCartReturn {
       const items = await storageService.getCartItems();
       setCartItems(items);
     } catch (error) {
-      console.error('Error loading cart items:', error);
+      logger.error('[useCart] Erro ao carregar itens do carrinho', error);
     } finally {
       setLoading(false);
     }
@@ -86,7 +87,7 @@ export function useCart(options: UseCartOptions = {}): UseCartReturn {
 
       setCartItems(validatedItems);
     } catch (error) {
-      console.error('Error loading/validating cart items:', error);
+      logger.error('[useCart] Erro ao carregar/validar itens do carrinho', error);
     } finally {
       setLoading(false);
     }

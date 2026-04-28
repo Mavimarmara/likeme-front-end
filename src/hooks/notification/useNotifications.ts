@@ -19,9 +19,7 @@ export function useNotifications(options: UseNotificationsOptions = {}) {
       const success = await notificationService.registerDevice();
       registered.current = success;
 
-      if (__DEV__) {
-        console.log(`[useNotifications] Registro: ${success ? 'OK' : 'falhou'}`);
-      }
+      logger.debug('[useNotifications] registro de dispositivo', { success });
     } catch (error) {
       logger.error('[useNotifications] Erro no registro:', error);
     }
@@ -31,7 +29,7 @@ export function useNotifications(options: UseNotificationsOptions = {}) {
     registerDevice();
 
     const foregroundUnsub = notificationService.onForegroundMessage((message) => {
-      if (__DEV__) console.log('[useNotifications] Foreground:', message);
+      logger.debug('[useNotifications] foreground', message);
 
       if (onNotificationReceived) {
         onNotificationReceived(message);
@@ -41,13 +39,13 @@ export function useNotifications(options: UseNotificationsOptions = {}) {
     });
 
     const openedUnsub = notificationService.onNotificationOpened((message) => {
-      if (__DEV__) console.log('[useNotifications] Opened:', message);
+      logger.debug('[useNotifications] opened', message);
       onNotificationOpened?.(message);
     });
 
     notificationService.getInitialNotification().then((message) => {
       if (message) {
-        if (__DEV__) console.log('[useNotifications] Initial:', message);
+        logger.debug('[useNotifications] initial', message);
         onNotificationOpened?.(message);
       }
     });

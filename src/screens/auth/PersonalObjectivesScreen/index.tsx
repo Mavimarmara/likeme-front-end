@@ -13,6 +13,7 @@ import { useAnalyticsScreen, logEvent } from '@/analytics';
 import { CUSTOM_EVENTS, ANALYTICS_PARAMS } from '@/analytics/constants';
 import type { RootStackParamList } from '@/types/navigation';
 import { getNextOnboardingScreen } from '@/utils';
+import { logger } from '@/utils/logger';
 import { useMarkers, objectiveNameToMarkerId } from './useMarkers';
 import { styles } from './styles';
 import { getMarkerGradient } from '@/constants/markers';
@@ -27,7 +28,7 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
   const { markers } = useMarkers();
   const [selectedMarkers, setSelectedMarkers] = useState<Set<string>>(new Set());
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [betaBannerVisible, setBetaBannerVisible] = useState(true);
+  const [welcomeHighlightVisible, setWelcomeHighlightVisible] = useState(true);
   const { width: windowWidth } = useWindowDimensions();
 
   const adornmentStyle = useMemo(() => {
@@ -49,13 +50,13 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
           return;
         }
       } catch (error) {
-        console.error('[PersonalObjectivesScreen] Falha ao carregar objetivos do backend.', error);
+        logger.error('[PersonalObjectivesScreen] Falha ao carregar objetivos do backend.', error);
       }
       try {
         const ids = await storageService.getSelectedObjectivesIds();
         if (ids.length > 0) setSelectedMarkers(new Set(ids));
       } catch (error) {
-        console.error('[PersonalObjectivesScreen] Falha ao carregar objetivos salvos localmente.', error);
+        logger.error('[PersonalObjectivesScreen] Falha ao carregar objetivos salvos localmente.', error);
       }
     };
     loadSelection();
@@ -115,15 +116,15 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
         <View style={styles.content}>
           <Image source={GradientSplash6} style={[styles.titleAdornment, adornmentStyle]} resizeMode='contain' />
           <Text style={styles.greeting}>{firstName},</Text>
-          {betaBannerVisible && (
+          {welcomeHighlightVisible && (
             <CTACard
               title={t('auth.personalObjectivesCardTitle')}
-              titleStyle={styles.betaCardTitle}
+              titleStyle={styles.highlightCardTitle}
               highlightText={t('auth.personalObjectivesCardHighlightText')}
               description={t('auth.personalObjectivesCardDescription')}
               backgroundColor={COLORS.HIGHLIGHT.LIGHT}
               style={styles.ctaCard}
-              onClose={() => setBetaBannerVisible(false)}
+              onClose={() => setWelcomeHighlightVisible(false)}
             />
           )}
           <View style={styles.instructionBlock}>

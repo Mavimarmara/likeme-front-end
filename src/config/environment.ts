@@ -1,3 +1,5 @@
+import { logger } from '@/utils/logger';
+
 function pickStringFromRecord(record: unknown, key: string): string | undefined {
   if (!record || typeof record !== 'object') {
     return undefined;
@@ -53,9 +55,7 @@ const getEnvVar = (key: string, defaultValue?: string): string => {
   }
 
   if (!defaultValue || defaultValue.includes('your-')) {
-    if (typeof console !== 'undefined' && console.warn) {
-      console.warn(`[ENV] ⚠️ Variável ${key} não encontrada. Usando default: ${defaultValue || 'vazio'}`);
-    }
+    logger.warn(`[ENV] Variável ${key} não encontrada. Usando default: ${defaultValue || 'vazio'}`);
   }
 
   return defaultValue || '';

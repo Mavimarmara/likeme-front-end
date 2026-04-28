@@ -139,7 +139,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleProductLike = (product: Product) => {
-    console.log('Curtir produto:', product.id);
+    logger.debug('[CommunityScreen] product like (stub)', { productId: product.id });
   };
 
   const handleProfessionalPress = (advertiser: Advertiser) => {
@@ -171,15 +171,15 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleLivePress = (live: LiveBannerData) => {
-    console.log('Navegar para live:', live.id);
+    logger.debug('[CommunityScreen] live press (stub)', { liveId: live.id });
   };
 
   const handleEventPress = (event: Event) => {
-    console.log('Navegar para evento:', event.id);
+    logger.debug('[CommunityScreen] event press (stub)', { eventId: event.id });
   };
 
   const handleEventSave = (event: Event) => {
-    console.log('Salvar evento:', event.id);
+    logger.debug('[CommunityScreen] event save (stub)', { eventId: event.id });
   };
 
   const handleLoadMore = useCallback(() => {

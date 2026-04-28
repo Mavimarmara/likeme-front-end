@@ -1,4 +1,5 @@
 import { FEATURE_FLAG_DEFAULTS, type FeatureFlagKey } from '@/constants';
+import { logger } from '@/utils/logger';
 
 const REMOTE_CONFIG_FETCH_TIMEOUT_MS = 12_000;
 
@@ -29,14 +30,14 @@ function getRemoteConfigInstance(): RemoteConfigInstance | null {
 function runFetchAndActivateInBackground(remoteConfig: RemoteConfigInstance, context: string): void {
   const pending = remoteConfig.fetchAndActivate();
   const slowLogTimer = setTimeout(() => {
-    console.warn(
+    logger.warn(
       `[FeatureFlags] ${context}: fetchAndActivate ainda em andamento após ${REMOTE_CONFIG_FETCH_TIMEOUT_MS}ms; UI segue com defaults/cache.`,
     );
   }, REMOTE_CONFIG_FETCH_TIMEOUT_MS);
 
   void pending
     .catch((error) => {
-      console.warn(`[FeatureFlags] ${context}: fetchAndActivate falhou:`, error);
+      logger.warn(`[FeatureFlags] ${context}: fetchAndActivate falhou:`, error);
     })
     .finally(() => {
       clearTimeout(slowLogTimer);
@@ -60,7 +61,7 @@ async function awaitFetchWithTimeout(remoteConfig: RemoteConfigInstance, context
       timeoutPromise,
     ]);
   } catch (error) {
-    console.warn(`[FeatureFlags] ${context}:`, error);
+    logger.warn(`[FeatureFlags] ${context}:`, error);
     void fetchPromise.catch(() => undefined);
   }
 }
@@ -77,13 +78,13 @@ class FeatureFlagService {
             minimumFetchIntervalMillis: __DEV__ ? 0 : 3_600_000,
           });
         } catch (error) {
-          console.warn('[FeatureFlags] Erro ao configurar Remote Config:', error);
+          logger.warn('[FeatureFlags] Erro ao configurar Remote Config:', error);
         }
 
         try {
           await remoteConfig.setDefaults(FEATURE_FLAG_DEFAULTS);
         } catch (error) {
-          console.warn('[FeatureFlags] Erro ao aplicar defaults locais:', error);
+          logger.warn('[FeatureFlags] Erro ao aplicar defaults locais:', error);
         }
 
         runFetchAndActivateInBackground(remoteConfig, 'init');
@@ -132,7 +133,7 @@ class FeatureFlagService {
 
       return value.asBoolean();
     } catch (error) {
-      console.warn(`[FeatureFlags] Erro ao ler flag "${flagKey}":`, error);
+      logger.warn(`[FeatureFlags] Erro ao ler flag "${flagKey}":`, error);
       return defaultValue;
     }
   }

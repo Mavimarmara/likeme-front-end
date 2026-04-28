@@ -6,11 +6,12 @@ Este projeto utiliza `react-i18next` para gerenciar traduções e internacionali
 
 ```
 src/i18n/
-├── index.ts              # Configuração do i18n
-├── locales/
-│   └── pt-BR.json        # Traduções em português brasileiro
+├── index.ts              # Configuração do i18n (fallback mínimo + lng)
+├── hydration.ts          # Cache + GET /api/i18n/labels
 └── README.md             # Esta documentação
 ```
+
+Textos de UI vêm do backend (`i18n_bundle`), expostos pela API e aplicados em `hydration.ts`. O bootstrap local em `index.ts` mantém só um fallback mínimo (ex.: taglines do loading) até a hidratação.
 
 ## 🚀 Como Usar
 
@@ -63,36 +64,23 @@ As chaves seguem a estrutura hierárquica:
 - `errors.*` - Mensagens de erro
 - `validation.*` - Validações
 
-## 🔧 Adicionar Novas Traduções
+## 🔧 Adicionar ou alterar traduções
 
-1. Abra `src/i18n/locales/pt-BR.json`
-2. Adicione a chave no namespace apropriado
-3. Use a chave no código com `t('namespace.key')`
+1. Cadastre ou atualize chaves no backend (`PUT /api/i18n/labels?lang=pt-BR` ou admin equivalente). O `prisma/seed` não atualiza `i18n_bundle`.
+2. Use a chave no código com `t('namespace.key')`.
 
-### Exemplo:
-
-```json
-{
-  "common": {
-    "newButton": "Novo Botão"
-  }
-}
-```
+### Exemplo no app:
 
 ```typescript
 <Text>{t('common.newButton')}</Text>
 ```
 
-## 🌍 Adicionar Novos Idiomas
+## 🌍 Novos idiomas
 
-1. Crie um novo arquivo em `src/i18n/locales/` (ex: `en-US.json`)
-2. Copie a estrutura do `pt-BR.json`
-3. Traduza os valores
-4. Adicione o idioma em `src/i18n/index.ts`:
+Exige suporte no backend (bundle por `locale`), na API de labels e ajuste de `lng`/hidratação no app quando o produto suportar outro idioma além de `pt-BR`.
 
 ```typescript
-import enUS from './locales/en-US.json';
-
+// Exemplo histórico (não é o fluxo atual): resources estáticos por arquivo JSON
 i18n.init({
   resources: {
     'pt-BR': { translation: ptBR },

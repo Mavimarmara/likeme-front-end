@@ -4,6 +4,7 @@
  * Baixo acoplamento com UI: telas/hooks chamam apenas este serviço.
  */
 
+import { logger } from '@/utils/logger';
 import { GA4_EVENTS, CUSTOM_EVENTS, ANALYTICS_PARAMS } from './constants';
 import type { AnalyticsEventParams } from './types';
 
@@ -33,9 +34,7 @@ function hasConfiguredFirebaseApp(): boolean {
     firebaseAppModule?.app();
     return true;
   } catch (error) {
-    if (__DEV__) {
-      console.warn('[Analytics] Firebase App não inicializado. Analytics será ignorado.', error);
-    }
+    logger.warn('[Analytics] Firebase App não inicializado. Analytics será ignorado.', error);
     return false;
   }
 }
@@ -71,9 +70,7 @@ export function logScreenView(screenName: string, screenClass?: string): void {
   if (!analytics) return;
 
   if (!isNonEmptyString(screenName)) {
-    if (__DEV__) {
-      console.warn('[Analytics] screen_view ignorado: screen_name inválido.');
-    }
+    logger.warn('[Analytics] screen_view ignorado: screen_name inválido.');
     return;
   }
 
@@ -85,7 +82,7 @@ export function logScreenView(screenName: string, screenClass?: string): void {
   try {
     analytics().logEvent(GA4_EVENTS.SCREEN_VIEW, params);
   } catch (e) {
-    if (__DEV__) console.warn('[Analytics] logScreenView error:', e);
+    logger.warn('[Analytics] logScreenView error:', e);
   }
 }
 
@@ -98,9 +95,7 @@ export function logEvent(eventName: string, params?: AnalyticsEventParams): void
   if (!analytics) return;
 
   if (!isNonEmptyString(eventName)) {
-    if (__DEV__) {
-      console.warn('[Analytics] evento ignorado: eventName inválido.');
-    }
+    logger.warn('[Analytics] evento ignorado: eventName inválido.');
     return;
   }
 
@@ -110,7 +105,7 @@ export function logEvent(eventName: string, params?: AnalyticsEventParams): void
   try {
     analytics().logEvent(sanitizedEventName, safeParams);
   } catch (e) {
-    if (__DEV__) console.warn('[Analytics] logEvent error:', { eventName: sanitizedEventName, params: safeParams, e });
+    logger.warn('[Analytics] logEvent error:', { eventName: sanitizedEventName, params: safeParams, e });
   }
 }
 

@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { chatService } from '@/services';
+import { logger } from '@/utils/logger';
 import type { Channel } from '@/types/community';
 
 export interface ChatConversation {
@@ -73,7 +74,7 @@ export function useChat(options: UseChatOptions = {}) {
         setChannels([]);
       }
     } catch (err) {
-      console.error('[useChat] Error loading channels:', err);
+      logger.error('[useChat] Erro ao carregar canais', err);
       setChannels([]);
       setError(err instanceof Error ? err.message : 'Erro ao carregar conversas');
     } finally {

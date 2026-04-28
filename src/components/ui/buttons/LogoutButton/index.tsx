@@ -1,6 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, Text, ActivityIndicator } from 'react-native';
 import { AuthService } from '@/services';
+import { logger } from '@/utils/logger';
 import { styles } from './styles';
 
 interface LogoutButtonProps {
@@ -17,7 +18,7 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({ onPress, label = 'Log out',
     try {
       await AuthService.logout();
     } catch (e) {
-      console.log(e);
+      logger.error('[LogoutButton] Falha no logout', e);
     } finally {
       setIsLoading(false);
 

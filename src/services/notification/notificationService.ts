@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import { logger } from '@/utils/logger';
 import notificationApiService from './notificationApiService';
 
 type FirebaseMessagingModule = {
@@ -48,7 +49,7 @@ function getMessaging(): FirebaseMessagingModule | null {
     messagingModule = mod;
     return mod;
   } catch {
-    if (__DEV__) console.log('[Notification] Firebase Messaging não disponível (Expo Go)');
+    logger.debug('[Notification] Firebase Messaging não disponível (Expo Go)');
     messagingModule = null;
     return null;
   }
@@ -68,7 +69,7 @@ class NotificationService {
 
       return authStatus === AuthorizationStatus.AUTHORIZED || authStatus === AuthorizationStatus.PROVISIONAL;
     } catch (error) {
-      if (__DEV__) console.warn('[Notification] Erro ao solicitar permissão:', error);
+      logger.warn('[Notification] Erro ao solicitar permissão:', error);
       return false;
     }
   }
@@ -81,7 +82,7 @@ class NotificationService {
       const token = await messaging().getToken();
       return token;
     } catch (error) {
-      if (__DEV__) console.warn('[Notification] Erro ao obter token:', error);
+      logger.warn('[Notification] Erro ao obter token:', error);
       return null;
     }
   }
@@ -89,23 +90,23 @@ class NotificationService {
   async registerDevice(): Promise<boolean> {
     const hasPermission = await this.requestPermission();
     if (!hasPermission) {
-      if (__DEV__) console.log('[Notification] Permissão negada');
+      logger.debug('[Notification] Permissão negada');
       return false;
     }
 
     const token = await this.getToken();
     if (!token) {
-      if (__DEV__) console.warn('[Notification] Token FCM não obtido');
+      logger.warn('[Notification] Token FCM não obtido');
       return false;
     }
 
     try {
       const platform = Platform.OS === 'ios' ? 'ios' : 'android';
       await notificationApiService.registerToken(token, platform);
-      if (__DEV__) console.log('[Notification] Dispositivo registrado');
+      logger.debug('[Notification] Dispositivo registrado');
       return true;
     } catch (error) {
-      if (__DEV__) console.warn('[Notification] Erro ao registrar dispositivo:', error);
+      logger.warn('[Notification] Erro ao registrar dispositivo:', error);
       return false;
     }
   }
@@ -116,7 +117,7 @@ class NotificationService {
       try {
         await notificationApiService.unregisterToken(token);
       } catch (error) {
-        if (__DEV__) console.warn('[Notification] Erro ao desregistrar dispositivo:', error);
+        logger.warn('[Notification] Erro ao desregistrar dispositivo:', error);
       }
     }
 
@@ -125,14 +126,14 @@ class NotificationService {
       try {
         await messaging().deleteToken();
       } catch (error) {
-        if (__DEV__) console.warn('[Notification] Erro ao deletar token FCM:', error);
+        logger.warn('[Notification] Erro ao deletar token FCM:', error);
       }
     }
   }
 
   onForegroundMessage(handler: NotificationHandler): () => void {
     const messaging = getMessaging();
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
+
     if (!messaging) return () => {};
 
     this.foregroundUnsubscribe = messaging().onMessage(handler);
@@ -141,7 +142,7 @@ class NotificationService {
 
   onNotificationOpened(handler: NotificationHandler): () => void {
     const messaging = getMessaging();
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
+
     if (!messaging) return () => {};
 
     this.openedAppUnsubscribe = messaging().onNotificationOpenedApp(handler);

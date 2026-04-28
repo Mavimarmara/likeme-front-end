@@ -74,7 +74,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
         }
       }
     } catch (error) {
-      console.error('Error loading user address:', error);
+      logger.error('[CheckoutScreen] Erro ao carregar endereço do usuário', error);
       setAddressLoadError(t('checkout.addressLoadError'));
     } finally {
       setAddressLoaded(true);
@@ -226,7 +226,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
       await storageService.clearCart();
       setCurrentStep('order');
     } catch (error: any) {
-      console.error('Error completing order:', error);
+      logger.error('[CheckoutScreen] Erro ao concluir pedido', error);
       Alert.alert(t('errors.error'), t('checkout.orderError'));
     } finally {
       payment.setIsProcessing(false);

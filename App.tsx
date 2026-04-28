@@ -126,7 +126,7 @@ const App: React.FC = () => {
       try {
         await NavigationBar.setVisibilityAsync('hidden');
       } catch (error) {
-        console.warn('[App] Falha ao ocultar barra de navegacao do Android:', error);
+        logger.warn('[App] Falha ao ocultar barra de navegacao do Android:', error);
       }
     };
 

@@ -7,6 +7,7 @@ import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen } from '@/analytics';
 import { AuthService, storageService } from '@/services';
 import { COLORS } from '@/constants';
+import { logger } from '@/utils/logger';
 import { styles } from './styles';
 
 /** Parse "text **bold** more" into segments for rendering bold in React Native Text */
@@ -69,9 +70,7 @@ const PrivacyPoliciesScreen: React.FC<Props> = ({ navigation, route }) => {
       await storageService.setPrivacyPolicyAcceptedAt(acceptedAt);
       await AuthService.acceptPrivacyPolicy(acceptedAt);
     } catch (error) {
-      if (__DEV__ && error instanceof Error) {
-        console.warn('[PrivacyPolicies] acceptPrivacyPolicy:', error.message);
-      }
+      logger.warn('[PrivacyPolicies] acceptPrivacyPolicy falhou (aceite local já gravado)', error);
       // Aceite já salvo no storage; mesmo se o backend falhar, segue para Register
     } finally {
       setIsSubmitting(false);

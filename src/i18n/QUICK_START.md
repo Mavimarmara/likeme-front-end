@@ -4,8 +4,7 @@
 
 1. **Estrutura de pastas**:
 
-   - `src/i18n/` - Configuração do i18n
-   - `src/i18n/locales/pt-BR.json` - Todas as traduções em português
+   - `src/i18n/` - Configuração do i18n e hidratação via API (`hydration.ts`)
    - `src/hooks/i18n/` - Hook customizado para usar traduções
 
 2. **Arquivos de configuração**:
@@ -73,5 +72,5 @@ const { t } = useTranslation();
 ## ⚠️ Importante
 
 - O i18n já está inicializado no `App.tsx`
-- Todas as traduções estão em `pt-BR.json`
+- Traduções vêm do backend (`/api/i18n/labels`) e cache local; fallback mínimo em `index.ts`
 - Use sempre o hook `useTranslation` para acessar traduções

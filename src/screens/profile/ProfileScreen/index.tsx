@@ -36,7 +36,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
       const storedUser = await storageService.getUser();
       setUser(storedUser);
     } catch (error) {
-      console.error('Error loading user:', error);
+      logger.error('[ProfileScreen] Erro ao carregar usuário', error);
     } finally {
       setLoading(false);
     }

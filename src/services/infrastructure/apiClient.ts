@@ -24,11 +24,11 @@ class ApiClient {
 
   private logAuthHeader(method: string, endpoint: string, headers: Record<string, string>) {
     const authorization = headers.Authorization;
-    if (authorization) {
-      console.log(`[Auth] ${method.toUpperCase()} ${endpoint} usando token: ${authorization}`);
-    } else {
-      console.log(`[Auth] ${method.toUpperCase()} ${endpoint} sem token no header`);
-    }
+    logger.debug('[ApiClient] request', {
+      method: method.toUpperCase(),
+      endpoint,
+      hasAuthorization: Boolean(authorization),
+    });
   }
 
   private async resolveAuthTokenForRequest(): Promise<string | null> {
@@ -147,7 +147,9 @@ class ApiClient {
         return false;
       }
 
-      console.log('[Auth] tokenId recebido:', newToken);
+      logger.debug('[ApiClient] token de sessão renovado', {
+        tokenLength: typeof newToken === 'string' ? newToken.length : 0,
+      });
 
       await storageService.setToken(newToken);
       this.authTokenMemory = newToken;

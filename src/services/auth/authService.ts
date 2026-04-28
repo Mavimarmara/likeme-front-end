@@ -67,8 +67,7 @@ class AuthService {
         );
       }
 
-      console.log('Starting login with domain:', AUTH0_CONFIG.domain);
-      console.log('Redirect URI:', this.getRedirectUri());
+      logger.debug('[AuthService] login start', { domain: AUTH0_CONFIG.domain, redirectUri: this.getRedirectUri() });
 
       let discovery;
       try {
@@ -94,11 +93,10 @@ class AuthService {
         throw new Error('Falha ao descobrir endpoints do Auth0');
       }
 
-      console.log('Discovery successful');
+      logger.debug('[AuthService] Auth0 discovery ok');
 
       const redirectUri = this.getRedirectUri();
-      console.log('Auth config useAuthProxy:', AUTH_CONFIG.useAuthProxy);
-      console.log('Auth redirect URI (fixo, não muda entre deploys):', redirectUri);
+      logger.debug('[AuthService] redirect', { useAuthProxy: AUTH_CONFIG.useAuthProxy, redirectUri });
 
       const baseExtraParams: Record<string, string> = {
         ui_locales: 'pt-BR',
@@ -120,14 +118,13 @@ class AuthService {
         extraParams,
       });
 
-      console.log('Auth request redirect URI:', request.redirectUri);
+      logger.debug('[AuthService] AuthRequest.redirectUri', request.redirectUri);
 
-      console.log('Prompting for authentication...');
+      logger.debug('[AuthService] prompting AuthSession');
       const result = await request.promptAsync(discovery, {
         preferEphemeralSession: true,
       });
-      console.log('Auth result type:', result.type);
-      console.log('Auth result:', JSON.stringify(result, null, 2));
+      logger.debug('[AuthService] prompt result', { type: result.type });
 
       if (result.type !== 'success') {
         if (result.type === 'cancel' || result.type === 'dismiss') {
@@ -152,15 +149,16 @@ class AuthService {
 
       let tokenResponse;
       try {
-        console.log('Exchanging code for token...');
-        console.log('Request code:', result.params.code);
-        console.log('Request state:', result.params.state);
+        logger.debug('[AuthService] exchanging authorization code for tokens', {
+          hasCode: typeof result.params.code === 'string' && result.params.code.length > 0,
+          hasState: typeof result.params.state === 'string' && result.params.state.length > 0,
+        });
 
         const codeVerifier = (request as any).codeVerifier;
         if (!codeVerifier) {
           throw new Error('code_verifier não encontrado no request. O PKCE pode não ter sido gerado corretamente.');
         }
-        console.log('Code verifier found:', codeVerifier ? 'Yes' : 'No');
+        logger.debug('[AuthService] PKCE code_verifier disponível');
 
         tokenResponse = await withTimeout(
           AuthSession.exchangeCodeAsync(
@@ -177,7 +175,7 @@ class AuthService {
           AUTH0_TOKEN_EXCHANGE_TIMEOUT_MS,
           'Auth0 token exchange',
         );
-        console.log('Token exchange successful');
+        logger.debug('[AuthService] token exchange concluído');
       } catch (error) {
         logger.error('Token exchange error:', error);
         if (error instanceof Error) {
@@ -201,8 +199,7 @@ class AuthService {
         );
       }
 
-      console.log('idToken received, length:', tokenResponse.idToken.length);
-      console.log('idToken preview:', tokenResponse.idToken.substring(0, 50) + '...');
+      logger.debug('[AuthService] idToken recebido', { length: tokenResponse.idToken.length });
 
       const userInfoResponse = await fetchWithTimeout(
         this.getUserInfoUrl(),
@@ -329,9 +326,11 @@ class AuthService {
   async validateToken(authResult: AuthResult): Promise<any> {
     try {
       const url = getApiUrl('/api/auth/login');
-      console.log('Validating token with backend:', url);
-      console.log('Token length:', authResult.idToken.length);
-      console.log('Token parts:', authResult.idToken.split('.').length);
+      logger.debug('[AuthService] validateToken → backend', {
+        url,
+        idTokenLength: authResult.idToken.length,
+        idTokenParts: authResult.idToken.split('.').length,
+      });
 
       // Decode token header to check for kid
       try {
@@ -340,11 +339,10 @@ class AuthService {
           const header = JSON.parse(
             (globalThis as typeof globalThis & { atob: (s: string) => string }).atob(tokenParts[0]),
           );
-          console.log('Token header:', JSON.stringify(header));
-          console.log('Token has kid?', !!header.kid);
+          logger.debug('[AuthService] JWT header', { hasKid: !!header.kid, alg: header.alg });
         }
       } catch (decodeError) {
-        console.error('Error decoding token:', decodeError);
+        logger.error('[AuthService] Falha ao decodificar header do idToken antes do login no backend', decodeError);
       }
 
       const response = await fetchWithTimeout(

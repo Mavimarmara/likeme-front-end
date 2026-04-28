@@ -10,6 +10,7 @@ import { getApiUrl } from '@/config';
 import { AUTH_BOOTSTRAP_HTTP_TIMEOUT_MS } from '@/constants';
 import { ensureI18nHydrated, startI18nHydration } from '@/i18n/hydration';
 import { fetchWithTimeout } from '@/utils/network/fetchWithTimeout';
+import { logger } from '@/utils/logger';
 
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 const GRADIENT_SOURCES = [GradientSplash7, GradientSplash8, GradientSplash9];
@@ -158,16 +159,16 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
             }
           }
         } catch (error) {
-          console.error('Erro ao renovar token:', error);
+          logger.error('[LoadingScreen] Erro ao renovar token', error);
         }
       } catch (error) {
-        console.error('[LoadingScreen] Falha no fluxo inicial (animacao ou bootstrap):', error);
+        logger.error('[LoadingScreen] Falha no fluxo inicial (animacao ou bootstrap)', error);
       }
 
       try {
         await ensureI18nHydrated({ lang: 'pt-BR', timeoutMs: 2500 });
       } catch (hydrationError) {
-        console.error('[LoadingScreen] Falha ao aguardar i18n:', hydrationError);
+        logger.error('[LoadingScreen] Falha ao aguardar i18n', hydrationError);
       }
 
       if (shouldAuthenticate) {
@@ -180,7 +181,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
           await storageService.removeToken();
           invalidateApiClientAuthTokenMemoryCache();
         } catch (removeError) {
-          console.error('[LoadingScreen] Falha ao limpar token invalido:', removeError);
+          logger.error('[LoadingScreen] Falha ao limpar token invalido', removeError);
         }
       }
 
@@ -194,7 +195,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
         }
 
         if (retryAttempt < BOOTSTRAP_WATCHDOG_MAX_RETRIES) {
-          console.warn(
+          logger.warn(
             `[LoadingScreen] Bootstrap ainda em andamento. Retentativa ${
               retryAttempt + 1
             }/${BOOTSTRAP_WATCHDOG_MAX_RETRIES}.`,
@@ -203,7 +204,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
           return;
         }
 
-        console.error('[LoadingScreen] Timeout de bootstrap inicial.');
+        logger.error('[LoadingScreen] Timeout de bootstrap inicial.');
         replaceOnce('Error', {
           errorMessage: 'Conexao com a internet necessaria para continuar.',
         });
