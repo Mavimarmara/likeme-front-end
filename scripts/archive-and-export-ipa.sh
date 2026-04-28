@@ -29,7 +29,7 @@ usage() {
   echo "IPA de loja (sem expo-dev-client): na raiz do front-end, rode antes:"
   echo "  npm run ios:pod-install:store"
   echo ""
-  echo "Submit para a App Store: use Xcode Organizer, Transporter, ou npm run submit:ios (EAS)."
+  echo "Submit para a App Store: Xcode Organizer, Transporter, ou npm run ios:appstore:upload / npm run submit:testflight."
 }
 
 if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
@@ -96,4 +96,4 @@ xcodebuild \
 
 echo ""
 echo "Pronto. IPA em: $EXPORT_DIR"
-echo "Submit: npm run submit:ios (EAS) ou envie o .ipa pelo Transporter / Xcode Organizer."
+echo "Submit: npm run ios:appstore:upload, npm run submit:testflight, ou Transporter / Xcode Organizer."
