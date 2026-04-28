@@ -89,6 +89,11 @@ export const SUPPORT_CONFIG = {
   ),
 };
 
+/** Página web opcional (ex.: política / suporte) ligada à exclusão de conta — Apple 5.1.1(v) quando o fluxo inclui o site. */
+export const ACCOUNT_CONFIG = {
+  deletionWebUrl: getEnvVar('EXPO_PUBLIC_ACCOUNT_DELETION_WEB_URL', '').trim(),
+};
+
 export const getApiUrl = (endpoint: string) => {
   const base = (BACKEND_CONFIG.baseUrl || '').replace(/\/+$/, '');
   if (endpoint.startsWith('/api')) {
