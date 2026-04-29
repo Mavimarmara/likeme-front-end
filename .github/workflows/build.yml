@@ -210,4 +210,25 @@ jobs:
         run: echo '${{ secrets.ASC_API_KEY_P8 }}' > ./AuthKey_6QJ886URZD.p8
 
       - name: Build + Archive + Export + Validate + Upload (App Store)
-        run: npm run ios:appstore:pipeline
+        run: |
+          set -eo pipefail
+          mkdir -p ci-logs
+          npm run ios:appstore:pipeline 2>&1 | tee ci-logs/ios-appstore-pipeline.log
+
+      - name: Resumo de erro iOS (quando falhar)
+        if: failure()
+        run: |
+          echo "===== Últimas 250 linhas do log iOS ====="
+          tail -n 250 ci-logs/ios-appstore-pipeline.log || true
+          echo "===== Linhas com 'error:' ====="
+          grep -n "error:" ci-logs/ios-appstore-pipeline.log || true
+          echo "===== Linhas com 'ARCHIVE FAILED' ====="
+          grep -n "ARCHIVE FAILED" ci-logs/ios-appstore-pipeline.log || true
+
+      - name: Upload log do pipeline iOS
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-appstore-pipeline-log
+          path: ci-logs/ios-appstore-pipeline.log
+          if-no-files-found: warn
