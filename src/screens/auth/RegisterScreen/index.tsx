@@ -33,6 +33,7 @@ import { useLoadPersonalData } from '@/hooks';
 import { styles } from './styles';
 import { COLORS, SPACING } from '@/constants';
 import { useAnalyticsScreen } from '@/analytics';
+import { logger } from '@/utils/logger';
 
 /** Valores enviados à API; labels vêm do i18n */
 const GENDER_OPTIONS = [
@@ -223,7 +224,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
       navigation.navigate(nextScreen as never, params as never);
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : t('auth.registerError');
-      console.error('Erro ao salvar dados da pessoa:', error);
+      logger.error('[RegisterScreen] Erro ao salvar dados da pessoa', error);
       Alert.alert(t('common.error'), message);
     } finally {
       setIsLoading(false);
@@ -239,7 +240,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
       navigation.navigate(nextScreen as never, params as never);
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : t('auth.registerError');
-      console.error('Erro ao pular registro:', error);
+      logger.error('[RegisterScreen] Erro ao pular registro', error);
       Alert.alert(t('common.error'), message);
     } finally {
       setIsSkipLoading(false);

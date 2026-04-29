@@ -11,6 +11,7 @@ import type { Ad } from '@/types/ad';
 import type { Product as ApiProduct } from '@/types/product';
 import type { RootStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
+import { logger } from '@/utils/logger';
 import { styles } from './styles';
 
 type AffiliateProductScreenProps = {
@@ -170,7 +171,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
                   });
                 }
               } catch (error) {
-                console.error('Error loading product by productId:', error);
+                logger.error('[AffiliateProductScreen] Erro ao carregar produto por productId', error);
                 // Se falhar, usar o product dos params se disponível
                 if (route.params?.product && !product) {
                   const fallbackProduct = route.params.product;
@@ -226,7 +227,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
             });
           }
         } catch (error) {
-          console.error('Error loading ad:', error);
+          logger.error('[AffiliateProductScreen] Erro ao carregar ad', error);
           // Se falhar ao carregar ad, usar o product dos params se disponível
           if (route.params?.product && !product) {
             const fallbackProduct = route.params.product;
@@ -328,11 +329,11 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
             setOtherOptions(relatedResponse.data.products.filter((p) => p.id !== currentProductId));
           }
         } catch (error) {
-          console.warn('Could not load related products:', error);
+          logger.warn('[AffiliateProductScreen] Não foi possível carregar produtos relacionados', error);
         }
       }
     } catch (error) {
-      console.error('Error loading affiliate product data:', error);
+      logger.error('[AffiliateProductScreen] Erro ao carregar dados do produto afiliado', error);
     } finally {
       setLoading(false);
     }
@@ -350,14 +351,14 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
     }
 
     if (!isAllowedAffiliateUrl(externalUrl)) {
-      console.warn('[AffiliateProductScreen] URL de afiliado bloqueada por domínio/protocolo inválido.', {
+      logger.warn('[AffiliateProductScreen] URL de afiliado bloqueada por domínio/protocolo inválido.', {
         externalUrl,
       });
       return;
     }
 
     Linking.openURL(externalUrl).catch((error: Error) => {
-      console.error('[AffiliateProductScreen] Falha ao abrir URL de afiliado.', { externalUrl, error });
+      logger.error('[AffiliateProductScreen] Falha ao abrir URL de afiliado.', { externalUrl, error });
     });
   };
 

@@ -93,7 +93,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
           setEvents([]);
         }
       } catch (error) {
-        console.error('Error loading events:', error);
+        logger.error('[AvatarProgressScreen] Erro ao carregar eventos', error);
         setEvents([]);
       } finally {
         setLoadingEvents(false);
@@ -188,7 +188,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
 
         setPopularProviders(providers);
       } catch (error) {
-        console.error('Error loading popular providers:', error);
+        logger.error('[AvatarProgressScreen] Erro ao carregar provedores populares', error);
         setPopularProviders([]);
       } finally {
         setLoadingProviders(false);
@@ -226,15 +226,15 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleEventPress = (event: Event) => {
-    console.log('Event pressed:', event.id);
+    logger.debug('[AvatarProgressScreen] event press (stub)', { eventId: event.id });
   };
 
   const handleEventSave = (event: Event) => {
-    console.log('Save event:', event.id);
+    logger.debug('[AvatarProgressScreen] event save (stub)', { eventId: event.id });
   };
 
   const handleProviderPress = (provider: Provider) => {
-    console.log('Provider pressed:', provider.id);
+    logger.debug('[AvatarProgressScreen] provider press (stub)', { providerId: provider.id });
   };
 
   const handleProductPress = (product: Product) => {
@@ -244,7 +244,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleProductLike = (product: Product) => {
-    console.log('Like product:', product.id);
+    logger.debug('[AvatarProgressScreen] product like (stub)', { productId: product.id });
   };
 
   const handleJoinCommunityPress = (community: JoinCardItem) => {
@@ -290,7 +290,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
           );
         }
       } catch (error) {
-        console.error('Error loading markers:', error);
+        logger.error('[AvatarProgressScreen] Erro ao carregar marcadores', error);
         const fallbackIds = [
           'activity',
           'connection',
@@ -512,7 +512,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
           <View style={styles.addWidgetsContainer}>
             <SecondaryButton
               label={t('avatar.addWidgets')}
-              onPress={() => console.log('Add new widgets')}
+              onPress={() => logger.debug('[AvatarProgressScreen] add widgets (stub)')}
               size='large'
               style={styles.addWidgetsButton}
             />

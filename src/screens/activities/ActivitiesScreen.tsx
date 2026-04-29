@@ -25,6 +25,7 @@ import { useTranslation } from '@/hooks/i18n';
 import type { Order } from '@/types/order';
 import type { RootStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
+import { logger } from '@/utils/logger';
 import { styles } from './styles';
 
 type ActivitiesScreenProps = {
@@ -88,7 +89,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
         const anamnesisCompletedAt = await storageService.getAnamnesisCompletedAt();
         setHasCompletedAnamnesis(!!anamnesisCompletedAt);
       } catch (error) {
-        console.error('Error checking anamnesis status:', error);
+        logger.error('Error checking anamnesis status:', error);
         setHasCompletedAnamnesis(false);
       }
     };
@@ -141,7 +142,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
           // Retornar true se for hoje (mostrar todas as atividades de hoje)
           return isTodayDate;
         } catch (error) {
-          console.error('Error parsing activity date/time:', error);
+          logger.error('Error parsing activity date/time:', error);
           return false;
         }
       })
@@ -240,7 +241,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
       }
       return t('activities.eventReminderToday', { name: activity.name });
     } catch (error) {
-      console.error('Error calculating reminder message:', error);
+      logger.error('Error calculating reminder message:', error);
       return t('activities.eventReminderToday', { name: activity.name });
     }
   };
@@ -274,7 +275,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
         time: activity.startTime || '',
       };
     } catch (error) {
-      console.error('Error parsing date and time:', error);
+      logger.error('Error parsing date and time:', error);
       return { date: t('activities.today'), time: '' };
     }
   };
@@ -290,7 +291,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
         setOrders(response.data.orders);
       }
     } catch (error) {
-      console.error('Error loading orders:', error);
+      logger.error('Error loading orders:', error);
     } finally {
       setIsLoadingOrders(false);
     }
@@ -337,7 +338,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
       // Recarregar atividades para atualizar a lista
       await loadActivities(activeTab === 'history');
     } catch (error) {
-      console.error('Error marking activity as done:', error);
+      logger.error('Error marking activity as done:', error);
       Alert.alert(t('errors.error'), t('activities.markError'));
     }
   };
@@ -374,7 +375,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
             await loadActivities(activeTab === 'history');
             setMenuVisibleForId(null);
           } catch (error) {
-            console.error('Error deleting activity:', error);
+            logger.error('Error deleting activity:', error);
             Alert.alert(t('errors.error'), t('activities.deleteError'));
           }
         },
@@ -397,7 +398,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
       // Recarregar atividades para atualizar a lista
       await loadActivities(activeTab === 'history');
     } catch (error) {
-      console.error('Error skipping activity:', error);
+      logger.error('Error skipping activity:', error);
       Alert.alert(t('errors.error'), t('activities.skipError'));
     }
   };
@@ -406,7 +407,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
     if (activity.meetUrl) {
       // Abrir link do meet em um navegador ou app apropriado
       Linking.openURL(activity.meetUrl).catch((err: Error) => {
-        console.error('Error opening meet URL:', err);
+        logger.error('Error opening meet URL:', err);
         Alert.alert(t('errors.error'), t('activities.openMeetError'));
       });
     }
@@ -554,7 +555,10 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
             </View>
 
             {activeTab === 'actives' && (
-              <TouchableOpacity onPress={() => console.log('View order:', order.id)} activeOpacity={0.7}>
+              <TouchableOpacity
+                onPress={() => logger.debug('[ActivitiesScreen] view order (stub)', { orderId: order.id })}
+                activeOpacity={0.7}
+              >
                 <Text style={styles.viewLink}>{t('common.view')}</Text>
               </TouchableOpacity>
             )}
@@ -746,8 +750,8 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
                     title={t('activities.plansForYou')}
                     subtitle={t('activities.discoverOptions')}
                     plans={plans}
-                    onPlanPress={(plan) => console.log('Plan pressed:', plan.id)}
-                    onPlanLike={(plan) => console.log('Plan liked:', plan.id)}
+                    onPlanPress={(plan) => logger.debug('[ActivitiesScreen] plan press (stub)', { planId: plan.id })}
+                    onPlanLike={(plan) => logger.debug('[ActivitiesScreen] plan like (stub)', { planId: plan.id })}
                   />
                 </View>
               )}
@@ -762,7 +766,9 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
                         productId: product.id,
                       } as never);
                     }}
-                    onProductLike={(product) => console.log('Product liked:', product.id)}
+                    onProductLike={(product) =>
+                      logger.debug('[ActivitiesScreen] product like (stub)', { productId: product.id })
+                    }
                   />
                 </View>
               )}
@@ -794,7 +800,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
                 reminderEnabled: data.reminderEnabled,
                 reminderOffset: data.reminderMinutes ? `${data.reminderMinutes}` : null,
               });
-              console.log('Activity updated:', activityId);
+              logger.debug('[ActivitiesScreen] activity updated', { activityId });
             } else {
               // Create new activity
               response = await activityService.createActivity({
@@ -809,7 +815,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
                 reminderEnabled: data.reminderEnabled,
                 reminderOffset: data.reminderMinutes ? `${data.reminderMinutes}` : null,
               });
-              console.log('Activity created:', response.data?.id);
+              logger.debug('[ActivitiesScreen] activity created', { activityId: response.data?.id });
             }
 
             // Verificar se a operação foi bem-sucedida antes de recarregar
@@ -820,7 +826,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
               throw new Error(response?.message || 'Failed to save activity');
             }
           } catch (error: any) {
-            console.error('Error saving activity:', error);
+            logger.error('Error saving activity:', error);
             Alert.alert(t('errors.error'), error?.message || t('activities.saveError'), [{ text: t('common.ok') }]);
           }
         }}

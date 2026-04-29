@@ -15,6 +15,7 @@ import { styles } from './styles';
 import { communityService, advertiserService } from '@/services';
 import type { AdvertiserProfile } from '@/types/ad';
 import { FEATURE_FLAGS } from '@/constants';
+import { logger } from '@/utils/logger';
 
 type ProviderProfileScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'ProviderProfile'>;
@@ -86,7 +87,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
           setProfiles([]);
         }
       } catch (error) {
-        console.error('Error loading advertiser profiles:', error);
+        logger.error('[ProviderProfileScreen] Erro ao carregar perfis do anunciante', error);
         setProfiles([]);
       } finally {
         setLoadingProfiles(false);

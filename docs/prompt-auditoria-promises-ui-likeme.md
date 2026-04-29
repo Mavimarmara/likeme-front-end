@@ -86,4 +86,4 @@ Você está analisando o app **LikeMe** (`likeme-front-end`). O objetivo é enco
 
 **Idioma:** português.
 
-**i18n:** não propor edição de `src/i18n/locales/pt-BR.json` para textos novos de UI; para labels novos, lembrar o fluxo **i18n via backend** (`i18n_bundle` / API de labels) quando o achado for de cópia de erro na UI.
+**i18n:** textos novos de UI vão para o backend (`i18n_bundle` / API de labels), não JSON estático no app.

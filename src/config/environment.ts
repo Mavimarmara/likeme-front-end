@@ -1,3 +1,5 @@
+import { logger } from '@/utils/logger';
+
 function pickStringFromRecord(record: unknown, key: string): string | undefined {
   if (!record || typeof record !== 'object') {
     return undefined;
@@ -53,9 +55,7 @@ const getEnvVar = (key: string, defaultValue?: string): string => {
   }
 
   if (!defaultValue || defaultValue.includes('your-')) {
-    if (typeof console !== 'undefined' && console.warn) {
-      console.warn(`[ENV] ⚠️ Variável ${key} não encontrada. Usando default: ${defaultValue || 'vazio'}`);
-    }
+    logger.warn(`[ENV] Variável ${key} não encontrada. Usando default: ${defaultValue || 'vazio'}`);
   }
 
   return defaultValue || '';
@@ -87,6 +87,11 @@ export const SUPPORT_CONFIG = {
     'EXPO_PUBLIC_SUPPORT_WHATSAPP_MESSAGE',
     'Olá! Vim pelo app e gostaria de tirar uma dúvida.',
   ),
+};
+
+/** Página web opcional (ex.: política / suporte) ligada à exclusão de conta — Apple 5.1.1(v) quando o fluxo inclui o site. */
+export const ACCOUNT_CONFIG = {
+  deletionWebUrl: getEnvVar('EXPO_PUBLIC_ACCOUNT_DELETION_WEB_URL', '').trim(),
 };
 
 export const getApiUrl = (endpoint: string) => {

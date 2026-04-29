@@ -138,6 +138,26 @@ class UserService {
     }
     throw new Error((response as any)?.message || 'Erro ao salvar endereço');
   }
+
+  /**
+   * Elimina a conta do utilizador autenticado no backend (soft delete).
+   * Requer perfil com `id` (GET /api/auth/profile).
+   */
+  async deleteMyAccount(): Promise<void> {
+    const profile = await this.getProfile();
+    if (!profile.success || !profile.data?.id) {
+      throw new Error('Perfil indisponível. Não foi possível identificar a conta para eliminar.');
+    }
+    const response = await apiClient.delete<ApiResponse<null>>(`/api/users/${profile.data.id}`, undefined, true);
+    if (
+      !response ||
+      typeof response !== 'object' ||
+      !('success' in response) ||
+      !(response as ApiResponse<null>).success
+    ) {
+      throw new Error((response as ApiResponse<null>)?.message || 'Erro ao eliminar a conta.');
+    }
+  }
 }
 
 export default new UserService();

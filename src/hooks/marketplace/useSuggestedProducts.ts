@@ -4,6 +4,7 @@ import type { Product } from '@/components/sections/product';
 import { getMarkerIdForCategory } from '@/hooks/category';
 import { CATEGORY_NAMES, type CategoryName } from '@/types/category';
 import { getProductModeTranslationKey } from '@/utils';
+import { logger } from '@/utils/logger';
 
 /** Lista padrão de produtos sugeridos (Home Summary, Activities, Comunidade sem filtro extra). */
 export const SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS = {
@@ -143,7 +144,7 @@ export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}):
         setProducts([]);
       }
     } catch (err) {
-      console.error('Error loading suggested products:', err);
+      logger.error('[useSuggestedProducts] Erro ao carregar produtos sugeridos', err);
       setError(err instanceof Error ? err : new Error('Failed to load suggested products'));
       setProducts([]);
     } finally {

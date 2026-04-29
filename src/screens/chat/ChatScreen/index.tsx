@@ -11,6 +11,7 @@ import { chatService, storageService } from '@/services';
 import { useBlockedUser, useUserAvatar, useTranslation, useChat, useFeatureFlag } from '@/hooks';
 import type { ChatStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
+import { logger } from '@/utils/logger';
 import { styles } from './styles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -112,7 +113,7 @@ const ChatScreen: React.FC = () => {
         }
       }
     } catch (err) {
-      console.error('[ChatScreen] Error loading messages:', err);
+      logger.error('[ChatScreen] Erro ao carregar mensagens', err);
     } finally {
       setLoading(false);
     }

@@ -17,6 +17,7 @@ import {
 } from '@/hooks';
 import { useFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
+import { logger } from '@/utils/logger';
 // import {
 //   mapChannelsToEvents,
 //   sortByDateObject,
@@ -157,7 +158,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
         }));
         setPopularProviders(providers);
       } catch (error) {
-        console.error('Error loading providers:', error);
+        logger.error('[SummaryScreen] Erro ao carregar provedores', error);
         setPopularProviders([]);
       } finally {
         setLoadingProviders(false);
@@ -294,7 +295,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleProductLike = (product: Product) => {
-    console.log('Curtir produto:', product.id);
+    logger.debug('[SummaryScreen] product like (stub)', { productId: product.id });
   };
 
   const handleProviderPress = (provider: Provider) => {

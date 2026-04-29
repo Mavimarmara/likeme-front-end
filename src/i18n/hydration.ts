@@ -83,7 +83,7 @@ export const startI18nHydration = (lang: string = DEFAULT_LANGUAGE, options?: { 
     // 2) busca no backend e atualiza cache + i18n
     // Endpoint sugerido no backend:
     // GET /api/i18n/labels?lang=pt-BR
-    // Response: { version?, etag?, updatedAt?, translation: { ...mesma estrutura do pt-BR.json... } }
+    // Response: { version?, etag?, updatedAt?, translation: { ...arvore de chaves i18n... } }
     const response = await apiClient.get<ApiResponse<I18nLabelsApiResponse>>('/api/i18n/labels', { lang }, false);
 
     const payload = response?.data;

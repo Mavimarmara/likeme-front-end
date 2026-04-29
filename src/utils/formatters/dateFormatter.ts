@@ -1,3 +1,5 @@
+import { logger } from '@/utils/logger';
+
 export class DateFormatter {
   private readonly date: Date;
 
@@ -79,7 +81,7 @@ export const getDateFromDatetime = (dateTime: string): string => {
       return `${currentYear}-${monthNum}-${day.padStart(2, '0')}`;
     }
   } catch (e) {
-    console.error('Error parsing date from datetime:', e);
+    logger.error('[dateFormatter] Erro ao interpretar data do datetime', e);
   }
   return new Date().toISOString().split('T')[0];
 };
@@ -96,7 +98,7 @@ export const getTimeFromDatetime = (dateTime: string): string => {
       return parts[1]; // "8:15 pm"
     }
   } catch (e) {
-    console.error('Error parsing time from datetime:', e);
+    logger.error('[dateFormatter] Erro ao interpretar hora do datetime', e);
   }
   return '8:00 am';
 };

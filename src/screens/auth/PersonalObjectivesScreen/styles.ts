@@ -43,7 +43,7 @@ export const styles = StyleSheet.create({
     marginBottom: SPACING.XL,
   },
 
-  betaCardTitle: {
+  highlightCardTitle: {
     fontSize: 20,
     fontWeight: '700',
     lineHeight: 28,

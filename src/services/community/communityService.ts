@@ -77,7 +77,7 @@ class CommunityService {
       }
 
       const userFeedResponse = await apiClient.get<UserFeedApiResponse>(this.userFeeEndpoint, queryParams, true, false);
-      console.log('userFeedResponse', JSON.stringify(userFeedResponse));
+      logger.debug('[CommunityService] userFeed response', userFeedResponse);
       return userFeedResponse;
     } catch (error) {
       logger.error('Error fetching user feed:', error);

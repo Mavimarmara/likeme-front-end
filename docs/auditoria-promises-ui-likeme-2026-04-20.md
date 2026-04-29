@@ -111,7 +111,7 @@ Data: 2026-04-20
 
 O principal risco estrutural de **UI congelada / awaits longos** está no **`apiClient`**: `fetch` e o refresh de token **sem timeout**, somados ao refresh **obrigatório** antes de requests autenticados e à leitura de token no storage por request. O **`LoadingScreen`** já mitiga parte do bootstrap (timeout no token da splash, watchdog, `ensureI18nHydrated` com race), mas animações + estado não cancelados ao desmontar ainda geram risco médio de inconsistência. Ajustes recomendados concentram-se em **`services/infrastructure`** e, em segundo plano, política de refresh + alguns `fetch` soltos em **`authService`**.
 
-**i18n:** conforme regras do projeto, qualquer **texto novo** de erro na UI deve seguir o fluxo via backend (`i18n_bundle` / API de labels), não `pt-BR.json`.
+**i18n:** conforme regras do projeto, qualquer **texto novo** de erro na UI deve seguir o fluxo via backend (`i18n_bundle` / API de labels).
 
 ---
 

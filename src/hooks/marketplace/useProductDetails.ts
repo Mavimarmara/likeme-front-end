@@ -6,6 +6,7 @@ import { mapProductToCartItem, formatPrice } from '@/utils';
 import type { Product as ApiProduct } from '@/types/product';
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import type { Ad } from '@/types/ad';
+import { logger } from '@/utils/logger';
 
 interface UseProductDetailsParams {
   productId: string | undefined;
@@ -68,7 +69,7 @@ export const useProductDetails = ({
 
       setProduct(productData);
     } catch (error) {
-      console.error('Error loading product:', error);
+      logger.error('[useProductDetails] Erro ao carregar produto', error);
       Alert.alert(t('errors.error'), t('errors.loadProductError'));
     } finally {
       setLoading(false);
@@ -111,7 +112,7 @@ export const useProductDetails = ({
         setRelatedProducts(response.data.products.filter((p) => p.id !== productId));
       }
     } catch (error) {
-      console.error('Error loading related products:', error);
+      logger.error('[useProductDetails] Erro ao carregar produtos relacionados', error);
     }
   }, [productId, fallbackProduct?.type]);
 
@@ -137,7 +138,7 @@ export const useProductDetails = ({
 
       setAd(adData);
     } catch (error) {
-      console.error('Error loading ad:', error);
+      logger.error('[useProductDetails] Erro ao carregar ad', error);
     }
   }, [productId]);
 
@@ -154,7 +155,7 @@ export const useProductDetails = ({
       await storageService.addToCart(cartItem);
       navigation.navigate('Cart');
     } catch (error) {
-      console.error('Error adding to cart:', error);
+      logger.error('[useProductDetails] Erro ao adicionar ao carrinho', error);
       Alert.alert(t('errors.error'), t('errors.addToCartError'));
     }
   }, [product, navigation]);

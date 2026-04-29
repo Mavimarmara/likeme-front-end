@@ -13,6 +13,7 @@ import {
   type SolutionOption as SharedSolutionOption,
 } from '@/types/solution';
 import { styles } from './styles';
+import { logger } from '@/utils/logger';
 import type { CommunityCategory } from '@/types/community';
 import type { CategoryName } from '@/types';
 
@@ -81,7 +82,7 @@ const FilterCategoryModal: React.FC<Props> = ({
   const handleSelectCategory = (cat: CommunityCategory | null) => {
     const nextId = cat ? String(cat.categoryId) : undefined;
     const categoryName: CategoryName | null = cat ? getMarkerIdForCategory(cat.categoryId, cat.name) ?? null : null;
-    console.log('categoryName', categoryName);
+    logger.debug('[FilterCategoryModal] select category', { categoryName });
     setLocalSelectedCategoryId(nextId);
     setLocalSelectedCategoryName(categoryName);
     onSelectCategory(cat, categoryName);
@@ -98,7 +99,7 @@ const FilterCategoryModal: React.FC<Props> = ({
         const cat = displayCategories.find((c) => String(c.categoryId) === String(localSelectedCategoryId));
         return cat ? getMarkerIdForCategory(cat.categoryId, cat.name) ?? null : null;
       })();
-    console.log('resolvedName', resolvedName);
+    logger.debug('[FilterCategoryModal] apply filter', { resolvedName });
     onFilter({
       categoryId: localSelectedCategoryId ?? null,
       categoryName: resolvedName,
