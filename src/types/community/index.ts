@@ -87,6 +87,8 @@ export interface Community {
   displayName: string;
   description?: string;
   avatarFileId?: string;
+  /** URL resolvida no backend (`fileUrl` cruzado com `avatarFileId`). */
+  avatarUrl?: string;
   isPublic: boolean;
   membersCount: number;
   postsCount: number;
@@ -177,6 +179,7 @@ export interface ListCommunitiesApiResponse {
   message?: string;
   data?: {
     communities?: Community[];
+    files?: CommunityFile[];
     categories?: CommunityCategory[];
     communityUsers?: CommunityUserRelation[];
     paging?: {

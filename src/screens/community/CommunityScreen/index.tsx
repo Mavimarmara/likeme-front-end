@@ -31,6 +31,7 @@ import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen, logTabSelect } from '@/analytics';
 import { storageService } from '@/services';
 import { logger } from '@/utils/logger';
+import { resolveCommunityHeroImageUri } from '@/utils/community/mappers';
 import type { Advertiser } from '@/types/ad';
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import Toggle from '@/components/ui/buttons/Toggle';
@@ -92,6 +93,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     refresh: _refreshCommunities,
     liveBanner,
     events,
+    communityFiles,
   } = useCommunities({
     enabled: true,
     pageSize: 10,
@@ -206,6 +208,11 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   }, [categories]);
 
   const primaryCommunity = rawCommunities[0];
+
+  const communityHeroImageUri = useMemo(
+    () => resolveCommunityHeroImageUri(primaryCommunity, communityFiles, DEFAULT_COMMUNITY_IMAGE),
+    [primaryCommunity, communityFiles],
+  );
 
   const communityInfoTabOptions: ButtonCarouselOption<CommunityInfoTabId>[] = useMemo(
     () => [
@@ -333,7 +340,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
       >
         {primaryCommunity?.displayName != null && (
           <HeroImage
-            imageUri={(primaryCommunity.avatarFileId as string | undefined) ?? DEFAULT_COMMUNITY_IMAGE}
+            imageUri={communityHeroImageUri}
             name={primaryCommunity.displayName}
             badges={communityHeroBadges}
             footer={

@@ -311,6 +311,33 @@ export const mapCommunityPostToPost = (
   return post;
 };
 
+const HTTP_URL_PREFIX = /^https?:\/\//i;
+
+export function resolveCommunityHeroImageUri(
+  community: Community | undefined,
+  files: CommunityFile[] | undefined,
+  fallbackUri: string,
+): string {
+  if (!community) {
+    return fallbackUri;
+  }
+  const fromBackend = community.avatarUrl?.trim();
+  if (fromBackend) {
+    return fromBackend;
+  }
+  const fileId = community.avatarFileId?.trim();
+  if (fileId && HTTP_URL_PREFIX.test(fileId)) {
+    return fileId;
+  }
+  if (fileId && files?.length) {
+    const fileUrl = files.find((f) => f.fileId === fileId)?.fileUrl?.trim();
+    if (fileUrl) {
+      return fileUrl;
+    }
+  }
+  return fallbackUri;
+}
+
 export const mapCommunityToProgram = (community: Community, files?: CommunityFile[]): Program => {
   let imageUrl: string | undefined;
   if (community.avatarFileId && files) {

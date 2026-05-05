@@ -1,6 +1,12 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { communityService, chatService } from '@/services';
-import type { Community, CommunityCategory, CommunityUserRelation, ListCommunitiesParams } from '@/types/community';
+import type {
+  Community,
+  CommunityCategory,
+  CommunityFile,
+  CommunityUserRelation,
+  ListCommunitiesParams,
+} from '@/types/community';
 import type { Event } from '@/types';
 import type { LiveBannerData } from '@/components/sections/community';
 import type { CategoryName } from '@/types/category';
@@ -62,6 +68,8 @@ interface UseCommunitiesReturn {
   liveBanner: LiveBannerData | undefined;
   /** Preenchido quando loadLiveChannels: true */
   events: Event[];
+  /** Metadados de arquivo da última resposta de listagem (avatars, etc.). */
+  communityFiles: CommunityFile[];
 }
 
 export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunitiesReturn => {
@@ -91,6 +99,7 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
   } | null>(null);
   const [liveBanner, setLiveBanner] = useState<LiveBannerData | undefined>(undefined);
   const [events, setEvents] = useState<Event[]>([]);
+  const [communityFiles, setCommunityFiles] = useState<CommunityFile[]>([]);
   const paramsKey = JSON.stringify(params ?? {});
   const memoizedParams = useMemo(() => params ?? {}, [paramsKey]);
 
@@ -132,6 +141,20 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
         const categoriesList = response.data.categories || [];
         const communityUsersList = response.data.communityUsers || [];
         const pagingData = response.data.paging || null;
+        const filesList = response.data.files ?? [];
+        if (!append) {
+          setCommunityFiles(filesList);
+        } else if (filesList.length > 0) {
+          setCommunityFiles((prev) => {
+            const byId = new Map(prev.map((f) => [f.fileId, f]));
+            for (const file of filesList) {
+              if (file?.fileId) {
+                byId.set(file.fileId, file);
+              }
+            }
+            return Array.from(byId.values());
+          });
+        }
 
         logger.debug('Communities list response:', {
           success: response.success,
@@ -179,6 +202,7 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
           setCategories([]);
           setCommunityUsers([]);
           setPaging(null);
+          setCommunityFiles([]);
         }
       } finally {
         setLoading(false);
@@ -326,5 +350,6 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
     refresh,
     liveBanner,
     events,
+    communityFiles,
   };
 };
