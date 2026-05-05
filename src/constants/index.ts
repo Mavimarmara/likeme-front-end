@@ -120,3 +120,4 @@ export {
   AUTH_LOGOUT_AND_POLICY_HTTP_TIMEOUT_MS,
   ROOT_SPLASH_FONT_LOAD_FALLBACK_MS,
 } from './networkTimeouts';
+export { MARKETPLACE_PRODUCT_PLACEHOLDER_IMAGE_URI } from './marketplacePlaceholders';

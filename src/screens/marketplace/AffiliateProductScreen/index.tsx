@@ -1,14 +1,13 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Linking, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScreenWithHeader } from '@/components/ui/layout';
+import { MARKETPLACE_PRODUCT_PLACEHOLDER_IMAGE_URI } from '@/constants';
+import { useProductDetails } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
-import { adService, productService } from '@/services';
-import type { Ad } from '@/types/ad';
-import type { Product as ApiProduct } from '@/types/product';
 import type { RootStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
 import { logger } from '@/utils/logger';
@@ -55,296 +54,41 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
   useAnalyticsScreen({ screenName: 'AffiliateProduct', screenClass: 'AffiliateProductScreen' });
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabType>('goal');
-  const [product, setProduct] = useState<ApiProduct | null>(null);
-  const [ad, setAd] = useState<Ad | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [_otherOptions, setOtherOptions] = useState<ApiProduct[]>([]);
 
-  const productId = route.params?.productId;
-  const adId = route.params?.adId;
+  const fallbackProduct = useMemo(() => {
+    const p = route.params?.product;
+    if (!p) return undefined;
+    return {
+      id: p.id,
+      title: p.title,
+      price: p.price,
+      image: p.image,
+      type: p.type,
+      description: p.description,
+    };
+  }, [
+    route.params?.product?.id,
+    route.params?.product?.title,
+    route.params?.product?.price,
+    route.params?.product?.image,
+    route.params?.product?.type,
+    route.params?.product?.description,
+  ]);
 
-  useEffect(() => {
-    if (productId || adId || route.params?.product) {
-      loadData();
-    } else {
-      // Se não tem nenhum parâmetro, usar dados do produto fornecido
-      if (route.params?.product) {
-        const fallbackProduct = route.params.product;
-        setProduct({
-          id: fallbackProduct.id,
-          name: fallbackProduct.title,
-          description: fallbackProduct.description,
-          price: parseFloat(fallbackProduct.price.replace('$', '').replace(',', '')) || 0,
-          image: fallbackProduct.image,
-          type: fallbackProduct.type,
-          quantity: 0,
-          status: 'active',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        });
-        setLoading(false);
-      } else {
-        setLoading(false);
-      }
-    }
-  }, [productId, adId]);
-
-  const loadData = async () => {
-    try {
-      setLoading(true);
-
-      // Se tem product nos params, usar como fallback inicial
-      if (route.params?.product) {
-        const fallbackProduct = route.params.product;
-        const productData: ApiProduct = {
-          id: fallbackProduct.id,
-          name: fallbackProduct.title,
-          description: fallbackProduct.description || '',
-          price: parseFloat(fallbackProduct.price.replace('$', '').replace(',', '')) || 0,
-          image: fallbackProduct.image,
-          type: fallbackProduct.type,
-          quantity: 0,
-          status: 'active',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          ...(fallbackProduct.externalUrl && { externalUrl: fallbackProduct.externalUrl }),
-        };
-        setProduct(productData);
-      }
-
-      // Primeiro, tentar carregar o ad (prioridade)
-      if (adId) {
-        try {
-          const adResponse = await adService.getAdById(adId);
-          if (adResponse.success && adResponse.data) {
-            const loadedAd = adResponse.data;
-            setAd(loadedAd);
-
-            // Se o ad tem product diretamente (produtos afiliados), usar esse produto
-            if (loadedAd.product) {
-              const adProduct = loadedAd.product;
-              setProduct({
-                id: adProduct.id || productId || adId,
-                name: adProduct.name || '',
-                description: adProduct.description || '',
-                price: adProduct.price ? Number(adProduct.price) : 0,
-                image: adProduct.image || '',
-                type: adProduct.type || '',
-                externalUrl: adProduct.externalUrl || route.params?.product?.externalUrl,
-                quantity: adProduct.quantity || 0,
-                status: adProduct.status || 'active',
-                createdAt: adProduct.createdAt || new Date().toISOString(),
-                updatedAt: adProduct.updatedAt || new Date().toISOString(),
-              });
-            } else if (loadedAd.productId) {
-              // Se o ad tem productId, tentar carregar o produto do backend
-              try {
-                const productResponse = await productService.getProductById(loadedAd.productId);
-                if (productResponse.success && productResponse.data) {
-                  const loadedProduct = productResponse.data;
-                  // Preservar externalUrl dos params se o produto carregado não tiver
-                  if (route.params?.product?.externalUrl && !loadedProduct.externalUrl) {
-                    setProduct({
-                      ...loadedProduct,
-                      externalUrl: route.params.product.externalUrl,
-                    });
-                  } else {
-                    setProduct(loadedProduct);
-                  }
-                } else if (route.params?.product) {
-                  // Se não conseguiu carregar do backend, usar o product dos params
-                  const fallbackProduct = route.params.product;
-                  setProduct({
-                    id: fallbackProduct.id,
-                    name: fallbackProduct.title,
-                    description: fallbackProduct.description || '',
-                    price: parseFloat(fallbackProduct.price.replace('$', '').replace(',', '')) || 0,
-                    image: fallbackProduct.image,
-                    type: fallbackProduct.type,
-                    quantity: 0,
-                    status: 'active',
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                    ...(fallbackProduct.externalUrl && {
-                      externalUrl: fallbackProduct.externalUrl,
-                    }),
-                  });
-                }
-              } catch (error) {
-                logger.error('[AffiliateProductScreen] Erro ao carregar produto por productId', error);
-                // Se falhar, usar o product dos params se disponível
-                if (route.params?.product && !product) {
-                  const fallbackProduct = route.params.product;
-                  setProduct({
-                    id: fallbackProduct.id,
-                    name: fallbackProduct.title,
-                    description: fallbackProduct.description || '',
-                    price: parseFloat(fallbackProduct.price.replace('$', '').replace(',', '')) || 0,
-                    image: fallbackProduct.image,
-                    type: fallbackProduct.type,
-                    quantity: 0,
-                    status: 'active',
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                    ...(fallbackProduct.externalUrl && {
-                      externalUrl: fallbackProduct.externalUrl,
-                    }),
-                  });
-                }
-              }
-            } else if (route.params?.product) {
-              // Se o ad não tem product nem productId, usar o product dos params
-              const fallbackProduct = route.params.product;
-              setProduct({
-                id: fallbackProduct.id,
-                name: fallbackProduct.title,
-                description: fallbackProduct.description || '',
-                price: parseFloat(fallbackProduct.price.replace('$', '').replace(',', '')) || 0,
-                image: fallbackProduct.image,
-                type: fallbackProduct.type,
-                quantity: 0,
-                status: 'active',
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-                ...(fallbackProduct.externalUrl && { externalUrl: fallbackProduct.externalUrl }),
-              });
-            }
-          } else if (route.params?.product) {
-            // Se não conseguiu carregar ad, usar o product dos params
-            const fallbackProduct = route.params.product;
-            setProduct({
-              id: fallbackProduct.id,
-              name: fallbackProduct.title,
-              description: fallbackProduct.description || '',
-              price: parseFloat(fallbackProduct.price.replace('$', '').replace(',', '')) || 0,
-              image: fallbackProduct.image,
-              type: fallbackProduct.type,
-              quantity: 0,
-              status: 'active',
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-              ...(fallbackProduct.externalUrl && { externalUrl: fallbackProduct.externalUrl }),
-            });
-          }
-        } catch (error) {
-          logger.error('[AffiliateProductScreen] Erro ao carregar ad', error);
-          // Se falhar ao carregar ad, usar o product dos params se disponível
-          if (route.params?.product && !product) {
-            const fallbackProduct = route.params.product;
-            setProduct({
-              id: fallbackProduct.id,
-              name: fallbackProduct.title,
-              description: fallbackProduct.description || '',
-              price: parseFloat(fallbackProduct.price.replace('$', '').replace(',', '')) || 0,
-              image: fallbackProduct.image,
-              type: fallbackProduct.type,
-              quantity: 0,
-              status: 'active',
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-              ...(fallbackProduct.externalUrl && { externalUrl: fallbackProduct.externalUrl }),
-            });
-          }
-        }
-      } else if (productId && productId !== route.params?.product?.id) {
-        // Se não tem adId mas tem productId válido, buscar ad relacionado
-        try {
-          const adsResponse = await adService.listAds({
-            productId: productId,
-            activeOnly: true,
-            limit: 1,
-          });
-          if (adsResponse.success && adsResponse.data && adsResponse.data.ads.length > 0) {
-            setAd(adsResponse.data.ads[0]);
-          }
-        } catch (error) {
-          // Se falhar, manter o product dos params
-        }
-      }
-
-      // Carregar produto se productId for válido (e não for apenas o ad.id usado como fallback)
-      if (productId && productId !== adId) {
-        try {
-          const productResponse = await productService.getProductById(productId);
-          if (productResponse.success && productResponse.data) {
-            const loadedProduct = productResponse.data;
-            // Preservar externalUrl dos params se o produto carregado não tiver
-            if (route.params?.product?.externalUrl && !loadedProduct.externalUrl) {
-              setProduct({
-                ...loadedProduct,
-                externalUrl: route.params.product.externalUrl,
-              });
-            } else {
-              setProduct(loadedProduct);
-            }
-          } else if (route.params?.product && !product) {
-            // Se não conseguiu carregar e ainda não tem product, usar dos params
-            const fallbackProduct = route.params.product;
-            setProduct({
-              id: fallbackProduct.id,
-              name: fallbackProduct.title,
-              description: fallbackProduct.description || '',
-              price: parseFloat(fallbackProduct.price.replace('$', '').replace(',', '')) || 0,
-              image: fallbackProduct.image,
-              type: fallbackProduct.type,
-              quantity: 0,
-              status: 'active',
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-              ...(fallbackProduct.externalUrl && { externalUrl: fallbackProduct.externalUrl }),
-            });
-          }
-        } catch (error) {
-          // Se falhar e ainda não tem product, usar dos params
-          if (route.params?.product && !product) {
-            const fallbackProduct = route.params.product;
-            setProduct({
-              id: fallbackProduct.id,
-              name: fallbackProduct.title,
-              description: fallbackProduct.description || '',
-              price: parseFloat(fallbackProduct.price.replace('$', '').replace(',', '')) || 0,
-              image: fallbackProduct.image,
-              type: fallbackProduct.type,
-              quantity: 0,
-              status: 'active',
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-              ...(fallbackProduct.externalUrl && { externalUrl: fallbackProduct.externalUrl }),
-            });
-          }
-        }
-      }
-
-      // Carregar outras opções relacionadas
-      // Prioridade: ad.product > product carregado > params.product
-      const category = ad?.product?.type || product?.type || route.params?.product?.type;
-      if (category) {
-        try {
-          const relatedResponse = await productService.listProducts({
-            limit: 3,
-            type: category,
-          });
-          if (relatedResponse.success && relatedResponse.data) {
-            const currentProductId = ad?.product?.id || product?.id || productId || adId;
-            setOtherOptions(relatedResponse.data.products.filter((p) => p.id !== currentProductId));
-          }
-        } catch (error) {
-          logger.warn('[AffiliateProductScreen] Não foi possível carregar produtos relacionados', error);
-        }
-      }
-    } catch (error) {
-      logger.error('[AffiliateProductScreen] Erro ao carregar dados do produto afiliado', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { product, ad, loading } = useProductDetails({
+    productId: route.params?.productId,
+    adId: route.params?.adId,
+    fallbackProduct,
+    navigation,
+    skipAmazonRedirect: true,
+    supplementalExternalUrl: route.params?.product?.externalUrl,
+  });
 
   const handleBackPress = () => {
     navigation.goBack();
   };
 
   const handleBuyOnAmazon = () => {
-    // Prioridade: ad.product > product carregado > product dos params
     const externalUrl = ad?.product?.externalUrl || product?.externalUrl || route.params?.product?.externalUrl;
     if (!externalUrl) {
       return;
@@ -362,28 +106,17 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
     });
   };
 
-  // Prioridade: ad.product > product carregado > params.product
   const paramsProduct = route.params?.product;
   const displayTitle = ad?.product?.name || product?.name || paramsProduct?.title || 'Product';
   const displayDescription = ad?.product?.description || product?.description || paramsProduct?.description || '';
   const displayImage =
-    ad?.product?.image ||
-    product?.image ||
-    paramsProduct?.image ||
-    'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
+    product?.image || ad?.product?.image || paramsProduct?.image || MARKETPLACE_PRODUCT_PLACEHOLDER_IMAGE_URI;
 
-  // Array de imagens do produto
-  // Por enquanto, produtos têm apenas uma imagem, mas o código está preparado para múltiplas
   const productImages = useMemo(() => {
     const images: string[] = [];
-    // Adicionar imagem principal se existir e não for placeholder
-    if (displayImage && displayImage !== 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400') {
+    if (displayImage && displayImage !== MARKETPLACE_PRODUCT_PLACEHOLDER_IMAGE_URI) {
       images.push(displayImage);
     }
-    // Se no futuro houver um campo images[] no produto, adicionar aqui:
-    // if (product?.images && Array.isArray(product.images)) {
-    //   images.push(...product.images.filter(img => img && img !== 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400'));
-    // }
     return images;
   }, [displayImage]);
 
@@ -414,7 +147,6 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
   );
 
   const renderTabContent = () => {
-    // Dividir a descrição em linhas para criar bullet points
     const descriptionLines = displayDescription
       ? displayDescription.split('\n').filter((line) => line.trim().length > 0)
       : [];
@@ -436,10 +168,6 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
       );
     };
 
-    if (activeTab === 'goal') {
-      return <View style={styles.tabContent}>{renderDescriptionWithBullets()}</View>;
-    }
-    // Para description e composition, mostrar a mesma descrição por enquanto
     return <View style={styles.tabContent}>{renderDescriptionWithBullets()}</View>;
   };
 
@@ -460,7 +188,6 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
       contentContainerStyle={styles.container}
     >
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* Hero Section with Image */}
         <View style={styles.heroSection}>
           <ImageBackground source={{ uri: displayImage }} style={styles.heroImage} imageStyle={styles.heroImageStyle}>
             <View style={styles.heroOverlay}>
@@ -486,7 +213,6 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
           </ImageBackground>
         </View>
 
-        {/* Pagination Dots - Mostrar apenas se houver mais de uma imagem */}
         {productImages.length > 1 && (
           <View style={styles.paginationContainer}>
             {productImages.map((_, index) => (
@@ -495,36 +221,10 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
           </View>
         )}
 
-        {/* Content Section */}
         <View style={styles.contentSection}>
           {renderTabs()}
           {renderTabContent()}
 
-          {/* Other Options */}
-          {/*otherOptions.length > 0 && (
-            <View style={styles.otherOptionsSection}>
-              <Text style={styles.sectionTitle}>{t('marketplace.otherOptions')}</Text>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.optionsList}
-              >
-                {otherOptions.map((option) => (
-                  <View key={option.id} style={styles.optionItem}>
-                    <Image
-                      source={{ uri: option.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=100' }}
-                      style={styles.optionImage}
-                    />
-                    <Text style={styles.optionLabel}>
-                      {option.name}
-                    </Text>
-                  </View>
-                ))}
-              </ScrollView>
-            </View>
-          )*/}
-
-          {/* Buy on Amazon Button */}
           <View style={styles.buySection}>
             <TouchableOpacity style={styles.buyButton} onPress={handleBuyOnAmazon} activeOpacity={0.7}>
               <Text style={styles.buyButtonText}>{t('marketplace.buyOnAmazon')}</Text>
