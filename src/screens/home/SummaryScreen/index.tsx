@@ -18,23 +18,14 @@ import {
 import { useFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 import { logger } from '@/utils/logger';
-// import {
-//   mapChannelsToEvents,
-//   sortByDateObject,
-// } from '@/utils';
 import { communityService, storageService, advertiserService } from '@/services';
-import {
-  // NextEventsSection,
-  PopularProvidersSection,
-  type Provider,
-} from '@/components/sections/community';
+import { PopularProvidersSection, type Provider } from '@/components/sections/community';
 import { JoinCard, type JoinCardItem } from '@/components/ui/cards';
 import { ProductsCarousel, type Product } from '@/components/sections/product';
 import { EmptyState } from '@/components/ui/feedback';
 // TODO: Temporariamente desabilitados
 // import { AnamnesisPromptCard } from '@/components/sections/anamnesis';
 // import { AvatarSection } from '@/components/sections/avatar';
-// import type { Event } from '@/types/event';
 // import type { Post } from '@/types';
 import type { SolutionTab, SolutionFilterId } from '@/types/solution';
 import { resolveSolutionTabFromFilters } from '@/types/solution';
@@ -136,7 +127,6 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   const { allCategoryOptions, categories } = useCategories({ enabled: true });
   const [popularProviders, setPopularProviders] = useState<Provider[]>([]);
   const [_loadingProviders, setLoadingProviders] = useState(false);
-  // const [events, setEvents] = useState<Event[]>([]);
 
   useEffect(() => {
     const loadProviders = async () => {
@@ -280,13 +270,6 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
       setMenu(menuItems, 'home');
     }, [menuItems, setMenu]),
   );
-
-  // TODO: Temporariamente desabilitados
-  // const handleEventPress = (event: Event) => {};
-  // const handleEventSave = (event: Event) => {};
-  // const handleSearchChange = (text: string) => {};
-  // const handleSearchPress = () => {};
-  // const handleFilterPress = () => {};
 
   const handleProductPress = (product: Product) => {
     rootNavigation.navigate('ProductDetails', {
@@ -450,13 +433,6 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
                 bodyPercentage={0}
                 onSeeMorePress={handleAvatarSeeMore}
               />
-            </View>
-          )}
-          */}
-              {/* TODO: Temporariamente desabilitados
-          {events.length > 0 && (
-            <View style={styles.eventsContainer}>
-              <NextEventsSection events={events} onEventPress={handleEventPress} onEventSave={handleEventSave} />
             </View>
           )}
           */}

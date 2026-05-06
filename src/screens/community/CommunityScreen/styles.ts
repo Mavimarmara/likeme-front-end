@@ -2,6 +2,10 @@ import { StyleSheet } from 'react-native';
 import { COLORS, SPACING, BORDER_RADIUS } from '@/constants';
 
 export const styles = StyleSheet.create({
+  screenRoot: {
+    flex: 1,
+    position: 'relative',
+  },
   container: {
     flex: 1,
     position: 'relative',
@@ -278,5 +282,12 @@ export const styles = StyleSheet.create({
   sliderIndicatorActive: {
     width: 20,
     backgroundColor: '#4CAF50',
+  },
+  eventJoinBusyOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(253, 251, 238, 0.72)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 100,
   },
 });

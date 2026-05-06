@@ -1,7 +1,7 @@
 import type { Channel } from '@/types/community';
-import type { Event } from '@/types/event';
+import type { FeedEvent } from '@/types/event';
 
-export const mapChannelsToEvents = (channels: Channel[]): Event[] => {
+export const mapChannelsToEvents = (channels: Channel[]): FeedEvent[] => {
   return channels.map((channel) => {
     const metadata = channel.metadata || {};
     const date =
@@ -11,7 +11,7 @@ export const mapChannelsToEvents = (channels: Channel[]): Event[] => {
       (metadata.thumbnailUrl as string) ||
       (channel.avatarFileId ? undefined : 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400') ||
       'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400';
-    const participants = (metadata.participants as Event['participants']) || [];
+    const participants = (metadata.participants as FeedEvent['participants']) || [];
     const participantsCount = (metadata.participantsCount as number) || participants.length || 0;
 
     return {

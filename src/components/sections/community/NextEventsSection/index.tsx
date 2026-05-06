@@ -1,14 +1,14 @@
 import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { EventCard } from '@/components/sections/community';
-import type { Event } from '@/types/event';
+import type { FeedEvent } from '@/types/event';
 import { useTranslation } from '@/hooks/i18n';
 import { styles } from './styles';
 
 type Props = {
-  events: Event[];
-  onEventPress?: (event: Event) => void;
-  onEventSave?: (event: Event) => void;
+  events: FeedEvent[];
+  onEventPress?: (event: FeedEvent) => void;
+  onEventSave?: (event: FeedEvent) => void;
 };
 
 const NextEventsSection: React.FC<Props> = ({ events, onEventPress, onEventSave }) => {

@@ -189,7 +189,12 @@ module.exports = {
         'expo-build-properties',
         {
           ios: { newArchEnabled: false },
-          android: { newArchEnabled: false },
+          android: {
+            newArchEnabled: false,
+            minSdkVersion: 26,
+            compileSdkVersion: 35,
+            targetSdkVersion: 35,
+          },
         },
       ],
       [
@@ -245,6 +250,12 @@ module.exports = {
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
         UIBackgroundModes: ['remote-notification'],
+        NSBluetoothPeripheralUsageDescription:
+          'Usamos Bluetooth para áudio em chamadas de vídeo quando você usa fones compatíveis.',
+        NSCameraUsageDescription: 'Precisamos da câmera para você participar das lives e reuniões com vídeo.',
+        NSMicrophoneUsageDescription: 'Precisamos do microfone para você participar das lives e reuniões com áudio.',
+        NSPhotoLibraryUsageDescription:
+          'Precisamos acessar fotos apenas se você compartilhar imagens durante uma reunião.',
       },
       entitlements: {
         'aps-environment': 'production',

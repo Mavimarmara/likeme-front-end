@@ -1,4 +1,5 @@
-export { default as LiveBanner, type LiveBannerData, type LiveStatus } from './LiveBanner';
+export { default as EventBanner } from './EventBanner';
+export type { EventBannerData, EventBannerStatus } from '@/types/event';
 export { default as CommunityIntroSection } from './CommunityIntroSection';
 export { default as SpecialistCard } from './SpecialistCard';
 export type { SpecialistCardProps } from './SpecialistCard';
