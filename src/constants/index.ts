@@ -104,6 +104,9 @@ export const PAGINATION = {
 /** Posts por requisição no feed da Comunidade (cada “load more” pede mais esta quantidade). */
 export const COMMUNITY_FEED_POSTS_PAGE_SIZE = PAGINATION.DEFAULT_PAGE_SIZE;
 
+/** Linhas visíveis do corpo do post no feed antes de truncar com reticências (APP-215). */
+export const COMMUNITY_POST_PREVIEW_MAX_LINES = 5;
+
 export const KEYBOARD_AWARE_SCROLL = {
   CONTENT_FALLBACK_PADDING_BOTTOM: 120,
 } as const;

@@ -155,6 +155,8 @@ export interface UserFeedApiResponse {
 export interface UserFeedParams {
   page?: number;
   limit?: number;
+  /** Valor de `paging.next` da página anterior (obrigatório no backend quando `page` > 1). */
+  token?: string;
   search?: string;
   postTypes?: string | string[];
   authorIds?: string | string[];

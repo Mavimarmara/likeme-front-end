@@ -66,6 +66,7 @@ export const styles = StyleSheet.create({
     fontWeight: '400',
     color: '#6e6a6a',
     letterSpacing: 0.2,
+    lineHeight: 20,
   },
   mediaContainer: {
     marginTop: SPACING.SM,

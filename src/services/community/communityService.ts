@@ -38,6 +38,10 @@ class CommunityService {
         queryParams.limit = String(params.limit);
       }
 
+      if (params.token != null && params.token.trim() !== '') {
+        queryParams.token = params.token.trim();
+      }
+
       if (params.search && params.search.trim() !== '') {
         queryParams.search = params.search.trim();
       }
