@@ -26,6 +26,8 @@ jest.mock('@/utils/logger', () => ({
   logger: { error: jest.fn(), warn: jest.fn(), debug: jest.fn() },
 }));
 
+const getUserFeedMock = communityService.getUserFeed as jest.MockedFunction<typeof communityService.getUserFeed>;
+
 const feedPayload = (options: {
   posts: Array<{ postId: string }>;
   paging?: { next?: string };
@@ -65,7 +67,7 @@ describe('useUserFeed (scroll infinito / paginação)', () => {
 
     expect(communityService.getUserFeed).toHaveBeenCalledTimes(1);
     expect(communityService.getUserFeed).toHaveBeenCalledWith(expect.objectContaining({ page: 1, limit: 10 }));
-    expect(communityService.getUserFeed.mock.calls[0][0]).not.toHaveProperty('token');
+    expect(getUserFeedMock.mock.calls[0][0]).not.toHaveProperty('token');
 
     expect(result.current.posts.map((p) => p.id)).toEqual(['a1']);
     expect(result.current.hasMore).toBe(true);
@@ -184,7 +186,7 @@ describe('useUserFeed (scroll infinito / paginação)', () => {
 
     expect(communityService.getUserFeed).toHaveBeenCalledTimes(2);
     expect(communityService.getUserFeed).toHaveBeenNthCalledWith(2, expect.objectContaining({ page: 1, limit: 10 }));
-    expect(communityService.getUserFeed.mock.calls[1][0]).not.toHaveProperty('token');
+    expect(getUserFeedMock.mock.calls[1][0]).not.toHaveProperty('token');
   });
 
   it('com enabled=false não dispara getUserFeed no mount', async () => {
