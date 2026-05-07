@@ -1,13 +1,21 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { View, Text, Animated, Image, ImageStyle } from 'react-native';
+import { Alert, Animated, Image, ImageStyle, Linking, Platform, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PartialLogo, GradientSplash7, GradientSplash8, GradientSplash9 } from '@/assets/auth';
 import { styles, GRADIENT_STRIP_HEIGHT, GRADIENT_STRIP_WIDTH } from './styles';
 import { invalidateApiClientAuthTokenMemoryCache, storageService } from '@/services';
+import { fetchAppReleasePolicy } from '@/services/app/appReleasePolicyService';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen } from '@/analytics';
-import { getApiUrl } from '@/config';
+import { getApiUrl, STORE_URL_CONFIG } from '@/config';
 import { AUTH_BOOTSTRAP_HTTP_TIMEOUT_MS } from '@/constants';
+import type { AppReleasePolicy } from '@/types/app/appReleasePolicy';
+import {
+  getInstalledAppVersion,
+  resolveStoreUrlForPlatform,
+  shouldForceAppUpdate,
+  shouldRecommendUpdate,
+} from '@/utils/app/appVersionPolicy';
 import { ensureI18nHydrated, startI18nHydration } from '@/i18n/hydration';
 import { fetchWithTimeout } from '@/utils/network/fetchWithTimeout';
 import { logger } from '@/utils/logger';
@@ -89,6 +97,10 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
     const run = async () => {
       let shouldAuthenticate = false;
       let hadStoredToken = false;
+      let releasePolicy: AppReleasePolicy | null = null;
+      let installedVersion = '0.0.0';
+      const releasePolicyPromise =
+        Platform.OS === 'ios' || Platform.OS === 'android' ? fetchAppReleasePolicy() : Promise.resolve(null);
       void startI18nHydration('pt-BR');
       const safeSetStep = (next: number) => {
         if (isScreenActive) {
@@ -131,6 +143,17 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
 
         await delay(360);
 
+        releasePolicy = await releasePolicyPromise;
+        installedVersion = getInstalledAppVersion();
+        if (releasePolicy && shouldForceAppUpdate(releasePolicy, installedVersion)) {
+          const storeUrl = resolveStoreUrlForPlatform(releasePolicy, STORE_URL_CONFIG);
+          replaceOnce('ForcedUpdate', {
+            storeUrl,
+            message: releasePolicy.message ?? undefined,
+          });
+          return;
+        }
+
         try {
           const token = await storageService.getToken();
           hadStoredToken = Boolean(token);
@@ -169,6 +192,38 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
         await ensureI18nHydrated({ lang: 'pt-BR', timeoutMs: 2500 });
       } catch (hydrationError) {
         logger.error('[LoadingScreen] Falha ao aguardar i18n', hydrationError);
+      }
+
+      if (
+        releasePolicy &&
+        shouldRecommendUpdate(releasePolicy, installedVersion) &&
+        !shouldForceAppUpdate(releasePolicy, installedVersion)
+      ) {
+        const storeUrl = resolveStoreUrlForPlatform(releasePolicy, STORE_URL_CONFIG);
+        if (storeUrl.length > 0) {
+          await new Promise<void>((resolve) => {
+            Alert.alert(
+              t('appUpdate.recommendedTitle'),
+              t('appUpdate.recommendedBody'),
+              [
+                { text: t('appUpdate.later'), style: 'cancel', onPress: () => resolve() },
+                {
+                  text: t('appUpdate.openStore'),
+                  onPress: () => {
+                    void Linking.openURL(storeUrl).catch((linkError) => {
+                      logger.error('[LoadingScreen] Falha ao abrir loja (soft update)', {
+                        storeUrl,
+                        cause: linkError,
+                      });
+                    });
+                    resolve();
+                  },
+                },
+              ],
+              { cancelable: true, onDismiss: () => resolve() },
+            );
+          });
+        }
       }
 
       if (shouldAuthenticate) {

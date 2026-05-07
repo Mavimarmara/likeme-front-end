@@ -119,6 +119,7 @@ export type { FeatureFlagKey } from './featureFlags';
 export { SUPPORT_FLOATING_HIDDEN_ROOT_ROUTES, isRouteNameHiddenForSupportFloating } from './supportFloatingVisibility';
 export {
   API_HTTP_REQUEST_TIMEOUT_MS,
+  APP_RELEASE_POLICY_FETCH_TIMEOUT_MS,
   AUTH_BOOTSTRAP_HTTP_TIMEOUT_MS,
   AUTH_LOGOUT_AND_POLICY_HTTP_TIMEOUT_MS,
   ROOT_SPLASH_FONT_LOAD_FALLBACK_MS,

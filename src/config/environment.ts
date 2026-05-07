@@ -94,6 +94,15 @@ export const ACCOUNT_CONFIG = {
   deletionWebUrl: getEnvVar('EXPO_PUBLIC_ACCOUNT_DELETION_WEB_URL', '').trim(),
 };
 
+const DEFAULT_IOS_APP_STORE_URL = 'https://apps.apple.com/br/app/like-me/id6757706434';
+const DEFAULT_ANDROID_PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.likeme.app';
+
+/** URLs das lojas quando o backend não envia `storeUrlIos` / `storeUrlAndroid` (fallback local). */
+export const STORE_URL_CONFIG = {
+  ios: getEnvVar('EXPO_PUBLIC_IOS_APP_STORE_URL', DEFAULT_IOS_APP_STORE_URL).trim(),
+  android: getEnvVar('EXPO_PUBLIC_ANDROID_PLAY_STORE_URL', DEFAULT_ANDROID_PLAY_STORE_URL).trim(),
+};
+
 export const getApiUrl = (endpoint: string) => {
   const base = (BACKEND_CONFIG.baseUrl || '').replace(/\/+$/, '');
   if (endpoint.startsWith('/api')) {

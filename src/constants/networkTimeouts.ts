@@ -1,6 +1,9 @@
 /** HTTP no fluxo de auth (token, sync de onboarding, perfil): evita espera infinita e tela vazia. */
 export const AUTH_BOOTSTRAP_HTTP_TIMEOUT_MS = 12_000;
 
+/** Política de versão / force update no arranque: curto para não atrasar splash em rede ruim. */
+export const APP_RELEASE_POLICY_FETCH_TIMEOUT_MS = 5_000;
+
 /** `apiClient` (GET/POST/…): limite padrão para não pendurar a UI em rede ruim. */
 export const API_HTTP_REQUEST_TIMEOUT_MS = 45_000;
 

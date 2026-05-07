@@ -284,6 +284,14 @@ module.exports = {
           'Olá! Vim pelo app e gostaria de tirar uma dúvida.',
         ),
         EXPO_PUBLIC_ACCOUNT_DELETION_WEB_URL: getEnvVar('EXPO_PUBLIC_ACCOUNT_DELETION_WEB_URL', ''),
+        EXPO_PUBLIC_IOS_APP_STORE_URL: getEnvVar(
+          'EXPO_PUBLIC_IOS_APP_STORE_URL',
+          'https://apps.apple.com/br/app/like-me/id6757706434',
+        ),
+        EXPO_PUBLIC_ANDROID_PLAY_STORE_URL: getEnvVar(
+          'EXPO_PUBLIC_ANDROID_PLAY_STORE_URL',
+          'https://play.google.com/store/apps/details?id=com.likeme.app',
+        ),
         EXPO_PUBLIC_LOGGER_ON_DEVICE: getEnvVar('EXPO_PUBLIC_LOGGER_ON_DEVICE', ''),
       },
     },

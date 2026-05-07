@@ -6,6 +6,7 @@ import { FloatingMenuProvider } from '@/contexts/FloatingMenuContext';
 import { COLORS } from '@/constants';
 import {
   getLoadingScreen,
+  getForcedUpdateScreen,
   getUnauthenticatedScreen,
   getAuthenticatedScreen,
   getWelcomeScreen,
@@ -85,6 +86,11 @@ const RootNavigator: React.FC = () => {
             }}
           >
             <Stack.Screen name='Loading' getComponent={getLoadingScreen} options={{ title: 'Carregando' }} />
+            <Stack.Screen
+              name='ForcedUpdate'
+              getComponent={getForcedUpdateScreen}
+              options={{ title: 'Atualização obrigatória', gestureEnabled: false }}
+            />
             <Stack.Screen
               name='Unauthenticated'
               getComponent={getUnauthenticatedScreen}

@@ -7,6 +7,9 @@ type RootStackScreen = ComponentType<Record<string, unknown>>;
 
 const asScreen = (mod: { default: RootStackScreen }): RootStackScreen => mod.default;
 
+export const getForcedUpdateScreen = (): RootStackScreen =>
+  asScreen(require('../screens/auth/ForcedUpdateScreen') as { default: RootStackScreen });
+
 export const getLoadingScreen = (): RootStackScreen => {
   try {
     return asScreen(require('../screens/auth/LoadingScreen') as { default: RootStackScreen });

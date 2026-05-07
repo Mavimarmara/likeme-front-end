@@ -1,4 +1,5 @@
 export type RootStackParamList = {
+  ForcedUpdate: { storeUrl: string; message?: string };
   Unauthenticated: undefined;
   Authenticated: undefined;
   Welcome: undefined;
