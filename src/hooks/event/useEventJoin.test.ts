@@ -1,63 +1,18 @@
 import { renderHook, act } from '@testing-library/react-native';
-import { Alert } from 'react-native';
+import { Linking } from 'react-native';
 import { useEventJoin } from '@/hooks/event/useEventJoin';
-import { eventService } from '@/services';
 
 describe('useEventJoin', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.spyOn(Alert, 'alert');
+    jest.spyOn(Linking, 'openURL').mockResolvedValue(undefined);
   });
 
   afterEach(() => {
     jest.restoreAllMocks();
   });
 
-  it('onZoomMeetingFailed limpa payload, encerra busy e exibe alerta', () => {
-    jest
-      .spyOn(eventService, 'requestZoomJoinPayload')
-      .mockReturnValue(new Promise(() => {}) as ReturnType<typeof eventService.requestZoomJoinPayload>);
-
-    const { result } = renderHook(() => useEventJoin());
-
-    act(() => {
-      void result.current.handleEventBannerPress({
-        id: '1',
-        title: 'Evento',
-        host: 'Host',
-        status: 'Live Now',
-        startTime: '',
-        endTime: '',
-        thumbnail: '',
-        externalUrl: 'https://us02web.zoom.us/j/123456789',
-      } as Parameters<typeof result.current.handleEventBannerPress>[0]);
-    });
-
-    expect(result.current.eventJoinBusy).toBe(true);
-
-    act(() => {
-      result.current.onZoomMeetingFailed(new Error('join falhou'));
-    });
-
-    expect(result.current.eventJoinPayload).toBeNull();
-    expect(result.current.eventJoinBusy).toBe(false);
-    expect(Alert.alert).toHaveBeenCalledWith(expect.any(String), 'join falhou');
-  });
-
-  it('handleEventBannerPress com Zoom chama requestZoomJoinPayload e define payload', async () => {
-    jest.spyOn(eventService, 'requestZoomJoinPayload').mockResolvedValue({
-      success: true,
-      data: {
-        provider: 'zoom',
-        externalUrl: 'https://us02web.zoom.us/j/123456789',
-        meetingNumber: '123456789',
-        signature: 'sig',
-        sdkKey: 'key',
-        role: 0,
-        userName: 'User',
-      },
-    });
-
+  it('handleEventBannerPress com Zoom abre sessão em webview', async () => {
     const { result } = renderHook(() => useEventJoin());
 
     await act(async () => {
@@ -73,13 +28,49 @@ describe('useEventJoin', () => {
       } as Parameters<typeof result.current.handleEventBannerPress>[0]);
     });
 
-    expect(eventService.requestZoomJoinPayload).toHaveBeenCalledWith('https://us02web.zoom.us/j/123456789');
-    expect(result.current.eventJoinPayload?.meetingNumber).toBe('123456789');
-    expect(result.current.eventJoinBusy).toBe(true);
+    expect(result.current.eventJoinUrl).toBe('https://us02web.zoom.us/j/123456789');
+  });
 
-    act(() => {
-      result.current.onZoomMeetingOpened();
+  it('closeEventSession limpa URL da sessão', async () => {
+    const { result } = renderHook(() => useEventJoin());
+
+    await act(async () => {
+      await result.current.handleEventBannerPress({
+        id: '1',
+        title: 'Evento',
+        host: 'Host',
+        status: 'Live Now',
+        startTime: '',
+        endTime: '',
+        thumbnail: '',
+        externalUrl: 'https://us02web.zoom.us/j/123456789',
+      } as Parameters<typeof result.current.handleEventBannerPress>[0]);
     });
-    expect(result.current.eventJoinBusy).toBe(false);
+    act(() => {
+      result.current.closeEventSession();
+    });
+
+    expect(result.current.eventJoinUrl).toBeNull();
+  });
+
+  it('handleEventBannerPress com external_browser usa Linking.openURL', async () => {
+    const { result } = renderHook(() => useEventJoin());
+
+    await act(async () => {
+      await result.current.handleEventBannerPress({
+        id: '1',
+        title: 'Evento',
+        host: 'Host',
+        status: 'Live Now',
+        startTime: '',
+        endTime: '',
+        thumbnail: '',
+        externalUrl: 'https://example.com/evento',
+        joinMode: 'external_browser',
+      } as Parameters<typeof result.current.handleEventBannerPress>[0]);
+    });
+
+    expect(Linking.openURL).toHaveBeenCalledWith('https://example.com/evento');
+    expect(result.current.eventJoinUrl).toBeNull();
   });
 });

@@ -437,6 +437,9 @@ PODS:
     - hermes-engine/Pre-built (= 0.81.5)
   - hermes-engine/Pre-built (0.81.5)
   - JWTDecode (3.3.0)
+  - meetingsdk-react-native (6.7.2):
+    - React-Core
+    - ZoomMeetingSDK (= 6.7.2)
   - nanopb (3.30910.0):
     - nanopb/decode (= 3.30910.0)
     - nanopb/encode (= 3.30910.0)
@@ -2270,6 +2273,34 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
+  - react-native-webview (13.16.1):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - React-NativeModulesApple (0.81.5):
     - boost
     - DoubleConversion
@@ -2989,6 +3020,7 @@ PODS:
   - SimpleKeychain (1.3.0)
   - SocketRocket (0.7.1)
   - Yoga (0.0.0)
+  - ZoomMeetingSDK (6.7.2)
 
 DEPENDENCIES:
   - A0Auth0 (from `../node_modules/react-native-auth0`)
@@ -3026,6 +3058,7 @@ DEPENDENCIES:
   - GoogleUtilities
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
   - JWTDecode
+  - "meetingsdk-react-native (from `../node_modules/@zoom/meetingsdk-react-native`)"
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTDeprecation (from `../node_modules/react-native/ReactApple/Libraries/RCTFoundation/RCTDeprecation`)
   - RCTRequired (from `../node_modules/react-native/Libraries/Required`)
@@ -3063,6 +3096,7 @@ DEPENDENCIES:
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - "react-native-slider (from `../node_modules/@react-native-community/slider`)"
   - react-native-video (from `../node_modules/react-native-video`)
+  - react-native-webview (from `../node_modules/react-native-webview`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-oscompat (from `../node_modules/react-native/ReactCommon/oscompat`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
@@ -3129,6 +3163,7 @@ SPEC REPOS:
     - PromisesObjC
     - SimpleKeychain
     - SocketRocket
+    - ZoomMeetingSDK
 
 EXTERNAL SOURCES:
   A0Auth0:
@@ -3190,6 +3225,8 @@ EXTERNAL SOURCES:
   hermes-engine:
     :podspec: "../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-2025-07-07-RNv0.81.0-e0fc67142ec0763c6b6153ca2bf96df815539782
+  meetingsdk-react-native:
+    :path: "../node_modules/@zoom/meetingsdk-react-native"
   RCT-Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTDeprecation:
@@ -3262,6 +3299,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/slider"
   react-native-video:
     :path: "../node_modules/react-native-video"
+  react-native-webview:
+    :path: "../node_modules/react-native-webview"
   React-NativeModulesApple:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios"
   React-oscompat:
@@ -3391,6 +3430,7 @@ SPEC CHECKSUMS:
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
   hermes-engine: 9f4dfe93326146a1c99eb535b1cb0b857a3cd172
   JWTDecode: 1ca6f765844457d0dd8690436860fecee788f631
+  meetingsdk-react-native: 052d82b3ad596406a7d59e8c23fbec18190392da
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   RCT-Folly: 846fda9475e61ec7bcbf8a3fe81edfcaeb090669
@@ -3429,6 +3469,7 @@ SPEC CHECKSUMS:
   react-native-safe-area-context: 6c8805194166a9d6b3e53ba69ca76756c9bfb052
   react-native-slider: b63b23ab9ed0fc7cc829df7965ac51f2e8fcf8af
   react-native-video: 3d87423fe18f14a538de3662efd03e1d9433ab41
+  react-native-webview: 39dc5eb2f6e31fbad4e3dcd4b61c73e294976e3c
   React-NativeModulesApple: ebf2ce72b35870036900d6498b33724386540a71
   React-oscompat: eb0626e8ba1a2c61673c991bf9dc21834898475d
   React-perflogger: 509e1f9a3ee28df71b0a66de806ac515ce951246
@@ -3472,6 +3513,7 @@ SPEC CHECKSUMS:
   SimpleKeychain: 9c0f3ca8458fed74e01db864d181c5cbe278603e
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: 728df40394d49f3f471688747cf558158b3a3bd1
+  ZoomMeetingSDK: fe434ab1adb9bffa11de3b1fc3656d5ee76b115a
 
 PODFILE CHECKSUM: d6b48c44719375ae2594c43e005ccfc78e9498f6
 

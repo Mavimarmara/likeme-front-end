@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { View, ScrollView, Text, NativeSyntheticEvent, NativeScrollEvent, ActivityIndicator } from 'react-native';
+import { View, ScrollView, Text, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { SocialList, ShoppingList, EventBanner, CommunityDescriptionSection } from '@/components/sections/community';
 import { styles as socialListStyles } from '@/components/sections/community/SocialList/styles';
@@ -31,7 +31,7 @@ import type { Advertiser } from '@/types/ad';
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import Toggle from '@/components/ui/buttons/Toggle';
 import { Checkbox } from '@/components/ui/inputs';
-import { ZoomSdkMeetingSession } from '@/components/infrastructure/zoom/ZoomSdkMeetingSession';
+import { EventWebViewSession } from '@/components/infrastructure/webview/EventWebViewSession';
 
 type CommunityMode = 'Feed' | 'Solutions';
 
@@ -100,14 +100,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     loadEvents: true,
   });
 
-  const {
-    eventBanner,
-    eventJoinPayload,
-    eventJoinBusy,
-    onZoomMeetingOpened,
-    onZoomMeetingFailed,
-    handleEventBannerPress,
-  } = useEventJoin({
+  const { eventBanner, eventJoinUrl, closeEventSession, handleEventBannerPress } = useEventJoin({
     loadEvents: true,
     events,
     communityAvatarUrl: rawCommunities[0]?.avatarUrl,
@@ -322,14 +315,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.screenRoot}>
-      {eventJoinPayload ? (
-        <ZoomSdkMeetingSession
-          key={eventJoinPayload.signature}
-          payload={eventJoinPayload}
-          onOpened={onZoomMeetingOpened}
-          onFailure={onZoomMeetingFailed}
-        />
-      ) : null}
+      {eventJoinUrl ? <EventWebViewSession url={eventJoinUrl} onClose={closeEventSession} /> : null}
       <ScreenWithHeader
         navigation={rootNavigation}
         headerProps={{
@@ -426,11 +412,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
           </View>
         </ScrollView>
       </ScreenWithHeader>
-      {eventJoinBusy ? (
-        <View style={styles.eventJoinBusyOverlay} pointerEvents='box-none'>
-          <ActivityIndicator size='large' />
-        </View>
-      ) : null}
     </View>
   );
 };
