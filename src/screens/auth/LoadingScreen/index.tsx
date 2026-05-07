@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Animated, Image, ImageStyle, Linking, Platform, Text, View } from 'react-native';
+import { Alert, Animated, Image, ImageStyle, Platform, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PartialLogo, GradientSplash7, GradientSplash8, GradientSplash9 } from '@/assets/auth';
 import { styles, GRADIENT_STRIP_HEIGHT, GRADIENT_STRIP_WIDTH } from './styles';
@@ -19,6 +19,7 @@ import {
 import { ensureI18nHydrated, startI18nHydration } from '@/i18n/hydration';
 import { fetchWithTimeout } from '@/utils/network/fetchWithTimeout';
 import { logger } from '@/utils/logger';
+import { openStoreListingWithFallback } from '@/utils/url/storeListingUrl';
 
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 const GRADIENT_SOURCES = [GradientSplash7, GradientSplash8, GradientSplash9];
@@ -210,7 +211,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
                 {
                   text: t('appUpdate.openStore'),
                   onPress: () => {
-                    void Linking.openURL(storeUrl).catch((linkError) => {
+                    void openStoreListingWithFallback(storeUrl).catch((linkError) => {
                       logger.error('[LoadingScreen] Falha ao abrir loja (soft update)', {
                         storeUrl,
                         cause: linkError,

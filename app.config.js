@@ -256,6 +256,7 @@ module.exports = {
         NSMicrophoneUsageDescription: 'Precisamos do microfone para você participar das lives e reuniões com áudio.',
         NSPhotoLibraryUsageDescription:
           'Precisamos acessar fotos apenas se você compartilhar imagens durante uma reunião.',
+        LSApplicationQueriesSchemes: ['itms-apps', 'itms'],
       },
       entitlements: {
         'aps-environment': 'production',

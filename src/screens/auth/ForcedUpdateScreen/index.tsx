@@ -1,10 +1,16 @@
-import React, { useEffect } from 'react';
-import { BackHandler, Linking, Platform, Text, View } from 'react-native';
+import React, { useEffect, useMemo } from 'react';
+import { BackHandler, Platform, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PrimaryButton } from '@/components/ui/buttons';
+import { STORE_URL_CONFIG } from '@/config';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen } from '@/analytics';
 import { logger } from '@/utils/logger';
+import {
+  normalizeStoreOpenUrl,
+  openStoreListingWithFallback,
+  sanitizeExternalHttpUrl,
+} from '@/utils/url/storeListingUrl';
 import { styles } from './styles';
 
 type Props = {
@@ -17,11 +23,30 @@ type Props = {
   };
 };
 
+function resolveEffectiveStoreUrl(routeUrl: string | undefined): string {
+  const fromRoute = sanitizeExternalHttpUrl(routeUrl);
+  const fallback =
+    Platform.OS === 'ios'
+      ? sanitizeExternalHttpUrl(STORE_URL_CONFIG.ios)
+      : Platform.OS === 'android'
+      ? sanitizeExternalHttpUrl(STORE_URL_CONFIG.android)
+      : '';
+  const base = fromRoute || fallback;
+  if (!base) {
+    return '';
+  }
+  if (Platform.OS === 'ios' || Platform.OS === 'android') {
+    return normalizeStoreOpenUrl(base, Platform.OS);
+  }
+  return base;
+}
+
 const ForcedUpdateScreen: React.FC<Props> = ({ route }) => {
   useAnalyticsScreen({ screenName: 'ForcedUpdate', screenClass: 'ForcedUpdateScreen' });
   const { t } = useTranslation();
-  const storeUrl = route.params?.storeUrl?.trim() ?? '';
   const customMessage = route.params?.message?.trim();
+
+  const effectiveStoreUrl = useMemo(() => resolveEffectiveStoreUrl(route.params?.storeUrl), [route.params?.storeUrl]);
 
   useEffect(() => {
     if (Platform.OS !== 'android') {
@@ -35,12 +60,12 @@ const ForcedUpdateScreen: React.FC<Props> = ({ route }) => {
   const body = customMessage && customMessage.length > 0 ? customMessage : t('appUpdate.requiredBody');
 
   const openStore = () => {
-    if (!storeUrl) {
-      logger.error('[ForcedUpdateScreen] storeUrl vazio; não é possível abrir a loja');
+    if (!effectiveStoreUrl) {
+      logger.error('[ForcedUpdateScreen] URL da loja indisponível após fallback do app');
       return;
     }
-    void Linking.openURL(storeUrl).catch((cause) => {
-      logger.error('[ForcedUpdateScreen] Falha ao abrir URL da loja', { storeUrl, cause });
+    void openStoreListingWithFallback(effectiveStoreUrl).catch((cause) => {
+      logger.error('[ForcedUpdateScreen] Falha ao abrir URL da loja', { storeUrl: effectiveStoreUrl, cause });
     });
   };
 
@@ -50,7 +75,12 @@ const ForcedUpdateScreen: React.FC<Props> = ({ route }) => {
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.body}>{body}</Text>
         <View style={styles.buttonWrap}>
-          <PrimaryButton label={t('appUpdate.updateButton')} onPress={openStore} disabled={!storeUrl} loading={false} />
+          <PrimaryButton
+            label={t('appUpdate.updateButton')}
+            onPress={openStore}
+            disabled={!effectiveStoreUrl}
+            loading={false}
+          />
         </View>
       </View>
     </SafeAreaView>

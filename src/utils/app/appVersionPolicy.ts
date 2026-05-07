@@ -2,6 +2,7 @@ import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 import type { AppReleasePolicy } from '@/types/app/appReleasePolicy';
 import { compareSemanticVersions } from '@/utils/version/compareSemanticVersions';
+import { normalizeStoreOpenUrl, sanitizeExternalHttpUrl } from '@/utils/url/storeListingUrl';
 
 export function getInstalledAppVersion(): string {
   const native = Constants.nativeAppVersion;
@@ -40,9 +41,16 @@ export function resolveStoreUrlForPlatform(
   fallbacks: { ios: string; android: string },
 ): string {
   const fromApi = Platform.OS === 'ios' ? policy.storeUrlIos : policy.storeUrlAndroid;
-  const trimmed = (fromApi ?? '').trim();
-  if (trimmed.length > 0) {
-    return trimmed;
+  const fromApiClean = sanitizeExternalHttpUrl(fromApi);
+  const raw =
+    fromApiClean.length > 0
+      ? fromApiClean
+      : sanitizeExternalHttpUrl(Platform.OS === 'ios' ? fallbacks.ios : fallbacks.android);
+  if (!raw) {
+    return '';
   }
-  return Platform.OS === 'ios' ? fallbacks.ios.trim() : fallbacks.android.trim();
+  if (Platform.OS === 'ios' || Platform.OS === 'android') {
+    return normalizeStoreOpenUrl(raw, Platform.OS);
+  }
+  return raw;
 }

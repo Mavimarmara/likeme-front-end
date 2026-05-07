@@ -3,6 +3,7 @@ import { APP_RELEASE_POLICY_FETCH_TIMEOUT_MS } from '@/constants';
 import type { AppReleasePolicy } from '@/types/app/appReleasePolicy';
 import { fetchWithTimeout } from '@/utils/network/fetchWithTimeout';
 import { logger } from '@/utils/logger';
+import { sanitizeExternalHttpUrl } from '@/utils/url/storeListingUrl';
 
 function parsePolicyPayload(raw: unknown): AppReleasePolicy | null {
   if (!raw || typeof raw !== 'object') {
@@ -32,8 +33,8 @@ function parsePolicyPayload(raw: unknown): AppReleasePolicy | null {
     minVersionAndroid,
     recommendedVersionIos: asOptionalString(data.recommendedVersionIos),
     recommendedVersionAndroid: asOptionalString(data.recommendedVersionAndroid),
-    storeUrlIos: typeof data.storeUrlIos === 'string' ? data.storeUrlIos : '',
-    storeUrlAndroid: typeof data.storeUrlAndroid === 'string' ? data.storeUrlAndroid : '',
+    storeUrlIos: sanitizeExternalHttpUrl(typeof data.storeUrlIos === 'string' ? data.storeUrlIos : ''),
+    storeUrlAndroid: sanitizeExternalHttpUrl(typeof data.storeUrlAndroid === 'string' ? data.storeUrlAndroid : ''),
     message: typeof data.message === 'string' ? data.message : null,
   };
 }
