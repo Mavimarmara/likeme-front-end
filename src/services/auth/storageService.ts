@@ -219,17 +219,18 @@ class StorageService {
     }
   }
 
-  async addToCart(item: any): Promise<void> {
+  async addToCart(item: any, quantity: number = 1): Promise<void> {
     try {
       const cartItems = await this.getCartItems();
       const existingItemIndex = cartItems.findIndex((cartItem) => cartItem.id === item.id);
+      const normalizedQuantity = Math.max(1, Math.floor(Number(quantity) || 1));
 
       if (existingItemIndex >= 0) {
-        // Se o item já existe, aumenta a quantidade
-        cartItems[existingItemIndex].quantity = (cartItems[existingItemIndex].quantity || 1) + 1;
+        // Se o item já existe, aumenta pela quantidade solicitada
+        cartItems[existingItemIndex].quantity = (cartItems[existingItemIndex].quantity || 1) + normalizedQuantity;
       } else {
-        // Adiciona novo item
-        cartItems.push({ ...item, quantity: 1 });
+        // Adiciona novo item com a quantidade solicitada
+        cartItems.push({ ...item, quantity: normalizedQuantity });
       }
 
       await this.setCartItems(cartItems);

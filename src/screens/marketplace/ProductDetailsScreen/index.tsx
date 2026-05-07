@@ -196,7 +196,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       item_name: displayData?.title,
       item_category: productCategory,
     });
-    void handleAddToCart();
+    void handleAddToCart(quantity);
   };
 
   const handleAddToCartPress = () => {

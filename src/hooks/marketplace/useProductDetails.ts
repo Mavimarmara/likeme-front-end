@@ -55,7 +55,7 @@ interface UseProductDetailsReturn {
   loading: boolean;
   isFavorite: boolean;
   setIsFavorite: (value: boolean) => void;
-  handleAddToCart: () => Promise<void>;
+  handleAddToCart: (quantity?: number) => Promise<void>;
   loadAd: () => Promise<void>;
 }
 
@@ -170,23 +170,26 @@ export const useProductDetails = ({
     }
   }, [productId, adId, mergeSupplementalExternalUrl]);
 
-  const handleAddToCart = useCallback(async () => {
-    if (!product) return;
+  const handleAddToCart = useCallback(
+    async (quantity: number = 1) => {
+      if (!product) return;
 
-    if (product.status === 'out_of_stock' || product.quantity === 0) {
-      Alert.alert(t('marketplace.outOfStock'), t('marketplace.productOutOfStockMessage'));
-      return;
-    }
+      if (product.status === 'out_of_stock' || product.quantity === 0) {
+        Alert.alert(t('marketplace.outOfStock'), t('marketplace.productOutOfStockMessage'));
+        return;
+      }
 
-    try {
-      const cartItem = mapProductToCartItem(product);
-      await storageService.addToCart(cartItem);
-      navigation.navigate('Cart');
-    } catch (error) {
-      logger.error('[useProductDetails] Erro ao adicionar ao carrinho', error);
-      Alert.alert(t('errors.error'), t('errors.addToCartError'));
-    }
-  }, [product, navigation]);
+      try {
+        const cartItem = mapProductToCartItem(product);
+        await storageService.addToCart(cartItem, quantity);
+        navigation.navigate('Cart');
+      } catch (error) {
+        logger.error('[useProductDetails] Erro ao adicionar ao carrinho', error);
+        Alert.alert(t('errors.error'), t('errors.addToCartError'));
+      }
+    },
+    [product, navigation, t],
+  );
 
   useEffect(() => {
     if (productId) {
