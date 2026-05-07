@@ -22,6 +22,7 @@ import { communityService, storageService, advertiserService } from '@/services'
 import { PopularProvidersSection, type Provider } from '@/components/sections/community';
 import { JoinCard, type JoinCardItem } from '@/components/ui/cards';
 import { ProductsCarousel, type Product } from '@/components/sections/product';
+import ProfileFloatingMenu from '@/components/sections/profile/ProfileFloatingMenu';
 import { EmptyState } from '@/components/ui/feedback';
 // TODO: Temporariamente desabilitados
 // import { AnamnesisPromptCard } from '@/components/sections/anamnesis';
@@ -49,6 +50,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   const insets = useSafeAreaInsets();
   const rootNavigation = navigation.getParent() ?? navigation;
   const [userAvatarUri, setUserAvatarUri] = useState<string | null>(null);
+  const [isProfileMenuVisible, setIsProfileMenuVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSolutionTab, setSelectedSolutionTab] = useState<SolutionTab>('all');
   const { getCategoryName } = useCategoryDisplayLabel();
@@ -81,7 +83,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleMenuPress = () => {
-    rootNavigation.navigate('Profile' as never);
+    setIsProfileMenuVisible(true);
   };
 
   // TODO: Temporariamente desabilitados
@@ -459,6 +461,11 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
           )}
         </ScrollView>
       </View>
+      <ProfileFloatingMenu
+        visible={isProfileMenuVisible}
+        navigation={rootNavigation}
+        onClose={() => setIsProfileMenuVisible(false)}
+      />
     </ScreenWithHeader>
   );
 };
