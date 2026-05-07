@@ -77,6 +77,8 @@ export interface CommunityComment {
 export interface CommunityUser {
   userId: string;
   displayName: string;
+  firstName?: string;
+  lastName?: string;
   avatarFileId?: string;
   createdAt?: string;
   updatedAt?: string;
