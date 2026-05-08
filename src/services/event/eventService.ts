@@ -1,5 +1,5 @@
 import apiClient from '../infrastructure/apiClient';
-import type { JoinEventApiResponse, ListEventsApiResponse } from '@/types/event';
+import type { ListEventsApiResponse } from '@/types/event';
 import { getReadableErrorMessage } from '@/utils/error/readableErrorMessage';
 
 class EventService {
@@ -16,17 +16,6 @@ class EventService {
       return {
         success: false,
         message: getReadableErrorMessage(error, 'Erro ao listar eventos'),
-      };
-    }
-  }
-
-  async requestZoomJoinPayload(externalUrl: string): Promise<JoinEventApiResponse> {
-    try {
-      return await apiClient.post<JoinEventApiResponse>(`${this.eventsEndpoint}/join-payload`, { externalUrl }, true);
-    } catch (error) {
-      return {
-        success: false,
-        message: getReadableErrorMessage(error, 'Erro ao obter dados do evento'),
       };
     }
   }

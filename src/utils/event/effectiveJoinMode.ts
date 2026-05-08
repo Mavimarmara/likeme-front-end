@@ -3,6 +3,9 @@ import type { EventBannerData, EventJoinMode } from '@/types/event';
 
 export function effectiveJoinMode(banner: EventBannerData): EventJoinMode {
   if (banner.joinMode) {
+    if (banner.joinMode === 'zoom_sdk') {
+      return 'external_browser';
+    }
     return banner.joinMode;
   }
   const how = classifyExternalJoinUrl(banner.externalUrl);
@@ -10,7 +13,7 @@ export function effectiveJoinMode(banner: EventBannerData): EventJoinMode {
     return 'none';
   }
   if (how.kind === 'zoom') {
-    return 'zoom_sdk';
+    return 'external_browser';
   }
   return 'external_browser';
 }

@@ -55,7 +55,7 @@ export const useEventJoin = (options: UseEventJoinOptions = {}): UseEventJoinRet
     if (mode === 'none' || !url) {
       return;
     }
-    if (mode === 'external_browser' || mode === 'zoom_sdk') {
+    if (mode === 'external_browser') {
       Linking.openURL(url).catch((linkError: Error) => {
         logger.error('[useEventJoin] Falha ao abrir link do evento', { url, error: linkError });
       });

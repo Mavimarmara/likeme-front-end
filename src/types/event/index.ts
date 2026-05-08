@@ -20,7 +20,10 @@ export interface EventParticipant {
 
 export type EventBannerStatus = 'Live Now' | 'Scheduled';
 
-export type EventJoinMode = 'zoom_sdk' | 'external_browser' | 'none';
+export type EventJoinMode = 'external_browser' | 'none';
+
+/** Valor legado ainda aceito na API; tratado como `external_browser`. */
+export type EventJoinModeFromApi = EventJoinMode | 'zoom_sdk';
 
 export interface EventBannerData {
   id: string;
@@ -32,7 +35,7 @@ export interface EventBannerData {
   thumbnail: ImageSourcePropType | string;
   externalUrl?: string;
   provider?: 'zoom' | 'unknown';
-  joinMode?: EventJoinMode;
+  joinMode?: EventJoinModeFromApi;
 }
 
 /** Evento retornado pela API (Social Plus / comunidade). */
@@ -46,7 +49,7 @@ export interface Event {
   provider: 'zoom' | 'unknown';
   externalUrl?: string;
   source: 'social_plus';
-  joinMode?: EventJoinMode;
+  joinMode?: EventJoinModeFromApi;
   displayHost?: string;
 }
 
@@ -57,23 +60,4 @@ export interface ListEventsApiResponse {
   data?: {
     events?: Event[];
   };
-}
-
-export interface EventJoinPayload {
-  provider: 'zoom';
-  externalUrl: string;
-  meetingNumber: string;
-  passcode?: string;
-  signature: string;
-  sdkKey: string;
-  role: 0 | 1;
-  userName: string;
-  userEmail?: string;
-}
-
-export interface JoinEventApiResponse {
-  success?: boolean;
-  status?: string;
-  message?: string;
-  data?: EventJoinPayload;
 }

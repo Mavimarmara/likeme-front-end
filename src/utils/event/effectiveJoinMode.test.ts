@@ -17,8 +17,12 @@ describe('effectiveJoinMode', () => {
     expect(effectiveJoinMode({ ...base, joinMode: 'external_browser' })).toBe('external_browser');
   });
 
-  it('deduz zoom_sdk pela URL quando joinMode ausente', () => {
-    expect(effectiveJoinMode({ ...base })).toBe('zoom_sdk');
+  it('deduz external_browser para URL de join Zoom quando joinMode ausente', () => {
+    expect(effectiveJoinMode({ ...base })).toBe('external_browser');
+  });
+
+  it('normaliza joinMode legado zoom_sdk para external_browser', () => {
+    expect(effectiveJoinMode({ ...base, joinMode: 'zoom_sdk' })).toBe('external_browser');
   });
 
   it('deduz external_browser quando joinMode ausente e URL não é Zoom join', () => {

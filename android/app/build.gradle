@@ -180,7 +180,6 @@ dependencies {
         implementation jscFlavor
     }
 
-    implementation 'us.zoom.meetingsdk:zoomsdk:6.7.2'
 }
 
 apply plugin: 'com.google.gms.google-services'
