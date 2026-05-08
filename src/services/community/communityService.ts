@@ -8,6 +8,7 @@ import type {
   ListCommunitiesParams,
   ListCommunitiesApiResponse,
 } from '@/types/community';
+import type { ApiError } from '@/types/infrastructure';
 
 class CommunityService {
   private readonly userFeeEndpoint = '/api/communities/feed';
@@ -371,6 +372,14 @@ class CommunityService {
       }
       return false;
     } catch (error) {
+      const apiError = error as ApiError;
+      if (apiError?.status === 401 || apiError?.status === 404) {
+        logger.warn('Aceite dos termos indisponível no momento; usando false como fallback', {
+          communityId,
+          status: apiError.status,
+        });
+        return false;
+      }
       logger.error('Erro ao obter aceite dos termos da comunidade', { communityId, cause: error });
       return false;
     }
