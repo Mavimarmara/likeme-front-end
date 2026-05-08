@@ -8,6 +8,7 @@ import type {
   ListCommunitiesParams,
   ListCommunitiesApiResponse,
 } from '@/types/community';
+import type { ApiError } from '@/types/infrastructure';
 
 class CommunityService {
   private readonly userFeeEndpoint = '/api/communities/feed';
@@ -36,6 +37,10 @@ class CommunityService {
 
       if (params.limit !== undefined) {
         queryParams.limit = String(params.limit);
+      }
+
+      if (params.token != null && params.token.trim() !== '') {
+        queryParams.token = params.token.trim();
       }
 
       if (params.search && params.search.trim() !== '') {
@@ -94,12 +99,6 @@ class CommunityService {
       const endpoint = `${this.pollsBasePath}/${encodeURIComponent(pollId.trim())}`;
 
       const pollResponse = await apiClient.get<ApiResponse<unknown>>(endpoint, undefined, true, false);
-
-      logger.debug('Poll detail response:', {
-        pollId,
-        success: pollResponse.success,
-        hasData: !!pollResponse.data,
-      });
 
       if (!pollResponse.success) {
         throw new Error(pollResponse.message || 'Falha ao carregar enquete');
@@ -367,6 +366,14 @@ class CommunityService {
       }
       return false;
     } catch (error) {
+      const apiError = error as ApiError;
+      if (apiError?.status === 401 || apiError?.status === 404) {
+        logger.warn('Aceite dos termos indisponível no momento; usando false como fallback', {
+          communityId,
+          status: apiError.status,
+        });
+        return false;
+      }
       logger.error('Erro ao obter aceite dos termos da comunidade', { communityId, cause: error });
       return false;
     }

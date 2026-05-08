@@ -104,6 +104,9 @@ export const PAGINATION = {
 /** Posts por requisição no feed da Comunidade (cada “load more” pede mais esta quantidade). */
 export const COMMUNITY_FEED_POSTS_PAGE_SIZE = PAGINATION.DEFAULT_PAGE_SIZE;
 
+/** Linhas visíveis do corpo do post no feed antes de truncar com reticências (APP-215). */
+export const COMMUNITY_POST_PREVIEW_MAX_LINES = 5;
+
 export const KEYBOARD_AWARE_SCROLL = {
   CONTENT_FALLBACK_PADDING_BOTTOM: 120,
 } as const;
@@ -116,7 +119,9 @@ export type { FeatureFlagKey } from './featureFlags';
 export { SUPPORT_FLOATING_HIDDEN_ROOT_ROUTES, isRouteNameHiddenForSupportFloating } from './supportFloatingVisibility';
 export {
   API_HTTP_REQUEST_TIMEOUT_MS,
+  APP_RELEASE_POLICY_FETCH_TIMEOUT_MS,
   AUTH_BOOTSTRAP_HTTP_TIMEOUT_MS,
   AUTH_LOGOUT_AND_POLICY_HTTP_TIMEOUT_MS,
   ROOT_SPLASH_FONT_LOAD_FALLBACK_MS,
 } from './networkTimeouts';
+export { MARKETPLACE_PRODUCT_PLACEHOLDER_IMAGE_URI } from './marketplacePlaceholders';

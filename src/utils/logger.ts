@@ -1,5 +1,3 @@
-import { Platform } from 'react-native';
-
 type LogLevel = 'log' | 'error' | 'warn' | 'info' | 'debug';
 
 interface Logger {
@@ -10,42 +8,8 @@ interface Logger {
   debug: (...args: any[]) => void;
 }
 
-const LOGGER_ON_DEVICE_ENV = 'EXPO_PUBLIC_LOGGER_ON_DEVICE';
-
-function isLikelyEmulatorOrSimulator(): boolean {
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires -- evitar ciclo de import na arranque
-    const Constants = require('expo-constants').default as { deviceName?: string | null };
-    const name = (Constants.deviceName ?? '').toLowerCase();
-    if (
-      name.includes('simulator') ||
-      name.includes('emulator') ||
-      name.includes('sdk_gphone') ||
-      name.includes('google_sdk')
-    ) {
-      return true;
-    }
-  } catch {
-    return false;
-  }
-  if (Platform.OS === 'android') {
-    const fingerprint = String((Platform.constants as { Fingerprint?: string })?.Fingerprint ?? '').toLowerCase();
-    const model = String((Platform.constants as { Model?: string })?.Model ?? '').toLowerCase();
-    if (fingerprint.includes('generic') || fingerprint.includes('emulator') || model.includes('emulator')) {
-      return true;
-    }
-  }
-  return false;
-}
-
 function shouldEmitLoggerOutput(): boolean {
-  if (!__DEV__) {
-    return false;
-  }
-  if (process.env[LOGGER_ON_DEVICE_ENV] === 'true') {
-    return true;
-  }
-  return isLikelyEmulatorOrSimulator();
+  return __DEV__;
 }
 
 // Converte argumentos para formato seguro para logging

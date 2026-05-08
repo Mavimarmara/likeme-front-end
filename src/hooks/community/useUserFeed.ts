@@ -39,6 +39,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
   const [error, setError] = useState<string | null>(null);
 
   const currentPageRef = useRef(1);
+  const nextFeedCursorRef = useRef<string | undefined>(undefined);
 
   const paramsKey = JSON.stringify(params ?? {});
   const memoizedParams = useMemo(() => params ?? {}, [paramsKey]);
@@ -55,6 +56,18 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
         return;
       }
 
+      if (page === 1) {
+        nextFeedCursorRef.current = undefined;
+      }
+
+      if (page > 1 && (nextFeedCursorRef.current == null || nextFeedCursorRef.current.trim() === '')) {
+        logger.warn('[useUserFeed] loadMore sem cursor: paging.next ausente na página anterior.');
+        setHasMore(false);
+        return;
+      }
+
+      const feedCursor = page === 1 ? undefined : nextFeedCursorRef.current?.trim();
+
       try {
         isLoadingRef.current = true;
         hasErrorRef.current = false;
@@ -69,6 +82,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
           page,
           limit: pageSize,
           search: search,
+          ...(feedCursor != null && feedCursor.length > 0 ? { token: feedCursor } : {}),
           ...memoizedParams,
         });
 
@@ -89,20 +103,6 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
         if (!isSuccess || !feedData) {
           throw new Error(userFeedResponse.message || 'Erro ao carregar feed do usuário');
         }
-
-        logger.debug('User feed response:', {
-          success: userFeedResponse.success,
-          status: userFeedResponse.status || userFeedResponse.data?.status,
-          postsCount: feedData.posts?.length || 0,
-          filesCount: feedData.files?.length || 0,
-          hasPagination: !!pagination,
-        });
-
-        logger.debug('Raw posts from API:', {
-          postsArray: feedData.posts,
-          postsLength: feedData.posts?.length || 0,
-          firstPostRaw: feedData.posts?.[0] || null,
-        });
 
         const feedPosts = feedData.posts ?? [];
         const mappedPostsPromises = feedPosts.map((communityPost) =>
@@ -128,10 +128,19 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
         setCurrentPage(page);
         currentPageRef.current = page;
 
+        const nextFromFeed =
+          feedData.paging?.next != null && String(feedData.paging.next).trim().length > 0
+            ? String(feedData.paging.next).trim()
+            : undefined;
+        nextFeedCursorRef.current = nextFromFeed;
+
         const receivedCount = mappedPosts.length;
+        const hasNextToken = nextFromFeed != null;
         let hasMorePages = false;
         if (receivedCount === 0 && page === 1) {
           hasMorePages = false;
+        } else if (hasNextToken) {
+          hasMorePages = true;
         } else if (
           pagination &&
           typeof pagination.page === 'number' &&
@@ -139,8 +148,6 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
           pagination.totalPages > 0
         ) {
           hasMorePages = pagination.page < pagination.totalPages;
-        } else if (feedData.paging?.next != null && String(feedData.paging.next).length > 0) {
-          hasMorePages = true;
         } else {
           hasMorePages = receivedCount >= pageSize;
         }
@@ -172,6 +179,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
   const refresh = useCallback(() => {
     hasLoadedInitially.current = false;
     previousSearchQuery.current = '';
+    nextFeedCursorRef.current = undefined;
     setCurrentPage(1);
     currentPageRef.current = 1;
     setHasMore(true);
@@ -182,6 +190,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
     (query: string) => {
       previousSearchQuery.current = query;
       hasLoadedInitially.current = false;
+      nextFeedCursorRef.current = undefined;
       setCurrentPage(1);
       currentPageRef.current = 1;
       setHasMore(true);
@@ -210,6 +219,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
       hasErrorRef.current = false;
 
       if (searchChanged || paramsChanged) {
+        nextFeedCursorRef.current = undefined;
         setCurrentPage(1);
         currentPageRef.current = 1;
         setHasMore(true);

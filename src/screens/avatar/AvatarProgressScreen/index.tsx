@@ -14,7 +14,7 @@ import type { UserMarker } from '@/types/anamnesis';
 import { getMarkerColor, getMarkerGradient, hasMarkerGradient, MARKER_NAMES } from '@/constants/markers';
 import { COLORS } from '@/constants';
 import { useTranslation } from '@/hooks/i18n';
-import type { Event } from '@/types/event';
+import type { FeedEvent } from '@/types/event';
 import { NextEventsSection, PopularProvidersSection, type Provider } from '@/components/sections/community';
 import { JoinCard, type JoinCardItem } from '@/components/ui/cards';
 import { ProductsCarousel, type Product } from '@/components/sections/product';
@@ -33,7 +33,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
   const { t } = useTranslation();
   const rootNavigation = navigation.getParent() ?? navigation;
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month'>('week');
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<FeedEvent[]>([]);
   const [popularProviders, setPopularProviders] = useState<Provider[]>([]);
   const [markers, setMarkers] = useState<UserMarker[]>([]);
   const [_loadingEvents, setLoadingEvents] = useState(false);
@@ -225,11 +225,11 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
     }
   };
 
-  const handleEventPress = (event: Event) => {
+  const handleEventPress = (event: FeedEvent) => {
     logger.debug('[AvatarProgressScreen] event press (stub)', { eventId: event.id });
   };
 
-  const handleEventSave = (event: Event) => {
+  const handleEventSave = (event: FeedEvent) => {
     logger.debug('[AvatarProgressScreen] event save (stub)', { eventId: event.id });
   };
 

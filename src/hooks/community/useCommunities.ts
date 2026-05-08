@@ -1,12 +1,17 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { communityService, chatService } from '@/services';
-import type { Community, CommunityCategory, CommunityUserRelation, ListCommunitiesParams } from '@/types/community';
-import type { Event } from '@/types';
-import type { LiveBannerData } from '@/components/sections/community';
+import { communityService } from '@/services';
+import type {
+  Community,
+  CommunityCategory,
+  CommunityFile,
+  CommunityUserRelation,
+  ListCommunitiesParams,
+} from '@/types/community';
+import type { Event, FeedEvent } from '@/types/event';
 import type { CategoryName } from '@/types/category';
-import { mapChannelsToEvents } from '@/utils';
 import { PAGINATION } from '@/constants';
 import { logger } from '@/utils/logger';
+import { useEventList } from '@/hooks/event/useEventList';
 
 /** Formato do item exibido no JoinCard (ui/cards; comunidade recomendada) */
 export interface JoinCommunityItem {
@@ -22,8 +27,8 @@ interface UseCommunitiesOptions {
   enabled?: boolean;
   pageSize?: number;
   params?: Partial<ListCommunitiesParams>;
-  /** Quando true, carrega canais live/broadcast e community para liveBanner e events */
-  loadLiveChannels?: boolean;
+  /** Quando true, carrega eventos da primeira comunidade (useEventJoin monta o banner) */
+  loadEvents?: boolean;
   /** Texto para filtrar joinCommunities por título/badge (opcional) */
   searchQuery?: string;
   /** Se 'all' ou 'communities', filteredJoinCommunities inclui as comunidades; caso contrário, lista vazia */
@@ -58,10 +63,12 @@ interface UseCommunitiesReturn {
   loadCommunities: (page: number, append?: boolean) => Promise<void>;
   loadMore: () => void;
   refresh: () => void;
-  /** Preenchido quando loadLiveChannels: true */
-  liveBanner: LiveBannerData | undefined;
-  /** Preenchido quando loadLiveChannels: true */
+  /** Eventos (API) da primeira comunidade quando loadEvents: true */
   events: Event[];
+  /** Mantido vazio; slot legado para SocialList (cards de canal) */
+  feedEvents: FeedEvent[];
+  /** Metadados de arquivo da última resposta de listagem (avatars, etc.). */
+  communityFiles: CommunityFile[];
 }
 
 export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunitiesReturn => {
@@ -69,7 +76,7 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
     enabled = true,
     pageSize = DEFAULT_PAGE_SIZE,
     params = {},
-    loadLiveChannels = false,
+    loadEvents = false,
     searchQuery = '',
     solutionTab = 'all',
     selectedCategoryName = null,
@@ -89,8 +96,8 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
     next: string | null;
     previous: string | null;
   } | null>(null);
-  const [liveBanner, setLiveBanner] = useState<LiveBannerData | undefined>(undefined);
-  const [events, setEvents] = useState<Event[]>([]);
+  const emptyFeedEvents = useMemo((): FeedEvent[] => [], []);
+  const [communityFiles, setCommunityFiles] = useState<CommunityFile[]>([]);
   const paramsKey = JSON.stringify(params ?? {});
   const memoizedParams = useMemo(() => params ?? {}, [paramsKey]);
 
@@ -132,6 +139,20 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
         const categoriesList = response.data.categories || [];
         const communityUsersList = response.data.communityUsers || [];
         const pagingData = response.data.paging || null;
+        const filesList = response.data.files ?? [];
+        if (!append) {
+          setCommunityFiles(filesList);
+        } else if (filesList.length > 0) {
+          setCommunityFiles((prev) => {
+            const byId = new Map(prev.map((f) => [f.fileId, f]));
+            for (const file of filesList) {
+              if (file?.fileId) {
+                byId.set(file.fileId, file);
+              }
+            }
+            return Array.from(byId.values());
+          });
+        }
 
         logger.debug('Communities list response:', {
           success: response.success,
@@ -179,6 +200,7 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
           setCategories([]);
           setCommunityUsers([]);
           setPaging(null);
+          setCommunityFiles([]);
         }
       } finally {
         setLoading(false);
@@ -228,56 +250,11 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
     }
   }, [enabled, loadCommunities, paramsKey]);
 
-  useEffect(() => {
-    if (!loadLiveChannels) return;
-    const loadChannels = async () => {
-      try {
-        const [liveAndBroadcastChannelsResponse, communityChannelsResponse] = await Promise.all([
-          chatService.getChannels({ types: ['live', 'broadcast'] }),
-          chatService.getChannels({ types: 'community' }),
-        ]);
-
-        if (liveAndBroadcastChannelsResponse.success && liveAndBroadcastChannelsResponse.data?.channels) {
-          const liveAndBroadcastChannels = liveAndBroadcastChannelsResponse.data.channels;
-          setEvents(mapChannelsToEvents(liveAndBroadcastChannels));
-
-          if (liveAndBroadcastChannels.length > 0) {
-            const firstChannel = liveAndBroadcastChannels[0];
-            const metadata = firstChannel.metadata || {};
-            const thumbnail =
-              (metadata.thumbnailUrl as string) ||
-              (firstChannel.avatarFileId
-                ? undefined
-                : 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400');
-
-            setLiveBanner({
-              id: firstChannel.channelId,
-              title: (metadata.title as string) || firstChannel.displayName || 'Live Session',
-              host: (metadata.host as string) || 'Host',
-              status: 'Live Now' as const,
-              startTime: (metadata.startTime as string) || '08:00 pm',
-              endTime: (metadata.endTime as string) || '10:00 pm',
-              thumbnail,
-            });
-          } else {
-            setLiveBanner(undefined);
-          }
-        } else {
-          setLiveBanner(undefined);
-          setEvents([]);
-        }
-
-        if (communityChannelsResponse.success && communityChannelsResponse.data?.channels) {
-          // Canal de comunidade disponível; redirecionamento para chat pode ser feito por outro fluxo
-        }
-      } catch (err) {
-        logger.error('Error loading channels:', err);
-        setLiveBanner(undefined);
-        setEvents([]);
-      }
-    };
-    loadChannels();
-  }, [loadLiveChannels]);
+  const firstCommunityId = communities[0]?.communityId;
+  const { events: communityApiEvents } = useEventList({
+    enabled: loadEvents && !!firstCommunityId,
+    communityId: firstCommunityId,
+  });
 
   const joinCommunities = useMemo((): JoinCommunityItem[] => {
     const list: JoinCommunityItem[] = communities.map((community) => {
@@ -324,7 +301,8 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
     loadCommunities,
     loadMore,
     refresh,
-    liveBanner,
-    events,
+    events: communityApiEvents,
+    feedEvents: emptyFeedEvents,
+    communityFiles,
   };
 };

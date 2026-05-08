@@ -166,7 +166,7 @@ module.exports = {
   expo: {
     name: 'LikeMe',
     slug: 'likeme-front-end',
-    version: '1.1.0',
+    version: '1.2.0',
     orientation: 'portrait',
     userInterfaceStyle: 'light',
     platforms: ['ios', 'android', 'web'],
@@ -189,7 +189,12 @@ module.exports = {
         'expo-build-properties',
         {
           ios: { newArchEnabled: false },
-          android: { newArchEnabled: false },
+          android: {
+            newArchEnabled: false,
+            minSdkVersion: 26,
+            compileSdkVersion: 35,
+            targetSdkVersion: 35,
+          },
         },
       ],
       [
@@ -245,6 +250,13 @@ module.exports = {
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
         UIBackgroundModes: ['remote-notification'],
+        NSBluetoothPeripheralUsageDescription:
+          'Usamos Bluetooth para áudio em chamadas de vídeo quando você usa fones compatíveis.',
+        NSCameraUsageDescription: 'Precisamos da câmera para você participar das lives e reuniões com vídeo.',
+        NSMicrophoneUsageDescription: 'Precisamos do microfone para você participar das lives e reuniões com áudio.',
+        NSPhotoLibraryUsageDescription:
+          'Precisamos acessar fotos apenas se você compartilhar imagens durante uma reunião.',
+        LSApplicationQueriesSchemes: ['itms-apps', 'itms'],
       },
       entitlements: {
         'aps-environment': 'production',
@@ -267,12 +279,20 @@ module.exports = {
         EXPO_PUBLIC_AUTH_SCHEME: getEnvVar('EXPO_PUBLIC_AUTH_SCHEME', 'likeme'),
         EXPO_PUBLIC_AUTH_REDIRECT_PATH: getEnvVar('EXPO_PUBLIC_AUTH_REDIRECT_PATH', 'auth'),
         EXPO_PUBLIC_SUPPORT_WHATSAPP_URL: getEnvVar('EXPO_PUBLIC_SUPPORT_WHATSAPP_URL', ''),
-        EXPO_PUBLIC_SUPPORT_WHATSAPP_PHONE: getEnvVar('EXPO_PUBLIC_SUPPORT_WHATSAPP_PHONE', '5511994592992'),
+        EXPO_PUBLIC_SUPPORT_WHATSAPP_PHONE: getEnvVar('EXPO_PUBLIC_SUPPORT_WHATSAPP_PHONE', '5511953562902'),
         EXPO_PUBLIC_SUPPORT_WHATSAPP_MESSAGE: getEnvVar(
           'EXPO_PUBLIC_SUPPORT_WHATSAPP_MESSAGE',
           'Olá! Vim pelo app e gostaria de tirar uma dúvida.',
         ),
         EXPO_PUBLIC_ACCOUNT_DELETION_WEB_URL: getEnvVar('EXPO_PUBLIC_ACCOUNT_DELETION_WEB_URL', ''),
+        EXPO_PUBLIC_IOS_APP_STORE_URL: getEnvVar(
+          'EXPO_PUBLIC_IOS_APP_STORE_URL',
+          'https://apps.apple.com/br/app/like-me/id6757706434',
+        ),
+        EXPO_PUBLIC_ANDROID_PLAY_STORE_URL: getEnvVar(
+          'EXPO_PUBLIC_ANDROID_PLAY_STORE_URL',
+          'https://play.google.com/store/apps/details?id=com.likeme.app',
+        ),
         EXPO_PUBLIC_LOGGER_ON_DEVICE: getEnvVar('EXPO_PUBLIC_LOGGER_ON_DEVICE', ''),
       },
     },

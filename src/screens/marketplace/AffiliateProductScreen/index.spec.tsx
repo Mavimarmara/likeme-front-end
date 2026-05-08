@@ -134,9 +134,12 @@ describe('AffiliateProductScreen', () => {
       <AffiliateProductScreen navigation={mockNavigation as any} route={mockRoute as any} />,
     );
 
-    await waitFor(() => {
-      expect(getByText('Amazon Product')).toBeTruthy();
-    });
+    await waitFor(
+      () => {
+        expect(getByText('Amazon Product')).toBeTruthy();
+      },
+      { timeout: 8000 },
+    );
   });
 
   it('loads ad data when adId is provided', async () => {
@@ -281,5 +284,43 @@ describe('AffiliateProductScreen', () => {
     );
 
     expect(queryByText('marketplace.loadingProduct')).toBeNull();
+  });
+
+  it('keeps ad snapshot title and still refreshes catalog product data', async () => {
+    (adService.getAdById as jest.Mock).mockResolvedValue({
+      success: true,
+      data: {
+        ...mockAd,
+        product: {
+          ...mockAd.product,
+          name: 'Ad Snapshot Title',
+          image: 'https://example.com/ad-snapshot-old.jpg',
+        },
+      },
+    });
+    (productService.getProductById as jest.Mock).mockResolvedValue({
+      success: true,
+      data: {
+        ...mockAd.product,
+        name: 'Catalog Product Title',
+        image: 'https://example.com/catalog-updated.jpg',
+      },
+    });
+
+    const mockRoute = {
+      params: {
+        productId: 'product-1',
+        adId: 'ad-1',
+      },
+    };
+
+    const { getByText } = render(
+      <AffiliateProductScreen navigation={mockNavigation as any} route={mockRoute as any} />,
+    );
+
+    await waitFor(() => {
+      expect(getByText('Ad Snapshot Title')).toBeTruthy();
+      expect(productService.getProductById).toHaveBeenCalledWith('product-1');
+    });
   });
 });

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import type { LayoutChangeEvent, NativeSyntheticEvent, TextLayoutEventData } from 'react-native';
 import { Image, Pressable, StyleProp, Text, View, ViewStyle } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Badge } from '@/components/ui';
@@ -6,7 +7,7 @@ import PollCard from '../PollCard';
 import { usePost, usePostReplies, type PostLikeEngagement } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import { styles as cardStyles } from './styles';
-import { COLORS } from '@/constants';
+import { COLORS, COMMUNITY_POST_PREVIEW_MAX_LINES } from '@/constants';
 import type { Post } from '@/types';
 import {
   capitalizeWords,
@@ -61,10 +62,58 @@ const PostCardView: React.FC<ViewProps> = ({
   const videoUri = post.videoUrl?.trim() ? post.videoUrl.trim() : undefined;
   const showMediaBlock = Boolean((imageUri || videoUri) && !activePoll);
   const [videoPlaybackOpen, setVideoPlaybackOpen] = useState(false);
+  const [descriptionWidth, setDescriptionWidth] = useState<number | null>(null);
+  const [textExceedsMaxLines, setTextExceedsMaxLines] = useState<boolean | null>(null);
+  const previousDescriptionWidthRef = useRef<number | null>(null);
 
   useEffect(() => {
     setVideoPlaybackOpen(false);
   }, [post.id, videoUri]);
+
+  useEffect(() => {
+    setTextExceedsMaxLines(null);
+    previousDescriptionWidthRef.current = null;
+    setDescriptionWidth(null);
+  }, [post.id, postPreviewContent]);
+
+  useEffect(() => {
+    if (descriptionWidth == null || descriptionWidth <= 0) {
+      return;
+    }
+    const prev = previousDescriptionWidthRef.current;
+    if (prev !== null && prev !== descriptionWidth) {
+      setTextExceedsMaxLines(null);
+    }
+    previousDescriptionWidthRef.current = descriptionWidth;
+  }, [descriptionWidth]);
+
+  const handleDescriptionContainerLayout = (event: LayoutChangeEvent) => {
+    const w = Math.round(event.nativeEvent.layout.width);
+    if (w <= 0) return;
+    setDescriptionWidth((prev) => (prev === w ? prev : w));
+  };
+
+  const handlePreviewMeasureLayout = (event: NativeSyntheticEvent<TextLayoutEventData>) => {
+    const lineCount = event.nativeEvent.lines.length;
+    setTextExceedsMaxLines(lineCount > COMMUNITY_POST_PREVIEW_MAX_LINES);
+  };
+
+  const collapsedPreviewNumberOfLines =
+    isContentExpanded || forceContentExpanded
+      ? undefined
+      : textExceedsMaxLines === false
+      ? undefined
+      : COMMUNITY_POST_PREVIEW_MAX_LINES;
+
+  const shouldMeasurePreviewLines =
+    Boolean(postPreviewContent) &&
+    !forceContentExpanded &&
+    !isContentExpanded &&
+    descriptionWidth != null &&
+    descriptionWidth > 0 &&
+    textExceedsMaxLines === null;
+
+  const showPreviewExpandControl = Boolean(postPreviewContent) && !forceContentExpanded && textExceedsMaxLines === true;
 
   const handleCommentsPress = () => {
     setIsCommentsOpen((prev) => {
@@ -114,9 +163,42 @@ const PostCardView: React.FC<ViewProps> = ({
           ) : null}
 
           {postPreviewContent ? (
-            <Text style={cardStyles.description} numberOfLines={isContentExpanded ? undefined : 3}>
-              {postPreviewContent}
-            </Text>
+            <View
+              style={{ position: 'relative' }}
+              onLayout={handleDescriptionContainerLayout}
+              testID='post-card-description-wrap'
+            >
+              <Text
+                testID='post-card-description'
+                style={cardStyles.description}
+                {...(collapsedPreviewNumberOfLines != null ? { numberOfLines: collapsedPreviewNumberOfLines } : {})}
+                ellipsizeMode='tail'
+              >
+                {postPreviewContent}
+              </Text>
+              {shouldMeasurePreviewLines ? (
+                <Text
+                  testID='post-card-description-measure'
+                  style={[
+                    cardStyles.description,
+                    {
+                      position: 'absolute',
+                      opacity: 0,
+                      width: descriptionWidth ?? undefined,
+                      left: 0,
+                      top: 0,
+                      zIndex: -1,
+                    },
+                  ]}
+                  pointerEvents='none'
+                  accessible={false}
+                  importantForAccessibility='no-hide-descendants'
+                  onTextLayout={handlePreviewMeasureLayout}
+                >
+                  {postPreviewContent}
+                </Text>
+              ) : null}
+            </View>
           ) : null}
 
           {showMediaBlock ? (
@@ -184,15 +266,16 @@ const PostCardView: React.FC<ViewProps> = ({
 
       <View style={cardStyles.footer}>
         <View style={cardStyles.footerLeft}>
-          {!activePoll && postPreviewContent && !forceContentExpanded && (
+          {!activePoll && showPreviewExpandControl && (
             <Pressable
+              testID='post-card-see-more'
               style={({ pressed }) => [cardStyles.seeMoreButton, pressed ? { opacity: 0.85 } : undefined]}
               onPress={(e) => {
                 e?.stopPropagation?.();
                 handleSeeMorePress();
               }}
               accessibilityRole='button'
-              accessibilityLabel='Expandir conteúdo'
+              accessibilityLabel={isContentExpanded ? t('common.seeLess') : t('avatar.seeMore')}
             >
               <Text style={cardStyles.seeMoreButtonText}>
                 {isContentExpanded ? t('common.seeLess') : t('avatar.seeMore')}

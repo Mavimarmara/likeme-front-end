@@ -1,7 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { Post } from '@/types';
-import { communityService } from '@/services';
+import { communityService, storageService } from '@/services';
 import { logger } from '@/utils/logger';
+import {
+  resolveCommentAuthorDisplayName,
+  resolveOptimisticCommentAuthorLabel,
+} from '@/utils/community/commentAuthorDisplayName';
 
 export type PostLikeEngagement = {
   likeCount: number;
@@ -188,6 +192,7 @@ export const usePostReplies = ({
           const userId = remoteComment?.userId ?? remoteComment?.userPublicId ?? remoteComment?.userInternalId ?? '';
           const user = getUser(remoteComment);
           const avatar = getAvatarUrl(user);
+          const userRecord = user && typeof user === 'object' ? (user as Record<string, unknown>) : null;
 
           const createdAtIso = remoteComment?.createdAt
             ? new Date(remoteComment.createdAt).toISOString()
@@ -207,7 +212,7 @@ export const usePostReplies = ({
             postId: postIdValue,
             author: {
               id: userId,
-              name: user?.displayName ?? (userId ? `User ${String(userId).slice(0, 8)}` : 'Usuário'),
+              name: resolveCommentAuthorDisplayName(userRecord, userId),
               avatar,
             },
             content,
@@ -271,6 +276,9 @@ export const usePostReplies = ({
 
       setIsAddingPostComment(true);
 
+      const me = await storageService.getUser();
+      const optimisticAuthorName = resolveOptimisticCommentAuthorLabel(me);
+
       const optimisticId = `temp-${Date.now()}`;
       const nowIso = new Date().toISOString();
 
@@ -279,7 +287,7 @@ export const usePostReplies = ({
         postId: String(postId),
         author: {
           id: 'me',
-          name: 'Você',
+          name: optimisticAuthorName,
           avatar: undefined,
         },
         content: trimmedText,

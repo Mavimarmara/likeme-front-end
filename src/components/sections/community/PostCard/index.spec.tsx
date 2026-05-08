@@ -92,4 +92,66 @@ describe('PostCard', () => {
     fireEvent.press(getByLabelText('Reproduzir vídeo'));
     expect(getByTestId('post-card-embedded-video')).toBeTruthy();
   });
+
+  const linesLayoutEvent = (lineCount: number) => ({
+    nativeEvent: {
+      lines: Array.from({ length: lineCount }, () => ({ text: 'x', width: 300, height: 20 })),
+    },
+  });
+
+  it('não exibe “Ver mais” quando o corpo do post cabe em até 5 linhas (medição)', () => {
+    const title = 'Título do post';
+    const body = 'Texto curto.';
+    const { getByTestId, queryByTestId } = render(
+      <PostCard
+        post={{
+          ...basePost(),
+          title,
+          content: `${title}\n\n${body}`,
+        }}
+        postEngagement={{ likeCount: 0, isLiked: false, isLiking: false, togglePostLike: jest.fn() }}
+      />,
+    );
+
+    fireEvent(getByTestId('post-card-description-wrap'), 'layout', {
+      nativeEvent: { layout: { width: 320, height: 40, x: 0, y: 0 } },
+    });
+    fireEvent(
+      getByTestId('post-card-description-measure', { includeHiddenElements: true }),
+      'textLayout',
+      linesLayoutEvent(3),
+    );
+
+    expect(queryByTestId('post-card-see-more')).toBeNull();
+  });
+
+  it('exibe “Ver mais” quando o corpo ultrapassa 5 linhas e expande ao tocar', () => {
+    const title = 'Título';
+    const body = Array(40).fill('palavra').join(' ');
+    const { getByTestId, queryByTestId } = render(
+      <PostCard
+        post={{
+          ...basePost(),
+          title,
+          content: `${title}\n\n${body}`,
+        }}
+        postEngagement={{ likeCount: 0, isLiked: false, isLiking: false, togglePostLike: jest.fn() }}
+      />,
+    );
+
+    fireEvent(getByTestId('post-card-description-wrap'), 'layout', {
+      nativeEvent: { layout: { width: 320, height: 200, x: 0, y: 0 } },
+    });
+    fireEvent(
+      getByTestId('post-card-description-measure', { includeHiddenElements: true }),
+      'textLayout',
+      linesLayoutEvent(6),
+    );
+
+    const seeMore = getByTestId('post-card-see-more');
+    expect(seeMore).toBeTruthy();
+
+    fireEvent.press(seeMore);
+    expect(queryByTestId('post-card-description-measure', { includeHiddenElements: true })).toBeNull();
+  });
 });

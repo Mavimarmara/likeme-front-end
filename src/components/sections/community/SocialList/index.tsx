@@ -1,22 +1,23 @@
 import React, { type ReactNode } from 'react';
 import { View, ScrollView } from 'react-native';
-import { LiveBanner, LiveBannerData, PostsSection, NextEventsSection } from '@/components/sections/community';
+import { EventBanner, PostsSection, NextEventsSection } from '@/components/sections/community';
+import type { EventBannerData, FeedEvent } from '@/types/event';
 import { ProductsCarousel, Product } from '@/components/sections/product';
 import { useTranslation } from '@/hooks/i18n';
-import type { Post, Event } from '@/types';
+import type { Post } from '@/types';
 import { styles } from './styles';
 
 type Props = {
-  liveBanner?: LiveBannerData | null;
-  onLivePress?: (live: LiveBannerData) => void;
+  eventBanner?: EventBannerData | null;
+  onEventBannerPress?: (event: EventBannerData) => void;
   posts: Post[];
   loading: boolean;
   loadingMore: boolean;
   error: string | null;
   onLoadMore: () => void;
-  events?: Event[];
-  onEventPress?: (event: Event) => void;
-  onEventSave?: (event: Event) => void;
+  events?: FeedEvent[];
+  onEventPress?: (event: FeedEvent) => void;
+  onEventSave?: (event: FeedEvent) => void;
   products?: Product[];
   onProductPress?: (product: Product) => void;
   onProductLike?: (product: Product) => void;
@@ -34,8 +35,8 @@ type Props = {
 };
 
 const SocialList: React.FC<Props> = ({
-  liveBanner,
-  onLivePress,
+  eventBanner,
+  onEventBannerPress,
   posts,
   loading,
   loadingMore,
@@ -88,9 +89,9 @@ const SocialList: React.FC<Props> = ({
 
   return (
     <View style={styles.container}>
-      {liveBanner && onLivePress && (
-        <View style={styles.liveBannerContainer}>
-          <LiveBanner live={liveBanner} onPress={onLivePress} />
+      {eventBanner && onEventBannerPress && (
+        <View style={styles.eventBannerContainer}>
+          <EventBanner event={eventBanner} onPress={onEventBannerPress} />
         </View>
       )}
       {embedInParentScroll ? (

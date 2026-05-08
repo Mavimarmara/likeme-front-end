@@ -38,8 +38,9 @@ jest.mock('@/components/ui/layout', () => {
   const Header = () => null;
   return {
     Header,
-    HeroImage: ({ children, name, title }: any) => (
+    HeroImage: ({ children, name, title, imageUri }: any) => (
       <View testID='hero-image'>
+        <Text testID='hero-image-uri'>{imageUri}</Text>
         {title ? <Text>{title}</Text> : null}
         {name ? <Text>{name}</Text> : null}
         {children}
@@ -420,6 +421,39 @@ describe('ProductDetailsScreen', () => {
           productId: 'product-1',
         }),
       );
+    });
+  });
+
+  it('prioritizes catalog image over ad snapshot image', async () => {
+    mockUseProductDetails.mockReturnValue({
+      product: { ...mockProduct, image: 'https://example.com/catalog-updated.jpg' },
+      ad: {
+        product: {
+          ...mockProduct,
+          image: 'https://example.com/ad-snapshot-old.jpg',
+        },
+      },
+      advertiserId: undefined,
+      relatedProducts: [],
+      loading: false,
+      isFavorite: false,
+      setIsFavorite: jest.fn(),
+      handleAddToCart: jest.fn(),
+      loadAd: jest.fn(),
+    });
+
+    const mockRoute = {
+      params: {
+        productId: 'product-1',
+      },
+    };
+
+    const { getByTestId } = render(
+      <ProductDetailsScreen navigation={mockNavigation as any} route={mockRoute as any} />,
+    );
+
+    await waitFor(() => {
+      expect(getByTestId('hero-image-uri').props.children).toBe('https://example.com/catalog-updated.jpg');
     });
   });
 });

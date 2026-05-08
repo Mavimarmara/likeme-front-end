@@ -30,6 +30,12 @@ import { styles } from './styles';
 
 type ActivitiesScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'Activities'>;
+  route?: {
+    params?: {
+      initialTab?: 'actives' | 'history';
+      initialFilter?: 'all' | 'activities' | 'appointments' | 'orders';
+    };
+  };
 };
 
 type TabType = 'actives' | 'history';
@@ -37,12 +43,12 @@ type FilterType = 'all' | 'activities' | 'appointments' | 'orders';
 
 import type { ActivityItem } from '@/types/activity/hooks';
 
-const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation }) => {
+const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation, route }) => {
   useAnalyticsScreen({ screenName: 'Activities', screenClass: 'ActivitiesScreen' });
   const { t } = useTranslation();
   const rootNavigation = navigation.getParent() ?? navigation;
-  const [activeTab, setActiveTab] = useState<TabType>('actives');
-  const [selectedFilter, setSelectedFilter] = useState<FilterType>('all');
+  const [activeTab, setActiveTab] = useState<TabType>(route?.params?.initialTab ?? 'actives');
+  const [selectedFilter, setSelectedFilter] = useState<FilterType>(route?.params?.initialFilter ?? 'all');
   const [showFestivalBanner, setShowFestivalBanner] = useState(true);
   const [isCreateActivityModalVisible, setIsCreateActivityModalVisible] = useState(false);
   const [editingActivityId, setEditingActivityId] = useState<string | null>(null);

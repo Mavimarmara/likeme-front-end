@@ -1,4 +1,5 @@
 export type RootStackParamList = {
+  ForcedUpdate: { storeUrl: string; message?: string };
   Unauthenticated: undefined;
   Authenticated: undefined;
   Welcome: undefined;
@@ -13,7 +14,12 @@ export type RootStackParamList = {
   AnamnesisHabits: { title: string; keyPrefix: string };
   Community: undefined;
   Chat: undefined;
-  Activities: undefined;
+  Activities:
+    | {
+        initialTab?: 'actives' | 'history';
+        initialFilter?: 'all' | 'activities' | 'appointments' | 'orders';
+      }
+    | undefined;
   Marketplace: undefined;
   ProductDetails: {
     productId: string;

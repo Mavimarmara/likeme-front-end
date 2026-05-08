@@ -1,24 +1,49 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Alert } from 'react-native';
 import { useTranslation } from '@/hooks/i18n';
+import { MARKETPLACE_PRODUCT_PLACEHOLDER_IMAGE_URI } from '@/constants';
 import { productService, adService, storageService } from '@/services';
 import { mapProductToCartItem, formatPrice } from '@/utils';
 import type { Product as ApiProduct } from '@/types/product';
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import type { Ad } from '@/types/ad';
 import { logger } from '@/utils/logger';
+import { buildApiProductFromRouteFallback, type RouteFallbackProduct } from '@/utils/marketplace/routeProductFallback';
+
+async function redirectAmazonProductToAffiliateScreen(
+  navigation: { replace: (screen: string, params: Record<string, unknown>) => void },
+  productData: ApiProduct,
+  productId: string,
+): Promise<void> {
+  const adsResponse = await adService.listAds({
+    productId,
+    activeOnly: true,
+    limit: 1,
+  });
+
+  const firstAdId = adsResponse.success && adsResponse.data?.ads.length ? adsResponse.data.ads[0].id : undefined;
+
+  navigation.replace('AffiliateProduct', {
+    productId,
+    adId: firstAdId,
+    product: {
+      id: productData.id,
+      title: productData.name,
+      price: formatPrice(productData.price),
+      image: productData.image || MARKETPLACE_PRODUCT_PLACEHOLDER_IMAGE_URI,
+      type: productData.type,
+      description: productData.description,
+    },
+  });
+}
 
 interface UseProductDetailsParams {
   productId: string | undefined;
-  fallbackProduct?: {
-    id: string;
-    title: string;
-    price: string;
-    image: string;
-    type?: string;
-    description?: string;
-  };
+  adId?: string;
+  fallbackProduct?: RouteFallbackProduct;
   navigation: any;
+  skipAmazonRedirect?: boolean;
+  supplementalExternalUrl?: string;
 }
 
 interface UseProductDetailsReturn {
@@ -30,14 +55,17 @@ interface UseProductDetailsReturn {
   loading: boolean;
   isFavorite: boolean;
   setIsFavorite: (value: boolean) => void;
-  handleAddToCart: () => Promise<void>;
+  handleAddToCart: (quantity?: number) => Promise<void>;
   loadAd: () => Promise<void>;
 }
 
 export const useProductDetails = ({
   productId,
+  adId,
   fallbackProduct,
   navigation,
+  skipAmazonRedirect = false,
+  supplementalExternalUrl,
 }: UseProductDetailsParams): UseProductDetailsReturn => {
   const { t } = useTranslation();
   const [product, setProduct] = useState<ApiProduct | null>(null);
@@ -48,6 +76,17 @@ export const useProductDetails = ({
 
   const advertiserId = product?.advertiserId ?? ad?.advertiserId;
 
+  const mergeSupplementalExternalUrl = useCallback(
+    (p: ApiProduct): ApiProduct => {
+      const url = supplementalExternalUrl?.trim();
+      if (!url || p.externalUrl) {
+        return p;
+      }
+      return { ...p, externalUrl: url };
+    },
+    [supplementalExternalUrl],
+  );
+
   const loadProduct = useCallback(async () => {
     if (!productId) return;
 
@@ -56,48 +95,24 @@ export const useProductDetails = ({
       const response = await productService.getProductById(productId);
 
       if (!response.success || !response.data) {
-        setLoading(false);
         return;
       }
 
       const productData = response.data;
 
-      if (productData.type === PRODUCT_CATALOG_TYPE.AMAZON) {
-        await handleAmazonProductRedirect(productData, productId, navigation);
+      if (productData.type === PRODUCT_CATALOG_TYPE.AMAZON && !skipAmazonRedirect) {
+        await redirectAmazonProductToAffiliateScreen(navigation, productData, productId);
         return;
       }
 
-      setProduct(productData);
+      setProduct(mergeSupplementalExternalUrl(productData));
     } catch (error) {
       logger.error('[useProductDetails] Erro ao carregar produto', error);
       Alert.alert(t('errors.error'), t('errors.loadProductError'));
     } finally {
       setLoading(false);
     }
-  }, [productId, navigation]);
-
-  const handleAmazonProductRedirect = async (productData: ApiProduct, productId: string, nav: any) => {
-    const adsResponse = await adService.listAds({
-      productId,
-      activeOnly: true,
-      limit: 1,
-    });
-
-    const adId = adsResponse.success && adsResponse.data?.ads.length > 0 ? adsResponse.data.ads[0].id : undefined;
-
-    nav.replace('AffiliateProduct', {
-      productId,
-      adId,
-      product: {
-        id: productData.id,
-        title: productData.name,
-        price: formatPrice(productData.price),
-        image: productData.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
-        type: productData.type,
-        description: productData.description,
-      },
-    });
-  };
+  }, [productId, navigation, skipAmazonRedirect, mergeSupplementalExternalUrl]);
 
   const loadRelatedProducts = useCallback(async () => {
     if (!productId) return;
@@ -117,9 +132,22 @@ export const useProductDetails = ({
   }, [productId, fallbackProduct?.type]);
 
   const loadAd = useCallback(async () => {
-    if (!productId) return;
-
     try {
+      if (adId) {
+        const adDetailResponse = await adService.getAdById(adId);
+        if (adDetailResponse.success && adDetailResponse.data) {
+          const adData = adDetailResponse.data;
+          setAd(adData);
+          const nested = adData.product;
+          if (nested) {
+            setProduct((prev) => (prev ? prev : mergeSupplementalExternalUrl({ ...nested })));
+          }
+        }
+        return;
+      }
+
+      if (!productId) return;
+
       const response = await adService.listAds({
         productId,
         activeOnly: true,
@@ -140,49 +168,58 @@ export const useProductDetails = ({
     } catch (error) {
       logger.error('[useProductDetails] Erro ao carregar ad', error);
     }
-  }, [productId]);
+  }, [productId, adId, mergeSupplementalExternalUrl]);
 
-  const handleAddToCart = useCallback(async () => {
-    if (!product) return;
+  const handleAddToCart = useCallback(
+    async (quantity: number = 1) => {
+      if (!product) return;
 
-    if (product.status === 'out_of_stock' || product.quantity === 0) {
-      Alert.alert(t('marketplace.outOfStock'), t('marketplace.productOutOfStockMessage'));
-      return;
-    }
+      if (product.status === 'out_of_stock' || product.quantity === 0) {
+        Alert.alert(t('marketplace.outOfStock'), t('marketplace.productOutOfStockMessage'));
+        return;
+      }
 
-    try {
-      const cartItem = mapProductToCartItem(product);
-      await storageService.addToCart(cartItem);
-      navigation.navigate('Cart');
-    } catch (error) {
-      logger.error('[useProductDetails] Erro ao adicionar ao carrinho', error);
-      Alert.alert(t('errors.error'), t('errors.addToCartError'));
-    }
-  }, [product, navigation]);
+      try {
+        const cartItem = mapProductToCartItem(product);
+        await storageService.addToCart(cartItem, quantity);
+        navigation.navigate('Cart');
+      } catch (error) {
+        logger.error('[useProductDetails] Erro ao adicionar ao carrinho', error);
+        Alert.alert(t('errors.error'), t('errors.addToCartError'));
+      }
+    },
+    [product, navigation, t],
+  );
 
   useEffect(() => {
     if (productId) {
       loadProduct();
       loadRelatedProducts();
-      return;
-    }
-
-    if (fallbackProduct) {
-      setProduct({
-        id: fallbackProduct.id,
-        name: fallbackProduct.title,
-        description: fallbackProduct.description,
-        price: parseFloat(fallbackProduct.price.replace('$', '').replace(',', '')),
-        image: fallbackProduct.image,
-        type: fallbackProduct.type,
-        quantity: 0,
-        status: 'active',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      });
+    } else if (fallbackProduct) {
+      const timestampsIso = new Date().toISOString();
+      setProduct(mergeSupplementalExternalUrl(buildApiProductFromRouteFallback(fallbackProduct, timestampsIso)));
+      setLoading(false);
+    } else {
       setLoading(false);
     }
-  }, [productId, fallbackProduct, loadProduct, loadRelatedProducts]);
+  }, [
+    productId,
+    fallbackProduct?.id,
+    fallbackProduct?.title,
+    fallbackProduct?.price,
+    fallbackProduct?.image,
+    fallbackProduct?.type,
+    fallbackProduct?.description,
+    loadProduct,
+    loadRelatedProducts,
+    mergeSupplementalExternalUrl,
+  ]);
+
+  useEffect(() => {
+    if (productId || adId) {
+      void loadAd();
+    }
+  }, [productId, adId, loadAd]);
 
   return {
     product,

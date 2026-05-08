@@ -77,6 +77,8 @@ export interface CommunityComment {
 export interface CommunityUser {
   userId: string;
   displayName: string;
+  firstName?: string;
+  lastName?: string;
   avatarFileId?: string;
   createdAt?: string;
   updatedAt?: string;
@@ -87,6 +89,8 @@ export interface Community {
   displayName: string;
   description?: string;
   avatarFileId?: string;
+  /** URL resolvida no backend (`fileUrl` cruzado com `avatarFileId`). */
+  avatarUrl?: string;
   isPublic: boolean;
   membersCount: number;
   postsCount: number;
@@ -153,6 +157,8 @@ export interface UserFeedApiResponse {
 export interface UserFeedParams {
   page?: number;
   limit?: number;
+  /** Valor de `paging.next` da página anterior (obrigatório no backend quando `page` > 1). */
+  token?: string;
   search?: string;
   postTypes?: string | string[];
   authorIds?: string | string[];
@@ -177,6 +183,7 @@ export interface ListCommunitiesApiResponse {
   message?: string;
   data?: {
     communities?: Community[];
+    files?: CommunityFile[];
     categories?: CommunityCategory[];
     communityUsers?: CommunityUserRelation[];
     paging?: {

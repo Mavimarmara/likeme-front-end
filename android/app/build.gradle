@@ -92,8 +92,8 @@ android {
         applicationId 'com.likeme.app'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 10100
-        versionName "1.1.0"
+        versionCode 1
+        versionName "1.2.0"
 
         buildConfigField "String", "REACT_NATIVE_RELEASE_LEVEL", "\"${findProperty('reactNativeReleaseLevel') ?: 'stable'}\""
     }
@@ -179,6 +179,8 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+
+    implementation 'us.zoom.meetingsdk:zoomsdk:6.7.2'
 }
 
 apply plugin: 'com.google.gms.google-services'

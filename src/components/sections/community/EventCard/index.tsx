@@ -3,12 +3,12 @@ import { View, Text, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { BlurCard } from '@/components/ui/cards';
 import { styles } from './styles';
-import type { Event } from '@/types/event';
+import type { FeedEvent } from '@/types/event';
 
 type Props = {
-  event: Event;
-  onPress?: (event: Event) => void;
-  onSave?: (event: Event) => void;
+  event: FeedEvent;
+  onPress?: (event: FeedEvent) => void;
+  onSave?: (event: FeedEvent) => void;
 };
 
 const EventCard: React.FC<Props> = ({ event, onPress, onSave }) => {

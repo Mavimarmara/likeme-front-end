@@ -82,7 +82,7 @@ export const AUTH_CONFIG = {
 
 export const SUPPORT_CONFIG = {
   whatsappUrl: getEnvVar('EXPO_PUBLIC_SUPPORT_WHATSAPP_URL', ''),
-  whatsappPhone: getEnvVar('EXPO_PUBLIC_SUPPORT_WHATSAPP_PHONE', '5511994592992'),
+  whatsappPhone: getEnvVar('EXPO_PUBLIC_SUPPORT_WHATSAPP_PHONE', '5511953562902'),
   whatsappDefaultMessage: getEnvVar(
     'EXPO_PUBLIC_SUPPORT_WHATSAPP_MESSAGE',
     'Olá! Vim pelo app e gostaria de tirar uma dúvida.',
@@ -92,6 +92,15 @@ export const SUPPORT_CONFIG = {
 /** Página web opcional (ex.: política / suporte) ligada à exclusão de conta — Apple 5.1.1(v) quando o fluxo inclui o site. */
 export const ACCOUNT_CONFIG = {
   deletionWebUrl: getEnvVar('EXPO_PUBLIC_ACCOUNT_DELETION_WEB_URL', '').trim(),
+};
+
+const DEFAULT_IOS_APP_STORE_URL = 'https://apps.apple.com/br/app/like-me/id6757706434';
+const DEFAULT_ANDROID_PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.likeme.app';
+
+/** URLs das lojas quando o backend não envia `storeUrlIos` / `storeUrlAndroid` (fallback local). */
+export const STORE_URL_CONFIG = {
+  ios: getEnvVar('EXPO_PUBLIC_IOS_APP_STORE_URL', DEFAULT_IOS_APP_STORE_URL).trim(),
+  android: getEnvVar('EXPO_PUBLIC_ANDROID_PLAY_STORE_URL', DEFAULT_ANDROID_PLAY_STORE_URL).trim(),
 };
 
 export const getApiUrl = (endpoint: string) => {

@@ -1,19 +1,13 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { View, ScrollView, Text, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import {
-  SocialList,
-  ShoppingList,
-  LiveBanner,
-  LiveBannerData,
-  CommunityDescriptionSection,
-} from '@/components/sections/community';
+import { SocialList, ShoppingList, EventBanner, CommunityDescriptionSection } from '@/components/sections/community';
 import { styles as socialListStyles } from '@/components/sections/community/SocialList/styles';
 import type { SpecialistCardProps } from '@/components/sections/community/SpecialistCard';
 import { Product } from '@/components/sections/product';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
 import { GradientBackground, HeroImage, ScreenWithHeader } from '@/components/ui/layout';
-import type { Event } from '@/types';
+import type { FeedEvent } from '@/types/event';
 import { SPACING, COMMUNITY_FEED_POSTS_PAGE_SIZE } from '@/constants';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
@@ -25,16 +19,19 @@ import {
   SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS,
   useAdvertisers,
   useMenuItems,
+  useEventJoin,
 } from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen, logTabSelect } from '@/analytics';
 import { storageService } from '@/services';
 import { logger } from '@/utils/logger';
+import { resolveCommunityHeroImageUri } from '@/utils/community/mappers';
 import type { Advertiser } from '@/types/ad';
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import Toggle from '@/components/ui/buttons/Toggle';
 import { Checkbox } from '@/components/ui/inputs';
+import { EventWebViewSession } from '@/components/infrastructure/webview/EventWebViewSession';
 
 type CommunityMode = 'Feed' | 'Solutions';
 
@@ -90,8 +87,9 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     hasMore: _communitiesHasMore,
     loadMore: _loadMoreCommunities,
     refresh: _refreshCommunities,
-    liveBanner,
     events,
+    feedEvents,
+    communityFiles,
   } = useCommunities({
     enabled: true,
     pageSize: 10,
@@ -99,7 +97,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
       sortBy: 'createdAt',
       includeDeleted: false,
     },
-    loadLiveChannels: true,
+    loadEvents: true,
   });
 
   const selectedCommunityId = rawCommunities[0]?.communityId;
@@ -124,6 +122,14 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
 
   const { advertisers: advertisersList } = useAdvertisers({ communityId: selectedCommunityId });
   const advertiser = advertisersList[0] ?? null;
+  const communityProviderName = advertiser?.name?.trim() ?? null;
+
+  const { eventBanner, eventJoinUrl, closeEventSession, handleEventBannerPress } = useEventJoin({
+    loadEvents: true,
+    events,
+    communityAvatarUrl: rawCommunities[0]?.avatarUrl,
+    communityProviderName,
+  });
 
   const feedFilterParams = useMemo(() => ({}), []);
 
@@ -170,15 +176,11 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     setSelectedMode(mode);
   };
 
-  const handleLivePress = (live: LiveBannerData) => {
-    logger.debug('[CommunityScreen] live press (stub)', { liveId: live.id });
-  };
-
-  const handleEventPress = (event: Event) => {
+  const handleEventPress = (event: FeedEvent) => {
     logger.debug('[CommunityScreen] event press (stub)', { eventId: event.id });
   };
 
-  const handleEventSave = (event: Event) => {
+  const handleEventSave = (event: FeedEvent) => {
     logger.debug('[CommunityScreen] event save (stub)', { eventId: event.id });
   };
 
@@ -206,6 +208,11 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   }, [categories]);
 
   const primaryCommunity = rawCommunities[0];
+
+  const communityHeroImageUri = useMemo(
+    () => resolveCommunityHeroImageUri(primaryCommunity, communityFiles, DEFAULT_COMMUNITY_IMAGE),
+    [primaryCommunity, communityFiles],
+  );
 
   const communityInfoTabOptions: ButtonCarouselOption<CommunityInfoTabId>[] = useMemo(
     () => [
@@ -309,102 +316,105 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   }, [selectedCommunityId, isCommunityFavorite]);
 
   return (
-    <ScreenWithHeader
-      navigation={rootNavigation}
-      headerProps={{
-        showBackButton: true,
-        showMenuWithAvatar: false,
-        onBackPress: () => navigation?.goBack?.(),
-        showRating: true,
-        favoriteActive: isCommunityFavorite,
-        onRatingPress: handleCommunityFavoritePress,
-      }}
-      contentContainerStyle={styles.container}
-    >
-      <View pointerEvents='none' style={styles.gradientBackground}>
-        <GradientBackground />
-      </View>
-      <ScrollView
-        style={[{ flex: 1 }, { zIndex: 1 }]}
-        contentContainerStyle={{ paddingBottom: SPACING.XL }}
-        showsVerticalScrollIndicator={false}
-        onScroll={handleScroll}
-        scrollEventThrottle={100}
+    <View style={styles.screenRoot}>
+      {eventJoinUrl ? <EventWebViewSession url={eventJoinUrl} onClose={closeEventSession} /> : null}
+      <ScreenWithHeader
+        navigation={rootNavigation}
+        headerProps={{
+          showBackButton: true,
+          showMenuWithAvatar: false,
+          onBackPress: () => navigation?.goBack?.(),
+          showRating: true,
+          favoriteActive: isCommunityFavorite,
+          onRatingPress: handleCommunityFavoritePress,
+        }}
+        contentContainerStyle={styles.container}
       >
-        {primaryCommunity?.displayName != null && (
-          <HeroImage
-            imageUri={(primaryCommunity.avatarFileId as string | undefined) ?? DEFAULT_COMMUNITY_IMAGE}
-            name={primaryCommunity.displayName}
-            badges={communityHeroBadges}
-            footer={
-              primaryCommunity.description ? (
-                <View style={styles.heroFooter}>
-                  <Text style={styles.heroDescription}>{primaryCommunity.description}</Text>
-                </View>
-              ) : undefined
-            }
-          />
-        )}
-        <View>
-          <View style={styles.toggleRow}>
-            <View style={styles.toggleContainer}>
-              <Toggle<CommunityMode> options={toggleOptions} selected={selectedMode} onSelect={handleModeSelect} />
-            </View>
-          </View>
-          {selectedMode === 'Feed' ? (
-            <>
-              {liveBanner ? (
-                <View style={socialListStyles.liveBannerContainer}>
-                  <LiveBanner live={liveBanner} onPress={handleLivePress} />
-                </View>
-              ) : null}
-              <CommunityDescriptionSection
-                variant='feed'
-                specialist={specialistData}
-                welcomeDismissed={welcomeDismissed}
-                onWelcomeClose={handleWelcomeClose}
-              />
-              <SocialList
-                posts={posts}
-                loading={loading}
-                loadingMore={loadingMore}
-                error={error}
-                onLoadMore={handleLoadMore}
-                events={events}
-                onEventPress={handleEventPress}
-                onEventSave={handleEventSave}
-                products={suggestedProducts}
-                onProductPress={handleProductPress}
-                onProductLike={handleProductLike}
-                embedInParentScroll
-                betweenSpecialistAndPosts={feedInformationSlot}
-                renderPostsFeed={activeInfoTab === 'posts'}
-                renderFeedRecommendations={activeInfoTab === 'posts' || activeInfoTab === 'about'}
-              />
-            </>
-          ) : (
-            <>
-              <CommunityDescriptionSection
-                variant='solutions'
-                specialist={specialistData}
-                shoppingTipDismissed={shoppingTipDismissed}
-                onShoppingTipClose={handleShoppingTipClose}
-              />
-              <ShoppingList
-                products={suggestedProducts}
-                services={suggestedServices}
-                programs={suggestedPrograms}
-                professionals={advertisersList}
-                onProductPress={handleProductPress}
-                onProductLike={handleProductLike}
-                onProfessionalPress={handleProfessionalPress}
-                embedInParentScroll
-              />
-            </>
-          )}
+        <View pointerEvents='none' style={styles.gradientBackground}>
+          <GradientBackground />
         </View>
-      </ScrollView>
-    </ScreenWithHeader>
+        <ScrollView
+          style={[{ flex: 1 }, { zIndex: 1 }]}
+          contentContainerStyle={{ paddingBottom: SPACING.XL }}
+          showsVerticalScrollIndicator={false}
+          onScroll={handleScroll}
+          scrollEventThrottle={100}
+        >
+          {primaryCommunity?.displayName != null && (
+            <HeroImage
+              imageUri={communityHeroImageUri}
+              name={primaryCommunity.displayName}
+              badges={communityHeroBadges}
+              footer={
+                primaryCommunity.description ? (
+                  <View style={styles.heroFooter}>
+                    <Text style={styles.heroDescription}>{primaryCommunity.description}</Text>
+                  </View>
+                ) : undefined
+              }
+            />
+          )}
+          <View>
+            <View style={styles.toggleRow}>
+              <View style={styles.toggleContainer}>
+                <Toggle<CommunityMode> options={toggleOptions} selected={selectedMode} onSelect={handleModeSelect} />
+              </View>
+            </View>
+            {selectedMode === 'Feed' ? (
+              <>
+                {eventBanner ? (
+                  <View style={socialListStyles.eventBannerContainer}>
+                    <EventBanner event={eventBanner} onPress={handleEventBannerPress} />
+                  </View>
+                ) : null}
+                <CommunityDescriptionSection
+                  variant='feed'
+                  specialist={specialistData}
+                  welcomeDismissed={welcomeDismissed}
+                  onWelcomeClose={handleWelcomeClose}
+                />
+                <SocialList
+                  posts={posts}
+                  loading={loading}
+                  loadingMore={loadingMore}
+                  error={error}
+                  onLoadMore={handleLoadMore}
+                  events={feedEvents}
+                  onEventPress={handleEventPress}
+                  onEventSave={handleEventSave}
+                  products={suggestedProducts}
+                  onProductPress={handleProductPress}
+                  onProductLike={handleProductLike}
+                  embedInParentScroll
+                  betweenSpecialistAndPosts={feedInformationSlot}
+                  renderPostsFeed={activeInfoTab === 'posts'}
+                  renderFeedRecommendations={activeInfoTab === 'posts' || activeInfoTab === 'about'}
+                />
+              </>
+            ) : (
+              <>
+                <CommunityDescriptionSection
+                  variant='solutions'
+                  specialist={specialistData}
+                  shoppingTipDismissed={shoppingTipDismissed}
+                  onShoppingTipClose={handleShoppingTipClose}
+                />
+                <ShoppingList
+                  products={suggestedProducts}
+                  services={suggestedServices}
+                  programs={suggestedPrograms}
+                  professionals={advertisersList}
+                  onProductPress={handleProductPress}
+                  onProductLike={handleProductLike}
+                  onProfessionalPress={handleProfessionalPress}
+                  embedInParentScroll
+                />
+              </>
+            )}
+          </View>
+        </ScrollView>
+      </ScreenWithHeader>
+    </View>
   );
 };
 

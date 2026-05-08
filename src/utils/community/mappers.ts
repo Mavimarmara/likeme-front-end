@@ -10,6 +10,7 @@ import type { Post, Comment, Poll } from '@/types';
 import type { Program } from '@/types/program';
 import { logger } from '@/utils/logger';
 import { resolveCommunityPostMediaWithChildren } from '@/utils/community/resolvePostMedia';
+import { resolveCommentAuthorDisplayName } from '@/utils/community/commentAuthorDisplayName';
 
 const mapCommunityCommentToComment = (
   communityComment: CommunityComment,
@@ -22,6 +23,7 @@ const mapCommunityCommentToComment = (
     JSON.stringify(communityComment.data || {});
 
   const user = users?.find((u) => u.userId === communityComment.userId);
+  const userRecord = user ? (user as unknown as Record<string, unknown>) : null;
 
   const reactionsObj = communityComment.reactions || {};
   const reactionsArray: Array<{ id: string; userId: string; type: string }> = [];
@@ -44,7 +46,7 @@ const mapCommunityCommentToComment = (
     userId: communityComment.userId,
     content,
     createdAt: new Date(communityComment.createdAt),
-    userName: user?.displayName,
+    userName: resolveCommentAuthorDisplayName(userRecord, communityComment.userId),
     userAvatar: user?.avatarFileId ? files?.find((f) => f.fileId === user.avatarFileId)?.fileUrl : undefined,
     reactionsCount: communityComment.reactionsCount,
     reactions,
@@ -150,13 +152,6 @@ const mapCommunityPostToPoll = (communityPost: CommunityPost, _postChildren?: Co
   if (!pollId && sortedPollOptions.length > 0) {
     pollId = sortedPollOptions[0].data?.pollId;
   }
-
-  logger.debug('Poll ID encontrado:', {
-    postId: communityPost.postId || communityPost._id,
-    pollIdFromMain: communityPost.data?.pollId,
-    pollIdFromOptions: sortedPollOptions[0]?.data?.pollId,
-    finalPollId: pollId,
-  });
 
   return {
     id: communityPost.postId || communityPost._id || '',
@@ -310,6 +305,33 @@ export const mapCommunityPostToPost = (
 
   return post;
 };
+
+const HTTP_URL_PREFIX = /^https?:\/\//i;
+
+export function resolveCommunityHeroImageUri(
+  community: Community | undefined,
+  files: CommunityFile[] | undefined,
+  fallbackUri: string,
+): string {
+  if (!community) {
+    return fallbackUri;
+  }
+  const fromBackend = community.avatarUrl?.trim();
+  if (fromBackend) {
+    return fromBackend;
+  }
+  const fileId = community.avatarFileId?.trim();
+  if (fileId && HTTP_URL_PREFIX.test(fileId)) {
+    return fileId;
+  }
+  if (fileId && files?.length) {
+    const fileUrl = files.find((f) => f.fileId === fileId)?.fileUrl?.trim();
+    if (fileUrl) {
+      return fileUrl;
+    }
+  }
+  return fallbackUri;
+}
 
 export const mapCommunityToProgram = (community: Community, files?: CommunityFile[]): Program => {
   let imageUrl: string | undefined;

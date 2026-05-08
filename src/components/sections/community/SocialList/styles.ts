@@ -5,10 +5,12 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  liveBannerContainer: {
+  eventBannerContainer: {
     paddingTop: SPACING.MD,
     paddingBottom: SPACING.SM,
     paddingHorizontal: SPACING.MD,
+    width: '100%',
+    alignSelf: 'stretch',
   },
   scrollView: {
     flex: 1,

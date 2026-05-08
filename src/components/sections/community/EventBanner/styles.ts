@@ -1,33 +1,43 @@
 import { StyleSheet } from 'react-native';
 import { COLORS, SPACING } from '@/constants';
 
+const IMAGE_CORNER_RADIUS = {
+  borderTopLeftRadius: 24,
+  borderTopRightRadius: 28,
+  borderBottomLeftRadius: 12,
+  borderBottomRightRadius: 32,
+} as const;
+
+const IMAGE_SHADOW = {
+  shadowColor: COLORS.BLACK,
+  shadowOffset: { width: 0, height: 4 },
+  shadowOpacity: 0.04,
+  shadowRadius: 8,
+  elevation: 4,
+} as const;
+
 export const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     marginBottom: SPACING.MD,
     height: 148,
+    width: '100%',
+    alignSelf: 'stretch',
   },
-  imageContainer: {
-    width: 139,
+  imageSide: {
+    flex: 2,
+    minWidth: 0,
     height: 148,
+  },
+  imageStack: {
+    flex: 1,
+    height: '100%',
     position: 'relative',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 28,
-    borderBottomLeftRadius: 12,
-    borderBottomRightRadius: 32,
-    overflow: 'hidden',
-    shadowColor: COLORS.BLACK,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 4,
   },
   image: {
     width: '100%',
     height: '100%',
+    ...IMAGE_CORNER_RADIUS,
     resizeMode: 'cover',
   },
   imageOverlay: {
@@ -35,14 +45,13 @@ export const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: 66,
-    backgroundColor: 'rgba(0, 0, 0, 0.128)',
+    overflow: 'hidden',
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 12,
     paddingVertical: 14,
   },
-  liveButton: {
+  ctaButton: {
     backgroundColor: '#fdfbee',
     borderRadius: 18,
     borderTopLeftRadius: 18,
@@ -64,14 +73,15 @@ export const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 4,
   },
-  liveButtonText: {
+  ctaButtonText: {
     fontSize: 14,
     fontWeight: '500',
     color: '#001137',
     textAlign: 'center',
   },
   infoContainer: {
-    width: 222,
+    flex: 3,
+    minWidth: 0,
     height: 148,
     backgroundColor: 'rgba(237, 236, 128, 0.8)',
     borderTopLeftRadius: 24,

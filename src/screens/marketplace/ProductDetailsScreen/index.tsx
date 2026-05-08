@@ -26,6 +26,7 @@ import {
   logSelectContent,
   logError,
 } from '@/analytics';
+import { MARKETPLACE_PRODUCT_PLACEHOLDER_IMAGE_URI } from '@/constants';
 import type { RootStackParamList } from '@/types/navigation';
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import { styles } from './styles';
@@ -65,7 +66,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   const [programParticipationTermsAccepted, setProgramParticipationTermsAccepted] = useState(false);
   const [programTermsModalVisible, setProgramTermsModalVisible] = useState(false);
 
-  const { product, ad, advertiserId, loading, handleAddToCart, loadAd } = useProductDetails({
+  const { product, ad, advertiserId, loading, handleAddToCart } = useProductDetails({
     productId: route.params?.productId,
     fallbackProduct: route.params?.product,
     navigation,
@@ -98,7 +99,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     return {
       title: ad?.product?.name || product.name,
       description: ad?.product?.description || product.description,
-      image: ad?.product?.image || product.image,
+      image: product.image || ad?.product?.image,
       price: product.price,
       tags: [categoryName, modeLabel].filter(Boolean) as string[],
       isOutOfStock: product.status === 'out_of_stock' || product.quantity === 0,
@@ -133,7 +134,6 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     return allTabs.filter((tab) => productTabContent[tab.id].length > 0);
   }, [productTabContent, isProgramProduct]);
 
-  // Categoria do produto para badges/tags (nome da categoria); tipo do produto para layout
   const productCategory = displayData?.tags?.[0] || 'Product';
   const heroBadges = useMemo(() => {
     const baseBadges = [t('marketplace.product')];
@@ -143,7 +143,6 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     return baseBadges;
   }, [productCategory, t]);
 
-  // Parceiro = dono do anúncio (advertiser). Dados vêm do ad quando a API retorna advertiser; senão de params. ProviderProfile carrega os dados na própria tela.
   const partnerData = useMemo(() => {
     const source = ad?.advertiser;
     if (source) {
@@ -197,7 +196,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       item_name: displayData?.title,
       item_category: productCategory,
     });
-    void handleAddToCart();
+    void handleAddToCart(quantity);
   };
 
   const handleAddToCartPress = () => {
@@ -244,12 +243,6 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   };
 
   useEffect(() => {
-    if (product?.id && route.params?.productId) {
-      loadAd();
-    }
-  }, [product?.id, route.params?.productId, loadAd]);
-
-  useEffect(() => {
     const firstOption = quantityOptions[0] ?? 1;
     const lastOption = quantityOptions[quantityOptions.length - 1] ?? 1;
     if (quantity < firstOption || quantity > lastOption) {
@@ -278,19 +271,15 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     }
   }, [activeProductTab, productTabOptions]);
 
-  // Obter imagem do produto para o background e hero section
   const backgroundImage = useMemo(() => {
     if (displayData?.image) return displayData.image;
-    if (ad?.product?.image) return ad.product.image;
-    if (product?.image) return product.image;
     if (route.params?.product?.image) return route.params.product.image;
-    return 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
-  }, [displayData, ad, product, route.params?.product]);
+    return MARKETPLACE_PRODUCT_PLACEHOLDER_IMAGE_URI;
+  }, [displayData?.image, route.params?.product?.image]);
 
-  // Array de imagens do produto (por enquanto apenas uma)
   const productImages = useMemo(() => {
     const images: string[] = [];
-    if (backgroundImage && backgroundImage !== 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400') {
+    if (backgroundImage && backgroundImage !== MARKETPLACE_PRODUCT_PLACEHOLDER_IMAGE_URI) {
       images.push(backgroundImage);
     }
     return images;
@@ -508,7 +497,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                 id: p.id,
                 title: p.title,
                 price: formatPrice(p.price ?? 0),
-                image: p.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
+                image: p.image || MARKETPLACE_PRODUCT_PLACEHOLDER_IMAGE_URI,
               },
             });
           }}
