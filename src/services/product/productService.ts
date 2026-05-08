@@ -43,14 +43,6 @@ class ProductService {
       }
 
       const response = await apiClient.get<ListProductsApiResponse>(this.productsEndpoint, queryParams, true, false);
-
-      logger.debug('Products list response:', {
-        page: params.page,
-        limit: params.limit,
-        success: response.success,
-        productsCount: response.data?.products?.length || 0,
-      });
-
       return response;
     } catch (error) {
       logger.error('Error fetching products list:', error);

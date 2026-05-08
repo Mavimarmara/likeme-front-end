@@ -104,20 +104,6 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
           throw new Error(userFeedResponse.message || 'Erro ao carregar feed do usuário');
         }
 
-        logger.debug('User feed response:', {
-          success: userFeedResponse.success,
-          status: userFeedResponse.status || userFeedResponse.data?.status,
-          postsCount: feedData.posts?.length || 0,
-          filesCount: feedData.files?.length || 0,
-          hasPagination: !!pagination,
-        });
-
-        logger.debug('Raw posts from API:', {
-          postsArray: feedData.posts,
-          postsLength: feedData.posts?.length || 0,
-          firstPostRaw: feedData.posts?.[0] || null,
-        });
-
         const feedPosts = feedData.posts ?? [];
         const mappedPostsPromises = feedPosts.map((communityPost) =>
           mapCommunityPostToPost(

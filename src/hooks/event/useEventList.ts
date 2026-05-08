@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { eventService } from '@/services';
 import type { Event } from '@/types/event';
+import { logger } from '@/utils/logger';
 
 export interface UseEventListOptions {
   enabled?: boolean;
@@ -39,7 +40,28 @@ export const useEventList = (options: UseEventListOptions = {}): UseEventListRet
       if (!isSuccess) {
         throw new Error(response.message || 'Erro ao carregar eventos');
       }
-      setEvents(Array.isArray(response.data?.events) ? response.data!.events! : []);
+      const nextEvents = Array.isArray(response.data?.events) ? response.data!.events! : [];
+      if (nextEvents.length > 0) {
+        const first = nextEvents[0] as unknown as Record<string, unknown>;
+        const metadata =
+          first.metadata && typeof first.metadata === 'object' && !Array.isArray(first.metadata)
+            ? (first.metadata as Record<string, unknown>)
+            : null;
+        logger.warn('[useEventList] Primeiro evento recebido (diagnóstico de horário)', {
+          eventId: String(first.id ?? ''),
+          eventKeys: Object.keys(first),
+          startsAt: first.startsAt,
+          endsAt: first.endsAt,
+          startTime: first.startTime,
+          endTime: first.endTime,
+          metadataKeys: metadata ? Object.keys(metadata) : [],
+          metadataStartTime: metadata?.startTime,
+          metadataEndTime: metadata?.endTime,
+        });
+      } else {
+        logger.warn('[useEventList] Nenhum evento retornado pela API');
+      }
+      setEvents(nextEvents);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao carregar eventos');
       setEvents([]);

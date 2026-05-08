@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity, ImageSourcePropType } from 'react-
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import type { EventBannerData } from '@/types/event';
 import { useTranslation } from '@/hooks/i18n';
+import { formatEventTimeRange } from '@/utils/event/formatEventTimeRange';
 import { styles } from './styles';
 
 type Props = {
@@ -12,34 +13,9 @@ type Props = {
 
 const EventBanner: React.FC<Props> = ({ event, onPress }) => {
   const { t } = useTranslation();
-  const formatEventTime = (value: string) => {
-    const normalizedValue = value.trim();
-    if (!normalizedValue) {
-      return '';
-    }
-    const parsedDate = new Date(normalizedValue);
-    if (Number.isNaN(parsedDate.getTime())) {
-      return normalizedValue;
-    }
-    return parsedDate.toLocaleTimeString('pt-BR', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-
-  const formatTimeRange = (startTime: string, endTime: string) => {
-    const normalizedStartTime = formatEventTime(startTime);
-    const normalizedEndTime = formatEventTime(endTime);
-
-    if (normalizedStartTime && normalizedEndTime) {
-      return `${normalizedStartTime} - ${normalizedEndTime}`;
-    }
-
-    return normalizedStartTime || normalizedEndTime;
-  };
-
   const isImageUri = typeof event.thumbnail === 'string';
-  const eventTimeRange = formatTimeRange(event.startTime, event.endTime);
+  const eventTimeRange = formatEventTimeRange(event.startTime, event.endTime);
+  const eventTimeLabel = eventTimeRange || 'Hoje';
 
   return (
     <View style={styles.container}>
@@ -73,10 +49,10 @@ const EventBanner: React.FC<Props> = ({ event, onPress }) => {
             {event.status === 'Live Now' && (
               <>
                 <Text style={styles.timeLabel}>{t('community.eventBanner.statusLiveNow')}</Text>
-                {eventTimeRange ? <Text style={styles.time}>{eventTimeRange}</Text> : null}
+                <Text style={styles.time}>{eventTimeLabel}</Text>
               </>
             )}
-            {event.status === 'Scheduled' && eventTimeRange ? <Text style={styles.time}>{eventTimeRange}</Text> : null}
+            {event.status === 'Scheduled' ? <Text style={styles.time}>{eventTimeLabel}</Text> : null}
           </View>
         </View>
       </View>

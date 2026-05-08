@@ -100,12 +100,6 @@ class CommunityService {
 
       const pollResponse = await apiClient.get<ApiResponse<unknown>>(endpoint, undefined, true, false);
 
-      logger.debug('Poll detail response:', {
-        pollId,
-        success: pollResponse.success,
-        hasData: !!pollResponse.data,
-      });
-
       if (!pollResponse.success) {
         throw new Error(pollResponse.message || 'Falha ao carregar enquete');
       }

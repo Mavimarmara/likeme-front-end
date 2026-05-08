@@ -4,11 +4,51 @@ export interface ToEventBannerParams {
   loadEvents: boolean;
   events: Event[];
   communityAvatarUrl?: string | null;
+  communityProviderName?: string | null;
   defaultThumbnailUrl: string;
 }
 
+function pickEventDateValue(event: Event, candidates: string[]): string {
+  const record = event as unknown as Record<string, unknown>;
+  const metadata =
+    record.metadata && typeof record.metadata === 'object' && !Array.isArray(record.metadata)
+      ? (record.metadata as Record<string, unknown>)
+      : null;
+
+  const normalize = (value: unknown): string | null => {
+    if (typeof value === 'string') {
+      const normalized = value.trim();
+      return normalized.length > 0 ? normalized : null;
+    }
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      const millis = value > 1_000_000_000_000 ? value : value * 1000;
+      return new Date(millis).toISOString();
+    }
+    if (value instanceof Date && !Number.isNaN(value.getTime())) {
+      return value.toISOString();
+    }
+    return null;
+  };
+
+  for (const candidate of candidates) {
+    const normalized = normalize(record[candidate]);
+    if (normalized) {
+      return normalized;
+    }
+  }
+  if (metadata) {
+    for (const candidate of candidates) {
+      const normalized = normalize(metadata[candidate]);
+      if (normalized) {
+        return normalized;
+      }
+    }
+  }
+  return '';
+}
+
 export function toEventBanner(params: ToEventBannerParams): EventBannerData | undefined {
-  const { loadEvents, events, communityAvatarUrl, defaultThumbnailUrl } = params;
+  const { loadEvents, events, communityAvatarUrl, communityProviderName, defaultThumbnailUrl } = params;
   if (!loadEvents || events.length === 0) {
     return undefined;
   }
@@ -18,13 +58,23 @@ export function toEventBanner(params: ToEventBannerParams): EventBannerData | un
   const thumbnail = communityThumb && communityThumb.length > 0 ? communityThumb : defaultThumbnailUrl;
   const status = first.status === 'scheduled' ? ('Scheduled' as const) : ('Live Now' as const);
 
+  const providerName = communityProviderName?.trim();
   return {
     id: first.id,
     title: first.title,
-    host: first.displayHost ?? 'Like:Me',
+    host: providerName && providerName.length > 0 ? providerName : first.displayHost ?? 'Like:Me',
     status,
-    startTime: first.startsAt || '',
-    endTime: first.endsAt || '',
+    startTime: pickEventDateValue(first, [
+      'startsAt',
+      'startAt',
+      'startTime',
+      'start',
+      'date',
+      'time',
+      'start_date',
+      'start_time',
+    ]),
+    endTime: pickEventDateValue(first, ['endsAt', 'endAt', 'endTime', 'end', 'end_date', 'end_time']),
     thumbnail,
     externalUrl: first.externalUrl,
     provider: first.provider,

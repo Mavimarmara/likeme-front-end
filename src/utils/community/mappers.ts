@@ -153,13 +153,6 @@ const mapCommunityPostToPoll = (communityPost: CommunityPost, _postChildren?: Co
     pollId = sortedPollOptions[0].data?.pollId;
   }
 
-  logger.debug('Poll ID encontrado:', {
-    postId: communityPost.postId || communityPost._id,
-    pollIdFromMain: communityPost.data?.pollId,
-    pollIdFromOptions: sortedPollOptions[0]?.data?.pollId,
-    finalPollId: pollId,
-  });
-
   return {
     id: communityPost.postId || communityPost._id || '',
     pollId: pollId || undefined,

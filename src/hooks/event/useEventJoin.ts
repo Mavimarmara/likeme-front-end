@@ -11,6 +11,7 @@ export interface UseEventJoinOptions {
   loadEvents?: boolean;
   events?: Event[];
   communityAvatarUrl?: string | null;
+  communityProviderName?: string | null;
   defaultThumbnailUrl?: string;
 }
 
@@ -26,6 +27,7 @@ export const useEventJoin = (options: UseEventJoinOptions = {}): UseEventJoinRet
     loadEvents = false,
     events = [],
     communityAvatarUrl,
+    communityProviderName,
     defaultThumbnailUrl = DEFAULT_EVENT_BANNER_THUMB,
   } = options;
 
@@ -37,9 +39,10 @@ export const useEventJoin = (options: UseEventJoinOptions = {}): UseEventJoinRet
         loadEvents,
         events,
         communityAvatarUrl,
+        communityProviderName,
         defaultThumbnailUrl,
       }),
-    [loadEvents, events, communityAvatarUrl, defaultThumbnailUrl],
+    [loadEvents, events, communityAvatarUrl, communityProviderName, defaultThumbnailUrl],
   );
 
   const closeEventSession = useCallback(() => {

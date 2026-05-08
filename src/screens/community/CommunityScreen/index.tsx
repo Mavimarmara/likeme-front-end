@@ -100,12 +100,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     loadEvents: true,
   });
 
-  const { eventBanner, eventJoinUrl, closeEventSession, handleEventBannerPress } = useEventJoin({
-    loadEvents: true,
-    events,
-    communityAvatarUrl: rawCommunities[0]?.avatarUrl,
-  });
-
   const selectedCommunityId = rawCommunities[0]?.communityId;
 
   const { termsAccepted: communityTermsAccepted, toggleTermsAccepted: toggleCommunityTermsAccepted } = useCommunity({
@@ -128,6 +122,14 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
 
   const { advertisers: advertisersList } = useAdvertisers({ communityId: selectedCommunityId });
   const advertiser = advertisersList[0] ?? null;
+  const communityProviderName = advertiser?.name?.trim() ?? null;
+
+  const { eventBanner, eventJoinUrl, closeEventSession, handleEventBannerPress } = useEventJoin({
+    loadEvents: true,
+    events,
+    communityAvatarUrl: rawCommunities[0]?.avatarUrl,
+    communityProviderName,
+  });
 
   const feedFilterParams = useMemo(() => ({}), []);
 
