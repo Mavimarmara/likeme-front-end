@@ -12,7 +12,7 @@ describe('useEventJoin', () => {
     jest.restoreAllMocks();
   });
 
-  it('handleEventBannerPress com Zoom abre sessão em webview', async () => {
+  it('handleEventBannerPress com Zoom abre no app/browser externo', async () => {
     const { result } = renderHook(() => useEventJoin());
 
     await act(async () => {
@@ -28,7 +28,8 @@ describe('useEventJoin', () => {
       } as Parameters<typeof result.current.handleEventBannerPress>[0]);
     });
 
-    expect(result.current.eventJoinUrl).toBe('https://us02web.zoom.us/j/123456789');
+    expect(Linking.openURL).toHaveBeenCalledWith('https://us02web.zoom.us/j/123456789');
+    expect(result.current.eventJoinUrl).toBeNull();
   });
 
   it('closeEventSession limpa URL da sessão', async () => {
