@@ -61,6 +61,16 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Precisamos de acesso ao calendario para permitir que voce adicione e acompanhe eventos e reunioes do app.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Precisamos da camera para voce participar das lives e reunioes com video.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Precisamos dos contatos para facilitar convites e compartilhamentos com pessoas da sua agenda.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Precisamos do microfone para voce participar das lives e reunioes com audio.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Precisamos acessar fotos apenas se voce compartilhar imagens durante uma reuniao.</string>
 	<key>RCTNewArchEnabled</key>
 	<false/>
 	<key>UIBackgroundModes</key>
