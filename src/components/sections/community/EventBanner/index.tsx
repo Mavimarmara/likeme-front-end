@@ -12,11 +12,34 @@ type Props = {
 
 const EventBanner: React.FC<Props> = ({ event, onPress }) => {
   const { t } = useTranslation();
-  const formatTime = (time: string) => {
-    return time;
+  const formatEventTime = (value: string) => {
+    const normalizedValue = value.trim();
+    if (!normalizedValue) {
+      return '';
+    }
+    const parsedDate = new Date(normalizedValue);
+    if (Number.isNaN(parsedDate.getTime())) {
+      return normalizedValue;
+    }
+    return parsedDate.toLocaleTimeString('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const formatTimeRange = (startTime: string, endTime: string) => {
+    const normalizedStartTime = formatEventTime(startTime);
+    const normalizedEndTime = formatEventTime(endTime);
+
+    if (normalizedStartTime && normalizedEndTime) {
+      return `${normalizedStartTime} - ${normalizedEndTime}`;
+    }
+
+    return normalizedStartTime || normalizedEndTime;
   };
 
   const isImageUri = typeof event.thumbnail === 'string';
+  const eventTimeRange = formatTimeRange(event.startTime, event.endTime);
 
   return (
     <View style={styles.container}>
@@ -50,16 +73,10 @@ const EventBanner: React.FC<Props> = ({ event, onPress }) => {
             {event.status === 'Live Now' && (
               <>
                 <Text style={styles.timeLabel}>{t('community.eventBanner.statusLiveNow')}</Text>
-                <Text style={styles.time}>
-                  {formatTime(event.startTime)} - {formatTime(event.endTime)}
-                </Text>
+                {eventTimeRange ? <Text style={styles.time}>{eventTimeRange}</Text> : null}
               </>
             )}
-            {event.status === 'Scheduled' && (
-              <Text style={styles.time}>
-                {formatTime(event.startTime)} - {formatTime(event.endTime)}
-              </Text>
-            )}
+            {event.status === 'Scheduled' && eventTimeRange ? <Text style={styles.time}>{eventTimeRange}</Text> : null}
           </View>
         </View>
       </View>
