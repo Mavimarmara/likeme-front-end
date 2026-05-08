@@ -191,7 +191,7 @@ module.exports = {
           ios: { newArchEnabled: false },
           android: {
             newArchEnabled: false,
-            minSdkVersion: 26,
+            minSdkVersion: 28,
             compileSdkVersion: 35,
             targetSdkVersion: 35,
           },
