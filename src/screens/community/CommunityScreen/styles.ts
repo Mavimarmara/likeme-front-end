@@ -290,4 +290,46 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     zIndex: 100,
   },
+  eventRemindersSection: {
+    marginHorizontal: SPACING.MD,
+    marginTop: SPACING.MD,
+    padding: SPACING.MD,
+    backgroundColor: COLORS.WHITE,
+    borderRadius: BORDER_RADIUS.LG,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.06)',
+  },
+  eventRemindersTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: COLORS.TEXT,
+    marginBottom: SPACING.SM,
+  },
+  eventReminderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: SPACING.SM,
+    gap: SPACING.MD,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(0,0,0,0.06)',
+  },
+  eventReminderRowFirst: {
+    borderTopWidth: 0,
+    paddingTop: 0,
+  },
+  eventReminderTextCol: {
+    flex: 1,
+    minWidth: 0,
+  },
+  eventReminderEventTitle: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: COLORS.TEXT,
+  },
+  eventReminderToggleLabel: {
+    fontSize: 12,
+    color: COLORS.TEXT_LIGHT,
+    marginTop: 4,
+  },
 });

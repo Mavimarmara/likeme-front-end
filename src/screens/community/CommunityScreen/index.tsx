@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { View, ScrollView, Text, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
+import { View, ScrollView, Text, NativeSyntheticEvent, NativeScrollEvent, Switch, Alert } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { SocialList, ShoppingList, EventBanner, CommunityDescriptionSection } from '@/components/sections/community';
 import { styles as socialListStyles } from '@/components/sections/community/SocialList/styles';
@@ -7,7 +7,7 @@ import type { SpecialistCardProps } from '@/components/sections/community/Specia
 import { Product } from '@/components/sections/product';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
 import { GradientBackground, HeroImage, ScreenWithHeader } from '@/components/ui/layout';
-import type { FeedEvent } from '@/types/event';
+import type { Event, FeedEvent } from '@/types/event';
 import { SPACING, COMMUNITY_FEED_POSTS_PAGE_SIZE } from '@/constants';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
@@ -24,7 +24,7 @@ import {
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen, logTabSelect } from '@/analytics';
-import { storageService } from '@/services';
+import { eventService, storageService } from '@/services';
 import { logger } from '@/utils/logger';
 import { resolveCommunityHeroImageUri } from '@/utils/community/mappers';
 import type { Advertiser } from '@/types/ad';
@@ -101,6 +101,33 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   });
 
   const selectedCommunityId = rawCommunities[0]?.communityId;
+
+  const [reminderEventIds, setReminderEventIds] = useState<Set<string>>(() => new Set());
+
+  const upcomingCommunityEvents = useMemo(() => {
+    const leadMs = 120_000;
+    const minStart = Date.now() + leadMs;
+    return events
+      .filter((e) => {
+        if (e.status !== 'scheduled' || !e.startsAt) return false;
+        const t = new Date(e.startsAt).getTime();
+        return Number.isFinite(t) && t >= minStart;
+      })
+      .slice(0, 10);
+  }, [events]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const ids = await eventService.listScheduledCommunityEventReminderIds();
+      if (!cancelled) {
+        setReminderEventIds(new Set(ids));
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedCommunityId, events]);
 
   const { termsAccepted: communityTermsAccepted, toggleTermsAccepted: toggleCommunityTermsAccepted } = useCommunity({
     communityId: selectedCommunityId,
@@ -315,6 +342,43 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     });
   }, [selectedCommunityId, isCommunityFavorite]);
 
+  const handleScheduledCommunityEventReminderToggle = useCallback(
+    async (event: Event, enabled: boolean) => {
+      if (!selectedCommunityId || !event.startsAt) {
+        return;
+      }
+      try {
+        if (enabled) {
+          const res = await eventService.registerScheduledCommunityEventReminder({
+            eventId: event.id,
+            title: event.title,
+            startsAt: event.startsAt,
+            communityId: selectedCommunityId,
+          });
+          if (res.data?.registered === false && res.data?.reason === 'already_sent') {
+            Alert.alert(t('community.eventReminder.sectionTitle'), t('community.eventReminder.alreadySentMessage'));
+            return;
+          }
+          setReminderEventIds((prev) => new Set(prev).add(event.id));
+        } else {
+          await eventService.unregisterScheduledCommunityEventReminder(event.id);
+          setReminderEventIds((prev) => {
+            const next = new Set(prev);
+            next.delete(event.id);
+            return next;
+          });
+        }
+      } catch (error) {
+        logger.error('[CommunityScreen] lembrete de evento', { eventId: event.id, enabled, cause: error });
+        Alert.alert(
+          t('errors.error'),
+          enabled ? t('community.eventReminder.registerError') : t('community.eventReminder.unregisterError'),
+        );
+      }
+    },
+    [selectedCommunityId, t],
+  );
+
   return (
     <View style={styles.screenRoot}>
       {eventJoinUrl ? <EventWebViewSession url={eventJoinUrl} onClose={closeEventSession} /> : null}
@@ -365,6 +429,32 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
                 {eventBanner ? (
                   <View style={socialListStyles.eventBannerContainer}>
                     <EventBanner event={eventBanner} onPress={handleEventBannerPress} />
+                  </View>
+                ) : null}
+                {upcomingCommunityEvents.length > 0 ? (
+                  <View style={styles.eventRemindersSection}>
+                    <Text style={styles.eventRemindersTitle}>{t('community.eventReminder.sectionTitle')}</Text>
+                    {upcomingCommunityEvents.map((ev, index) => (
+                      <View key={ev.id} style={[styles.eventReminderRow, index === 0 && styles.eventReminderRowFirst]}>
+                        <View style={styles.eventReminderTextCol}>
+                          <Text style={styles.eventReminderEventTitle} numberOfLines={2}>
+                            {ev.title}
+                          </Text>
+                          <Text style={styles.eventReminderToggleLabel}>
+                            {t('community.eventReminder.toggleLabel')}
+                          </Text>
+                        </View>
+                        <Switch
+                          accessibilityLabel={t('community.eventReminder.toggleLabel')}
+                          value={reminderEventIds.has(ev.id)}
+                          onValueChange={(on) => {
+                            void handleScheduledCommunityEventReminderToggle(ev, on);
+                          }}
+                          trackColor={{ false: '#d9d9d9', true: '#c4e8c8' }}
+                          thumbColor={reminderEventIds.has(ev.id) ? '#2e7d32' : '#f4f3f4'}
+                        />
+                      </View>
+                    ))}
                   </View>
                 ) : null}
                 <CommunityDescriptionSection

@@ -61,3 +61,20 @@ export interface ListEventsApiResponse {
     events?: Event[];
   };
 }
+
+export interface ScheduledCommunityEventRemindersListApiResponse {
+  success?: boolean;
+  message?: string;
+  data?: {
+    eventIds?: string[];
+  };
+}
+
+export interface RegisterScheduledCommunityEventReminderApiResponse {
+  success?: boolean;
+  message?: string;
+  data?: {
+    registered?: boolean;
+    reason?: string;
+  };
+}
