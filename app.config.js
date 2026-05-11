@@ -248,6 +248,7 @@ module.exports = {
       supportsTablet: false,
       googleServicesFile: './GoogleService-Info.plist',
       infoPlist: {
+        FirebaseAppDelegateProxyEnabled: true,
         ITSAppUsesNonExemptEncryption: false,
         UIBackgroundModes: ['remote-notification'],
         NSBluetoothPeripheralUsageDescription:

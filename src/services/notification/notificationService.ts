@@ -12,6 +12,7 @@ type FirebaseMessagingModule = {
     onNotificationOpenedApp(listener: (message: RemoteMessage) => void): () => void;
     getInitialNotification(): Promise<RemoteMessage | null>;
     setBackgroundMessageHandler(handler: (message: RemoteMessage) => Promise<void>): void;
+    onTokenRefresh(listener: (token: string) => void): () => void;
   };
   AuthorizationStatus: {
     NOT_DETERMINED: -1;
@@ -87,6 +88,18 @@ class NotificationService {
     }
   }
 
+  async pushTokenToBackend(token: string): Promise<boolean> {
+    try {
+      const platform = Platform.OS === 'ios' ? 'ios' : 'android';
+      await notificationApiService.registerToken(token, platform);
+      logger.debug('[Notification] Token FCM sincronizado com o backend');
+      return true;
+    } catch (error) {
+      logger.warn('[Notification] Erro ao sincronizar token FCM com o backend:', error);
+      return false;
+    }
+  }
+
   async registerDevice(): Promise<boolean> {
     const hasPermission = await this.requestPermission();
     if (!hasPermission) {
@@ -100,15 +113,8 @@ class NotificationService {
       return false;
     }
 
-    try {
-      const platform = Platform.OS === 'ios' ? 'ios' : 'android';
-      await notificationApiService.registerToken(token, platform);
-      logger.debug('[Notification] Dispositivo registrado');
-      return true;
-    } catch (error) {
-      logger.warn('[Notification] Erro ao registrar dispositivo:', error);
-      return false;
-    }
+    const synced = await this.pushTokenToBackend(token);
+    return synced;
   }
 
   async unregisterDevice(): Promise<void> {
@@ -129,6 +135,12 @@ class NotificationService {
         logger.warn('[Notification] Erro ao deletar token FCM:', error);
       }
     }
+  }
+
+  onTokenRefresh(handler: (token: string) => void): () => void {
+    const messaging = getMessaging();
+    if (!messaging) return () => {};
+    return messaging().onTokenRefresh(handler);
   }
 
   onForegroundMessage(handler: NotificationHandler): () => void {

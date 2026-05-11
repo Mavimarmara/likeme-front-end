@@ -1,19 +1,28 @@
 import { useEffect, useRef, useCallback } from 'react';
-import { Alert } from 'react-native';
+import { Alert, AppState, type AppStateStatus } from 'react-native';
 import notificationService, { RemoteMessage } from '@/services/notification/notificationService';
+import { storageService } from '@/services';
 import { logger } from '@/utils/logger';
 
 interface UseNotificationsOptions {
+  activeRouteName?: string;
   onNotificationReceived?: (message: RemoteMessage) => void;
   onNotificationOpened?: (message: RemoteMessage) => void;
 }
 
 export function useNotifications(options: UseNotificationsOptions = {}) {
-  const { onNotificationReceived, onNotificationOpened } = options;
+  const { activeRouteName, onNotificationReceived, onNotificationOpened } = options;
   const registered = useRef(false);
 
   const registerDevice = useCallback(async () => {
-    if (registered.current) return;
+    const session = await storageService.getToken();
+    if (!session) {
+      registered.current = false;
+      return;
+    }
+    if (registered.current) {
+      return;
+    }
 
     try {
       const success = await notificationService.registerDevice();
@@ -26,8 +35,41 @@ export function useNotifications(options: UseNotificationsOptions = {}) {
   }, []);
 
   useEffect(() => {
-    registerDevice();
+    if (activeRouteName === 'Unauthenticated') {
+      registered.current = false;
+      return;
+    }
+    if (activeRouteName === 'Loading' || activeRouteName == null) {
+      return;
+    }
+    registerDevice().catch(() => undefined);
+  }, [activeRouteName, registerDevice]);
 
+  useEffect(() => {
+    const onAppState = (next: AppStateStatus) => {
+      if (next === 'active') {
+        registerDevice().catch(() => undefined);
+      }
+    };
+    const sub = AppState.addEventListener('change', onAppState);
+    return () => sub.remove();
+  }, [registerDevice]);
+
+  useEffect(() => {
+    const unsub = notificationService.onTokenRefresh(async (newToken) => {
+      const session = await storageService.getToken();
+      if (!session) {
+        return;
+      }
+      const ok = await notificationService.pushTokenToBackend(newToken);
+      if (ok) {
+        registered.current = true;
+      }
+    });
+    return () => unsub();
+  }, []);
+
+  useEffect(() => {
     const foregroundUnsub = notificationService.onForegroundMessage((message) => {
       logger.debug('[useNotifications] foreground', message);
 
@@ -54,7 +96,7 @@ export function useNotifications(options: UseNotificationsOptions = {}) {
       foregroundUnsub();
       openedUnsub();
     };
-  }, [registerDevice, onNotificationReceived, onNotificationOpened]);
+  }, [onNotificationReceived, onNotificationOpened]);
 
   return { registerDevice };
 }

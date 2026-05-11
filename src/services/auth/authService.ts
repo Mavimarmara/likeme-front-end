@@ -2,6 +2,7 @@ import * as AuthSession from 'expo-auth-session';
 import { AUTH0_CONFIG, AUTH_CONFIG, getApiUrl } from '@/config';
 import { AUTH_LOGOUT_AND_POLICY_HTTP_TIMEOUT_MS } from '@/constants';
 import { invalidateApiClientAuthTokenMemoryCache } from '@/services/infrastructure/apiClient';
+import notificationService from '@/services/notification/notificationService';
 import { fetchWithTimeout } from '@/utils/network/fetchWithTimeout';
 import storageService from './storageService';
 import { logger } from '@/utils/logger';
@@ -428,6 +429,11 @@ class AuthService {
 
   async logout(): Promise<void> {
     try {
+      try {
+        await notificationService.unregisterDevice();
+      } catch (error) {
+        logger.warn('[Auth] Falha ao desregistar push FCM antes do logout', { cause: error });
+      }
       try {
         const token = await storageService.getToken();
         if (token) {

@@ -1,8 +1,9 @@
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, useCallback, useState } from 'react';
 import { Easing, Platform, StyleSheet, View } from 'react-native';
-import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
+import { DefaultTheme, NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import { FloatingMenuProvider } from '@/contexts/FloatingMenuContext';
+import PushNotificationsRoot from '@/components/infrastructure/PushNotificationsRoot';
 import { COLORS } from '@/constants';
 import {
   getLoadingScreen,
@@ -61,10 +62,24 @@ const styles = StyleSheet.create({
 });
 
 const RootNavigator: React.FC = () => {
+  const navigationRef = useNavigationContainerRef();
+  const [activeRouteName, setActiveRouteName] = useState<string | undefined>(undefined);
+
+  const syncActiveRouteName = useCallback(() => {
+    const name = navigationRef.getCurrentRoute()?.name;
+    setActiveRouteName(typeof name === 'string' ? name : undefined);
+  }, [navigationRef]);
+
   return (
-    <NavigationContainer theme={rootNavigationTheme}>
+    <NavigationContainer
+      ref={navigationRef}
+      theme={rootNavigationTheme}
+      onReady={syncActiveRouteName}
+      onStateChange={syncActiveRouteName}
+    >
       <View style={styles.stackWrapper}>
         <FloatingMenuProvider>
+          <PushNotificationsRoot activeRouteName={activeRouteName} />
           <Stack.Navigator
             initialRouteName='Loading'
             screenOptions={{

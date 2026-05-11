@@ -11,7 +11,6 @@ import {
   useSuggestedProducts,
   SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS,
   useMenuItems,
-  useNotifications,
   useCategoryDisplayLabel,
   useSolutions,
 } from '@/hooks';
@@ -44,7 +43,6 @@ type SummarySolutionCarouselId = SolutionFilterId | 'all';
 
 const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   useAnalyticsScreen({ screenName: 'Summary', screenClass: 'SummaryScreen' });
-  useNotifications();
   const { t } = useTranslation();
   const { homeCarouselOptions } = useSolutions();
   const insets = useSafeAreaInsets();
