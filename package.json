@@ -71,7 +71,7 @@
     "clean:project": "./scripts/clean-project.sh",
     "clean:android": "cd android && ./gradlew clean && cd ..",
     "clean:ios": "cd ios && rm -rf Pods Podfile.lock build && pod install && cd ..",
-    "postinstall": "node scripts/patch-slider-podspec.js && node scripts/patch-rn-third-party-components-provider.js && if [ -d ios ] && [ -f ios/Podfile ] && [ \"$SKIP_IOS_POD_INSTALL\" != \"true\" ]; then cd ios && pod install && cd ..; fi",
+    "postinstall": "node scripts/ensure-onboarding-debug.cjs && node scripts/patch-slider-podspec.js && node scripts/patch-rn-third-party-components-provider.js && if [ -d ios ] && [ -f ios/Podfile ] && [ \"$SKIP_IOS_POD_INSTALL\" != \"true\" ]; then cd ios && pod install && cd ..; fi",
     "run:emulator:ios": "open -a Simulator",
     "prepare": "husky || true"
   },

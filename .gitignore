@@ -162,6 +162,9 @@ ios/.xcode.env.local
 
 devices.json
 
+# Debug de onboarding: override local (gerado a partir de onboardingDebug.template.ts no postinstall)
+src/constants/onboardingDebug.ts
+
 # Keystore de produção (NUNCA commitar!)
 android/keystore.properties
 android/app/*.keystore
