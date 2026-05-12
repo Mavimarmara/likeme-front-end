@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Animated, Image, ImageStyle, Platform, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { PartialLogo, GradientSplash7, GradientSplash8, GradientSplash9 } from '@/assets/auth';
+import { PartialLogo3, GradientSplash7, GradientSplash8, GradientSplash9 } from '@/assets/auth';
 import { styles, GRADIENT_STRIP_HEIGHT, GRADIENT_STRIP_WIDTH } from './styles';
 import { invalidateApiClientAuthTokenMemoryCache, storageService } from '@/services';
 import { fetchAppReleasePolicy } from '@/services/app/appReleasePolicyService';
@@ -307,7 +307,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
         </View>
 
         <View style={styles.like}>
-          <PartialLogo width='100%' height='100%' />
+          <PartialLogo3 width='100%' height='100%' />
         </View>
 
         <Animated.View style={[styles.taglineContainer, { opacity: taglineOpacity }]}>

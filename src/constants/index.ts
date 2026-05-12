@@ -116,7 +116,10 @@ export { AUTH_ONBOARDING_SCREENS_ORDER } from './authOnboarding';
 export type { AuthOnboardingScreenName } from './authOnboarding';
 export { FEATURE_FLAGS, FEATURE_FLAG_DEFAULTS } from './featureFlags';
 export type { FeatureFlagKey } from './featureFlags';
-export { SUPPORT_FLOATING_HIDDEN_ROOT_ROUTES, isRouteNameHiddenForSupportFloating } from './supportFloatingVisibility';
+export {
+  SUPPORT_FLOATING_MAIN_APP_ROOT_ROUTE_NAMES,
+  isRouteNameEligibleForSupportFloating,
+} from './supportFloatingVisibility';
 export {
   API_HTTP_REQUEST_TIMEOUT_MS,
   APP_RELEASE_POLICY_FETCH_TIMEOUT_MS,

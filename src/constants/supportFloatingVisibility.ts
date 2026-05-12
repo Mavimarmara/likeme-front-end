@@ -1,8 +1,30 @@
-export const SUPPORT_FLOATING_HIDDEN_ROOT_ROUTES = ['Loading', 'AppLoading', 'ForcedUpdate'] as const;
+/**
+ * Rotas raiz do `RootNavigator` em que o botão flutuante de suporte pode aparecer
+ * (fluxo pós-onboarding, a partir de `Home`).
+ */
+export const SUPPORT_FLOATING_MAIN_APP_ROOT_ROUTE_NAMES = [
+  'Home',
+  'Summary',
+  'Activities',
+  'Community',
+  'Chat',
+  'Marketplace',
+  'ProductDetails',
+  'AffiliateProduct',
+  'Cart',
+  'Checkout',
+  'CommunityPreview',
+  'ProviderProfile',
+  'Profile',
+  'AvatarProgress',
+  'MarkerDetails',
+] as const;
 
-export function isRouteNameHiddenForSupportFloating(routeName: string | undefined): boolean {
+const SUPPORT_FLOATING_MAIN_APP_ROUTE_NAME_SET = new Set<string>(SUPPORT_FLOATING_MAIN_APP_ROOT_ROUTE_NAMES);
+
+export function isRouteNameEligibleForSupportFloating(routeName: string | undefined): boolean {
   if (routeName == null || routeName.length === 0) {
     return false;
   }
-  return (SUPPORT_FLOATING_HIDDEN_ROOT_ROUTES as readonly string[]).includes(routeName);
+  return SUPPORT_FLOATING_MAIN_APP_ROUTE_NAME_SET.has(routeName);
 }

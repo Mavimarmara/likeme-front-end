@@ -3,6 +3,7 @@
 // Logos/ícones usados em telas de autenticação
 import PartialLogoSvg from '../../assets/ui/LogoPartial.svg';
 import PartialLogo2Svg from '../../assets/ui/PartialLogo2.svg';
+import PartialLogo3Svg from '../../assets/ui/LogoPartial3.svg';
 
 // Gradiente principal
 import GradientSplashSvg from '../../assets/auth/GradientSplash.svg';
@@ -29,6 +30,7 @@ import LogoFullPng from '../../assets/ui/LogoFull.png';
 
 export const PartialLogo = PartialLogoSvg;
 export const PartialLogo2 = PartialLogo2Svg;
+export const PartialLogo3 = PartialLogo3Svg;
 export const GradientSplash = GradientSplashSvg;
 
 export const GradientSplash2 = GradientSplash2Png;

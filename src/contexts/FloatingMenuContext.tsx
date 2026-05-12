@@ -30,7 +30,16 @@ type ContextValue = {
   isFloatingMenuVisible: boolean;
 };
 
-const FloatingMenuContext = createContext<ContextValue | null>(null);
+const noopSetMenu: ContextValue['setMenu'] = () => undefined;
+const noopClearMenu: ContextValue['clearMenu'] = () => undefined;
+
+const floatingMenuContextFallback: ContextValue = {
+  setMenu: noopSetMenu,
+  clearMenu: noopClearMenu,
+  isFloatingMenuVisible: false,
+};
+
+const FloatingMenuContext = createContext<ContextValue>(floatingMenuContextFallback);
 
 export const FloatingMenuProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [menu, setMenuState] = useState<MenuState>(null);
@@ -56,8 +65,13 @@ export const FloatingMenuProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const showMenu = menu && showMenuByRoute;
   const isFloatingMenuVisible = Boolean(showMenu);
 
+  const contextValue = useMemo(
+    () => ({ setMenu, clearMenu, isFloatingMenuVisible }),
+    [setMenu, clearMenu, isFloatingMenuVisible],
+  );
+
   return (
-    <FloatingMenuContext.Provider value={{ setMenu, clearMenu, isFloatingMenuVisible }}>
+    <FloatingMenuContext.Provider value={contextValue}>
       {children}
       {showMenu && (
         <View style={[StyleSheet.absoluteFill, { zIndex: 10000, elevation: 10000 }]} pointerEvents='box-none'>
@@ -69,14 +83,11 @@ export const FloatingMenuProvider: React.FC<{ children: React.ReactNode }> = ({ 
 };
 
 export const useFloatingMenu = (): ContextValue => {
-  const ctx = useContext(FloatingMenuContext);
-  if (!ctx) throw new Error('useFloatingMenu must be used within FloatingMenuProvider');
-  return ctx;
+  return useContext(FloatingMenuContext);
 };
 
 export const useIsFloatingMenuVisible = (): boolean => {
-  const ctx = useContext(FloatingMenuContext);
-  return ctx?.isFloatingMenuVisible ?? false;
+  return useContext(FloatingMenuContext).isFloatingMenuVisible;
 };
 
 export const useSetFloatingMenu = (items: FloatingMenuItem[], selectedId?: string): void => {

@@ -3,7 +3,7 @@ import { Linking, Pressable, Text, View } from 'react-native';
 import { useNavigationState } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ColoredTwoDotsIcon } from '@/assets/ui';
-import { AUTH_ONBOARDING_SCREENS_ORDER, FEATURE_FLAGS, isRouteNameHiddenForSupportFloating } from '@/constants';
+import { FEATURE_FLAGS, isRouteNameEligibleForSupportFloating } from '@/constants';
 import { useFeatureFlag } from '@/hooks';
 import { useIsFloatingMenuVisible } from '@/contexts/FloatingMenuContext';
 import { SUPPORT_CONFIG } from '@/config/environment';
@@ -17,8 +17,6 @@ const SUPPORT_LABEL = 'Suporte';
 const SUPPORT_BUTTON_DEFAULT_BOTTOM_OFFSET = 20;
 const FLOATING_MENU_HEIGHT = 64;
 const SUPPORT_BUTTON_MENU_GAP = 15;
-
-const onboardingRouteNames = new Set<string>(AUTH_ONBOARDING_SCREENS_ORDER);
 
 function buildSupportWhatsappUrl(): string {
   if (SUPPORT_CONFIG.whatsappUrl.trim()) {
@@ -37,13 +35,9 @@ const SupportFloatingButton: React.FC = () => {
   const rootRouteName = useNavigationState((state) => getRootRouteName(state));
   const focusedRouteName = useNavigationState((state) => getFocusedRouteNameFromNavState(state));
 
-  const shouldHideOnboarding = useMemo(
-    () => onboardingRouteNames.has(rootRouteName ?? '') || onboardingRouteNames.has(focusedRouteName ?? ''),
-    [focusedRouteName, rootRouteName],
-  );
-
-  const shouldHideSplashOrBootstrap = useMemo(
-    () => isRouteNameHiddenForSupportFloating(rootRouteName) || isRouteNameHiddenForSupportFloating(focusedRouteName),
+  const shouldShowByRoute = useMemo(
+    () =>
+      isRouteNameEligibleForSupportFloating(rootRouteName) || isRouteNameEligibleForSupportFloating(focusedRouteName),
     [focusedRouteName, rootRouteName],
   );
 
@@ -83,7 +77,7 @@ const SupportFloatingButton: React.FC = () => {
     }
   }, []);
 
-  if (!isSupportFloatingButtonEnabled || shouldHideOnboarding || shouldHideSplashOrBootstrap) {
+  if (!isSupportFloatingButtonEnabled || !shouldShowByRoute) {
     return null;
   }
 
