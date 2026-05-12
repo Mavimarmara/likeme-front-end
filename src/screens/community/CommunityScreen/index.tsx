@@ -256,6 +256,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   );
 
   const aboutDescription = primaryCommunity?.description ?? '';
+  const heroDescription = primaryCommunity?.socialDescription?.trim() ?? '';
 
   const agreementLines = useMemo(() => {
     const body = primaryCommunity?.agreement ?? '';
@@ -414,9 +415,9 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
               name={primaryCommunity.displayName}
               badges={communityHeroBadges}
               footer={
-                primaryCommunity.description ? (
+                heroDescription ? (
                   <View style={styles.heroFooter}>
-                    <Text style={styles.heroDescription}>{primaryCommunity.description}</Text>
+                    <Text style={styles.heroDescription}>{heroDescription}</Text>
                   </View>
                 ) : undefined
               }

@@ -15,10 +15,20 @@ export interface User {
   personId?: string;
 }
 
-/** Contato da pessoa (email, phone, shipping_address, etc.) */
+/** Alinhado ao enum `ContactType` do backend (Prisma). */
+export type PersonContactType =
+  | 'phone'
+  | 'instagram'
+  | 'whatsapp'
+  | 'email'
+  | 'website'
+  | 'address'
+  | 'billing_address';
+
+/** Contato da pessoa (tipos: phone, instagram, whatsapp, email, website, address, billing_address) */
 export interface PersonContact {
   id: string;
-  type: string;
+  type: PersonContactType;
   value: string;
 }
 
@@ -78,7 +88,7 @@ class UserService {
   }
 
   /**
-   * Busca o endereço de entrega cadastrado do usuário (contact type shipping_address no perfil).
+   * Busca o endereço de entrega cadastrado do usuário (contato `address` no perfil).
    * Retorna null se não houver endereço cadastrado.
    */
   async getShippingAddress(): Promise<ShippingAddressFromProfile | null> {
@@ -86,7 +96,7 @@ class UserService {
     if (!response.success || !response.data?.person?.contacts?.length) {
       return null;
     }
-    const contact = response.data.person.contacts.find((c) => c.type === 'shipping_address');
+    const contact = response.data.person.contacts.find((c) => c.type === 'address');
     if (!contact?.value) {
       return null;
     }
@@ -110,7 +120,7 @@ class UserService {
   }
 
   /**
-   * Salva o endereço de entrega do usuário (cria ou atualiza o contato shipping_address).
+   * Salva o endereço de entrega do usuário (cria ou atualiza o contato `address`).
    */
   async saveShippingAddress(address: ShippingAddressFromProfile): Promise<GetProfileResponse> {
     const normalized = {
