@@ -1,20 +1,24 @@
 import { useEffect } from 'react';
 import { getApiUrl } from '@/config';
-import { AUTH_BOOTSTRAP_HTTP_TIMEOUT_MS } from '@/constants';
+import { AUTH_BOOTSTRAP_HTTP_TIMEOUT_MS, FORCE_START_ONBOARDING_LOCALLY } from '@/constants';
 import { getNextOnboardingDestination } from '@/utils';
 import { fetchWithTimeout } from '@/utils/network/fetchWithTimeout';
 import { storageService, userService } from '@/services';
+import { invalidateApiClientAuthTokenMemoryCache } from '@/services/infrastructure/apiClient';
 import { logger } from '@/utils/logger';
 
 type NavigationReplace = (screen: string, params?: object) => void;
 
 /**
  * Sincroniza flags de onboarding com o backend quando há token (ex.: pós-login / reabrir app).
- * Se o backend retornar registerCompletedAt, etc., atualiza o storage para refletir "dados pessoais salvos".
+ * Com `FORCE_START_ONBOARDING_LOCALLY` não gravamos register/objectives/privacy vindos da API.
  */
 async function syncOnboardingStateFromBackend(): Promise<void> {
   const token = await storageService.getToken();
   if (!token) return;
+  if (FORCE_START_ONBOARDING_LOCALLY) {
+    return;
+  }
   try {
     const response = await fetchWithTimeout(
       getApiUrl('/api/auth/token'),
@@ -87,6 +91,10 @@ export function useOnboardingRedirect(navigationReplace: NavigationReplace): voi
   useEffect(() => {
     const redirect = async () => {
       try {
+        if (FORCE_START_ONBOARDING_LOCALLY) {
+          await storageService.clearAll();
+          invalidateApiClientAuthTokenMemoryCache();
+        }
         await syncOnboardingStateFromBackend();
 
         const welcomeScreenAccessedAt = await storageService.getWelcomeScreenAccessedAt();

@@ -116,6 +116,7 @@ export { AUTH_ONBOARDING_SCREENS_ORDER } from './authOnboarding';
 export type { AuthOnboardingScreenName } from './authOnboarding';
 export { FEATURE_FLAGS, FEATURE_FLAG_DEFAULTS } from './featureFlags';
 export type { FeatureFlagKey } from './featureFlags';
+export { FORCE_START_ONBOARDING_LOCALLY } from './onboardingDebug';
 export {
   SUPPORT_FLOATING_MAIN_APP_ROOT_ROUTE_NAMES,
   isRouteNameEligibleForSupportFloating,

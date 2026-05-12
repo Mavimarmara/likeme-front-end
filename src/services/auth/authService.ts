@@ -1,6 +1,6 @@
 import * as AuthSession from 'expo-auth-session';
 import { AUTH0_CONFIG, AUTH_CONFIG, getApiUrl } from '@/config';
-import { AUTH_LOGOUT_AND_POLICY_HTTP_TIMEOUT_MS } from '@/constants';
+import { AUTH_LOGOUT_AND_POLICY_HTTP_TIMEOUT_MS, FORCE_START_ONBOARDING_LOCALLY } from '@/constants';
 import { invalidateApiClientAuthTokenMemoryCache } from '@/services/infrastructure/apiClient';
 import notificationService from '@/services/notification/notificationService';
 import { fetchWithTimeout } from '@/utils/network/fetchWithTimeout';
@@ -412,8 +412,10 @@ class AuthService {
       const objectivesSelectedAt =
         backendResponse.objectivesSelectedAt || backendResponse.data?.objectivesSelectedAt || null;
 
-      await storageService.setRegisterCompletedAt(registerCompletedAt);
-      await storageService.setObjectivesSelectedAt(objectivesSelectedAt);
+      if (!FORCE_START_ONBOARDING_LOCALLY) {
+        await storageService.setRegisterCompletedAt(registerCompletedAt);
+        await storageService.setObjectivesSelectedAt(objectivesSelectedAt);
+      }
 
       invalidateApiClientAuthTokenMemoryCache();
 
