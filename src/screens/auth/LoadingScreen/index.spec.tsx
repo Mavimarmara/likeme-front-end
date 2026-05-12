@@ -35,14 +35,53 @@ jest.mock('@/analytics', () => ({
   useAnalyticsScreen: jest.fn(),
 }));
 
-jest.mock('@/services', () => ({
-  storageService: {
-    getToken: (...args: unknown[]) => mockGetToken(...args),
-    setToken: (...args: unknown[]) => mockSetToken(...args),
-    removeToken: (...args: unknown[]) => mockRemoveToken(...args),
-  },
-  invalidateApiClientAuthTokenMemoryCache: jest.fn(),
-}));
+jest.mock('@/services', () => {
+  const invalidateApiClientAuthTokenMemoryCache = jest.fn();
+  return {
+    storageService: {
+      getToken: (...args: unknown[]) => mockGetToken(...args),
+      setToken: (...args: unknown[]) => mockSetToken(...args),
+      removeToken: (...args: unknown[]) => mockRemoveToken(...args),
+    },
+    invalidateApiClientAuthTokenMemoryCache,
+    AuthService: {
+      async refreshBackendSessionFromStoredCredentials() {
+        const token = await mockGetToken();
+        if (!token) {
+          return { ok: false, responseBody: null };
+        }
+        const response = await mockFetchWithTimeout(
+          'http://localhost/api/auth/token',
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          },
+          12_000,
+        );
+        if (!response.ok) {
+          return { ok: false, responseBody: null };
+        }
+        const data = (await response.json()) as Record<string, unknown>;
+        const payload = data.data ?? data;
+        const sessionTokenCandidate =
+          (typeof payload === 'object' &&
+            payload !== null &&
+            ((payload as Record<string, unknown>).token ?? (payload as Record<string, unknown>).accessToken)) ??
+          data.token ??
+          data.accessToken;
+        const sessionToken = typeof sessionTokenCandidate === 'string' ? sessionTokenCandidate : null;
+        if (sessionToken && sessionToken.length > 0) {
+          await mockSetToken(sessionToken);
+          invalidateApiClientAuthTokenMemoryCache();
+        }
+        return { ok: true, responseBody: data };
+      },
+    },
+  };
+});
 
 jest.mock('@/config', () => ({
   getApiUrl: (path: string) => `http://localhost${path}`,

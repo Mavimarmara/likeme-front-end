@@ -1,9 +1,10 @@
 import * as AuthSession from 'expo-auth-session';
 import { AUTH0_CONFIG, AUTH_CONFIG, getApiUrl } from '@/config';
-import { AUTH_LOGOUT_AND_POLICY_HTTP_TIMEOUT_MS, FORCE_START_ONBOARDING_LOCALLY } from '@/constants';
+import { AUTH_BOOTSTRAP_HTTP_TIMEOUT_MS, AUTH_LOGOUT_AND_POLICY_HTTP_TIMEOUT_MS } from '@/constants';
 import { invalidateApiClientAuthTokenMemoryCache } from '@/services/infrastructure/apiClient';
 import notificationService from '@/services/notification/notificationService';
 import { fetchWithTimeout } from '@/utils/network/fetchWithTimeout';
+import { setOnboardingStep } from './setOnboardingStep';
 import storageService from './storageService';
 import { logger } from '@/utils/logger';
 import type { AuthResult } from '@/types/auth';
@@ -412,10 +413,8 @@ class AuthService {
       const objectivesSelectedAt =
         backendResponse.objectivesSelectedAt || backendResponse.data?.objectivesSelectedAt || null;
 
-      if (!FORCE_START_ONBOARDING_LOCALLY) {
-        await storageService.setRegisterCompletedAt(registerCompletedAt);
-        await storageService.setObjectivesSelectedAt(objectivesSelectedAt);
-      }
+      await storageService.setRegisterCompletedAt(registerCompletedAt);
+      await storageService.setObjectivesSelectedAt(objectivesSelectedAt);
 
       invalidateApiClientAuthTokenMemoryCache();
 
@@ -426,6 +425,54 @@ class AuthService {
         throw error;
       }
       throw new Error('Falha na comunicação com o servidor.');
+    }
+  }
+
+  /**
+   * GET /api/auth/token: valida o token guardado, persiste o JWT de sessão do backend quando a API o devolve
+   * e aplica `data.onboarding` no storage (com fallback ao formato antigo no mesmo nível que `token`).
+   */
+  async refreshBackendSessionFromStoredCredentials(): Promise<{
+    ok: boolean;
+    responseBody: Record<string, unknown> | null;
+  }> {
+    try {
+      const token = await storageService.getToken();
+      if (!token) {
+        return { ok: false, responseBody: null };
+      }
+      const response = await fetchWithTimeout(
+        getApiUrl('/api/auth/token'),
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        },
+        AUTH_BOOTSTRAP_HTTP_TIMEOUT_MS,
+      );
+      if (!response.ok) {
+        return { ok: false, responseBody: null };
+      }
+      const data = (await response.json()) as Record<string, unknown>;
+      await setOnboardingStep(data);
+      const payload = data.data ?? data;
+      const sessionTokenCandidate =
+        (typeof payload === 'object' &&
+          payload !== null &&
+          ((payload as Record<string, unknown>).token ?? (payload as Record<string, unknown>).accessToken)) ??
+        data.token ??
+        data.accessToken;
+      const sessionToken = typeof sessionTokenCandidate === 'string' ? sessionTokenCandidate : null;
+      if (sessionToken && sessionToken.length > 0) {
+        await storageService.setToken(sessionToken);
+        invalidateApiClientAuthTokenMemoryCache();
+      }
+      return { ok: true, responseBody: data };
+    } catch (error) {
+      logger.warn('[AuthService] refreshBackendSessionFromStoredCredentials falhou', { cause: error });
+      return { ok: false, responseBody: null };
     }
   }
 

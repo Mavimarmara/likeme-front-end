@@ -1,5 +1,6 @@
 import { BACKEND_CONFIG, getApiUrl } from '@/config';
 import { API_HTTP_REQUEST_TIMEOUT_MS, AUTH_BOOTSTRAP_HTTP_TIMEOUT_MS } from '@/constants';
+import { setOnboardingStep } from '../auth/setOnboardingStep';
 import storageService from '../auth/storageService';
 import { logger } from '@/utils/logger';
 import { fetchWithTimeout } from '@/utils/network/fetchWithTimeout';
@@ -141,6 +142,7 @@ class ApiClient {
       }
 
       const data = await response.json().catch(() => null);
+      await setOnboardingStep(data);
       const newToken = data?.data?.token || data?.token || data?.data?.accessToken || data?.accessToken;
 
       if (!newToken) {

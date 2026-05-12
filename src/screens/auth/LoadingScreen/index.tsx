@@ -3,12 +3,11 @@ import { Alert, Animated, Image, ImageStyle, Platform, Text, View } from 'react-
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PartialLogo3, GradientSplash7, GradientSplash8, GradientSplash9 } from '@/assets/auth';
 import { styles, GRADIENT_STRIP_HEIGHT, GRADIENT_STRIP_WIDTH } from './styles';
-import { invalidateApiClientAuthTokenMemoryCache, storageService } from '@/services';
+import { AuthService, invalidateApiClientAuthTokenMemoryCache, storageService } from '@/services';
 import { fetchAppReleasePolicy } from '@/services/app/appReleasePolicyService';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen } from '@/analytics';
-import { getApiUrl, STORE_URL_CONFIG } from '@/config';
-import { AUTH_BOOTSTRAP_HTTP_TIMEOUT_MS } from '@/constants';
+import { STORE_URL_CONFIG } from '@/config';
 import type { AppReleasePolicy } from '@/types/app/appReleasePolicy';
 import {
   getInstalledAppVersion,
@@ -17,7 +16,6 @@ import {
   shouldRecommendUpdate,
 } from '@/utils/app/appVersionPolicy';
 import { ensureI18nHydrated, startI18nHydration } from '@/i18n/hydration';
-import { fetchWithTimeout } from '@/utils/network/fetchWithTimeout';
 import { logger } from '@/utils/logger';
 import { openStoreListingWithFallback } from '@/utils/url/storeListingUrl';
 
@@ -159,26 +157,8 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
           const token = await storageService.getToken();
           hadStoredToken = Boolean(token);
           if (token) {
-            const response = await fetchWithTimeout(
-              getApiUrl('/api/auth/token'),
-              {
-                method: 'GET',
-                headers: {
-                  'Content-Type': 'application/json',
-                  Authorization: `Bearer ${token}`,
-                },
-              },
-              AUTH_BOOTSTRAP_HTTP_TIMEOUT_MS,
-            );
-
-            if (response.ok) {
-              const data = await response.json();
-              const payload = data?.data ?? data;
-              const sessionToken = payload?.token || payload?.accessToken || data?.token || data?.accessToken;
-              if (sessionToken) {
-                await storageService.setToken(sessionToken);
-                invalidateApiClientAuthTokenMemoryCache();
-              }
+            const { ok } = await AuthService.refreshBackendSessionFromStoredCredentials();
+            if (ok) {
               shouldAuthenticate = true;
             }
           }

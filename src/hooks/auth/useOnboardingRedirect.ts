@@ -1,51 +1,24 @@
 import { useEffect } from 'react';
-import { getApiUrl } from '@/config';
 import { AUTH_BOOTSTRAP_HTTP_TIMEOUT_MS, FORCE_START_ONBOARDING_LOCALLY } from '@/constants';
 import { getNextOnboardingDestination } from '@/utils';
-import { fetchWithTimeout } from '@/utils/network/fetchWithTimeout';
-import { storageService, userService } from '@/services';
+import { storageService, AuthService, userService } from '@/services';
 import { invalidateApiClientAuthTokenMemoryCache } from '@/services/infrastructure/apiClient';
 import { logger } from '@/utils/logger';
 
 type NavigationReplace = (screen: string, params?: object) => void;
 
 /**
- * Sincroniza flags de onboarding com o backend quando há token (ex.: pós-login / reabrir app).
- * Com `FORCE_START_ONBOARDING_LOCALLY` não gravamos register/objectives/privacy vindos da API.
+ * Sincroniza JWT e flags de onboarding com o backend (`GET /api/auth/token`) quando há token.
+ * Com `FORCE_START_ONBOARDING_LOCALLY` não chama a API (onboarding forçado só no device).
  */
 async function syncOnboardingStateFromBackend(): Promise<void> {
-  const token = await storageService.getToken();
-  if (!token) return;
   if (FORCE_START_ONBOARDING_LOCALLY) {
     return;
   }
+  const token = await storageService.getToken();
+  if (!token) return;
   try {
-    const response = await fetchWithTimeout(
-      getApiUrl('/api/auth/token'),
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      },
-      AUTH_BOOTSTRAP_HTTP_TIMEOUT_MS,
-    );
-    if (!response.ok) return;
-    const data = (await response.json()) as Record<string, unknown>;
-    const payload = data.data ?? data;
-    if (payload && typeof payload === 'object') {
-      const p = payload as Record<string, unknown>;
-      if (p.registerCompletedAt != null) {
-        await storageService.setRegisterCompletedAt(p.registerCompletedAt as string);
-      }
-      if (p.objectivesSelectedAt != null) {
-        await storageService.setObjectivesSelectedAt(p.objectivesSelectedAt as string);
-      }
-      if (p.privacyPolicyAcceptedAt != null) {
-        await storageService.setPrivacyPolicyAcceptedAt(p.privacyPolicyAcceptedAt as string);
-      }
-    }
+    await AuthService.refreshBackendSessionFromStoredCredentials();
   } catch (error) {
     logger.warn('[useOnboardingRedirect] syncOnboardingStateFromBackend falhou; segue com flags do storage', {
       cause: error,

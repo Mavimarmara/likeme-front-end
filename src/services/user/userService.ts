@@ -44,7 +44,6 @@ export interface UserProfile extends User {
 
 export type GetProfileResponse = ApiResponse<UserProfile>;
 
-/** Endereço de entrega no formato retornado pelo perfil (contact type shipping_address) */
 export interface ShippingAddressFromProfile {
   fullName: string;
   addressLine1: string;

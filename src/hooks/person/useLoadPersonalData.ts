@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { userService, personsService } from '@/services';
+import { userService, personsService, storageService, AuthService } from '@/services';
 import type { PersonWithContacts } from '@/services/user/userService';
 import type { PersonResponse } from '@/types/person';
 import { isoToBirthdateMask } from '@/utils/formatters/personFormats';
@@ -49,6 +49,14 @@ function mapPersonToFormData(person: PersonWithContacts | PersonResponse): Perso
 export function useLoadPersonalData() {
   const loadPersonalData = useCallback(async (): Promise<PersonFormData | null> => {
     try {
+      const token = await storageService.getToken();
+      if (!token) {
+        return null;
+      }
+      const { ok } = await AuthService.refreshBackendSessionFromStoredCredentials();
+      if (!ok) {
+        return null;
+      }
       const response = await userService.getProfile();
       if (!response.success || !response.data?.person) return null;
 
