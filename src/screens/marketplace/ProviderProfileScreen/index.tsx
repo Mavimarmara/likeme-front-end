@@ -1,24 +1,41 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Linking } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Linking, Image } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { HeroImage, ScreenWithHeader } from '@/components/ui/layout';
 import { ToggleTabs } from '@/components/ui/tabs';
 import { IconButton, SecondaryButton } from '@/components/ui/buttons';
+import { EmptyState } from '@/components/ui/feedback';
+import type { ButtonCarouselOption } from '@/components/ui/carousel';
 import { JoinCard, type JoinCardItem } from '@/components/ui/cards';
 import { AdsList } from '@/components/sections/marketplace';
-import { useAdvertiser, useProviderAds, useCommunities, useFeatureFlag, useMenuItems } from '@/hooks';
+import { Product } from '@/components/sections/product';
+import {
+  useAdvertiser,
+  useAdvertisers,
+  useProviderAds,
+  useCommunities,
+  useFeatureFlag,
+  useMenuItems,
+  useSuggestedProducts,
+  SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS,
+} from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import type { RootStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
+import { styles as communityShopListStyles } from '@/components/sections/community/ShoppingList/styles';
 import { communityService, advertiserService } from '@/services';
-import type { AdvertiserProfile } from '@/types/ad';
-import { FEATURE_FLAGS } from '@/constants';
+import type { Advertiser, AdvertiserProfile } from '@/types/ad';
+import { COLORS, FEATURE_FLAGS } from '@/constants';
+import { DEFAULT_MARKETPLACE_SORT_ORDER, type MarketplaceSortOrderId } from '@/constants/marketplaceSortOrder';
+import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { logger } from '@/utils/logger';
 import { buildAdvertiserContactButtons, type AdvertiserContactButton } from '@/utils/advertiser/contactButtons';
 import { formatAdvertiserDocumentsLine } from '@/utils/advertiser/documents';
+import { getMarketplaceSortOptions } from '@/utils/marketplace/sortOptions';
+import { sortShopProductsByMarketplaceOrder } from '@/utils/marketplace/sorting';
 
 type ProviderProfileScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'ProviderProfile'>;
@@ -51,6 +68,8 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
   const [productsPage, setProductsPage] = useState(1);
   const [profiles, setProfiles] = useState<AdvertiserProfile[]>([]);
   const [loadingProfiles, setLoadingProfiles] = useState(false);
+  const [communityShopSortOrder, setCommunityShopSortOrder] =
+    useState<MarketplaceSortOrderId>(DEFAULT_MARKETPLACE_SORT_ORDER);
 
   const toggleSection = useCallback((profileId: string) => {
     setExpandedSectionIds((prev) => {
@@ -165,6 +184,105 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
 
   const rootNavigation = navigation.getParent() ?? navigation;
 
+  const loadCommunityShop = activeTab === 'communities';
+  const providerCommunityId = advertiser?.communityId?.trim() ?? '';
+
+  const { advertisers: communityShopAdvertisers } = useAdvertisers({
+    communityId: loadCommunityShop && providerCommunityId ? providerCommunityId : undefined,
+  });
+
+  const communityShopProfessionals = useMemo(() => {
+    const filtered = communityShopAdvertisers.filter((a) => a.id !== providerId);
+    const seen = new Set<string>();
+    return filtered.filter((a) => {
+      if (!a.id || seen.has(a.id)) {
+        return false;
+      }
+      seen.add(a.id);
+      return true;
+    });
+  }, [communityShopAdvertisers, providerId]);
+
+  const { products: communityShopProducts } = useSuggestedProducts({
+    ...SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS,
+    enabled: loadCommunityShop,
+  });
+  const { products: communityShopServices } = useSuggestedProducts({
+    limit: 20,
+    status: 'active',
+    enabled: loadCommunityShop,
+    type: 'service',
+  });
+  const { products: communityShopPrograms } = useSuggestedProducts({
+    limit: 20,
+    status: 'active',
+    enabled: loadCommunityShop,
+    type: PRODUCT_CATALOG_TYPE.PROGRAM,
+  });
+
+  const mergeCommunityShopTags = useCallback((primaryTag: string, product: Product): string[] => {
+    const combinedTags = [primaryTag, ...(product.tags ?? []), product.tag].filter(Boolean);
+    return combinedTags.filter((tag, index) => combinedTags.indexOf(tag) === index);
+  }, []);
+
+  const communityShopCatalogFlat = useMemo(() => {
+    if (!loadCommunityShop) {
+      return [];
+    }
+    const productsTagged = (communityShopProducts ?? []).map((p) => ({
+      ...p,
+      tag: t('filterCategory.solutions.products'),
+      tags: mergeCommunityShopTags(t('filterCategory.solutions.products'), p),
+    }));
+    const servicesTagged = (communityShopServices ?? []).map((p) => ({
+      ...p,
+      tag: t('filterCategory.solutions.services'),
+      tags: mergeCommunityShopTags(t('filterCategory.solutions.services'), p),
+    }));
+    const programsTagged = (communityShopPrograms ?? []).map((p) => ({
+      ...p,
+      tag: t('filterCategory.solutions.programs'),
+      tags: mergeCommunityShopTags(t('filterCategory.solutions.programs'), p),
+    }));
+    const merged = [...productsTagged, ...servicesTagged, ...programsTagged];
+    const seenIds = new Set<string>();
+    return merged.filter((item) => {
+      if (!item.id || seenIds.has(item.id)) {
+        return false;
+      }
+      seenIds.add(item.id);
+      return true;
+    });
+  }, [
+    loadCommunityShop,
+    communityShopProducts,
+    communityShopServices,
+    communityShopPrograms,
+    mergeCommunityShopTags,
+    t,
+  ]);
+
+  const communityShopCatalogSorted = useMemo(
+    () => sortShopProductsByMarketplaceOrder(communityShopCatalogFlat, communityShopSortOrder),
+    [communityShopCatalogFlat, communityShopSortOrder],
+  );
+
+  const communityShopOrderOptions: ButtonCarouselOption<string>[] = useMemo(() => getMarketplaceSortOptions(t), [t]);
+
+  const handleCommunityShopProductPress = useCallback(
+    (product: Product) => {
+      rootNavigation.navigate('ProductDetails', { productId: product.id } as never);
+    },
+    [rootNavigation],
+  );
+
+  const handleCommunityShopProfessionalPress = useCallback(
+    (professional: Advertiser) => {
+      rootNavigation.navigate('ProviderProfile', { providerId: professional.id } as never);
+    },
+    [rootNavigation],
+  );
+
   const { communities: rawCommunities, categories } = useCommunities({
     enabled: activeTab === 'communities',
     pageSize: 10,
@@ -272,7 +390,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
                 onSelect={(id) => setActiveTab(id as 'about' | 'communities')}
               />
             </View>
-            {contactButtons.length > 0 ? (
+            {activeTab === 'about' && contactButtons.length > 0 ? (
               <View style={styles.contactButtonsRow}>
                 {contactButtons.map((contactButton, index) => {
                   const ContactIcon = contactButton.IconComponent;
@@ -356,6 +474,63 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
               <View style={styles.communityPreviewContainer}>
                 <Text style={styles.communitiesSectionTitle}>{t('marketplace.curatedSpecialty')}</Text>
                 <JoinCard items={joinCommunities} onItemPress={handleJoinCommunity} />
+                {communityShopCatalogSorted.length > 0 ? (
+                  <AdsList
+                    products={communityShopCatalogSorted}
+                    onProductPress={(item) => handleCommunityShopProductPress(item as Product)}
+                    orderOptions={communityShopOrderOptions}
+                    selectedOrder={communityShopSortOrder}
+                    onOrderSelect={(id) => setCommunityShopSortOrder(id as MarketplaceSortOrderId)}
+                  />
+                ) : null}
+                {communityShopProfessionals.length > 0 ? (
+                  <View style={communityShopListStyles.list}>
+                    {communityShopProfessionals.map((prof) => (
+                      <View key={prof.id} style={communityShopListStyles.professionalCardWrapper}>
+                        <View style={communityShopListStyles.professionalCardContent}>
+                          {prof.logo ? (
+                            <Image
+                              source={{ uri: prof.logo }}
+                              style={communityShopListStyles.professionalAvatar}
+                              resizeMode='cover'
+                            />
+                          ) : (
+                            <View style={communityShopListStyles.professionalAvatarPlaceholder}>
+                              <Icon name='person' size={32} color={COLORS.NEUTRAL.LOW.MEDIUM} />
+                            </View>
+                          )}
+                          <View style={communityShopListStyles.professionalInfo}>
+                            <Text style={communityShopListStyles.professionalName} numberOfLines={1}>
+                              {prof.name ?? ''}
+                            </Text>
+                            {prof.description ? (
+                              <Text style={communityShopListStyles.professionalProfession} numberOfLines={1}>
+                                Especialista
+                              </Text>
+                            ) : null}
+                          </View>
+                          <SecondaryButton
+                            label={t('community.viewProfile')}
+                            onPress={() => handleCommunityShopProfessionalPress(prof)}
+                            size='medium'
+                            style={communityShopListStyles.professionalViewProfileButton}
+                          />
+                        </View>
+                      </View>
+                    ))}
+                  </View>
+                ) : null}
+                {communityShopCatalogSorted.length === 0 &&
+                communityShopProfessionals.length === 0 &&
+                loadCommunityShop ? (
+                  <View style={communityShopListStyles.emptySection}>
+                    <EmptyState
+                      title={t('marketplace.noAdsFound')}
+                      description={t('marketplace.noAdsFoundDescription')}
+                      iconName='storefront'
+                    />
+                  </View>
+                ) : null}
                 {isChatEnabled && (
                   <View style={styles.talkButtonContainer}>
                     <SecondaryButton

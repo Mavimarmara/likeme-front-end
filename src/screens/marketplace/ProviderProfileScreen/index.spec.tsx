@@ -25,6 +25,12 @@ jest.mock('@/hooks/i18n', () => ({
         'marketplace.curatedSpecialty': 'Curated specialty',
         'marketplace.specialistLabel': 'Specialist',
         'marketplace.chatInitialMessage': 'Hi',
+        'marketplace.noAdsFound': 'No ads',
+        'marketplace.noAdsFoundDescription': 'No ads description',
+        'community.viewProfile': 'View profile',
+        'filterCategory.solutions.products': 'Products',
+        'filterCategory.solutions.services': 'Services',
+        'filterCategory.solutions.programs': 'Programs',
         'home.joinCommunityError': 'Join error',
       };
       return labels[key] ?? key;
@@ -155,14 +161,30 @@ jest.mock('@/hooks', () => ({
     loading: false,
     loadCommunities: jest.fn(),
   }),
-  useAdvertisers: (...args: any[]) => mockUseAdvertisers(...args),
-  useAdvertiser: (...args: any[]) => {
-    const base: any = mockUseAdvertisers(...args);
+  useAdvertisers: (params: any) => {
+    if (params?.communityId) {
+      return {
+        advertisers: [],
+        loading: false,
+        error: null,
+        refresh: jest.fn(),
+      };
+    }
+    return mockUseAdvertisers(params);
+  },
+  useAdvertiser: (params: any) => {
+    const base: any = mockUseAdvertisers(params);
     return {
       ...base,
       advertiser: base.advertisers?.[0] ?? null,
     };
   },
+  useSuggestedProducts: () => ({
+    products: [],
+    loading: false,
+    error: null,
+    refresh: jest.fn(),
+  }),
   useProviderAds: () => ({
     ads: [],
     loading: false,
