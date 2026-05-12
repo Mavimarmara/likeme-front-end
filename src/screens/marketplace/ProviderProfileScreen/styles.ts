@@ -26,6 +26,15 @@ export const styles = StyleSheet.create({
   tabsContainer: {
     marginBottom: SPACING.LG,
   },
+  contactButtonsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: SPACING.XL,
+  },
+  contactIconButtonContainer: {
+    padding: 0,
+  },
   aboutSection: {
     marginBottom: SPACING.XL,
   },

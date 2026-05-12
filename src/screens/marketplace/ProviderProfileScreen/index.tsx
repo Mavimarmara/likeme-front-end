@@ -1,10 +1,10 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Linking } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { HeroImage, ScreenWithHeader } from '@/components/ui/layout';
 import { ToggleTabs } from '@/components/ui/tabs';
-import { SecondaryButton } from '@/components/ui/buttons';
+import { IconButton, SecondaryButton } from '@/components/ui/buttons';
 import { JoinCard, type JoinCardItem } from '@/components/ui/cards';
 import { AdsList } from '@/components/sections/marketplace';
 import { useAdvertiser, useProviderAds, useCommunities, useFeatureFlag } from '@/hooks';
@@ -16,6 +16,7 @@ import { communityService, advertiserService } from '@/services';
 import type { AdvertiserProfile } from '@/types/ad';
 import { FEATURE_FLAGS } from '@/constants';
 import { logger } from '@/utils/logger';
+import { buildAdvertiserContactButtons, type AdvertiserContactButton } from '@/utils/advertiser/contactButtons';
 
 type ProviderProfileScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'ProviderProfile'>;
@@ -127,6 +128,8 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
     return null;
   }, [advertiser, providerFromParams]);
 
+  const contactButtons = useMemo(() => buildAdvertiserContactButtons(advertiser?.contacts), [advertiser?.contacts]);
+
   const positioningProfile = useMemo(
     () => profiles.find((profile) => profile.key === 'profile.positioning'),
     [profiles],
@@ -213,6 +216,16 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
     });
   };
 
+  const handleContactPress = (contactButton: AdvertiserContactButton) => {
+    Linking.openURL(contactButton.url).catch((error: Error) => {
+      logger.error('[ProviderProfileScreen] Erro ao abrir contato do provider', {
+        providerId,
+        contactType: contactButton.contact.type,
+        cause: error,
+      });
+    });
+  };
+
   return (
     <ScreenWithHeader
       navigation={navigation}
@@ -249,6 +262,25 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
                 onSelect={(id) => setActiveTab(id as 'about' | 'communities')}
               />
             </View>
+            {contactButtons.length > 0 ? (
+              <View style={styles.contactButtonsRow}>
+                {contactButtons.map((contactButton, index) => {
+                  const ContactIcon = contactButton.IconComponent;
+                  return (
+                    <IconButton
+                      key={`${contactButton.contact.type}-${contactButton.contact.value}-${index}`}
+                      onPress={() => handleContactPress(contactButton)}
+                      {...(ContactIcon
+                        ? { iconElement: <ContactIcon width={contactButton.size} height={contactButton.size} /> }
+                        : { icon: contactButton.materialIcon ?? 'link', iconSize: contactButton.size })}
+                      variant='dark'
+                      backgroundSize='medium'
+                      containerStyle={styles.contactIconButtonContainer}
+                    />
+                  );
+                })}
+              </View>
+            ) : null}
 
             {activeTab === 'about' && (
               <>

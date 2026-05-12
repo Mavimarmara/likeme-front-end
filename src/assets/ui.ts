@@ -7,6 +7,11 @@ import LogoPartialMiniSvg from '../../assets/ui/LogoPartialMini.svg';
 import RightArrowSvg from '../../assets/ui/RightArrow.svg';
 import BackgroundIconSvg from '../../assets/icons/BackgroundIcon.svg';
 import ColoredTwoDotsSvg from '../../assets/icons/ColoredTwoDots.svg';
+import InstagramSvg from '../../assets/icons/Instagram.svg';
+import MailSvg from '../../assets/icons/Mail.svg';
+import PinMapSvg from '../../assets/icons/PinMap.svg';
+import WebsiteSvg from '../../assets/icons/Website.svg';
+import WhatsappSvg from '../../assets/icons/Whatsapp.svg';
 
 // Ícones em bitmap / fundos
 import BackgroundIconButtonPng from '../../assets/ui/BackgroundIconButton.png';
@@ -20,6 +25,11 @@ export const LogoMini = LogoMiniSvg;
 export const LogoPartialMini = LogoPartialMiniSvg;
 export const RightArrow = RightArrowSvg;
 export const BackgroundIcon = BackgroundIconSvg;
+export const InstagramIcon = InstagramSvg;
+export const MailIcon = MailSvg;
+export const PinMapIcon = PinMapSvg;
+export const WebsiteIcon = WebsiteSvg;
+export const WhatsappIcon = WhatsappSvg;
 
 export const BackgroundIconButton = BackgroundIconButtonPng;
 export const BackgroundWithGradient = BackgroundWithGradientPng;

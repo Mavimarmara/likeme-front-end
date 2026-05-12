@@ -1,5 +1,6 @@
 import apiClient from '../infrastructure/apiClient';
 import { logger } from '@/utils/logger';
+import type { Contact, ContactType } from '@/types/contact';
 import type { ApiResponse } from '@/types/infrastructure';
 
 export interface User {
@@ -15,22 +16,8 @@ export interface User {
   personId?: string;
 }
 
-/** Alinhado ao enum `ContactType` do backend (Prisma). */
-export type PersonContactType =
-  | 'phone'
-  | 'instagram'
-  | 'whatsapp'
-  | 'email'
-  | 'website'
-  | 'address'
-  | 'billing_address';
-
-/** Contato da pessoa (tipos: phone, instagram, whatsapp, email, website, address, billing_address) */
-export interface PersonContact {
-  id: string;
-  type: PersonContactType;
-  value: string;
-}
+export type PersonContactType = ContactType;
+export type PersonContact = Contact & { id: string };
 
 /** Pessoa com contatos (retornada no perfil) */
 export interface PersonWithContacts {

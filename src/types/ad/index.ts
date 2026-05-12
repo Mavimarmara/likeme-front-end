@@ -1,4 +1,5 @@
 import type { ApiResponse } from '@/types/infrastructure';
+import type { Contact } from '@/types/contact';
 import type { Product, ProductCatalogType } from '@/types/product';
 
 export interface Advertiser {
@@ -11,6 +12,7 @@ export interface Advertiser {
   contactEmail?: string;
   contactPhone?: string;
   website?: string;
+  contacts?: Contact[];
   status: string;
   createdAt: string;
   updatedAt: string;

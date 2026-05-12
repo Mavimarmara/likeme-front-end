@@ -19,6 +19,7 @@ const VARIANT_CONFIG: Record<IconButtonVariant, { tintColor: string; iconColor: 
 
 type Props = {
   icon?: string;
+  iconElement?: React.ReactNode;
   iconSize?: number;
   iconColor?: string;
   iconImageSource?: ImageSourcePropType;
@@ -39,6 +40,7 @@ type Props = {
 const IconButton: React.FC<Props> = (props) => {
   const {
     icon,
+    iconElement,
     iconImageSource,
     iconImageStyle,
     onPress,
@@ -60,7 +62,7 @@ const IconButton: React.FC<Props> = (props) => {
   const silhouetteTint =
     props.backgroundTintColor === null ? null : props.backgroundTintColor ?? variantConfig.tintColor;
 
-  const iconElement = (
+  const renderedIcon = iconElement ?? (
     <Icon name={icon} size={iconSize} color={iconColor} imageSource={iconImageSource} imageStyle={iconImageStyle} />
   );
 
@@ -78,10 +80,10 @@ const IconButton: React.FC<Props> = (props) => {
           size={backgroundSize}
           style={iconContainerStyle}
         >
-          {iconElement}
+          {renderedIcon}
         </IconSilhouette>
       ) : (
-        <View style={[styles.iconContainer, iconContainerStyle]}>{iconElement}</View>
+        <View style={[styles.iconContainer, iconContainerStyle]}>{renderedIcon}</View>
       )}
       {label && <Text style={styles.label}>{label}</Text>}
     </TouchableOpacity>
