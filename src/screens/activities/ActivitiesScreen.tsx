@@ -1,5 +1,6 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Image, Modal, Alert, Linking } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { StickyFilterCarouselRow, type ButtonCarouselOption } from '@/components/ui/menu';
@@ -88,6 +89,29 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation, route }
       loadOrders();
     }
   }, [activeTab]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const p = route?.params;
+      if (p?.initialTab == null && p?.initialFilter == null) {
+        return;
+      }
+
+      if (p?.initialFilter === 'orders') {
+        setActiveTab('history');
+        setSelectedFilter('orders');
+      } else {
+        if (p?.initialTab === 'history' || p?.initialTab === 'actives') {
+          setActiveTab(p.initialTab);
+        }
+        if (p?.initialFilter != null) {
+          setSelectedFilter(p.initialFilter);
+        }
+      }
+
+      navigation.setParams({ initialTab: undefined, initialFilter: undefined } as never);
+    }, [navigation, route?.params?.initialTab, route?.params?.initialFilter]),
+  );
 
   useEffect(() => {
     const checkAnamnesisStatus = async () => {

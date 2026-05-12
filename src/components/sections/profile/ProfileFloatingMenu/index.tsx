@@ -100,11 +100,6 @@ const ProfileFloatingMenu: React.FC<Props> = ({ visible, navigation, onClose }) 
     rootNavigation.navigate('Activities' as never, { initialTab: 'actives' } as never);
   };
 
-  const handleGoToProtocolsAndServices = () => {
-    onClose();
-    rootNavigation.navigate('Marketplace' as never);
-  };
-
   const userName = useMemo(() => user?.name?.trim() || user?.nickname?.trim() || 'Usuário', [user]);
   const userEmail = useMemo(() => user?.email?.trim() || '', [user]);
 
@@ -151,13 +146,13 @@ const ProfileFloatingMenu: React.FC<Props> = ({ visible, navigation, onClose }) 
             </TouchableOpacity>
             <View style={styles.separator} />
 
-            <TouchableOpacity onPress={handleGoToProtocolsAndServices} style={styles.menuItem} activeOpacity={0.7}>
+            <View style={styles.menuItemDisabled}>
               <View style={styles.menuItemLeft}>
-                <Icon name='credit-card' size={22} color={COLORS.TEXT} />
-                <Text style={styles.menuItemLabel}>Meus Protocolos e Servicos</Text>
+                <Icon name='credit-card' size={22} color='#9aa2b1' />
+                <Text style={styles.menuItemDisabledLabel}>Meus Protocolos e Servicos</Text>
               </View>
-              <Icon name='chevron-right' size={22} color='#6e6a6a' />
-            </TouchableOpacity>
+              <Icon name='chevron-right' size={22} color='#C7CED8' />
+            </View>
             <View style={styles.separator} />
 
             <TouchableOpacity onPress={handleGoToActivities} style={styles.menuItem} activeOpacity={0.7}>

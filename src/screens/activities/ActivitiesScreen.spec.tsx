@@ -4,6 +4,16 @@ import { Alert } from 'react-native';
 import ActivitiesScreen from './ActivitiesScreen';
 import { activityService, orderService } from '@/services';
 
+jest.mock('@react-navigation/native', () => ({
+  useFocusEffect: (callback: () => void | (() => void)) => {
+    const R = require('react');
+    R.useEffect(() => {
+      const cleanup = callback();
+      return typeof cleanup === 'function' ? cleanup : undefined;
+    }, [callback]);
+  },
+}));
+
 jest.mock('@/contexts/FloatingMenuContext', () => ({
   FloatingMenuProvider: ({ children }: { children: React.ReactNode }) => children,
   useFloatingMenu: () => ({
@@ -220,6 +230,7 @@ jest.mock('@/utils', () => ({
 
 const mockNavigation = {
   navigate: jest.fn(),
+  setParams: jest.fn(),
   getParent: jest.fn(() => ({
     navigate: jest.fn(),
   })),
