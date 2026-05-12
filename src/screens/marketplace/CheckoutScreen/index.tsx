@@ -7,7 +7,8 @@ import { storageService, orderService, userService } from '@/services';
 import { getShippingQuote } from '@/services/shipping/shippingService';
 import { formatZipCodeDisplay } from '@/services/address/cepService';
 import { formatPrice, formatAddress, formatBillingAddress } from '@/utils';
-import { useTranslation, usePayment } from '@/hooks';
+import { catalogTypeTranslatedBadgeLabels } from '@/types/product';
+import { useTranslation, usePayment, useCartShippingPolicy } from '@/hooks';
 import { logger } from '@/utils/logger';
 import { styles } from './styles';
 import AddressForm, { AddressData, EMPTY_ADDRESS, isAddressFilled } from './address/AddressForm';
@@ -50,6 +51,11 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
   const [shippingLoading, setShippingLoading] = useState(false);
   const [orderId, setOrderId] = useState('');
 
+  const { shippingRequired, isResolving: shippingPolicyLoading } = useCartShippingPolicy(cartItems);
+  const isShippingDisabled = shippingRequired === false;
+  const effectiveShipping = isShippingDisabled ? 0 : shipping;
+  const productIds = useMemo(() => cartItems.map((item) => item.id).filter(Boolean), [cartItems]);
+
   const effectiveDeliveryAddress = deliverySameAsBilling ? billingAddressData : addressData;
   const deliveryZipCode = (effectiveDeliveryAddress.zipCode || '').replace(/\D/g, '');
   const fallbackZipCode = (addressData.zipCode || '').replace(/\D/g, '');
@@ -82,15 +88,20 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   useEffect(() => {
+    if (isShippingDisabled) {
+      setShipping(0);
+      setShippingLoading(false);
+      return;
+    }
     if (zipCodeForShipping.length !== 8) {
       setShipping(0);
       return;
     }
     let cancelled = false;
     setShippingLoading(true);
-    getShippingQuote(zipCodeForShipping)
+    getShippingQuote(zipCodeForShipping, productIds)
       .then((res) => {
-        if (!cancelled) setShipping(res.minValue);
+        if (!cancelled) setShipping(res.requiresShipping === false ? 0 : res.minValue);
       })
       .catch(() => {
         if (!cancelled) setShipping(0);
@@ -101,7 +112,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
     return () => {
       cancelled = true;
     };
-  }, [zipCodeForShipping, currentStep]);
+  }, [zipCodeForShipping, currentStep, isShippingDisabled, productIds]);
 
   useEffect(() => {
     if (currentStep !== 'payment') payment.setPaymentError(null);
@@ -113,21 +124,15 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
     }
   }, [currentStep]);
 
-  const formatRating = (rating: number): string => {
-    if (rating === undefined || rating === null || isNaN(rating)) {
-      return '0.000';
-    }
-    return Number(rating).toFixed(3);
-  };
-
   const isAddressValid = isAddressFilled(addressData);
 
   const canProceedFromAddress = isAddressValid && (deliverySameAsBilling || isAddressFilled(billingAddressData));
 
+  const isShippingBlocking = !isShippingDisabled && (shipping === 0 || shippingLoading || shippingPolicyLoading);
   const isContinueDisabled =
     payment.isProcessing ||
-    (currentStep === 'address' && (!canProceedFromAddress || shipping === 0 || shippingLoading)) ||
-    (currentStep === 'payment' && (shipping === 0 || shippingLoading));
+    (currentStep === 'address' && (!canProceedFromAddress || isShippingBlocking)) ||
+    (currentStep === 'payment' && isShippingBlocking);
 
   const handleContinue = async () => {
     if (currentStep === 'address' && !canProceedFromAddress) {
@@ -150,7 +155,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
         return;
       }
 
-      if (shipping === 0 || shippingLoading) {
+      if (!isShippingDisabled && (shipping === 0 || shippingLoading)) {
         Alert.alert(t('errors.error'), t('checkout.shippingRequired'));
         payment.setIsProcessing(false);
         return;
@@ -198,7 +203,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
       const orderData: CreateOrderData = {
         items: orderItems,
         status: 'pending',
-        shippingCost: shipping,
+        shippingCost: effectiveShipping,
         tax: 0,
         shippingAddress: shippingAddressFormatted,
         billingAddress: billingAddressObj,
@@ -282,7 +287,13 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
   );
 
   const orderSummary = (
-    <OrderSummary subtotal={subtotal} shipping={shipping} formatPrice={formatPrice} shippingLoading={shippingLoading} />
+    <OrderSummary
+      subtotal={subtotal}
+      shipping={effectiveShipping}
+      formatPrice={formatPrice}
+      shippingLoading={!isShippingDisabled && (shippingLoading || shippingPolicyLoading)}
+      showShipping={!isShippingDisabled}
+    />
   );
 
   return (
@@ -322,7 +333,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
                   price={item.price}
                   formatPrice={formatPrice}
                   onPress={noop}
-                  badges={item.tags}
+                  badges={catalogTypeTranslatedBadgeLabels(item.type, t)}
                   subtitle={
                     item.subtitle
                       ? item.date
@@ -332,8 +343,6 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
                       ? `${t('cart.date')}: ${item.date}`
                       : undefined
                   }
-                  rating={item.rating}
-                  formatRating={formatRating}
                   quantity={item.quantity}
                   showDelete={true}
                   onRemove={() => removeItem(item.id)}
@@ -378,7 +387,8 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
           <OrderScreen
             orderId={orderId}
             subtotal={subtotal}
-            shipping={shipping}
+            shipping={effectiveShipping}
+            showShipping={!isShippingDisabled}
             addressData={deliverySameAsBilling ? billingAddressData : addressData}
             cartItems={cartItems}
             onViewProgram={handleProductPress}

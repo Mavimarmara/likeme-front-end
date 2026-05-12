@@ -38,7 +38,6 @@ describe('cartMapper', () => {
         type: PRODUCT_CATALOG_TYPE.PHYSICAL,
         categoryId: undefined,
         category: 'Product',
-        tags: [PRODUCT_CATALOG_TYPE.PHYSICAL],
       });
     });
 
@@ -81,14 +80,14 @@ describe('cartMapper', () => {
       expect(result.image).toBe('https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400');
     });
 
-    it('deve usar array vazio para tags quando type é undefined', () => {
+    it('deve manter type indefinido quando produto não informa type', () => {
       const productWithoutType = {
         ...mockApiProduct,
         type: undefined,
       };
       const result = mapProductToCartItem(productWithoutType);
 
-      expect(result.tags).toEqual([]);
+      expect(result.type).toBeUndefined();
       expect(result.category).toBe('Product');
     });
 
@@ -101,6 +100,7 @@ describe('cartMapper', () => {
       const programProduct = { ...mockApiProduct, type: PRODUCT_CATALOG_TYPE.PROGRAM };
       const result = mapProductToCartItem(programProduct);
       expect(result.category).toBe('Programs');
+      expect(result.type).toBe(PRODUCT_CATALOG_TYPE.PROGRAM);
     });
 
     it('deve usar description vazia quando undefined', () => {

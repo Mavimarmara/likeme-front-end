@@ -1,14 +1,15 @@
-import React, { useCallback, useState, useEffect, useRef } from 'react';
+import React, { useCallback, useState, useEffect, useRef, useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput, Linking } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GradientBackground, ScreenWithHeader } from '@/components/ui/layout';
 import type { RootStackParamList } from '@/types/navigation';
 import { formatPrice } from '@/utils';
+import { catalogTypeTranslatedBadgeLabels } from '@/types/product';
 import { Alert } from 'react-native';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { ProductItemCard } from '@/components/ui/cards';
-import { useMenuItems, useTranslation, useCart, useFormattedInput } from '@/hooks';
+import { useMenuItems, useTranslation, useCart, useFormattedInput, useCartShippingPolicy } from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useAnalyticsScreen } from '@/analytics';
 import { isValidZipCodeFormat, formatZipCodeDisplay } from '@/services/address/cepService';
@@ -35,6 +36,10 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
   const [zipCode, setZipCode] = useState('');
   const [shipping, setShipping] = useState(0.0);
   const [shippingLoading, setShippingLoading] = useState(false);
+
+  const { shippingRequired, isResolving: shippingPolicyLoading } = useCartShippingPolicy(cartItems);
+  const effectiveShipping = shippingRequired === false ? 0 : shipping;
+  const productIds = useMemo(() => cartItems.map((item) => item.id).filter(Boolean), [cartItems]);
 
   const handleZipCodeChange = useFormattedInput({ type: 'zipCode', onChangeText: setZipCode });
 
@@ -79,7 +84,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
     }
     setShippingLoading(true);
     try {
-      const result = await getShippingQuote(trimmed);
+      const result = await getShippingQuote(trimmed, productIds);
       setZipCode(formatZipCodeDisplay(trimmed));
       setShipping(result.minValue);
     } catch (err: any) {
@@ -94,18 +99,13 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
 
   const handleBuy = () => {
     const zipParam =
-      zipCode.trim().replace(/\D/g, '').length === 8 ? { zipCode: formatZipCodeDisplay(zipCode.trim()) } : undefined;
+      shippingRequired !== false && zipCode.trim().replace(/\D/g, '').length === 8
+        ? { zipCode: formatZipCodeDisplay(zipCode.trim()) }
+        : undefined;
     navigation.navigate('Checkout', zipParam);
   };
 
-  const calculateTotal = () => subtotal + shipping;
-
-  const formatRating = (rating: number | undefined | null) => {
-    if (rating === undefined || rating === null || isNaN(Number(rating))) {
-      return '0.000';
-    }
-    return Number(rating).toFixed(3);
-  };
+  const calculateTotal = () => subtotal + effectiveShipping;
 
   const noop = useCallback((): void => undefined, []);
 
@@ -117,7 +117,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
       price={item.price}
       formatPrice={formatPrice}
       onPress={noop}
-      badges={item.tags}
+      badges={catalogTypeTranslatedBadgeLabels(item.type, t)}
       subtitle={
         item.subtitle
           ? item.date
@@ -127,8 +127,6 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
           ? `${t('cart.date')}: ${item.date}`
           : undefined
       }
-      rating={item.rating}
-      formatRating={formatRating}
       quantity={item.quantity}
       showDelete={true}
       onRemove={() => removeItem(item.id)}
@@ -196,10 +194,14 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
           <Text style={styles.summaryLabel}>{t('cart.subtotal')}</Text>
           <Text style={styles.summaryValue}>{formatPrice(subtotal)}</Text>
         </View>
-        <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>{t('cart.shipping')}</Text>
-          <Text style={styles.summaryValue}>{formatPrice(shipping)}</Text>
-        </View>
+        {shippingRequired !== false && (
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>{t('cart.shipping')}</Text>
+            <Text style={styles.summaryValue}>
+              {shippingPolicyLoading ? t('common.loading') : formatPrice(effectiveShipping)}
+            </Text>
+          </View>
+        )}
         <View style={styles.separator} />
         <View style={styles.totalRow}>
           <Text style={styles.totalLabel}>{t('cart.total')}</Text>
@@ -237,7 +239,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
           <>
             <Text style={styles.productsTitle}>{t('cart.yourProducts')}</Text>
             <View style={styles.cartItemsList}>{cartItems.map((item) => renderCartItem(item))}</View>
-            {renderShippingSection()}
+            {shippingRequired !== false && renderShippingSection()}
             {renderOrderSummary()}
             <View style={styles.buyButtonContainer}>
               <SecondaryButton

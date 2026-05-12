@@ -15,20 +15,37 @@ export interface ShippingOption {
 export interface ShippingQuoteResponse {
   options: ShippingOption[];
   minValue: number;
+  /** Quando false, o backend determinou que os itens não geram frete (valor 0). */
+  requiresShipping: boolean;
   cepDestino: string;
 }
 
+export interface ShippingPolicyResponse {
+  requiresShipping: boolean;
+}
+
+const buildProductIdsQuery = (productIds?: ReadonlyArray<string>): string => {
+  if (!productIds || productIds.length === 0) {
+    return '';
+  }
+  return `&productIds=${encodeURIComponent(productIds.join(','))}`;
+};
+
 /**
  * Consulta opções de frete dos Correios para um CEP.
- * Retorna as opções (PAC, SEDEX) e o menor valor.
+ * Quando `productIds` é fornecido, o backend é a fonte de verdade para determinar se o
+ * frete se aplica ao conjunto (ex.: pedidos só com programs/services retornam minValue=0).
  */
-export async function getShippingQuote(cep: string): Promise<ShippingQuoteResponse> {
+export async function getShippingQuote(
+  cep: string,
+  productIds?: ReadonlyArray<string>,
+): Promise<ShippingQuoteResponse> {
   const digits = (cep || '').replace(/\D/g, '');
   if (digits.length !== 8) {
     throw new Error('CEP inválido');
   }
 
-  const url = getApiUrl(`/api/shipping/quote?cep=${encodeURIComponent(digits)}`);
+  const url = getApiUrl(`/api/shipping/quote?cep=${encodeURIComponent(digits)}${buildProductIdsQuery(productIds)}`);
 
   let response: Response;
   try {
@@ -77,4 +94,42 @@ export async function getShippingQuote(cep: string): Promise<ShippingQuoteRespon
   }
 
   return data.data as ShippingQuoteResponse;
+}
+
+/**
+ * Consulta no backend se uma lista de produtos exige frete. O backend é fonte única da regra.
+ * Em caso de falha, lança erro — o caller deve decidir o fallback (ex.: exigir frete).
+ */
+export async function getShippingPolicy(productIds: ReadonlyArray<string>): Promise<ShippingPolicyResponse> {
+  const url = getApiUrl(`/api/shipping/policy?${buildProductIdsQuery(productIds).replace(/^&/, '')}`);
+
+  let response: Response;
+  try {
+    response = await fetch(url, { method: 'GET', headers: { Accept: 'application/json' } });
+  } catch (networkError: any) {
+    const msg = networkError?.message || '';
+    if (/network|failed to fetch|internet|connection/i.test(msg)) {
+      throw new Error('Verifique sua conexão e tente novamente.');
+    }
+    throw new Error('Não foi possível consultar a política de frete.');
+  }
+
+  let data: any = {};
+  try {
+    const text = await response.text();
+    if (text) {
+      data = JSON.parse(text);
+    }
+  } catch {
+    // Resposta não é JSON
+  }
+
+  if (!response.ok || !data?.success || !data?.data) {
+    const apiMessage = data?.message || data?.error || 'Falha ao consultar política de frete';
+    const error: Error & { status?: number } = new Error(apiMessage);
+    error.status = response.status;
+    throw error;
+  }
+
+  return data.data as ShippingPolicyResponse;
 }

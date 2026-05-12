@@ -7,8 +7,16 @@ import { mapProductToCartItem, formatPrice } from '@/utils';
 import type { Product as ApiProduct } from '@/types/product';
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import type { Ad } from '@/types/ad';
+import type { ApiError } from '@/types/infrastructure';
 import { logger } from '@/utils/logger';
 import { buildApiProductFromRouteFallback, type RouteFallbackProduct } from '@/utils/marketplace/routeProductFallback';
+
+function isAdRequestNotFound(error: unknown): boolean {
+  if (typeof error !== 'object' || error === null) {
+    return false;
+  }
+  return (error as ApiError).status === 404;
+}
 
 async function redirectAmazonProductToAffiliateScreen(
   navigation: { replace: (screen: string, params: Record<string, unknown>) => void },
@@ -134,13 +142,24 @@ export const useProductDetails = ({
   const loadAd = useCallback(async () => {
     try {
       if (adId) {
-        const adDetailResponse = await adService.getAdById(adId);
-        if (adDetailResponse.success && adDetailResponse.data) {
-          const adData = adDetailResponse.data;
-          setAd(adData);
-          const nested = adData.product;
-          if (nested) {
-            setProduct((prev) => (prev ? prev : mergeSupplementalExternalUrl({ ...nested })));
+        try {
+          const adDetailResponse = await adService.getAdById(adId);
+          if (adDetailResponse.success && adDetailResponse.data) {
+            const adData = adDetailResponse.data;
+            setAd(adData);
+            const nested = adData.product;
+            if (nested) {
+              setProduct((prev) => (prev ? prev : mergeSupplementalExternalUrl({ ...nested })));
+            }
+          } else {
+            setAd(null);
+          }
+        } catch (error) {
+          if (isAdRequestNotFound(error)) {
+            logger.debug('[useProductDetails] Anúncio não encontrado (404)', { adId });
+            setAd(null);
+          } else {
+            logger.error('[useProductDetails] Erro ao carregar ad', error);
           }
         }
         return;
@@ -154,18 +173,35 @@ export const useProductDetails = ({
         limit: 1,
       });
 
-      if (!response.success || !response.data?.ads.length) return;
-
-      const adData = response.data.ads[0];
-      const adDetailResponse = await adService.getAdById(adData.id);
-
-      if (adDetailResponse.success && adDetailResponse.data) {
-        setAd(adDetailResponse.data);
+      if (!response.success || !response.data?.ads.length) {
+        setAd(null);
         return;
       }
 
-      setAd(adData);
+      const adData = response.data.ads[0];
+      try {
+        const adDetailResponse = await adService.getAdById(adData.id);
+        if (adDetailResponse.success && adDetailResponse.data) {
+          setAd(adDetailResponse.data);
+          return;
+        }
+        setAd(adData);
+      } catch (error) {
+        if (isAdRequestNotFound(error)) {
+          logger.debug('[useProductDetails] Detalhe do anúncio indisponível (404), usando dados da listagem', {
+            adId: adData.id,
+          });
+          setAd(adData);
+          return;
+        }
+        logger.error('[useProductDetails] Erro ao carregar ad', error);
+      }
     } catch (error) {
+      if (isAdRequestNotFound(error)) {
+        logger.debug('[useProductDetails] Anúncio não encontrado (404)', { productId });
+        setAd(null);
+        return;
+      }
       logger.error('[useProductDetails] Erro ao carregar ad', error);
     }
   }, [productId, adId, mergeSupplementalExternalUrl]);

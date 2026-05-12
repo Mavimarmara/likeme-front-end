@@ -2,6 +2,7 @@
 export { useAuthLogin } from './auth/useAuthLogin';
 export { useLogout } from './auth/useLogout';
 export { useOnboardingRedirect } from './auth/useOnboardingRedirect';
+export { useSessionTokenReady } from './auth/useSessionTokenReady';
 
 // Community hooks
 export { useUserFeed } from './community/useUserFeed';
@@ -39,6 +40,7 @@ export { useSuggestedProducts, SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS } fro
 export { usePayment } from './marketplace/usePayment';
 export { useCart } from './marketplace/useCart';
 export type { UseCartOptions, UseCartReturn } from './marketplace/useCart';
+export { useCartShippingPolicy } from './marketplace/useCartShippingPolicy';
 
 // Layout
 export { useKeyboardInset } from './useKeyboardInset';

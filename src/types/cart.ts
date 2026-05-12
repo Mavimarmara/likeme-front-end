@@ -27,8 +27,6 @@ export interface CartItem {
   categoryId?: string;
   /** Categoria de exibição derivada de type (Programs, Product, etc.) */
   category?: CartItemCategory;
-  /** Tags para badges na UI, derivadas de type (e opcionalmente category) */
-  tags: string[];
   /** Data opcional (ex.: entrega, evento) */
   date?: string;
   /** Previsão de entrega (ex.: tela de pedido) */

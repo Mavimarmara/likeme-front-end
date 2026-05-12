@@ -1,7 +1,7 @@
 import apiClient from '../infrastructure/apiClient';
 import { logger } from '@/utils/logger';
 import type { Ad, ListAdsParams, ListAdsApiResponse, GetAdApiResponse, CreateAdData, UpdateAdData } from '@/types/ad';
-import type { ApiResponse } from '@/types/infrastructure';
+import type { ApiError, ApiResponse } from '@/types/infrastructure';
 
 class AdService {
   private readonly adsEndpoint = '/api/ads';
@@ -80,7 +80,10 @@ class AdService {
 
       return response;
     } catch (error) {
-      logger.error('Error fetching ad detail:', error);
+      const status = typeof error === 'object' && error !== null ? (error as ApiError).status : undefined;
+      if (status !== 404) {
+        logger.error('Error fetching ad detail:', error);
+      }
       throw error;
     }
   }

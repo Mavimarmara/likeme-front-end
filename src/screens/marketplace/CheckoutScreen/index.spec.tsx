@@ -196,7 +196,6 @@ jest.mock('@/hooks', () => {
       price: 29.99,
       quantity: 2,
       rating: 4.5,
-      tags: ['tag1'],
     },
   ];
   return {
@@ -244,7 +243,6 @@ jest.mock('@/hooks', () => {
           price: 29.99,
           quantity: 2,
           rating: 4.5,
-          tags: ['tag1'],
         },
       ];
       return {
@@ -258,8 +256,16 @@ jest.mock('@/hooks', () => {
         subtotal: items.reduce((s, i) => s + i.price * i.quantity, 0),
       };
     },
+    useCartShippingPolicy: () => ({ shippingRequired: true, isResolving: false }),
   };
 });
+
+jest.mock('@/services/shipping/shippingService', () => ({
+  getShippingQuote: jest
+    .fn()
+    .mockResolvedValue({ options: [{ valor: 15, nome: 'PAC' }], minValue: 15, requiresShipping: true }),
+  getShippingPolicy: jest.fn().mockResolvedValue({ requiresShipping: true }),
+}));
 
 jest.mock('@/analytics', () => ({
   useAnalyticsScreen: jest.fn(),
@@ -301,7 +307,6 @@ const mockCartItems = [
     price: 29.99,
     quantity: 2,
     rating: 4.5,
-    tags: ['tag1'],
     category: 'Product',
     subCategory: 'SubCategory',
   },

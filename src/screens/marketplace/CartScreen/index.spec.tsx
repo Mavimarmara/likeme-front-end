@@ -1,5 +1,6 @@
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import CartScreen from './index';
+import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 
 let mockGetCartItems: jest.Mock;
 let mockSetCartItems: jest.Mock;
@@ -105,7 +106,10 @@ jest.mock('@/services/address/cepService', () => ({
 }));
 
 jest.mock('@/services/shipping/shippingService', () => ({
-  getShippingQuote: jest.fn().mockResolvedValue({ options: [{ valor: 15, nome: 'PAC' }], minValue: 15 }),
+  getShippingQuote: jest
+    .fn()
+    .mockResolvedValue({ options: [{ valor: 15, nome: 'PAC' }], minValue: 15, requiresShipping: true }),
+  getShippingPolicy: jest.fn().mockResolvedValue({ requiresShipping: true }),
 }));
 
 const mockCartItems = [
@@ -117,7 +121,6 @@ const mockCartItems = [
     price: 29.99,
     quantity: 2,
     rating: 4.5,
-    tags: ['tag1'],
     category: 'Product',
     subCategory: 'SubCategory',
   },
@@ -129,7 +132,6 @@ const mockCartItems = [
     price: 19.99,
     quantity: 1,
     rating: 4.0,
-    tags: ['tag2'],
     category: 'Product',
     subCategory: 'SubCategory',
   },
@@ -177,6 +179,7 @@ describe('CartScreen', () => {
             quantity: 100,
             image: item.image,
             status: 'active',
+            type: PRODUCT_CATALOG_TYPE.PHYSICAL,
           },
         });
       }
@@ -354,7 +357,7 @@ describe('CartScreen', () => {
   });
 
   it('applies shipping when apply button is pressed', async () => {
-    const { getByText, getByPlaceholderText, queryByText } = render(
+    const { getByText, findByPlaceholderText, queryByText } = render(
       <CartScreen navigation={mockNavigation as any} route={mockRoute as any} />,
     );
 
@@ -366,7 +369,7 @@ describe('CartScreen', () => {
       { timeout: 3000 },
     );
 
-    const zipInput = getByPlaceholderText('cart.zipCodePlaceholder');
+    const zipInput = await findByPlaceholderText('cart.zipCodePlaceholder', { timeout: 8000 });
     fireEvent.changeText(zipInput, '12345-678');
 
     const applyButton = getByText('common.apply');

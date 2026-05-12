@@ -2,7 +2,21 @@ import { useState, useCallback, useMemo } from 'react';
 import storageService from '@/services/auth/storageService';
 import productService from '@/services/product/productService';
 import type { CartItem } from '@/types/cart';
+import { isProductCatalogType, resolveCartItemCatalogType } from '@/types/product';
 import { logger } from '@/utils/logger';
+
+type StoredCartItem = CartItem & { tags?: unknown };
+
+function stripLegacyCartFields(item: StoredCartItem): CartItem {
+  const { tags: _legacyTags, ...rest } = item;
+  const fromPayload = resolveCartItemCatalogType({ type: rest.type, tags: item.tags });
+  const type = isProductCatalogType(rest.type ?? undefined) ? rest.type : fromPayload ?? rest.type;
+  return { ...rest, type };
+}
+
+function cartItemsFromStorage(items: StoredCartItem[]): CartItem[] {
+  return items.map((item) => stripLegacyCartFields(item));
+}
 
 export type UseCartOptions = {
   /** Chamado quando o carrinho fica vazio após remover item (ex.: navegar para Cart) */
@@ -31,7 +45,7 @@ export function useCart(options: UseCartOptions = {}): UseCartReturn {
     try {
       setLoading(true);
       const items = await storageService.getCartItems();
-      setCartItems(items);
+      setCartItems(cartItemsFromStorage(items));
     } catch (error) {
       logger.error('[useCart] Erro ao carregar itens do carrinho', error);
     } finally {
@@ -69,12 +83,14 @@ export function useCart(options: UseCartOptions = {}): UseCartReturn {
             }
           }
 
+          const cleaned = stripLegacyCartFields(item as StoredCartItem);
           validatedItems.push({
-            ...item,
+            ...cleaned,
             price: Number(product.price) || Number(item.price) || 0,
             quantity: Number(item.quantity) || 1,
             rating: Number(item.rating) || 0,
-          } as CartItem);
+            type: product.type ?? cleaned.type,
+          });
         } catch {
           removedItems.push(item.title || item.id);
         }
@@ -85,7 +101,7 @@ export function useCart(options: UseCartOptions = {}): UseCartReturn {
         onRemoved?.(removedItems);
       }
 
-      setCartItems(validatedItems);
+      setCartItems(cartItemsFromStorage(validatedItems as StoredCartItem[]));
     } catch (error) {
       logger.error('[useCart] Erro ao carregar/validar itens do carrinho', error);
     } finally {
@@ -95,8 +111,10 @@ export function useCart(options: UseCartOptions = {}): UseCartReturn {
 
   const increaseQuantity = useCallback(async (id: string) => {
     const items = await storageService.getCartItems();
-    const updated = items.map((item: CartItem) =>
-      item.id === id ? { ...item, quantity: (Number(item.quantity) || 1) + 1 } : item,
+    const updated = cartItemsFromStorage(
+      items.map((item: CartItem) =>
+        item.id === id ? { ...item, quantity: (Number(item.quantity) || 1) + 1 } : item,
+      ) as StoredCartItem[],
     );
     await storageService.setCartItems(updated);
     setCartItems(updated);
@@ -110,12 +128,14 @@ export function useCart(options: UseCartOptions = {}): UseCartReturn {
       const q = Number(current.quantity) || 1;
       if (q <= 1) {
         await storageService.removeCartItem(id);
-        const next = await storageService.getCartItems();
+        const next = cartItemsFromStorage((await storageService.getCartItems()) as StoredCartItem[]);
         setCartItems(next);
         if (next.length === 0) onEmpty?.();
         return;
       }
-      const updated = items.map((item: CartItem) => (item.id === id ? { ...item, quantity: q - 1 } : item));
+      const updated = cartItemsFromStorage(
+        items.map((item: CartItem) => (item.id === id ? { ...item, quantity: q - 1 } : item)) as StoredCartItem[],
+      );
       await storageService.setCartItems(updated);
       setCartItems(updated);
     },
@@ -125,7 +145,7 @@ export function useCart(options: UseCartOptions = {}): UseCartReturn {
   const removeItem = useCallback(
     async (id: string) => {
       await storageService.removeCartItem(id);
-      const items = await storageService.getCartItems();
+      const items = cartItemsFromStorage((await storageService.getCartItems()) as StoredCartItem[]);
       setCartItems(items);
       if (items.length === 0) onEmpty?.();
     },

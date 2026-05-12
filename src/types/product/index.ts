@@ -1,7 +1,18 @@
 import type { ApiResponse } from '@/types/infrastructure';
 import type { ProductCatalogType } from './productCatalogType';
 
-export { PRODUCT_CATALOG_TYPE, PRODUCT_CATALOG_TYPE_VALUES, type ProductCatalogType } from './productCatalogType';
+export {
+  PRODUCT_CATALOG_TYPE,
+  PRODUCT_CATALOG_TYPE_VALUES,
+  PRODUCT_CATALOG_TYPES_WITHOUT_SHIPPING,
+  productCatalogTypeOptions,
+  getProductCatalogTypeLabelKey,
+  isProductCatalogType,
+  catalogTypeTranslatedBadgeLabels,
+  resolveCartItemCatalogType,
+  type ProductCatalogType,
+  type ProductCatalogTypeOption,
+} from './productCatalogType';
 
 export interface Advertiser {
   id: string;

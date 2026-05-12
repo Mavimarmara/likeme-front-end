@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useTranslation } from '@/hooks/i18n';
 import { formatPrice } from '@/utils';
+import { catalogTypeTranslatedBadgeLabels } from '@/types/product';
 import { styles } from '../styles';
 import type { AddressData } from '../address/AddressForm';
 import type { CartItem } from '@/types/cart';
@@ -11,6 +12,8 @@ interface OrderScreenProps {
   orderId: string;
   subtotal: number;
   shipping: number;
+  /** Quando false, oculta linha/endereço de entrega (carrinho só com programs/services). */
+  showShipping?: boolean;
   addressData: AddressData;
   cartItems: CartItem[];
   onViewProgram?: (itemId: string) => void;
@@ -22,6 +25,7 @@ const OrderScreen: React.FC<OrderScreenProps> = ({
   orderId,
   subtotal,
   shipping,
+  showShipping = true,
   addressData,
   cartItems,
   onViewProgram,
@@ -29,7 +33,7 @@ const OrderScreen: React.FC<OrderScreenProps> = ({
   onHomePress,
 }) => {
   const { t } = useTranslation();
-  const total = subtotal + shipping;
+  const total = subtotal + (showShipping ? shipping : 0);
 
   const formatRating = (rating: number | undefined | null): string => {
     if (rating === undefined || rating === null || isNaN(Number(rating))) {
@@ -79,54 +83,57 @@ const OrderScreen: React.FC<OrderScreenProps> = ({
     return null;
   };
 
-  const renderOrderItem = (item: CartItem) => (
-    <View key={item.id} style={styles.orderItemCard}>
-      <Image source={{ uri: item.image }} style={styles.orderItemImage} />
+  const renderOrderItem = (item: CartItem) => {
+    const tagLabels = catalogTypeTranslatedBadgeLabels(item.type, t);
+    return (
+      <View key={item.id} style={styles.orderItemCard}>
+        <Image source={{ uri: item.image }} style={styles.orderItemImage} />
 
-      <View style={styles.orderItemContent}>
-        <View style={styles.orderItemHeader}>
-          <View style={styles.orderItemTags}>
-            {item.tags?.map((tag, index) => (
-              <View key={index} style={styles.orderItemTag}>
-                <Text style={styles.orderItemTagText}>{tag}</Text>
-              </View>
-            ))}
-          </View>
-          {item.rating !== undefined && item.rating !== null && (
-            <View style={styles.orderItemRating}>
-              <Text style={styles.orderItemRatingText}>{formatRating(item.rating)}</Text>
-              <Icon name='star' size={16} color='#001137' />
+        <View style={styles.orderItemContent}>
+          <View style={styles.orderItemHeader}>
+            <View style={styles.orderItemTags}>
+              {tagLabels.map((label, index) => (
+                <View key={`${label}-${index}`} style={styles.orderItemTag}>
+                  <Text style={styles.orderItemTagText}>{label}</Text>
+                </View>
+              ))}
             </View>
+            {item.rating !== undefined && item.rating !== null && (
+              <View style={styles.orderItemRating}>
+                <Text style={styles.orderItemRatingText}>{formatRating(item.rating)}</Text>
+                <Icon name='star' size={16} color='#001137' />
+              </View>
+            )}
+          </View>
+
+          <Text style={styles.orderItemTitle} numberOfLines={2}>
+            {item.title}
+          </Text>
+
+          {item.date && (
+            <Text style={styles.orderItemDate}>
+              {t('cart.date')}: {formatDateDisplay(item.date)}
+            </Text>
           )}
+
+          {item.deliveryForecast && (
+            <Text style={styles.orderItemDeliveryForecast}>
+              {t('checkout.deliveryForecast')}
+              {'\n'}
+              {formatDateDisplay(item.deliveryForecast, true)}
+            </Text>
+          )}
+
+          <View style={styles.orderItemFooter}>
+            <Text style={styles.orderItemPrice}>{formatPrice(item.price)}</Text>
+            <Text style={styles.orderItemQuantity}>QTD: {String(item.quantity).padStart(2, '0')}</Text>
+          </View>
+
+          {getItemActionButton(item)}
         </View>
-
-        <Text style={styles.orderItemTitle} numberOfLines={2}>
-          {item.title}
-        </Text>
-
-        {item.date && (
-          <Text style={styles.orderItemDate}>
-            {t('cart.date')}: {formatDateDisplay(item.date)}
-          </Text>
-        )}
-
-        {item.deliveryForecast && (
-          <Text style={styles.orderItemDeliveryForecast}>
-            {t('checkout.deliveryForecast')}
-            {'\n'}
-            {formatDateDisplay(item.deliveryForecast, true)}
-          </Text>
-        )}
-
-        <View style={styles.orderItemFooter}>
-          <Text style={styles.orderItemPrice}>{formatPrice(item.price)}</Text>
-          <Text style={styles.orderItemQuantity}>QTD: {String(item.quantity).padStart(2, '0')}</Text>
-        </View>
-
-        {getItemActionButton(item)}
       </View>
-    </View>
-  );
+    );
+  };
 
   return (
     <ScrollView
@@ -143,10 +150,12 @@ const OrderScreen: React.FC<OrderScreenProps> = ({
             <Text style={styles.summaryLabel}>{t('cart.subtotal')}</Text>
             <Text style={styles.summaryValue}>{formatPrice(subtotal)}</Text>
           </View>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>{t('cart.shipping')}</Text>
-            <Text style={styles.summaryValue}>{formatPrice(shipping)}</Text>
-          </View>
+          {showShipping && (
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>{t('cart.shipping')}</Text>
+              <Text style={styles.summaryValue}>{formatPrice(shipping)}</Text>
+            </View>
+          )}
           <View style={styles.summaryRow}>
             <Text style={[styles.summaryLabel, styles.summaryTotalLabel]}>{t('cart.total')}</Text>
             <Text style={[styles.summaryValue, styles.summaryTotalValue]}>{formatPrice(total)}</Text>
@@ -154,23 +163,24 @@ const OrderScreen: React.FC<OrderScreenProps> = ({
         </View>
       </View>
 
-      {/* Delivery Address Section */}
-      <View style={styles.deliveryAddressCard}>
-        <Text style={styles.deliveryAddressTitle}>{t('checkout.deliveryAddress')}</Text>
-        <View style={styles.deliveryAddressContent}>
-          <Text style={styles.deliveryAddressText}>{addressData.fullName}</Text>
-          <Text style={styles.deliveryAddressText}>
-            {addressData.addressLine1}
-            {addressData.streetNumber ? `, ${addressData.streetNumber}` : ''}
-            {addressData.addressLine2 ? ` - ${addressData.addressLine2}` : ''}
-          </Text>
-          <Text style={styles.deliveryAddressText}>
-            {addressData.neighborhood} - {addressData.city} - {addressData.state}
-          </Text>
-          <Text style={styles.deliveryAddressText}>{addressData.zipCode}</Text>
-          <Text style={styles.deliveryAddressText}>{addressData.phone}</Text>
+      {showShipping && (
+        <View style={styles.deliveryAddressCard}>
+          <Text style={styles.deliveryAddressTitle}>{t('checkout.deliveryAddress')}</Text>
+          <View style={styles.deliveryAddressContent}>
+            <Text style={styles.deliveryAddressText}>{addressData.fullName}</Text>
+            <Text style={styles.deliveryAddressText}>
+              {addressData.addressLine1}
+              {addressData.streetNumber ? `, ${addressData.streetNumber}` : ''}
+              {addressData.addressLine2 ? ` - ${addressData.addressLine2}` : ''}
+            </Text>
+            <Text style={styles.deliveryAddressText}>
+              {addressData.neighborhood} - {addressData.city} - {addressData.state}
+            </Text>
+            <Text style={styles.deliveryAddressText}>{addressData.zipCode}</Text>
+            <Text style={styles.deliveryAddressText}>{addressData.phone}</Text>
+          </View>
         </View>
-      </View>
+      )}
 
       {/* Your Products Section */}
       <Text style={styles.yourProductsTitle}>{t('cart.yourProducts')}</Text>

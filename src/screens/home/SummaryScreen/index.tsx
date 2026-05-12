@@ -13,6 +13,7 @@ import {
   useMenuItems,
   useCategoryDisplayLabel,
   useSolutions,
+  useSessionTokenReady,
 } from '@/hooks';
 import { useFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
@@ -47,6 +48,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   const { homeCarouselOptions } = useSolutions();
   const insets = useSafeAreaInsets();
   const rootNavigation = navigation.getParent() ?? navigation;
+  const hasSessionToken = useSessionTokenReady();
   const [userAvatarUri, setUserAvatarUri] = useState<string | null>(null);
   const [isProfileMenuVisible, setIsProfileMenuVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -112,7 +114,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   // }, []);
 
   const { filteredJoinCommunities, loading: _communitiesLoading } = useCommunities({
-    enabled: true,
+    enabled: hasSessionToken,
     pageSize: 20,
     params: {
       sortBy: 'createdAt',
@@ -124,11 +126,16 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
     getCategoryName,
   });
 
-  const { allCategoryOptions, categories } = useCategories({ enabled: true });
+  const { allCategoryOptions, categories } = useCategories({ enabled: hasSessionToken });
   const [popularProviders, setPopularProviders] = useState<Provider[]>([]);
   const [_loadingProviders, setLoadingProviders] = useState(false);
 
   useEffect(() => {
+    if (!hasSessionToken) {
+      setPopularProviders([]);
+      return;
+    }
+
     const loadProviders = async () => {
       try {
         setLoadingProviders(true);
@@ -155,17 +162,17 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
       }
     };
     loadProviders();
-  }, []);
+  }, [hasSessionToken]);
 
   const { products: recommendedProducts } = useSuggestedProducts({
     ...SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS,
-    enabled: true,
+    enabled: hasSessionToken,
     categoryId: selectedCategoryId ?? null,
   });
 
   const { products: suggestedPrograms } = useSuggestedProducts({
     ...SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS,
-    enabled: true,
+    enabled: hasSessionToken,
     categoryId: selectedCategoryId ?? null,
     type: PRODUCT_CATALOG_TYPE.PROGRAM,
   });

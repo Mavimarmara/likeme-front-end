@@ -17,6 +17,5 @@ export const mapProductToCartItem = (product: ApiProduct): CartItem => {
     type: product.type,
     categoryId: product.categoryId,
     category: product.type === PRODUCT_CATALOG_TYPE.PROGRAM ? 'Programs' : 'Product',
-    tags: product.type ? [product.type] : [],
   };
 };
