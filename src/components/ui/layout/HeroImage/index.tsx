@@ -32,7 +32,7 @@ const HeroImage = ({
 }: HeroImageProps) => {
   const source = useMemo(() => ({ uri: imageUri || DEFAULT_IMAGE_URI }), [imageUri]);
 
-  const profileMode = !children && !cardContent && name != null;
+  const profileMode = !children && !cardContent;
   const customOverlay = Boolean(children);
   const cardMode = Boolean(cardContent);
 
@@ -73,22 +73,20 @@ const HeroImage = ({
               </View>
             )}
             <View style={styles.content} onLayout={handleOverlayContentLayout}>
-              {profileMode && (
-                <>
-                  {badges.length > 0 && (
-                    <View style={styles.badgesContainer}>
-                      {badges.map((badge, index) => (
-                        <View key={index} style={styles.badge}>
-                          <Text style={styles.badgeText}>{badge}</Text>
-                        </View>
-                      ))}
-                    </View>
-                  )}
-                  {title ? <Text style={styles.title}>{title}</Text> : null}
-                  <Text style={styles.name}>{name}</Text>
-                  {footer != null ? <View style={styles.footer}>{footer}</View> : <View style={styles.footer} />}
-                </>
-              )}
+              <>
+                {badges.length > 0 && (
+                  <View style={styles.badgesContainer}>
+                    {badges.map((badge, index) => (
+                      <View key={index} style={styles.badge}>
+                        <Text style={styles.badgeText}>{badge}</Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
+                {title ? <Text style={styles.title}>{title}</Text> : null}
+                <Text style={styles.name}>{name}</Text>
+                {footer != null ? <View style={styles.footer}>{footer}</View> : <View style={styles.footer} />}
+              </>
               {customOverlay && children}
             </View>
           </View>

@@ -23,6 +23,32 @@ export const styles = StyleSheet.create({
     paddingHorizontal: SPACING.MD,
     paddingTop: SPACING.LG,
   },
+  heroContent: {
+    width: '100%',
+    paddingBottom: 30,
+  },
+  heroTextGroup: {
+    gap: SPACING.MD,
+  },
+  heroTitle: {
+    fontFamily: 'DM Sans',
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  heroName: {
+    fontFamily: 'DM Sans',
+    fontSize: 24,
+    fontWeight: '400',
+    lineHeight: 24,
+    color: '#FFFFFF',
+  },
+  heroDocuments: {
+    fontFamily: 'DM Sans',
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#FFFFFF',
+  },
   tabsContainer: {
     marginBottom: SPACING.LG,
   },

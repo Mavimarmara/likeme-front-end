@@ -118,9 +118,10 @@ describe('floatingMenuRoutePolicy', () => {
   });
 
   describe('telas sem menu por rota', () => {
-    it('ProviderProfile não está em ROUTES_SHOW_MENU', () => {
+    it('ProviderProfile permite overlay com aba marketplace selecionada', () => {
       const state = makeStack(0, ['ProviderProfile']);
-      expect(shouldShowFloatingMenuByRoute(state)).toBe(false);
+      expect(shouldShowFloatingMenuByRoute(state)).toBe(true);
+      expect(getSelectedIdFromRoute('ProviderProfile')).toBe('marketplace');
     });
 
     it('Checkout não está em ROUTES_SHOW_MENU', () => {

@@ -7,7 +7,7 @@ import { ToggleTabs } from '@/components/ui/tabs';
 import { IconButton, SecondaryButton } from '@/components/ui/buttons';
 import { JoinCard, type JoinCardItem } from '@/components/ui/cards';
 import { AdsList } from '@/components/sections/marketplace';
-import { useAdvertiser, useProviderAds, useCommunities, useFeatureFlag } from '@/hooks';
+import { useAdvertiser, useProviderAds, useCommunities, useFeatureFlag, useMenuItems } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import type { RootStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
@@ -15,8 +15,10 @@ import { styles } from './styles';
 import { communityService, advertiserService } from '@/services';
 import type { AdvertiserProfile } from '@/types/ad';
 import { FEATURE_FLAGS } from '@/constants';
+import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { logger } from '@/utils/logger';
 import { buildAdvertiserContactButtons, type AdvertiserContactButton } from '@/utils/advertiser/contactButtons';
+import { formatAdvertiserDocumentsLine } from '@/utils/advertiser/documents';
 
 type ProviderProfileScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'ProviderProfile'>;
@@ -41,6 +43,8 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
   const { t } = useTranslation();
   const { isEnabled: isChatEnabled } = useFeatureFlag(FEATURE_FLAGS.CHAT_ENABLED);
   const { providerId, provider: providerFromParams } = route.params;
+  const menuItems = useMenuItems(navigation);
+  useSetFloatingMenu(menuItems, 'marketplace');
   const [activeTab, setActiveTab] = useState<'about' | 'communities'>('about');
   const [_isFavorite, _setIsFavorite] = useState(false);
   const [expandedSectionIds, setExpandedSectionIds] = useState<Set<string>>(new Set());
@@ -134,6 +138,9 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
     () => profiles.find((profile) => profile.key === 'profile.positioning'),
     [profiles],
   );
+
+  const heroTitle = providerData?.description || undefined;
+  const documentsLine = useMemo(() => formatAdvertiserDocumentsLine(advertiser?.documents), [advertiser?.documents]);
 
   const visibleProfiles = useMemo(
     () =>
@@ -245,12 +252,15 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
       )}
       {providerData && (
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-          <HeroImage
-            imageUri={providerData.avatar}
-            name={providerData.name}
-            title={providerData.title || undefined}
-            badges={providerData.specialties}
-          />
+          <HeroImage imageUri={providerData.avatar} badges={[t('marketplace.specialistLabel')]}>
+            <View style={styles.heroContent}>
+              <View style={styles.heroTextGroup}>
+                {heroTitle ? <Text style={styles.heroTitle}>{heroTitle}</Text> : null}
+                <Text style={styles.heroName}>{providerData.name}</Text>
+                {documentsLine ? <Text style={styles.heroDocuments}>{documentsLine}</Text> : null}
+              </View>
+            </View>
+          </HeroImage>
           <View style={styles.content}>
             <View style={styles.tabsContainer}>
               <ToggleTabs

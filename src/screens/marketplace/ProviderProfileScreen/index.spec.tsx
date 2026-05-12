@@ -5,6 +5,33 @@ import ProviderProfileScreen from './index';
 
 const mockUseAdvertisers = jest.fn();
 
+jest.mock('@/contexts/FloatingMenuContext', () => ({
+  useSetFloatingMenu: jest.fn(),
+}));
+
+jest.mock('@/hooks/i18n', () => ({
+  useTranslation: () => ({
+    t: (key: string, opts?: { provider?: string }) => {
+      if (key === 'marketplace.talkToProvider') {
+        return `Talk to ${opts?.provider ?? ''}`;
+      }
+      const labels: Record<string, string> = {
+        'common.loading': 'Loading',
+        'common.error': 'Error',
+        'marketplace.providerNotFound': 'Provider not found',
+        'marketplace.about': 'About',
+        'marketplace.myCommunities': 'My communities',
+        'marketplace.allProducts': 'All products',
+        'marketplace.curatedSpecialty': 'Curated specialty',
+        'marketplace.specialistLabel': 'Specialist',
+        'marketplace.chatInitialMessage': 'Hi',
+        'home.joinCommunityError': 'Join error',
+      };
+      return labels[key] ?? key;
+    },
+  }),
+}));
+
 jest.mock('react-native-safe-area-context', () => {
   const ReactNative = require('react-native');
   return {
@@ -32,13 +59,12 @@ jest.mock('@/components/ui/layout', () => {
   return {
     Header,
     Background: () => null,
-    HeroImage: ({ name, title, badges = [], ...rest }: any) => (
+    HeroImage: ({ badges = [], children, ...rest }: any) => (
       <View testID='hero-image'>
-        {name != null && <Text>{name}</Text>}
-        {title != null && <Text>{title}</Text>}
         {(badges || []).map((b: string, i: number) => (
           <Text key={i}>{b}</Text>
         ))}
+        {children}
       </View>
     ),
     ScreenWithHeader: ({ children, headerProps }: any) => (
@@ -81,8 +107,9 @@ jest.mock('@/components/ui/tabs', () => {
 });
 
 jest.mock('@/components/ui/buttons', () => {
-  const { TouchableOpacity, Text } = require('react-native');
+  const { TouchableOpacity, Text, View } = require('react-native');
   return {
+    IconButton: () => <View testID='icon-button' />,
     SecondaryButton: ({ label, onPress }: any) => (
       <TouchableOpacity onPress={onPress} testID={`button-${label}`}>
         <Text>{label}</Text>
@@ -144,6 +171,7 @@ jest.mock('@/hooks', () => ({
   }),
   useCategories: () => ({ categories: [] }),
   useFeatureFlag: () => ({ isEnabled: true, isLoading: false }),
+  useMenuItems: () => [],
 }));
 
 jest.mock('@/services', () => ({
@@ -215,13 +243,13 @@ describe('ProviderProfileScreen', () => {
   });
 
   it('renders correctly with provider data', () => {
-    const { getByText } = render(<ProviderProfileScreen navigation={mockNavigation} route={mockRouteWithProvider} />);
+    const { getByText, getAllByText } = render(
+      <ProviderProfileScreen navigation={mockNavigation} route={mockRouteWithProvider} />,
+    );
 
     expect(getByText('Dr. Avery Parker')).toBeTruthy();
-    expect(getByText('Therapist & Wellness Coach')).toBeTruthy();
-    expect(getByText('Mental Health')).toBeTruthy();
-    expect(getByText('Wellness Coaching')).toBeTruthy();
-    expect(getByText('Therapy')).toBeTruthy();
+    expect(getAllByText('Specialized in mental health and wellness coaching.').length).toBeGreaterThanOrEqual(1);
+    expect(getByText('Specialist')).toBeTruthy();
   });
 
   it('renders correctly with default provider data when not provided', () => {
@@ -267,6 +295,5 @@ describe('ProviderProfileScreen', () => {
     const { getByText } = render(<ProviderProfileScreen navigation={mockNavigation} route={routeWithoutAvatar} />);
 
     expect(getByText('Dr. Test')).toBeTruthy();
-    expect(getByText('Test Title')).toBeTruthy();
   });
 });

@@ -13,9 +13,18 @@ export interface Advertiser {
   contactPhone?: string;
   website?: string;
   contacts?: Contact[];
+  documents?: AdvertiserDocument[];
   status: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export type AdvertiserDocumentType = 'crm' | 'rqe';
+
+export interface AdvertiserDocument {
+  id?: string;
+  type: AdvertiserDocumentType;
+  value: string;
 }
 
 export interface Ad {
