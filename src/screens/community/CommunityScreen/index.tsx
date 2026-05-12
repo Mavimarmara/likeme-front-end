@@ -255,12 +255,12 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     [t],
   );
 
-  const aboutBody = useMemo(() => rawCommunities[0]?.description?.trim() ?? '', [rawCommunities]);
+  const aboutDescription = primaryCommunity?.description ?? '';
 
   const agreementLines = useMemo(() => {
-    const body = t('community.agreementsBody');
+    const body = primaryCommunity?.agreement ?? '';
     return body.split('\n').filter((line) => line.trim().length > 0);
-  }, [t]);
+  }, [primaryCommunity?.agreement]);
 
   const specialistData: CommunityDescriptionSpecialist | null = useMemo(() => {
     if (!advertiser) return null;
@@ -268,8 +268,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     if (!advertiserName) return null;
     return {
       name: advertiserName,
-      subtitle: t('community.specialistLabel'),
-      rating: 5,
+      subtitle: advertiser.description?.trim() || t('community.specialistLabel'),
       tags: [],
       avatarUri: advertiser.logo ?? undefined,
     };
@@ -291,8 +290,8 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
         </View>
         {activeInfoTab === 'about' ? (
           <View style={styles.tabContent}>
-            {aboutBody.length > 0 ? (
-              <Text style={styles.aboutBodyText}>{aboutBody}</Text>
+            {aboutDescription.trim().length > 0 ? (
+              <Text style={styles.aboutBodyText}>{aboutDescription}</Text>
             ) : (
               <Text style={styles.aboutBodyText}>{t('community.aboutEmpty')}</Text>
             )}
@@ -326,7 +325,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
       t,
       communityInfoTabOptions,
       activeInfoTab,
-      aboutBody,
+      aboutDescription,
       agreementLines,
       communityTermsAccepted,
       toggleCommunityTermsAccepted,

@@ -88,6 +88,8 @@ export interface Community {
   communityId: string;
   displayName: string;
   description?: string;
+  /** Texto de acordo/termos da comunidade (campo `community.agreement` no backend). */
+  agreement?: string | null;
   avatarFileId?: string;
   /** URL resolvida no backend (`fileUrl` cruzado com `avatarFileId`). */
   avatarUrl?: string;

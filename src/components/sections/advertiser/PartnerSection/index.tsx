@@ -1,13 +1,11 @@
 import React from 'react';
 import { Image, Text, View, type ImageStyle } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { styles } from './styles';
 
 type PartnerSectionProps = {
   name: string;
   avatar?: string;
-  rating?: number;
   specialistLabel: string;
   profileButtonLabel?: string;
   onPressProfile?: () => void;
@@ -16,7 +14,6 @@ type PartnerSectionProps = {
 export function PartnerSection({
   name,
   avatar,
-  rating,
   specialistLabel,
   profileButtonLabel,
   onPressProfile,
@@ -33,12 +30,6 @@ export function PartnerSection({
           <Text style={styles.name}>{name}</Text>
           <Text style={styles.role}>{specialistLabel}</Text>
         </View>
-        {rating != null && (
-          <View style={styles.rating}>
-            <Icon name='star' size={24} color='#FFB800' />
-            <Text style={styles.ratingText}>{String(rating)}</Text>
-          </View>
-        )}
       </View>
       {onPressProfile ? (
         <SecondaryButton

@@ -48,7 +48,6 @@ type ProductDetailsScreenProps = {
           name: string;
           avatar: string;
         };
-        rating?: number;
       };
     };
   };
@@ -103,13 +102,17 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     };
   }, [product, ad, t]);
 
-  const productTabContent = useMemo(
-    () => ({
-      about: [displayData?.description?.trim(), product?.targetAudience?.trim()].filter(Boolean).join('\n\n'),
+  const productTabContent = useMemo(() => {
+    const rawDescription = displayData?.description ?? '';
+    const audience = product?.targetAudience?.trim() ?? '';
+    const aboutParts: string[] = [];
+    if (rawDescription.length > 0) aboutParts.push(rawDescription);
+    if (audience.length > 0) aboutParts.push(audience);
+    return {
+      about: aboutParts.join('\n\n'),
       agreements: product?.technicalSpecifications?.trim() ?? '',
-    }),
-    [displayData?.description, product?.targetAudience, product?.technicalSpecifications],
-  );
+    };
+  }, [displayData?.description, product?.targetAudience, product?.technicalSpecifications]);
 
   const isProgramProduct = product?.type === PRODUCT_CATALOG_TYPE.PROGRAM;
 
@@ -146,27 +149,23 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
         avatar: source.logo ?? '',
         description: source.description ?? '',
         title: '' as string,
-        rating: undefined as number | undefined,
         specialties: [] as string[],
       };
     }
     const productWithProvider = product as {
       provider?: { name?: string; avatar?: string; title?: string; description?: string; specialties?: string[] };
-      rating?: number;
     };
     const fromParams = route.params?.product?.provider as
       | { name?: string; avatar?: string; title?: string; description?: string; specialties?: string[] }
       | undefined;
     const fromProduct = productWithProvider?.provider;
     const p = fromParams || fromProduct;
-    const rating = route.params?.product?.rating ?? productWithProvider?.rating;
     return {
       id: advertiserId ?? product?.id ?? route.params?.productId ?? '',
       name: p?.name ?? '',
       avatar: p?.avatar ?? '',
       description: p?.description ?? '',
       title: p?.title ?? '',
-      rating,
       specialties: p?.specialties ?? [],
     };
   }, [ad?.advertiser, advertiserId, product, route.params?.product]);
@@ -340,14 +339,15 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
               <>
                 <View style={styles.contentCard}>
                   {isProgramProduct && hasSpecialistPartner ? (
-                    <PartnerSection
-                      name={partnerData.name}
-                      avatar={partnerData.avatar}
-                      rating={partnerData.rating}
-                      specialistLabel={partnerData.description?.trim() || t('marketplace.specialistLabel')}
-                      profileButtonLabel={t('marketplace.seePartnerProfile')}
-                      onPressProfile={handleSeeProviderProfile}
-                    />
+                    <View style={styles.partnerSectionAbovePrice}>
+                      <PartnerSection
+                        name={partnerData.name}
+                        avatar={partnerData.avatar}
+                        specialistLabel={partnerData.description?.trim() || t('marketplace.specialistLabel')}
+                        profileButtonLabel={t('marketplace.seePartnerProfile')}
+                        onPressProfile={handleSeeProviderProfile}
+                      />
+                    </View>
                   ) : null}
                   {productTabOptions.length > 0 && (
                     <View style={styles.tabsContainerInCard}>
@@ -374,13 +374,12 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                   ) : null}
                   {!isProgramProduct && hasSpecialistPartner ? (
                     <View style={styles.partnerSectionAbovePrice}>
-                      {displayData.description?.trim() ? (
-                        <Text style={styles.descriptionText}>{displayData.description.trim()}</Text>
+                      {displayData.description != null && displayData.description.length > 0 ? (
+                        <Text style={styles.descriptionText}>{displayData.description}</Text>
                       ) : null}
                       <PartnerSection
                         name={partnerData.name}
                         avatar={partnerData.avatar}
-                        rating={partnerData.rating}
                         specialistLabel={partnerData.description?.trim() || t('marketplace.specialistLabel')}
                       />
                     </View>
@@ -517,7 +516,12 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
         <View style={styles.tabContent}>
           {agreementLines.length > 0 ? (
             <View style={styles.descriptionContainer}>
-              <Text style={styles.descriptionText}>{agreementLines.map((line) => line.trim()).join('\n')}</Text>
+              {agreementLines.map((line, index) => (
+                <View key={index} style={styles.descriptionItem}>
+                  <View style={styles.bulletPoint} />
+                  <Text style={styles.descriptionText}>{line.trim()}</Text>
+                </View>
+              ))}
             </View>
           ) : null}
           <View style={styles.programAgreementsCheckboxRow}>
@@ -545,7 +549,12 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     return (
       <View style={styles.tabContent}>
         <View style={styles.descriptionContainer}>
-          <Text style={styles.descriptionText}>{tabLines.map((line) => line.trim()).join('\n')}</Text>
+          {tabLines.map((line, index) => (
+            <View key={index} style={styles.descriptionItem}>
+              <View style={styles.bulletPoint} />
+              <Text style={styles.descriptionText}>{line.trim()}</Text>
+            </View>
+          ))}
         </View>
       </View>
     );

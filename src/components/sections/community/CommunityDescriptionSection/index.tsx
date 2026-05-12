@@ -12,7 +12,6 @@ export type CommunityDescriptionVariant = 'feed' | 'solutions';
 export type CommunityDescriptionSpecialist = {
   name: string;
   subtitle?: string;
-  rating?: number;
   tags?: string[];
   avatarUri?: string | null;
 };
@@ -42,7 +41,6 @@ const CommunityDescriptionSection: React.FC<CommunityDescriptionSectionProps> = 
         <PartnerSection
           name={specialist.name}
           avatar={specialist.avatarUri ?? undefined}
-          rating={specialist.rating}
           specialistLabel={specialist.subtitle?.trim() || t('community.specialistLabel')}
         />
       </View>

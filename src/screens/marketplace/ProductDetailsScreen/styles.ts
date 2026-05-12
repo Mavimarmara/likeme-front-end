@@ -1,7 +1,9 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, type TextStyle } from 'react-native';
 import { BORDER_RADIUS, COLORS, FLOATING_NAV_MENU_BAR_OFFSET, SPACING } from '@/constants';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+
+const textPreserveWhitespace: TextStyle = { whiteSpace: 'pre-wrap' } as TextStyle;
 
 export const styles = StyleSheet.create({
   container: {
@@ -294,6 +296,7 @@ export const styles = StyleSheet.create({
     color: '#666666',
     marginBottom: SPACING.LG,
     paddingHorizontal: SPACING.LG,
+    ...textPreserveWhitespace,
   },
   tabContent: {
     paddingHorizontal: SPACING.SM,
@@ -301,13 +304,28 @@ export const styles = StyleSheet.create({
   descriptionContainer: {
     gap: 8,
   },
+  descriptionItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  bulletPoint: {
+    width: 5,
+    height: 5,
+    borderRadius: 2.5,
+    backgroundColor: '#6e6a6a',
+    marginTop: 8.5,
+    flexShrink: 0,
+  },
   descriptionText: {
+    flex: 1,
     fontSize: 14,
     fontFamily: 'DM Sans',
     fontWeight: '400',
     color: '#6e6a6a',
     letterSpacing: 0.2,
     lineHeight: 22,
+    ...textPreserveWhitespace,
   },
   programAgreementsCheckboxRow: {
     marginTop: SPACING.LG,

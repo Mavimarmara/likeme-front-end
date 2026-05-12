@@ -38,18 +38,6 @@ export const styles = StyleSheet.create({
     letterSpacing: 0.2,
     lineHeight: 22,
   },
-  rating: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  ratingText: {
-    fontSize: 12,
-    fontFamily: 'DM Sans',
-    fontWeight: '500',
-    color: COLORS.NEUTRAL.LOW.PURE,
-    letterSpacing: 0.2,
-  },
   profileButton: {
     width: '100%',
     backgroundColor: 'rgba(240, 238, 225, 0.16)',

@@ -1,5 +1,7 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, type TextStyle } from 'react-native';
 import { COLORS, SPACING, BORDER_RADIUS } from '@/constants';
+
+const textPreserveWhitespace: TextStyle = { whiteSpace: 'pre-wrap' } as TextStyle;
 
 export const styles = StyleSheet.create({
   screenRoot: {
@@ -149,6 +151,7 @@ export const styles = StyleSheet.create({
     color: '#6e6a6a',
     lineHeight: 22,
     letterSpacing: 0.2,
+    ...textPreserveWhitespace,
   },
   toggleRow: {
     flexDirection: 'row',
