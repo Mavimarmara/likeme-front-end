@@ -82,7 +82,7 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
         scrollContentContainerStyle={styles.scrollContentContainer}
         includeBottomSafeAreaOnFooter={false}
         footer={
-          <View style={[styles.footer, bottomInset > 0 ? { paddingBottom: bottomInset } : null]}>
+          <View style={[styles.footer, bottomInset > 0 ? { paddingBottom: 0 } : null]}>
             <PrimaryButton label='Próximo' onPress={handleContinue} size='large' />
           </View>
         }

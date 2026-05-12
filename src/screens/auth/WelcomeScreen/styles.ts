@@ -9,10 +9,10 @@ export const styles = StyleSheet.create({
 
   scrollContentContainer: {
     flexGrow: 1,
-    width: 362,
+    width: '100%',
     alignSelf: 'center',
-    paddingTop: 60,
-    paddingVertical: SPACING.LG,
+    paddingTop: SPACING.XL,
+    paddingHorizontal: SPACING.XL,
   },
 
   main: {
@@ -82,7 +82,7 @@ export const styles = StyleSheet.create({
   inputSection: {
     flex: 1,
     justifyContent: 'flex-start',
-    marginTop: SPACING.XXL,
+    marginTop: SPACING.XL,
     width: '100%',
   },
 
@@ -98,6 +98,5 @@ export const styles = StyleSheet.create({
   footer: {
     width: '100%',
     paddingHorizontal: SPACING.MD,
-    paddingBottom: SPACING.XXL,
   },
 });
