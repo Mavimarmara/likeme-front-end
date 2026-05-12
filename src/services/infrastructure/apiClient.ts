@@ -67,12 +67,16 @@ class ApiClient {
 
   private async handleResponse<T>(response: Response): Promise<T> {
     if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const serverMessage =
+        (typeof errorData.message === 'string' && errorData.message.trim() ? errorData.message.trim() : '') ||
+        (typeof errorData.error === 'string' && errorData.error.trim() ? errorData.error.trim() : '');
+
       if (response.status === 401) {
-        throw new Error('Sessão expirada. Faça login novamente.');
+        throw new Error(serverMessage || 'Sessão expirada. Faça login novamente.');
       }
 
-      const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.message || errorData.error || `HTTP error! status: ${response.status}`;
+      const errorMessage = serverMessage || `HTTP error! status: ${response.status}`;
       const error: ApiError = {
         message: errorMessage,
         status: response.status,

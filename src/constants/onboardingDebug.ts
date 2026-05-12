@@ -5,4 +5,4 @@
  * estiver `true`.
  * Manter `false` em commits e builds de release.
  */
-export const FORCE_START_ONBOARDING_LOCALLY = true;
+export const FORCE_START_ONBOARDING_LOCALLY = false;
