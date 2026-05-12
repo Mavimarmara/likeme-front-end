@@ -9,9 +9,8 @@ type PartnerSectionProps = {
   avatar?: string;
   rating?: number;
   specialistLabel: string;
-  profileButtonLabel: string;
-  onPressProfile: () => void;
-  showButton?: boolean;
+  profileButtonLabel?: string;
+  onPressProfile?: () => void;
 };
 
 export function PartnerSection({
@@ -21,7 +20,6 @@ export function PartnerSection({
   specialistLabel,
   profileButtonLabel,
   onPressProfile,
-  showButton = true,
 }: PartnerSectionProps) {
   return (
     <View style={styles.container}>
@@ -42,14 +40,14 @@ export function PartnerSection({
           </View>
         )}
       </View>
-      {showButton && (
+      {onPressProfile ? (
         <SecondaryButton
-          label={profileButtonLabel}
+          label={profileButtonLabel ?? ''}
           onPress={onPressProfile}
           style={styles.profileButton}
           size='large'
         />
-      )}
+      ) : null}
     </View>
   );
 }

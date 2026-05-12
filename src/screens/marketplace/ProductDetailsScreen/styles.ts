@@ -301,21 +301,7 @@ export const styles = StyleSheet.create({
   descriptionContainer: {
     gap: 8,
   },
-  descriptionItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 12,
-  },
-  bulletPoint: {
-    width: 5,
-    height: 5,
-    borderRadius: 2.5,
-    backgroundColor: '#6e6a6a',
-    marginTop: 8.5,
-    flexShrink: 0,
-  },
   descriptionText: {
-    flex: 1,
     fontSize: 14,
     fontFamily: 'DM Sans',
     fontWeight: '400',

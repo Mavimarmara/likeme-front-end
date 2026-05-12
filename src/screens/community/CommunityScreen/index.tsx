@@ -1,9 +1,14 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { View, ScrollView, Text, NativeSyntheticEvent, NativeScrollEvent, Switch, Alert } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import { SocialList, ShoppingList, EventBanner, CommunityDescriptionSection } from '@/components/sections/community';
+import {
+  SocialList,
+  ShoppingList,
+  EventBanner,
+  CommunityDescriptionSection,
+  type CommunityDescriptionSpecialist,
+} from '@/components/sections/community';
 import { styles as socialListStyles } from '@/components/sections/community/SocialList/styles';
-import type { SpecialistCardProps } from '@/components/sections/community/SpecialistCard';
 import { Product } from '@/components/sections/product';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
 import { GradientBackground, HeroImage, ScreenWithHeader } from '@/components/ui/layout';
@@ -257,7 +262,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     return body.split('\n').filter((line) => line.trim().length > 0);
   }, [t]);
 
-  const specialistData: SpecialistCardProps | null = useMemo(() => {
+  const specialistData: CommunityDescriptionSpecialist | null = useMemo(() => {
     if (!advertiser) return null;
     const advertiserName = advertiser.name?.trim();
     if (!advertiserName) return null;

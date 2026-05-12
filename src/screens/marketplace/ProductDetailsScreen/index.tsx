@@ -344,7 +344,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                       name={partnerData.name}
                       avatar={partnerData.avatar}
                       rating={partnerData.rating}
-                      specialistLabel={t('marketplace.specialistLabel')}
+                      specialistLabel={partnerData.description?.trim() || t('marketplace.specialistLabel')}
                       profileButtonLabel={t('marketplace.seePartnerProfile')}
                       onPressProfile={handleSeeProviderProfile}
                     />
@@ -381,10 +381,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                         name={partnerData.name}
                         avatar={partnerData.avatar}
                         rating={partnerData.rating}
-                        specialistLabel={t('marketplace.specialistLabel')}
-                        profileButtonLabel={t('marketplace.seePartnerProfile')}
-                        onPressProfile={handleSeeProviderProfile}
-                        showButton={false}
+                        specialistLabel={partnerData.description?.trim() || t('marketplace.specialistLabel')}
                       />
                     </View>
                   ) : null}
@@ -520,12 +517,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
         <View style={styles.tabContent}>
           {agreementLines.length > 0 ? (
             <View style={styles.descriptionContainer}>
-              {agreementLines.map((line, index) => (
-                <View key={index} style={styles.descriptionItem}>
-                  <View style={styles.bulletPoint} />
-                  <Text style={styles.descriptionText}>{line.trim()}</Text>
-                </View>
-              ))}
+              <Text style={styles.descriptionText}>{agreementLines.map((line) => line.trim()).join('\n')}</Text>
             </View>
           ) : null}
           <View style={styles.programAgreementsCheckboxRow}>
@@ -553,12 +545,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     return (
       <View style={styles.tabContent}>
         <View style={styles.descriptionContainer}>
-          {tabLines.map((line, index) => (
-            <View key={index} style={styles.descriptionItem}>
-              <View style={styles.bulletPoint} />
-              <Text style={styles.descriptionText}>{line.trim()}</Text>
-            </View>
-          ))}
+          <Text style={styles.descriptionText}>{tabLines.map((line) => line.trim()).join('\n')}</Text>
         </View>
       </View>
     );

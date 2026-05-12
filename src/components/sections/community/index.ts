@@ -1,8 +1,6 @@
 export { default as EventBanner } from './EventBanner';
 export type { EventBannerData, EventBannerStatus } from '@/types/event';
 export { default as CommunityIntroSection } from './CommunityIntroSection';
-export { default as SpecialistCard } from './SpecialistCard';
-export type { SpecialistCardProps } from './SpecialistCard';
 export { default as NextEventsSection } from './NextEventsSection';
 export { default as PopularProvidersSection, type Provider } from './PopularProvidersSection';
 export { default as YourCommunitiesSection, type YourCommunity } from './YourCommunitiesSection';
@@ -14,6 +12,7 @@ export { default as CommentReactions } from './CommentReactions';
 export {
   default as CommunityDescriptionSection,
   type CommunityDescriptionSectionProps,
+  type CommunityDescriptionSpecialist,
   type CommunityDescriptionVariant,
 } from './CommunityDescriptionSection';
 export { default as SocialList } from './SocialList';

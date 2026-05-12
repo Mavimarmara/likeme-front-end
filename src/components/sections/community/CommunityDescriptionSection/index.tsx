@@ -1,16 +1,25 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { CTACard } from '@/components/ui/cards';
-import SpecialistCard, { type SpecialistCardProps } from '../SpecialistCard';
+import { PartnerSection } from '@/components/sections/advertiser';
 import { COLORS } from '@/constants';
 import { useTranslation } from '@/hooks/i18n';
 import { styles } from './styles';
 
 export type CommunityDescriptionVariant = 'feed' | 'solutions';
 
+/** Dados do parceiro/especialista exibidos acima do feed (alinhado ao que o PartnerSection consome). */
+export type CommunityDescriptionSpecialist = {
+  name: string;
+  subtitle?: string;
+  rating?: number;
+  tags?: string[];
+  avatarUri?: string | null;
+};
+
 export type CommunityDescriptionSectionProps = {
   variant: CommunityDescriptionVariant;
-  specialist?: SpecialistCardProps | null;
+  specialist?: CommunityDescriptionSpecialist | null;
   welcomeDismissed?: boolean;
   onWelcomeClose?: () => void;
   shoppingTipDismissed?: boolean;
@@ -30,12 +39,11 @@ const CommunityDescriptionSection: React.FC<CommunityDescriptionSectionProps> = 
   const specialistBlock =
     specialist != null ? (
       <View style={styles.specialistBlock}>
-        <SpecialistCard
+        <PartnerSection
           name={specialist.name}
-          subtitle={specialist.subtitle}
+          avatar={specialist.avatarUri ?? undefined}
           rating={specialist.rating}
-          tags={specialist.tags}
-          avatarUri={specialist.avatarUri}
+          specialistLabel={specialist.subtitle?.trim() || t('community.specialistLabel')}
         />
       </View>
     ) : null;

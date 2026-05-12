@@ -29,5 +29,8 @@ export const styles = StyleSheet.create({
   shoppingTipDescriptionBold: {
     fontWeight: '700',
   },
-  specialistBlock: {},
+  specialistBlock: {
+    paddingHorizontal: SPACING.MD,
+    paddingBottom: SPACING.MD,
+  },
 });
