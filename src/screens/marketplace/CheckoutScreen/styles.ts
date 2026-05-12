@@ -427,17 +427,6 @@ export const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#FFFFFF',
   },
-  orderItemRating: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  orderItemRatingText: {
-    fontSize: FONT_SIZES.XS,
-    fontFamily: 'DM Sans',
-    fontWeight: '400',
-    color: '#001137',
-  },
   orderItemTitle: {
     fontSize: FONT_SIZES.SM,
     fontFamily: 'DM Sans',

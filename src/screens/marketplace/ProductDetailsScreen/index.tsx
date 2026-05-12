@@ -482,9 +482,6 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
               },
             });
           }}
-          onProductLike={(p) =>
-            logSelectContent({ content_type: 'product_like', item_id: p.id, screen_name: 'product_details' })
-          }
         />
       </View>
     );

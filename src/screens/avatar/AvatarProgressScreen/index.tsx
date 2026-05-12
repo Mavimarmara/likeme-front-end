@@ -243,10 +243,6 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
     } as never);
   };
 
-  const handleProductLike = (product: Product) => {
-    logger.debug('[AvatarProgressScreen] product like (stub)', { productId: product.id });
-  };
-
   const handleJoinCommunityPress = (community: JoinCardItem) => {
     rootNavigation.navigate('Community' as never);
   };
@@ -502,7 +498,6 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
                 subtitle={t('home.discoverProducts')}
                 products={recommendedProducts}
                 onProductPress={handleProductPress}
-                onProductLike={handleProductLike}
               />
             </View>
           )}

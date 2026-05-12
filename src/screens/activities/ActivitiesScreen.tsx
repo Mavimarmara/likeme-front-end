@@ -757,7 +757,6 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation, route }
                     subtitle={t('activities.discoverOptions')}
                     plans={plans}
                     onPlanPress={(plan) => logger.debug('[ActivitiesScreen] plan press (stub)', { planId: plan.id })}
-                    onPlanLike={(plan) => logger.debug('[ActivitiesScreen] plan like (stub)', { planId: plan.id })}
                   />
                 </View>
               )}
@@ -772,9 +771,6 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation, route }
                         productId: product.id,
                       } as never);
                     }}
-                    onProductLike={(product) =>
-                      logger.debug('[ActivitiesScreen] product like (stub)', { productId: product.id })
-                    }
                   />
                 </View>
               )}

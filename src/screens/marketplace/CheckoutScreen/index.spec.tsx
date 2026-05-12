@@ -195,7 +195,6 @@ jest.mock('@/hooks', () => {
       subtitle: 'Description 1',
       price: 29.99,
       quantity: 2,
-      rating: 4.5,
     },
   ];
   return {
@@ -242,7 +241,6 @@ jest.mock('@/hooks', () => {
           subtitle: 'Description 1',
           price: 29.99,
           quantity: 2,
-          rating: 4.5,
         },
       ];
       return {
@@ -306,7 +304,6 @@ const mockCartItems = [
     subtitle: 'Description 1',
     price: 29.99,
     quantity: 2,
-    rating: 4.5,
     category: 'Product',
     subCategory: 'SubCategory',
   },

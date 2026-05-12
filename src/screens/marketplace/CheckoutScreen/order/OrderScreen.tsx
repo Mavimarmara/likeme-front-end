@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useTranslation } from '@/hooks/i18n';
 import { formatPrice } from '@/utils';
 import { catalogTypeTranslatedBadgeLabels } from '@/types/product';
@@ -34,13 +33,6 @@ const OrderScreen: React.FC<OrderScreenProps> = ({
 }) => {
   const { t } = useTranslation();
   const total = subtotal + (showShipping ? shipping : 0);
-
-  const formatRating = (rating: number | undefined | null): string => {
-    if (rating === undefined || rating === null || isNaN(Number(rating))) {
-      return '0.000';
-    }
-    return Number(rating).toFixed(3);
-  };
 
   const formatDateDisplay = (dateString?: string, includeYear = false): string => {
     if (!dateString) return '';
@@ -98,12 +90,6 @@ const OrderScreen: React.FC<OrderScreenProps> = ({
                 </View>
               ))}
             </View>
-            {item.rating !== undefined && item.rating !== null && (
-              <View style={styles.orderItemRating}>
-                <Text style={styles.orderItemRatingText}>{formatRating(item.rating)}</Text>
-                <Icon name='star' size={16} color='#001137' />
-              </View>
-            )}
           </View>
 
           <Text style={styles.orderItemTitle} numberOfLines={2}>
