@@ -21,8 +21,10 @@ jest.mock('@/i18n/hydration', () => ({
 jest.mock('@/assets/auth', () => {
   const React = require('react');
   const { View } = require('react-native');
+  const LogoPlaceholder = (props: any) => React.createElement(View, props);
   return {
-    PartialLogo: (props: any) => React.createElement(View, props),
+    PartialLogo: LogoPlaceholder,
+    PartialLogo3: LogoPlaceholder,
     GradientSplash7: 1,
     GradientSplash8: 2,
     GradientSplash9: 3,
