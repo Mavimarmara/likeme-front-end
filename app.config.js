@@ -166,7 +166,7 @@ module.exports = {
   expo: {
     name: 'LikeMe',
     slug: 'likeme-front-end',
-    version: '1.2.0',
+    version: '1.2.1',
     orientation: 'portrait',
     userInterfaceStyle: 'light',
     platforms: ['ios', 'android', 'web'],
@@ -242,7 +242,7 @@ module.exports = {
     },
     ios: {
       bundleIdentifier: 'app.likeme.com',
-      buildNumber: '3',
+      buildNumber: '4',
       // App é iPhone-only. No iPad, a Apple exibe em "iPhone compat mode"
       // (janela com proporção de iPhone, letterbox no iPad) — comportamento
       // esperado para apps iPhone-only, não é motivo de rejeição.
