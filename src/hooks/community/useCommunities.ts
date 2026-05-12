@@ -12,6 +12,7 @@ import type { CategoryName } from '@/types/category';
 import { PAGINATION } from '@/constants';
 import { logger } from '@/utils/logger';
 import { useEventList } from '@/hooks/event/useEventList';
+import { resolveCommunityHeroImageUri } from '@/utils/community/mappers';
 
 /** Formato do item exibido no JoinCard (ui/cards; comunidade recomendada) */
 export interface JoinCommunityItem {
@@ -21,7 +22,7 @@ export interface JoinCommunityItem {
   image: string;
 }
 
-const DEFAULT_COMMUNITY_IMAGE = 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800';
+const JOIN_CARD_IMAGE_FALLBACK = 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400';
 
 interface UseCommunitiesOptions {
   enabled?: boolean;
@@ -263,7 +264,7 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
         id: community.communityId,
         title: community.displayName,
         badge: category?.name ?? 'Community',
-        image: DEFAULT_COMMUNITY_IMAGE,
+        image: resolveCommunityHeroImageUri(community, communityFiles, JOIN_CARD_IMAGE_FALLBACK),
       };
     });
     if (list.length > 0 && (firstCardImageUrl != null || (getCategoryName != null && selectedCategoryName != null))) {
@@ -277,7 +278,7 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
       };
     }
     return list;
-  }, [communities, categories, selectedCategoryName, getCategoryName, firstCardImageUrl]);
+  }, [communities, categories, communityFiles, selectedCategoryName, getCategoryName, firstCardImageUrl]);
 
   const filteredJoinCommunities = useMemo((): JoinCommunityItem[] => {
     const base = solutionTab === 'all' || solutionTab === 'communities' ? joinCommunities : [];

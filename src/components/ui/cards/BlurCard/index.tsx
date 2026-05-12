@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { Image, StyleProp, TouchableOpacity, View, ViewStyle, LayoutChangeEvent } from 'react-native';
+import { Image, LayoutChangeEvent, StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { PlatformBlurView } from '@/components/ui/PlatformBlurView';
 import {
   styles,
