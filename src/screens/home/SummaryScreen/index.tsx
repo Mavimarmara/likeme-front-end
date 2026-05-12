@@ -277,10 +277,6 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
     } as never);
   };
 
-  const handleProductLike = (product: Product) => {
-    logger.debug('[SummaryScreen] product like (stub)', { productId: product.id });
-  };
-
   const handleProviderPress = (provider: Provider) => {
     rootNavigation.navigate('ProviderProfile', {
       providerId: provider.id,
@@ -450,7 +446,6 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
                       subtitle={t('home.discoverProducts')}
                       products={filteredProducts}
                       onProductPress={handleProductPress}
-                      onProductLike={handleProductLike}
                     />
                   </View>
                 </View>

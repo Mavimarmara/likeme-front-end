@@ -54,7 +54,6 @@ export const styles = StyleSheet.create({
     fontWeight: '400',
     color: '#6e6a6a',
     textAlign: 'center',
-    lineHeight: 22,
     letterSpacing: 0.2,
     width: 86,
     fontFamily: 'DM Sans',

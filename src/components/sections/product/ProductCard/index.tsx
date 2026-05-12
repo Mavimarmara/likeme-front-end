@@ -50,10 +50,12 @@ const ProductCard: React.FC<Props> = ({ product, onPress, onLike }) => {
   const footerSection = (
     <View style={styles.bottomInfo}>
       <Text style={styles.price}>{formatPrice(product.price)}</Text>
-      <TouchableOpacity style={styles.likeButton} onPress={() => onLike?.(product)} activeOpacity={0.7}>
-        <HeartSuggested width={20} height={20} />
-        <Text style={styles.likesCount}>{product.likes}</Text>
-      </TouchableOpacity>
+      {onLike && (
+        <TouchableOpacity style={styles.likeButton} onPress={() => onLike?.(product)} activeOpacity={0.7}>
+          <HeartSuggested width={20} height={20} />
+          <Text style={styles.likesCount}>{product.likes}</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 
