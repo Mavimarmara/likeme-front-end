@@ -1,5 +1,5 @@
 /**
- * Template versionado. `onboardingDebug.ts` é gitignored; `postinstall` copia este ficheiro
+ * Template versionado. `onboardingDebug.ts` está no gitignore; o `postinstall` copia este arquivo
  * quando `onboardingDebug.ts` não existe. Para forçar onboarding em dev, edite só
  * `onboardingDebug.ts` no disco (não commite).
  */
