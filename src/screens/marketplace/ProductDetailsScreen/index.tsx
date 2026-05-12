@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Image, type ImageStyle } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { HeroImage, ScreenWithHeader } from '@/components/ui/layout';
@@ -102,11 +102,19 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     };
   }, [product, ad, t]);
 
+  const isAmazonProduct = useMemo(() => {
+    if (!product) return false;
+    if (product.type === PRODUCT_CATALOG_TYPE.AMAZON) return true;
+    const url = (product.externalUrl ?? '').trim().toLowerCase();
+    return url.includes('amazon.');
+  }, [product]);
+
   const productTabContent = useMemo(() => {
     const rawDescription = displayData?.description ?? '';
+    const descriptionTrimmed = rawDescription.trim();
     const audience = product?.targetAudience?.trim() ?? '';
     const aboutParts: string[] = [];
-    if (rawDescription.length > 0) aboutParts.push(rawDescription);
+    if (descriptionTrimmed.length > 0) aboutParts.push(descriptionTrimmed);
     if (audience.length > 0) aboutParts.push(audience);
     return {
       about: aboutParts.join('\n\n'),
@@ -176,7 +184,9 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   }, [ad?.advertiser?.id, partnerData.name]);
 
   const usesPhysicalProductDetailLayout =
-    product?.type === PRODUCT_CATALOG_TYPE.PHYSICAL || product?.type === PRODUCT_CATALOG_TYPE.PROGRAM;
+    product?.type === PRODUCT_CATALOG_TYPE.PHYSICAL ||
+    product?.type === PRODUCT_CATALOG_TYPE.PROGRAM ||
+    product?.type === PRODUCT_CATALOG_TYPE.SERVICE;
 
   const quantityOptions = useMemo(() => {
     const maxQuantity = Math.max(1, Math.min(product?.quantity ?? 10, 10));
@@ -374,7 +384,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                   ) : null}
                   {!isProgramProduct && hasSpecialistPartner ? (
                     <View style={styles.partnerSectionAbovePrice}>
-                      {displayData.description != null && displayData.description.length > 0 ? (
+                      {(displayData.description ?? '').trim().length > 0 ? (
                         <Text style={styles.descriptionText}>{displayData.description}</Text>
                       ) : null}
                       <PartnerSection
@@ -413,17 +423,9 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
               </>
             ) : (
               <>
-                <Text style={styles.sectionTitle}>{displayData.title}</Text>
-                <Text style={styles.productDescription}>
-                  {displayData.description || t('marketplace.noDescriptionAvailable')}
-                </Text>
-                <View style={styles.productImageContainer}>
-                  <Image
-                    source={{ uri: backgroundImage }}
-                    style={styles.productImage as ImageStyle}
-                    resizeMode='contain'
-                  />
-                </View>
+                {(displayData.description ?? '').trim().length > 0 ? (
+                  <Text style={styles.productDescription}>{(displayData.description ?? '').trim()}</Text>
+                ) : null}
                 {renderInfoSection()}
                 {!displayData.isOutOfStock ? (
                   <View style={styles.addToCartSecondaryWrapper}>

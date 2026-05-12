@@ -39,6 +39,11 @@ jest.mock('@/components/ui/layout', () => {
   };
 });
 
+jest.mock('@/contexts/FloatingMenuContext', () => ({
+  useSetFloatingMenu: jest.fn(),
+  useIsFloatingMenuVisible: () => false,
+}));
+
 jest.mock('@/services', () => ({
   adService: {
     getAdById: jest.fn(),
@@ -84,6 +89,9 @@ describe('AffiliateProductScreen', () => {
   const mockNavigation = {
     navigate: jest.fn(),
     goBack: jest.fn(),
+    getParent: jest.fn(() => ({
+      navigate: jest.fn(),
+    })),
   };
 
   beforeEach(() => {

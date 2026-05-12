@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Linking, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -6,11 +6,14 @@ import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScreenWithHeader } from '@/components/ui/layout';
 import { MARKETPLACE_PRODUCT_PLACEHOLDER_IMAGE_URI } from '@/constants';
-import { useProductDetails } from '@/hooks';
+import { useMenuItems, useProductDetails } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import type { RootStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
+import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
+import { getProductModeTranslationKey } from '@/utils';
 import { logger } from '@/utils/logger';
+import { catalogTypeTranslatedBadgeLabels } from '@/types/product';
 import { styles } from './styles';
 
 type AffiliateProductScreenProps = {
@@ -53,6 +56,8 @@ function isAllowedAffiliateUrl(url: string): boolean {
 const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigation, route }) => {
   useAnalyticsScreen({ screenName: 'AffiliateProduct', screenClass: 'AffiliateProductScreen' });
   const { t } = useTranslation();
+  const menuItems = useMenuItems(navigation);
+  useSetFloatingMenu(menuItems, 'marketplace');
   const [activeTab, setActiveTab] = useState<TabType>('goal');
 
   const fallbackProduct = useMemo(() => {
@@ -109,6 +114,9 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
   const paramsProduct = route.params?.product;
   const displayTitle = ad?.product?.name || product?.name || paramsProduct?.title || 'Product';
   const displayDescription = ad?.product?.description || product?.description || paramsProduct?.description || '';
+  const displayGoal = (ad?.product?.targetAudience ?? product?.targetAudience ?? '').trim();
+  const displayComposition = (ad?.product?.technicalSpecifications ?? product?.technicalSpecifications ?? '').trim();
+  const displayDescriptionTrimmed = displayDescription.trim();
   const displayImage =
     product?.image || ad?.product?.image || paramsProduct?.image || MARKETPLACE_PRODUCT_PLACEHOLDER_IMAGE_URI;
 
@@ -120,55 +128,76 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
     return images;
   }, [displayImage]);
 
-  const productCategory = ad?.product?.type || product?.type || paramsProduct?.type || 'Product';
+  const heroBadges = useMemo(() => {
+    const catalogType = product?.type ?? ad?.product?.type ?? paramsProduct?.type;
+    const catalogBadges = catalogTypeTranslatedBadgeLabels(catalogType, t);
+    const modeTranslationKey = getProductModeTranslationKey(product ?? null);
+    const modeLabel = modeTranslationKey ? t(`marketplace.productMode.${modeTranslationKey}`).trim() : '';
+    return [...catalogBadges, modeLabel].filter(Boolean);
+  }, [product, ad?.product, paramsProduct?.type, t]);
 
-  const tabs = useMemo(
-    () => [
-      { id: 'goal' as TabType, label: t('marketplace.goal') },
-      { id: 'description' as TabType, label: t('marketplace.description') },
-      { id: 'composition' as TabType, label: t('marketplace.composition') },
-    ],
-    [t],
-  );
+  const tabs = useMemo(() => {
+    const all: { id: TabType; label: string; text: string }[] = [
+      { id: 'goal', label: t('marketplace.goal'), text: displayGoal },
+      { id: 'description', label: t('marketplace.description'), text: displayDescriptionTrimmed },
+      { id: 'composition', label: t('marketplace.composition'), text: displayComposition },
+    ];
+    return all.filter((tab) => tab.text.length > 0);
+  }, [t, displayGoal, displayDescriptionTrimmed, displayComposition]);
+
+  useEffect(() => {
+    if (tabs.length === 0) {
+      return;
+    }
+    if (!tabs.some((tab) => tab.id === activeTab)) {
+      setActiveTab(tabs[0].id);
+    }
+  }, [tabs, activeTab]);
+
+  const resolvedTabId = useMemo((): TabType | null => {
+    if (tabs.length === 0) return null;
+    return tabs.some((tab) => tab.id === activeTab) ? activeTab : tabs[0].id;
+  }, [tabs, activeTab]);
 
   const renderTabs = () => (
     <View style={styles.tabsContainer}>
       {tabs.map((tab) => (
         <TouchableOpacity
           key={tab.id}
-          style={[styles.tab, activeTab === tab.id && styles.tabActive]}
+          style={[styles.tab, resolvedTabId === tab.id && styles.tabActive]}
           onPress={() => setActiveTab(tab.id)}
           activeOpacity={0.7}
         >
-          <Text style={[styles.tabText, activeTab === tab.id && styles.tabTextActive]}>{tab.label}</Text>
+          <Text style={[styles.tabText, resolvedTabId === tab.id && styles.tabTextActive]}>{tab.label}</Text>
         </TouchableOpacity>
       ))}
     </View>
   );
 
   const renderTabContent = () => {
-    const descriptionLines = displayDescription
-      ? displayDescription.split('\n').filter((line) => line.trim().length > 0)
-      : [];
+    if (resolvedTabId == null) {
+      return null;
+    }
+    const active = tabs.find((tab) => tab.id === resolvedTabId);
+    const sourceText = active?.text ?? '';
+    const lines = sourceText.split('\n').filter((line) => line.trim().length > 0);
 
-    const renderDescriptionWithBullets = () => {
-      if (descriptionLines.length === 0) {
-        return <Text style={styles.descriptionText}>{t('marketplace.noDescriptionAvailable')}</Text>;
-      }
+    if (lines.length === 0) {
+      return null;
+    }
 
-      return (
+    return (
+      <View style={styles.tabContent}>
         <View style={styles.descriptionContainer}>
-          {descriptionLines.map((line, index) => (
+          {lines.map((line, index) => (
             <View key={index} style={styles.descriptionItem}>
               <View style={styles.bulletPoint} />
               <Text style={styles.descriptionText}>{line.trim()}</Text>
             </View>
           ))}
         </View>
-      );
-    };
-
-    return <View style={styles.tabContent}>{renderDescriptionWithBullets()}</View>;
+      </View>
+    );
   };
 
   if (loading) {
@@ -197,16 +226,15 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
                 style={styles.heroGradient}
               />
               <View style={styles.heroContent}>
-                <View style={styles.badgesContainer}>
-                  <View style={styles.badge}>
-                    <Text style={styles.badgeText}>Product</Text>
+                {heroBadges.length > 0 ? (
+                  <View style={styles.badgesContainer}>
+                    {heroBadges.map((label, index) => (
+                      <View key={`${label}-${index}`} style={styles.badge}>
+                        <Text style={styles.badgeText}>{label}</Text>
+                      </View>
+                    ))}
                   </View>
-                  {productCategory && productCategory !== 'Product' && (
-                    <View style={styles.badge}>
-                      <Text style={styles.badgeText}>{productCategory}</Text>
-                    </View>
-                  )}
-                </View>
+                ) : null}
                 <Text style={styles.heroTitle}>{displayTitle}</Text>
               </View>
             </View>
@@ -222,8 +250,12 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
         )}
 
         <View style={styles.contentSection}>
-          {renderTabs()}
-          {renderTabContent()}
+          {tabs.length > 0 ? (
+            <>
+              {renderTabs()}
+              {renderTabContent()}
+            </>
+          ) : null}
 
           <View style={styles.buySection}>
             <TouchableOpacity style={styles.buyButton} onPress={handleBuyOnAmazon} activeOpacity={0.7}>

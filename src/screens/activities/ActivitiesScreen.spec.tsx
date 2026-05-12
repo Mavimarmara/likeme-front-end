@@ -14,6 +14,11 @@ jest.mock('@react-navigation/native', () => ({
   },
 }));
 
+jest.mock('@/components/sections/profile/ProfileFloatingMenu', () => {
+  const { View } = require('react-native');
+  return () => <View testID='profile-floating-menu' />;
+});
+
 jest.mock('@/contexts/FloatingMenuContext', () => ({
   FloatingMenuProvider: ({ children }: { children: React.ReactNode }) => children,
   useFloatingMenu: () => ({
@@ -217,6 +222,7 @@ jest.mock('@/services', () => ({
   },
   storageService: {
     getAnamnesisCompletedAt: jest.fn().mockResolvedValue(null),
+    getUser: jest.fn().mockResolvedValue(null),
   },
 }));
 

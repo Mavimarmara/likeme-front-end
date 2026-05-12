@@ -12,6 +12,7 @@ export const ROUTES_SHOW_MENU = new Set<string>([
   'CommunityList',
   'Marketplace',
   'ProductDetails',
+  'AffiliateProduct',
   'ProviderProfile',
   'Cart',
   'CommunityPreview',

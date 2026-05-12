@@ -23,16 +23,6 @@ export const styles = StyleSheet.create({
     borderBottomRightRadius: 40,
     flex: 1,
   },
-  productImage: {
-    width: '100%',
-    height: 300,
-    borderRadius: 40,
-  },
-  productImageContainer: {
-    position: 'relative',
-    width: '100%',
-    paddingVertical: SPACING.MD,
-  },
   backgroundImageStyle: {
     resizeMode: 'cover',
     opacity: 0.1,
@@ -333,6 +323,7 @@ export const styles = StyleSheet.create({
   },
   partnerSectionAbovePrice: {
     marginTop: SPACING.LG,
+    gap: SPACING.MD,
   },
   addToCartSecondary: {
     width: '100%',

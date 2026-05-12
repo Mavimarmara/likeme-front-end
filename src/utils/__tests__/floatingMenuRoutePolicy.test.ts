@@ -84,7 +84,7 @@ describe('floatingMenuRoutePolicy', () => {
   });
 
   describe('telas com menu (rota focada na folha)', () => {
-    it.each(['Marketplace', 'Cart', 'ProductDetails', 'Profile', 'Summary'])(
+    it.each(['Marketplace', 'Cart', 'ProductDetails', 'AffiliateProduct', 'Profile', 'Summary'])(
       '%s: stack de um nível permite overlay',
       (screenName) => {
         const state = makeStack(0, [screenName]);

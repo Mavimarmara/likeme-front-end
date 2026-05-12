@@ -38,12 +38,14 @@ import Toggle from '@/components/ui/buttons/Toggle';
 import { Checkbox } from '@/components/ui/inputs';
 import { EventWebViewSession } from '@/components/infrastructure/webview/EventWebViewSession';
 
-type CommunityMode = 'Feed' | 'Solutions';
-
 type CommunityInfoTabId = 'posts' | 'about' | 'agreements';
 
-const getToggleOptions = (t: (key: string) => string): readonly [CommunityMode, CommunityMode] =>
-  [t('community.social') as CommunityMode, t('community.solutions') as CommunityMode] as const;
+const COMMUNITY_VIEW = {
+  FEED: 'feed',
+  SOLUTIONS: 'solutions',
+} as const;
+
+type CommunityViewId = (typeof COMMUNITY_VIEW)[keyof typeof COMMUNITY_VIEW];
 
 type NavigationProp = StackNavigationProp<CommunityStackParamList, 'CommunityList'>;
 type Props = { navigation: NavigationProp };
@@ -57,13 +59,18 @@ const FEED_END_THRESHOLD_PX = 120;
 const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   useAnalyticsScreen({ screenName: 'CommunityList', screenClass: 'CommunityScreen' });
   const { t } = useTranslation();
-  const toggleOptions = useMemo(() => getToggleOptions(t), [t]);
+  const toggleOptions = useMemo(() => [t('community.social'), t('community.solutions')] as const, [t]);
   const rootNavigation = navigation.getParent()?.getParent?.() ?? navigation.getParent();
-  const [selectedMode, setSelectedMode] = useState<CommunityMode>('Feed');
+  const [selectedMode, setSelectedMode] = useState<CommunityViewId>(COMMUNITY_VIEW.FEED);
   const [activeInfoTab, setActiveInfoTab] = useState<CommunityInfoTabId>('posts');
   const [welcomeDismissed, setWelcomeDismissed] = useState(true);
   const [shoppingTipDismissed, setShoppingTipDismissed] = useState(true);
   const [isCommunityFavorite, setIsCommunityFavorite] = useState(false);
+
+  const toggleSelectedLabel = useMemo(
+    () => (selectedMode === COMMUNITY_VIEW.FEED ? toggleOptions[0] : toggleOptions[1]),
+    [selectedMode, toggleOptions],
+  );
 
   useEffect(() => {
     storageService.getCommunityWelcomeDismissed().then(setWelcomeDismissed);
@@ -166,7 +173,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   const feedFilterParams = useMemo(() => ({}), []);
 
   const { posts, loading, loadingMore, error, loadMore } = useUserFeed({
-    enabled: selectedMode === 'Feed',
+    enabled: selectedMode === COMMUNITY_VIEW.FEED,
     searchQuery: '',
     pageSize: COMMUNITY_FEED_POSTS_PAGE_SIZE,
     params: feedFilterParams,
@@ -191,22 +198,29 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   const { products: suggestedServices } = useSuggestedProducts({
     limit: 20,
     status: 'active',
-    enabled: selectedMode === 'Solutions',
-    type: 'service',
+    enabled: selectedMode === COMMUNITY_VIEW.SOLUTIONS,
+    type: PRODUCT_CATALOG_TYPE.SERVICE,
   });
   const { products: suggestedPrograms } = useSuggestedProducts({
     limit: 20,
     status: 'active',
-    enabled: selectedMode === 'Solutions',
+    enabled: selectedMode === COMMUNITY_VIEW.SOLUTIONS,
     type: PRODUCT_CATALOG_TYPE.PROGRAM,
   });
 
   const menuItems = useMenuItems(navigation);
   useSetFloatingMenu(menuItems, 'community');
 
-  const handleModeSelect = (mode: CommunityMode) => {
-    setSelectedMode(mode);
-  };
+  const handleModeSelect = useCallback(
+    (label: string) => {
+      if (label === toggleOptions[0]) {
+        setSelectedMode(COMMUNITY_VIEW.FEED);
+      } else {
+        setSelectedMode(COMMUNITY_VIEW.SOLUTIONS);
+      }
+    },
+    [toggleOptions],
+  );
 
   const handleEventPress = (event: FeedEvent) => {
     logger.debug('[CommunityScreen] event press (stub)', { eventId: event.id });
@@ -217,14 +231,14 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleLoadMore = useCallback(() => {
-    if (selectedMode === 'Feed') {
+    if (selectedMode === COMMUNITY_VIEW.FEED) {
       loadMore();
     }
   }, [selectedMode, loadMore]);
 
   const handleScroll = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-      if (selectedMode !== 'Feed' || activeInfoTab !== 'posts') return;
+      if (selectedMode !== COMMUNITY_VIEW.FEED || activeInfoTab !== 'posts') return;
       const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
       const distanceFromBottom = contentSize.height - layoutMeasurement.height - contentOffset.y;
       if (distanceFromBottom <= FEED_END_THRESHOLD_PX) {
@@ -393,9 +407,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
           showBackButton: true,
           showMenuWithAvatar: false,
           onBackPress: () => navigation?.goBack?.(),
-          showRating: true,
-          favoriteActive: isCommunityFavorite,
-          onRatingPress: handleCommunityFavoritePress,
         }}
         contentContainerStyle={styles.container}
       >
@@ -426,10 +437,10 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
           <View>
             <View style={styles.toggleRow}>
               <View style={styles.toggleContainer}>
-                <Toggle<CommunityMode> options={toggleOptions} selected={selectedMode} onSelect={handleModeSelect} />
+                <Toggle options={[...toggleOptions]} selected={toggleSelectedLabel} onSelect={handleModeSelect} />
               </View>
             </View>
-            {selectedMode === 'Feed' ? (
+            {selectedMode === COMMUNITY_VIEW.FEED ? (
               <>
                 {eventBanner ? (
                   <View style={socialListStyles.eventBannerContainer}>

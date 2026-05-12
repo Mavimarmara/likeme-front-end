@@ -7,6 +7,7 @@ import { StickyFilterCarouselRow, type ButtonCarouselOption } from '@/components
 import { GradientBackground, ScreenWithHeader } from '@/components/ui/layout';
 import { Toggle, PrimaryButton, Badge } from '@/components/ui';
 import { CreateActivityModal } from '@/components/sections/activity';
+import ProfileFloatingMenu from '@/components/sections/profile/ProfileFloatingMenu';
 import { DoneIcon, CloseIcon } from '@/assets/ui';
 import { ProductsCarousel, PlansCarousel, type Plan } from '@/components/sections/product';
 import { EventReminder } from '@/components/ui/cards';
@@ -60,6 +61,8 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation, route }
   const [menuVisibleForId, setMenuVisibleForId] = useState<string | null>(null);
   const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null);
   const [_hasCompletedAnamnesis, setHasCompletedAnamnesis] = useState<boolean>(false);
+  const [isProfileMenuVisible, setIsProfileMenuVisible] = useState(false);
+  const [userAvatarUri, setUserAvatarUri] = useState<string | null>(null);
 
   // Usar o hook useActivities
   const {
@@ -125,6 +128,20 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation, route }
     };
 
     checkAnamnesisStatus();
+  }, []);
+
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const user = await storageService.getUser();
+        setUserAvatarUri(user?.picture ?? null);
+      } catch (error) {
+        logger.error('[ActivitiesScreen] Erro ao carregar usuário para o header', error);
+        setUserAvatarUri(null);
+      }
+    };
+
+    void loadUser();
   }, []);
 
   const { products: suggestedProducts } = useSuggestedProducts({
@@ -348,6 +365,14 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation, route }
   const menuItems = useMenuItems(navigation);
   useSetFloatingMenu(menuItems, 'activities');
 
+  const handleMenuPress = () => {
+    setIsProfileMenuVisible(true);
+  };
+
+  const handleCartPress = () => {
+    rootNavigation.navigate('Cart' as never);
+  };
+
   const handleMarkAsDone = async (activityId: string) => {
     try {
       const activity = activities.find((a) => a.id === activityId);
@@ -413,7 +438,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation, route }
     ]);
   };
 
-  const handleMenuPress = (activityId: string, event: any) => {
+  const handleActivityCardMenuPress = (activityId: string, event: any) => {
     event.persist();
     const { pageX, pageY } = event.nativeEvent;
     // Ajustar posição para aparecer abaixo e à direita do botão
@@ -612,7 +637,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation, route }
           <View style={styles.cardContent}>
             <View style={styles.cardHeader}>
               <Badge label={typeLabels[activity.type]} color='orange' />
-              <TouchableOpacity activeOpacity={0.7} onPress={(e) => handleMenuPress(activity.id, e)}>
+              <TouchableOpacity activeOpacity={0.7} onPress={(e) => handleActivityCardMenuPress(activity.id, e)}>
                 <Icon name='more-vert' size={20} color={COLORS.TEXT} />
               </TouchableOpacity>
             </View>
@@ -664,7 +689,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation, route }
         <View style={styles.cardContent}>
           <View style={styles.cardHeader}>
             <Badge label={typeLabels[activity.type]} color='orange' />
-            <TouchableOpacity activeOpacity={0.7} onPress={(e) => handleMenuPress(activity.id, e)}>
+            <TouchableOpacity activeOpacity={0.7} onPress={(e) => handleActivityCardMenuPress(activity.id, e)}>
               <Icon name='more-vert' size={20} color={COLORS.TEXT} />
             </TouchableOpacity>
           </View>
@@ -709,7 +734,16 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation, route }
   return (
     <ScreenWithHeader
       navigation={navigation}
-      headerProps={{ showBackButton: false }}
+      headerProps={{
+        showBackButton: false,
+        showMenuWithAvatar: true,
+        onMenuPress: handleMenuPress,
+        userAvatarUri,
+        showCartButton: true,
+        onCartPress: handleCartPress,
+        showBellButton: true,
+        onBellPress: () => rootNavigation.navigate('Activities' as never),
+      }}
       contentContainerStyle={styles.container}
     >
       <View pointerEvents='none' style={styles.gradientBackground}>
@@ -901,6 +935,11 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation, route }
           )}
         </TouchableOpacity>
       </Modal>
+      <ProfileFloatingMenu
+        visible={isProfileMenuVisible}
+        navigation={rootNavigation}
+        onClose={() => setIsProfileMenuVisible(false)}
+      />
     </ScreenWithHeader>
   );
 };
