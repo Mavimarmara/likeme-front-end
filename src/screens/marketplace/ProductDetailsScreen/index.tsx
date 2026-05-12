@@ -14,7 +14,7 @@ import {
 import { Checkbox } from '@/components/ui/inputs';
 import { PartnerSection } from '@/components/sections/advertiser';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
-import { useMenuItems, useProductDetails, useSuggestedProducts, useCategories } from '@/hooks';
+import { useMenuItems, useProductDetails, useSuggestedProducts } from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 import { formatPrice, getProductModeTranslationKey } from '@/utils';
@@ -28,7 +28,7 @@ import {
 } from '@/analytics';
 import { MARKETPLACE_PRODUCT_PLACEHOLDER_IMAGE_URI } from '@/constants';
 import type { RootStackParamList } from '@/types/navigation';
-import { PRODUCT_CATALOG_TYPE } from '@/types/product';
+import { PRODUCT_CATALOG_TYPE, catalogTypeTranslatedBadgeLabels } from '@/types/product';
 import { styles } from './styles';
 
 type ProductDetailsScreenProps = {
@@ -78,8 +78,6 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     enabled: !!product?.id,
   });
 
-  const { categories } = useCategories({ enabled: true });
-
   const recommendedProducts = useMemo(
     () => (suggestedProducts || []).filter((p) => p.id !== product?.id).slice(0, 5),
     [suggestedProducts, product?.id],
@@ -90,21 +88,20 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       return null;
     }
 
-    const categoryName = product.categoryId
-      ? categories.find((c) => c.categoryId === product.categoryId)?.name
-      : undefined;
+    const catalogBadges = catalogTypeTranslatedBadgeLabels(product.type, t);
     const modeTranslationKey = getProductModeTranslationKey(product);
-    const modeLabel = modeTranslationKey ? t(`marketplace.productMode.${modeTranslationKey}`) : undefined;
+    const modeLabel = modeTranslationKey ? t(`marketplace.productMode.${modeTranslationKey}`).trim() : '';
+    const tags = [...catalogBadges, modeLabel].filter(Boolean);
 
     return {
       title: ad?.product?.name || product.name,
       description: ad?.product?.description || product.description,
       image: product.image || ad?.product?.image,
       price: product.price,
-      tags: [categoryName, modeLabel].filter(Boolean) as string[],
+      tags,
       isOutOfStock: product.status === 'out_of_stock' || product.quantity === 0,
     };
-  }, [product, ad, categories, t]);
+  }, [product, ad, t]);
 
   const productTabContent = useMemo(
     () => ({
@@ -134,14 +131,11 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     return allTabs.filter((tab) => productTabContent[tab.id].length > 0);
   }, [productTabContent, isProgramProduct]);
 
-  const productCategory = displayData?.tags?.[0] || 'Product';
+  const productCategory = product?.type ?? 'Product';
   const heroBadges = useMemo(() => {
-    const baseBadges = [t('marketplace.product')];
-    if (productCategory && productCategory !== 'Product') {
-      baseBadges.push(productCategory);
-    }
-    return baseBadges;
-  }, [productCategory, t]);
+    const extra = displayData?.tags ?? [];
+    return [...extra].filter(Boolean);
+  }, [displayData?.tags, t]);
 
   const partnerData = useMemo(() => {
     const source = ad?.advertiser;
@@ -327,6 +321,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
               <ProductHeroFooter
                 isOutOfStock={displayData.isOutOfStock}
                 price={displayData.price}
+                priceSuffix={isProgramProduct ? t('marketplace.programPriceMonthly') : undefined}
                 onCartPress={handleAddToCartPress}
               />
             }
@@ -343,19 +338,6 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
           <View style={styles.content}>
             {usesPhysicalProductDetailLayout ? (
               <>
-                {isProgramProduct && (
-                  <View style={styles.swapperSection}>
-                    <Toggle
-                      options={['Protocolo', 'Shop'] as const}
-                      selected={activeSwapperTab === 'protocol' ? 'Protocolo' : 'Shop'}
-                      onSelect={(selectedOption) => {
-                        const tabId = selectedOption === 'Protocolo' ? 'protocol' : 'shop';
-                        logTabSelect({ screen_name: 'product_details', tab_id: tabId });
-                        setActiveSwapperTab(tabId);
-                      }}
-                    />
-                  </View>
-                )}
                 <View style={styles.contentCard}>
                   {isProgramProduct && hasSpecialistPartner ? (
                     <PartnerSection
@@ -392,6 +374,9 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                   ) : null}
                   {!isProgramProduct && hasSpecialistPartner ? (
                     <View style={styles.partnerSectionAbovePrice}>
+                      {displayData.description?.trim() ? (
+                        <Text style={styles.descriptionText}>{displayData.description.trim()}</Text>
+                      ) : null}
                       <PartnerSection
                         name={partnerData.name}
                         avatar={partnerData.avatar}

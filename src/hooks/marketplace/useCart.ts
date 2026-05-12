@@ -5,13 +5,17 @@ import type { CartItem } from '@/types/cart';
 import { isProductCatalogType, resolveCartItemCatalogType } from '@/types/product';
 import { logger } from '@/utils/logger';
 
-type StoredCartItem = CartItem & { tags?: unknown };
+type StoredCartItem = CartItem & { tags?: unknown; description?: string };
 
 function stripLegacyCartFields(item: StoredCartItem): CartItem {
-  const { tags: _legacyTags, ...rest } = item;
+  const { tags: _legacyTags, description: legacyDescription, ...rest } = item;
   const fromPayload = resolveCartItemCatalogType({ type: rest.type, tags: item.tags });
   const type = isProductCatalogType(rest.type ?? undefined) ? rest.type : fromPayload ?? rest.type;
-  return { ...rest, type };
+  const subtitle =
+    (rest.subtitle && rest.subtitle.trim()) ||
+    (typeof legacyDescription === 'string' && legacyDescription.trim() ? legacyDescription.trim() : '') ||
+    undefined;
+  return { ...rest, type, subtitle };
 }
 
 function cartItemsFromStorage(items: StoredCartItem[]): CartItem[] {
@@ -84,12 +88,16 @@ export function useCart(options: UseCartOptions = {}): UseCartReturn {
           }
 
           const cleaned = stripLegacyCartFields(item as StoredCartItem);
+          const subtitle =
+            (product.description && product.description.trim()) || (cleaned.subtitle && cleaned.subtitle.trim()) || '';
+
           validatedItems.push({
             ...cleaned,
             price: Number(product.price) || Number(item.price) || 0,
             quantity: Number(item.quantity) || 1,
             rating: Number(item.rating) || 0,
             type: product.type ?? cleaned.type,
+            subtitle: subtitle || undefined,
           });
         } catch {
           removedItems.push(item.title || item.id);

@@ -7,13 +7,26 @@ import { styles } from './styles';
 type ProductHeroFooterProps = {
   isOutOfStock: boolean;
   price: number | null | undefined;
+  priceSuffix?: string;
   onCartPress: () => void;
 };
 
-export const ProductHeroFooter: React.FC<ProductHeroFooterProps> = ({ isOutOfStock, price, onCartPress }) => {
+export const ProductHeroFooter: React.FC<ProductHeroFooterProps> = ({
+  isOutOfStock,
+  price,
+  priceSuffix,
+  onCartPress,
+}) => {
   return (
     <View style={styles.heroFooter}>
-      {!isOutOfStock && price != null ? <Text style={styles.heroPrice}>{formatPrice(price)}</Text> : <View />}
+      {!isOutOfStock && price != null ? (
+        <View style={styles.priceRow}>
+          <Text style={styles.heroPrice}>{formatPrice(price)}</Text>
+          {priceSuffix?.trim() ? <Text style={styles.heroPriceSuffix}>{priceSuffix.trim()}</Text> : null}
+        </View>
+      ) : (
+        <View />
+      )}
 
       {!isOutOfStock ? (
         <IconButton

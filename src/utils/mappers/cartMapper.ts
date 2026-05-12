@@ -10,7 +10,7 @@ export const mapProductToCartItem = (product: ApiProduct): CartItem => {
     id: product.id,
     image: product.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
     title: product.name,
-    subtitle: product.description || '',
+    subtitle: product.description?.trim() || '',
     price,
     quantity: 1,
     rating: 5,

@@ -17,6 +17,7 @@ export interface CartItem {
   id: string;
   image: string;
   title: string;
+  /** Texto de apoio na listagem (ex.: trecho de `Product.description`). */
   subtitle?: string;
   price: number;
   quantity: number;

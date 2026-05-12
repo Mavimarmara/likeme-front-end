@@ -103,7 +103,17 @@ describe('cartMapper', () => {
       expect(result.type).toBe(PRODUCT_CATALOG_TYPE.PROGRAM);
     });
 
-    it('deve usar description vazia quando undefined', () => {
+    it('define subtitle a partir de Product.description (propriedade extra subtitle no objeto não é usada)', () => {
+      const withExtra = {
+        ...mockApiProduct,
+        description: 'Descrição do catálogo',
+      } as ApiProduct & { subtitle?: string };
+      withExtra.subtitle = 'Campo antigo';
+      const result = mapProductToCartItem(withExtra);
+      expect(result.subtitle).toBe('Descrição do catálogo');
+    });
+
+    it('deve usar subtitle vazio quando description undefined', () => {
       const productWithoutDescription = {
         ...mockApiProduct,
         description: undefined,
