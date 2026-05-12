@@ -27,6 +27,8 @@ jest.mock('@/hooks/i18n', () => ({
         'marketplace.chatInitialMessage': 'Hi',
         'marketplace.noAdsFound': 'No ads',
         'marketplace.noAdsFoundDescription': 'No ads description',
+        'marketplace.providerCuratedComingSoon':
+          'Em breve você poderá acessar a Curadoria feita por este especialista.',
         'community.viewProfile': 'View profile',
         'filterCategory.solutions.products': 'Products',
         'filterCategory.solutions.services': 'Services',
@@ -179,12 +181,6 @@ jest.mock('@/hooks', () => ({
       advertiser: base.advertisers?.[0] ?? null,
     };
   },
-  useSuggestedProducts: () => ({
-    products: [],
-    loading: false,
-    error: null,
-    refresh: jest.fn(),
-  }),
   useProviderAds: () => ({
     ads: [],
     loading: false,

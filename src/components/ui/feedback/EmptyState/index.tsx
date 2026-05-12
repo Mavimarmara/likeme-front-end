@@ -6,7 +6,7 @@ import { styles } from './styles';
 import { COLORS } from '@/constants';
 
 export type EmptyStateProps = {
-  title: string;
+  title?: string;
   description?: string;
   /** Nome do ícone MaterialIcons (ex: "search-off", "inbox"). Exibido no topo quando informado. */
   iconName?: string;
@@ -24,7 +24,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({ title, description, iconName, a
           <Icon name={iconName as any} size={64} color={COLORS.NEUTRAL.LOW.MEDIUM} style={styles.icon} />
         </View>
       ) : null}
-      <Text style={styles.title}>{title}</Text>
+      {title ? <Text style={styles.title}>{title}</Text> : null}
       {description ? <Text style={styles.description}>{description}</Text> : null}
       {actionLabel && onActionPress ? (
         <SecondaryButton label={actionLabel} onPress={onActionPress} style={styles.actionButton} size='medium' />

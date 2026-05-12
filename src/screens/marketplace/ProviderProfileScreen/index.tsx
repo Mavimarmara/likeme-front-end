@@ -10,16 +10,7 @@ import type { ButtonCarouselOption } from '@/components/ui/carousel';
 import { JoinCard, type JoinCardItem } from '@/components/ui/cards';
 import { AdsList } from '@/components/sections/marketplace';
 import { Product } from '@/components/sections/product';
-import {
-  useAdvertiser,
-  useAdvertisers,
-  useProviderAds,
-  useCommunities,
-  useFeatureFlag,
-  useMenuItems,
-  useSuggestedProducts,
-  SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS,
-} from '@/hooks';
+import { useAdvertiser, useAdvertisers, useProviderAds, useCommunities, useFeatureFlag, useMenuItems } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import type { RootStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
@@ -35,10 +26,13 @@ import { logger } from '@/utils/logger';
 import { buildAdvertiserContactButtons, type AdvertiserContactButton } from '@/utils/advertiser/contactButtons';
 import { formatAdvertiserDocumentsLine } from '@/utils/advertiser/documents';
 import { resolveCommunityHeroImageUri } from '@/utils/community/mappers';
+import { getProductModeTranslationKey } from '@/utils';
+import { filterAdsForProviderProfile } from '@/utils/marketplace/filterAdsForProviderProfile';
 import { getMarketplaceSortOptions } from '@/utils/marketplace/sortOptions';
 import { sortShopProductsByMarketplaceOrder } from '@/utils/marketplace/sorting';
 
 const JOIN_CARD_COMMUNITY_IMAGE_FALLBACK = 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400';
+const CATALOG_PRODUCT_IMAGE_FALLBACK = 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
 
 type ProviderProfileScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'ProviderProfile'>;
@@ -128,6 +122,11 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
     advertiserId: providerId || undefined,
   });
 
+  const filteredProviderAds = useMemo(
+    () => filterAdsForProviderProfile(providerAds, providerId, advertiser?.userId),
+    [providerAds, providerId, advertiser?.userId],
+  );
+
   const providerData = useMemo(() => {
     if (advertiser) {
       return {
@@ -206,64 +205,48 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
     });
   }, [communityShopAdvertisers, providerId]);
 
-  const { products: communityShopProducts } = useSuggestedProducts({
-    ...SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS,
-    enabled: loadCommunityShop,
-  });
-  const { products: communityShopServices } = useSuggestedProducts({
-    limit: 20,
-    status: 'active',
-    enabled: loadCommunityShop,
-    type: 'service',
-  });
-  const { products: communityShopPrograms } = useSuggestedProducts({
-    limit: 20,
-    status: 'active',
-    enabled: loadCommunityShop,
-    type: PRODUCT_CATALOG_TYPE.PROGRAM,
-  });
-
-  const mergeCommunityShopTags = useCallback((primaryTag: string, product: Product): string[] => {
-    const combinedTags = [primaryTag, ...(product.tags ?? []), product.tag].filter(Boolean);
-    return combinedTags.filter((tag, index) => combinedTags.indexOf(tag) === index);
-  }, []);
-
   const communityShopCatalogFlat = useMemo(() => {
     if (!loadCommunityShop) {
       return [];
     }
-    const productsTagged = (communityShopProducts ?? []).map((p) => ({
-      ...p,
-      tag: t('filterCategory.solutions.products'),
-      tags: mergeCommunityShopTags(t('filterCategory.solutions.products'), p),
-    }));
-    const servicesTagged = (communityShopServices ?? []).map((p) => ({
-      ...p,
-      tag: t('filterCategory.solutions.services'),
-      tags: mergeCommunityShopTags(t('filterCategory.solutions.services'), p),
-    }));
-    const programsTagged = (communityShopPrograms ?? []).map((p) => ({
-      ...p,
-      tag: t('filterCategory.solutions.programs'),
-      tags: mergeCommunityShopTags(t('filterCategory.solutions.programs'), p),
-    }));
-    const merged = [...productsTagged, ...servicesTagged, ...programsTagged];
     const seenIds = new Set<string>();
-    return merged.filter((item) => {
-      if (!item.id || seenIds.has(item.id)) {
-        return false;
+    const rows: Product[] = [];
+
+    for (const ad of filteredProviderAds) {
+      const p = ad.product;
+      if (!p?.id || seenIds.has(p.id)) {
+        continue;
       }
-      seenIds.add(item.id);
-      return true;
-    });
-  }, [
-    loadCommunityShop,
-    communityShopProducts,
-    communityShopServices,
-    communityShopPrograms,
-    mergeCommunityShopTags,
-    t,
-  ]);
+      seenIds.add(p.id);
+
+      const catalogType = typeof p.type === 'string' ? p.type : '';
+      const solutionsKey =
+        catalogType === PRODUCT_CATALOG_TYPE.PROGRAM
+          ? ('filterCategory.solutions.programs' as const)
+          : catalogType === PRODUCT_CATALOG_TYPE.SERVICE
+          ? ('filterCategory.solutions.services' as const)
+          : ('filterCategory.solutions.products' as const);
+
+      const primaryTag = t(solutionsKey);
+      const modeKey = getProductModeTranslationKey(p);
+      const modeLabel = modeKey ? t(`marketplace.productMode.${modeKey}`) : '';
+      const tags = [primaryTag, modeLabel].filter(Boolean);
+
+      rows.push({
+        id: p.id,
+        title: p.name ?? '',
+        price: p.price ?? 0,
+        image: p.image ?? CATALOG_PRODUCT_IMAGE_FALLBACK,
+        tag: primaryTag,
+        tags,
+        likes: 0,
+        createdAt: p.createdAt ?? ad.createdAt ?? '',
+        updatedAt: p.updatedAt ?? ad.updatedAt ?? '',
+      });
+    }
+
+    return rows;
+  }, [loadCommunityShop, filteredProviderAds, t]);
 
   const communityShopCatalogSorted = useMemo(
     () => sortShopProductsByMarketplaceOrder(communityShopCatalogFlat, communityShopSortOrder),
@@ -456,7 +439,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
 
                 <AdsList
                   navigation={navigation}
-                  ads={providerAds}
+                  ads={filteredProviderAds}
                   loading={loadingAds}
                   hasMore={hasMoreAds}
                   onLoadMore={() => setProductsPage((p) => p + 1)}
@@ -489,6 +472,10 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
                     selectedOrder={communityShopSortOrder}
                     onOrderSelect={(id) => setCommunityShopSortOrder(id as MarketplaceSortOrderId)}
                   />
+                ) : loadCommunityShop ? (
+                  <View style={communityShopListStyles.emptySection}>
+                    <EmptyState description={t('marketplace.providerCuratedComingSoon')} />
+                  </View>
                 ) : null}
                 {communityShopProfessionals.length > 0 ? (
                   <View style={communityShopListStyles.list}>
@@ -525,17 +512,6 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
                         </View>
                       </View>
                     ))}
-                  </View>
-                ) : null}
-                {communityShopCatalogSorted.length === 0 &&
-                communityShopProfessionals.length === 0 &&
-                loadCommunityShop ? (
-                  <View style={communityShopListStyles.emptySection}>
-                    <EmptyState
-                      title={t('marketplace.noAdsFound')}
-                      description={t('marketplace.noAdsFoundDescription')}
-                      iconName='storefront'
-                    />
                   </View>
                 ) : null}
                 {isChatEnabled && (
