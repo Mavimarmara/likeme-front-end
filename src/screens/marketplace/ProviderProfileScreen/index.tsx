@@ -34,8 +34,11 @@ import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { logger } from '@/utils/logger';
 import { buildAdvertiserContactButtons, type AdvertiserContactButton } from '@/utils/advertiser/contactButtons';
 import { formatAdvertiserDocumentsLine } from '@/utils/advertiser/documents';
+import { resolveCommunityHeroImageUri } from '@/utils/community/mappers';
 import { getMarketplaceSortOptions } from '@/utils/marketplace/sortOptions';
 import { sortShopProductsByMarketplaceOrder } from '@/utils/marketplace/sorting';
+
+const JOIN_CARD_COMMUNITY_IMAGE_FALLBACK = 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400';
 
 type ProviderProfileScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'ProviderProfile'>;
@@ -283,7 +286,11 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
     [rootNavigation],
   );
 
-  const { communities: rawCommunities, categories } = useCommunities({
+  const {
+    communities: rawCommunities,
+    categories,
+    communityFiles,
+  } = useCommunities({
     enabled: activeTab === 'communities',
     pageSize: 10,
   });
@@ -302,10 +309,10 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
         id: community.communityId,
         title: community.displayName,
         badge: category?.name ?? 'Community',
-        image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
+        image: resolveCommunityHeroImageUri(community, communityFiles, JOIN_CARD_COMMUNITY_IMAGE_FALLBACK),
       };
     });
-  }, [rawCommunities, categories, advertiser]);
+  }, [rawCommunities, categories, advertiser, communityFiles]);
 
   const handleJoinCommunity = useCallback(
     async (community: JoinCardItem) => {
