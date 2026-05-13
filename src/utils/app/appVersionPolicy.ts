@@ -2,16 +2,16 @@ import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 import { nativeApplicationVersion as nativeVersionFromApplication } from 'expo-application';
 import type { AppReleasePolicy } from '@/types/app/appReleasePolicy';
-import { compareSemanticVersions } from '@/utils/version/compareSemanticVersions';
 import { normalizeStoreOpenUrl, sanitizeExternalHttpUrl } from '@/utils/url/storeListingUrl';
 
-function firstNonEmptyVersion(candidates: Array<string | null | undefined>): string {
-  for (const candidate of candidates) {
-    if (typeof candidate === 'string') {
-      const trimmed = candidate.trim();
-      if (trimmed !== '') {
-        return trimmed;
-      }
+function pickFirstNonEmptyVersion(candidates: Array<string | null | undefined>): string {
+  for (const raw of candidates) {
+    if (typeof raw !== 'string') {
+      continue;
+    }
+    const trimmed = raw.trim();
+    if (trimmed !== '') {
+      return trimmed;
     }
   }
   return '0.0.0';
@@ -25,37 +25,12 @@ export function getInstalledAppVersion(): string {
     typeof constantsRecord.nativeAppVersion === 'string' ? constantsRecord.nativeAppVersion : undefined;
   const fromManifest = Constants.expoConfig?.version;
 
-  return firstNonEmptyVersion([
+  return pickFirstNonEmptyVersion([
     nativeVersionFromApplication,
     nativeApplicationVersionField,
     nativeAppVersionField,
     fromManifest,
   ]);
-}
-
-export function shouldForceAppUpdate(policy: AppReleasePolicy | null, installedVersion: string): boolean {
-  if (!policy || !policy.forceUpdateEnabled) {
-    return false;
-  }
-  if (Platform.OS !== 'ios' && Platform.OS !== 'android') {
-    return false;
-  }
-  const min = Platform.OS === 'ios' ? policy.minVersionIos : policy.minVersionAndroid;
-  return compareSemanticVersions(installedVersion, min) < 0;
-}
-
-export function shouldRecommendUpdate(policy: AppReleasePolicy | null, installedVersion: string): boolean {
-  if (!policy) {
-    return false;
-  }
-  if (Platform.OS !== 'ios' && Platform.OS !== 'android') {
-    return false;
-  }
-  const rec = Platform.OS === 'ios' ? policy.recommendedVersionIos : policy.recommendedVersionAndroid;
-  if (!rec || rec.trim() === '') {
-    return false;
-  }
-  return compareSemanticVersions(installedVersion, rec) < 0;
 }
 
 export function resolveStoreUrlForPlatform(

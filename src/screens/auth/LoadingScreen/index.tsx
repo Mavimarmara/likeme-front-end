@@ -9,12 +9,7 @@ import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen } from '@/analytics';
 import { STORE_URL_CONFIG } from '@/config';
 import type { AppReleasePolicy } from '@/types/app/appReleasePolicy';
-import {
-  getInstalledAppVersion,
-  resolveStoreUrlForPlatform,
-  shouldForceAppUpdate,
-  shouldRecommendUpdate,
-} from '@/utils/app/appVersionPolicy';
+import { getInstalledAppVersion, resolveStoreUrlForPlatform } from '@/utils/app/appVersionPolicy';
 import { ensureI18nHydrated, startI18nHydration } from '@/i18n/hydration';
 import { logger } from '@/utils/logger';
 import { openStoreListingWithFallback } from '@/utils/url/storeListingUrl';
@@ -97,9 +92,13 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
       let shouldAuthenticate = false;
       let hadStoredToken = false;
       let releasePolicy: AppReleasePolicy | null = null;
-      let installedVersion = '0.0.0';
+      let serverMustUpdate: boolean | null = null;
+      let serverRecommendUpdate: boolean | null = null;
+      const installedVersionForPolicy = getInstalledAppVersion();
       const releasePolicyPromise =
-        Platform.OS === 'ios' || Platform.OS === 'android' ? fetchAppReleasePolicy() : Promise.resolve(null);
+        Platform.OS === 'ios' || Platform.OS === 'android'
+          ? fetchAppReleasePolicy(installedVersionForPolicy)
+          : Promise.resolve({ policy: null, serverMustUpdate: null, serverRecommendUpdate: null });
       void startI18nHydration('pt-BR');
       const safeSetStep = (next: number) => {
         if (isScreenActive) {
@@ -142,9 +141,11 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
 
         await delay(360);
 
-        releasePolicy = await releasePolicyPromise;
-        installedVersion = getInstalledAppVersion();
-        if (releasePolicy && shouldForceAppUpdate(releasePolicy, installedVersion)) {
+        const policyFetch = await releasePolicyPromise;
+        releasePolicy = policyFetch.policy;
+        serverMustUpdate = policyFetch.serverMustUpdate;
+        serverRecommendUpdate = policyFetch.serverRecommendUpdate;
+        if (releasePolicy && serverMustUpdate === true) {
           const storeUrl = resolveStoreUrlForPlatform(releasePolicy, STORE_URL_CONFIG);
           replaceOnce('ForcedUpdate', {
             storeUrl,
@@ -175,11 +176,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
         logger.error('[LoadingScreen] Falha ao aguardar i18n', hydrationError);
       }
 
-      if (
-        releasePolicy &&
-        shouldRecommendUpdate(releasePolicy, installedVersion) &&
-        !shouldForceAppUpdate(releasePolicy, installedVersion)
-      ) {
+      if (releasePolicy && serverRecommendUpdate === true) {
         const storeUrl = resolveStoreUrlForPlatform(releasePolicy, STORE_URL_CONFIG);
         if (storeUrl.length > 0) {
           await new Promise<void>((resolve) => {
