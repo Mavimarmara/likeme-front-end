@@ -145,7 +145,23 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
         releasePolicy = policyFetch.policy;
         serverMustUpdate = policyFetch.serverMustUpdate;
         serverRecommendUpdate = policyFetch.serverRecommendUpdate;
+        if (__DEV__) {
+          logger.info('[LoadingScreen] Política de versão (release-policy)', {
+            platform: Platform.OS,
+            installedVersion: installedVersionForPolicy,
+            serverMustUpdate,
+            serverRecommendUpdate,
+            minIos: releasePolicy?.minVersionIos,
+            minAndroid: releasePolicy?.minVersionAndroid,
+          });
+        }
         if (releasePolicy && serverMustUpdate === true) {
+          logger.warn('[LoadingScreen] mustUpdate: versão instalada abaixo do mínimo do backend', {
+            platform: Platform.OS,
+            installedVersion: installedVersionForPolicy,
+            minIos: releasePolicy.minVersionIos,
+            minAndroid: releasePolicy.minVersionAndroid,
+          });
           const storeUrl = resolveStoreUrlForPlatform(releasePolicy, STORE_URL_CONFIG);
           replaceOnce('ForcedUpdate', {
             storeUrl,

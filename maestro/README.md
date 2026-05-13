@@ -15,8 +15,9 @@ Este diretório contém testes end-to-end (E2E) usando Maestro para simular inte
 Use quando o app está instalado como build nativo no simulador:
 
 ```bash
-npm run ios  # Instala o app nativo
-npm run test:e2e  # Executa os testes
+npm run ios:xcode:build:debug   # compila o binário Debug (simulador)
+# Depois: abrir ios/LikeMe.xcworkspace no Xcode e Product → Run (⌘R) para instalar no simulador
+npm run test:e2e  # executa os testes
 ```
 
 Os testes usam `appId: com.likeme.app` para identificar o app.
@@ -104,9 +105,8 @@ xcrun simctl list devices
 Antes de executar os testes, certifique-se de que o app está instalado:
 
 ```bash
-npm run ios
-# ou
-npx expo run:ios
+npm run ios:xcode:build:debug
+# em seguida instale no simulador com Xcode: LikeMe.xcworkspace → Run (⌘R)
 ```
 
 ## Debugging

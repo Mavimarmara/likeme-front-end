@@ -38,7 +38,7 @@ APP_INSTALLED=$(xcrun simctl listapps booted | grep -i "likeme" || echo "")
 
 if [ -z "$APP_INSTALLED" ]; then
     echo -e "${YELLOW}⚠️  App não encontrado no simulador.${NC}"
-    echo -e "${BLUE}💡 Dica: Execute 'npm run ios' ou 'npx expo run:ios' primeiro${NC}"
+    echo -e "${BLUE}💡 Dica: npm run ios:xcode:build:debug e instale no simulador (Xcode: LikeMe.xcworkspace → Run)${NC}"
     echo -e "${BLUE}💡 Ou use o Expo Go e escaneie o QR code${NC}"
     read -p "Deseja continuar mesmo assim? (s/n) " -n 1 -r
     echo

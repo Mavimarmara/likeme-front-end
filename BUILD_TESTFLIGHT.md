@@ -13,24 +13,18 @@ Este guia mostra como gerar uma versão do app para distribuição no TestFlight
 
 ## 🎯 Método: Build Local
 
-### Passo 1: Execute o script
+### Passo 1: Na raiz do front-end
+
+Garanta a pasta `ios/` (se não existir: `npx expo prebuild --platform ios`). Depois:
 
 ```bash
 cd /Users/weber/Projetos/likeme/likeme-front-end
-./build-ios-local.sh
+npm run ios:xcode:archive:production
 ```
 
-### Passo 2: Escolha a opção 3 (Archive para distribuição)
+(Alternativa Release: `npm run ios:xcode:archive:release`. Para archive + export + validação + upload: `npm run ios:appstore:pipeline`.)
 
-O script irá:
-
-1. ✅ Verificar se o Xcode está instalado
-2. ✅ Verificar se o CocoaPods está instalado
-3. ✅ Gerar o projeto iOS se necessário
-4. ✅ Instalar as dependências CocoaPods
-5. ✅ Criar o Archive com xcodebuild
-
-### Passo 3: Aguarde a conclusão
+### Passo 2: Aguarde a conclusão
 
 - ⏱️ **Tempo estimado**: 5-15 minutos (dependendo do hardware)
 - 📊 **Processo local**: Sem filas, sem depender de servidores externos
@@ -220,7 +214,7 @@ export LC_ALL=en_US.UTF-8
 - [ ] CocoaPods instalado
 - [ ] Certificados configurados
 - [ ] Projeto iOS gerado (se necessário)
-- [ ] Archive criado (`./build-ios-local.sh`)
+- [ ] Archive criado (`npm run ios:xcode:archive:production` ou fluxo no Xcode Organizer)
 - [ ] Archive distribuído via Xcode Organizer
 - [ ] Build processado no App Store Connect
 - [ ] Testadores adicionados
