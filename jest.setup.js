@@ -45,6 +45,11 @@ jest.mock('expo-constants', () => ({
   },
 }));
 
+jest.mock('expo-application', () => ({
+  nativeApplicationVersion: null,
+  nativeBuildVersion: null,
+}));
+
 // Mock para expo-file-system
 jest.mock('expo-file-system', () => ({
   documentDirectory: 'file:///mock/',

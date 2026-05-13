@@ -1,14 +1,36 @@
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
+import { nativeApplicationVersion as nativeVersionFromApplication } from 'expo-application';
 import type { AppReleasePolicy } from '@/types/app/appReleasePolicy';
 import { compareSemanticVersions } from '@/utils/version/compareSemanticVersions';
 import { normalizeStoreOpenUrl, sanitizeExternalHttpUrl } from '@/utils/url/storeListingUrl';
 
+function firstNonEmptyVersion(candidates: Array<string | null | undefined>): string {
+  for (const candidate of candidates) {
+    if (typeof candidate === 'string') {
+      const trimmed = candidate.trim();
+      if (trimmed !== '') {
+        return trimmed;
+      }
+    }
+  }
+  return '0.0.0';
+}
+
 export function getInstalledAppVersion(): string {
-  const native = Constants.nativeAppVersion;
-  const expo = Constants.expoConfig?.version;
-  const raw = (typeof native === 'string' && native.trim() !== '' ? native : expo) ?? '0.0.0';
-  return String(raw).trim() || '0.0.0';
+  const constantsRecord = Constants as Record<string, unknown>;
+  const nativeApplicationVersionField =
+    typeof constantsRecord.nativeApplicationVersion === 'string' ? constantsRecord.nativeApplicationVersion : undefined;
+  const nativeAppVersionField =
+    typeof constantsRecord.nativeAppVersion === 'string' ? constantsRecord.nativeAppVersion : undefined;
+  const fromManifest = Constants.expoConfig?.version;
+
+  return firstNonEmptyVersion([
+    nativeVersionFromApplication,
+    nativeApplicationVersionField,
+    nativeAppVersionField,
+    fromManifest,
+  ]);
 }
 
 export function shouldForceAppUpdate(policy: AppReleasePolicy | null, installedVersion: string): boolean {
