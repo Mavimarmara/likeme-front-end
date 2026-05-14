@@ -5,7 +5,8 @@ export type ResolvedPostMedia = {
   videoUrl?: string;
 };
 
-const VIDEO_FILE_ID_QUALITIES = ['medium', 'high', 'original', 'low'] as const;
+/** Ordem de preferência para `videoFileId` map (Amity): maior qualidade primeiro. */
+const VIDEO_FILE_ID_QUALITIES = ['original', 'high', 'medium', 'low'] as const;
 
 type VideoFileIdMap = Partial<Record<(typeof VIDEO_FILE_ID_QUALITIES)[number], string>>;
 
@@ -68,8 +69,8 @@ function lookupUrlByFileId(id: string | undefined, rows: FeedFileRow[]): string 
   return rowUrl(lookupRowByFileId(id, rows));
 }
 
-/** Social Plus / Amity: objeto `videoUrl` com chaves 720p, 480p, original, etc. */
-const VIDEO_DIRECT_URL_KEYS = ['720p', '480p', '1080p', '360p', 'original', 'medium', 'high', 'low'] as const;
+/** Social Plus / Amity: objeto `videoUrl` com chaves 720p, 480p, original, etc. — maior qualidade primeiro. */
+const VIDEO_DIRECT_URL_KEYS = ['original', '1080p', '720p', '480p', '360p', 'high', 'medium', 'low'] as const;
 
 function pickHttpUrlFromVideoUrlObject(o: Record<string, unknown>): string | undefined {
   for (const k of VIDEO_DIRECT_URL_KEYS) {
@@ -156,7 +157,8 @@ function nestedImageFileUrl(val: unknown): string | undefined {
   if (typeof val !== 'object' || Array.isArray(val)) return undefined;
   const o = val as FeedFileRow;
   const u = o.fileUrl ?? o.url;
-  return typeof u === 'string' && u.trim() ? u.trim() : undefined;
+  if (typeof u === 'string' && u.trim()) return u.trim();
+  return extractDirectImageUrl(o as Record<string, unknown>);
 }
 
 function extractDirectImageUrl(dataObj: Record<string, unknown>): string | undefined {
