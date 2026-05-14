@@ -201,6 +201,34 @@ export LC_ALL=en_US.UTF-8
 2. Verifique se escolheu **Generic iOS Device** como destino
 3. Tente limpar o build: `xcodebuild clean`
 
+## 🤖 GitHub Actions — secrets de assinatura iOS (CI)
+
+O workflow `.github/workflows/build.yml` (jobs `build-ios` e `ios-appstore-pipeline`) importa **certificado** e **perfil App Store** a partir de secrets. **Team ID** no projeto: `VS752K4DT8` (alinhado a `ios/ExportOptions-AppStore.plist` e ao Xcode).
+
+### Secrets no repositório (Settings → Secrets and variables → Actions)
+
+| Secret | O que é |
+|--------|--------|
+| `IOS_CERTIFICATE_P12_BASE64` | Certificado **Apple Distribution** (ou iPhone Distribution) exportado como `.p12`, codificado em Base64 (uma linha). |
+| `IOS_CERTIFICATE_PASSWORD` | Senha definida na exportação do `.p12` no Acesso às Chaves. |
+| `IOS_PROVISIONING_PROFILE_BASE64` | Perfil **App Store** para o bundle `app.likeme.com`, ficheiro `.mobileprovision` em Base64 (uma linha). |
+| `KEYCHAIN_PASSWORD` | Palavra-passe da keychain temporária criada no runner pelo `Apple-Actions/import-codesign-certs` (pode ser uma string forte fixa; não é a senha da Apple). |
+
+Gerar Base64 no macOS (exemplos):
+
+```bash
+base64 -i caminho/para/Distribution.p12 | tr -d '\n' | pbcopy
+base64 -i caminho/para/AppStore_app_likeme.mobileprovision | tr -d '\n' | pbcopy
+```
+
+Colar cada resultado no secret correspondente. O `.p12` deve incluir a **chave privada** do certificado de distribuição da equipa.
+
+O perfil no Developer Portal deve ser do tipo **App Store**, associado ao App ID `app.likeme.com`, e assinado com o mesmo certificado que está no `.p12`.
+
+### Referência
+
+- [Instalar certificado Apple em runners macOS (GitHub Docs)](https://docs.github.com/actions/deployment/deploying-xcode-applications/installing-an-apple-certificate-on-macos-runners-for-xcode-development)
+
 ## 📚 Recursos Úteis
 
 - [Xcode Organizer](https://developer.apple.com/documentation/xcode/distributing-your-app-to-registered-devices)
