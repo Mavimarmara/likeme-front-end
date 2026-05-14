@@ -4,6 +4,7 @@ import { resolveCommunityPostMedia } from '@/utils/community/resolvePostMedia';
 describe('resolveCommunityPostMedia (qualidade mídia)', () => {
   it('prefere 1080p a 480p em data.videoUrl', () => {
     const r = resolveCommunityPostMedia({
+      createdAt: '2026-01-01T00:00:00.000Z',
       data: {
         type: 'video',
         videoUrl: {
@@ -19,6 +20,7 @@ describe('resolveCommunityPostMedia (qualidade mídia)', () => {
 
   it('prefere original quando presente em data.videoUrl', () => {
     const r = resolveCommunityPostMedia({
+      createdAt: '2026-01-01T00:00:00.000Z',
       data: {
         type: 'video',
         videoUrl: {
@@ -34,6 +36,7 @@ describe('resolveCommunityPostMedia (qualidade mídia)', () => {
 
   it('prefere fullImage a smallImage em data.image aninhado', () => {
     const r = resolveCommunityPostMedia({
+      createdAt: '2026-01-01T00:00:00.000Z',
       data: {
         image: {
           smallImage: { fileUrl: 'https://cdn.example.com/small.jpg' },
@@ -48,6 +51,7 @@ describe('resolveCommunityPostMedia (qualidade mídia)', () => {
   it('prefere fileId original a medium em videoFileId + files', () => {
     const post = {
       postId: 'p-q',
+      createdAt: '2026-01-01T00:00:00.000Z',
       data: {
         type: 'video',
         videoFileId: {
