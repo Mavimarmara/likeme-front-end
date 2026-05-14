@@ -48,6 +48,47 @@ describe('resolveCommunityPostMedia (qualidade mídia)', () => {
     expect(r.imageUrl).toBe('https://cdn.example.com/full.jpg');
   });
 
+  it('prefere fullImage a fileUrl no mesmo objeto data.image', () => {
+    const r = resolveCommunityPostMedia({
+      createdAt: '2026-01-01T00:00:00.000Z',
+      data: {
+        image: {
+          fileUrl: 'https://cdn.example.com/preview.jpg',
+          fullImage: { fileUrl: 'https://cdn.example.com/full.jpg' },
+        },
+      },
+    } as CommunityPost);
+
+    expect(r.imageUrl).toBe('https://cdn.example.com/full.jpg');
+  });
+
+  it('prefere fullImage em data a data.fileUrl quando ambos existem', () => {
+    const r = resolveCommunityPostMedia({
+      createdAt: '2026-01-01T00:00:00.000Z',
+      data: {
+        fileUrl: 'https://cdn.example.com/feed-thumb.jpg',
+        fullImage: { fileUrl: 'https://cdn.example.com/full.jpg' },
+      },
+    } as CommunityPost);
+
+    expect(r.imageUrl).toBe('https://cdn.example.com/full.jpg');
+  });
+
+  it('prefere fullImage dentro de data.image a data.fileUrl de preview', () => {
+    const r = resolveCommunityPostMedia({
+      createdAt: '2026-01-01T00:00:00.000Z',
+      data: {
+        fileUrl: 'https://cdn.example.com/preview.jpg',
+        image: {
+          fileUrl: 'https://cdn.example.com/medium.jpg',
+          fullImage: { fileUrl: 'https://cdn.example.com/full.jpg' },
+        },
+      },
+    } as CommunityPost);
+
+    expect(r.imageUrl).toBe('https://cdn.example.com/full.jpg');
+  });
+
   it('prefere fileId original a medium em videoFileId + files', () => {
     const post = {
       postId: 'p-q',

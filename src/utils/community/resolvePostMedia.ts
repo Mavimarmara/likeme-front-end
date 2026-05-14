@@ -155,10 +155,12 @@ function nestedImageFileUrl(val: unknown): string | undefined {
   if (val == null) return undefined;
   if (typeof val === 'string' && val.trim().startsWith('http')) return val.trim();
   if (typeof val !== 'object' || Array.isArray(val)) return undefined;
-  const o = val as FeedFileRow;
-  const u = o.fileUrl ?? o.url;
+  const o = val as Record<string, unknown>;
+  const fromSizes = extractDirectImageUrl(o);
+  if (fromSizes) return fromSizes;
+  const u = (o.fileUrl ?? o.url) as unknown;
   if (typeof u === 'string' && u.trim()) return u.trim();
-  return extractDirectImageUrl(o as Record<string, unknown>);
+  return undefined;
 }
 
 function extractDirectImageUrl(dataObj: Record<string, unknown>): string | undefined {
@@ -172,6 +174,8 @@ function extractDirectImageUrl(dataObj: Record<string, unknown>): string | undef
     const u = nestedImageFileUrl(dataObj[k]);
     if (u) return u;
   }
+  const fromImageField = nestedImageFileUrl(dataObj.image);
+  if (fromImageField) return fromImageField;
   return undefined;
 }
 
@@ -345,7 +349,8 @@ export function resolveCommunityPostMedia(
     if (hintsVideo || looksVideoPath) {
       videoUrl = fileUrlDirect;
     } else {
-      imageUrl = fileUrlDirect;
+      const hiResStill = dataObj ? extractDirectImageUrl(dataObj) : undefined;
+      imageUrl = hiResStill || fileUrlDirect;
     }
   }
 
