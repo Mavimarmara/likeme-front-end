@@ -12,6 +12,7 @@ import {
   ProgramParticipationTermsRequiredModal,
 } from '@/components/sections/marketplace';
 import { Checkbox } from '@/components/ui/inputs';
+import { LinkifiedText } from '@/components/ui/text/LinkifiedText';
 import { PartnerSection } from '@/components/sections/advertiser';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
 import { useMenuItems, useProductDetails, useSuggestedProducts } from '@/hooks';
@@ -377,7 +378,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                   {!isProgramProduct && hasSpecialistPartner ? (
                     <View style={styles.partnerSectionAbovePrice}>
                       {(displayData.description ?? '').trim().length > 0 ? (
-                        <Text style={styles.descriptionText}>{displayData.description}</Text>
+                        <LinkifiedText style={styles.descriptionText} text={displayData.description ?? ''} />
                       ) : null}
                       <PartnerSection
                         name={partnerData.name}
@@ -416,7 +417,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
             ) : (
               <>
                 {(displayData.description ?? '').trim().length > 0 ? (
-                  <Text style={styles.productDescription}>{(displayData.description ?? '').trim()}</Text>
+                  <LinkifiedText style={styles.productDescription} text={(displayData.description ?? '').trim()} />
                 ) : null}
                 {renderInfoSection()}
                 {displayData.price != null && !displayData.isOutOfStock ? (
@@ -489,7 +490,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     return (
       <View style={styles.aboutContent}>
         {product.technicalSpecifications && (
-          <Text style={styles.productDescription}>{product.technicalSpecifications}</Text>
+          <LinkifiedText style={styles.productDescription} text={product.technicalSpecifications} />
         )}
       </View>
     );
@@ -510,7 +511,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
               {agreementLines.map((line, index) => (
                 <View key={index} style={styles.descriptionItem}>
                   <View style={styles.bulletPoint} />
-                  <Text style={styles.descriptionText}>{line.trim()}</Text>
+                  <LinkifiedText style={styles.descriptionText} text={line.trim()} />
                 </View>
               ))}
             </View>
@@ -543,7 +544,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
           {tabLines.map((line, index) => (
             <View key={index} style={styles.descriptionItem}>
               <View style={styles.bulletPoint} />
-              <Text style={styles.descriptionText}>{line.trim()}</Text>
+              <LinkifiedText style={styles.descriptionText} text={line.trim()} />
             </View>
           ))}
         </View>

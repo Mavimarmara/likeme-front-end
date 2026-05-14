@@ -5,6 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScreenWithHeader } from '@/components/ui/layout';
+import { LinkifiedText } from '@/components/ui/text/LinkifiedText';
 import { MARKETPLACE_PRODUCT_PLACEHOLDER_IMAGE_URI } from '@/constants';
 import { useMenuItems, useProductDetails } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
@@ -192,7 +193,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
           {lines.map((line, index) => (
             <View key={index} style={styles.descriptionItem}>
               <View style={styles.bulletPoint} />
-              <Text style={styles.descriptionText}>{line.trim()}</Text>
+              <LinkifiedText style={styles.descriptionText} text={line.trim()} />
             </View>
           ))}
         </View>
