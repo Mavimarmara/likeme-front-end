@@ -373,15 +373,6 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                     </View>
                   )}
                   {renderProductTabContent()}
-                  {displayData.price == null && !displayData.isOutOfStock ? (
-                    <SecondaryButton
-                      label={t('marketplace.addToCart')}
-                      onPress={handleAddToCartPress}
-                      style={styles.addToCartSecondary}
-                      size='large'
-                      testID='product-details-add-to-cart'
-                    />
-                  ) : null}
                   {!isProgramProduct && hasSpecialistPartner ? (
                     <View style={styles.partnerSectionAbovePrice}>
                       {(displayData.description ?? '').trim().length > 0 ? (
@@ -394,9 +385,9 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                       />
                     </View>
                   ) : null}
-                  {!isProgramProduct ? (
+                  {!isProgramProduct && displayData.price != null ? (
                     <ProductDetailsPriceQuantityRow
-                      formattedPrice={displayData.price != null ? formatPrice(displayData.price * quantity) : ''}
+                      formattedPrice={formatPrice(displayData.price * quantity)}
                       quantity={quantity}
                       quantityOptions={quantityOptions}
                       isQuantityDropdownOpen={isQuantityDropdownOpen}
@@ -427,7 +418,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                   <Text style={styles.productDescription}>{(displayData.description ?? '').trim()}</Text>
                 ) : null}
                 {renderInfoSection()}
-                {!displayData.isOutOfStock ? (
+                {displayData.price != null && !displayData.isOutOfStock ? (
                   <View style={styles.addToCartSecondaryWrapper}>
                     <SecondaryButton
                       label={t('marketplace.addToCart')}

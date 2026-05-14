@@ -50,7 +50,7 @@ export interface Product {
   targetAudience?: string; // Who is this product for
   technicalSpecifications?: string; // Technical specs and composition
   sku?: string;
-  price?: number; // Optional when externalUrl is provided
+  price?: number | null;
   cost?: number;
   quantity?: number; // Optional when externalUrl is provided
   image?: string;
@@ -103,7 +103,7 @@ export interface CreateProductData {
   targetAudience?: string;
   technicalSpecifications?: string;
   sku?: string;
-  price?: number; // Optional when externalUrl is provided
+  price?: number | null;
   cost?: number;
   quantity?: number; // Optional when externalUrl is provided
   image?: string;

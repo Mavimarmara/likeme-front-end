@@ -28,7 +28,7 @@ export const ProductHeroFooter: React.FC<ProductHeroFooterProps> = ({
         <View />
       )}
 
-      {!isOutOfStock ? (
+      {!isOutOfStock && price != null ? (
         <IconButton
           icon='shopping-cart'
           variant='light'
