@@ -1,9 +1,10 @@
 import type { Contact } from '@/types/contact';
+import { buildWhatsAppWaMeUrl } from '@/utils/messaging/buildWhatsAppWaMeUrl';
 
 const ensureHttpUrl = (value: string): string => (/^https?:\/\//i.test(value) ? value : `https://${value}`);
 
 export type ResolveAdvertiserContactUrlOptions = {
-  whatsappPrefillMessage?: string | null;
+  waMePrefillText?: string | null;
 };
 
 export const resolveAdvertiserContactUrl = (
@@ -19,9 +20,8 @@ export const resolveAdvertiserContactUrl = (
     case 'whatsapp': {
       const phone = value.replace(/\D/g, '');
       if (!phone) return ensureHttpUrl(value);
-      const prefill = options?.whatsappPrefillMessage?.trim();
-      if (!prefill) return `https://wa.me/${phone}`;
-      return `https://wa.me/${phone}?text=${encodeURIComponent(prefill)}`;
+      const wa = buildWhatsAppWaMeUrl({ phone, prefillText: options?.waMePrefillText });
+      return wa || ensureHttpUrl(value);
     }
     case 'instagram':
       return value.startsWith('http') ? value : `https://instagram.com/${value.replace(/^@/, '')}`;

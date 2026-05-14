@@ -8,6 +8,7 @@ import { useFeatureFlag } from '@/hooks';
 import { useIsFloatingMenuVisible } from '@/contexts/FloatingMenuContext';
 import { SUPPORT_CONFIG } from '@/config/environment';
 import { getFocusedRouteNameFromNavState, getRootRouteName } from '@/utils/floatingMenuRoutePolicy';
+import { buildWhatsAppWaMeUrl } from '@/utils/messaging/buildWhatsAppWaMeUrl';
 import { logger } from '@/utils/logger';
 import { styles } from './styles';
 
@@ -19,13 +20,11 @@ const FLOATING_MENU_HEIGHT = 64;
 const SUPPORT_BUTTON_MENU_GAP = 15;
 
 function buildSupportWhatsappUrl(): string {
-  if (SUPPORT_CONFIG.whatsappUrl.trim()) {
-    return SUPPORT_CONFIG.whatsappUrl.trim();
-  }
-
-  const phone = SUPPORT_CONFIG.whatsappPhone.replace(/\D/g, '');
-  const text = encodeURIComponent(SUPPORT_CONFIG.whatsappDefaultMessage.trim());
-  return `https://wa.me/${phone}?text=${text}`;
+  return buildWhatsAppWaMeUrl({
+    fullUrl: SUPPORT_CONFIG.whatsappUrl,
+    phone: SUPPORT_CONFIG.whatsappPhone,
+    prefillText: SUPPORT_CONFIG.whatsappDefaultMessage,
+  });
 }
 
 const SupportFloatingButton: React.FC = () => {

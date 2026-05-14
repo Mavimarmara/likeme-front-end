@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Linking, Image } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -12,6 +12,7 @@ import { AdsList } from '@/components/sections/marketplace';
 import { Product } from '@/components/sections/product';
 import { useAdvertiser, useAdvertisers, useProviderAds, useCommunities, useFeatureFlag, useMenuItems } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
+import i18n from '@/i18n';
 import type { RootStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
@@ -30,6 +31,7 @@ import { getProductModeTranslationKey } from '@/utils';
 import { filterAdsForProviderProfile } from '@/utils/marketplace/filterAdsForProviderProfile';
 import { getMarketplaceSortOptions } from '@/utils/marketplace/sortOptions';
 import { sortShopProductsByMarketplaceOrder } from '@/utils/marketplace/sorting';
+import { resolveWaMePrefillFromI18n } from '@/utils/marketplace/resolveWaMePrefillFromI18n';
 
 const JOIN_CARD_COMMUNITY_IMAGE_FALLBACK = 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400';
 const CATALOG_PRODUCT_IMAGE_FALLBACK = 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
@@ -54,7 +56,7 @@ type ProviderProfileScreenProps = {
 
 const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigation, route }) => {
   useAnalyticsScreen({ screenName: 'ProviderProfile', screenClass: 'ProviderProfileScreen' });
-  const { t } = useTranslation();
+  const { t, currentLanguage } = useTranslation();
   const { isEnabled: isChatEnabled } = useFeatureFlag(FEATURE_FLAGS.CHAT_ENABLED);
   const { providerId, provider: providerFromParams } = route.params;
   const menuItems = useMenuItems(navigation);
@@ -67,6 +69,17 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
   const [loadingProfiles, setLoadingProfiles] = useState(false);
   const [communityShopSortOrder, setCommunityShopSortOrder] =
     useState<MarketplaceSortOrderId>(DEFAULT_MARKETPLACE_SORT_ORDER);
+  const [i18nBundleEpoch, setI18nBundleEpoch] = useState(0);
+
+  useEffect(() => {
+    const bump = () => setI18nBundleEpoch((n) => n + 1);
+    i18n.on('added', bump);
+    i18n.on('languageChanged', bump);
+    return () => {
+      i18n.off('added', bump);
+      i18n.off('languageChanged', bump);
+    };
+  }, []);
 
   const toggleSection = useCallback((profileId: string) => {
     setExpandedSectionIds((prev) => {
@@ -156,9 +169,9 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
   const contactButtons = useMemo(
     () =>
       buildAdvertiserContactButtons(advertiser?.contacts, {
-        whatsappPrefillMessage: advertiser?.whatsappPrefillMessage,
+        waMePrefillText: resolveWaMePrefillFromI18n(providerId),
       }),
-    [advertiser?.contacts, advertiser?.whatsappPrefillMessage],
+    [advertiser?.contacts, providerId, i18nBundleEpoch, currentLanguage],
   );
 
   const positioningProfile = useMemo(
