@@ -143,6 +143,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
           page: 1,
           limit: 20,
           status: 'active',
+          ...(selectedCategoryId != null && selectedCategoryId !== '' ? { categoryId: selectedCategoryId } : {}),
         });
         if (!response.success || !response.data?.advertisers) {
           setPopularProviders([]);
@@ -162,7 +163,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
       }
     };
     loadProviders();
-  }, [hasSessionToken]);
+  }, [hasSessionToken, selectedCategoryId]);
 
   const { products: recommendedProducts } = useSuggestedProducts({
     ...SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS,
