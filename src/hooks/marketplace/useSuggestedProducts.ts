@@ -1,9 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { productService, categoryService } from '@/services';
 import type { Product } from '@/components/sections/product';
-import { getMarkerIdForCategory } from '@/hooks/category';
-import { CATEGORY_NAMES, type CategoryName } from '@/types/category';
-import { getProductModeTranslationKey } from '@/utils';
 import { logger } from '@/utils/logger';
 
 /** Lista padrão de produtos sugeridos (Home Summary, Activities, Comunidade sem filtro extra). */
@@ -28,74 +25,12 @@ interface UseSuggestedProductsReturn {
   refresh: () => Promise<void>;
 }
 
-type ProductApiLike = {
-  categoryId?: string | null;
-  category?: string | { id?: string; name?: string } | null;
-  categoryName?: string | null;
-  category_id?: string | null;
-};
-
-const resolveCategoryReference = (
-  product: ProductApiLike,
-  categoriesList: Array<{ categoryId: string; name: string }>,
-): { categoryId: string; categoryName: string } => {
-  const rawCategory = product.category;
-  const categoryFromObject =
-    rawCategory && typeof rawCategory === 'object'
-      ? {
-          id: typeof rawCategory.id === 'string' ? rawCategory.id : '',
-          name: typeof rawCategory.name === 'string' ? rawCategory.name : '',
-        }
-      : { id: '', name: '' };
-
-  const categoryIdCandidates = [
-    product.categoryId,
-    product.category_id,
-    categoryFromObject.id,
-    typeof rawCategory === 'string' ? rawCategory : undefined,
-  ]
-    .map((value) => (typeof value === 'string' ? value.trim() : ''))
-    .filter(Boolean);
-
-  const categoryNameCandidates = [
-    product.categoryName,
-    categoryFromObject.name,
-    typeof rawCategory === 'string' ? rawCategory : undefined,
-  ]
-    .map((value) => (typeof value === 'string' ? value.trim() : ''))
-    .filter(Boolean);
-
-  const matchedById = categoriesList.find((category) =>
-    categoryIdCandidates.some((candidate) => String(category.categoryId) === String(candidate)),
-  );
-  if (matchedById) {
-    return {
-      categoryId: String(matchedById.categoryId),
-      categoryName: matchedById.name,
-    };
-  }
-
-  const matchedByName = categoriesList.find((category) =>
-    categoryNameCandidates.some((candidate) => candidate.toLowerCase() === category.name.toLowerCase()),
-  );
-  if (matchedByName) {
-    return {
-      categoryId: String(matchedByName.categoryId),
-      categoryName: matchedByName.name,
-    };
-  }
-
-  return {
-    categoryId: categoryIdCandidates[0] ?? '',
-    categoryName: categoryNameCandidates[0] ?? '',
-  };
-};
-
 export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}): UseSuggestedProductsReturn => {
   const { limit = 4, status = 'active', enabled = true, categoryId, type } = options;
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const TAGS_QUANTITY = 2;
 
   const loadProducts = useCallback(async () => {
     if (!enabled) {
@@ -106,26 +41,37 @@ export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}):
     setError(null);
 
     try {
-      const [productsResponse, categoriesList] = await Promise.all([
-        productService.listProducts({
-          limit,
-          status,
-          ...(categoryId != null && categoryId !== '' ? { categoryId } : {}),
-          ...(type != null && type !== '' ? { type } : {}),
-        }),
-        categoryService.listCategories().catch(() => []),
-      ]);
+      const productsResponse = await productService.listProducts({
+        limit,
+        status,
+        ...(categoryId != null && categoryId !== '' ? { categoryId } : {}),
+        ...(type != null && type !== '' ? { type } : {}),
+      });
 
       if (productsResponse.success && productsResponse.data) {
-        const mappedProducts: Product[] = productsResponse.data.products.map((p) => {
-          const { categoryId: resolvedCategoryId, categoryName } = resolveCategoryReference(
-            p as ProductApiLike,
-            categoriesList,
-          );
-          const markerId = getMarkerIdForCategory(resolvedCategoryId, categoryName);
-          const categoryLabel = markerId ? CATEGORY_NAMES[markerId as CategoryName] : categoryName;
-          const modeTranslationKey = getProductModeTranslationKey(p);
-          const tags = [categoryLabel, modeTranslationKey].filter(Boolean) as string[];
+        const list = productsResponse.data.products;
+        const categoriesByProductId = await Promise.all(
+          list.map(async (p) => {
+            try {
+              const res = await categoryService.listProductCategories(p.id);
+              if (res.success && res.data?.categories?.length) {
+                return { productId: p.id, categories: res.data.categories };
+              }
+            } catch (e) {
+              logger.warn('[useSuggestedProducts] Falha ao carregar categorias do produto', {
+                productId: p.id,
+                cause: e,
+              });
+            }
+            return { productId: p.id, categories: [] as { id: string; name: string }[] };
+          }),
+        );
+        const categoriesMap = new Map(categoriesByProductId.map((row) => [row.productId, row.categories]));
+
+        const mappedProducts: Product[] = list.map((p) => {
+          const allNames = (categoriesMap.get(p.id) ?? []).map((c) => c.name.trim()).filter(Boolean);
+          const tags = allNames.slice(0, TAGS_QUANTITY);
+          const categoryLabel = tags[0] ?? '';
 
           return {
             id: p.id,

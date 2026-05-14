@@ -4,6 +4,10 @@ import type { CommunityCategory } from '@/types/community';
 import { MARKER_NAMES } from '@/constants/markers';
 import { NAME_TO_CATEGORY_ID } from '@/types/category';
 
+async function requestCategoriesList(): Promise<CommunityCategory[]> {
+  return categoryService.listCategories();
+}
+
 /** Retorna o id canônico (marker) da categoria para deduplicação. */
 function getCanonicalKey(categoryId: string, name: string): string {
   const key = (categoryId || name).toLowerCase().trim().replace(/\s+/g, '-');
@@ -37,7 +41,7 @@ export const useCategories = (options: UseCategoriesOptions = {}): UseCategories
     try {
       setLoading(true);
       setError(null);
-      const list = await categoryService.listCategories();
+      const list = await requestCategoriesList();
       setCategories(list);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erro ao carregar categorias';

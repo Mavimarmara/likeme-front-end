@@ -31,16 +31,19 @@ export const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     justifyContent: 'flex-end',
-    paddingHorizontal: SPACING.LG,
     borderBottomLeftRadius: 40,
     borderBottomRightRadius: 40,
     position: 'relative',
   },
+  bottomBlock: {
+    position: 'relative',
+    alignSelf: 'stretch',
+    width: '100%',
+    paddingHorizontal: SPACING.LG,
+    minHeight: 56,
+  },
   effectsContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
+    ...StyleSheet.absoluteFillObject,
     overflow: 'hidden',
     zIndex: 0,
     borderBottomLeftRadius: 40,
@@ -81,7 +84,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
     marginBottom: 10,
-    paddingTop: SPACING.XXL,
+    paddingTop: SPACING.MD,
   },
   badge: {
     backgroundColor: 'rgba(0, 17, 55, 0.64)',

@@ -1,6 +1,7 @@
 import apiClient from '../infrastructure/apiClient';
 import { logger } from '@/utils/logger';
 import type { CommunityCategory } from '@/types/community';
+import type { ListProductCategoriesApiResponse } from '@/types/product';
 
 export interface ListCategoriesApiResponse {
   success?: boolean;
@@ -33,6 +34,20 @@ class CategoryService {
       return response.data.categories.map(mapToCommunityCategory);
     } catch (error) {
       logger.error('Error fetching categories:', error);
+      throw error;
+    }
+  }
+
+  async listProductCategories(productId: string): Promise<ListProductCategoriesApiResponse> {
+    try {
+      if (!productId || productId.trim() === '') {
+        throw new Error('Product ID is required');
+      }
+
+      const endpoint = `${this.categoriesEndpoint}/by-product/${productId.trim()}`;
+      return await apiClient.get<ListProductCategoriesApiResponse>(endpoint, undefined, true, false);
+    } catch (error) {
+      logger.error('Error fetching product categories:', error);
       throw error;
     }
   }

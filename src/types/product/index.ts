@@ -96,6 +96,15 @@ export type ListProductsApiResponse = ApiResponse<{
 
 export type GetProductApiResponse = ApiResponse<Product>;
 
+export interface ProductCategorySummary {
+  id: string;
+  name: string;
+}
+
+export type ListProductCategoriesApiResponse = ApiResponse<{
+  categories: ProductCategorySummary[];
+}>;
+
 export interface CreateProductData {
   name: string;
   description?: string;

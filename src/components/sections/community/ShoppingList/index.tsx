@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ScrollView, View, Text, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SecondaryButton } from '@/components/ui/buttons';
@@ -39,50 +39,17 @@ const ShoppingList: React.FC<Props> = ({
   const { t } = useTranslation();
   const [activeOrder, setActiveOrder] = useState<MarketplaceSortOrderId>(DEFAULT_MARKETPLACE_SORT_ORDER);
 
-  const mergeTags = useCallback((primaryTag: string, product: Product): string[] => {
-    const combinedTags = [primaryTag, ...(product.tags ?? []), product.tag].filter(Boolean);
-    return combinedTags.filter((tag, index) => combinedTags.indexOf(tag) === index);
-  }, []);
-
-  const productsWithTag = useMemo(
-    () =>
-      (products ?? []).map((p) => ({
-        ...p,
-        tag: t('filterCategory.solutions.products'),
-        tags: mergeTags(t('filterCategory.solutions.products'), p),
-      })),
-    [mergeTags, products, t],
-  );
-  const servicesWithTag = useMemo(
-    () =>
-      (services ?? []).map((p) => ({
-        ...p,
-        tag: t('filterCategory.solutions.services'),
-        tags: mergeTags(t('filterCategory.solutions.services'), p),
-      })),
-    [mergeTags, services, t],
-  );
-  const programsWithTag = useMemo(
-    () =>
-      (programs ?? []).map((p) => ({
-        ...p,
-        tag: t('filterCategory.solutions.programs'),
-        tags: mergeTags(t('filterCategory.solutions.programs'), p),
-      })),
-    [mergeTags, programs, t],
-  );
-
   const orderedProducts = useMemo(
-    () => sortShopProductsByMarketplaceOrder(productsWithTag, activeOrder),
-    [productsWithTag, activeOrder],
+    () => sortShopProductsByMarketplaceOrder(products ?? [], activeOrder),
+    [products, activeOrder],
   );
   const orderedServices = useMemo(
-    () => sortShopProductsByMarketplaceOrder(servicesWithTag, activeOrder),
-    [servicesWithTag, activeOrder],
+    () => sortShopProductsByMarketplaceOrder(services ?? [], activeOrder),
+    [services, activeOrder],
   );
   const orderedPrograms = useMemo(
-    () => sortShopProductsByMarketplaceOrder(programsWithTag, activeOrder),
-    [programsWithTag, activeOrder],
+    () => sortShopProductsByMarketplaceOrder(programs ?? [], activeOrder),
+    [programs, activeOrder],
   );
 
   const orderOptions: ButtonCarouselOption<string>[] = useMemo(() => getMarketplaceSortOptions(t), [t]);
