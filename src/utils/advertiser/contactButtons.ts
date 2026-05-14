@@ -1,7 +1,7 @@
 import type { SvgProps } from 'react-native-svg';
 import type { Contact, ContactType } from '@/types/contact';
 import { InstagramIcon, MailIcon, PinMapIcon, WebsiteIcon, WhatsappIcon } from '@/assets/ui';
-import { resolveAdvertiserContactUrl } from '@/utils/advertiser/contactUrl';
+import { resolveAdvertiserContactUrl, type ResolveAdvertiserContactUrlOptions } from '@/utils/advertiser/contactUrl';
 
 export type AdvertiserContactButton = {
   contact: Contact;
@@ -33,13 +33,16 @@ const CONTACT_ICON_BY_TYPE: Partial<
   phone: { materialIcon: 'phone', size: 20 },
 };
 
-export const buildAdvertiserContactButtons = (contacts: Contact[] | undefined): AdvertiserContactButton[] => {
+export const buildAdvertiserContactButtons = (
+  contacts: Contact[] | undefined,
+  options?: ResolveAdvertiserContactUrlOptions,
+): AdvertiserContactButton[] => {
   const orderIndex = new Map(CONTACT_TYPE_ORDER.map((type, index) => [type, index]));
   return [...(contacts ?? [])]
     .sort((a, b) => (orderIndex.get(a.type) ?? 99) - (orderIndex.get(b.type) ?? 99))
     .map((contact) => {
       const icon = CONTACT_ICON_BY_TYPE[contact.type];
-      const url = resolveAdvertiserContactUrl(contact);
+      const url = resolveAdvertiserContactUrl(contact, options);
       if (!icon || !url) return null;
       return { contact, url, ...icon };
     })

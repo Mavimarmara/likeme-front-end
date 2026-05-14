@@ -127,9 +127,16 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   const isProgramProduct = product?.type === PRODUCT_CATALOG_TYPE.PROGRAM;
 
   const productTabOptions: ButtonCarouselOption<'about' | 'agreements'>[] = useMemo(() => {
+    const isPhysicalProduct = product?.type === PRODUCT_CATALOG_TYPE.PHYSICAL;
+    const secondaryTabLabel = isProgramProduct
+      ? 'Acordos'
+      : isPhysicalProduct
+      ? t('marketplace.composition')
+      : 'Acordos';
+
     const allTabs: ButtonCarouselOption<'about' | 'agreements'>[] = [
       { id: 'about', label: 'Sobre' },
-      { id: 'agreements', label: 'Acordos' },
+      { id: 'agreements', label: secondaryTabLabel },
     ];
 
     if (isProgramProduct) {
@@ -137,12 +144,12 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       if (productTabContent.about.length > 0) {
         tabs.push({ id: 'about', label: 'Sobre' });
       }
-      tabs.push({ id: 'agreements', label: 'Acordos' });
+      tabs.push({ id: 'agreements', label: secondaryTabLabel });
       return tabs;
     }
 
     return allTabs.filter((tab) => productTabContent[tab.id].length > 0);
-  }, [productTabContent, isProgramProduct]);
+  }, [productTabContent, isProgramProduct, product?.type, t]);
 
   const productCategory = product?.type ?? 'Product';
   const heroBadges = useMemo(() => {
@@ -377,9 +384,6 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                   {renderProductTabContent()}
                   {!isProgramProduct && hasSpecialistPartner ? (
                     <View style={styles.partnerSectionAbovePrice}>
-                      {(displayData.description ?? '').trim().length > 0 ? (
-                        <LinkifiedText style={styles.descriptionText} text={displayData.description ?? ''} />
-                      ) : null}
                       <PartnerSection
                         name={partnerData.name}
                         avatar={partnerData.avatar}

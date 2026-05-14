@@ -153,7 +153,13 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
     return null;
   }, [advertiser, providerFromParams]);
 
-  const contactButtons = useMemo(() => buildAdvertiserContactButtons(advertiser?.contacts), [advertiser?.contacts]);
+  const contactButtons = useMemo(
+    () =>
+      buildAdvertiserContactButtons(advertiser?.contacts, {
+        whatsappPrefillMessage: advertiser?.whatsappPrefillMessage,
+      }),
+    [advertiser?.contacts, advertiser?.whatsappPrefillMessage],
+  );
 
   const positioningProfile = useMemo(
     () => profiles.find((profile) => profile.key === 'profile.positioning'),

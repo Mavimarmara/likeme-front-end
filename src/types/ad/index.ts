@@ -17,6 +17,7 @@ export interface Advertiser {
   status: string;
   createdAt: string;
   updatedAt: string;
+  whatsappPrefillMessage?: string | null;
 }
 
 export type AdvertiserDocumentType = 'crm' | 'rqe';

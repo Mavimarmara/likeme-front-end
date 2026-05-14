@@ -2,7 +2,14 @@ import type { Contact } from '@/types/contact';
 
 const ensureHttpUrl = (value: string): string => (/^https?:\/\//i.test(value) ? value : `https://${value}`);
 
-export const resolveAdvertiserContactUrl = (contact: Contact): string | null => {
+export type ResolveAdvertiserContactUrlOptions = {
+  whatsappPrefillMessage?: string | null;
+};
+
+export const resolveAdvertiserContactUrl = (
+  contact: Contact,
+  options?: ResolveAdvertiserContactUrlOptions,
+): string | null => {
   const value = contact.value?.trim();
   if (!value) return null;
 
@@ -11,7 +18,10 @@ export const resolveAdvertiserContactUrl = (contact: Contact): string | null => 
       return `mailto:${value}`;
     case 'whatsapp': {
       const phone = value.replace(/\D/g, '');
-      return phone ? `https://wa.me/${phone}` : ensureHttpUrl(value);
+      if (!phone) return ensureHttpUrl(value);
+      const prefill = options?.whatsappPrefillMessage?.trim();
+      if (!prefill) return `https://wa.me/${phone}`;
+      return `https://wa.me/${phone}?text=${encodeURIComponent(prefill)}`;
     }
     case 'instagram':
       return value.startsWith('http') ? value : `https://instagram.com/${value.replace(/^@/, '')}`;
