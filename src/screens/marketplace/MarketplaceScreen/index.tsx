@@ -356,14 +356,9 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   }, [professionals, t, handleProfessionalPress]);
 
   const renderWeekHighlights = () => {
-    if (selectedSolutionTab === 'professionals') {
+    if (selectedSolutionTab !== SOLUTION_ALL) {
       return null;
     }
-
-    if (selectedSolutionTab === 'programs' || selectedSolutionTab === 'services') {
-      return null;
-    }
-
     if (appliedSearchQuery.trim().length > 0) {
       return null;
     }
