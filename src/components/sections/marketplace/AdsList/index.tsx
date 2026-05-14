@@ -8,7 +8,8 @@ import { FilterPickerModal } from '@/components/ui/modals';
 import { EmptyState } from '@/components/ui/feedback';
 import { useCategories } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
-import { getProductModeTranslationKey, handleAdNavigation } from '@/utils';
+import { handleAdNavigation } from '@/utils';
+import { buildMarketplaceCategoryBadgeLabels } from '@/utils/marketplace/buildMarketplaceCategoryBadgeLabels';
 import type { Ad } from '@/types/ad';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { RootStackParamList } from '@/types/navigation';
@@ -158,11 +159,7 @@ const AdsList: React.FC<AdsListProps> = ({
     const product = ad.product;
     const displayName = product?.name || t('marketplace.product', { defaultValue: 'Product' });
     const displayImage = product?.image || DEFAULT_IMAGE;
-    const displayCategory = product?.categoryId
-      ? categories.find((c) => c.categoryId === product.categoryId)?.name
-      : undefined;
-    const modeTranslationKey = getProductModeTranslationKey(product);
-    const displayMode = modeTranslationKey ? t(`marketplace.productMode.${modeTranslationKey}`) : undefined;
+    const categoryBadges = buildMarketplaceCategoryBadgeLabels(product, categories);
     const productPrice = product?.price;
 
     return (
@@ -170,7 +167,7 @@ const AdsList: React.FC<AdsListProps> = ({
         key={ad.id}
         image={displayImage}
         title={displayName}
-        badges={[displayCategory, displayMode].filter(Boolean) as string[]}
+        badges={categoryBadges}
         price={productPrice}
         outOfStock={product?.status === 'out_of_stock'}
         outOfStockLabel={t('marketplace.outOfStock', {

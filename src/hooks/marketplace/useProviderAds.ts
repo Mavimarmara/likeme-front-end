@@ -1,3 +1,4 @@
+import { enrichAdsProductsWithCategoriesFromByProductApi } from '@/hooks/marketplace/productCategoryEnrichment';
 import { useState, useCallback, useEffect } from 'react';
 import { adService } from '@/services';
 import type { Ad } from '@/types/ad';
@@ -47,7 +48,7 @@ export const useProviderAds = ({ advertiserId, page = 1, limit = 20 }: UseProvid
         return;
       }
 
-      const adsArray = response.data.ads || [];
+      const adsArray = await enrichAdsProductsWithCategoriesFromByProductApi(response.data.ads || []);
       if (page === 1) {
         setAds(adsArray);
       } else {

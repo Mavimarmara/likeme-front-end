@@ -10,6 +10,10 @@ import type { Ad } from '@/types/ad';
 import type { ApiError } from '@/types/infrastructure';
 import { logger } from '@/utils/logger';
 import { buildApiProductFromRouteFallback, type RouteFallbackProduct } from '@/utils/marketplace/routeProductFallback';
+import {
+  enrichAdsProductsWithCategoriesFromByProductApi,
+  enrichProductsWithCategoriesFromByProductApi,
+} from './productCategoryEnrichment';
 
 function isAdRequestNotFound(error: unknown): boolean {
   if (typeof error !== 'object' || error === null) {
@@ -29,7 +33,11 @@ async function redirectAmazonProductToAffiliateScreen(
     limit: 1,
   });
 
-  const firstAdId = adsResponse.success && adsResponse.data?.ads.length ? adsResponse.data.ads[0].id : undefined;
+  let firstAdId: string | undefined;
+  if (adsResponse.success && adsResponse.data?.ads.length) {
+    const [a] = await enrichAdsProductsWithCategoriesFromByProductApi([adsResponse.data.ads[0]]);
+    firstAdId = a.id;
+  }
 
   navigation.replace('AffiliateProduct', {
     productId,
@@ -106,7 +114,7 @@ export const useProductDetails = ({
         return;
       }
 
-      const productData = response.data;
+      const [productData] = await enrichProductsWithCategoriesFromByProductApi([response.data]);
 
       if (productData.type === PRODUCT_CATALOG_TYPE.AMAZON && !skipAmazonRedirect) {
         await redirectAmazonProductToAffiliateScreen(navigation, productData, productId);
@@ -132,7 +140,8 @@ export const useProductDetails = ({
       });
 
       if (response.success && response.data) {
-        setRelatedProducts(response.data.products.filter((p) => p.id !== productId));
+        const enriched = await enrichProductsWithCategoriesFromByProductApi(response.data.products);
+        setRelatedProducts(enriched.filter((p) => p.id !== productId));
       }
     } catch (error) {
       logger.error('[useProductDetails] Erro ao carregar produtos relacionados', error);
@@ -145,7 +154,7 @@ export const useProductDetails = ({
         try {
           const adDetailResponse = await adService.getAdById(adId);
           if (adDetailResponse.success && adDetailResponse.data) {
-            const adData = adDetailResponse.data;
+            const [adData] = await enrichAdsProductsWithCategoriesFromByProductApi([adDetailResponse.data]);
             setAd(adData);
             const nested = adData.product;
             if (nested) {
@@ -178,11 +187,12 @@ export const useProductDetails = ({
         return;
       }
 
-      const adData = response.data.ads[0];
+      const [adData] = await enrichAdsProductsWithCategoriesFromByProductApi([response.data.ads[0]]);
       try {
         const adDetailResponse = await adService.getAdById(adData.id);
         if (adDetailResponse.success && adDetailResponse.data) {
-          setAd(adDetailResponse.data);
+          const [detailAd] = await enrichAdsProductsWithCategoriesFromByProductApi([adDetailResponse.data]);
+          setAd(detailAd);
           return;
         }
         setAd(adData);

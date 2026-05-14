@@ -6,6 +6,7 @@ import { SearchBar } from '@/components/ui/inputs';
 import { IconButton } from '@/components/ui/buttons';
 import { StickyFilterCarouselRow } from '@/components/ui/menu';
 import { DEFAULT_MARKETPLACE_SORT_ORDER, type MarketplaceSortOrderId } from '@/constants/marketplaceSortOrder';
+import { buildMarketplaceCategoryBadgeLabels } from '@/utils/marketplace/buildMarketplaceCategoryBadgeLabels';
 import { sortAdsByMarketplaceOrder } from '@/utils/marketplace/sorting';
 import { ScreenWithHeader } from '@/components/ui/layout';
 import { GradientBackgroundByCategory } from '@/components/sections';
@@ -369,9 +370,8 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       return null;
     }
 
-    const categoryBadge = highlight.product.categoryId
-      ? categories.find((c) => c.categoryId === highlight.product?.categoryId)?.name
-      : undefined;
+    const categoryBadgeLabels = buildMarketplaceCategoryBadgeLabels(highlight.product, categories);
+    const categoryBadge = categoryBadgeLabels.length > 0 ? categoryBadgeLabels.join(' · ') : undefined;
 
     return (
       <View style={styles.section}>

@@ -4,6 +4,7 @@ import { logger } from '@/utils/logger';
 import type { Ad } from '@/types/ad';
 import type { Product } from '@/types/product';
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
+import { enrichProductsWithCategoriesFromByProductApi } from './productCategoryEnrichment';
 
 const adIsUsableForListing = (ad: Ad): boolean => {
   if (ad.status !== 'active') {
@@ -109,7 +110,7 @@ export const useProducts = ({
         return;
       }
 
-      const products = response.data.products ?? [];
+      const products = await enrichProductsWithCategoriesFromByProductApi(response.data.products ?? []);
       const rows = products.map(listingAdFromProduct);
 
       if (page === 1) {

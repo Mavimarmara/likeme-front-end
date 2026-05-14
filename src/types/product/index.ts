@@ -55,7 +55,10 @@ export interface Product {
   quantity?: number; // Optional when externalUrl is provided
   image?: string;
   type?: ProductCatalogType | string;
-  categoryId?: string; // FK to Category (Estresse, Sono, etc.)
+  categoryId?: string;
+  categoryIds?: string[];
+  categoryNames?: string[];
+  categoryName?: string | null;
   modes?: Array<{
     modeId?: string;
     mode?: {

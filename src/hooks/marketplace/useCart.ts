@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import storageService from '@/services/auth/storageService';
 import productService from '@/services/product/productService';
+import { enrichProductsWithCategoriesFromByProductApi } from '@/hooks/marketplace/productCategoryEnrichment';
 import type { CartItem } from '@/types/cart';
 import { isProductCatalogType, resolveCartItemCatalogType } from '@/types/product';
 import { logger } from '@/utils/logger';
@@ -73,7 +74,7 @@ export function useCart(options: UseCartOptions = {}): UseCartReturn {
             continue;
           }
 
-          const product = productResponse.data;
+          const [product] = await enrichProductsWithCategoriesFromByProductApi([productResponse.data]);
           const requestedQuantity = Number(item.quantity) || 1;
 
           if (product.quantity !== null) {

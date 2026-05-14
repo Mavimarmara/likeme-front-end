@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { adService } from '@/services';
+import { enrichAdsProductsWithCategoriesFromByProductApi } from '@/hooks/marketplace/productCategoryEnrichment';
 import { mapUICategoryToApiCategory } from '@/utils';
 import { logger } from '@/utils/logger';
 import type { Ad, ListAdsParams } from '@/types/ad';
@@ -76,7 +77,7 @@ export const useMarketplaceAds = ({
         return;
       }
 
-      const adsArray = response.data.ads || [];
+      const adsArray = await enrichAdsProductsWithCategoriesFromByProductApi(response.data.ads || []);
       updateAds(adsArray);
       updatePagination(response.data.pagination, adsArray.length, params.limit);
     } catch (error) {

@@ -1,7 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import { productService, categoryService } from '@/services';
+import { productService } from '@/services';
 import type { Product } from '@/components/sections/product';
 import { logger } from '@/utils/logger';
+import {
+  PRODUCT_LIST_CATEGORY_TAGS_LIMIT,
+  enrichProductsWithCategoriesFromByProductApi,
+} from './productCategoryEnrichment';
 
 /** Lista padrão de produtos sugeridos (Home Summary, Activities, Comunidade sem filtro extra). */
 export const SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS = {
@@ -30,7 +34,6 @@ export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}):
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
-  const TAGS_QUANTITY = 2;
 
   const loadProducts = useCallback(async () => {
     if (!enabled) {
@@ -49,28 +52,10 @@ export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}):
       });
 
       if (productsResponse.success && productsResponse.data) {
-        const list = productsResponse.data.products;
-        const categoriesByProductId = await Promise.all(
-          list.map(async (p) => {
-            try {
-              const res = await categoryService.listProductCategories(p.id);
-              if (res.success && res.data?.categories?.length) {
-                return { productId: p.id, categories: res.data.categories };
-              }
-            } catch (e) {
-              logger.warn('[useSuggestedProducts] Falha ao carregar categorias do produto', {
-                productId: p.id,
-                cause: e,
-              });
-            }
-            return { productId: p.id, categories: [] as { id: string; name: string }[] };
-          }),
-        );
-        const categoriesMap = new Map(categoriesByProductId.map((row) => [row.productId, row.categories]));
-
+        const list = await enrichProductsWithCategoriesFromByProductApi(productsResponse.data.products);
         const mappedProducts: Product[] = list.map((p) => {
-          const allNames = (categoriesMap.get(p.id) ?? []).map((c) => c.name.trim()).filter(Boolean);
-          const tags = allNames.slice(0, TAGS_QUANTITY);
+          const allNames = (p.categoryNames ?? []).map((n) => (typeof n === 'string' ? n.trim() : '')).filter(Boolean);
+          const tags = allNames.slice(0, PRODUCT_LIST_CATEGORY_TAGS_LIMIT);
           const categoryLabel = tags[0] ?? '';
 
           return {
