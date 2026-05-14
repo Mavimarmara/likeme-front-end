@@ -339,7 +339,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
                   </Text>
                   {advertiser.description ? (
                     <Text style={shoppingListStyles.professionalProfession} numberOfLines={1}>
-                      Especialista
+                      {advertiser.description}
                     </Text>
                   ) : null}
                 </View>

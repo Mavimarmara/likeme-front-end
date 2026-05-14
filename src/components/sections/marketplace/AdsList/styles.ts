@@ -60,6 +60,7 @@ export const styles = StyleSheet.create({
   },
   mAdsList: {
     gap: SPACING.MD,
+    paddingBottom: SPACING.MD,
   },
   solutionTabsRow: {
     marginTop: SPACING.MD,

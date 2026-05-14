@@ -113,6 +113,8 @@ const AdsList: React.FC<AdsListProps> = ({
   const isProfessionalsTab =
     selectedTabId === 'professionals' && (hasSolutionTabStrip || marketplaceListWithoutInlineChrome);
   const showAdsListInTabbedMode = isControlledTabbed && !isProfessionalsTab;
+  const showProfessionalsAfterAllTab =
+    marketplaceListWithoutInlineChrome && selectedTabId === 'all' && professionalsContent != null;
 
   const handleAdPress = (ad: Ad) => {
     if (navigation) handleAdNavigation(ad, navigation);
@@ -237,7 +239,11 @@ const AdsList: React.FC<AdsListProps> = ({
       ) : hasSolutionTabStrip && isEmptyTab ? (
         renderEmptyState()
       ) : isEmptyControlledTabbed ? (
-        renderEmptyState()
+        showProfessionalsAfterAllTab ? (
+          professionalsContent
+        ) : (
+          renderEmptyState()
+        )
       ) : !isEmpty || showAdsListInTabbedMode ? (
         <>
           {!isSimpleMode && !hasSolutionTabStrip && !marketplaceListWithoutInlineChrome && (
@@ -262,6 +268,7 @@ const AdsList: React.FC<AdsListProps> = ({
               </TouchableOpacity>
             )}
           </View>
+          {showProfessionalsAfterAllTab ? professionalsContent : null}
         </>
       ) : null}
     </View>
