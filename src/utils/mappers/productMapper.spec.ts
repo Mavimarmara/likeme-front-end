@@ -9,13 +9,11 @@ import { mapApiProductToCarouselProduct, mapApiProductToNavigationParams } from 
 import type { Product as ApiProduct } from '@/types/product';
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 
-jest.mock('@/utils', () => ({
-  formatPrice: jest.fn((price) => {
-    if (price === null || price === undefined || isNaN(Number(price))) {
-      return '$0.00';
-    }
-    return `$${Number(price).toFixed(2)}`;
-  }),
+jest.mock('@/i18n', () => ({
+  __esModule: true,
+  default: {
+    t: (key: string) => (key === 'marketplace.noPriceLabel' ? 'Sob Demanda' : key),
+  },
 }));
 
 describe('productMapper', () => {
@@ -60,12 +58,11 @@ describe('productMapper', () => {
       expect(result.image).toBe('https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400');
     });
 
-    it('deve converter price null/undefined para 0', () => {
+    it('deve preservar price null no carousel', () => {
       const productWithNullPrice = { ...mockApiProduct, price: null };
       const result = mapApiProductToCarouselProduct(productWithNullPrice);
 
-      // O mapper converte null/undefined para 0 usando || 0
-      expect(result.price).toBe(0);
+      expect(result.price).toBeNull();
     });
   });
 
@@ -76,7 +73,7 @@ describe('productMapper', () => {
       expect(result).toEqual({
         id: 'product-1',
         title: 'Test Product',
-        price: '$29.99',
+        price: 'R$29.99',
         image: 'https://example.com/image.jpg',
         type: PRODUCT_CATALOG_TYPE.PHYSICAL,
         description: 'Test description',
@@ -85,7 +82,7 @@ describe('productMapper', () => {
 
     it('deve formatar preço corretamente', () => {
       const result = mapApiProductToNavigationParams(mockApiProduct);
-      expect(result.price).toMatch(/^\$\d+\.\d{2}$/);
+      expect(result.price).toMatch(/^R\$\d+\.\d{2}$/);
     });
 
     it('deve usar placeholder quando image é undefined', () => {
@@ -95,11 +92,11 @@ describe('productMapper', () => {
       expect(result.image).toBe('https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400');
     });
 
-    it('deve lidar com price null/undefined', () => {
+    it('deve usar rótulo Sob Demanda quando price é null', () => {
       const productWithNullPrice = { ...mockApiProduct, price: null };
       const result = mapApiProductToNavigationParams(productWithNullPrice);
 
-      expect(result.price).toBe('$0.00');
+      expect(result.price).toBe('Sob Demanda');
     });
   });
 });

@@ -1,6 +1,8 @@
 import type { Ad } from '@/types/ad';
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
-import { formatPrice } from '@/utils';
+import { formatPriceLabel } from '@/utils/formatters/priceFormatter';
+
+const priceForNav = (raw: number | null | undefined) => formatPriceLabel(raw);
 
 interface Navigation {
   navigate: (screen: string, params?: any) => void;
@@ -26,7 +28,7 @@ export const navigateToAmazonProduct = (ad: Ad, navigation: Navigation): boolean
     ? {
         id: ad.product.id,
         title: ad.product.name,
-        price: formatPrice(ad.product.price),
+        price: priceForNav(ad.product.price),
         image: ad.product.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
         type: ad.product.type,
         description: ad.product.description,
@@ -58,7 +60,7 @@ export const navigateToExternalProduct = (ad: Ad, navigation: Navigation): boole
     product: {
       id: ad.product.id,
       title: ad.product.name,
-      price: formatPrice(ad.product.price),
+      price: priceForNav(ad.product.price),
       image: ad.product.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
       type: ad.product.type,
       description: ad.product.description,
@@ -79,7 +81,7 @@ export const navigateToProductDetails = (ad: Ad, navigation: Navigation): boolea
     product: {
       id: ad.product.id,
       title: ad.product.name,
-      price: formatPrice(ad.product.price),
+      price: priceForNav(ad.product.price),
       image: ad.product.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
       type: ad.product.type,
       description: ad.product.description,

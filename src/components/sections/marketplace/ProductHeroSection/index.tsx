@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { HeroImage } from '@/components/ui/layout';
-import { formatPrice } from '@/utils';
+import { formatPriceLabel } from '@/utils/formatters/priceFormatter';
 import { useTranslation } from '@/hooks/i18n';
 import { styles } from './styles';
 
@@ -37,8 +37,8 @@ export const ProductHeroSection: React.FC<ProductHeroSectionProps> = ({
       </View>
       <Text style={styles.heroCardTitle}>{title}</Text>
       <View style={styles.heroCardPriceRow}>
-        <Text style={styles.heroCardPrice}>{formatPrice(price)}</Text>
-        {!isOutOfStock && (
+        <Text style={styles.heroCardPrice}>{formatPriceLabel(price)}</Text>
+        {!isOutOfStock && price != null && (
           <TouchableOpacity style={styles.heroCardCartButton} onPress={onAddToCart} activeOpacity={0.7}>
             <Icon name='shopping-cart' size={20} color='#001137' />
           </TouchableOpacity>

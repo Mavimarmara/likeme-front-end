@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, Pressable } from 'react-native';
 import { BlurCard } from '@/components/ui/cards';
 import { IconButton } from '@/components/ui/buttons';
 import { useTranslation } from '@/hooks/i18n';
-import { formatPrice } from '@/utils';
+import { formatPriceLabel } from '@/utils/formatters/priceFormatter';
 import HeartSuggested from '../../../../../assets/home-mvp/heart.svg';
 import { styles } from './styles';
 
@@ -49,7 +49,7 @@ const ProductCard: React.FC<Props> = ({ product, onPress, onLike }) => {
 
   const footerSection = (
     <View style={styles.bottomInfo}>
-      <Text style={styles.price}>{formatPrice(product.price)}</Text>
+      <Text style={styles.price}>{formatPriceLabel(product.price)}</Text>
       {onLike && (
         <TouchableOpacity style={styles.likeButton} onPress={() => onLike?.(product)} activeOpacity={0.7}>
           <HeartSuggested width={20} height={20} />

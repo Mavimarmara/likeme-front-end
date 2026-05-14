@@ -115,7 +115,6 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
       image={item.image}
       title={item.title}
       price={item.price}
-      formatPrice={formatPrice}
       onPress={noop}
       badges={catalogTypeTranslatedBadgeLabels(item.type, t)}
       subtitle={

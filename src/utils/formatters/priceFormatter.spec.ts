@@ -5,7 +5,14 @@
  * do formatter de preços, demonstrando como lidar com diferentes cenários.
  */
 
-import { PriceFormatter, formatPrice } from './priceFormatter';
+jest.mock('@/i18n', () => ({
+  __esModule: true,
+  default: {
+    t: (key: string) => (key === 'marketplace.noPriceLabel' ? 'Sob Demanda' : key),
+  },
+}));
+
+import { PriceFormatter, formatPrice, formatPriceLabel } from './priceFormatter';
 
 describe('PriceFormatter', () => {
   describe('Constructor e normalização', () => {
@@ -159,5 +166,23 @@ describe('formatPrice (função helper)', () => {
 
   it('deve formatar preço inteiro com 2 casas decimais', () => {
     expect(formatPrice(100)).toBe('R$100.00');
+  });
+});
+
+describe('formatPriceLabel', () => {
+  it('deve retornar o rótulo quando price é null', () => {
+    expect(formatPriceLabel(null)).toBe('Sob Demanda');
+  });
+
+  it('deve retornar o rótulo quando price é undefined', () => {
+    expect(formatPriceLabel(undefined)).toBe('Sob Demanda');
+  });
+
+  it('deve formatar número quando price está definido', () => {
+    expect(formatPriceLabel(42.5)).toBe('R$42.50');
+  });
+
+  it('deve respeitar moeda USD quando informada', () => {
+    expect(formatPriceLabel(10, 'USD')).toBe('$10.00');
   });
 });

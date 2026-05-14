@@ -8,7 +8,7 @@ import { FilterPickerModal } from '@/components/ui/modals';
 import { EmptyState } from '@/components/ui/feedback';
 import { useCategories } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
-import { formatPrice, getProductModeTranslationKey, handleAdNavigation } from '@/utils';
+import { getProductModeTranslationKey, handleAdNavigation } from '@/utils';
 import type { Ad } from '@/types/ad';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { RootStackParamList } from '@/types/navigation';
@@ -178,7 +178,6 @@ const AdsList: React.FC<AdsListProps> = ({
         })}
         onPress={() => handleAdPress(ad)}
         showTrailingChevron={!!product}
-        formatPrice={formatPrice}
       />
     );
   };
@@ -192,7 +191,6 @@ const AdsList: React.FC<AdsListProps> = ({
       price={product.price ?? undefined}
       onPress={() => onProductPress?.(product)}
       showTrailingChevron={!!onProductPress}
-      formatPrice={formatPrice}
     />
   );
 

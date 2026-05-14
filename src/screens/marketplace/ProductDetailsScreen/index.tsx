@@ -18,6 +18,7 @@ import { useMenuItems, useProductDetails, useSuggestedProducts } from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 import { formatPrice, getProductModeTranslationKey } from '@/utils';
+import { formatPriceLabel } from '@/utils/formatters/priceFormatter';
 import {
   useAnalyticsScreen,
   logButtonClick,
@@ -470,7 +471,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
               product: {
                 id: p.id,
                 title: p.title,
-                price: formatPrice(p.price ?? 0),
+                price: formatPriceLabel(p.price),
                 image: p.image || MARKETPLACE_PRODUCT_PLACEHOLDER_IMAGE_URI,
               },
             });

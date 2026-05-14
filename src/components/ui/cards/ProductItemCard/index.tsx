@@ -3,19 +3,19 @@ import { View, Text, Pressable, Image, ImageSourcePropType } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { IconButton } from '@/components/ui/buttons';
 import { COLORS } from '@/constants';
+import { formatPriceLabel } from '@/utils/formatters/priceFormatter';
 import { styles } from './styles';
 
 export type ProductItemCardProps = {
   image: string;
   title: string;
   badges?: string[];
-  price?: number;
+  price?: number | null;
   outOfStock?: boolean;
   outOfStockLabel?: string;
   onPress: () => void;
   /** Seta à direita chama o mesmo `onPress` do card (ex.: listagem marketplace/comunidade). */
   showTrailingChevron?: boolean;
-  formatPrice: (value: number) => string;
   fallbackImage?: ImageSourcePropType;
   subtitle?: string;
   rating?: number;
@@ -42,7 +42,6 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
   outOfStockLabel = 'Sem estoque',
   onPress,
   showTrailingChevron = false,
-  formatPrice,
   fallbackImage,
   subtitle,
   rating,
@@ -115,7 +114,7 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
             {outOfStock ? (
               <Text style={styles.outOfStock}>{outOfStockLabel}</Text>
             ) : (
-              price !== undefined && <Text style={styles.price}>{formatPrice(price)}</Text>
+              <Text style={styles.price}>{formatPriceLabel(price)}</Text>
             )}
           </View>
           {showQuantityRow ? (

@@ -331,7 +331,6 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
                   image={item.image}
                   title={item.title}
                   price={item.price}
-                  formatPrice={formatPrice}
                   onPress={noop}
                   badges={catalogTypeTranslatedBadgeLabels(item.type, t)}
                   subtitle={

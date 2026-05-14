@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { IconButton } from '@/components/ui/buttons';
-import { formatPrice } from '@/utils';
+import { formatPriceLabel } from '@/utils/formatters/priceFormatter';
 import { styles } from './styles';
 
 type ProductHeroFooterProps = {
@@ -19,10 +19,12 @@ export const ProductHeroFooter: React.FC<ProductHeroFooterProps> = ({
 }) => {
   return (
     <View style={styles.heroFooter}>
-      {!isOutOfStock && price != null ? (
+      {!isOutOfStock ? (
         <View style={styles.priceRow}>
-          <Text style={styles.heroPrice}>{formatPrice(price)}</Text>
-          {priceSuffix?.trim() ? <Text style={styles.heroPriceSuffix}>{priceSuffix.trim()}</Text> : null}
+          <Text style={styles.heroPrice}>{formatPriceLabel(price)}</Text>
+          {price != null && priceSuffix?.trim() ? (
+            <Text style={styles.heroPriceSuffix}>{priceSuffix.trim()}</Text>
+          ) : null}
         </View>
       ) : (
         <View />

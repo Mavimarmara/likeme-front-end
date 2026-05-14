@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
-import { formatPrice } from '@/utils';
+import { formatPriceLabel } from '@/utils/formatters/priceFormatter';
 import { styles } from './styles';
 
 interface WeekHighlightCardProps {
@@ -23,7 +23,7 @@ export const WeekHighlightCard: React.FC<WeekHighlightCardProps> = ({ title, ima
       ) : null}
       <View style={styles.weekHighlightContent}>
         <Text style={styles.weekHighlightTitle}>{title}</Text>
-        <Text style={styles.weekHighlightPrice}>{formatPrice(price)}</Text>
+        <Text style={styles.weekHighlightPrice}>{formatPriceLabel(price)}</Text>
       </View>
     </TouchableOpacity>
   );
