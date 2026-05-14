@@ -200,10 +200,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     rootNavigation?.navigate('ProductDetails', { productId: product.id } as never);
   };
 
-  const handleProductLike = (product: Product) => {
-    logger.debug('[CommunityScreen] product like (stub)', { productId: product.id });
-  };
-
   const handleProfessionalPress = (advertiser: Advertiser) => {
     rootNavigation?.navigate('ProviderProfile', { providerId: advertiser.id } as never);
   };
@@ -507,7 +503,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
                   onEventSave={handleEventSave}
                   products={suggestedProducts}
                   onProductPress={handleProductPress}
-                  onProductLike={handleProductLike}
                   embedInParentScroll
                   betweenSpecialistAndPosts={feedInformationSlot}
                   renderPostsFeed={activeInfoTab === 'posts'}
@@ -528,7 +523,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
                   programs={suggestedPrograms}
                   professionals={shopProfessionals}
                   onProductPress={handleProductPress}
-                  onProductLike={handleProductLike}
                   onProfessionalPress={handleProfessionalPress}
                   embedInParentScroll
                 />
