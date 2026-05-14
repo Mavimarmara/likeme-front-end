@@ -23,8 +23,15 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     color: COLORS.TEXT_LIGHT,
-    marginBottom: SPACING.XL,
+    marginBottom: SPACING.LG,
     fontFamily: 'DM Sans',
+  },
+  storeBadges: {
+    width: '100%',
+    maxWidth: 280,
+    height: 72,
+    alignSelf: 'center',
+    marginBottom: SPACING.LG,
   },
   buttonWrap: {
     marginTop: SPACING.MD,

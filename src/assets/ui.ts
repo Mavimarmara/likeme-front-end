@@ -1,5 +1,7 @@
 // Assets compartilhados de UI (layout, ícones genéricos, branding global)
 
+import type { ImageSourcePropType } from 'react-native';
+
 // Logos e ícones vetoriais
 import LogoSvg from '../../assets/ui/Logo.svg';
 import LogoMiniSvg from '../../assets/ui/LogoFullMini.svg';
@@ -19,6 +21,9 @@ import BackgroundWithGradientPng from '../../assets/ui/BackgroundWithGradient.pn
 import DoneIconPng from '../../assets/ui/Done.png';
 import CloseIconPng from '../../assets/ui/Close.png';
 import TwoDotsPng from '../../assets/icons/TwoDots.png';
+import StoreListingBadgesJpg from '../../assets/icons/apple_store_v2.jpg';
+
+export const STORE_LISTING_BADGES_IMAGE = StoreListingBadgesJpg as ImageSourcePropType;
 
 export const Logo = LogoSvg;
 export const LogoMini = LogoMiniSvg;

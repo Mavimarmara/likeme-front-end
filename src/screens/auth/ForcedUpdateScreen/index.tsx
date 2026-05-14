@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
-import { BackHandler, Platform, Text, View } from 'react-native';
+import { BackHandler, Image, Platform, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { STORE_LISTING_BADGES_IMAGE } from '@/assets/ui';
 import { PrimaryButton } from '@/components/ui/buttons';
 import { STORE_URL_CONFIG } from '@/config';
 import { useTranslation } from '@/hooks/i18n';
@@ -74,6 +75,12 @@ const ForcedUpdateScreen: React.FC<Props> = ({ route }) => {
       <View style={styles.container}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.body}>{body}</Text>
+        <Image
+          source={STORE_LISTING_BADGES_IMAGE}
+          style={styles.storeBadges}
+          resizeMode='contain'
+          accessibilityIgnoresInvertColors
+        />
         <View style={styles.buttonWrap}>
           <PrimaryButton
             label={t('appUpdate.updateButton')}
