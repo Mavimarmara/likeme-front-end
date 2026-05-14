@@ -754,7 +754,9 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation, route }
         {renderFilters()}
         {renderEventReminder()}
 
-        {activeTab === 'actives' && <Text style={styles.sectionLabel}>{t('activities.markAsDoneLabel')}</Text>}
+        {activeTab === 'actives' && filteredActivities.length > 0 && (
+          <Text style={styles.sectionLabel}>{t('activities.markAsDoneLabel')}</Text>
+        )}
 
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
           {activeTab === 'history' ? (

@@ -18,6 +18,7 @@ export interface UseAdvertisersParams {
   advertiserId?: string | null;
   communityId?: string;
   listOptions?: UseAdvertisersListOptions;
+  fetchAllPages?: boolean;
 }
 
 export interface UseAdvertisersReturn {
@@ -28,7 +29,7 @@ export interface UseAdvertisersReturn {
 }
 
 export const useAdvertisers = (params: UseAdvertisersParams = {}): UseAdvertisersReturn => {
-  const { advertiserId, communityId, listOptions } = params;
+  const { advertiserId, communityId, listOptions, fetchAllPages = false } = params;
   const [advertisers, setAdvertisers] = useState<Advertiser[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -89,18 +90,59 @@ export const useAdvertisers = (params: UseAdvertisersParams = {}): UseAdvertiser
     }
     const requestId = ++requestIdRef.current;
     startRequest(requestId);
+    const baseQuery = {
+      limit,
+      status,
+      communityId,
+      ...(search ? { search } : {}),
+      ...(categoryId ? { categoryId } : {}),
+    };
     try {
-      const response = await advertiserService.getAdvertisers({
-        page,
-        limit,
-        status,
-        communityId,
-        ...(search ? { search } : {}),
-        ...(categoryId ? { categoryId } : {}),
+      if (!fetchAllPages) {
+        const response = await advertiserService.getAdvertisers({
+          page,
+          ...baseQuery,
+        });
+        if (cancelledRef.current || requestId !== requestIdRef.current) return;
+        const list = response.success ? response.data?.advertisers ?? [] : [];
+        setAdvertisers(list);
+        return;
+      }
+
+      const first = await advertiserService.getAdvertisers({
+        page: 1,
+        ...baseQuery,
       });
       if (cancelledRef.current || requestId !== requestIdRef.current) return;
-      const list = response.success ? response.data?.advertisers ?? [] : [];
-      setAdvertisers(list);
+      if (!first.success || !first.data) {
+        setAdvertisers([]);
+        return;
+      }
+
+      const merged: Advertiser[] = [...(first.data.advertisers ?? [])];
+      const seenIds = new Set(merged.map((a) => a.id).filter(Boolean));
+      const totalPages = first.data.pagination?.totalPages ?? 1;
+
+      for (let p = 2; p <= totalPages; p += 1) {
+        if (cancelledRef.current || requestId !== requestIdRef.current) return;
+        const next = await advertiserService.getAdvertisers({
+          page: p,
+          ...baseQuery,
+        });
+        if (cancelledRef.current || requestId !== requestIdRef.current) return;
+        if (!next.success || !next.data) {
+          break;
+        }
+        for (const adv of next.data.advertisers ?? []) {
+          if (!adv.id || seenIds.has(adv.id)) {
+            continue;
+          }
+          seenIds.add(adv.id);
+          merged.push(adv);
+        }
+      }
+
+      setAdvertisers(merged);
     } catch (err) {
       if (cancelledRef.current || requestId !== requestIdRef.current) return;
       logger.error('Error loading advertisers list:', err);
@@ -109,7 +151,18 @@ export const useAdvertisers = (params: UseAdvertisersParams = {}): UseAdvertiser
     } finally {
       finishRequest(requestId);
     }
-  }, [shouldLoadList, page, limit, status, communityId, search, categoryId, finishRequest, startRequest]);
+  }, [
+    shouldLoadList,
+    fetchAllPages,
+    page,
+    limit,
+    status,
+    communityId,
+    search,
+    categoryId,
+    finishRequest,
+    startRequest,
+  ]);
 
   const refresh = useCallback(async (): Promise<void> => {
     if (shouldLoadList) {
@@ -132,7 +185,19 @@ export const useAdvertisers = (params: UseAdvertisersParams = {}): UseAdvertiser
     return () => {
       cancelledRef.current = true;
     };
-  }, [shouldLoadList, advertiserId, communityId, page, limit, status, search, categoryId, loadList, loadById]);
+  }, [
+    shouldLoadList,
+    advertiserId,
+    communityId,
+    page,
+    limit,
+    status,
+    search,
+    categoryId,
+    fetchAllPages,
+    loadList,
+    loadById,
+  ]);
 
   return {
     advertisers,

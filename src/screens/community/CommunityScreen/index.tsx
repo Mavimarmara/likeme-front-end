@@ -159,8 +159,16 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     };
   }, [selectedCommunityId]);
 
-  const { advertisers: advertisersList } = useAdvertisers({ communityId: selectedCommunityId });
-  const advertiser = advertisersList[0] ?? null;
+  const { advertisers: communityAdvertisers } = useAdvertisers({
+    communityId: selectedCommunityId,
+    fetchAllPages: true,
+  });
+  const advertiser = communityAdvertisers[0] ?? null;
+
+  const solutionsMode = selectedMode === COMMUNITY_VIEW.SOLUTIONS;
+  const { advertisers: shopProfessionals } = useAdvertisers(
+    solutionsMode ? { listOptions: { limit: 50 }, fetchAllPages: true } : {},
+  );
   const communityProviderName = advertiser?.name?.trim() ?? null;
 
   const { eventBanner, eventJoinUrl, closeEventSession, handleEventBannerPress } = useEventJoin({
@@ -509,7 +517,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
                   products={suggestedProducts}
                   services={suggestedServices}
                   programs={suggestedPrograms}
-                  professionals={advertisersList}
+                  professionals={shopProfessionals}
                   onProductPress={handleProductPress}
                   onProductLike={handleProductLike}
                   onProfessionalPress={handleProfessionalPress}

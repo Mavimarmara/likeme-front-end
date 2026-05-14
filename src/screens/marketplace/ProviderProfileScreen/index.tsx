@@ -187,11 +187,10 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
   const rootNavigation = navigation.getParent() ?? navigation;
 
   const loadCommunityShop = activeTab === 'communities';
-  const providerCommunityId = advertiser?.communityId?.trim() ?? '';
 
-  const { advertisers: communityShopAdvertisers } = useAdvertisers({
-    communityId: loadCommunityShop && providerCommunityId ? providerCommunityId : undefined,
-  });
+  const { advertisers: communityShopAdvertisers } = useAdvertisers(
+    loadCommunityShop ? { listOptions: { limit: 50 }, fetchAllPages: true } : {},
+  );
 
   const communityShopProfessionals = useMemo(() => {
     const filtered = communityShopAdvertisers.filter((a) => a.id !== providerId);
