@@ -2,6 +2,31 @@ import i18n from '@/i18n';
 
 const MARKETPLACE_NO_PRICE_LABEL_KEY = 'marketplace.noPriceLabel';
 
+function splitFixedParts(value: number): { sign: '' | '-'; intPart: string; fraction: string } {
+  const rounded = Math.round((value + Number.EPSILON) * 100) / 100;
+  const parts = rounded.toFixed(2).split('.');
+  const intRaw = parts[0] ?? '0';
+  const fraction = parts[1] ?? '00';
+  const isNegative = intRaw.startsWith('-');
+  return {
+    sign: isNegative ? '-' : '',
+    intPart: isNegative ? intRaw.slice(1) : intRaw,
+    fraction,
+  };
+}
+
+function formatBRLAmount(value: number): string {
+  const { sign, intPart, fraction } = splitFixedParts(value);
+  const grouped = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return `R$${sign}${grouped},${fraction}`;
+}
+
+function formatUSDAmount(value: number): string {
+  const { sign, intPart, fraction } = splitFixedParts(value);
+  const grouped = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return `$${sign}${grouped}.${fraction}`;
+}
+
 export class PriceFormatter {
   private readonly value: number;
 
@@ -17,11 +42,11 @@ export class PriceFormatter {
   }
 
   toUSD(): string {
-    return `$${this.value.toFixed(2)}`;
+    return formatUSDAmount(this.value);
   }
 
   toBRL(): string {
-    return `R$${this.value.toFixed(2)}`;
+    return formatBRLAmount(this.value);
   }
 
   format(currency: 'USD' | 'BRL' = 'USD'): string {

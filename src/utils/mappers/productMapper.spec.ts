@@ -73,7 +73,7 @@ describe('productMapper', () => {
       expect(result).toEqual({
         id: 'product-1',
         title: 'Test Product',
-        price: 'R$29.99',
+        price: 'R$29,99',
         image: 'https://example.com/image.jpg',
         type: PRODUCT_CATALOG_TYPE.PHYSICAL,
         description: 'Test description',
@@ -82,7 +82,7 @@ describe('productMapper', () => {
 
     it('deve formatar preço corretamente', () => {
       const result = mapApiProductToNavigationParams(mockApiProduct);
-      expect(result.price).toMatch(/^R\$\d+\.\d{2}$/);
+      expect(result.price).toMatch(/^R\$\d[\d.]*,\d{2}$/);
     });
 
     it('deve usar placeholder quando image é undefined', () => {

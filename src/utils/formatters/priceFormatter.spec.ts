@@ -58,6 +58,11 @@ describe('PriceFormatter', () => {
       expect(formatter.toUSD()).toBe('$100.00');
     });
 
+    it('deve formatar milhar em dólares', () => {
+      const formatter = new PriceFormatter(1234.56);
+      expect(formatter.toUSD()).toBe('$1,234.56');
+    });
+
     it('deve formatar preço com muitas casas decimais corretamente', () => {
       const formatter = new PriceFormatter(29.999999);
       expect(formatter.toUSD()).toBe('$30.00');
@@ -77,17 +82,22 @@ describe('PriceFormatter', () => {
   describe('toBRL()', () => {
     it('deve formatar preço em reais com 2 casas decimais', () => {
       const formatter = new PriceFormatter(29.99);
-      expect(formatter.toBRL()).toBe('R$29.99');
+      expect(formatter.toBRL()).toBe('R$29,99');
     });
 
     it('deve formatar preço inteiro em reais', () => {
       const formatter = new PriceFormatter(100);
-      expect(formatter.toBRL()).toBe('R$100.00');
+      expect(formatter.toBRL()).toBe('R$100,00');
+    });
+
+    it('deve formatar milhar em reais', () => {
+      const formatter = new PriceFormatter(1234.56);
+      expect(formatter.toBRL()).toBe('R$1.234,56');
     });
 
     it('deve formatar zero em reais', () => {
       const formatter = new PriceFormatter(0);
-      expect(formatter.toBRL()).toBe('R$0.00');
+      expect(formatter.toBRL()).toBe('R$0,00');
     });
   });
 
@@ -104,7 +114,7 @@ describe('PriceFormatter', () => {
 
     it('deve formatar em BRL quando especificado', () => {
       const formatter = new PriceFormatter(29.99);
-      expect(formatter.format('BRL')).toBe('R$29.99');
+      expect(formatter.format('BRL')).toBe('R$29,99');
     });
   });
 
@@ -133,39 +143,43 @@ describe('PriceFormatter', () => {
 
 describe('formatPrice (função helper)', () => {
   it('deve formatar preço em BRL por padrão', () => {
-    expect(formatPrice(29.99)).toBe('R$29.99');
+    expect(formatPrice(29.99)).toBe('R$29,99');
   });
 
   it('deve formatar preço em BRL quando especificado', () => {
-    expect(formatPrice(29.99, 'BRL')).toBe('R$29.99');
+    expect(formatPrice(29.99, 'BRL')).toBe('R$29,99');
   });
 
   it('deve formatar preço em USD quando especificado', () => {
     expect(formatPrice(29.99, 'USD')).toBe('$29.99');
   });
 
-  it('deve lidar com null retornando R$0.00', () => {
-    expect(formatPrice(null)).toBe('R$0.00');
+  it('deve formatar milhar em BRL', () => {
+    expect(formatPrice(12_345.67)).toBe('R$12.345,67');
   });
 
-  it('deve lidar com undefined retornando R$0.00', () => {
-    expect(formatPrice(undefined)).toBe('R$0.00');
+  it('deve lidar com null retornando R$0,00', () => {
+    expect(formatPrice(null)).toBe('R$0,00');
   });
 
-  it('deve lidar com NaN retornando R$0.00', () => {
-    expect(formatPrice(NaN)).toBe('R$0.00');
+  it('deve lidar com undefined retornando R$0,00', () => {
+    expect(formatPrice(undefined)).toBe('R$0,00');
+  });
+
+  it('deve lidar com NaN retornando R$0,00', () => {
+    expect(formatPrice(NaN)).toBe('R$0,00');
   });
 
   it('deve formatar preço zero corretamente', () => {
-    expect(formatPrice(0)).toBe('R$0.00');
+    expect(formatPrice(0)).toBe('R$0,00');
   });
 
   it('deve formatar preço com muitas casas decimais', () => {
-    expect(formatPrice(29.999999)).toBe('R$30.00');
+    expect(formatPrice(29.999999)).toBe('R$30,00');
   });
 
   it('deve formatar preço inteiro com 2 casas decimais', () => {
-    expect(formatPrice(100)).toBe('R$100.00');
+    expect(formatPrice(100)).toBe('R$100,00');
   });
 });
 
@@ -179,7 +193,7 @@ describe('formatPriceLabel', () => {
   });
 
   it('deve formatar número quando price está definido', () => {
-    expect(formatPriceLabel(42.5)).toBe('R$42.50');
+    expect(formatPriceLabel(42.5)).toBe('R$42,50');
   });
 
   it('deve respeitar moeda USD quando informada', () => {
