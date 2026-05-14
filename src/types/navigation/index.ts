@@ -1,3 +1,10 @@
+import type { NavigatorScreenParams } from '@react-navigation/native';
+
+export type CommunityStackParamList = {
+  CommunityList: { openFeedFromMenu?: true } | undefined;
+  PostDetail: { post: import('@/types').Post };
+};
+
 export type RootStackParamList = {
   ForcedUpdate: { storeUrl: string; message?: string };
   Unauthenticated: undefined;
@@ -12,7 +19,7 @@ export type RootStackParamList = {
   AnamnesisBody: undefined;
   AnamnesisMind: undefined;
   AnamnesisHabits: { title: string; keyPrefix: string };
-  Community: undefined;
+  Community: NavigatorScreenParams<CommunityStackParamList>;
   Chat: undefined;
   Activities:
     | {
@@ -81,11 +88,6 @@ export type RootStackParamList = {
       specialties?: string[];
     };
   };
-};
-
-export type CommunityStackParamList = {
-  CommunityList: undefined;
-  PostDetail: { post: import('@/types').Post };
 };
 
 export type ChatStackParamList = {

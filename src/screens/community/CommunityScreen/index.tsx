@@ -1,5 +1,7 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { View, ScrollView, Text, NativeSyntheticEvent, NativeScrollEvent, Switch, Alert } from 'react-native';
+import type { RouteProp } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import {
   SocialList,
@@ -58,6 +60,7 @@ const FEED_END_THRESHOLD_PX = 120;
 
 const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   useAnalyticsScreen({ screenName: 'CommunityList', screenClass: 'CommunityScreen' });
+  const route = useRoute<RouteProp<CommunityStackParamList, 'CommunityList'>>();
   const { t } = useTranslation();
   const toggleOptions = useMemo(() => [t('community.social'), t('community.solutions')] as const, [t]);
   const rootNavigation = navigation.getParent()?.getParent?.() ?? navigation.getParent();
@@ -71,6 +74,12 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     () => (selectedMode === COMMUNITY_VIEW.FEED ? toggleOptions[0] : toggleOptions[1]),
     [selectedMode, toggleOptions],
   );
+
+  useEffect(() => {
+    if (!route.params?.openFeedFromMenu) return;
+    setSelectedMode(COMMUNITY_VIEW.FEED);
+    navigation.setParams({ openFeedFromMenu: undefined });
+  }, [navigation, route.params?.openFeedFromMenu]);
 
   useEffect(() => {
     storageService.getCommunityWelcomeDismissed().then(setWelcomeDismissed);

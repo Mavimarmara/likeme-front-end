@@ -37,9 +37,13 @@ export const useMenuItems = (navigation: any): MenuItem[] => {
         label: 'Comunidade',
         fullLabel: 'Comunidade',
         onPress: () =>
-          rootNavigation.navigate('Community' as never, {
-            screen: 'CommunityList',
-          }),
+          rootNavigation.navigate(
+            'Community' as never,
+            {
+              screen: 'CommunityList',
+              params: { openFeedFromMenu: true },
+            } as never,
+          ),
       },
       {
         id: 'marketplace',
