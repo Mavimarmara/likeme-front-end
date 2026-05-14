@@ -4,9 +4,25 @@ import { HOME_MVP_ASSETS } from '@/assets/homeMvp';
 import { LogoMini } from '@/assets/ui';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { IconButton } from '@/components/ui/buttons';
+import { useCartItemCount } from '@/hooks/marketplace/useCartItemCount';
 import { styles } from './styles';
 
 const noop = () => undefined;
+
+function CartHeaderButton({ onPress }: { onPress: () => void }) {
+  const cartItemCount = useCartItemCount();
+  const label = cartItemCount > 99 ? '99+' : String(cartItemCount);
+  return (
+    <View style={styles.cartButtonWrapper}>
+      <IconButton iconImageSource={HOME_MVP_ASSETS.cart} iconSize={22} onPress={onPress} backgroundSize='medium' />
+      {cartItemCount > 0 ? (
+        <View style={styles.cartBadge}>
+          <Text style={styles.cartBadgeText}>{label}</Text>
+        </View>
+      ) : null}
+    </View>
+  );
+}
 
 interface HeaderProps {
   onBackPress?: () => void;
@@ -122,14 +138,7 @@ const Header: React.FC<HeaderProps> = ({
                 backgroundSize='medium'
               />
             )}
-            {showCartButton && onCartPress && (
-              <IconButton
-                iconImageSource={HOME_MVP_ASSETS.cart}
-                iconSize={22}
-                onPress={onCartPress}
-                backgroundSize='medium'
-              />
-            )}
+            {showCartButton && onCartPress && <CartHeaderButton onPress={onCartPress} />}
             {showLogoutButton && onLogoutPress && (
               <IconButton icon='logout' onPress={onLogoutPress} backgroundSize='medium' />
             )}

@@ -40,6 +40,7 @@ export { useSuggestedProducts, SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS } fro
 export { usePayment } from './marketplace/usePayment';
 export { useCart } from './marketplace/useCart';
 export type { UseCartOptions, UseCartReturn } from './marketplace/useCart';
+export { useCartItemCount } from './marketplace/useCartItemCount';
 export { useCartShippingPolicy } from './marketplace/useCartShippingPolicy';
 
 // Layout
