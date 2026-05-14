@@ -15,6 +15,7 @@ class AdvertiserService {
     status?: string;
     communityId?: string;
     search?: string;
+    categoryId?: string;
   }): Promise<ListAdvertisersApiResponse> {
     try {
       const queryParams: Record<string, string> = {};
@@ -24,6 +25,8 @@ class AdvertiserService {
       if (params?.communityId) queryParams.communityId = params.communityId;
       const trimmedSearch = params?.search?.trim();
       if (trimmedSearch) queryParams.search = trimmedSearch;
+      const trimmedCategoryId = params?.categoryId?.trim();
+      if (trimmedCategoryId) queryParams.categoryId = trimmedCategoryId;
 
       const response = await apiClient.get<ListAdvertisersApiResponse>(
         this.advertisersEndpoint,

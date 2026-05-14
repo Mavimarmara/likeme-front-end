@@ -82,6 +82,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       status: 'active',
       limit: 50,
       ...(professionalsSearch ? { search: professionalsSearch } : {}),
+      ...(selectedCategoryId != null && selectedCategoryId !== '' ? { categoryId: selectedCategoryId } : {}),
     },
   });
 

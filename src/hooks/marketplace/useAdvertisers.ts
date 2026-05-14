@@ -11,6 +11,7 @@ export interface UseAdvertisersListOptions {
   limit?: number;
   status?: AdvertiserStatus;
   search?: string;
+  categoryId?: string;
 }
 
 export interface UseAdvertisersParams {
@@ -40,6 +41,7 @@ export const useAdvertisers = (params: UseAdvertisersParams = {}): UseAdvertiser
   const limit = listOptions?.limit ?? 50;
   const status = listOptions?.status ?? ADVERTISER_STATUS.ACTIVE;
   const search = listOptions?.search?.trim() ?? '';
+  const categoryId = listOptions?.categoryId?.trim() ?? '';
 
   const startRequest = useCallback((requestId: number, options?: { clear?: boolean }) => {
     if (options?.clear !== false) {
@@ -94,6 +96,7 @@ export const useAdvertisers = (params: UseAdvertisersParams = {}): UseAdvertiser
         status,
         communityId,
         ...(search ? { search } : {}),
+        ...(categoryId ? { categoryId } : {}),
       });
       if (cancelledRef.current || requestId !== requestIdRef.current) return;
       const list = response.success ? response.data?.advertisers ?? [] : [];
@@ -106,7 +109,7 @@ export const useAdvertisers = (params: UseAdvertisersParams = {}): UseAdvertiser
     } finally {
       finishRequest(requestId);
     }
-  }, [shouldLoadList, page, limit, status, communityId, search, finishRequest, startRequest]);
+  }, [shouldLoadList, page, limit, status, communityId, search, categoryId, finishRequest, startRequest]);
 
   const refresh = useCallback(async (): Promise<void> => {
     if (shouldLoadList) {
@@ -129,7 +132,7 @@ export const useAdvertisers = (params: UseAdvertisersParams = {}): UseAdvertiser
     return () => {
       cancelledRef.current = true;
     };
-  }, [shouldLoadList, advertiserId, communityId, page, limit, status, search, loadList, loadById]);
+  }, [shouldLoadList, advertiserId, communityId, page, limit, status, search, categoryId, loadList, loadById]);
 
   return {
     advertisers,

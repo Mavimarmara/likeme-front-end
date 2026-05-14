@@ -6,6 +6,12 @@ const mockLoadAds = jest.fn();
 const mockUseMarketplaceAds = jest.fn();
 const mockLoadProducts = jest.fn();
 const mockUseProducts = jest.fn();
+const mockUseAdvertisers = jest.fn().mockReturnValue({
+  advertisers: [],
+  loading: false,
+  error: null,
+  refresh: jest.fn(),
+});
 
 jest.mock('@/contexts/FloatingMenuContext', () => ({
   useSetFloatingMenu: () => jest.fn(),
@@ -139,12 +145,7 @@ jest.mock('@/hooks', () => ({
   useCategories: () => ({ categories: [{ categoryId: 'cat-1', name: 'Autoestima' }] }),
   useCategoryDisplayLabel: () => ({ getCategoryName: (id: string) => id || 'Category' }),
   useUserAvatar: () => null,
-  useAdvertisers: () => ({
-    advertisers: [],
-    loading: false,
-    error: null,
-    refresh: jest.fn(),
-  }),
+  useAdvertisers: (...args: any[]) => mockUseAdvertisers(...args),
 }));
 
 jest.mock('@/analytics', () => ({
@@ -225,6 +226,13 @@ describe('MarketplaceScreen', () => {
     jest.clearAllMocks();
     mockLoadAds.mockClear();
     mockLoadProducts.mockClear();
+    mockUseAdvertisers.mockClear();
+    mockUseAdvertisers.mockReturnValue({
+      advertisers: [],
+      loading: false,
+      error: null,
+      refresh: jest.fn(),
+    });
     mockUseMarketplaceAds.mockReturnValue({
       ads: mockAds,
       loading: false,
@@ -312,6 +320,14 @@ describe('MarketplaceScreen', () => {
     expect(mockUseMarketplaceAds).toHaveBeenLastCalledWith(
       expect.objectContaining({
         selectedCategoryId: 'cat-1',
+      }),
+    );
+
+    expect(mockUseAdvertisers).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        listOptions: expect.objectContaining({
+          categoryId: 'cat-1',
+        }),
       }),
     );
   });
