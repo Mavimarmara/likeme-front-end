@@ -338,9 +338,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
                     {advertiser.name ?? ''}
                   </Text>
                   {advertiser.description ? (
-                    <Text style={shoppingListStyles.professionalProfession} numberOfLines={1}>
-                      {advertiser.description}
-                    </Text>
+                    <Text style={shoppingListStyles.professionalProfession}>{advertiser.description}</Text>
                   ) : null}
                 </View>
                 <SecondaryButton

@@ -60,9 +60,13 @@ export const styles = StyleSheet.create({
     marginBottom: 2,
   },
   professionalProfession: {
-    fontSize: 13,
+    fontSize: 12,
     color: COLORS.TEXT_LIGHT,
-    fontWeight: '400',
+    fontWeight: '500',
+    flexShrink: 1,
+    alignSelf: 'stretch',
+    paddingRight: SPACING.MD,
+    letterSpacing: 0.2,
   },
   professionalViewProfileButton: {
     alignSelf: 'center',

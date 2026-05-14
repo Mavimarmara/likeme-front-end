@@ -47,6 +47,7 @@ export const styles = StyleSheet.create({
     paddingBottom: SPACING.XXL,
   },
   section: {
+    paddingHorizontal: SPACING.MD,
     marginBottom: SPACING.XL,
   },
   sectionHeader: {

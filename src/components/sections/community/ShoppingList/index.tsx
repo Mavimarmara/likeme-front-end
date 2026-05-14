@@ -126,9 +126,7 @@ const ShoppingList: React.FC<Props> = ({
                   {advertiser.name ?? ''}
                 </Text>
                 {advertiser.description ? (
-                  <Text style={styles.professionalProfession} numberOfLines={1}>
-                    Especialista
-                  </Text>
+                  <Text style={styles.professionalProfession}>{advertiser.description}</Text>
                 ) : null}
               </View>
               <SecondaryButton
