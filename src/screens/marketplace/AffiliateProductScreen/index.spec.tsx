@@ -55,6 +55,17 @@ jest.mock('@/services', () => ({
   },
 }));
 
+jest.mock('@/services/category/categoryService', () => ({
+  __esModule: true,
+  default: {
+    listCategories: jest.fn().mockResolvedValue([]),
+    listProductCategories: jest.fn().mockResolvedValue({
+      success: true,
+      data: { categories: [] },
+    }),
+  },
+}));
+
 jest.mock('@/analytics', () => ({
   useAnalyticsScreen: jest.fn(),
 }));
