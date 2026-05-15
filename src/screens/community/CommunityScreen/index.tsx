@@ -64,6 +64,9 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   const { t } = useTranslation();
   const toggleOptions = useMemo(() => [t('community.social'), t('community.solutions')] as const, [t]);
   const rootNavigation = navigation.getParent()?.getParent?.() ?? navigation.getParent();
+  const handleCartPress = () => {
+    (rootNavigation ?? navigation).navigate('Cart' as never);
+  };
   const [selectedMode, setSelectedMode] = useState<CommunityViewId>(COMMUNITY_VIEW.FEED);
   const [activeInfoTab, setActiveInfoTab] = useState<CommunityInfoTabId>('posts');
   const [welcomeDismissed, setWelcomeDismissed] = useState(true);
@@ -420,6 +423,8 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
           showBackButton: true,
           showMenuWithAvatar: false,
           onBackPress: () => navigation?.goBack?.(),
+          showCartButton: true,
+          onCartPress: handleCartPress,
         }}
         contentContainerStyle={styles.container}
       >

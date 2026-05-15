@@ -741,8 +741,6 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation, route }
         userAvatarUri,
         showCartButton: true,
         onCartPress: handleCartPress,
-        showBellButton: true,
-        onBellPress: () => rootNavigation.navigate('Activities' as never),
       }}
       contentContainerStyle={styles.container}
     >

@@ -146,10 +146,6 @@ const ChatScreen: React.FC = () => {
     (navigation.getParent() ?? navigation).navigate('Cart' as never);
   };
 
-  const handleBellPress = () => {
-    (navigation.getParent() ?? navigation).navigate('Activities' as never);
-  };
-
   const [sending, setSending] = useState(false);
   const [currentUserName, setCurrentUserName] = useState('');
 
@@ -285,8 +281,6 @@ const ChatScreen: React.FC = () => {
         userAvatarUri,
         showCartButton: true,
         onCartPress: handleCartPress,
-        showBellButton: true,
-        onBellPress: handleBellPress,
       }}
       contentContainerStyle={styles.container}
     >
