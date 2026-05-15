@@ -61,6 +61,7 @@ export type { ChatConversation } from './chat/useChat';
 export { useBlockedUser } from './chat/useBlockedUser';
 
 // User hooks
+export { useUser } from './user/useUser';
 export { useUserAvatar } from './auth/useUserAvatar';
 
 // Person hooks

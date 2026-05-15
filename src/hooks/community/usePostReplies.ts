@@ -1,11 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { Post } from '@/types';
-import { communityService, storageService } from '@/services';
+import { communityService } from '@/services';
 import { logger } from '@/utils/logger';
-import {
-  resolveCommentAuthorDisplayName,
-  resolveOptimisticCommentAuthorLabel,
-} from '@/utils/community/commentAuthorDisplayName';
+import { useUser } from '@/hooks/user/useUser';
 
 export type PostLikeEngagement = {
   likeCount: number;
@@ -111,6 +108,7 @@ export const usePostReplies = ({
   isLiked = false,
   myReactions,
 }: UsePostRepliesOptions) => {
+  const { getPublicUser } = useUser();
   const {
     likeCount,
     isLiked: isLikedValue,
@@ -144,32 +142,6 @@ export const usePostReplies = ({
         const childComments = Array.isArray(data?.commentChildren) ? data.commentChildren : [];
         // `communityUsers` é relação de membership e não necessariamente contém `displayName`/`avatar`.
         // Para renderizar nome e foto, preferimos `users`.
-        const commentUsers = (() => {
-          if (Array.isArray(data?.users)) return data.users;
-          if (Array.isArray(data?.communityUsers)) return data.communityUsers;
-          return [];
-        })();
-        const commentFiles = Array.isArray(data?.files) ? data.files : [];
-
-        const getUser = (commentNode: any) => {
-          const commentUserId = commentNode?.userId;
-          const commentUserPublicId = commentNode?.userPublicId;
-          const commentUserInternalId = commentNode?.userInternalId;
-
-          return commentUsers.find((u: any) => {
-            if (commentUserId && u?.userId === commentUserId) return true;
-            if (commentUserPublicId && u?.userPublicId === commentUserPublicId) return true;
-            if (commentUserInternalId && u?.userInternalId === commentUserInternalId) return true;
-            return false;
-          });
-        };
-
-        const getAvatarUrl = (user: any) => {
-          const avatarFileId = user?.avatarFileId;
-          if (!avatarFileId) return undefined;
-          return commentFiles.find((f: any) => f?.fileId === avatarFileId)?.fileUrl;
-        };
-
         const computeUpvotes = (reactions: Record<string, number> | undefined): number => {
           if (!reactions) return 0;
           return (reactions.like ?? 0) + (reactions.upvote ?? 0) + (reactions['👍'] ?? 0);
@@ -187,12 +159,10 @@ export const usePostReplies = ({
           return undefined;
         };
 
-        const buildNode = (remoteComment: any, postIdValue: string): PostReplyCardComment => {
+        const buildNode = async (remoteComment: any, postIdValue: string): Promise<PostReplyCardComment> => {
           const commentId = remoteComment?.commentId ?? remoteComment?._id;
           const userId = remoteComment?.userId ?? remoteComment?.userPublicId ?? remoteComment?.userInternalId ?? '';
-          const user = getUser(remoteComment);
-          const avatar = getAvatarUrl(user);
-          const userRecord = user && typeof user === 'object' ? (user as Record<string, unknown>) : null;
+          const publicUser = userId ? await getPublicUser(userId) : { name: 'Usuário', username: null, avatar: null };
 
           const createdAtIso = remoteComment?.createdAt
             ? new Date(remoteComment.createdAt).toISOString()
@@ -212,8 +182,8 @@ export const usePostReplies = ({
             postId: postIdValue,
             author: {
               id: userId,
-              name: resolveCommentAuthorDisplayName(userRecord, userId),
-              avatar,
+              name: publicUser.name,
+              avatar: publicUser.avatar ?? undefined,
             },
             content,
             upvotes,
@@ -226,13 +196,12 @@ export const usePostReplies = ({
           };
         };
 
-        // Observacao: o tipo PostReplyCardComment nao tem `userReaction`,
-        // mas o CommentCard aceita por tipagem estrutural (campo extra).
-        const rootNodes: PostReplyCardComment[] = rootComments.map((c: any) => buildNode(c, String(postId)));
-        const childrenNodes: PostReplyCardComment[] = childComments.map((c: any) => {
-          const node = buildNode(c, String(postId));
-          return node;
-        });
+        const rootNodes: PostReplyCardComment[] = await Promise.all(
+          rootComments.map((c: any) => buildNode(c, String(postId))),
+        );
+        const childrenNodes: PostReplyCardComment[] = await Promise.all(
+          childComments.map((c: any) => buildNode(c, String(postId))),
+        );
 
         const nodesById = new Map<string, PostReplyCardComment>();
         [...rootNodes, ...childrenNodes].forEach((n) => nodesById.set(String(n.id), n));
@@ -264,7 +233,7 @@ export const usePostReplies = ({
     };
 
     run();
-  }, [enabled, postId, fetchNonce]);
+  }, [enabled, postId, fetchNonce, getPublicUser]);
 
   const addPostComment = useCallback(
     async (text: string, parentId?: string) => {
@@ -276,8 +245,7 @@ export const usePostReplies = ({
 
       setIsAddingPostComment(true);
 
-      const me = await storageService.getUser();
-      const optimisticAuthorName = resolveOptimisticCommentAuthorLabel(me);
+      const loggedInUser = await getPublicUser('me');
 
       const optimisticId = `temp-${Date.now()}`;
       const nowIso = new Date().toISOString();
@@ -287,8 +255,8 @@ export const usePostReplies = ({
         postId: String(postId),
         author: {
           id: 'me',
-          name: optimisticAuthorName,
-          avatar: undefined,
+          name: loggedInUser.name,
+          avatar: loggedInUser.avatar ?? undefined,
         },
         content: trimmedText,
         upvotes: 0,
@@ -317,7 +285,7 @@ export const usePostReplies = ({
         setIsAddingPostComment(false);
       }
     },
-    [isAddingPostComment, postId, refresh],
+    [getPublicUser, isAddingPostComment, postId, refresh],
   );
 
   const mergedForRender = useMemo(() => {
