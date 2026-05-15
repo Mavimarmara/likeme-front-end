@@ -5,7 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScreenWithHeader } from '@/components/ui/layout';
-import { LinkifiedText } from '@/components/ui/text/LinkifiedText';
+import { MarkdownText } from '@/components/ui/text/MarkdownText';
 import { MARKETPLACE_PRODUCT_PLACEHOLDER_IMAGE_URI } from '@/constants';
 import { useMenuItems, useProductDetails } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
@@ -180,23 +180,15 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
       return null;
     }
     const active = tabs.find((tab) => tab.id === resolvedTabId);
-    const sourceText = active?.text ?? '';
-    const lines = sourceText.split('\n').filter((line) => line.trim().length > 0);
+    const sourceText = (active?.text ?? '').trim();
 
-    if (lines.length === 0) {
+    if (sourceText.length === 0) {
       return null;
     }
 
     return (
       <View style={styles.tabContent}>
-        <View style={styles.descriptionContainer}>
-          {lines.map((line, index) => (
-            <View key={index} style={styles.descriptionItem}>
-              <View style={styles.bulletPoint} />
-              <LinkifiedText style={styles.descriptionText} text={line.trim()} />
-            </View>
-          ))}
-        </View>
+        <MarkdownText style={styles.descriptionText} text={sourceText} />
       </View>
     );
   };

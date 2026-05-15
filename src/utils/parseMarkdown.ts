@@ -5,10 +5,29 @@ export type MarkdownSegment = {
   underline: boolean;
 };
 
+function canToggleItalicUnderscore(input: string, index: number, italicActive: boolean): boolean {
+  const before = index > 0 ? input[index - 1] : '';
+  const after = input[index + 1];
+
+  if (after === '_') {
+    return false;
+  }
+
+  if (italicActive) {
+    return Boolean(before) && !/\s/.test(before) && (after === undefined || !/\w/.test(after));
+  }
+
+  if (after === undefined || /\s/.test(after)) {
+    return false;
+  }
+
+  return !before || !/\w/.test(before);
+}
+
 /**
- * Subconjunto usado em labels i18n do banco:
+ * Subconjunto usado em labels i18n e descrições de produto:
  * - `**negrito**`
- * - `*itálico*` (um `*`; `**` é tratado antes)
+ * - `*itálico*` ou `_itálico_` (underscore só entre limites de palavra)
  * - `__sublinhado__`
  * - `\n` permanece no texto dos segmentos
  */
@@ -46,6 +65,12 @@ export function parseMarkdownSegments(input: string): MarkdownSegment[] {
       flush();
       underline = !underline;
       i += 2;
+      continue;
+    }
+    if (c === '_' && canToggleItalicUnderscore(input, i, italic)) {
+      flush();
+      italic = !italic;
+      i += 1;
       continue;
     }
 

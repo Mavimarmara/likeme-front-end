@@ -12,7 +12,7 @@ import {
   ProgramParticipationTermsRequiredModal,
 } from '@/components/sections/marketplace';
 import { Checkbox } from '@/components/ui/inputs';
-import { LinkifiedText } from '@/components/ui/text/LinkifiedText';
+import { MarkdownText } from '@/components/ui/text/MarkdownText';
 import { PartnerSection } from '@/components/sections/advertiser';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
 import { useMenuItems, useProductDetails, useSuggestedProducts } from '@/hooks';
@@ -421,7 +421,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
             ) : (
               <>
                 {(displayData.description ?? '').trim().length > 0 ? (
-                  <LinkifiedText style={styles.productDescription} text={(displayData.description ?? '').trim()} />
+                  <MarkdownText style={styles.productDescription} text={(displayData.description ?? '').trim()} />
                 ) : null}
                 {renderInfoSection()}
                 {displayData.price != null && !displayData.isOutOfStock ? (
@@ -494,7 +494,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     return (
       <View style={styles.aboutContent}>
         {product.technicalSpecifications && (
-          <LinkifiedText style={styles.productDescription} text={product.technicalSpecifications} />
+          <MarkdownText style={styles.productDescription} text={product.technicalSpecifications} />
         )}
       </View>
     );
@@ -505,21 +505,11 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     const resolvedTab = productTabOptions.some((tab) => tab.id === activeProductTab) ? activeProductTab : fallbackTabId;
 
     if (isProgramProduct && resolvedTab === 'agreements') {
-      const agreementsText = productTabContent.agreements;
-      const agreementLines = agreementsText.split('\n').filter((line) => line.trim().length > 0);
+      const agreementsText = productTabContent.agreements.trim();
 
       return (
         <View style={styles.tabContent}>
-          {agreementLines.length > 0 ? (
-            <View style={styles.descriptionContainer}>
-              {agreementLines.map((line, index) => (
-                <View key={index} style={styles.descriptionItem}>
-                  <View style={styles.bulletPoint} />
-                  <LinkifiedText style={styles.descriptionText} text={line.trim()} />
-                </View>
-              ))}
-            </View>
-          ) : null}
+          {agreementsText.length > 0 ? <MarkdownText style={styles.descriptionText} text={agreementsText} /> : null}
           <View style={styles.programAgreementsCheckboxRow}>
             <Checkbox
               label={t('marketplace.programParticipationTermsCheckbox')}
@@ -531,10 +521,9 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       );
     }
 
-    const tabText = productTabContent[resolvedTab] || productTabContent[fallbackTabId] || '';
-    const tabLines = tabText.split('\n').filter((line) => line.trim().length > 0);
+    const tabText = (productTabContent[resolvedTab] || productTabContent[fallbackTabId] || '').trim();
 
-    if (tabLines.length === 0) {
+    if (tabText.length === 0) {
       return (
         <View style={styles.tabContent}>
           <Text style={styles.productDescription}>{t('marketplace.noDescriptionAvailable')}</Text>
@@ -544,14 +533,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
 
     return (
       <View style={styles.tabContent}>
-        <View style={styles.descriptionContainer}>
-          {tabLines.map((line, index) => (
-            <View key={index} style={styles.descriptionItem}>
-              <View style={styles.bulletPoint} />
-              <LinkifiedText style={styles.descriptionText} text={line.trim()} />
-            </View>
-          ))}
-        </View>
+        <MarkdownText style={styles.descriptionText} text={tabText} />
       </View>
     );
   }

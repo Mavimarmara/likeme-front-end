@@ -10,8 +10,12 @@ describe('parseMarkdownSegments / markdownToPlainText', () => {
     expect(markdownToPlainText('a **b** c')).toBe('a b c');
   });
 
-  it('remove itálico', () => {
+  it('remove itálico com asterisco', () => {
     expect(markdownToPlainText('a *b* c')).toBe('a b c');
+  });
+
+  it('remove itálico com underscore entre limites de palavra', () => {
+    expect(markdownToPlainText('a _b_ c')).toBe('a b c');
   });
 
   it('remove sublinhado', () => {
