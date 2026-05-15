@@ -2,6 +2,8 @@
 const path = require('path');
 const fs = require('fs');
 
+const appVersion = require('./app.version.json');
+
 // Função para encontrar o arquivo .env no diretório original do projeto
 function findOriginalEnvFile() {
   // Prioridade 1: Variável de ambiente com caminho absoluto (definida pelo script de build)
@@ -166,7 +168,7 @@ module.exports = {
   expo: {
     name: 'LikeMe',
     slug: 'likeme-front-end',
-    version: '1.3.1',
+    version: appVersion.version,
     orientation: 'portrait',
     userInterfaceStyle: 'light',
     platforms: ['ios', 'android', 'web'],
@@ -221,6 +223,7 @@ module.exports = {
     },
     android: {
       package: 'com.likeme.app',
+      versionCode: appVersion.android.versionCode,
       googleServicesFile: './google-services.json',
       softwareKeyboardLayoutMode: 'resize',
       adaptiveIcon: {
@@ -242,7 +245,7 @@ module.exports = {
     },
     ios: {
       bundleIdentifier: 'app.likeme.com',
-      buildNumber: '8',
+      buildNumber: String(appVersion.ios.buildNumber),
       // App é iPhone-only. No iPad, a Apple exibe em "iPhone compat mode"
       // (janela com proporção de iPhone, letterbox no iPad) — comportamento
       // esperado para apps iPhone-only, não é motivo de rejeição.
