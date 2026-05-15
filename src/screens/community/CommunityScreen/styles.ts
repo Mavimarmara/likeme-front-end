@@ -46,7 +46,7 @@ export const styles = StyleSheet.create({
     fontWeight: '500',
     lineHeight: 20,
     color: '#FFFFFF',
-    marginTop: 8,
+    marginBottom: 8,
   },
   tabsWrapper: {
     width: '100%',
