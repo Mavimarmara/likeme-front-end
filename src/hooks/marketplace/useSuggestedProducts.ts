@@ -61,7 +61,7 @@ export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}):
           return {
             id: p.id,
             title: p.name,
-            price: p.price || 0,
+            price: p.price ?? null,
             tag: categoryLabel,
             tags,
             image: p.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
