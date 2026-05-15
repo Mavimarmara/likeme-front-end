@@ -150,14 +150,16 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
     type: PRODUCT_CATALOG_TYPE.PROGRAM,
   });
 
-  const recommendedProgramCards = useMemo((): JoinCardItem[] => {
-    return suggestedPrograms.map((p) => ({
-      id: p.id,
-      title: p.title,
-      badge: p.tag,
-      image: p.image,
-    }));
-  }, [suggestedPrograms]);
+  const recommendedProgramCards = useMemo(
+    (): JoinCardItem[] =>
+      suggestedPrograms.map((p) => ({
+        id: p.id,
+        title: p.title,
+        badges: p.tags ?? [],
+        image: p.image,
+      })),
+    [suggestedPrograms],
+  );
 
   const menuItems = useMenuItems(navigation);
   const { setMenu } = useFloatingMenu();

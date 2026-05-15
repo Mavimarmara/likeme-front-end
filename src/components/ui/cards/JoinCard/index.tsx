@@ -6,7 +6,7 @@ import { styles } from './styles';
 export type JoinCardItem = {
   id: string;
   title: string;
-  badge: string;
+  badges: string[];
   image: string;
 };
 
@@ -20,14 +20,15 @@ export function JoinCard<T extends JoinCardItem>({ items, onItemPress }: JoinCar
 
   const renderCard = (item: T) => {
     const handlePress = () => onItemPress?.(item);
-    const badgeLabel = item.badge.trim();
+    const badges = item.badges.map((label) => label.trim()).filter(Boolean);
+
     const topSection = (
-      <View style={styles.badgeContainer}>
-        {badgeLabel.length > 0 ? (
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>{badgeLabel}</Text>
+      <View style={styles.badgesWrap}>
+        {badges.map((label, index) => (
+          <View key={`${label}-${index}`} style={styles.badge}>
+            <Text style={styles.badgeText}>{label}</Text>
           </View>
-        ) : null}
+        ))}
       </View>
     );
 

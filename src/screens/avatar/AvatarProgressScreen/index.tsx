@@ -67,15 +67,18 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
   });
 
   const joinCommunities = useMemo((): JoinCardItem[] => {
-    return rawCommunities.map((community) => {
-      const category = categories.length > 0 ? categories[0] : undefined;
-      return {
-        id: community.communityId,
-        title: community.displayName,
-        badge: category?.name || 'Community',
-        image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
-      };
-    });
+    const names = categories
+      .map((category) => category.name.trim())
+      .filter(Boolean)
+      .slice(0, 2);
+    const badges = names.length > 0 ? names : ['Community'];
+
+    return rawCommunities.map((community) => ({
+      id: community.communityId,
+      title: community.displayName,
+      badges,
+      image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
+    }));
   }, [rawCommunities, categories]);
 
   useEffect(() => {

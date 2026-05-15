@@ -304,15 +304,18 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
 
     const filteredCommunities = rawCommunities.filter((community) => community.communityId === targetCommunityId);
 
-    return filteredCommunities.map((community) => {
-      const category = categories.length > 0 ? categories[0] : undefined;
-      return {
-        id: community.communityId,
-        title: community.displayName,
-        badge: category?.name ?? 'Community',
-        image: resolveCommunityHeroImageUri(community, communityFiles, JOIN_CARD_COMMUNITY_IMAGE_FALLBACK),
-      };
-    });
+    const names = categories
+      .map((category) => category.name.trim())
+      .filter(Boolean)
+      .slice(0, 2);
+    const badges = names.length > 0 ? names : ['Community'];
+
+    return filteredCommunities.map((community) => ({
+      id: community.communityId,
+      title: community.displayName,
+      badges,
+      image: resolveCommunityHeroImageUri(community, communityFiles, JOIN_CARD_COMMUNITY_IMAGE_FALLBACK),
+    }));
   }, [rawCommunities, categories, advertiser, communityFiles]);
 
   const handleJoinCommunity = useCallback(

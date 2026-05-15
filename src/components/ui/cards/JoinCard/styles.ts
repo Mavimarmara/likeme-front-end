@@ -20,11 +20,14 @@ export const styles = StyleSheet.create({
     borderBottomRightRadius: 32,
     marginRight: 0,
   },
-  badgeContainer: {
-    alignSelf: 'flex-start',
+  badgesWrap: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
   },
   badge: {
     backgroundColor: 'rgba(0, 17, 55, 0.64)',
+    alignSelf: 'flex-start',
     paddingHorizontal: 14,
     minHeight: 24,
     borderTopLeftRadius: 12,

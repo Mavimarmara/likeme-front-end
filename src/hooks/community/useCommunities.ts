@@ -14,13 +14,10 @@ import { logger } from '@/utils/logger';
 import { useEventList } from '@/hooks/event/useEventList';
 import { resolveCommunityHeroImageUri } from '@/utils/community/mappers';
 
+import type { JoinCardItem } from '@/components/ui/cards/JoinCard';
+
 /** Formato do item exibido no JoinCard (ui/cards; comunidade recomendada) */
-export interface JoinCommunityItem {
-  id: string;
-  title: string;
-  badge: string;
-  image: string;
-}
+export type JoinCommunityItem = JoinCardItem;
 
 const JOIN_CARD_IMAGE_FALLBACK = 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400';
 
@@ -258,22 +255,30 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
   });
 
   const joinCommunities = useMemo((): JoinCommunityItem[] => {
-    const list: JoinCommunityItem[] = communities.map((community) => {
-      const category = categories.length > 0 ? categories[0] : undefined;
-      return {
-        id: community.communityId,
-        title: community.displayName,
-        badge: category?.name ?? 'Community',
-        image: resolveCommunityHeroImageUri(community, communityFiles, JOIN_CARD_IMAGE_FALLBACK),
-      };
-    });
+    const defaultBadges = categories
+      .map((category) => category.name.trim())
+      .filter(Boolean)
+      .slice(0, 2);
+    const badges = defaultBadges.length > 0 ? defaultBadges : ['Community'];
+
+    const list: JoinCommunityItem[] = communities.map((community) => ({
+      id: community.communityId,
+      title: community.displayName,
+      badges,
+      image: resolveCommunityHeroImageUri(community, communityFiles, JOIN_CARD_IMAGE_FALLBACK),
+    }));
+
     if (list.length > 0 && (firstCardImageUrl != null || (getCategoryName != null && selectedCategoryName != null))) {
+      const selectedLabel =
+        getCategoryName != null && selectedCategoryName != null ? getCategoryName(selectedCategoryName).trim() : '';
+      const firstBadges =
+        selectedLabel.length > 0
+          ? [selectedLabel, ...badges.filter((label) => label !== selectedLabel)].slice(0, 2)
+          : badges;
+
       list[0] = {
         ...list[0],
-        badge:
-          getCategoryName != null && selectedCategoryName != null
-            ? getCategoryName(selectedCategoryName)
-            : list[0].badge,
+        badges: firstBadges,
         image: firstCardImageUrl ?? list[0].image,
       };
     }
@@ -282,9 +287,15 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
 
   const filteredJoinCommunities = useMemo((): JoinCommunityItem[] => {
     const base = solutionTab === 'all' || solutionTab === 'communities' ? joinCommunities : [];
-    const q = searchQuery.trim().toLowerCase();
-    if (!q) return base;
-    return base.filter((c) => c.title.toLowerCase().includes(q) || c.badge.toLowerCase().includes(q));
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) {
+      return base;
+    }
+    return base.filter(
+      (community) =>
+        community.title.toLowerCase().includes(query) ||
+        community.badges.some((badge) => badge.toLowerCase().includes(query)),
+    );
   }, [joinCommunities, searchQuery, solutionTab]);
 
   return {

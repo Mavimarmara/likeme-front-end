@@ -1,11 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { productService } from '@/services';
 import type { Product } from '@/components/sections/product';
+import { useCategories } from '@/hooks/category/useCategories';
 import { logger } from '@/utils/logger';
-import {
-  PRODUCT_LIST_CATEGORY_TAGS_LIMIT,
-  enrichProductsWithCategoriesFromByProductApi,
-} from './productCategoryEnrichment';
+import { buildMarketplaceCategoryBadgeLabels } from '@/utils/marketplace/buildMarketplaceCategoryBadgeLabels';
+import { enrichProductsWithCategoriesFromByProductApi } from './productCategoryEnrichment';
 
 /** Lista padrão de produtos sugeridos (Home Summary, Activities, Comunidade sem filtro extra). */
 export const SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS = {
@@ -31,6 +30,7 @@ interface UseSuggestedProductsReturn {
 
 export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}): UseSuggestedProductsReturn => {
   const { limit = 4, status = 'active', enabled = true, categoryId, type } = options;
+  const { categories } = useCategories({ enabled });
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -54,8 +54,7 @@ export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}):
       if (productsResponse.success && productsResponse.data) {
         const list = await enrichProductsWithCategoriesFromByProductApi(productsResponse.data.products);
         const mappedProducts: Product[] = list.map((p) => {
-          const allNames = (p.categoryNames ?? []).map((n) => (typeof n === 'string' ? n.trim() : '')).filter(Boolean);
-          const tags = allNames.slice(0, PRODUCT_LIST_CATEGORY_TAGS_LIMIT);
+          const tags = buildMarketplaceCategoryBadgeLabels(p, categories);
           const categoryLabel = tags[0] ?? '';
 
           return {
@@ -81,7 +80,7 @@ export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}):
     } finally {
       setLoading(false);
     }
-  }, [enabled, limit, status, categoryId, type]);
+  }, [enabled, limit, status, categoryId, type, categories]);
 
   useEffect(() => {
     loadProducts();

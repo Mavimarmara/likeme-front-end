@@ -4,6 +4,7 @@ import { BlurCard } from '@/components/ui/cards';
 import { IconButton } from '@/components/ui/buttons';
 import { useTranslation } from '@/hooks/i18n';
 import { formatPriceLabel } from '@/utils/formatters/priceFormatter';
+import { normalizeProductListBadgeLabels } from '@/utils/marketplace/normalizeProductListBadgeLabels';
 import HeartSuggested from '../../../../../assets/home-mvp/heart.svg';
 import { styles } from './styles';
 
@@ -27,15 +28,7 @@ type Props = {
 
 const ProductCard: React.FC<Props> = ({ product, onPress, onLike }) => {
   const { t } = useTranslation();
-  const normalizedTags = (product.tags ?? [product.tag])
-    .map((tag) => (typeof tag === 'string' ? tag.trim() : ''))
-    .filter(Boolean)
-    .map((tag) => {
-      if (tag === 'online' || tag === 'onsite') {
-        return t(`marketplace.productMode.${tag}`);
-      }
-      return tag;
-    });
+  const normalizedTags = normalizeProductListBadgeLabels(product.tags ?? [product.tag], t);
   const topSection = (
     <View style={styles.tagsWrap}>
       {normalizedTags.length > 0 &&
