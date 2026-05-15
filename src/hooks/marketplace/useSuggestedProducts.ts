@@ -5,12 +5,20 @@ import { useCategories } from '@/hooks/category/useCategories';
 import { logger } from '@/utils/logger';
 import { buildMarketplaceCategoryBadgeLabels } from '@/utils/marketplace/buildMarketplaceCategoryBadgeLabels';
 import { enrichProductsWithCategoriesFromByProductApi } from './productCategoryEnrichment';
+import { pickRandomItems } from '@/utils/array/shuffleArray';
 
 /** Lista padrão de produtos sugeridos (Home Summary, Activities, Comunidade sem filtro extra). */
 export const SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS = {
   limit: 4,
   status: 'active' as const,
 };
+
+/** Pool maior na API para sortear sugestões variadas antes do slice final. */
+const SUGGESTED_PRODUCTS_FETCH_POOL_MAX = 48;
+
+function getSuggestedProductsFetchLimit(displayLimit: number): number {
+  return Math.min(Math.max(displayLimit * 8, 16), SUGGESTED_PRODUCTS_FETCH_POOL_MAX);
+}
 
 interface UseSuggestedProductsOptions {
   limit?: number;
@@ -44,8 +52,9 @@ export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}):
     setError(null);
 
     try {
+      const fetchLimit = getSuggestedProductsFetchLimit(limit);
       const productsResponse = await productService.listProducts({
-        limit,
+        limit: fetchLimit,
         status,
         ...(categoryId != null && categoryId !== '' ? { categoryId } : {}),
         ...(type != null && type !== '' ? { type } : {}),
@@ -69,7 +78,7 @@ export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}):
             updatedAt: p.updatedAt,
           };
         });
-        setProducts(mappedProducts);
+        setProducts(pickRandomItems(mappedProducts, limit));
       } else {
         setProducts([]);
       }
