@@ -452,7 +452,6 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                       />
                     ) : null}
                   </View>
-                  {renderRecommendedProducts()}
                 </>
               ) : (
                 <>
@@ -473,6 +472,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                   ) : null}
                 </>
               )}
+              {renderRecommendedProducts()}
             </View>
           </View>
         </ScrollView>
