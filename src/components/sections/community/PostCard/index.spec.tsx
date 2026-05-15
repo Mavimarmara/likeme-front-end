@@ -2,6 +2,16 @@ import { fireEvent, render } from '@testing-library/react-native';
 import PostCard from './index';
 import type { Post } from '@/types';
 
+jest.mock('@react-navigation/native', () => ({
+  useFocusEffect: jest.fn((effect: () => void | (() => void)) => {
+    const React = require('react');
+    React.useEffect(() => {
+      const cleanup = effect();
+      return typeof cleanup === 'function' ? cleanup : undefined;
+    }, [effect]);
+  }),
+}));
+
 jest.mock('@/hooks', () => {
   const actual = jest.requireActual('@/hooks');
   return {

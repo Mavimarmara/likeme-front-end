@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import type { LayoutChangeEvent, NativeSyntheticEvent, TextLayoutEventData } from 'react-native';
 import { Image, Pressable, StyleProp, Text, View, ViewStyle } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -69,6 +70,14 @@ const PostCardView: React.FC<ViewProps> = ({
   useEffect(() => {
     setVideoPlaybackOpen(false);
   }, [post.id, videoUri]);
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        setVideoPlaybackOpen(false);
+      };
+    }, []),
+  );
 
   useEffect(() => {
     setTextExceedsMaxLines(null);
@@ -324,7 +333,12 @@ const PostCardView: React.FC<ViewProps> = ({
     </>
   );
 
+  const videoExpandedBlocksPostNavigation = Boolean(videoUri && videoPlaybackOpen);
+
   if (onPress != null) {
+    if (videoExpandedBlocksPostNavigation) {
+      return <View style={[cardStyles.container, containerStyles]}>{cardInner}</View>;
+    }
     return (
       <Pressable
         style={({ pressed }) => [cardStyles.container, containerStyles, pressed ? { opacity: 0.92 } : undefined]}
