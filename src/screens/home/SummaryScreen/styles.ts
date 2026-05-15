@@ -11,6 +11,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     zIndex: 1,
     backgroundColor: 'transparent',
+    paddingVertical: SPACING.MD,
   },
   gradientBackground: {
     ...StyleSheet.absoluteFillObject,
@@ -21,10 +22,6 @@ export const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-  },
-  searchAndFilters: {
-    paddingVertical: SPACING.MD,
-    paddingHorizontal: SPACING.MD,
   },
   sectionTitle: {
     paddingHorizontal: SPACING.MD,
@@ -61,8 +58,5 @@ export const styles = StyleSheet.create({
   },
   sectionDivider: {
     paddingBottom: SPACING.MD,
-  },
-  emptyStateContainer: {
-    justifyContent: 'center',
   },
 });

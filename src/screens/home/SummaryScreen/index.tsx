@@ -2,17 +2,11 @@ import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { Alert, View, ScrollView, Text } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { GradientBackground, ScreenWithHeader } from '@/components/ui/layout';
-import { SearchBar } from '@/components/ui/inputs';
-import { StickyFilterCarouselRow } from '@/components/ui/menu';
-import { FilterCategoryModal, type FilterCategoryResult, type SolutionId } from '@/components/ui/modals';
 import {
   useCommunities,
-  useCategories,
   useSuggestedProducts,
   SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS,
   useMenuItems,
-  useCategoryDisplayLabel,
-  useSolutions,
   useSessionTokenReady,
 } from '@/hooks';
 import { useFloatingMenu } from '@/contexts/FloatingMenuContext';
@@ -23,13 +17,9 @@ import { PopularProvidersSection, type Provider } from '@/components/sections/co
 import { JoinCard, type JoinCardItem } from '@/components/ui/cards';
 import { ProductsCarousel, type Product } from '@/components/sections/product';
 import ProfileFloatingMenu from '@/components/sections/profile/ProfileFloatingMenu';
-import { EmptyState } from '@/components/ui/feedback';
 // TODO: Temporariamente desabilitados
 // import { AnamnesisPromptCard } from '@/components/sections/anamnesis';
 // import { AvatarSection } from '@/components/sections/avatar';
-// import type { Post } from '@/types';
-import type { SolutionTab, SolutionFilterId } from '@/types/solution';
-import { resolveSolutionTabFromFilters } from '@/types/solution';
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import { useAnalyticsScreen } from '@/analytics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -40,24 +30,14 @@ type Props = {
   route: any;
 };
 
-type SummarySolutionCarouselId = SolutionFilterId | 'all';
-
 const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   useAnalyticsScreen({ screenName: 'Summary', screenClass: 'SummaryScreen' });
   const { t } = useTranslation();
-  const { homeCarouselOptions } = useSolutions();
   const insets = useSafeAreaInsets();
   const rootNavigation = navigation.getParent() ?? navigation;
   const hasSessionToken = useSessionTokenReady();
   const [userAvatarUri, setUserAvatarUri] = useState<string | null>(null);
   const [isProfileMenuVisible, setIsProfileMenuVisible] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedSolutionTab, setSelectedSolutionTab] = useState<SolutionTab>('all');
-  const { getCategoryName } = useCategoryDisplayLabel();
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>(undefined);
-  const [selectedCategoryName, setSelectedCategoryName] = useState<import('@/types').CategoryName | null>(null);
-  const [selectedSolutionIds, setSelectedSolutionIds] = useState<SolutionId[]>([]);
-  const [isFilterCategoryModalVisible, setIsFilterCategoryModalVisible] = useState(false);
   // TODO: Temporariamente desabilitados
   // const [hasCompletedAnamnesis, setHasCompletedAnamnesis] = useState<boolean>(false);
   // const [hasAnyAnamnesisAnswers, setHasAnyAnamnesisAnswers] = useState<boolean>(false);
@@ -120,13 +100,8 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
       sortBy: 'createdAt',
       includeDeleted: false,
     },
-    searchQuery,
-    solutionTab: selectedSolutionTab,
-    selectedCategoryName,
-    getCategoryName,
   });
 
-  const { allCategoryOptions, categories } = useCategories({ enabled: hasSessionToken });
   const [popularProviders, setPopularProviders] = useState<Provider[]>([]);
   const [_loadingProviders, setLoadingProviders] = useState(false);
 
@@ -143,7 +118,6 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
           page: 1,
           limit: 20,
           status: 'active',
-          ...(selectedCategoryId != null && selectedCategoryId !== '' ? { categoryId: selectedCategoryId } : {}),
         });
         if (!response.success || !response.data?.advertisers) {
           setPopularProviders([]);
@@ -163,34 +137,18 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
       }
     };
     loadProviders();
-  }, [hasSessionToken, selectedCategoryId]);
+  }, [hasSessionToken]);
 
   const { products: recommendedProducts } = useSuggestedProducts({
     ...SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS,
     enabled: hasSessionToken,
-    categoryId: selectedCategoryId ?? null,
   });
 
   const { products: suggestedPrograms } = useSuggestedProducts({
     ...SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS,
     enabled: hasSessionToken,
-    categoryId: selectedCategoryId ?? null,
     type: PRODUCT_CATALOG_TYPE.PROGRAM,
   });
-
-  const filteredProviders = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
-    const base = selectedSolutionTab === 'all' || selectedSolutionTab === 'professionals' ? popularProviders : [];
-    if (!q) return base;
-    return base.filter((p) => p.name.toLowerCase().includes(q));
-  }, [popularProviders, searchQuery, selectedSolutionTab]);
-
-  const filteredProducts = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
-    const base = selectedSolutionTab === 'all' || selectedSolutionTab === 'products' ? recommendedProducts : [];
-    if (!q) return base;
-    return base.filter((p) => p.title?.toLowerCase?.().includes?.(q));
-  }, [recommendedProducts, searchQuery, selectedSolutionTab]);
 
   const recommendedProgramCards = useMemo((): JoinCardItem[] => {
     return suggestedPrograms.map((p) => ({
@@ -200,75 +158,6 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
       image: p.image,
     }));
   }, [suggestedPrograms]);
-
-  const hasActiveSearchOrFilter =
-    searchQuery.trim() !== '' || selectedCategoryName != null || selectedSolutionIds.length > 0;
-
-  const hasNoResultsForCurrentTab = useMemo(() => {
-    if (!hasActiveSearchOrFilter) return false;
-    switch (selectedSolutionTab) {
-      case 'communities':
-        return filteredJoinCommunities.length === 0;
-      case 'products':
-        return filteredProducts.length === 0;
-      case 'professionals':
-        return filteredProviders.length === 0;
-      case 'programs':
-        return suggestedPrograms.length === 0;
-      case 'all':
-      default:
-        return (
-          filteredJoinCommunities.length === 0 &&
-          filteredProviders.length === 0 &&
-          filteredProducts.length === 0 &&
-          suggestedPrograms.length === 0
-        );
-    }
-  }, [
-    hasActiveSearchOrFilter,
-    selectedSolutionTab,
-    filteredJoinCommunities.length,
-    filteredProviders.length,
-    filteredProducts.length,
-    suggestedPrograms.length,
-  ]);
-
-  const showEmptyState = hasActiveSearchOrFilter && hasNoResultsForCurrentTab;
-
-  const handleFilterCategoryApply = useCallback(
-    (result: FilterCategoryResult) => {
-      setSelectedCategoryId(result.categoryId ?? undefined);
-      setSelectedCategoryName(result.categoryName ?? null);
-      setSelectedSolutionIds(result.solutionIds);
-
-      setSelectedSolutionTab(resolveSolutionTabFromFilters(result.solutionIds as SolutionFilterId[]));
-    },
-    [setSelectedCategoryId, setSelectedCategoryName],
-  );
-
-  const handleClearFilterCategory = useCallback(() => {
-    setSelectedCategoryId(undefined);
-    setSelectedCategoryName(null);
-    setSelectedSolutionIds([]);
-    setSelectedSolutionTab('all');
-  }, []);
-
-  const selectedCategoryFromId =
-    selectedCategoryId != null
-      ? categories.find((category) => String(category.categoryId) === String(selectedCategoryId))
-      : null;
-
-  const categoryFilterButtonLabel =
-    selectedCategoryName != null
-      ? getCategoryName(selectedCategoryName)
-      : selectedCategoryFromId?.name ?? t('marketplace.category');
-  const selectedCarouselSolutionId = useMemo<SummarySolutionCarouselId>(() => {
-    if (selectedSolutionIds.length === 1) {
-      return selectedSolutionIds[0] as SummarySolutionCarouselId;
-    }
-
-    return selectedSolutionTab;
-  }, [selectedSolutionIds, selectedSolutionTab]);
 
   const menuItems = useMenuItems(navigation);
   const { setMenu } = useFloatingMenu();
@@ -323,8 +212,6 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
         userAvatarUri,
         showCartButton: true,
         onCartPress: handleCartPress,
-        showBellButton: true,
-        onBellPress: () => rootNavigation.navigate('Activities' as never),
       }}
       contentContainerStyle={styles.content}
     >
@@ -332,87 +219,25 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
         <GradientBackground />
       </View>
       <View style={styles.content}>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          style={styles.scrollView}
-          contentContainerStyle={[styles.scrollContent, { paddingBottom: Math.max(insets.bottom, 0) + 180 }]}
-          scrollIndicatorInsets={{ bottom: Math.max(insets.bottom, 0) + 180 }}
-        >
-          <View style={styles.searchAndFilters}>
-            <SearchBar
-              placeholder={t('common.search')}
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              onSearchPress={() => undefined}
-              showFilterButton={false}
-            />
-            <StickyFilterCarouselRow<SummarySolutionCarouselId>
-              filterButtonLabel={categoryFilterButtonLabel}
-              filterButtonSelected={selectedCategoryName != null || selectedSolutionIds.length > 0}
-              onFilterButtonPress={() => setIsFilterCategoryModalVisible(true)}
-              carouselOptions={homeCarouselOptions}
-              selectedCarouselId={selectedCarouselSolutionId}
-              onCarouselSelect={(solutionId) => {
-                if (solutionId === 'all') {
-                  setSelectedSolutionIds([]);
-                  setSelectedSolutionTab('all');
-                  return;
-                }
-
-                setSelectedSolutionIds([solutionId]);
-                setSelectedSolutionTab(resolveSolutionTabFromFilters([solutionId]));
-              }}
-            />
-          </View>
-          <FilterCategoryModal
-            visible={isFilterCategoryModalVisible}
-            onClose={() => setIsFilterCategoryModalVisible(false)}
-            categories={allCategoryOptions}
-            selectedCategoryId={selectedCategoryId}
-            onSelectCategory={() => {
-              // aplica apenas ao confirmar "Filtrar"
-            }}
-            selectedSolutionIds={selectedSolutionIds}
-            onToggleSolution={(id) => {
-              setSelectedSolutionIds((prev) => (prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]));
-            }}
-            onFilter={handleFilterCategoryApply}
-            onClear={handleClearFilterCategory}
-          />
-
-          {showEmptyState ? (
-            <View style={[styles.sectionDivider, styles.sectionContainer, styles.emptyStateContainer]}>
-              <EmptyState
-                title={t('home.noResultsTitle')}
-                description={t('home.noResultsDescription')}
-                actionLabel={t('home.clearFilters')}
-                onActionPress={() => {
-                  setSearchQuery('');
-                  handleClearFilterCategory();
-                }}
-              />
+        <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
+          {filteredJoinCommunities.length > 0 && (
+            <View style={styles.sectionDivider}>
+              <Text style={styles.sectionTitle}>{t('home.recommendedCommunitySectionTitle')}</Text>
+              <View style={styles.sectionContainer}>
+                <JoinCard items={filteredJoinCommunities} onItemPress={handleJoinCommunity} />
+              </View>
             </View>
-          ) : (
-            <>
-              {filteredJoinCommunities.length > 0 && (
-                <View style={styles.sectionDivider}>
-                  <Text style={styles.sectionTitle}>{t('home.recommendedCommunitySectionTitle')}</Text>
-                  <View style={styles.sectionContainer}>
-                    <JoinCard items={filteredJoinCommunities} onItemPress={handleJoinCommunity} />
-                  </View>
-                </View>
-              )}
+          )}
 
-              {(selectedSolutionTab === 'all' || selectedSolutionTab === 'programs') &&
-                recommendedProgramCards.length > 0 && (
-                  <View style={styles.sectionDivider}>
-                    <Text style={styles.sectionTitle}>{t('home.recommendedProgramSectionTitle')}</Text>
-                    <View style={styles.sectionContainer}>
-                      <JoinCard items={recommendedProgramCards} onItemPress={handleProgramPress} />
-                    </View>
-                  </View>
-                )}
-              {/* TODO: Avatar e Anamnese temporariamente desabilitados
+          {recommendedProgramCards.length > 0 && (
+            <View style={styles.sectionDivider}>
+              <Text style={styles.sectionTitle}>{t('home.recommendedProgramSectionTitle')}</Text>
+              <View style={styles.sectionContainer}>
+                <JoinCard items={recommendedProgramCards} onItemPress={handleProgramPress} />
+              </View>
+            </View>
+          )}
+          {/* TODO: Avatar e Anamnese temporariamente desabilitados
           {(hasAnyAnamnesisAnswers || hasCompletedAnamnesis) && (
             <View style={styles.avatarContainer}>
               <AvatarSection
@@ -440,25 +265,23 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
             </View>
           )}
           */}
-              {filteredProviders.length > 0 && (
-                <View style={[styles.sectionDivider]}>
-                  <PopularProvidersSection providers={filteredProviders} onProviderPress={handleProviderPress} />
-                </View>
-              )}
-              {filteredProducts.length > 0 && (
-                <View style={[styles.productsContainer, styles.sectionDivider]}>
-                  <Text style={styles.sectionTitle}>{t('home.recommendedProductsTitle')}</Text>
-                  <View style={[styles.sectionContainer, styles.sectionRetreatedContainer]}>
-                    <ProductsCarousel
-                      title={t('home.productsRecommended', { provider: '' })}
-                      subtitle={t('home.discoverProducts')}
-                      products={filteredProducts}
-                      onProductPress={handleProductPress}
-                    />
-                  </View>
-                </View>
-              )}
-            </>
+          {popularProviders.length > 0 && (
+            <View style={[styles.sectionDivider]}>
+              <PopularProvidersSection providers={popularProviders} onProviderPress={handleProviderPress} />
+            </View>
+          )}
+          {recommendedProducts.length > 0 && (
+            <View style={[styles.productsContainer, styles.sectionDivider]}>
+              <Text style={styles.sectionTitle}>{t('home.recommendedProductsTitle')}</Text>
+              <View style={[styles.sectionContainer, styles.sectionRetreatedContainer]}>
+                <ProductsCarousel
+                  title={t('home.productsRecommended', { provider: '' })}
+                  subtitle={t('home.discoverProducts')}
+                  products={recommendedProducts}
+                  onProductPress={handleProductPress}
+                />
+              </View>
+            </View>
           )}
         </ScrollView>
       </View>
