@@ -34,6 +34,8 @@ import { styles } from './styles';
 import { COLORS, SPACING } from '@/constants';
 import { useAnalyticsScreen } from '@/analytics';
 import { logger } from '@/utils/logger';
+import { getReadableErrorMessage } from '@/utils/error/readableErrorMessage';
+import { parseFullName, validateFullNameForPerson } from '@/utils/person/fullNameValidation';
 
 /** Valores enviados à API; labels vêm do i18n */
 const GENDER_OPTIONS = [
@@ -47,7 +49,6 @@ const GENDER_OPTIONS = [
 const KEYBOARD_RESPIRATION = 24;
 const SCROLL_FOCUS_OFFSET_PX = 80;
 const SCROLL_PADDING_WHEN_KEYBOARD_OPEN = 120;
-const FULL_NAME_REGEX = /^[\p{L}\s]+$/u;
 
 type Props = StackScreenProps<RootStackParamList, 'Register'>;
 
@@ -166,10 +167,15 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
         height?: string;
       } = {};
 
-      if (!fullName.trim()) {
+      const fullNameIssue = validateFullNameForPerson(fullName);
+      if (fullNameIssue === 'empty') {
         errors.fullName = t('auth.fillFullName');
-      } else if (!FULL_NAME_REGEX.test(fullName.trim())) {
+      } else if (fullNameIssue === 'invalid_chars') {
         errors.fullName = t('auth.validationInvalidFullName');
+      } else if (fullNameIssue === 'missing_surname') {
+        errors.fullName = t('auth.validationFullNameRequiresSurname');
+      } else if (fullNameIssue === 'part_too_short') {
+        errors.fullName = t('auth.validationFullNamePartTooShort');
       }
 
       const birthdateISO = birthdate.trim() ? birthdateToISO(birthdate.trim()) : null;
@@ -202,9 +208,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
         return;
       }
 
-      const nameParts = fullName.trim().split(/\s+/);
-      const firstName = nameParts[0] || '';
-      const lastName = nameParts.slice(1).join(' ') || '';
+      const { firstName, lastName } = parseFullName(fullName);
 
       const personData: PersonData = {
         firstName,
@@ -223,7 +227,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
       };
       navigation.navigate(nextScreen as never, params as never);
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : t('auth.registerError');
+      const message = getReadableErrorMessage(error, t('auth.registerError'));
       logger.error('[RegisterScreen] Erro ao salvar dados da pessoa', error);
       Alert.alert(t('common.error'), message);
     } finally {
@@ -239,7 +243,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
       const params = { firstName };
       navigation.navigate(nextScreen as never, params as never);
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : t('auth.registerError');
+      const message = getReadableErrorMessage(error, t('auth.registerError'));
       logger.error('[RegisterScreen] Erro ao pular registro', error);
       Alert.alert(t('common.error'), message);
     } finally {

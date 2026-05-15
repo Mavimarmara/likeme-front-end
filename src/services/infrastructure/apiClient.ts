@@ -72,16 +72,12 @@ class ApiClient {
         (typeof errorData.message === 'string' && errorData.message.trim() ? errorData.message.trim() : '') ||
         (typeof errorData.error === 'string' && errorData.error.trim() ? errorData.error.trim() : '');
 
-      if (response.status === 401) {
-        throw new Error(serverMessage || 'Sessão expirada. Faça login novamente.');
-      }
-
       const errorMessage = serverMessage || `HTTP error! status: ${response.status}`;
-      const error: ApiError = {
-        message: errorMessage,
-        status: response.status,
-      };
-      throw error;
+      const httpError = new Error(
+        response.status === 401 ? serverMessage || 'Sessão expirada. Faça login novamente.' : errorMessage,
+      ) as Error & ApiError;
+      httpError.status = response.status;
+      throw httpError;
     }
 
     if (response.status === 204) {

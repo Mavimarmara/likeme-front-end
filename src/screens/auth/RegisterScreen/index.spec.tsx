@@ -19,6 +19,8 @@ const t = (key: string, opts?: Record<string, string>) => {
     'auth.validationInvalidBirthdate': 'Informe uma data de nascimento válida (DD/MM/AAAA).',
     'auth.requiredField': 'Campo obrigatório',
     'auth.fillFullName': 'Por favor, preencha o nome completo.',
+    'auth.validationFullNameRequiresSurname': 'Informe nome e sobrenome.',
+    'auth.validationFullNamePartTooShort': 'Nome e sobrenome devem ter pelo menos 2 caracteres cada.',
     'auth.validationInvalidNumber': 'Informe um número válido.',
     'auth.validationOutOfRange': `Deve estar entre ${opts?.min ?? ''} e ${opts?.max ?? ''}.`,
     'auth.gender': 'Gênero',
@@ -147,7 +149,7 @@ describe('RegisterScreen', () => {
 
     const { getByText, getByTestId } = render(<RegisterScreen navigation={mockNavigation} route={mockRoute as any} />);
 
-    fireEvent.changeText(getByTestId('input-Nome completo'), 'John');
+    fireEvent.changeText(getByTestId('input-Nome completo'), 'John Doe');
     fireEvent.changeText(getByTestId('input-DD/MM/AAAA'), '01/01/1990');
     fireEvent.press(getByText('Selecione'));
     fireEvent.press(getByText('Masculino'));
@@ -247,13 +249,27 @@ describe('RegisterScreen', () => {
     expect(mockNavigation.navigate).not.toHaveBeenCalled();
   });
 
+  it('shows inline error when Salvar is pressed with single-word fullName', () => {
+    const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
+    const mockRoute = { params: {} };
+
+    const { getByText, getByTestId } = render(<RegisterScreen navigation={mockNavigation} route={mockRoute as any} />);
+
+    fireEvent.changeText(getByTestId('input-Nome completo'), 'Maria');
+    fireEvent.press(getByText('Salvar'));
+
+    expect(getByText('Informe nome e sobrenome.')).toBeTruthy();
+    expect(mockNavigation.navigate).not.toHaveBeenCalled();
+    expect(getServices().personsService.createOrUpdatePerson).not.toHaveBeenCalled();
+  });
+
   it('does not navigate when birthdate is out of range and sets field error', async () => {
     const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
     const mockRoute = { params: {} };
 
     const { getByText, getByTestId } = render(<RegisterScreen navigation={mockNavigation} route={mockRoute as any} />);
 
-    fireEvent.changeText(getByTestId('input-Nome completo'), 'João');
+    fireEvent.changeText(getByTestId('input-Nome completo'), 'João Silva');
     fireEvent.changeText(getByTestId('input-DD/MM/AAAA'), '01/01/1820');
     fireEvent.press(getByText('Salvar'));
 
