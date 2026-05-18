@@ -9,7 +9,7 @@ import {
   useMenuItems,
   useSessionTokenReady,
 } from '@/hooks';
-import { useFloatingMenu } from '@/contexts/FloatingMenuContext';
+import { useFloatingMenuActions } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 import { logger } from '@/utils/logger';
 import { communityService, storageService, advertiserService } from '@/services';
@@ -162,7 +162,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   );
 
   const menuItems = useMenuItems(navigation);
-  const { setMenu } = useFloatingMenu();
+  const { setMenu } = useFloatingMenuActions();
 
   useFocusEffect(
     useCallback(() => {

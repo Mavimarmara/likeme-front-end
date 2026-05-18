@@ -9,7 +9,7 @@ import { SearchBar } from '@/components/ui';
 import { GradientBackground, ScreenWithHeader } from '@/components/ui/layout';
 import { useTranslation } from '@/hooks/i18n';
 import { useChat, useFeatureFlag, useMenuItems } from '@/hooks';
-import { useFloatingMenu } from '@/contexts/FloatingMenuContext';
+import { useFloatingMenuActions } from '@/contexts/FloatingMenuContext';
 import type { ChatConversation } from '@/hooks';
 import { LogoMini } from '@/assets/ui';
 import { COLORS, FEATURE_FLAGS } from '@/constants';
@@ -36,7 +36,7 @@ const ChatListScreen: React.FC<Props> = () => {
 
   const { conversations, loading, refresh } = useChat({ searchQuery });
   const menuItems = useMenuItems(navigation);
-  const { setMenu } = useFloatingMenu();
+  const { setMenu } = useFloatingMenuActions();
 
   useFocusEffect(
     useCallback(() => {

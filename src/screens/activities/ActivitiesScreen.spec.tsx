@@ -26,6 +26,10 @@ jest.mock('@/contexts/FloatingMenuContext', () => ({
     clearMenu: jest.fn(),
     isFloatingMenuVisible: false,
   }),
+  useFloatingMenuActions: () => ({
+    setMenu: jest.fn(),
+    clearMenu: jest.fn(),
+  }),
   useSetFloatingMenu: () => jest.fn(),
   useIsFloatingMenuVisible: () => false,
 }));
