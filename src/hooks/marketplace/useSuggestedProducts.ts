@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { productService } from '@/services';
-import type { Product } from '@/components/sections/product';
+import type { Product as CarouselProduct } from '@/components/sections/product';
+import type { Product as ApiProduct } from '@/types/product';
 import { useCategories } from '@/hooks/category/useCategories';
 import { logger } from '@/utils/logger';
 import { buildMarketplaceCategoryBadgeLabels } from '@/utils/marketplace/buildMarketplaceCategoryBadgeLabels';
@@ -14,11 +15,29 @@ export const SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS = {
   status: 'active' as const,
 };
 
-/** Pool maior na API para sortear sugestões variadas antes do slice final. */
-const SUGGESTED_PRODUCTS_FETCH_POOL_MAX = 48;
+/** Pool máximo trazido da API. Margem pequena sobre o `limit` apenas para variar o slice final. */
+const SUGGESTED_PRODUCTS_FETCH_POOL_MAX = 24;
 
 function getSuggestedProductsFetchLimit(displayLimit: number): number {
-  return Math.min(Math.max(displayLimit * 8, 16), SUGGESTED_PRODUCTS_FETCH_POOL_MAX);
+  const minimum = Math.max(displayLimit, 4);
+  return Math.min(Math.max(displayLimit * 2, minimum), SUGGESTED_PRODUCTS_FETCH_POOL_MAX);
+}
+
+const SUGGESTED_PRODUCT_PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
+
+function mapApiProductToCarouselProduct(product: ApiProduct, tags: string[]): CarouselProduct {
+  const categoryLabel = tags[0] ?? '';
+  return {
+    id: product.id,
+    title: product.name,
+    price: product.price ?? null,
+    tag: categoryLabel,
+    tags,
+    image: product.image || SUGGESTED_PRODUCT_PLACEHOLDER_IMAGE,
+    likes: 0,
+    createdAt: product.createdAt,
+    updatedAt: product.updatedAt,
+  };
 }
 
 interface UseSuggestedProductsOptions {
@@ -31,7 +50,7 @@ interface UseSuggestedProductsOptions {
 }
 
 interface UseSuggestedProductsReturn {
-  products: Product[];
+  products: CarouselProduct[];
   loading: boolean;
   error: Error | null;
   refresh: () => Promise<void>;
@@ -40,7 +59,12 @@ interface UseSuggestedProductsReturn {
 export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}): UseSuggestedProductsReturn => {
   const { limit = 4, status = 'active', enabled = true, categoryId, type } = options;
   const { categories } = useCategories({ enabled });
-  const [products, setProducts] = useState<Product[]>([]);
+  /**
+   * Pool já com `pickRandomItems` aplicado: o sorteio acontece uma única vez por load
+   * (não a cada render nem quando `categories` chega depois). Isso evita o "pisca"
+   * de conteúdo diferente sempre que a tela remonta sem motivo.
+   */
+  const [shuffledApiProducts, setShuffledApiProducts] = useState<ApiProduct[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
@@ -63,40 +87,40 @@ export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}):
 
       if (productsResponse.success && productsResponse.data) {
         const list = await enrichProductsWithCategoriesFromByProductApi(productsResponse.data.products);
-        const mappedProducts: Product[] = list.map((p) => {
-          const tags = buildMarketplaceCategoryBadgeLabels(p, categories);
-          const categoryLabel = tags[0] ?? '';
-
-          return {
-            id: p.id,
-            title: p.name,
-            price: p.price ?? null,
-            tag: categoryLabel,
-            tags,
-            image: p.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
-            likes: 0,
-            createdAt: p.createdAt,
-            updatedAt: p.updatedAt,
-          };
-        });
-        const finalProducts = pickRandomItems(mappedProducts, limit);
-        setProducts(finalProducts);
-        void prefetchImageUris(finalProducts.map((p) => p.image));
+        setShuffledApiProducts(pickRandomItems(list, limit));
       } else {
-        setProducts([]);
+        setShuffledApiProducts([]);
       }
     } catch (err) {
       logger.error('[useSuggestedProducts] Erro ao carregar produtos sugeridos', err);
       setError(err instanceof Error ? err : new Error('Failed to load suggested products'));
-      setProducts([]);
+      setShuffledApiProducts([]);
     } finally {
       setLoading(false);
     }
-  }, [enabled, limit, status, categoryId, type, categories]);
+  }, [enabled, limit, status, categoryId, type]);
+
+  /**
+   * Tags vêm de `categoryNames` (preenchido pelo enrichment) ou do array `categories`.
+   * Mantemos o mapping em `useMemo` para que a chegada tardia de `categories` não
+   * dispare um segundo fetch — antes ela estava nas deps de `loadProducts`.
+   */
+  const products = useMemo<CarouselProduct[]>(
+    () =>
+      shuffledApiProducts.map((p) => {
+        const tags = buildMarketplaceCategoryBadgeLabels(p, categories);
+        return mapApiProductToCarouselProduct(p, tags);
+      }),
+    [shuffledApiProducts, categories],
+  );
 
   useEffect(() => {
     loadProducts();
   }, [loadProducts]);
+
+  useEffect(() => {
+    void prefetchImageUris(products.map((p) => p.image));
+  }, [products]);
 
   return {
     products,
