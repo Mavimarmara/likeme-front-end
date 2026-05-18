@@ -46,6 +46,40 @@ export const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: SPACING.XXL,
   },
+  listContentContainer: {
+    paddingHorizontal: SPACING.MD,
+    paddingBottom: SPACING.XXL,
+  },
+  listItemSeparator: {
+    height: SPACING.MD,
+  },
+  listFooter: {
+    paddingTop: SPACING.MD,
+  },
+  listLoadingMore: {
+    padding: SPACING.MD,
+    alignItems: 'center',
+  },
+  listLoadMoreButton: {
+    padding: SPACING.MD,
+    alignItems: 'center',
+    backgroundColor: '#F5F5F5',
+    borderRadius: 8,
+    marginTop: SPACING.MD,
+  },
+  listLoadMoreText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#2196F3',
+  },
+  listLoadingInitial: {
+    paddingTop: SPACING.SM,
+    gap: SPACING.MD,
+  },
+  listEmptyContainer: {
+    paddingHorizontal: SPACING.MD,
+    paddingVertical: SPACING.LG,
+  },
   section: {
     paddingHorizontal: SPACING.MD,
     marginBottom: SPACING.XL,

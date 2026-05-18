@@ -1,5 +1,5 @@
-import React, { useMemo, useState, useEffect } from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
+import { ActivityIndicator, FlatList, type ListRenderItem, TouchableOpacity, View, Text } from 'react-native';
 import { CachedImage } from '@/components/ui/media/CachedImage';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { RouteProp } from '@react-navigation/native';
@@ -10,9 +10,11 @@ import { DEFAULT_MARKETPLACE_SORT_ORDER, type MarketplaceSortOrderId } from '@/c
 import { buildMarketplaceCategoryBadgeLabels } from '@/utils/marketplace/buildMarketplaceCategoryBadgeLabels';
 import { sortAdsByMarketplaceOrder } from '@/utils/marketplace/sorting';
 import { ScreenWithHeader } from '@/components/ui/layout';
+import { EmptyState } from '@/components/ui/feedback';
 import { GradientBackgroundByCategory } from '@/components/sections';
 import { FilterCategoryModal, type FilterCategoryResult, type SolutionId } from '@/components/ui/modals';
-import { WeekHighlightCard, AdsList } from '@/components/sections/marketplace';
+import { WeekHighlightCard } from '@/components/sections/marketplace';
+import { ProductItemCard, ProductItemCardSkeleton } from '@/components/ui/cards';
 import {
   useMarketplaceAds,
   useProducts,
@@ -48,6 +50,9 @@ const SOLUTION_ALL: SolutionTab = 'all';
 const MARKETPLACE_SOLUTION_ID_SET = new Set<SolutionFilterId>(marketplaceSolutionOptions.map((option) => option.id));
 
 const DEFAULT_HIGHLIGHT_IMAGE = 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
+const DEFAULT_PRODUCT_IMAGE = 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
+const MARKETPLACE_LIST_SKELETON_COUNT = 4;
+const MARKETPLACE_LIST_END_REACHED_THRESHOLD = 0.5;
 type MarketplaceSolutionTab = SolutionTab | MarketplaceSolutionFilterId;
 
 type MarketplaceScreenProps = {
@@ -149,19 +154,20 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     loadAds();
   }, [isProgramsTab, loadAds, loadProducts, selectedCategory, selectedCategoryId, page, appliedSearchQuery]);
 
-  const handleAdPress = (ad: Ad) => {
-    handleAdNavigation(ad, navigation);
-  };
+  const handleAdPress = useCallback(
+    (ad: Ad) => {
+      handleAdNavigation(ad, navigation);
+    },
+    [navigation],
+  );
+
+  const handleLoadMore = useCallback(() => {
+    if (loading || !hasMore) return;
+    setPage((prev) => prev + 1);
+  }, [loading, hasMore]);
 
   const menuItems = useMenuItems(navigation);
   useSetFloatingMenu(menuItems, 'marketplace');
-
-  const handleSolutionTabChange = (tabId: string) => {
-    if (tabId === SOLUTION_ALL || MARKETPLACE_SOLUTION_ID_SET.has(tabId as SolutionId)) {
-      setSelectedSolutionTab(tabId as MarketplaceSolutionTab);
-    }
-    setPage(1);
-  };
 
   const handleFilterCategoryApply = (result: FilterCategoryResult) => {
     setSelectedCategoryId(result.categoryId ?? undefined);
@@ -182,7 +188,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     setPage(1);
   };
 
-  const handleClearFilterCategory = () => {
+  const handleClearFilterCategory = useCallback(() => {
     setSelectedCategoryId(undefined);
     setSelectedSolutionIds([]);
     setSelectedSolutionTab(SOLUTION_ALL);
@@ -190,7 +196,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     setSearchQuery('');
     setAppliedSearchQuery('');
     setPage(1);
-  };
+  }, []);
 
   const selectedCategoryFromId =
     selectedCategoryId != null
@@ -297,15 +303,45 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     return page === 1 ? filteredAdsBySolution.slice(1) : filteredAdsBySolution;
   }, [filteredAdsBySolution, page, appliedSearchQuery, selectedSolutionTab]);
 
-  const handleProfessionalPress = (advertiser: Advertiser) => {
-    navigation.navigate('ProviderProfile', {
-      providerId: advertiser.id,
-      provider: {
-        name: advertiser.name,
-        avatar: advertiser.logo,
-      },
-    });
-  };
+  const handleProfessionalPress = useCallback(
+    (advertiser: Advertiser) => {
+      navigation.navigate('ProviderProfile', {
+        providerId: advertiser.id,
+        provider: {
+          name: advertiser.name,
+          avatar: advertiser.logo,
+        },
+      });
+    },
+    [navigation],
+  );
+
+  const renderAdItem = useCallback<ListRenderItem<Ad>>(
+    ({ item: ad }) => {
+      const product = ad.product;
+      const displayName = product?.name || t('marketplace.product', { defaultValue: 'Product' });
+      const displayImage = product?.image || DEFAULT_PRODUCT_IMAGE;
+      const categoryBadges = buildMarketplaceCategoryBadgeLabels(product, categories);
+
+      return (
+        <ProductItemCard
+          image={displayImage}
+          title={displayName}
+          badges={categoryBadges}
+          price={product?.price}
+          outOfStock={product?.status === 'out_of_stock'}
+          outOfStockLabel={t('marketplace.outOfStock', { defaultValue: 'Out of stock' })}
+          onPress={() => handleAdPress(ad)}
+          showTrailingChevron={!!product}
+        />
+      );
+    },
+    [t, categories, handleAdPress],
+  );
+
+  const adKeyExtractor = useCallback((ad: Ad) => ad.id, []);
+
+  const renderItemSeparator = useCallback(() => <View style={styles.listItemSeparator} />, []);
 
   const professionalsContent = useMemo(() => {
     if (!professionals.length) {
@@ -377,21 +413,73 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     );
   };
 
-  const renderAllAds = () => (
-    <AdsList
-      suppressInlineListChrome
-      selectedTabId={selectedSolutionTab}
-      onTabChange={handleSolutionTabChange}
-      ads={listAdsForCurrentTab}
-      professionalsContent={professionalsContent}
-      loading={loading}
-      hasMore={hasMore}
-      onLoadMore={() => setPage((prev) => prev + 1)}
-      navigation={navigation}
-      emptyActionLabel={t('home.clearFilters')}
-      onEmptyActionPress={handleClearFilterCategory}
-    />
-  );
+  const isProfessionalsTab = selectedSolutionTab === 'professionals';
+  const listData = isProfessionalsTab ? [] : listAdsForCurrentTab;
+  const showProfessionalsAfterAllTab =
+    selectedSolutionTab === SOLUTION_ALL && professionalsContent != null && listAdsForCurrentTab.length > 0;
+
+  const listFooter = useMemo(() => {
+    return (
+      <View style={styles.listFooter}>
+        {!isProfessionalsTab && loading && listAdsForCurrentTab.length > 0 ? (
+          <View style={styles.listLoadingMore}>
+            <ActivityIndicator size='small' color='#2196F3' />
+          </View>
+        ) : null}
+        {!isProfessionalsTab && hasMore && !loading && listAdsForCurrentTab.length > 0 ? (
+          <TouchableOpacity style={styles.listLoadMoreButton} onPress={handleLoadMore} activeOpacity={0.7}>
+            <Text style={styles.listLoadMoreText}>{t('marketplace.loadMore')}</Text>
+          </TouchableOpacity>
+        ) : null}
+        {showProfessionalsAfterAllTab ? professionalsContent : null}
+      </View>
+    );
+  }, [
+    isProfessionalsTab,
+    loading,
+    listAdsForCurrentTab.length,
+    hasMore,
+    handleLoadMore,
+    t,
+    showProfessionalsAfterAllTab,
+    professionalsContent,
+  ]);
+
+  const listEmpty = useMemo(() => {
+    if (isProfessionalsTab) {
+      return (
+        professionalsContent ?? (
+          <View style={styles.listEmptyContainer}>
+            <EmptyState
+              title={t('marketplace.noAdsFound')}
+              description={t('marketplace.noAdsFoundDescription')}
+              iconName='storefront'
+            />
+          </View>
+        )
+      );
+    }
+    if (loading) {
+      return (
+        <View style={styles.listLoadingInitial}>
+          {Array.from({ length: MARKETPLACE_LIST_SKELETON_COUNT }).map((_, index) => (
+            <ProductItemCardSkeleton key={`mkt-skeleton-${index}`} />
+          ))}
+        </View>
+      );
+    }
+    return (
+      <View style={styles.listEmptyContainer}>
+        <EmptyState
+          title={t('marketplace.noAdsFound')}
+          description={t('marketplace.noAdsFoundDescription')}
+          iconName='storefront'
+          actionLabel={t('home.clearFilters')}
+          onActionPress={handleClearFilterCategory}
+        />
+      </View>
+    );
+  }, [isProfessionalsTab, professionalsContent, loading, t, handleClearFilterCategory]);
 
   return (
     <ScreenWithHeader
@@ -412,14 +500,25 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       </View>
       <View style={styles.content}>
         {renderCustomHeader()}
-        <ScrollView
+        <FlatList<Ad>
+          testID='marketplace-list'
           style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={styles.listContentContainer}
           showsVerticalScrollIndicator={false}
-        >
-          {renderWeekHighlights()}
-          {renderAllAds()}
-        </ScrollView>
+          data={listData}
+          keyExtractor={adKeyExtractor}
+          renderItem={renderAdItem}
+          ItemSeparatorComponent={renderItemSeparator}
+          ListHeaderComponent={renderWeekHighlights()}
+          ListFooterComponent={listFooter}
+          ListEmptyComponent={listEmpty}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={MARKETPLACE_LIST_END_REACHED_THRESHOLD}
+          initialNumToRender={10}
+          maxToRenderPerBatch={10}
+          windowSize={11}
+          removeClippedSubviews
+        />
       </View>
     </ScreenWithHeader>
   );
