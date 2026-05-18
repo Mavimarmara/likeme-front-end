@@ -20,7 +20,7 @@ import { GradientBackground, HeroImage, ScreenWithHeader } from '@/components/ui
 import type { FeedEvent } from '@/types/event';
 import { SPACING, COMMUNITY_FEED_POSTS_PAGE_SIZE } from '@/constants';
 import { styles } from './styles';
-import type { CommunityStackParamList } from '@/types/navigation';
+import type { CommunityStackParamList, RootStackParamList } from '@/types/navigation';
 import {
   useUserFeed,
   useCommunities,
@@ -28,6 +28,7 @@ import {
   useSuggestedProducts,
   SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS,
   useAdvertisers,
+  useMarketplaceAds,
   useMenuItems,
   useEventJoin,
 } from '@/hooks';
@@ -38,7 +39,7 @@ import { storageService } from '@/services';
 import { logger } from '@/utils/logger';
 import { resolveCommunityHeroImageUri } from '@/utils/community/mappers';
 import type { Advertiser } from '@/types/ad';
-import { PRODUCT_CATALOG_TYPE } from '@/types/product';
+import type { ShopTabId } from '@/components/sections/community/ShoppingList';
 import Toggle from '@/components/ui/buttons/Toggle';
 import { Checkbox } from '@/components/ui/inputs';
 import { EventWebViewSession } from '@/components/infrastructure/webview/EventWebViewSession';
@@ -184,18 +185,98 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     ...SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS,
     enabled: true,
   });
-  const { products: suggestedServices } = useSuggestedProducts({
-    limit: 20,
-    status: 'active',
-    enabled: selectedMode === COMMUNITY_VIEW.SOLUTIONS,
-    type: PRODUCT_CATALOG_TYPE.SERVICE,
+
+  const [selectedShopTabId, setSelectedShopTabId] = useState<ShopTabId>('products');
+  const [shopProductsPage, setShopProductsPage] = useState(1);
+  const [shopServicesPage, setShopServicesPage] = useState(1);
+  const [shopProgramsPage, setShopProgramsPage] = useState(1);
+
+  const {
+    ads: shopProductsAds,
+    loading: shopProductsLoading,
+    hasMore: shopProductsHasMore,
+    loadAds: loadShopProductsAds,
+  } = useMarketplaceAds({
+    selectedCategory: 'products',
+    page: shopProductsPage,
+    enabled: solutionsMode,
   });
-  const { products: suggestedPrograms } = useSuggestedProducts({
-    limit: 20,
-    status: 'active',
-    enabled: selectedMode === COMMUNITY_VIEW.SOLUTIONS,
-    type: PRODUCT_CATALOG_TYPE.PROGRAM,
+  const {
+    ads: shopServicesAds,
+    loading: shopServicesLoading,
+    hasMore: shopServicesHasMore,
+    loadAds: loadShopServicesAds,
+  } = useMarketplaceAds({
+    selectedCategory: 'services',
+    page: shopServicesPage,
+    enabled: solutionsMode,
   });
+  const {
+    ads: shopProgramsAds,
+    loading: shopProgramsLoading,
+    hasMore: shopProgramsHasMore,
+    loadAds: loadShopProgramsAds,
+  } = useMarketplaceAds({
+    selectedCategory: 'programs',
+    page: shopProgramsPage,
+    enabled: solutionsMode,
+  });
+
+  useEffect(() => {
+    if (!solutionsMode) return;
+    loadShopProductsAds();
+  }, [solutionsMode, shopProductsPage, loadShopProductsAds]);
+
+  useEffect(() => {
+    if (!solutionsMode) return;
+    loadShopServicesAds();
+  }, [solutionsMode, shopServicesPage, loadShopServicesAds]);
+
+  useEffect(() => {
+    if (!solutionsMode) return;
+    loadShopProgramsAds();
+  }, [solutionsMode, shopProgramsPage, loadShopProgramsAds]);
+
+  const shopTabState = useMemo(() => {
+    switch (selectedShopTabId) {
+      case 'products':
+        return { ads: shopProductsAds, loading: shopProductsLoading, hasMore: shopProductsHasMore };
+      case 'services':
+        return { ads: shopServicesAds, loading: shopServicesLoading, hasMore: shopServicesHasMore };
+      case 'programs':
+        return { ads: shopProgramsAds, loading: shopProgramsLoading, hasMore: shopProgramsHasMore };
+      case 'professionals':
+      default:
+        return { ads: [], loading: false, hasMore: false };
+    }
+  }, [
+    selectedShopTabId,
+    shopProductsAds,
+    shopProductsLoading,
+    shopProductsHasMore,
+    shopServicesAds,
+    shopServicesLoading,
+    shopServicesHasMore,
+    shopProgramsAds,
+    shopProgramsLoading,
+    shopProgramsHasMore,
+  ]);
+
+  const handleShopLoadMore = useCallback(() => {
+    if (selectedShopTabId === 'products') {
+      setShopProductsPage((prev) => prev + 1);
+    } else if (selectedShopTabId === 'services') {
+      setShopServicesPage((prev) => prev + 1);
+    } else if (selectedShopTabId === 'programs') {
+      setShopProgramsPage((prev) => prev + 1);
+    }
+  }, [selectedShopTabId]);
+
+  // Navegação raiz para ProductDetails/ProviderProfile a partir do ShoppingList.
+  const shopNavigation = (rootNavigation ?? navigation) as unknown as StackNavigationProp<
+    RootStackParamList,
+    keyof RootStackParamList
+  >;
 
   const menuItems = useMenuItems(navigation);
   useSetFloatingMenu(menuItems, 'community');
@@ -515,11 +596,14 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
                     onShoppingTipClose={handleShoppingTipClose}
                   />
                   <ShoppingList
-                    products={suggestedProducts}
-                    services={suggestedServices}
-                    programs={suggestedPrograms}
+                    selectedTabId={selectedShopTabId}
+                    onTabChange={setSelectedShopTabId}
+                    ads={shopTabState.ads}
+                    loading={shopTabState.loading}
+                    hasMore={shopTabState.hasMore}
+                    onLoadMore={handleShopLoadMore}
+                    navigation={shopNavigation}
                     professionals={shopProfessionals}
-                    onProductPress={handleProductPress}
                     onProfessionalPress={handleProfessionalPress}
                     embedInParentScroll
                   />

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, type ReactNode } from 'react';
 import { ScrollView, View, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SecondaryButton } from '@/components/ui/buttons';
@@ -8,50 +8,46 @@ import { AdsList } from '@/components/sections/marketplace';
 import type { ButtonCarouselOption } from '@/components/ui/carousel';
 import { DEFAULT_MARKETPLACE_SORT_ORDER, type MarketplaceSortOrderId } from '@/constants/marketplaceSortOrder';
 import { getMarketplaceSortOptions } from '@/utils/marketplace/sortOptions';
-import { sortShopProductsByMarketplaceOrder } from '@/utils/marketplace/sorting';
+import { sortAdsByMarketplaceOrder } from '@/utils/marketplace/sorting';
 import { useTranslation } from '@/hooks/i18n';
-import type { Product } from '@/components/sections/product/ProductCard';
-import type { Advertiser } from '@/types/ad';
+import type { Ad, Advertiser } from '@/types/ad';
+import type { StackNavigationProp } from '@react-navigation/stack';
+import type { RootStackParamList } from '@/types/navigation';
 import { COLORS } from '@/constants';
 import { styles } from './styles';
 
+export type ShopTabId = 'products' | 'services' | 'programs' | 'professionals';
+
 type Props = {
-  products: Product[];
-  services?: Product[];
-  programs?: Product[];
+  selectedTabId: ShopTabId;
+  onTabChange: (tabId: ShopTabId) => void;
+  ads: Ad[];
+  loading?: boolean;
+  hasMore?: boolean;
+  onLoadMore?: () => void;
+  navigation: StackNavigationProp<RootStackParamList, keyof RootStackParamList>;
   professionals?: Advertiser[];
-  onProductPress?: (product: Product) => void;
-  onProductLike?: (product: Product) => void;
   onProfessionalPress?: (advertiser: Advertiser) => void;
   /** Quando true, não usa ScrollView próprio; o conteúdo é renderizado para ficar dentro do scroll do pai. */
   embedInParentScroll?: boolean;
 };
 
 const ShoppingList: React.FC<Props> = ({
-  products,
-  services = [],
-  programs = [],
+  selectedTabId,
+  onTabChange,
+  ads,
+  loading = false,
+  hasMore = false,
+  onLoadMore,
+  navigation,
   professionals = [],
-  onProductPress,
-  onProductLike: _onProductLike,
   onProfessionalPress,
   embedInParentScroll = false,
 }) => {
   const { t } = useTranslation();
   const [activeOrder, setActiveOrder] = useState<MarketplaceSortOrderId>(DEFAULT_MARKETPLACE_SORT_ORDER);
 
-  const orderedProducts = useMemo(
-    () => sortShopProductsByMarketplaceOrder(products ?? [], activeOrder),
-    [products, activeOrder],
-  );
-  const orderedServices = useMemo(
-    () => sortShopProductsByMarketplaceOrder(services ?? [], activeOrder),
-    [services, activeOrder],
-  );
-  const orderedPrograms = useMemo(
-    () => sortShopProductsByMarketplaceOrder(programs ?? [], activeOrder),
-    [programs, activeOrder],
-  );
+  const orderedAds = useMemo(() => sortAdsByMarketplaceOrder(ads, activeOrder), [ads, activeOrder]);
 
   const orderOptions: ButtonCarouselOption<string>[] = useMemo(() => getMarketplaceSortOptions(t), [t]);
 
@@ -65,7 +61,7 @@ const ShoppingList: React.FC<Props> = ({
     [t],
   );
 
-  const professionalsContent = useMemo(() => {
+  const professionalsContent: ReactNode = useMemo(() => {
     if (professionals.length === 0) {
       return (
         <View style={styles.emptySection}>
@@ -112,12 +108,15 @@ const ShoppingList: React.FC<Props> = ({
 
   const listContent = (
     <AdsList
+      navigation={navigation}
       solutionTabs={solutionTabs}
-      productsList={orderedProducts}
-      servicesList={orderedServices}
-      programsList={orderedPrograms}
+      selectedTabId={selectedTabId}
+      onTabChange={(id) => onTabChange(id as ShopTabId)}
+      ads={orderedAds}
+      loading={loading}
+      hasMore={hasMore}
+      onLoadMore={onLoadMore}
       professionalsContent={professionalsContent}
-      onProductPress={onProductPress}
       orderOptions={orderOptions}
       selectedOrder={activeOrder}
       onOrderSelect={(id) => setActiveOrder(id as MarketplaceSortOrderId)}
