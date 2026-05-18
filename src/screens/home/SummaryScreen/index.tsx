@@ -103,7 +103,6 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   });
 
   const [popularProviders, setPopularProviders] = useState<Provider[]>([]);
-  const [_loadingProviders, setLoadingProviders] = useState(false);
 
   useEffect(() => {
     if (!hasSessionToken) {
@@ -111,12 +110,14 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
       return;
     }
 
+    // PopularProvidersSection e um carrossel horizontal — 10 e suficiente
+    // pra preencher mais que a primeira tela na maioria dos devices, sem
+    // pagar latencia/dados para itens que nunca serao vistos.
     const loadProviders = async () => {
       try {
-        setLoadingProviders(true);
         const response = await advertiserService.getAdvertisers({
           page: 1,
-          limit: 20,
+          limit: 10,
           status: 'active',
         });
         if (!response.success || !response.data?.advertisers) {
@@ -132,8 +133,6 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
       } catch (error) {
         logger.error('[SummaryScreen] Erro ao carregar provedores', error);
         setPopularProviders([]);
-      } finally {
-        setLoadingProviders(false);
       }
     };
     loadProviders();
