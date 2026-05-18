@@ -130,13 +130,6 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   };
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      setPage(1);
-    });
-    return unsubscribe;
-  }, [navigation]);
-
-  useEffect(() => {
     const handle = setTimeout(() => {
       const next = searchQuery.trim();
       setAppliedSearchQuery((prev) => {
