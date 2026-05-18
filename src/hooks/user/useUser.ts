@@ -1,6 +1,13 @@
-import { useCallback, useRef } from 'react';
+import { useCallback } from 'react';
 import type { PublicUser } from '@/types/user/publicUser';
 import publicUserService from '@/services/user/publicUserService';
+import {
+  deleteInflightPublicUser,
+  getCachedPublicUser,
+  getInflightPublicUser,
+  setCachedPublicUser,
+  setInflightPublicUser,
+} from '@/services/user/publicUserCache';
 import { storageService } from '@/services';
 import { resolveOptimisticCommentAuthorLabel } from '@/utils/community/commentAuthorDisplayName';
 
@@ -13,9 +20,6 @@ const EMPTY_PUBLIC_USER: PublicUser = {
 };
 
 export function useUser() {
-  const cacheRef = useRef(new Map<string, PublicUser>());
-  const inflightRef = useRef(new Map<string, Promise<PublicUser>>());
-
   const getPublicUser = useCallback(async (userId: string): Promise<PublicUser> => {
     const id = userId.trim();
     if (!id) {
@@ -31,27 +35,27 @@ export function useUser() {
       };
     }
 
-    const cached = cacheRef.current.get(id);
+    const cached = getCachedPublicUser(id);
     if (cached) {
       return cached;
     }
 
-    const inflight = inflightRef.current.get(id);
+    const inflight = getInflightPublicUser(id);
     if (inflight) {
       return inflight;
     }
 
     const request = publicUserService.getPublicUser(id).then((user) => {
-      cacheRef.current.set(id, user);
+      setCachedPublicUser(id, user);
       return user;
     });
 
-    inflightRef.current.set(id, request);
+    setInflightPublicUser(id, request);
 
     try {
       return await request;
     } finally {
-      inflightRef.current.delete(id);
+      deleteInflightPublicUser(id);
     }
   }, []);
 

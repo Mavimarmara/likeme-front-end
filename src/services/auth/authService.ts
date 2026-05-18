@@ -3,6 +3,7 @@ import { AUTH0_CONFIG, AUTH_CONFIG, getApiUrl } from '@/config';
 import { AUTH_BOOTSTRAP_HTTP_TIMEOUT_MS, AUTH_LOGOUT_AND_POLICY_HTTP_TIMEOUT_MS } from '@/constants';
 import { invalidateApiClientAuthTokenMemoryCache } from '@/services/infrastructure/apiClient';
 import notificationService from '@/services/notification/notificationService';
+import { clearPublicUserCache } from '@/services/user/publicUserCache';
 import { fetchWithTimeout } from '@/utils/network/fetchWithTimeout';
 import { setOnboardingStep } from './setOnboardingStep';
 import storageService from './storageService';
@@ -511,10 +512,12 @@ class AuthService {
 
       await storageService.clearAll();
       invalidateApiClientAuthTokenMemoryCache();
+      clearPublicUserCache();
     } catch (error) {
       logger.error('Logout error:', error);
       await storageService.clearAll();
       invalidateApiClientAuthTokenMemoryCache();
+      clearPublicUserCache();
     }
   }
 
