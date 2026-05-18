@@ -86,8 +86,13 @@ export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}):
       });
 
       if (productsResponse.success && productsResponse.data) {
-        const list = await enrichProductsWithCategoriesFromByProductApi(productsResponse.data.products);
-        setShuffledApiProducts(pickRandomItems(list, limit));
+        // Sorteio acontece ANTES do enrichment para evitar o N+1: como o enrich
+        // dispara uma chamada por produto pra montar categoryNames/categoryIds,
+        // limitar a `limit` itens antes corta o numero de requisicoes de
+        // pool inteiro (ate 24) para apenas `limit` (default 4).
+        const shuffled = pickRandomItems(productsResponse.data.products, limit);
+        const enriched = await enrichProductsWithCategoriesFromByProductApi(shuffled);
+        setShuffledApiProducts(enriched);
       } else {
         setShuffledApiProducts([]);
       }
