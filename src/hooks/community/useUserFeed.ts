@@ -6,6 +6,7 @@ import { mapCommunityPostToPost } from '@/utils';
 import { prefetchImageUris } from '@/utils/image/prefetchImageUris';
 import { PAGINATION } from '@/constants';
 import { logger } from '@/utils/logger';
+import { isFeedCacheEntryFresh, useFeedCache } from '@/contexts/FeedCacheContext';
 
 const FEED_PREFETCH_FIRST_N = 8;
 
@@ -34,22 +35,29 @@ interface UseUserFeedReturn {
 export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn => {
   const { enabled = true, searchQuery = '', pageSize = DEFAULT_PAGE_SIZE, params = {} } = options;
 
-  const [posts, setPosts] = useState<Post[]>([]);
+  const feedCache = useFeedCache();
+  const paramsKey = JSON.stringify(params ?? {});
+  const cacheKey = `${searchQuery}::${paramsKey}`;
+  const initialCacheEntry = feedCache.read(cacheKey);
+  const initialCacheIsFresh = initialCacheEntry != null && isFeedCacheEntryFresh(initialCacheEntry);
+
+  const [posts, setPosts] = useState<Post[]>(() => (initialCacheIsFresh ? initialCacheEntry.posts : []));
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
+  const [currentPage, setCurrentPage] = useState(() => (initialCacheIsFresh ? initialCacheEntry.currentPage : 1));
+  const [hasMore, setHasMore] = useState(() => (initialCacheIsFresh ? initialCacheEntry.hasMore : true));
   const [error, setError] = useState<string | null>(null);
 
-  const currentPageRef = useRef(1);
-  const nextFeedCursorRef = useRef<string | undefined>(undefined);
+  const currentPageRef = useRef(initialCacheIsFresh ? initialCacheEntry.currentPage : 1);
+  const nextFeedCursorRef = useRef<string | undefined>(initialCacheIsFresh ? initialCacheEntry.nextCursor : undefined);
+  const postsRef = useRef<Post[]>(posts);
+  postsRef.current = posts;
 
-  const paramsKey = JSON.stringify(params ?? {});
   const memoizedParams = useMemo(() => params ?? {}, [paramsKey]);
 
-  const hasLoadedInitially = useRef(false);
-  const previousSearchQuery = useRef<string>('');
-  const previousParamsKey = useRef<string>('');
+  const hasLoadedInitially = useRef(initialCacheIsFresh);
+  const previousSearchQuery = useRef<string>(initialCacheIsFresh ? searchQuery : '');
+  const previousParamsKey = useRef<string>(initialCacheIsFresh ? paramsKey : '');
   const isLoadingRef = useRef(false);
   const hasErrorRef = useRef(false);
 
@@ -122,11 +130,8 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
         const mappedPostsResults = await Promise.all(mappedPostsPromises);
         const mappedPosts: Post[] = mappedPostsResults.filter((post): post is Post => post !== null);
 
-        if (append) {
-          setPosts((prev) => [...prev, ...mappedPosts]);
-        } else {
-          setPosts(mappedPosts);
-        }
+        const nextPosts = append ? [...postsRef.current, ...mappedPosts] : mappedPosts;
+        setPosts(nextPosts);
 
         const postsToPrefetch = mappedPosts.slice(0, FEED_PREFETCH_FIRST_N);
         const urisToPrefetch = postsToPrefetch.flatMap((p) => [p.userAvatar, p.image]);
@@ -159,6 +164,14 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
           hasMorePages = receivedCount >= pageSize;
         }
         setHasMore(hasMorePages);
+
+        feedCache.write(cacheKey, {
+          posts: nextPosts,
+          nextCursor: nextFromFeed,
+          hasMore: hasMorePages,
+          currentPage: page,
+          fetchedAt: Date.now(),
+        });
       } catch (err) {
         hasErrorRef.current = true;
         const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar posts';
@@ -174,7 +187,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
         isLoadingRef.current = false;
       }
     },
-    [pageSize, memoizedParams],
+    [pageSize, memoizedParams, feedCache, cacheKey],
   );
 
   const loadMore = useCallback(() => {
@@ -184,6 +197,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
   }, [hasMore, loadingMore, loading, searchQuery, enabled, loadPosts]);
 
   const refresh = useCallback(() => {
+    feedCache.invalidate(cacheKey);
     hasLoadedInitially.current = false;
     previousSearchQuery.current = '';
     nextFeedCursorRef.current = undefined;
@@ -191,7 +205,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
     currentPageRef.current = 1;
     setHasMore(true);
     loadPosts(1, searchQuery);
-  }, [searchQuery, loadPosts]);
+  }, [searchQuery, loadPosts, feedCache, cacheKey]);
 
   const search = useCallback(
     (query: string) => {
