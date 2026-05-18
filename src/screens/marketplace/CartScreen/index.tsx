@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect, useRef, useMemo } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, TextInput, Linking } from 'react-native';
+import { View, Text, FlatList, type ListRenderItem, TouchableOpacity, TextInput, Linking } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GradientBackground, ScreenWithHeader } from '@/components/ui/layout';
@@ -109,33 +109,37 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
 
   const noop = useCallback((): void => undefined, []);
 
-  const renderCartItem = (item: CartItem) => (
-    <ProductItemCard
-      key={item.id}
-      image={item.image}
-      title={item.title}
-      price={item.price}
-      onPress={noop}
-      badges={catalogTypeTranslatedBadgeLabels(item.type, t)}
-      subtitle={
-        item.subtitle
-          ? item.date
-            ? `${item.subtitle} · ${t('cart.date')}: ${item.date}`
-            : item.subtitle
-          : item.date
-          ? `${t('cart.date')}: ${item.date}`
-          : undefined
-      }
-      quantity={item.quantity}
-      showDelete={true}
-      onRemove={() => removeItem(item.id)}
-      onIncreaseQuantity={() => increaseQuantity(item.id)}
-      onDecreaseQuantity={() => decreaseQuantity(item.id)}
-      deleteButtonTestID={`delete-item-${item.id}`}
-      increaseQuantityTestID={`increase-quantity-${item.id}`}
-      decreaseQuantityTestID={`decrease-quantity-${item.id}`}
-    />
+  const renderCartItem = useCallback<ListRenderItem<CartItem>>(
+    ({ item }) => (
+      <ProductItemCard
+        image={item.image}
+        title={item.title}
+        price={item.price}
+        onPress={noop}
+        badges={catalogTypeTranslatedBadgeLabels(item.type, t)}
+        subtitle={
+          item.subtitle
+            ? item.date
+              ? `${item.subtitle} · ${t('cart.date')}: ${item.date}`
+              : item.subtitle
+            : item.date
+            ? `${t('cart.date')}: ${item.date}`
+            : undefined
+        }
+        quantity={item.quantity}
+        showDelete={true}
+        onRemove={() => removeItem(item.id)}
+        onIncreaseQuantity={() => increaseQuantity(item.id)}
+        onDecreaseQuantity={() => decreaseQuantity(item.id)}
+        deleteButtonTestID={`delete-item-${item.id}`}
+        increaseQuantityTestID={`increase-quantity-${item.id}`}
+        decreaseQuantityTestID={`decrease-quantity-${item.id}`}
+      />
+    ),
+    [t, noop, removeItem, increaseQuantity, decreaseQuantity],
   );
+
+  const cartItemKeyExtractor = useCallback((item: CartItem) => item.id, []);
   const renderBackground = () => (
     <View pointerEvents='none' style={styles.backgroundLayer}>
       <GradientBackground />
@@ -210,6 +214,43 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
     );
   };
 
+  const hasItems = cartItems.length > 0;
+
+  const listHeader = (
+    <>
+      <Text style={styles.screenTitle}>{t('cart.screenTitle')}</Text>
+      {renderWarningBanner()}
+      {hasItems ? <Text style={styles.productsTitle}>{t('cart.yourProducts')}</Text> : null}
+    </>
+  );
+
+  const listFooter = hasItems ? (
+    <>
+      {shippingRequired !== false && renderShippingSection()}
+      {renderOrderSummary()}
+      <View style={styles.buyButtonContainer}>
+        <SecondaryButton label={t('cart.finalizePurchase')} onPress={handleBuy} style={styles.buyButton} size='large' />
+      </View>
+    </>
+  ) : null;
+
+  const listEmpty = loading ? (
+    <View style={styles.loadingContainer}>
+      <Text style={styles.loadingText}>{t('cart.loadingCart')}</Text>
+    </View>
+  ) : (
+    <View style={styles.emptyCartContainer}>
+      <Text style={styles.emptyCartText}>{t('cart.emptyCart')}</Text>
+      <TouchableOpacity
+        style={styles.shopButton}
+        onPress={() => navigation.navigate('Marketplace')}
+        activeOpacity={0.8}
+      >
+        <Text style={styles.shopButtonText}>{t('cart.startShopping')}</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
   return (
     <ScreenWithHeader
       navigation={navigation}
@@ -223,45 +264,21 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
       contentBackgroundColor='transparent'
     >
       {renderBackground()}
-      <ScrollView
+      <FlatList
         style={styles.scrollView}
-        contentContainerStyle={[styles.scrollContent]}
+        contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
-      >
-        <Text style={styles.screenTitle}>{t('cart.screenTitle')}</Text>
-        {renderWarningBanner()}
-        {loading ? (
-          <View style={styles.loadingContainer}>
-            <Text style={styles.loadingText}>{t('cart.loadingCart')}</Text>
-          </View>
-        ) : cartItems.length > 0 ? (
-          <>
-            <Text style={styles.productsTitle}>{t('cart.yourProducts')}</Text>
-            <View style={styles.cartItemsList}>{cartItems.map((item) => renderCartItem(item))}</View>
-            {shippingRequired !== false && renderShippingSection()}
-            {renderOrderSummary()}
-            <View style={styles.buyButtonContainer}>
-              <SecondaryButton
-                label={t('cart.finalizePurchase')}
-                onPress={handleBuy}
-                style={styles.buyButton}
-                size='large'
-              />
-            </View>
-          </>
-        ) : (
-          <View style={styles.emptyCartContainer}>
-            <Text style={styles.emptyCartText}>{t('cart.emptyCart')}</Text>
-            <TouchableOpacity
-              style={styles.shopButton}
-              onPress={() => navigation.navigate('Marketplace')}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.shopButtonText}>{t('cart.startShopping')}</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      </ScrollView>
+        data={cartItems}
+        keyExtractor={cartItemKeyExtractor}
+        renderItem={renderCartItem}
+        ListHeaderComponent={listHeader}
+        ListFooterComponent={listFooter}
+        ListEmptyComponent={listEmpty}
+        initialNumToRender={6}
+        maxToRenderPerBatch={6}
+        windowSize={7}
+        removeClippedSubviews
+      />
     </ScreenWithHeader>
   );
 };
