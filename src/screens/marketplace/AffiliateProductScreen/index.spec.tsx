@@ -1,6 +1,7 @@
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import AffiliateProductScreen from './index';
 import { adService, productService } from '@/services';
+import advertiserService from '@/services/advertiser/advertiserService';
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 
 jest.mock('react-native-safe-area-context', () => {
@@ -55,6 +56,13 @@ jest.mock('@/services', () => ({
   },
 }));
 
+jest.mock('@/services/advertiser/advertiserService', () => ({
+  __esModule: true,
+  default: {
+    getAdvertiserById: jest.fn(),
+  },
+}));
+
 jest.mock('@/services/category/categoryService', () => ({
   __esModule: true,
   default: {
@@ -70,8 +78,20 @@ jest.mock('@/analytics', () => ({
   useAnalyticsScreen: jest.fn(),
 }));
 
+const mockAdvertiser = {
+  id: 'adv-1',
+  name: 'Dr. Partner',
+  logo: 'https://example.com/partner.jpg',
+  description: 'Especialista parceiro',
+  status: 'active',
+  createdAt: '2023-01-01',
+  updatedAt: '2023-01-01',
+};
+
 const mockAd = {
   id: 'ad-1',
+  advertiserId: 'adv-1',
+  advertiser: mockAdvertiser,
   productId: 'product-1',
   title: 'Amazon Product',
   description: 'Amazon description',
@@ -138,6 +158,10 @@ describe('AffiliateProductScreen', () => {
           totalPages: 1,
         },
       },
+    });
+    (advertiserService.getAdvertiserById as jest.Mock).mockResolvedValue({
+      success: true,
+      data: mockAdvertiser,
     });
   });
 

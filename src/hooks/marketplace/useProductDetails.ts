@@ -6,10 +6,11 @@ import { productService, adService, storageService } from '@/services';
 import { mapProductToCartItem, formatPrice } from '@/utils';
 import type { Product as ApiProduct } from '@/types/product';
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
-import type { Ad } from '@/types/ad';
+import type { Ad, Advertiser } from '@/types/ad';
 import type { ApiError } from '@/types/infrastructure';
 import { logger } from '@/utils/logger';
 import { buildApiProductFromRouteFallback, type RouteFallbackProduct } from '@/utils/marketplace/routeProductFallback';
+import { advertiserToRouteProductProvider } from '@/utils/marketplace/routeProductProvider';
 import {
   enrichAdsProductsWithCategoriesFromByProductApi,
   enrichProductsWithCategoriesFromByProductApi,
@@ -34,9 +35,11 @@ async function redirectAmazonProductToAffiliateScreen(
   });
 
   let firstAdId: string | undefined;
+  let listAdAdvertiser: Advertiser | undefined;
   if (adsResponse.success && adsResponse.data?.ads.length) {
     const [a] = await enrichAdsProductsWithCategoriesFromByProductApi([adsResponse.data.ads[0]]);
     firstAdId = a.id;
+    listAdAdvertiser = a.advertiser;
   }
 
   navigation.replace('AffiliateProduct', {
@@ -49,6 +52,7 @@ async function redirectAmazonProductToAffiliateScreen(
       image: productData.image || MARKETPLACE_PRODUCT_PLACEHOLDER_IMAGE_URI,
       type: productData.type,
       description: productData.description,
+      provider: advertiserToRouteProductProvider(listAdAdvertiser),
     },
   });
 }

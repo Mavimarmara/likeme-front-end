@@ -4,11 +4,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { PartnerSection } from '@/components/sections/advertiser';
 import { ScreenWithHeader } from '@/components/ui/layout';
 import { CachedImage } from '@/components/ui/media/CachedImage';
 import { MarkdownText } from '@/components/ui/text/MarkdownText';
 import { IMAGE_PRIORITY_HIGH, MARKETPLACE_PRODUCT_PLACEHOLDER_IMAGE_URI } from '@/constants';
-import { useMenuItems, useProductDetails } from '@/hooks';
+import { useMenuItems, useProductDetails, useProductPartner } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import type { RootStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
@@ -32,6 +33,11 @@ type AffiliateProductScreenProps = {
         type?: string;
         description?: string;
         externalUrl?: string;
+        provider?: {
+          name: string;
+          avatar: string;
+          description?: string;
+        };
       };
     };
   };
@@ -82,13 +88,21 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
     route.params?.product?.description,
   ]);
 
-  const { product, ad, loading } = useProductDetails({
+  const { product, ad, advertiserId, loading } = useProductDetails({
     productId: route.params?.productId,
     adId: route.params?.adId,
     fallbackProduct,
     navigation,
     skipAmazonRedirect: true,
     supplementalExternalUrl: route.params?.product?.externalUrl,
+  });
+
+  const { partnerData, hasSpecialistPartner, partnerDisplayName } = useProductPartner({
+    product,
+    ad,
+    advertiserId,
+    routeProduct: route.params?.product,
+    productIdFallback: route.params?.productId,
   });
 
   const handleBackPress = () => {
@@ -160,6 +174,22 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
     if (tabs.length === 0) return null;
     return tabs.some((tab) => tab.id === activeTab) ? activeTab : tabs[0].id;
   }, [tabs, activeTab]);
+
+  const renderSpecialistPartnerSection = () => {
+    if (!hasSpecialistPartner) {
+      return null;
+    }
+
+    return (
+      <View style={styles.partnerSection}>
+        <PartnerSection
+          name={`${t('marketplace.recommendedBy')} ${partnerDisplayName}`.trim()}
+          avatar={partnerData.avatar}
+          specialistLabel={partnerData.description?.trim() || t('marketplace.specialistLabel')}
+        />
+      </View>
+    );
+  };
 
   const renderTabs = () => (
     <View style={styles.tabsContainer}>
@@ -255,6 +285,8 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
               {renderTabContent()}
             </>
           ) : null}
+
+          {renderSpecialistPartnerSection()}
 
           <View style={styles.buySection}>
             <TouchableOpacity style={styles.buyButton} onPress={handleBuyOnAmazon} activeOpacity={0.7}>

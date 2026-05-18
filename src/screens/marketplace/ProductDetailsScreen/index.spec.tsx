@@ -3,9 +3,23 @@ import ProductDetailsScreen from './index';
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 
 const mockUseProductDetails = jest.fn();
+const mockUseProductPartner = jest.fn();
 const mockUseUserFeed = jest.fn();
 const mockUseSuggestedProducts = jest.fn();
 const mockUseCategories = jest.fn();
+
+const emptyProductPartner = {
+  partnerData: {
+    id: '',
+    name: '',
+    avatar: '',
+    description: '',
+    title: '',
+    specialties: [] as string[],
+  },
+  hasSpecialistPartner: false,
+  partnerDisplayName: '',
+};
 
 jest.mock('react-native-safe-area-context', () => {
   const ReactNative = require('react-native');
@@ -127,6 +141,7 @@ jest.mock('@/components/sections/community', () => {
 
 jest.mock('@/hooks', () => ({
   useProductDetails: (...args: any[]) => mockUseProductDetails(...args),
+  useProductPartner: (...args: any[]) => mockUseProductPartner(...args),
   useUserFeed: (...args: any[]) => mockUseUserFeed(...args),
   useSuggestedProducts: (...args: any[]) => mockUseSuggestedProducts(...args),
   useCategories: (...args: any[]) => mockUseCategories(...args),
@@ -203,6 +218,8 @@ describe('ProductDetailsScreen', () => {
       handleAddToCart: jest.fn(),
       loadAd: jest.fn(),
     });
+
+    mockUseProductPartner.mockReturnValue(emptyProductPartner);
 
     mockUseUserFeed.mockReturnValue({
       posts: [],

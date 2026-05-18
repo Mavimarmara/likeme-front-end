@@ -1,6 +1,7 @@
 import type { Ad } from '@/types/ad';
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import { formatPriceLabel } from '@/utils/formatters/priceFormatter';
+import { advertiserToRouteProductProvider } from '@/utils/marketplace/routeProductProvider';
 
 const priceForNav = (raw: number | null | undefined) => formatPriceLabel(raw);
 
@@ -32,6 +33,7 @@ export const navigateToAmazonProduct = (ad: Ad, navigation: Navigation): boolean
         image: ad.product.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
         type: ad.product.type,
         description: ad.product.description,
+        provider: advertiserToRouteProductProvider(ad.advertiser),
       }
     : undefined;
 
@@ -65,6 +67,7 @@ export const navigateToExternalProduct = (ad: Ad, navigation: Navigation): boole
       type: ad.product.type,
       description: ad.product.description,
       externalUrl: ad.product.externalUrl,
+      provider: advertiserToRouteProductProvider(ad.advertiser),
     },
   });
 
@@ -85,6 +88,7 @@ export const navigateToProductDetails = (ad: Ad, navigation: Navigation): boolea
       image: ad.product.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
       type: ad.product.type,
       description: ad.product.description,
+      provider: advertiserToRouteProductProvider(ad.advertiser),
     },
   });
 

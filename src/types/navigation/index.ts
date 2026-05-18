@@ -56,6 +56,11 @@ export type RootStackParamList = {
       category?: string;
       description?: string;
       externalUrl?: string;
+      provider?: {
+        name: string;
+        avatar: string;
+        description?: string;
+      };
     };
   };
   Profile: undefined;

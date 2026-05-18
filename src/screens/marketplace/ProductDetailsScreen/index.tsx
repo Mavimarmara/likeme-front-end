@@ -16,7 +16,7 @@ import { Checkbox } from '@/components/ui/inputs';
 import { MarkdownText } from '@/components/ui/text/MarkdownText';
 import { PartnerSection } from '@/components/sections/advertiser';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
-import { useMenuItems, useProductDetails, useSuggestedProducts } from '@/hooks';
+import { useMenuItems, useProductDetails, useProductPartner, useSuggestedProducts } from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 import { formatPrice, getProductModeTranslationKey } from '@/utils';
@@ -78,6 +78,14 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     productId: route.params?.productId,
     fallbackProduct: route.params?.product,
     navigation,
+  });
+
+  const { partnerData, hasSpecialistPartner, partnerDisplayName } = useProductPartner({
+    product,
+    ad,
+    advertiserId,
+    routeProduct: route.params?.product,
+    productIdFallback: route.params?.productId,
   });
 
   const { products: suggestedProducts, loading: loadingSuggested } = useSuggestedProducts({
@@ -164,41 +172,6 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     return [...extra].filter(Boolean);
   }, [displayData?.tags, t]);
 
-  const partnerData = useMemo(() => {
-    const source = ad?.advertiser;
-    if (source) {
-      return {
-        id: source.id,
-        name: source.name ?? '',
-        avatar: source.logo ?? '',
-        description: source.description ?? '',
-        title: '' as string,
-        specialties: [] as string[],
-      };
-    }
-    const productWithProvider = product as {
-      provider?: { name?: string; avatar?: string; title?: string; description?: string; specialties?: string[] };
-    };
-    const fromParams = route.params?.product?.provider as
-      | { name?: string; avatar?: string; title?: string; description?: string; specialties?: string[] }
-      | undefined;
-    const fromProduct = productWithProvider?.provider;
-    const p = fromParams || fromProduct;
-    return {
-      id: advertiserId ?? product?.id ?? route.params?.productId ?? '',
-      name: p?.name ?? '',
-      avatar: p?.avatar ?? '',
-      description: p?.description ?? '',
-      title: p?.title ?? '',
-      specialties: p?.specialties ?? [],
-    };
-  }, [ad?.advertiser, advertiserId, product, route.params?.product]);
-
-  const hasSpecialistPartner = useMemo(() => {
-    if (ad?.advertiser?.id) return true;
-    return Boolean(partnerData.name?.trim());
-  }, [ad?.advertiser?.id, partnerData.name]);
-
   const usesPhysicalProductDetailLayout =
     product?.type === PRODUCT_CATALOG_TYPE.PHYSICAL ||
     product?.type === PRODUCT_CATALOG_TYPE.PROGRAM ||
@@ -283,6 +256,24 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     navigation.navigate('ProviderProfile', {
       providerId,
     });
+  };
+
+  const renderSpecialistPartnerSection = (showProfileButton: boolean, atScreenEnd = false) => {
+    if (!hasSpecialistPartner) {
+      return null;
+    }
+
+    return (
+      <View style={[styles.partnerSectionAbovePrice, atScreenEnd && styles.partnerSectionAtScreenEnd]}>
+        <PartnerSection
+          name={`${t('marketplace.recommendedBy')} ${partnerDisplayName}`.trim()}
+          avatar={partnerData.avatar}
+          specialistLabel={partnerData.description?.trim() || t('marketplace.specialistLabel')}
+          profileButtonLabel={showProfileButton ? t('marketplace.seePartnerProfile') : undefined}
+          onPressProfile={showProfileButton ? handleSeeProviderProfile : undefined}
+        />
+      </View>
+    );
   };
 
   useEffect(() => {
@@ -393,17 +384,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
               {usesPhysicalProductDetailLayout ? (
                 <>
                   <View style={styles.contentCard}>
-                    {isProgramProduct && hasSpecialistPartner ? (
-                      <View style={styles.partnerSectionAbovePrice}>
-                        <PartnerSection
-                          name={partnerData.name}
-                          avatar={partnerData.avatar}
-                          specialistLabel={partnerData.description?.trim() || t('marketplace.specialistLabel')}
-                          profileButtonLabel={t('marketplace.seePartnerProfile')}
-                          onPressProfile={handleSeeProviderProfile}
-                        />
-                      </View>
-                    ) : null}
+                    {isProgramProduct ? renderSpecialistPartnerSection(true) : null}
                     {productTabOptions.length > 0 && (
                       <View style={styles.tabsContainerInCard}>
                         <Text style={styles.sectionTitle}>Informações</Text>
@@ -418,15 +399,6 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                       </View>
                     )}
                     {renderProductTabContent()}
-                    {!isProgramProduct && hasSpecialistPartner ? (
-                      <View style={styles.partnerSectionAbovePrice}>
-                        <PartnerSection
-                          name={partnerData.name}
-                          avatar={partnerData.avatar}
-                          specialistLabel={partnerData.description?.trim() || t('marketplace.specialistLabel')}
-                        />
-                      </View>
-                    ) : null}
                     {!isProgramProduct && displayData.price != null ? (
                       <ProductDetailsPriceQuantityRow
                         formattedPrice={formatPrice(displayData.price * quantity)}
@@ -472,6 +444,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                   ) : null}
                 </>
               )}
+              {!isProgramProduct ? renderSpecialistPartnerSection(false, true) : null}
               {renderRecommendedProducts()}
             </View>
           </View>

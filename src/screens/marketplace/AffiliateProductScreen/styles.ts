@@ -213,6 +213,10 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
     width: 86,
   },
+  partnerSection: {
+    marginTop: SPACING.LG,
+    gap: SPACING.MD,
+  },
   buySection: {
     gap: 10,
     alignItems: 'center',

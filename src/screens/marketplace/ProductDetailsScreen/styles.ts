@@ -325,6 +325,16 @@ export const styles = StyleSheet.create({
     marginTop: SPACING.LG,
     gap: SPACING.MD,
   },
+  partnerRecommendedByLabel: {
+    fontSize: 14,
+    fontFamily: 'DM Sans',
+    fontWeight: '500',
+    color: '#001137',
+  },
+  partnerSectionAtScreenEnd: {
+    paddingHorizontal: SPACING.LG,
+    paddingBottom: SPACING.XL,
+  },
   addToCartSecondary: {
     width: '100%',
     marginTop: SPACING.LG,
