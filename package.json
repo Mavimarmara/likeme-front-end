@@ -1,6 +1,6 @@
 {
   "name": "likeme-front-end",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "React Native app for health and wellness",
   "main": "index.js",
   "scripts": {
