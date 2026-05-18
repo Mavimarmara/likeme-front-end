@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, StyleProp, ViewStyle } from 'react-native';
-import { ProductItemCard } from '@/components/ui/cards';
+import { ProductItemCard, ProductItemCardSkeleton } from '@/components/ui/cards';
 import { ToggleTabs } from '@/components/ui/tabs';
 import type { ButtonCarouselOption } from '@/components/ui/carousel';
 import { StickyFilterCarouselRow } from '@/components/ui/menu';
@@ -126,8 +126,10 @@ const AdsList: React.FC<AdsListProps> = ({
   if (!isSimpleMode && loading && ads.length === 0) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size='large' color='#2196F3' />
-        <Text style={styles.loadingText}>{t('marketplace.loadingAds')}</Text>
+        <ProductItemCardSkeleton />
+        <ProductItemCardSkeleton />
+        <ProductItemCardSkeleton />
+        <ProductItemCardSkeleton />
       </View>
     );
   }

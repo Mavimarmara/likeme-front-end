@@ -21,10 +21,9 @@ export const styles = StyleSheet.create({
     marginBottom: SPACING.MD,
   },
   loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: SPACING.XL,
+    paddingHorizontal: SPACING.MD,
+    paddingVertical: SPACING.MD,
+    gap: SPACING.SM,
   },
   loadingText: {
     marginTop: SPACING.MD,

@@ -67,9 +67,8 @@ export const styles = StyleSheet.create({
     color: COLORS.TEXT_LIGHT,
   },
   feedInitialLoading: {
-    paddingVertical: SPACING.XL,
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingTop: SPACING.SM,
+    paddingBottom: SPACING.XL,
   },
   feedEmptyContainer: {
     paddingHorizontal: SPACING.MD,

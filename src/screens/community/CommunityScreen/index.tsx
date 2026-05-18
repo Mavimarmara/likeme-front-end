@@ -7,6 +7,7 @@ import {
   ShoppingList,
   EventBanner,
   PostCard,
+  PostCardSkeleton,
   NextEventsSection,
   CommunityDescriptionSection,
   type CommunityDescriptionSpecialist,
@@ -529,7 +530,17 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
 
   const feedListEmpty = loading ? (
     <View style={styles.feedInitialLoading}>
-      <ActivityIndicator size='large' color='#4CAF50' />
+      <View style={styles.feedItemWrapper}>
+        <PostCardSkeleton />
+      </View>
+      <View style={styles.feedItemSeparator} />
+      <View style={styles.feedItemWrapper}>
+        <PostCardSkeleton />
+      </View>
+      <View style={styles.feedItemSeparator} />
+      <View style={styles.feedItemWrapper}>
+        <PostCardSkeleton />
+      </View>
     </View>
   ) : error ? (
     <View style={styles.feedEmptyContainer}>
