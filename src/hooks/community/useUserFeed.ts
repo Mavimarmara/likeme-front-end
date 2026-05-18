@@ -10,6 +10,33 @@ import { isFeedCacheEntryFresh, useFeedCache } from '@/contexts/FeedCacheContext
 
 const FEED_PREFETCH_FIRST_N = 8;
 
+/**
+ * Concatena scalars do UserFeedParams num unico string usado como chave de
+ * cache e detector de "params mudaram". Evita JSON.stringify a cada render —
+ * a serializacao explicita e mais barata e ignora `page`/`limit`/`token`,
+ * que sao parametros de paginacao (nao definem identidade do feed).
+ */
+function buildFeedParamsKey(params: Partial<UserFeedParams> | undefined): string {
+  if (!params) return '';
+  const postTypes = Array.isArray(params.postTypes)
+    ? params.postTypes.slice().sort().join(',')
+    : params.postTypes ?? '';
+  const authorIds = Array.isArray(params.authorIds)
+    ? params.authorIds.slice().sort().join(',')
+    : params.authorIds ?? '';
+  const solutionIds = Array.isArray(params.solutionIds) ? params.solutionIds.slice().sort().join(',') : '';
+  return [
+    postTypes,
+    authorIds,
+    params.startDate ?? '',
+    params.endDate ?? '',
+    params.orderBy ?? '',
+    params.order ?? '',
+    params.categoryId ?? '',
+    solutionIds,
+  ].join('|');
+}
+
 interface UseUserFeedOptions {
   enabled?: boolean;
   searchQuery?: string;
@@ -36,7 +63,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
   const { enabled = true, searchQuery = '', pageSize = DEFAULT_PAGE_SIZE, params = {} } = options;
 
   const feedCache = useFeedCache();
-  const paramsKey = JSON.stringify(params ?? {});
+  const paramsKey = buildFeedParamsKey(params);
   const cacheKey = `${searchQuery}::${paramsKey}`;
   const initialCacheEntry = feedCache.read(cacheKey);
   const initialCacheIsFresh = initialCacheEntry != null && isFeedCacheEntryFresh(initialCacheEntry);
