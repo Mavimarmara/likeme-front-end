@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, TouchableOpacity, Text, Image, type ImageSourcePropType } from 'react-native';
+import { View, TouchableOpacity, Text, type ImageSourcePropType } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ColoredTwoDotsIcon } from '@/assets/ui';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { PlatformBlurView } from '@/components/ui/PlatformBlurView';
 import { styles } from './styles';
 
@@ -60,7 +61,7 @@ const FloatingMenu: React.FC<Props> = ({ items, selectedId }) => {
               accessibilityLabel={item.fullLabel || item.label}
             >
               {item.iconImage != null ? (
-                <Image source={item.iconImage} style={styles.menuIconImage} resizeMode='contain' />
+                <CachedImage source={item.iconImage} style={styles.menuIconImage} contentFit='contain' />
               ) : (
                 <Icon
                   name={item.icon ?? 'help-outline'}

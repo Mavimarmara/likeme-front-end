@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { View, Text, ScrollView, Image, TouchableOpacity, TextInput, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert } from 'react-native';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { useNavigation, useRoute, useFocusEffect, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -293,7 +294,7 @@ const ChatScreen: React.FC = () => {
           disabled={!channelId}
         >
           {channelAvatar ? (
-            <Image source={{ uri: channelAvatar }} style={styles.headerAvatar} />
+            <CachedImage source={{ uri: channelAvatar }} style={styles.headerAvatar} />
           ) : (
             <View style={styles.headerAvatarPlaceholder}>
               <Icon name='person' size={28} color={COLORS.TEXT_LIGHT} />

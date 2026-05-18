@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, Image } from 'react-native';
+import { View, Text } from 'react-native';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { ScreenWithHeader } from '@/components/ui/layout';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import { useTranslation } from '@/hooks/i18n';
@@ -30,16 +31,16 @@ const AnamnesisStartScreen: React.FC<Props> = ({ navigation }) => {
       contentContainerStyle={styles.container}
     >
       {/* Background superior */}
-      <Image source={BackgroundWithGradient3} style={styles.backgroundTop} resizeMode='cover' />
+      <CachedImage source={BackgroundWithGradient3} style={styles.backgroundTop} />
 
       {/* Background inferior */}
-      <Image source={BackgroundWithGradient2} style={styles.backgroundBottom} resizeMode='cover' />
+      <CachedImage source={BackgroundWithGradient2} style={styles.backgroundBottom} />
 
       <View style={styles.content}>
         {/* Imagem decorativa rotacionada 270 graus e centralizada */}
         <View style={styles.decorativeImageContainer}>
           <View style={styles.decorativeImageWrapper}>
-            <Image source={{ uri: IMAGE_DECORATIVE }} style={styles.decorativeImage} resizeMode='contain' />
+            <CachedImage source={{ uri: IMAGE_DECORATIVE }} style={styles.decorativeImage} contentFit='contain' />
           </View>
         </View>
 

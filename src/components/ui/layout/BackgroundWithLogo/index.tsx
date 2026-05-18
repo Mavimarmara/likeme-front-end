@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Image, ImageSourcePropType } from 'react-native';
+import { View, type ImageSourcePropType } from 'react-native';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { FirstStepBackground, LogoFull } from '@/assets/auth';
 import { styles } from './styles';
 
@@ -27,9 +28,9 @@ const BackgroundWithLogo: React.FC<Props> = ({
 
   return (
     <View style={containerStyle}>
-      <Image source={backgroundImage} style={styles.backgroundImage} resizeMode='cover' />
+      <CachedImage source={backgroundImage} style={styles.backgroundImage} />
       <View style={styles.logoContainer}>
-        <Image source={logoImage} style={styles.logo} resizeMode='contain' />
+        <CachedImage source={logoImage} style={styles.logo} contentFit='contain' />
       </View>
     </View>
   );

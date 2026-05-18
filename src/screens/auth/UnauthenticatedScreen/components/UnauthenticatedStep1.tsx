@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Animated, Dimensions, Image } from 'react-native';
+import { View, Text, Animated, Dimensions } from 'react-native';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { PrimaryButton, ButtonGroup } from '@/components/ui';
 import { useTranslation } from '@/hooks/i18n';
 import { GradientSplash2, PartialLogo, PartialLogo2 } from '@/assets/auth';
@@ -46,7 +47,7 @@ const UnauthenticatedStep1: React.FC<UnauthenticatedStep1Props> = ({ onLogin, is
   return (
     <View style={styles.container}>
       <Animated.View style={[styles.background, { opacity: bgOpacity }]}>
-        <Image source={GradientSplash2} />
+        <CachedImage source={GradientSplash2} />
       </Animated.View>
 
       <Animated.View style={[styles.buttonContainer, { opacity: buttonsOpacity }]}>

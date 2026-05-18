@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -16,7 +17,7 @@ type DetailsNavigation = StackNavigationProp<ChatStackParamList, 'ChatDetails'>;
 
 const ContactAvatar: React.FC<{ uri?: string }> = ({ uri }) => {
   if (uri) {
-    return <Image source={{ uri }} style={styles.avatar} />;
+    return <CachedImage source={{ uri }} style={styles.avatar} />;
   }
   return (
     <View style={styles.avatarPlaceholder}>

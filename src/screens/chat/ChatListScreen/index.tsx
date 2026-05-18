@@ -1,14 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-  ActivityIndicator,
-  RefreshControl,
-  Alert,
-} from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, RefreshControl, Alert } from 'react-native';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -131,7 +123,7 @@ const ChatListScreen: React.FC<Props> = () => {
     }
 
     if (conversation.avatar) {
-      return <Image source={{ uri: conversation.avatar }} style={styles.avatar} />;
+      return <CachedImage source={{ uri: conversation.avatar }} style={styles.avatar} />;
     }
 
     return (

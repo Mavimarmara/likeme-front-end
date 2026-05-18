@@ -11,10 +11,13 @@ import type { Event, FeedEvent } from '@/types/event';
 import type { CategoryName } from '@/types/category';
 import { PAGINATION } from '@/constants';
 import { logger } from '@/utils/logger';
+import { prefetchImageUris } from '@/utils/image/prefetchImageUris';
 import { useEventList } from '@/hooks/event/useEventList';
 import { resolveCommunityHeroImageUri } from '@/utils/community/mappers';
 
 import type { JoinCardItem } from '@/components/ui/cards/JoinCard';
+
+const COMMUNITIES_PREFETCH_FIRST_N = 6;
 
 /** Formato do item exibido no JoinCard (ui/cards; comunidade recomendada) */
 export type JoinCommunityItem = JoinCardItem;
@@ -166,9 +169,13 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
           setCommunities((prev) => [...prev, ...communitiesList]);
         } else {
           setCommunities(communitiesList);
-          // Categories são atualizadas apenas na primeira página
           setCategories(categoriesList);
         }
+
+        const heroUris = communitiesList
+          .slice(0, COMMUNITIES_PREFETCH_FIRST_N)
+          .map((community) => resolveCommunityHeroImageUri(community, filesList, JOIN_CARD_IMAGE_FALLBACK));
+        void prefetchImageUris(heroUris);
         setCommunityUsers(communityUsersList);
 
         setCurrentPage(page);

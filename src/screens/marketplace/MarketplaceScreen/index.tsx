@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { View, Text, ScrollView, Image } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { RouteProp } from '@react-navigation/native';
 import { SearchBar } from '@/components/ui/inputs';
@@ -325,11 +326,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
             <View key={advertiser.id} style={shoppingListStyles.professionalCardWrapper}>
               <View style={shoppingListStyles.professionalCardContent}>
                 {advertiser.logo ? (
-                  <Image
-                    source={{ uri: advertiser.logo }}
-                    style={shoppingListStyles.professionalAvatar}
-                    resizeMode='cover'
-                  />
+                  <CachedImage source={{ uri: advertiser.logo }} style={shoppingListStyles.professionalAvatar} />
                 ) : (
                   <View style={shoppingListStyles.professionalAvatarPlaceholder}>
                     <Icon name='person' size={32} color={COLORS.NEUTRAL.LOW.MEDIUM} />

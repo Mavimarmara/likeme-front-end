@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, Image, Linking, Modal, Pressable, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Linking, Modal, Pressable, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SecondaryButton } from '@/components/ui/buttons';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { AuthService, storageService, userService } from '@/services';
 import { useTranslation } from '@/hooks/i18n';
 import type { StoredUser } from '@/types/auth';
@@ -111,7 +112,7 @@ const ProfileFloatingMenu: React.FC<Props> = ({ visible, navigation, onClose }) 
           <View style={styles.headerRow}>
             <View style={styles.avatarWithText}>
               {user?.picture ? (
-                <Image source={{ uri: user.picture }} style={styles.avatar} />
+                <CachedImage source={{ uri: user.picture }} style={styles.avatar} />
               ) : (
                 <View style={styles.avatarPlaceholder}>
                   <Icon name='person' size={18} color={COLORS.TEXT} />

@@ -1,8 +1,9 @@
 import React, { useMemo, useState } from 'react';
-import { ScrollView, View, Text, Image } from 'react-native';
+import { ScrollView, View, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { EmptyState } from '@/components/ui/feedback';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { AdsList } from '@/components/sections/marketplace';
 import type { ButtonCarouselOption } from '@/components/ui/carousel';
 import { DEFAULT_MARKETPLACE_SORT_ORDER, type MarketplaceSortOrderId } from '@/constants/marketplaceSortOrder';
@@ -82,7 +83,7 @@ const ShoppingList: React.FC<Props> = ({
           <View key={advertiser.id} style={styles.professionalCardWrapper}>
             <View style={styles.professionalCardContent}>
               {advertiser.logo ? (
-                <Image source={{ uri: advertiser.logo }} style={styles.professionalAvatar} resizeMode='cover' />
+                <CachedImage source={{ uri: advertiser.logo }} style={styles.professionalAvatar} />
               ) : (
                 <View style={styles.professionalAvatarPlaceholder}>
                   <Icon name='person' size={32} color={COLORS.NEUTRAL.LOW.MEDIUM} />

@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import type { LayoutChangeEvent, NativeSyntheticEvent, TextLayoutEventData } from 'react-native';
-import { Image, Pressable, StyleProp, Text, View, ViewStyle } from 'react-native';
+import { Pressable, StyleProp, Text, View, ViewStyle } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Badge } from '@/components/ui';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import PollCard from '../PollCard';
 import { usePost, usePostReplies, type PostLikeEngagement } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
@@ -156,7 +157,7 @@ const PostCardView: React.FC<ViewProps> = ({
         <View>
           <View style={cardStyles.authorSection}>
             {post.userAvatar ? (
-              <Image source={{ uri: post.userAvatar }} style={cardStyles.avatar} />
+              <CachedImage source={{ uri: post.userAvatar }} style={cardStyles.avatar} />
             ) : (
               <View style={cardStyles.avatarPlaceholder}>
                 <Icon name='person' size={12} color={COLORS.TEXT_LIGHT} />
@@ -230,12 +231,11 @@ const PostCardView: React.FC<ViewProps> = ({
                   >
                     <View style={cardStyles.videoPosterInner}>
                       {imageUri ? (
-                        <Image
+                        <CachedImage
                           testID='post-card-video-poster'
                           accessibilityLabel='Imagem do post'
                           source={{ uri: imageUri }}
                           style={forceContentExpanded ? cardStyles.mediaImageExpanded : cardStyles.mediaImage}
-                          resizeMode='cover'
                           onError={onPostImageError}
                         />
                       ) : (
@@ -257,12 +257,11 @@ const PostCardView: React.FC<ViewProps> = ({
                   </Pressable>
                 )
               ) : imageUri ? (
-                <Image
+                <CachedImage
                   testID='post-card-image-only'
                   accessibilityLabel='Imagem do post'
                   source={{ uri: imageUri }}
                   style={forceContentExpanded ? cardStyles.mediaImageExpanded : cardStyles.mediaImage}
-                  resizeMode='cover'
                   onError={onPostImageError}
                 />
               ) : null}

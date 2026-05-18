@@ -3,8 +3,11 @@ import { communityService } from '@/services';
 import type { Post } from '@/types';
 import type { CommunityFeedData, UserFeedParams } from '@/types/community';
 import { mapCommunityPostToPost } from '@/utils';
+import { prefetchImageUris } from '@/utils/image/prefetchImageUris';
 import { PAGINATION } from '@/constants';
 import { logger } from '@/utils/logger';
+
+const FEED_PREFETCH_FIRST_N = 8;
 
 interface UseUserFeedOptions {
   enabled?: boolean;
@@ -124,6 +127,10 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
         } else {
           setPosts(mappedPosts);
         }
+
+        const postsToPrefetch = mappedPosts.slice(0, FEED_PREFETCH_FIRST_N);
+        const urisToPrefetch = postsToPrefetch.flatMap((p) => [p.userAvatar, p.image]);
+        void prefetchImageUris(urisToPrefetch);
 
         setCurrentPage(page);
         currentPageRef.current = page;

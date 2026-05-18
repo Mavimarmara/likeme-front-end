@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, ImageSourcePropType } from 'react-native';
+import { View, Text, TouchableOpacity, type ImageSourcePropType } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import type { EventBannerData } from '@/types/event';
 import { useTranslation } from '@/hooks/i18n';
 import { formatEventTimeRange } from '@/utils/event/formatEventTimeRange';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { styles } from './styles';
 
 type Props = {
@@ -21,9 +22,9 @@ const EventBanner: React.FC<Props> = ({ event, onPress }) => {
     <View style={styles.container}>
       <View style={styles.imageSide}>
         {isImageUri ? (
-          <Image source={{ uri: event.thumbnail as string }} style={styles.image} />
+          <CachedImage source={{ uri: event.thumbnail as string }} style={styles.image} />
         ) : (
-          <Image source={event.thumbnail as ImageSourcePropType} style={styles.image} />
+          <CachedImage source={event.thumbnail as ImageSourcePropType} style={styles.image} />
         )}
         <View style={styles.imageOverlay}>
           <TouchableOpacity style={styles.ctaButton} onPress={() => onPress(event)} activeOpacity={0.8}>

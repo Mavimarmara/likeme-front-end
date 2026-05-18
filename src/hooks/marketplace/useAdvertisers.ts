@@ -1,8 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { advertiserService } from '@/services';
 import { logger } from '@/utils/logger';
+import { prefetchImageUris } from '@/utils/image/prefetchImageUris';
 import type { Advertiser } from '@/types/ad';
 import { ADVERTISER_STATUS } from '@/constants';
+
+const ADVERTISERS_PREFETCH_FIRST_N = 8;
 
 type AdvertiserStatus = (typeof ADVERTISER_STATUS)[keyof typeof ADVERTISER_STATUS];
 
@@ -106,6 +109,7 @@ export const useAdvertisers = (params: UseAdvertisersParams = {}): UseAdvertiser
         if (cancelledRef.current || requestId !== requestIdRef.current) return;
         const list = response.success ? response.data?.advertisers ?? [] : [];
         setAdvertisers(list);
+        void prefetchImageUris(list.slice(0, ADVERTISERS_PREFETCH_FIRST_N).map((a) => a.logo));
         return;
       }
 
@@ -143,6 +147,7 @@ export const useAdvertisers = (params: UseAdvertisersParams = {}): UseAdvertiser
       }
 
       setAdvertisers(merged);
+      void prefetchImageUris(merged.slice(0, ADVERTISERS_PREFETCH_FIRST_N).map((a) => a.logo));
     } catch (err) {
       if (cancelledRef.current || requestId !== requestIdRef.current) return;
       logger.error('Error loading advertisers list:', err);

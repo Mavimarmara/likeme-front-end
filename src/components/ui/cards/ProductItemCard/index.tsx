@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, Pressable, Image, ImageSourcePropType } from 'react-native';
+import { View, Text, Pressable, type ImageSourcePropType } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { IconButton } from '@/components/ui/buttons';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { COLORS } from '@/constants';
 import { formatPriceLabel } from '@/utils/formatters/priceFormatter';
 import { styles } from './styles';
@@ -65,7 +66,7 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
 
   const content = (
     <>
-      <Image source={imageSource} style={styles.image} resizeMode='cover' />
+      <CachedImage source={imageSource} style={styles.image} recyclingKey={image} />
       <View style={styles.content}>
         <View style={styles.topRow}>
           {badges.length > 0 ? (

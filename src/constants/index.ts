@@ -129,3 +129,9 @@ export {
   ROOT_SPLASH_FONT_LOAD_FALLBACK_MS,
 } from './networkTimeouts';
 export { MARKETPLACE_PRODUCT_PLACEHOLDER_IMAGE_URI } from './marketplacePlaceholders';
+export {
+  IMAGE_CACHE_POLICY,
+  IMAGE_TRANSITION_MS,
+  IMAGE_NEUTRAL_PLACEHOLDER_COLOR,
+  IMAGE_PRIORITY_HIGH,
+} from './imageCache';

@@ -1,9 +1,10 @@
 import React from 'react';
-import { Image, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { BackgroundWithGradient } from '@/assets/ui';
 
 const Background: React.FC = () => {
-  return <Image source={BackgroundWithGradient} style={styles.background} resizeMode='cover' />;
+  return <CachedImage source={BackgroundWithGradient} style={styles.background} />;
 };
 
 const styles = StyleSheet.create({

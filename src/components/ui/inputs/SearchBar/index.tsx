@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, TouchableOpacity, TextInput as RNTextInput, ImageBackground } from 'react-native';
+import { View, TouchableOpacity, TextInput as RNTextInput, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { BackgroundIconButton } from '@/assets/ui';
 import { IconButton } from '@/components/ui/buttons';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { styles } from './styles';
 
 interface SearchBarProps {
@@ -49,13 +50,10 @@ const SearchBar: React.FC<SearchBarProps> = ({
       </View>
       {showFilterButton && (
         <TouchableOpacity style={styles.filterButton} activeOpacity={0.7} onPress={onFilterPress}>
-          <ImageBackground
-            source={BackgroundIconButton}
-            style={styles.filterButtonBackground}
-            imageStyle={styles.filterButtonImage}
-          >
+          <View style={styles.filterButtonBackground}>
+            <CachedImage source={BackgroundIconButton} style={StyleSheet.absoluteFill} />
             <Icon name='tune' size={15} color='#001137' />
-          </ImageBackground>
+          </View>
         </TouchableOpacity>
       )}
     </View>

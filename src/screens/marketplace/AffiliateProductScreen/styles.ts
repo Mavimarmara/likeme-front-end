@@ -44,7 +44,7 @@ export const styles = StyleSheet.create({
     borderBottomRightRadius: 40,
   },
   heroOverlay: {
-    flex: 1,
+    ...StyleSheet.absoluteFillObject,
     justifyContent: 'flex-end',
     paddingHorizontal: 32,
     paddingBottom: 30,

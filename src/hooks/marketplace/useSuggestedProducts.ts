@@ -6,6 +6,7 @@ import { logger } from '@/utils/logger';
 import { buildMarketplaceCategoryBadgeLabels } from '@/utils/marketplace/buildMarketplaceCategoryBadgeLabels';
 import { enrichProductsWithCategoriesFromByProductApi } from './productCategoryEnrichment';
 import { pickRandomItems } from '@/utils/array/shuffleArray';
+import { prefetchImageUris } from '@/utils/image/prefetchImageUris';
 
 /** Lista padrão de produtos sugeridos (Home Summary, Activities, Comunidade sem filtro extra). */
 export const SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS = {
@@ -78,7 +79,9 @@ export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}):
             updatedAt: p.updatedAt,
           };
         });
-        setProducts(pickRandomItems(mappedProducts, limit));
+        const finalProducts = pickRandomItems(mappedProducts, limit);
+        setProducts(finalProducts);
+        void prefetchImageUris(finalProducts.map((p) => p.image));
       } else {
         setProducts([]);
       }

@@ -1,10 +1,13 @@
 import { useState, useCallback, useEffect } from 'react';
 import { productService } from '@/services';
 import { logger } from '@/utils/logger';
+import { prefetchImageUris } from '@/utils/image/prefetchImageUris';
 import type { Ad } from '@/types/ad';
 import type { Product } from '@/types/product';
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import { enrichProductsWithCategoriesFromByProductApi } from './productCategoryEnrichment';
+
+const PRODUCTS_PREFETCH_FIRST_N = 6;
 
 const adIsUsableForListing = (ad: Ad): boolean => {
   if (ad.status !== 'active') {
@@ -112,6 +115,8 @@ export const useProducts = ({
 
       const products = await enrichProductsWithCategoriesFromByProductApi(response.data.products ?? []);
       const rows = products.map(listingAdFromProduct);
+
+      void prefetchImageUris(rows.slice(0, PRODUCTS_PREFETCH_FIRST_N).map((ad) => ad.product?.image));
 
       if (page === 1) {
         setAds(rows);

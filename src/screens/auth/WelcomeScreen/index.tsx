@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Alert, TextInput as RNTextInput, Image, Text } from 'react-native';
+import { View, Alert, TextInput as RNTextInput, Text } from 'react-native';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TextInput, PrimaryButton } from '@/components/ui';
 import { KeyboardAwareScreen, ScreenWithHeader } from '@/components/ui/layout';
@@ -92,7 +93,7 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
             <View style={styles.welcomeTitleBlock}>
               <View style={styles.welcomeTitleRow}>
                 <Text style={[styles.welcomeTitleText, styles.welcomeTitleLarge]}>{t('auth.welcomeTitleStart')}</Text>
-                <Image source={GradientSplash4} style={styles.welcomeTitleImage} resizeMode='cover' />
+                <CachedImage source={GradientSplash4} style={styles.welcomeTitleImage} />
                 <Text style={[styles.welcomeTitleText, styles.welcomeTitleLarge]}>
                   {t('auth.welcomeTitleLine1End')}
                 </Text>

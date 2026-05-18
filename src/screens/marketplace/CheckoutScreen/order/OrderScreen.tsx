@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { useTranslation } from '@/hooks/i18n';
 import { formatPrice } from '@/utils';
 import { catalogTypeTranslatedBadgeLabels } from '@/types/product';
@@ -79,7 +80,7 @@ const OrderScreen: React.FC<OrderScreenProps> = ({
     const tagLabels = catalogTypeTranslatedBadgeLabels(item.type, t);
     return (
       <View key={item.id} style={styles.orderItemCard}>
-        <Image source={{ uri: item.image }} style={styles.orderItemImage} />
+        <CachedImage source={{ uri: item.image }} style={styles.orderItemImage} />
 
         <View style={styles.orderItemContent}>
           <View style={styles.orderItemHeader}>

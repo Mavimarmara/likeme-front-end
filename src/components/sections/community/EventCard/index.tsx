@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { BlurCard } from '@/components/ui/cards';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { styles } from './styles';
 import type { FeedEvent } from '@/types/event';
 
@@ -21,7 +22,7 @@ const EventCard: React.FC<Props> = ({ event, onPress, onSave }) => {
         {visibleParticipants.map((participant, index) => (
           <View key={participant.id} style={[styles.avatarWrapper, index > 0 && styles.avatarOverlap]}>
             {participant.avatar ? (
-              <Image source={{ uri: participant.avatar }} style={styles.avatar} />
+              <CachedImage source={{ uri: participant.avatar }} style={styles.avatar} />
             ) : (
               <View style={[styles.avatar, styles.avatarPlaceholder]}>
                 <Text style={styles.avatarInitial}>{participant.name?.charAt(0).toUpperCase() || 'A'}</Text>
