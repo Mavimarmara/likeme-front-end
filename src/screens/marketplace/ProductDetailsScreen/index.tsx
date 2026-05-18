@@ -328,7 +328,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     return images;
   }, [backgroundImage]);
 
-  if (loading) {
+  if (loading && (!product || !displayData)) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>

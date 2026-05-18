@@ -194,7 +194,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
     );
   };
 
-  if (loading) {
+  if (loading && !product) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
