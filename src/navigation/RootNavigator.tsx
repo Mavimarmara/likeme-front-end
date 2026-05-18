@@ -1,9 +1,10 @@
 import React, { lazy, Suspense, useCallback, useState } from 'react';
-import { Easing, Platform, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { DefaultTheme, NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
-import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import { FloatingMenuProvider } from '@/contexts/FloatingMenuContext';
 import { FeedCacheProvider } from '@/contexts/FeedCacheContext';
+import { STACK_GESTURE_ENABLED, fastFadeTransition, forSimpleFade } from '@/navigation/stackTransitions';
 import PushNotificationsRoot from '@/components/infrastructure/PushNotificationsRoot';
 import { COLORS } from '@/constants';
 import {
@@ -54,7 +55,6 @@ const rootNavigationTheme = {
     card: COLORS.BACKGROUND,
   },
 };
-const STACK_GESTURE_ENABLED = Platform.OS !== 'android';
 
 const styles = StyleSheet.create({
   stackWrapper: {
@@ -89,17 +89,8 @@ const RootNavigator: React.FC = () => {
                 animationEnabled: true,
                 gestureEnabled: STACK_GESTURE_ENABLED,
                 cardStyle: { flex: 1, backgroundColor: COLORS.BACKGROUND },
-                cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter,
-                transitionSpec: {
-                  open: {
-                    animation: 'timing',
-                    config: { duration: 200, easing: Easing.out(Easing.ease) },
-                  },
-                  close: {
-                    animation: 'timing',
-                    config: { duration: 150, easing: Easing.in(Easing.ease) },
-                  },
-                },
+                cardStyleInterpolator: forSimpleFade,
+                transitionSpec: fastFadeTransition,
               }}
             >
               <Stack.Screen name='Loading' getComponent={getLoadingScreen} options={{ title: 'Carregando' }} />
