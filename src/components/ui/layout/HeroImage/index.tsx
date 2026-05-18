@@ -1,7 +1,9 @@
 import React, { useMemo } from 'react';
-import { View, Text, ImageBackground, Dimensions } from 'react-native';
+import { View, Text, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { PlatformBlurView } from '@/components/ui/PlatformBlurView';
+import { IMAGE_PRIORITY_HIGH } from '@/constants';
 import { styles } from './styles';
 
 const DEFAULT_IMAGE_URI = 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400';
@@ -45,43 +47,42 @@ const HeroImage = ({
 
   return (
     <View style={[styles.section, sectionStyle]}>
-      <ImageBackground source={source} style={styles.image} imageStyle={styles.imageStyle}>
-        {shouldRenderCard ? (
-          <View style={styles.cardContainer}>{cardContent}</View>
-        ) : (
-          <View style={styles.overlay}>
-            <View style={styles.bottomBlock}>
-              {shouldRenderOverlay && (
-                <View style={styles.effectsContainer}>
-                  <PlatformBlurView intensity={10} tint='dark' style={styles.blur} />
-                  <LinearGradient
-                    colors={['rgba(48, 48, 48, 0)', 'rgba(41, 41, 41, 1)']}
-                    locations={[0.64, 1]}
-                    style={styles.gradient}
-                  />
-                </View>
-              )}
-              <View style={styles.content}>
-                <>
-                  {badges.length > 0 && (
-                    <View style={styles.badgesContainer}>
-                      {badges.map((badge, index) => (
-                        <View key={index} style={styles.badge}>
-                          <Text style={styles.badgeText}>{badge}</Text>
-                        </View>
-                      ))}
-                    </View>
-                  )}
-                  {title ? <Text style={styles.title}>{title}</Text> : null}
-                  <Text style={styles.name}>{name}</Text>
-                  {footer != null ? <View style={styles.footer}>{footer}</View> : <View style={styles.footer} />}
-                </>
-                {customOverlay && children}
+      <CachedImage source={source} style={[styles.image, styles.imageStyle]} priority={IMAGE_PRIORITY_HIGH} />
+      {shouldRenderCard ? (
+        <View style={styles.cardContainer}>{cardContent}</View>
+      ) : (
+        <View style={styles.overlay}>
+          <View style={styles.bottomBlock}>
+            {shouldRenderOverlay && (
+              <View style={styles.effectsContainer}>
+                <PlatformBlurView intensity={10} tint='dark' style={styles.blur} />
+                <LinearGradient
+                  colors={['rgba(48, 48, 48, 0)', 'rgba(41, 41, 41, 1)']}
+                  locations={[0.64, 1]}
+                  style={styles.gradient}
+                />
               </View>
+            )}
+            <View style={styles.content}>
+              <>
+                {badges.length > 0 && (
+                  <View style={styles.badgesContainer}>
+                    {badges.map((badge, index) => (
+                      <View key={index} style={styles.badge}>
+                        <Text style={styles.badgeText}>{badge}</Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
+                {title ? <Text style={styles.title}>{title}</Text> : null}
+                <Text style={styles.name}>{name}</Text>
+                {footer != null ? <View style={styles.footer}>{footer}</View> : <View style={styles.footer} />}
+              </>
+              {customOverlay && children}
             </View>
           </View>
-        )}
-      </ImageBackground>
+        </View>
+      )}
     </View>
   );
 };

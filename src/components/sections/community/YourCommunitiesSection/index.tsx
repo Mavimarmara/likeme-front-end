@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { useTranslation } from '@/hooks/i18n';
 import { styles } from './styles';
 import type { Post } from '@/types';
@@ -82,7 +83,11 @@ const YourCommunitiesSection: React.FC<Props> = ({ community, onCommunityPress, 
               >
                 <View style={styles.postHeader}>
                   {post.userAvatar ? (
-                    <Image source={{ uri: post.userAvatar }} style={styles.postAvatar} />
+                    <CachedImage
+                      source={{ uri: post.userAvatar }}
+                      style={styles.postAvatar}
+                      recyclingKey={`post-${post.id}-avatar`}
+                    />
                   ) : (
                     <View style={styles.postAvatarPlaceholder}>
                       <Icon name='person' size={12} color='#6e6a6a' />
@@ -104,7 +109,11 @@ const YourCommunitiesSection: React.FC<Props> = ({ community, onCommunityPress, 
                 {(post.image || post.videoUrl) && (
                   <View style={styles.postMediaWrap}>
                     {post.image ? (
-                      <Image source={{ uri: post.image }} style={styles.postMedia} resizeMode='cover' />
+                      <CachedImage
+                        source={{ uri: post.image }}
+                        style={styles.postMedia}
+                        recyclingKey={`post-${post.id}-media`}
+                      />
                     ) : (
                       <View style={[styles.postMedia, styles.postMediaVideoFallback]} />
                     )}

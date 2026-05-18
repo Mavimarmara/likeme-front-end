@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { MindAvatar, BodyAvatar, MindAvatarActive, BodyAvatarActive } from '@/assets/profile';
 import { IconButton } from '@/components/ui/buttons';
 import { COLORS } from '@/constants';
@@ -86,17 +87,15 @@ const AvatarSection: React.FC<AvatarSectionProps> = ({
         <View style={styles.avatarsContent}>
           <View style={styles.avatarItem}>
             <Text style={styles.avatarLabel}>{t('avatar.mind')}</Text>
-            <Image
+            <CachedImage
               source={mindAvatarSource}
               style={[styles.mindAvatar, { width: mindDimensions.width, height: mindDimensions.height }]}
-              resizeMode='cover'
             />
           </View>
           <View style={styles.avatarItem}>
-            <Image
+            <CachedImage
               source={bodyAvatarSource}
               style={[styles.bodyAvatar, { width: bodyDimensions.width, height: bodyDimensions.height }]}
-              resizeMode='cover'
             />
             <Text style={styles.avatarLabel}>{t('avatar.body')}</Text>
           </View>

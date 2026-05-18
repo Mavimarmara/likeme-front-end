@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState, Platform, StatusBar, StyleSheet, View } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
@@ -27,6 +27,10 @@ const App: React.FC = () => {
   const [fontsLoaded, fontError] = useFonts({
     'Bricolage Grotesque': require('./assets/fonts/BricolageGrotesque-Regular.ttf'),
   });
+  // Mesmo se as fontes nao carregarem dentro do tempo limite, libera o
+  // RootNavigator para nao prender o usuario no splash indefinidamente.
+  const [forceRenderApp, setForceRenderApp] = useState(false);
+  const shouldRenderApp = fontsLoaded || Boolean(fontError) || forceRenderApp;
 
   const hideSplashOnce = useCallback(async () => {
     if (splashHiddenRef.current) {
@@ -62,6 +66,7 @@ const App: React.FC = () => {
       hideSplashOnce().catch(() => undefined);
     }, 1_500);
     const fallbackTimer = setTimeout(() => {
+      setForceRenderApp(true);
       hideSplashOnce().catch(() => undefined);
     }, ROOT_SPLASH_FONT_LOAD_FALLBACK_MS);
     return () => {
@@ -85,6 +90,12 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    // Bloco de debug do startup: so paga o custo (require de expo-constants,
+    // monta strings, etc.) em DEV. Em release era 100% trabalho descartado,
+    // ja que logger.debug e no-op fora de __DEV__.
+    if (!__DEV__) {
+      return;
+    }
     try {
       logger.debug('═══════════════════════════════════════════════════════════');
       logger.debug('  DEBUG - Variáveis de Ambiente');
@@ -166,9 +177,11 @@ const App: React.FC = () => {
     <View style={styles.rootSurface} onLayout={onLayoutRootView}>
       <SafeAreaProvider style={styles.rootSurface}>
         <StatusBar hidden={Platform.OS === 'android'} />
-        <RootErrorBoundary>
-          <RootNavigator />
-        </RootErrorBoundary>
+        {shouldRenderApp ? (
+          <RootErrorBoundary>
+            <RootNavigator />
+          </RootErrorBoundary>
+        ) : null}
       </SafeAreaProvider>
     </View>
   );

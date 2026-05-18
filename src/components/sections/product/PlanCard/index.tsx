@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { PlatformBlurView } from '@/components/ui/PlatformBlurView';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { formatPrice } from '@/utils';
 import { styles } from './styles';
@@ -37,7 +38,7 @@ const PlanCard: React.FC<Props> = ({ plan, onPress, onLike }) => {
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-        <Image source={{ uri: plan.image }} style={styles.image} />
+        <CachedImage source={{ uri: plan.image }} style={styles.image} />
         <PlatformBlurView intensity={10} tint='dark' style={styles.imageOverlay} />
         <View style={styles.contentOverlay}>
           <View style={[styles.tagBadge, { backgroundColor: 'rgba(0, 17, 55, 0.64)' }]}>

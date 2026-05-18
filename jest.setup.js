@@ -26,6 +26,17 @@ jest.mock('expo-blur', () => {
   };
 });
 
+// Mock para expo-image (puxa expo-modules-core ESM em tempo de teste)
+jest.mock('expo-image', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  const Image = React.forwardRef((props, ref) => React.createElement(View, { ...props, ref }));
+  Image.prefetch = jest.fn(() => Promise.resolve());
+  Image.clearMemoryCache = jest.fn(() => Promise.resolve());
+  Image.clearDiskCache = jest.fn(() => Promise.resolve());
+  return { Image };
+});
+
 // Mock para expo-auth-session
 jest.mock('expo-auth-session', () => ({
   AuthRequest: jest.fn(),

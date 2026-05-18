@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, ScrollView, Image, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { useFocusEffect } from '@react-navigation/native';
 import { ScreenWithHeader } from '@/components/ui/layout';
 import { SecondaryButton } from '@/components/ui/buttons';
@@ -120,10 +121,10 @@ const AnamnesisHomeScreen: React.FC<Props> = ({ navigation }) => {
       contentContainerStyle={styles.container}
     >
       {/* Background superior */}
-      <Image source={BackgroundWithGradient3} style={styles.backgroundTop} resizeMode='cover' />
+      <CachedImage source={BackgroundWithGradient3} style={styles.backgroundTop} />
 
       {/* Background inferior */}
-      <Image source={BackgroundWithGradient2} style={styles.backgroundBottom} resizeMode='cover' />
+      <CachedImage source={BackgroundWithGradient2} style={styles.backgroundBottom} />
 
       <ScrollView
         style={styles.scrollView}

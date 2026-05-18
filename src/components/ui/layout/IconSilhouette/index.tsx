@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
-import { ImageBackground, ImageSourcePropType, StyleSheet, View, ViewStyle } from 'react-native';
+import { type ImageSourcePropType, StyleSheet, View, type ViewStyle } from 'react-native';
 import Svg, { Defs, LinearGradient, Path, Stop } from 'react-native-svg';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { BackgroundIcon } from '@/assets/ui';
 import { styles } from './styles';
 
@@ -43,13 +44,14 @@ const IconSilhouette: React.FC<IconSilhouetteProps> = ({ tintColor, source, size
 
   if (source != null) {
     return (
-      <ImageBackground
-        source={source}
-        style={[styles.container, containerSize, style]}
-        imageStyle={[styles.image, imageSize, singleTint != null && { tintColor: singleTint }]}
-      >
+      <View style={[styles.container, containerSize, style]}>
+        <CachedImage
+          source={source}
+          style={[styles.image, imageSize, StyleSheet.absoluteFill]}
+          tintColor={singleTint}
+        />
         {childrenOverlay}
-      </ImageBackground>
+      </View>
     );
   }
 

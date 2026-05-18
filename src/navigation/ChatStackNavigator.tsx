@@ -1,16 +1,10 @@
 import React from 'react';
-import { Easing, Platform } from 'react-native';
-import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import { ChatListScreen, ChatScreen, ChatDetailsScreen } from '@/screens/chat';
 import type { ChatStackParamList } from '@/types/navigation';
+import { STACK_GESTURE_ENABLED, fastFadeTransition, forSimpleFade } from '@/navigation/stackTransitions';
 
 const Stack = createStackNavigator<ChatStackParamList>();
-const STACK_GESTURE_ENABLED = Platform.OS !== 'android';
-
-const fastFadeTransition = {
-  open: { animation: 'timing' as const, config: { duration: 200, easing: Easing.out(Easing.ease) } },
-  close: { animation: 'timing' as const, config: { duration: 150, easing: Easing.in(Easing.ease) } },
-};
 
 const ChatStackNavigator: React.FC = () => {
   return (
@@ -18,7 +12,7 @@ const ChatStackNavigator: React.FC = () => {
       screenOptions={{
         headerShown: false,
         gestureEnabled: STACK_GESTURE_ENABLED,
-        cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter,
+        cardStyleInterpolator: forSimpleFade,
         transitionSpec: fastFadeTransition,
       }}
     >

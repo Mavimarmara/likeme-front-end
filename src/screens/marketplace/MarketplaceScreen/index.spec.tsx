@@ -91,14 +91,36 @@ jest.mock('@/components/ui/buttons', () => {
 });
 
 jest.mock('@/components/sections/marketplace', () => {
-  const { View, Text, TouchableOpacity } = require('react-native');
+  const { Text, TouchableOpacity } = require('react-native');
   return {
     WeekHighlightCard: ({ title, onPress }: any) => (
       <TouchableOpacity onPress={onPress} testID='week-highlight'>
         <Text>{title}</Text>
       </TouchableOpacity>
     ),
-    AdsList: () => <View testID='ads-list' />,
+  };
+});
+
+jest.mock('@/components/ui/cards', () => {
+  const { View, Text, TouchableOpacity } = require('react-native');
+  return {
+    ProductItemCard: ({ title, onPress }: any) => (
+      <TouchableOpacity onPress={onPress} testID='product-item-card'>
+        <Text>{title}</Text>
+      </TouchableOpacity>
+    ),
+    ProductItemCardSkeleton: () => <View testID='product-item-card-skeleton' />,
+  };
+});
+
+jest.mock('@/components/ui/feedback', () => {
+  const { View, Text } = require('react-native');
+  return {
+    EmptyState: ({ title }: any) => (
+      <View testID='empty-state'>
+        <Text>{title}</Text>
+      </View>
+    ),
   };
 });
 
@@ -276,7 +298,7 @@ describe('MarketplaceScreen', () => {
     const { getByTestId } = render(<MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
-      expect(getByTestId('ads-list')).toBeTruthy();
+      expect(getByTestId('marketplace-list')).toBeTruthy();
     });
   });
 
@@ -284,7 +306,7 @@ describe('MarketplaceScreen', () => {
     const { getByTestId } = render(<MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
-      expect(getByTestId('ads-list')).toBeTruthy();
+      expect(getByTestId('marketplace-list')).toBeTruthy();
     });
   });
 
@@ -292,7 +314,7 @@ describe('MarketplaceScreen', () => {
     const { getByTestId } = render(<MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
-      expect(getByTestId('ads-list')).toBeTruthy();
+      expect(getByTestId('marketplace-list')).toBeTruthy();
     });
 
     expect(mockNavigation.navigate).toBeDefined();

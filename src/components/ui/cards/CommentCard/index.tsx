@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Image, ImageSourcePropType } from 'react-native';
+import { View, Text, TouchableOpacity, type ImageSourcePropType } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { styles } from './styles';
 import communityService from '@/services/community/communityService';
 import { logger } from '@/utils/logger';
@@ -132,9 +133,17 @@ const CommentCard: React.FC<Props> = ({
         <View style={styles.imageColumn}>
           {comment.author.avatar ? (
             isAvatarUri ? (
-              <Image source={{ uri: comment.author.avatar as string }} style={styles.avatar} />
+              <CachedImage
+                source={{ uri: comment.author.avatar as string }}
+                style={styles.avatar}
+                recyclingKey={`comment-${comment.id}-avatar`}
+              />
             ) : (
-              <Image source={comment.author.avatar as ImageSourcePropType} style={styles.avatar} />
+              <CachedImage
+                source={comment.author.avatar as ImageSourcePropType}
+                style={styles.avatar}
+                recyclingKey={`comment-${comment.id}-avatar`}
+              />
             )
           ) : (
             <View style={styles.avatarPlaceholder}>

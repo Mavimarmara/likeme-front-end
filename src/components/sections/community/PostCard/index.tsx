@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import type { LayoutChangeEvent, NativeSyntheticEvent, TextLayoutEventData } from 'react-native';
-import { Image, Pressable, StyleProp, Text, View, ViewStyle } from 'react-native';
+import { Pressable, StyleProp, Text, View, ViewStyle } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Badge } from '@/components/ui';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import PollCard from '../PollCard';
 import { usePost, usePostReplies, type PostLikeEngagement } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
@@ -156,7 +157,11 @@ const PostCardView: React.FC<ViewProps> = ({
         <View>
           <View style={cardStyles.authorSection}>
             {post.userAvatar ? (
-              <Image source={{ uri: post.userAvatar }} style={cardStyles.avatar} />
+              <CachedImage
+                source={{ uri: post.userAvatar }}
+                style={cardStyles.avatar}
+                recyclingKey={`post-${post.id}-avatar`}
+              />
             ) : (
               <View style={cardStyles.avatarPlaceholder}>
                 <Icon name='person' size={12} color={COLORS.TEXT_LIGHT} />
@@ -230,12 +235,12 @@ const PostCardView: React.FC<ViewProps> = ({
                   >
                     <View style={cardStyles.videoPosterInner}>
                       {imageUri ? (
-                        <Image
+                        <CachedImage
                           testID='post-card-video-poster'
                           accessibilityLabel='Imagem do post'
                           source={{ uri: imageUri }}
                           style={forceContentExpanded ? cardStyles.mediaImageExpanded : cardStyles.mediaImage}
-                          resizeMode='cover'
+                          recyclingKey={`post-${post.id}-media`}
                           onError={onPostImageError}
                         />
                       ) : (
@@ -257,12 +262,12 @@ const PostCardView: React.FC<ViewProps> = ({
                   </Pressable>
                 )
               ) : imageUri ? (
-                <Image
+                <CachedImage
                   testID='post-card-image-only'
                   accessibilityLabel='Imagem do post'
                   source={{ uri: imageUri }}
                   style={forceContentExpanded ? cardStyles.mediaImageExpanded : cardStyles.mediaImage}
-                  resizeMode='cover'
+                  recyclingKey={`post-${post.id}-media`}
                   onError={onPostImageError}
                 />
               ) : null}
@@ -366,11 +371,45 @@ const PostCardWithRepliesLikes: React.FC<Omit<Props, 'postEngagement'>> = (props
   return <PostCardView {...props} engagement={{ likeCount, isLiked, isLiking, togglePostLike }} />;
 };
 
-const PostCard: React.FC<Props> = (props) => {
+const PostCardInner: React.FC<Props> = (props) => {
   if (props.postEngagement) {
     return <PostCardView {...props} engagement={props.postEngagement} />;
   }
   return <PostCardWithRepliesLikes {...props} />;
 };
+
+/**
+ * Memoizado para evitar re-renders em cascata ao rolar a lista do feed na
+ * FlatList: enquanto o item do array `posts` mantém a mesma referencia (ou
+ * `post.id`/contadores nao mudam), o card nao re-renderiza.
+ *
+ * Atencao: a comparacao default e shallow; estabilize `onPress` /
+ * `onCommentsOpenChange` / `styles` no consumidor para preservar o ganho.
+ */
+const PostCard = React.memo(PostCardInner, (prev, next) => {
+  if (prev.post !== next.post) {
+    if (prev.post.id !== next.post.id) return false;
+    if (prev.post.likes !== next.post.likes) return false;
+    if (prev.post.isLiked !== next.post.isLiked) return false;
+    if (prev.post.commentsCount !== next.post.commentsCount) return false;
+    if (prev.post.comments?.length !== next.post.comments?.length) return false;
+    if (prev.post.image !== next.post.image) return false;
+    if (prev.post.videoUrl !== next.post.videoUrl) return false;
+    if (prev.post.userAvatar !== next.post.userAvatar) return false;
+    if (prev.post.userName !== next.post.userName) return false;
+  }
+  return (
+    prev.onPress === next.onPress &&
+    prev.category === next.category &&
+    prev.initialContentExpanded === next.initialContentExpanded &&
+    prev.initialCommentsOpen === next.initialCommentsOpen &&
+    prev.onCommentsOpenChange === next.onCommentsOpenChange &&
+    prev.styles === next.styles &&
+    prev.forceContentExpanded === next.forceContentExpanded &&
+    prev.postEngagement === next.postEngagement
+  );
+});
+
+PostCard.displayName = 'PostCard';
 
 export default PostCard;

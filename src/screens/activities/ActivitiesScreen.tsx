@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image, Modal, Alert, Linking } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Modal, Alert, Linking } from 'react-native';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { useFocusEffect } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -705,7 +706,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation, route }
           <View style={styles.cardActions}>
             {activeTab === 'history' ? (
               <View style={[styles.actionButton]}>
-                <Image source={activity.declined ? CloseIcon : DoneIcon} style={styles.statusIcon} resizeMode='cover' />
+                <CachedImage source={activity.declined ? CloseIcon : DoneIcon} style={styles.statusIcon} />
               </View>
             ) : (
               <TouchableOpacity

@@ -29,11 +29,10 @@ export const styles = StyleSheet.create({
     borderBottomRightRadius: 40,
   },
   overlay: {
-    flex: 1,
+    ...StyleSheet.absoluteFillObject,
     justifyContent: 'flex-end',
     borderBottomLeftRadius: 40,
     borderBottomRightRadius: 40,
-    position: 'relative',
   },
   bottomBlock: {
     position: 'relative',

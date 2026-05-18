@@ -40,6 +40,45 @@ export const styles = StyleSheet.create({
   heroFooter: {
     width: '100%',
   },
+  feedContentContainer: {
+    paddingBottom: SPACING.XL,
+  },
+  feedListHeader: {
+    paddingBottom: SPACING.MD,
+  },
+  feedListFooter: {
+    paddingTop: SPACING.MD,
+  },
+  feedItemWrapper: {
+    paddingHorizontal: SPACING.MD,
+  },
+  feedItemSeparator: {
+    height: SPACING.MD,
+  },
+  feedLoadingFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: SPACING.MD,
+    columnGap: SPACING.SM,
+  },
+  feedLoadingFooterLabel: {
+    fontSize: 12,
+    color: COLORS.TEXT_LIGHT,
+  },
+  feedInitialLoading: {
+    paddingTop: SPACING.SM,
+    paddingBottom: SPACING.XL,
+  },
+  feedEmptyContainer: {
+    paddingHorizontal: SPACING.MD,
+    paddingVertical: SPACING.LG,
+    alignItems: 'center',
+  },
+  feedEmptyText: {
+    fontSize: 14,
+    color: COLORS.TEXT_LIGHT,
+  },
   heroDescription: {
     fontSize: 12,
     fontFamily: 'DM Sans',
@@ -292,47 +331,5 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 100,
-  },
-  eventRemindersSection: {
-    marginHorizontal: SPACING.MD,
-    marginTop: SPACING.MD,
-    padding: SPACING.MD,
-    backgroundColor: COLORS.WHITE,
-    borderRadius: BORDER_RADIUS.LG,
-    borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.06)',
-  },
-  eventRemindersTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: COLORS.TEXT,
-    marginBottom: SPACING.SM,
-  },
-  eventReminderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: SPACING.SM,
-    gap: SPACING.MD,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(0,0,0,0.06)',
-  },
-  eventReminderRowFirst: {
-    borderTopWidth: 0,
-    paddingTop: 0,
-  },
-  eventReminderTextCol: {
-    flex: 1,
-    minWidth: 0,
-  },
-  eventReminderEventTitle: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: COLORS.TEXT,
-  },
-  eventReminderToggleLabel: {
-    fontSize: 12,
-    color: COLORS.TEXT_LIGHT,
-    marginTop: 4,
   },
 });

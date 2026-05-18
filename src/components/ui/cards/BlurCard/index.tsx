@@ -1,5 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { Image, LayoutChangeEvent, StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { LayoutChangeEvent, StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { PlatformBlurView } from '@/components/ui/PlatformBlurView';
 import {
   styles,
@@ -37,7 +38,7 @@ const BlurCard: React.FC<BlurCardProps> = ({ backgroundImage, topSection, footer
 
   return (
     <Wrapper {...wrapperProps} style={[styles.container, style]}>
-      <Image source={{ uri: backgroundImage }} style={styles.backgroundImage} resizeMode='cover' />
+      <CachedImage source={{ uri: backgroundImage }} style={styles.backgroundImage} />
 
       <View style={styles.content}>
         {topSection && <View style={styles.topSection}>{topSection}</View>}

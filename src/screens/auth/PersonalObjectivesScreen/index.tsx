@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { StackScreenProps } from '@react-navigation/stack';
-import { View, Text, ScrollView, Image, useWindowDimensions, Alert } from 'react-native';
+import { View, Text, ScrollView, useWindowDimensions, Alert } from 'react-native';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { IconSilhouette, PrimaryButton, SelectionButtonQuiz } from '@/components/ui';
 import { ScreenWithHeader } from '@/components/ui/layout';
 import { CTACard } from '@/components/ui/cards';
@@ -114,7 +115,7 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
         ]}
       >
         <View style={styles.content}>
-          <Image source={GradientSplash6} style={[styles.titleAdornment, adornmentStyle]} resizeMode='contain' />
+          <CachedImage source={GradientSplash6} style={[styles.titleAdornment, adornmentStyle]} contentFit='contain' />
           <Text style={styles.greeting}>{firstName},</Text>
           {welcomeHighlightVisible && (
             <CTACard

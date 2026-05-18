@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, Image } from 'react-native';
+import { View, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { styles } from './styles';
 import type { ProgramContent } from '@/types/program';
 
@@ -19,7 +20,7 @@ const VideoContent: React.FC<Props> = ({ content }) => {
       </View>
 
       <View style={styles.videoCard}>
-        {content.thumbnail && <Image source={{ uri: content.thumbnail }} style={styles.thumbnail} resizeMode='cover' />}
+        {content.thumbnail && <CachedImage source={{ uri: content.thumbnail }} style={styles.thumbnail} />}
         <View style={styles.overlay}>
           <View style={styles.playButton}>
             <Icon name='play-arrow' size={48} color='#fbf7e5' />

@@ -1,6 +1,7 @@
 import React from 'react';
-import { Image, Text, View, type ImageStyle } from 'react-native';
+import { Text, View, type ImageStyle } from 'react-native';
 import { SecondaryButton } from '@/components/ui/buttons';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { styles } from './styles';
 
 type PartnerSectionProps = {
@@ -22,7 +23,7 @@ export function PartnerSection({
     <View style={styles.container}>
       <View style={styles.row}>
         {avatar ? (
-          <Image source={{ uri: avatar }} style={styles.avatar as ImageStyle} />
+          <CachedImage source={{ uri: avatar }} style={styles.avatar as ImageStyle} />
         ) : (
           <View style={[styles.avatar, styles.avatarPlaceholder]} />
         )}

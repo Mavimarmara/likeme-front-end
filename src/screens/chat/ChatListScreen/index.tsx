@@ -1,14 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-  ActivityIndicator,
-  RefreshControl,
-  Alert,
-} from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, RefreshControl, Alert } from 'react-native';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -17,7 +9,7 @@ import { SearchBar } from '@/components/ui';
 import { GradientBackground, ScreenWithHeader } from '@/components/ui/layout';
 import { useTranslation } from '@/hooks/i18n';
 import { useChat, useFeatureFlag, useMenuItems } from '@/hooks';
-import { useFloatingMenu } from '@/contexts/FloatingMenuContext';
+import { useFloatingMenuActions } from '@/contexts/FloatingMenuContext';
 import type { ChatConversation } from '@/hooks';
 import { LogoMini } from '@/assets/ui';
 import { COLORS, FEATURE_FLAGS } from '@/constants';
@@ -44,7 +36,7 @@ const ChatListScreen: React.FC<Props> = () => {
 
   const { conversations, loading, refresh } = useChat({ searchQuery });
   const menuItems = useMenuItems(navigation);
-  const { setMenu } = useFloatingMenu();
+  const { setMenu } = useFloatingMenuActions();
 
   useFocusEffect(
     useCallback(() => {
@@ -131,7 +123,7 @@ const ChatListScreen: React.FC<Props> = () => {
     }
 
     if (conversation.avatar) {
-      return <Image source={{ uri: conversation.avatar }} style={styles.avatar} />;
+      return <CachedImage source={{ uri: conversation.avatar }} style={styles.avatar} />;
     }
 
     return (

@@ -6,6 +6,7 @@ export { default as PopularProvidersSection, type Provider } from './PopularProv
 export { default as YourCommunitiesSection, type YourCommunity } from './YourCommunitiesSection';
 export { default as OtherCommunitiesSection, type OtherCommunity } from './OtherCommunitiesSection';
 export { default as PostCard } from './PostCard';
+export { default as PostCardSkeleton } from './PostCardSkeleton';
 export { default as EventCard } from './EventCard';
 export { default as PollCard } from './PollCard';
 export { default as CommentReactions } from './CommentReactions';

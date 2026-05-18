@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
-import { BackHandler, Image, Platform, Text, View } from 'react-native';
+import { BackHandler, Platform, Text, View } from 'react-native';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { STORE_LISTING_BADGES_IMAGE } from '@/assets/ui';
 import { PrimaryButton } from '@/components/ui/buttons';
@@ -75,10 +76,10 @@ const ForcedUpdateScreen: React.FC<Props> = ({ route }) => {
       <View style={styles.container}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.body}>{body}</Text>
-        <Image
+        <CachedImage
           source={STORE_LISTING_BADGES_IMAGE}
           style={styles.storeBadges}
-          resizeMode='contain'
+          contentFit='contain'
           accessibilityIgnoresInvertColors
         />
         <View style={styles.buttonWrap}>

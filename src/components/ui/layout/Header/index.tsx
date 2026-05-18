@@ -1,10 +1,12 @@
 import React, { ReactNode } from 'react';
-import { View, Text, TouchableOpacity, Image, type ImageSourcePropType } from 'react-native';
+import { View, Text, TouchableOpacity, type ImageSourcePropType } from 'react-native';
 import { HOME_MVP_ASSETS } from '@/assets/homeMvp';
 import { LogoMini } from '@/assets/ui';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { IconButton } from '@/components/ui/buttons';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { useCartItemCount } from '@/hooks/marketplace/useCartItemCount';
+import { IMAGE_PRIORITY_HIGH } from '@/constants';
 import { styles } from './styles';
 
 const noop = () => undefined;
@@ -84,9 +86,9 @@ const Header: React.FC<HeaderProps> = ({
       <View style={styles.header}>
         {showMenuWithAvatar && onMenuPress && (
           <TouchableOpacity style={styles.menuWithAvatarPill} onPress={onMenuPress} activeOpacity={0.7}>
-            <Image source={HOME_MVP_ASSETS.menu} style={styles.menuIconImage} resizeMode='contain' />
+            <CachedImage source={HOME_MVP_ASSETS.menu} style={styles.menuIconImage} contentFit='contain' />
             {userAvatarUri ? (
-              <Image source={{ uri: userAvatarUri }} style={styles.headerAvatar} />
+              <CachedImage source={{ uri: userAvatarUri }} style={styles.headerAvatar} priority={IMAGE_PRIORITY_HIGH} />
             ) : (
               <View style={styles.headerAvatarPlaceholder}>
                 <Icon name='person' size={18} color='#0F1B33' />
@@ -109,10 +111,10 @@ const Header: React.FC<HeaderProps> = ({
         >
           {customLogo ||
             (headerLogoImageSource != null ? (
-              <Image
+              <CachedImage
                 source={headerLogoImageSource}
                 style={{ width: headerLogoImageWidth, height: headerLogoImageHeight }}
-                resizeMode='contain'
+                contentFit='contain'
               />
             ) : (
               <LogoMini width={87} height={16} />

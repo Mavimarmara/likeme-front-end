@@ -84,7 +84,13 @@ export const useProductDetails = ({
   supplementalExternalUrl,
 }: UseProductDetailsParams): UseProductDetailsReturn => {
   const { t } = useTranslation();
-  const [product, setProduct] = useState<ApiProduct | null>(null);
+  // Inicializa com o fallback recebido pela rota para evitar tela em branco com
+  // ActivityIndicator enquanto o GET completa. O detalhe completo substitui o
+  // fallback assim que chega.
+  const [product, setProduct] = useState<ApiProduct | null>(() => {
+    if (!fallbackProduct) return null;
+    return buildApiProductFromRouteFallback(fallbackProduct, new Date().toISOString());
+  });
   const [ad, setAd] = useState<Ad | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<ApiProduct[]>([]);
   const [loading, setLoading] = useState(true);

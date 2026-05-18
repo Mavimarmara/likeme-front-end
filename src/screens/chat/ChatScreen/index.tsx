@@ -1,9 +1,19 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { View, Text, ScrollView, Image, TouchableOpacity, TextInput, ActivityIndicator, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  type ListRenderItem,
+  TouchableOpacity,
+  TextInput,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { useNavigation, useRoute, useFocusEffect, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { KeyboardAwareScreen, ScreenWithHeader } from '@/components/ui/layout';
+import { KeyboardAwareList, ScreenWithHeader } from '@/components/ui/layout';
 import { IconButton } from '@/components/ui/buttons';
 import { MessageBubble } from '@/components/ui/chat';
 import { COLORS, FEATURE_FLAGS } from '@/constants';
@@ -50,7 +60,7 @@ const ChatScreen: React.FC = () => {
 
   const { refresh: refreshChatList } = useChat();
   const { bottom: bottomInset } = useSafeAreaInsets();
-  const scrollViewRef = useRef<ScrollView>(null);
+  const messagesListRef = useRef<FlatList<ChatMessage> | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(!isComposeMode);
   const [resolvingChannel, setResolvingChannel] = useState(isComposeMode);
@@ -134,8 +144,10 @@ const ChatScreen: React.FC = () => {
 
   useEffect(() => {
     if (messages.length > 0) {
-      setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: false }), 100);
+      const handle = setTimeout(() => messagesListRef.current?.scrollToEnd({ animated: false }), 100);
+      return () => clearTimeout(handle);
     }
+    return undefined;
   }, [messages]);
 
   const handleMenuPress = () => {
@@ -271,6 +283,32 @@ const ChatScreen: React.FC = () => {
     navigation.navigate('ChatDetails', { channelId, channelName, channelAvatar });
   };
 
+  const renderMessage = useCallback<ListRenderItem<ChatMessage>>(
+    ({ item }) => <MessageBubble text={item.text} timestamp={item.timestamp} isOwn={item.isOwn} />,
+    [],
+  );
+
+  const messageKeyExtractor = useCallback((msg: ChatMessage) => msg.id, []);
+
+  const listEmptyComponent = useMemo(() => {
+    if (loading || resolvingChannel) {
+      return (
+        <View style={styles.centerContainer}>
+          <ActivityIndicator size='large' color={COLORS.PRIMARY.PURE} />
+          {resolvingChannel ? (
+            <Text style={[styles.emptyText, { marginTop: 12 }]}>{t('chat.loadingChannel')}</Text>
+          ) : null}
+        </View>
+      );
+    }
+    return (
+      <View style={styles.centerContainer}>
+        <Icon name='chat-bubble-outline' size={48} color={COLORS.TEXT_LIGHT} />
+        <Text style={styles.emptyText}>{t('chat.noMessages')}</Text>
+      </View>
+    );
+  }, [loading, resolvingChannel, t]);
+
   return (
     <ScreenWithHeader
       navigation={navigation}
@@ -293,7 +331,7 @@ const ChatScreen: React.FC = () => {
           disabled={!channelId}
         >
           {channelAvatar ? (
-            <Image source={{ uri: channelAvatar }} style={styles.headerAvatar} />
+            <CachedImage source={{ uri: channelAvatar }} style={styles.headerAvatar} />
           ) : (
             <View style={styles.headerAvatarPlaceholder}>
               <Icon name='person' size={28} color={COLORS.TEXT_LIGHT} />
@@ -310,11 +348,19 @@ const ChatScreen: React.FC = () => {
         </TouchableOpacity>
       </View>
 
-      <KeyboardAwareScreen
-        scrollViewStyle={styles.messagesContainer}
-        scrollContentContainerStyle={styles.messagesContent}
+      <KeyboardAwareList<ChatMessage>
+        listStyle={styles.messagesContainer}
+        listContentContainerStyle={styles.messagesContent}
         includeBottomSafeAreaOnFooter={false}
-        scrollRef={scrollViewRef}
+        listRef={messagesListRef}
+        data={resolvingChannel ? [] : messages}
+        renderItem={renderMessage}
+        keyExtractor={messageKeyExtractor}
+        ListEmptyComponent={listEmptyComponent}
+        initialNumToRender={20}
+        maxToRenderPerBatch={10}
+        windowSize={11}
+        removeClippedSubviews
         footer={
           <View
             style={[
@@ -351,28 +397,7 @@ const ChatScreen: React.FC = () => {
             />
           </View>
         }
-      >
-        {(loading || resolvingChannel) && (
-          <View style={styles.centerContainer}>
-            <ActivityIndicator size='large' color={COLORS.PRIMARY.PURE} />
-            {resolvingChannel ? (
-              <Text style={[styles.emptyText, { marginTop: 12 }]}>{t('chat.loadingChannel')}</Text>
-            ) : null}
-          </View>
-        )}
-
-        {!loading && !resolvingChannel && messages.length === 0 && (
-          <View style={styles.centerContainer}>
-            <Icon name='chat-bubble-outline' size={48} color={COLORS.TEXT_LIGHT} />
-            <Text style={styles.emptyText}>{t('chat.noMessages')}</Text>
-          </View>
-        )}
-
-        {!resolvingChannel &&
-          messages.map((msg) => (
-            <MessageBubble key={msg.id} text={msg.text} timestamp={msg.timestamp} isOwn={msg.isOwn} />
-          ))}
-      </KeyboardAwareScreen>
+      />
     </ScreenWithHeader>
   );
 };

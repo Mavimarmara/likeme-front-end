@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Linking, Image } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Linking } from 'react-native';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { HeroImage, ScreenWithHeader } from '@/components/ui/layout';
@@ -504,10 +505,9 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
                       <View key={prof.id} style={communityShopListStyles.professionalCardWrapper}>
                         <View style={communityShopListStyles.professionalCardContent}>
                           {prof.logo ? (
-                            <Image
+                            <CachedImage
                               source={{ uri: prof.logo }}
                               style={communityShopListStyles.professionalAvatar}
-                              resizeMode='cover'
                             />
                           ) : (
                             <View style={communityShopListStyles.professionalAvatarPlaceholder}>

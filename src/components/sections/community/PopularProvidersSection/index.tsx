@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { useTranslation } from '@/hooks/i18n';
 import { styles } from './styles';
 
@@ -38,7 +39,7 @@ const PopularProvidersSection: React.FC<Props> = ({ providers, onProviderPress }
           >
             <View style={styles.avatarContainer}>
               {provider.avatar ? (
-                <Image source={{ uri: provider.avatar }} style={styles.avatar} resizeMode='cover' />
+                <CachedImage source={{ uri: provider.avatar }} style={styles.avatar} />
               ) : (
                 <View style={styles.avatarPlaceholder}>
                   <Text style={styles.avatarInitials}>

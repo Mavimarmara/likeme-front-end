@@ -3,7 +3,10 @@ import { adService } from '@/services';
 import { enrichAdsProductsWithCategoriesFromByProductApi } from '@/hooks/marketplace/productCategoryEnrichment';
 import { mapUICategoryToApiCategory } from '@/utils';
 import { logger } from '@/utils/logger';
+import { prefetchImageUris } from '@/utils/image/prefetchImageUris';
 import type { Ad, ListAdsParams } from '@/types/ad';
+
+const MARKETPLACE_ADS_PREFETCH_FIRST_N = 6;
 
 interface UseMarketplaceAdsParams {
   selectedCategory: string;
@@ -102,6 +105,9 @@ export const useMarketplaceAds = ({
   };
 
   const updateAds = (adsArray: Ad[]) => {
+    const prefetchSlice = adsArray.slice(0, MARKETPLACE_ADS_PREFETCH_FIRST_N);
+    void prefetchImageUris(prefetchSlice.map((ad) => ad.product?.image));
+
     if (page === 1) {
       setAds(adsArray);
       return;

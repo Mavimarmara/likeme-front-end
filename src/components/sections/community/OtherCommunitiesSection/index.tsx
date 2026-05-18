@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView, ImageBackground } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { BackgroundIconButton } from '@/assets/ui';
 import { SearchBar } from '@/components/ui';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { useTranslation } from '@/hooks/i18n';
 import { styles } from './styles';
 
@@ -67,7 +68,7 @@ const OtherCommunitiesSection: React.FC<Props> = ({
             activeOpacity={0.8}
             onPress={() => onCommunityPress?.(community)}
           >
-            <Image source={{ uri: community.image }} style={styles.cardImage} resizeMode='cover' />
+            <CachedImage source={{ uri: community.image }} style={styles.cardImage} />
             <View style={styles.cardContent}>
               <View style={styles.cardHeader}>
                 <View style={styles.badge}>
@@ -90,13 +91,10 @@ const OtherCommunitiesSection: React.FC<Props> = ({
                   activeOpacity={0.8}
                   onPress={() => onCommunityPress?.(community)}
                 >
-                  <ImageBackground
-                    source={BackgroundIconButton}
-                    style={styles.buttonBackground}
-                    imageStyle={styles.buttonImage}
-                  >
+                  <View style={styles.buttonBackground}>
+                    <CachedImage source={BackgroundIconButton} style={StyleSheet.absoluteFill} />
                     <Icon name='chevron-right' size={30} color='#001137' />
-                  </ImageBackground>
+                  </View>
                 </TouchableOpacity>
               </View>
             </View>

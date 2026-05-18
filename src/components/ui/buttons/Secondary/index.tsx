@@ -7,11 +7,11 @@ import {
   TextStyle,
   ActivityIndicator,
   View,
-  Image,
   type ImageSourcePropType,
   type ImageStyle,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { COLORS } from '@/constants';
 import { styles } from './styles';
 
@@ -70,14 +70,14 @@ const SecondaryButton: React.FC<Props> = ({
   const renderIcon = () => {
     if (iconImage != null) {
       return (
-        <Image
+        <CachedImage
           source={iconImage}
           style={[
             iconPosition === 'left' ? styles.iconLeft : styles.iconRight,
             { width: iconSize, height: iconSize },
             iconImageStyle,
           ]}
-          resizeMode='contain'
+          contentFit='contain'
         />
       );
     }

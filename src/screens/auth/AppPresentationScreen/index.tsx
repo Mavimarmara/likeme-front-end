@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, Image, ScrollView, Dimensions } from 'react-native';
+import { View, Text, ScrollView, Dimensions } from 'react-native';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { IconButton } from '@/components/ui';
 import { ScreenWithHeader } from '@/components/ui/layout';
 import { PRESENTATION_PAGES } from '@/constants/presentation';
@@ -109,10 +110,9 @@ const AppPresentationScreen: React.FC<Props> = ({ navigation, route }) => {
                 );
               })()
             ) : (
-              <Image
+              <CachedImage
                 source={currentPageData.image}
                 style={[styles.image, { width: imageWidth, height: imageHeight }]}
-                resizeMode='cover'
               />
             )}
           </View>

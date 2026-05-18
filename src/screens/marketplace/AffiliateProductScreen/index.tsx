@@ -1,12 +1,13 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Linking, ImageBackground } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Linking, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScreenWithHeader } from '@/components/ui/layout';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { MarkdownText } from '@/components/ui/text/MarkdownText';
-import { MARKETPLACE_PRODUCT_PLACEHOLDER_IMAGE_URI } from '@/constants';
+import { IMAGE_PRIORITY_HIGH, MARKETPLACE_PRODUCT_PLACEHOLDER_IMAGE_URI } from '@/constants';
 import { useMenuItems, useProductDetails } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import type { RootStackParamList } from '@/types/navigation';
@@ -193,7 +194,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
     );
   };
 
-  if (loading) {
+  if (loading && !product) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
@@ -211,7 +212,12 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
     >
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.heroSection}>
-          <ImageBackground source={{ uri: displayImage }} style={styles.heroImage} imageStyle={styles.heroImageStyle}>
+          <View style={styles.heroImage}>
+            <CachedImage
+              source={{ uri: displayImage }}
+              style={[StyleSheet.absoluteFill, styles.heroImageStyle]}
+              priority={IMAGE_PRIORITY_HIGH}
+            />
             <View style={styles.heroOverlay}>
               <LinearGradient
                 colors={['rgba(48, 48, 48, 0)', 'rgba(41, 41, 41, 1)']}
@@ -231,7 +237,7 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
                 <Text style={styles.heroTitle}>{displayTitle}</Text>
               </View>
             </View>
-          </ImageBackground>
+          </View>
         </View>
 
         {productImages.length > 1 && (

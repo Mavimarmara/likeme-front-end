@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Animated, Image, ImageStyle, Platform, Text, View } from 'react-native';
+import { Alert, Animated, Image as RNImage, ImageStyle, Platform, Text, View } from 'react-native';
+import { Image as ExpoImage } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PartialLogo3, GradientSplash7, GradientSplash8, GradientSplash9 } from '@/assets/auth';
 import { styles, GRADIENT_STRIP_HEIGHT, GRADIENT_STRIP_WIDTH } from './styles';
@@ -14,7 +15,7 @@ import { ensureI18nHydrated, startI18nHydration } from '@/i18n/hydration';
 import { logger } from '@/utils/logger';
 import { openStoreListingWithFallback } from '@/utils/url/storeListingUrl';
 
-const AnimatedImage = Animated.createAnimatedComponent(Image);
+const AnimatedImage = Animated.createAnimatedComponent(ExpoImage);
 const GRADIENT_SOURCES = [GradientSplash7, GradientSplash8, GradientSplash9];
 const BOOTSTRAP_WATCHDOG_INTERVAL_MS = 8_000;
 const BOOTSTRAP_WATCHDOG_MAX_RETRIES = 2;
@@ -35,7 +36,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
 
   const TAGLINES = [t('auth.taglineRhythm'), t('auth.taglineJourney'), t('auth.taglineRoutine')];
 
-  const gradientAssets = useMemo(() => GRADIENT_SOURCES.map((source) => Image.resolveAssetSource(source)), []);
+  const gradientAssets = useMemo(() => GRADIENT_SOURCES.map((source) => RNImage.resolveAssetSource(source)), []);
 
   const gradientHeights = useMemo(
     () =>
@@ -100,6 +101,28 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
           ? fetchAppReleasePolicy(installedVersionForPolicy)
           : Promise.resolve({ policy: null, serverMustUpdate: null, serverRecommendUpdate: null });
       void startI18nHydration('pt-BR');
+
+      // Token refresh tambem entra no bootstrap paralelo: ate aqui a gente so
+      // disparava apos a release policy responder (sequencial). Disparamos em
+      // paralelo e so consumimos o resultado depois da policy autorizar.
+      // Atencao: hadStoredToken precisa refletir o "havia token salvo antes
+      // do refresh", mesmo se o refresh em si falhar — e isso que dispara o
+      // cleanup de token no fluxo de bootstrap.
+      const tokenRefreshPromise: Promise<{ hadStoredToken: boolean; shouldAuthenticate: boolean }> = (async () => {
+        let hadStoredTokenLocal = false;
+        try {
+          const token = await storageService.getToken();
+          hadStoredTokenLocal = Boolean(token);
+          if (!token) {
+            return { hadStoredToken: false, shouldAuthenticate: false };
+          }
+          const { ok } = await AuthService.refreshBackendSessionFromStoredCredentials();
+          return { hadStoredToken: true, shouldAuthenticate: ok };
+        } catch (error) {
+          logger.error('[LoadingScreen] Erro ao renovar token', error);
+          return { hadStoredToken: hadStoredTokenLocal, shouldAuthenticate: false };
+        }
+      })();
       const safeSetStep = (next: number) => {
         if (isScreenActive) {
           setStep(next);
@@ -170,18 +193,9 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
           return;
         }
 
-        try {
-          const token = await storageService.getToken();
-          hadStoredToken = Boolean(token);
-          if (token) {
-            const { ok } = await AuthService.refreshBackendSessionFromStoredCredentials();
-            if (ok) {
-              shouldAuthenticate = true;
-            }
-          }
-        } catch (error) {
-          logger.error('[LoadingScreen] Erro ao renovar token', error);
-        }
+        const tokenResult = await tokenRefreshPromise;
+        hadStoredToken = tokenResult.hadStoredToken;
+        shouldAuthenticate = tokenResult.shouldAuthenticate;
       } catch (error) {
         logger.error('[LoadingScreen] Falha no fluxo inicial (animacao ou bootstrap)', error);
       }
@@ -286,7 +300,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
             ]}
           >
             {GRADIENT_SOURCES.map((source, index) => {
-              const asset = Image.resolveAssetSource(source);
+              const asset = RNImage.resolveAssetSource(source);
               const scale = asset.width ? GRADIENT_STRIP_WIDTH / asset.width : 1;
               const heightScaled =
                 gradientHeights[index] ?? (asset.height ? asset.height * scale : GRADIENT_STRIP_HEIGHT);
@@ -294,7 +308,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
                 width: GRADIENT_STRIP_WIDTH,
                 height: heightScaled,
               };
-              return <AnimatedImage key={index} source={source} style={combinedStyle} resizeMode='cover' />;
+              return <AnimatedImage key={index} source={source} style={combinedStyle} contentFit='cover' />;
             })}
           </Animated.View>
         </View>
