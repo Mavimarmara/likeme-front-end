@@ -15,7 +15,7 @@ export const ROUTES_SHOW_MENU = new Set<string>([
   'AffiliateProduct',
   'ProviderProfile',
   'Cart',
-  'CommunityPreview',
+  'AcquisitionList',
   'Profile',
   CHAT_STACK_LIST_ROUTE,
 ]);
@@ -35,8 +35,8 @@ export const ROUTE_TO_SELECTED_ID: Record<string, string> = {
   AffiliateProduct: 'marketplace',
   Cart: 'marketplace',
   Checkout: 'marketplace',
-  CommunityPreview: 'marketplace',
   ProviderProfile: 'marketplace',
+  AcquisitionList: 'profile',
   Profile: 'profile',
 };
 

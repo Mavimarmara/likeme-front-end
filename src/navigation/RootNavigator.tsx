@@ -33,9 +33,9 @@ import {
   getAffiliateProductScreen,
   getCartScreen,
   getCheckoutScreen,
-  getCommunityPreviewScreen,
   getProviderProfileScreen,
   getProfileScreen,
+  getAcquisitionListScreen,
   getPrivacyPoliciesScreen,
   getHomeScreen,
   getSummaryScreen,
@@ -171,16 +171,16 @@ const RootNavigator: React.FC = () => {
               <Stack.Screen name='Cart' getComponent={getCartScreen} options={{ title: 'Carrinho' }} />
               <Stack.Screen name='Checkout' getComponent={getCheckoutScreen} options={{ title: 'Checkout' }} />
               <Stack.Screen
-                name='CommunityPreview'
-                getComponent={getCommunityPreviewScreen}
-                options={{ title: 'Community Preview' }}
-              />
-              <Stack.Screen
                 name='ProviderProfile'
                 getComponent={getProviderProfileScreen}
                 options={{ title: 'Provider Profile' }}
               />
               <Stack.Screen name='Profile' getComponent={getProfileScreen} options={{ title: 'Perfil' }} />
+              <Stack.Screen
+                name='AcquisitionList'
+                getComponent={getAcquisitionListScreen}
+                options={{ title: 'Meus Protocolos e Serviços' }}
+              />
               <Stack.Screen
                 name='PrivacyPolicies'
                 getComponent={getPrivacyPoliciesScreen}

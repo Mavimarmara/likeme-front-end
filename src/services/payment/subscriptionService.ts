@@ -49,6 +49,20 @@ export interface ProtocolAccessResponse {
   subscription: unknown | null;
 }
 
+export interface UserSubscriptionListItem {
+  id: string;
+  productId: string;
+  status: string;
+  nextBillingAt: string | null;
+  createdAt: string;
+  product: {
+    id: string;
+    name: string;
+    image: string | null;
+    type: string | null;
+  };
+}
+
 class SubscriptionService {
   async createProtocolSubscription(
     data: CreateProtocolSubscriptionRequest,
@@ -64,6 +78,10 @@ class SubscriptionService {
 
   async getSubscription(subscriptionId: string): Promise<ApiResponse<unknown>> {
     return apiClient.get<ApiResponse<unknown>>(`/api/payment/subscriptions/${encodeURIComponent(subscriptionId)}`);
+  }
+
+  async listUserSubscriptions(): Promise<ApiResponse<{ subscriptions: UserSubscriptionListItem[] }>> {
+    return apiClient.get<ApiResponse<{ subscriptions: UserSubscriptionListItem[] }>>('/api/payment/subscriptions');
   }
 }
 

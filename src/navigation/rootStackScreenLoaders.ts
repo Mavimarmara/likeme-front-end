@@ -64,12 +64,12 @@ export const getCartScreen = (): RootStackScreen =>
   asScreen(require('../screens/marketplace/CartScreen') as { default: RootStackScreen });
 export const getCheckoutScreen = (): RootStackScreen =>
   asScreen(require('../screens/marketplace/CheckoutScreen') as { default: RootStackScreen });
-export const getCommunityPreviewScreen = (): RootStackScreen =>
-  asScreen(require('../screens/marketplace/CommunityPreviewScreen') as { default: RootStackScreen });
 export const getProviderProfileScreen = (): RootStackScreen =>
   asScreen(require('../screens/marketplace/ProviderProfileScreen') as { default: RootStackScreen });
 export const getProfileScreen = (): RootStackScreen =>
   asScreen(require('../screens/profile/ProfileScreen') as { default: RootStackScreen });
+export const getAcquisitionListScreen = (): RootStackScreen =>
+  asScreen(require('../screens/profile/AcquisitionListScreen') as { default: RootStackScreen });
 export const getPrivacyPoliciesScreen = (): RootStackScreen =>
   asScreen(require('../screens/policies/PrivacyPoliciesScreen') as { default: RootStackScreen });
 export const getHomeScreen = (): RootStackScreen =>

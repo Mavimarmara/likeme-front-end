@@ -64,6 +64,7 @@ export type RootStackParamList = {
     };
   };
   Profile: undefined;
+  AcquisitionList: undefined;
   PrivacyPolicies: { userName?: string };
   Home: undefined;
   Summary: undefined;
@@ -78,10 +79,6 @@ export type RootStackParamList = {
   };
   Cart: undefined;
   Checkout: { zipCode?: string } | undefined;
-  CommunityPreview: {
-    productId: string;
-    productName?: string;
-  };
   ProviderProfile: {
     providerId: string;
     provider?: {
