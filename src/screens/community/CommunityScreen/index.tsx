@@ -306,18 +306,20 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     }
   }, [selectedMode, loadMore]);
 
+  const handlePostCardPress = useCallback(
+    (selectedPost: Post) => {
+      navigation.navigate('PostDetail' as never, { post: selectedPost } as never);
+    },
+    [navigation],
+  );
+
   const renderPostItem = useCallback<ListRenderItem<Post>>(
     ({ item }) => (
       <View style={styles.feedItemWrapper}>
-        <PostCard
-          post={item}
-          onPress={(selectedPost) => {
-            navigation.navigate('PostDetail' as never, { post: selectedPost } as never);
-          }}
-        />
+        <PostCard post={item} onPress={handlePostCardPress} />
       </View>
     ),
-    [navigation],
+    [handlePostCardPress],
   );
 
   const renderPostSeparator = useCallback(() => <View style={styles.feedItemSeparator} />, []);

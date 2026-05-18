@@ -371,11 +371,45 @@ const PostCardWithRepliesLikes: React.FC<Omit<Props, 'postEngagement'>> = (props
   return <PostCardView {...props} engagement={{ likeCount, isLiked, isLiking, togglePostLike }} />;
 };
 
-const PostCard: React.FC<Props> = (props) => {
+const PostCardInner: React.FC<Props> = (props) => {
   if (props.postEngagement) {
     return <PostCardView {...props} engagement={props.postEngagement} />;
   }
   return <PostCardWithRepliesLikes {...props} />;
 };
+
+/**
+ * Memoizado para evitar re-renders em cascata ao rolar a lista do feed na
+ * FlatList: enquanto o item do array `posts` mantém a mesma referencia (ou
+ * `post.id`/contadores nao mudam), o card nao re-renderiza.
+ *
+ * Atencao: a comparacao default e shallow; estabilize `onPress` /
+ * `onCommentsOpenChange` / `styles` no consumidor para preservar o ganho.
+ */
+const PostCard = React.memo(PostCardInner, (prev, next) => {
+  if (prev.post !== next.post) {
+    if (prev.post.id !== next.post.id) return false;
+    if (prev.post.likes !== next.post.likes) return false;
+    if (prev.post.isLiked !== next.post.isLiked) return false;
+    if (prev.post.commentsCount !== next.post.commentsCount) return false;
+    if (prev.post.comments?.length !== next.post.comments?.length) return false;
+    if (prev.post.image !== next.post.image) return false;
+    if (prev.post.videoUrl !== next.post.videoUrl) return false;
+    if (prev.post.userAvatar !== next.post.userAvatar) return false;
+    if (prev.post.userName !== next.post.userName) return false;
+  }
+  return (
+    prev.onPress === next.onPress &&
+    prev.category === next.category &&
+    prev.initialContentExpanded === next.initialContentExpanded &&
+    prev.initialCommentsOpen === next.initialCommentsOpen &&
+    prev.onCommentsOpenChange === next.onCommentsOpenChange &&
+    prev.styles === next.styles &&
+    prev.forceContentExpanded === next.forceContentExpanded &&
+    prev.postEngagement === next.postEngagement
+  );
+});
+
+PostCard.displayName = 'PostCard';
 
 export default PostCard;
