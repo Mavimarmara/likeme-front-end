@@ -6,6 +6,7 @@ import type {
   ListOrdersApiResponse,
   GetOrderApiResponse,
   CreateOrderData,
+  CreateOrderResponse,
   UpdateOrderData,
 } from '@/types/order';
 import type { ApiResponse } from '@/types/infrastructure';
@@ -13,9 +14,9 @@ import type { ApiResponse } from '@/types/infrastructure';
 class OrderService {
   private readonly ordersEndpoint = '/api/orders';
 
-  async createOrder(data: CreateOrderData): Promise<ApiResponse<Order>> {
+  async createOrder(data: CreateOrderData): Promise<ApiResponse<CreateOrderResponse>> {
     try {
-      const response = await apiClient.post<ApiResponse<Order>>(this.ordersEndpoint, data, true);
+      const response = await apiClient.post<ApiResponse<CreateOrderResponse>>(this.ordersEndpoint, data, true);
 
       logger.debug('Order created:', {
         orderId: response.data?.id,

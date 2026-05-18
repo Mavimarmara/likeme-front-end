@@ -60,6 +60,22 @@ export interface CardData {
   phone?: string; // Telefone do cliente (opcional, backend busca automaticamente se não fornecido)
 }
 
+export type SubscriptionBillingPeriod =
+  | 'WEEKLY'
+  | 'BIWEEKLY'
+  | 'MONTHLY'
+  | 'BIMONTHLY'
+  | 'QUARTERLY'
+  | 'SEMIANNUAL'
+  | 'YEARLY';
+
+export interface SubscriptionEnrollmentSummary {
+  orderId: string;
+  subscriptionId: string;
+  productId: string;
+  billingId: string;
+}
+
 export interface CreateOrderData {
   items: CreateOrderItem[];
   status?: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
@@ -70,8 +86,13 @@ export interface CreateOrderData {
   cardData?: CardData; // Obrigatório quando paymentMethod é 'credit_card'
   notes?: string;
   paymentMethod?: string;
-  // paymentStatus sempre será 'pending' ao criar - definido no backend
+  /** Periodicidade da assinatura quando o carrinho contém protocolos. */
+  billingPeriod?: SubscriptionBillingPeriod;
   trackingNumber?: string;
+}
+
+export interface CreateOrderResponse extends Order {
+  subscriptionEnrollments?: SubscriptionEnrollmentSummary[];
 }
 
 export interface UpdateOrderData {

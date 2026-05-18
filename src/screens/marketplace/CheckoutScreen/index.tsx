@@ -7,7 +7,7 @@ import { storageService, orderService, userService } from '@/services';
 import { getShippingQuote } from '@/services/shipping/shippingService';
 import { formatZipCodeDisplay } from '@/services/address/cepService';
 import { formatPrice, formatAddress, formatBillingAddress } from '@/utils';
-import { catalogTypeTranslatedBadgeLabels } from '@/types/product';
+import { catalogTypeTranslatedBadgeLabels, PRODUCT_CATALOG_TYPE } from '@/types/product';
 import { useTranslation, usePayment, useCartShippingPolicy } from '@/hooks';
 import { logger } from '@/utils/logger';
 import { styles } from './styles';
@@ -55,6 +55,10 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
   const isShippingDisabled = shippingRequired === false;
   const effectiveShipping = isShippingDisabled ? 0 : shipping;
   const productIds = useMemo(() => cartItems.map((item) => item.id).filter(Boolean), [cartItems]);
+  const cartHasProgram = useMemo(
+    () => cartItems.some((item) => item.type === PRODUCT_CATALOG_TYPE.PROGRAM),
+    [cartItems],
+  );
 
   const effectiveDeliveryAddress = deliverySameAsBilling ? billingAddressData : addressData;
   const deliveryZipCode = (effectiveDeliveryAddress.zipCode || '').replace(/\D/g, '');
@@ -217,6 +221,10 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
           return;
         }
         orderData.cardData = cardDataObj;
+      }
+
+      if (cartHasProgram) {
+        orderData.billingPeriod = 'MONTHLY';
       }
 
       logger.debug('Dados do pedido completos:', orderData);
