@@ -81,7 +81,6 @@ export const styles = StyleSheet.create({
     paddingVertical: SPACING.LG,
   },
   section: {
-    paddingHorizontal: SPACING.MD,
     marginBottom: SPACING.XL,
   },
   sectionHeader: {
