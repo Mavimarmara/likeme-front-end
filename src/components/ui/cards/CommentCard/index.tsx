@@ -133,9 +133,17 @@ const CommentCard: React.FC<Props> = ({
         <View style={styles.imageColumn}>
           {comment.author.avatar ? (
             isAvatarUri ? (
-              <CachedImage source={{ uri: comment.author.avatar as string }} style={styles.avatar} />
+              <CachedImage
+                source={{ uri: comment.author.avatar as string }}
+                style={styles.avatar}
+                recyclingKey={`comment-${comment.id}-avatar`}
+              />
             ) : (
-              <CachedImage source={comment.author.avatar as ImageSourcePropType} style={styles.avatar} />
+              <CachedImage
+                source={comment.author.avatar as ImageSourcePropType}
+                style={styles.avatar}
+                recyclingKey={`comment-${comment.id}-avatar`}
+              />
             )
           ) : (
             <View style={styles.avatarPlaceholder}>

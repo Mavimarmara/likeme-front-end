@@ -22,7 +22,11 @@ const EventCard: React.FC<Props> = ({ event, onPress, onSave }) => {
         {visibleParticipants.map((participant, index) => (
           <View key={participant.id} style={[styles.avatarWrapper, index > 0 && styles.avatarOverlap]}>
             {participant.avatar ? (
-              <CachedImage source={{ uri: participant.avatar }} style={styles.avatar} />
+              <CachedImage
+                source={{ uri: participant.avatar }}
+                style={styles.avatar}
+                recyclingKey={`event-${event.id}-participant-${participant.id}`}
+              />
             ) : (
               <View style={[styles.avatar, styles.avatarPlaceholder]}>
                 <Text style={styles.avatarInitial}>{participant.name?.charAt(0).toUpperCase() || 'A'}</Text>

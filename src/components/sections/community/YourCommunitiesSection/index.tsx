@@ -83,7 +83,11 @@ const YourCommunitiesSection: React.FC<Props> = ({ community, onCommunityPress, 
               >
                 <View style={styles.postHeader}>
                   {post.userAvatar ? (
-                    <CachedImage source={{ uri: post.userAvatar }} style={styles.postAvatar} />
+                    <CachedImage
+                      source={{ uri: post.userAvatar }}
+                      style={styles.postAvatar}
+                      recyclingKey={`post-${post.id}-avatar`}
+                    />
                   ) : (
                     <View style={styles.postAvatarPlaceholder}>
                       <Icon name='person' size={12} color='#6e6a6a' />
@@ -105,7 +109,11 @@ const YourCommunitiesSection: React.FC<Props> = ({ community, onCommunityPress, 
                 {(post.image || post.videoUrl) && (
                   <View style={styles.postMediaWrap}>
                     {post.image ? (
-                      <CachedImage source={{ uri: post.image }} style={styles.postMedia} />
+                      <CachedImage
+                        source={{ uri: post.image }}
+                        style={styles.postMedia}
+                        recyclingKey={`post-${post.id}-media`}
+                      />
                     ) : (
                       <View style={[styles.postMedia, styles.postMediaVideoFallback]} />
                     )}

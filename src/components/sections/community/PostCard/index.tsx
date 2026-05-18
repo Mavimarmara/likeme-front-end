@@ -157,7 +157,11 @@ const PostCardView: React.FC<ViewProps> = ({
         <View>
           <View style={cardStyles.authorSection}>
             {post.userAvatar ? (
-              <CachedImage source={{ uri: post.userAvatar }} style={cardStyles.avatar} />
+              <CachedImage
+                source={{ uri: post.userAvatar }}
+                style={cardStyles.avatar}
+                recyclingKey={`post-${post.id}-avatar`}
+              />
             ) : (
               <View style={cardStyles.avatarPlaceholder}>
                 <Icon name='person' size={12} color={COLORS.TEXT_LIGHT} />
@@ -236,6 +240,7 @@ const PostCardView: React.FC<ViewProps> = ({
                           accessibilityLabel='Imagem do post'
                           source={{ uri: imageUri }}
                           style={forceContentExpanded ? cardStyles.mediaImageExpanded : cardStyles.mediaImage}
+                          recyclingKey={`post-${post.id}-media`}
                           onError={onPostImageError}
                         />
                       ) : (
@@ -262,6 +267,7 @@ const PostCardView: React.FC<ViewProps> = ({
                   accessibilityLabel='Imagem do post'
                   source={{ uri: imageUri }}
                   style={forceContentExpanded ? cardStyles.mediaImageExpanded : cardStyles.mediaImage}
+                  recyclingKey={`post-${post.id}-media`}
                   onError={onPostImageError}
                 />
               ) : null}
