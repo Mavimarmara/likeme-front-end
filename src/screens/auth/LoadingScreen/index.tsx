@@ -101,6 +101,28 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
           ? fetchAppReleasePolicy(installedVersionForPolicy)
           : Promise.resolve({ policy: null, serverMustUpdate: null, serverRecommendUpdate: null });
       void startI18nHydration('pt-BR');
+
+      // Token refresh tambem entra no bootstrap paralelo: ate aqui a gente so
+      // disparava apos a release policy responder (sequencial). Disparamos em
+      // paralelo e so consumimos o resultado depois da policy autorizar.
+      // Atencao: hadStoredToken precisa refletir o "havia token salvo antes
+      // do refresh", mesmo se o refresh em si falhar — e isso que dispara o
+      // cleanup de token no fluxo de bootstrap.
+      const tokenRefreshPromise: Promise<{ hadStoredToken: boolean; shouldAuthenticate: boolean }> = (async () => {
+        let hadStoredTokenLocal = false;
+        try {
+          const token = await storageService.getToken();
+          hadStoredTokenLocal = Boolean(token);
+          if (!token) {
+            return { hadStoredToken: false, shouldAuthenticate: false };
+          }
+          const { ok } = await AuthService.refreshBackendSessionFromStoredCredentials();
+          return { hadStoredToken: true, shouldAuthenticate: ok };
+        } catch (error) {
+          logger.error('[LoadingScreen] Erro ao renovar token', error);
+          return { hadStoredToken: hadStoredTokenLocal, shouldAuthenticate: false };
+        }
+      })();
       const safeSetStep = (next: number) => {
         if (isScreenActive) {
           setStep(next);
@@ -171,18 +193,9 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
           return;
         }
 
-        try {
-          const token = await storageService.getToken();
-          hadStoredToken = Boolean(token);
-          if (token) {
-            const { ok } = await AuthService.refreshBackendSessionFromStoredCredentials();
-            if (ok) {
-              shouldAuthenticate = true;
-            }
-          }
-        } catch (error) {
-          logger.error('[LoadingScreen] Erro ao renovar token', error);
-        }
+        const tokenResult = await tokenRefreshPromise;
+        hadStoredToken = tokenResult.hadStoredToken;
+        shouldAuthenticate = tokenResult.shouldAuthenticate;
       } catch (error) {
         logger.error('[LoadingScreen] Falha no fluxo inicial (animacao ou bootstrap)', error);
       }
