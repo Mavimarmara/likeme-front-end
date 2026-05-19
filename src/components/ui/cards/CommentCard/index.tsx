@@ -6,6 +6,8 @@ import { styles } from './styles';
 import communityService from '@/services/community/communityService';
 import { logger } from '@/utils/logger';
 import { personNameLabel } from '@/utils/user/personNameLabel';
+import { useTranslation } from '@/hooks/i18n/useTranslation';
+import { commentCreatedAtLabel } from '@/utils/community/commentCreatedAtLabel';
 
 type Comment = {
   id: string;
@@ -47,6 +49,7 @@ const CommentCard: React.FC<Props> = ({
   onToggleReplies,
   level = 0,
 }) => {
+  const { t, currentLanguage } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(true);
   const [isContentExpanded, setIsContentExpanded] = useState(false);
   const hasReplies = comment.replies && comment.replies.length > 0;
@@ -101,26 +104,18 @@ const CommentCard: React.FC<Props> = ({
     onToggleReplies?.();
   };
 
-  const formatRelativeTime = (iso: string): string => {
-    const created = new Date(iso);
-    const diffMs = Date.now() - created.getTime();
-    if (Number.isNaN(diffMs) || diffMs < 0) return '';
-
-    const totalMinutes = Math.floor(diffMs / (1000 * 60));
-    if (totalMinutes < 60) return `${Math.max(totalMinutes, 1)} min`;
-
-    const totalHours = Math.floor(totalMinutes / 60);
-    if (totalHours < 24) return `${Math.max(totalHours, 1)}h`;
-
-    return '';
-  };
-
   const shouldTruncate = comment.content.length > CONTENT_COLLAPSED_LIMIT;
   const collapsedContent = comment.content.substring(0, CONTENT_COLLAPSED_LIMIT).trim();
   const displayedContent = isContentExpanded || !shouldTruncate ? comment.content : collapsedContent;
 
   return (
-    <View style={[styles.container, level > 0 && styles.replyContainer]}>
+    <View
+      style={[
+        styles.container,
+        level > 0 && styles.replyContainer,
+        level === 0 && hasReplies && styles.containerWithReplies,
+      ]}
+    >
       <View style={styles.bodyRow}>
         <View style={styles.imageColumn}>
           {comment.author.avatar ? (
@@ -176,10 +171,12 @@ const CommentCard: React.FC<Props> = ({
           </Text>
 
           <View style={styles.footerRow}>
-            <Text style={styles.timeText}>{formatRelativeTime(comment.createdAt)}</Text>
+            <Text style={styles.timeText}>{commentCreatedAtLabel(comment.createdAt, currentLanguage)}</Text>
             {hasReplies ? (
               <TouchableOpacity style={styles.hideButton} onPress={handleToggleReplies} activeOpacity={0.7}>
-                <Text style={styles.hideText}>{isExpanded ? 'hide' : 'show'}</Text>
+                <Text style={styles.hideText}>
+                  {isExpanded ? t('community.hideReplies') : t('community.showReplies')}
+                </Text>
               </TouchableOpacity>
             ) : null}
           </View>

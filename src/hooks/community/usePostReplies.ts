@@ -4,6 +4,13 @@ import { communityService } from '@/services';
 import { logger } from '@/utils/logger';
 import { useUser } from '@/hooks/user/useUser';
 import { personNameLabel } from '@/utils/user/personNameLabel';
+import {
+  commentAuthorIds,
+  commentAuthorLabelFromPayload,
+  communityUserAvatarUrl,
+  communityUserMatchingComment,
+} from '@/utils/community/commentAuthorFromPayload';
+import { parseCommentCreatedAt } from '@/utils/community/commentCreatedAtLabel';
 
 export type PostLikeEngagement = {
   likeCount: number;
@@ -141,8 +148,8 @@ export const usePostReplies = ({
 
         const rootComments = Array.isArray(data?.comments) ? data.comments : [];
         const childComments = Array.isArray(data?.commentChildren) ? data.commentChildren : [];
-        // `communityUsers` é relação de membership e não necessariamente contém `displayName`/`avatar`.
-        // Para renderizar nome e foto, preferimos `users`.
+        const communityUsers = Array.isArray(data?.users) ? data.users : [];
+        const communityFiles = Array.isArray(data?.files) ? data.files : [];
         const computeUpvotes = (reactions: Record<string, number> | undefined): number => {
           if (!reactions) return 0;
           return (reactions.like ?? 0) + (reactions.upvote ?? 0) + (reactions['👍'] ?? 0);
@@ -160,19 +167,50 @@ export const usePostReplies = ({
           return undefined;
         };
 
+        const registerCommentNode = (
+          nodesById: Map<string, PostReplyCardComment>,
+          node: PostReplyCardComment,
+          remoteComment: Record<string, unknown>,
+        ) => {
+          nodesById.set(String(node.id), node);
+          const commentId = remoteComment.commentId;
+          const privateId = remoteComment._id;
+          if (typeof commentId === 'string' && commentId.trim()) {
+            nodesById.set(commentId.trim(), node);
+          }
+          if (typeof privateId === 'string' && privateId.trim()) {
+            nodesById.set(privateId.trim(), node);
+          }
+        };
+
         const buildNode = async (remoteComment: any, postIdValue: string): Promise<PostReplyCardComment> => {
           const commentId = remoteComment?.commentId ?? remoteComment?._id;
-          const userId = remoteComment?.userId ?? remoteComment?.userPublicId ?? remoteComment?.userInternalId ?? '';
-          const publicUser = userId ? await getPublicUser(userId) : { name: 'Usuário', username: null, avatar: null };
-          const rawAuthorName =
-            publicUser.name.trim() && publicUser.name !== 'Usuário'
-              ? publicUser.name
-              : publicUser.username?.trim() || 'Usuário';
-          const authorName = personNameLabel(rawAuthorName);
+          const authorIds = commentAuthorIds(remoteComment ?? {});
+          const primaryUserId = authorIds[0] ?? '';
+          const bundledUser = communityUserMatchingComment(remoteComment ?? {}, communityUsers);
 
-          const createdAtIso = remoteComment?.createdAt
-            ? new Date(remoteComment.createdAt).toISOString()
-            : new Date().toISOString();
+          let authorName = commentAuthorLabelFromPayload(remoteComment ?? {}, communityUsers, primaryUserId);
+          let avatar = communityUserAvatarUrl(bundledUser, communityFiles);
+
+          const needsPublicLookup =
+            !bundledUser || authorName === 'Usuário' || authorName.startsWith('User ') || !avatar;
+
+          if (needsPublicLookup && primaryUserId) {
+            const publicUser = await getPublicUser(primaryUserId);
+            if (authorName === 'Usuário' || authorName.startsWith('User ')) {
+              const rawAuthorName =
+                publicUser.name.trim() && publicUser.name !== 'Usuário'
+                  ? publicUser.name
+                  : publicUser.username?.trim() || authorName;
+              authorName = personNameLabel(rawAuthorName);
+            }
+            if (!avatar && publicUser.avatar) {
+              avatar = publicUser.avatar;
+            }
+          }
+
+          const parsedCreatedAt = parseCommentCreatedAt(remoteComment?.createdAt);
+          const createdAtIso = parsedCreatedAt ? parsedCreatedAt.toISOString() : new Date().toISOString();
 
           const content =
             remoteComment?.data?.text ?? (typeof remoteComment?.data === 'string' ? remoteComment.data : '') ?? '';
@@ -187,9 +225,9 @@ export const usePostReplies = ({
             id: String(commentId),
             postId: postIdValue,
             author: {
-              id: userId,
+              id: primaryUserId,
               name: authorName,
-              avatar: publicUser.avatar ?? undefined,
+              avatar,
             },
             content,
             upvotes,
@@ -210,13 +248,14 @@ export const usePostReplies = ({
         );
 
         const nodesById = new Map<string, PostReplyCardComment>();
-        [...rootNodes, ...childrenNodes].forEach((n) => nodesById.set(String(n.id), n));
+        rootNodes.forEach((node, idx) => registerCommentNode(nodesById, node, rootComments[idx] ?? {}));
+        childrenNodes.forEach((node, idx) => registerCommentNode(nodesById, node, childComments[idx] ?? {}));
 
         const orphans: PostReplyCardComment[] = [];
-        childrenNodes.forEach((child: any, idx: number) => {
+        childrenNodes.forEach((child, idx) => {
           const original = childComments[idx];
           const parentId = original?.parentId;
-          const parent = nodesById.get(String(parentId));
+          const parent = parentId ? nodesById.get(String(parentId)) : undefined;
           if (!parentId || !parent) {
             orphans.push(child);
             return;

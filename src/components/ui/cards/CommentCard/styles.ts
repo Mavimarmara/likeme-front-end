@@ -9,7 +9,13 @@ export const styles = StyleSheet.create({
   },
   replyContainer: {
     marginLeft: SPACING.LG,
-    marginTop: SPACING.SM,
+    marginTop: SPACING.XS,
+    marginBottom: SPACING.XS,
+    paddingVertical: SPACING.XS,
+  },
+  containerWithReplies: {
+    marginBottom: SPACING.SM,
+    paddingBottom: SPACING.SM,
   },
   avatar: {
     width: 26,
@@ -99,7 +105,7 @@ export const styles = StyleSheet.create({
     letterSpacing: 0.1,
   },
   repliesContainer: {
-    marginTop: SPACING.SM,
+    marginTop: SPACING.XS,
     width: '100%',
   },
 });
