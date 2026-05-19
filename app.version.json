@@ -1,9 +1,26 @@
 {
-  "version": "1.3.2",
+  "version": "1.4.0",
+  "releasedAt": "2026-05-19",
   "android": {
-    "versionCode": 4
+    "versionCode": 5
   },
   "ios": {
-    "buildNumber": 9
+    "buildNumber": 10
+  },
+  "changelog": {
+    "added": [
+      "Label \"Recomendado por\" e parceiro em detalhes de produto e produto afiliado",
+      "Tela de aquisições no perfil (AcquisitionListScreen)",
+      "Assinatura de protocolo no checkout com billingPeriod mensal",
+      "Cliente HTTP para assinatura de protocolo e verificação de acesso"
+    ],
+    "changed": [
+      "Remoção do CommunityPreview do fluxo de perfil"
+    ],
+    "fixed": [
+      "Comentários e respostas: autor, data relativa, expandir e layout sem duplicação de nome",
+      "Preservação da capitalização do displayName vindo do payload",
+      "ReplyInput fixo no PostDetail com suporte acima do dock inferior"
+    ]
   }
 }

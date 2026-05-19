@@ -1,6 +1,6 @@
 {
   "name": "likeme-front-end",
-  "version": "1.3.2",
+  "version": "1.4.0",
   "description": "React Native app for health and wellness",
   "main": "index.js",
   "scripts": {
@@ -35,6 +35,7 @@
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md}\"",
     "doctor": "npx expo-doctor",
     "version:sync": "node scripts/sync-app-version.cjs",
+    "version:check": "node scripts/sync-app-version.cjs --check",
     "assert:ios-apple-signin": "node scripts/assert-ios-apple-signin.cjs",
     "native:prebuild": "npm run version:sync && expo prebuild",
     "native:prebuild:clean": "npm run version:sync && expo prebuild --clean",
@@ -160,6 +161,10 @@
     ]
   },
   "lint-staged": {
+    "app.version.json": [
+      "node scripts/sync-app-version.cjs",
+      "node scripts/stage-app-version-sync-outputs.cjs"
+    ],
     "*.{js,jsx,ts,tsx}": [
       "eslint --fix --no-error-on-unmatched-pattern",
       "prettier --write"
