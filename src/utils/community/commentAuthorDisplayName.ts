@@ -18,7 +18,7 @@ export function resolveCommentAuthorDisplayName(
     }
     const display = trimString(user.displayName);
     if (display.length > 0) {
-      return personNameLabel(display);
+      return display;
     }
   }
   if (fallbackUserId) {
