@@ -3,6 +3,7 @@ import type { Post } from '@/types';
 import { communityService } from '@/services';
 import { logger } from '@/utils/logger';
 import { useUser } from '@/hooks/user/useUser';
+import { personNameLabel } from '@/utils/user/personNameLabel';
 
 export type PostLikeEngagement = {
   likeCount: number;
@@ -163,6 +164,11 @@ export const usePostReplies = ({
           const commentId = remoteComment?.commentId ?? remoteComment?._id;
           const userId = remoteComment?.userId ?? remoteComment?.userPublicId ?? remoteComment?.userInternalId ?? '';
           const publicUser = userId ? await getPublicUser(userId) : { name: 'Usuário', username: null, avatar: null };
+          const rawAuthorName =
+            publicUser.name.trim() && publicUser.name !== 'Usuário'
+              ? publicUser.name
+              : publicUser.username?.trim() || 'Usuário';
+          const authorName = personNameLabel(rawAuthorName);
 
           const createdAtIso = remoteComment?.createdAt
             ? new Date(remoteComment.createdAt).toISOString()
@@ -182,7 +188,7 @@ export const usePostReplies = ({
             postId: postIdValue,
             author: {
               id: userId,
-              name: publicUser.name,
+              name: authorName,
               avatar: publicUser.avatar ?? undefined,
             },
             content,

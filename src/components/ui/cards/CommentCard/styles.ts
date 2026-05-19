@@ -15,7 +15,6 @@ export const styles = StyleSheet.create({
     width: 26,
     height: 26,
     borderRadius: 13,
-    marginRight: 0,
   },
   avatarPlaceholder: {
     width: 26,
@@ -24,7 +23,6 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.BACKGROUND,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 0,
   },
   bodyRow: {
     flexDirection: 'row',
@@ -36,25 +34,22 @@ export const styles = StyleSheet.create({
   },
   contentColumn: {
     flex: 1,
+    minWidth: 0,
   },
-  metaColumn: {
-    width: 110,
-    alignItems: 'flex-end',
-    alignSelf: 'stretch',
-    justifyContent: 'flex-end',
-  },
-  metaTopRow: {
+  headerRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    gap: SPACING.XS,
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    gap: SPACING.SM,
+    marginBottom: SPACING.XS,
   },
   authorName: {
+    flex: 1,
     fontSize: 12,
-    fontWeight: '500',
+    fontWeight: '600',
     color: '#6E6A6A',
     letterSpacing: 0.2,
-    lineHeight: 22,
+    lineHeight: 16,
   },
   content: {
     fontSize: 14,
@@ -62,36 +57,40 @@ export const styles = StyleSheet.create({
     color: '#6E6A6A',
     lineHeight: 20,
     letterSpacing: 0.2,
-    marginBottom: SPACING.SM,
-    paddingLeft: 0,
+    marginBottom: SPACING.XS,
   },
   verMore: {
     fontSize: 14,
     fontWeight: '600',
     color: '#001137',
   },
+  footerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.MD,
+  },
   timeText: {
     fontSize: 12,
     fontWeight: '500',
     color: '#6E6A6A',
     letterSpacing: 0.2,
-    lineHeight: 20,
+    lineHeight: 16,
   },
   likeBubble: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    justifyContent: 'flex-end',
+    flexShrink: 0,
   },
   likeCount: {
     fontSize: 10,
     fontWeight: '400',
     color: '#0154f8',
     letterSpacing: 0.2,
-    lineHeight: 20,
+    lineHeight: 14,
   },
   hideButton: {
-    marginTop: SPACING.XS,
+    paddingVertical: 0,
   },
   hideText: {
     fontSize: 11,
@@ -101,5 +100,6 @@ export const styles = StyleSheet.create({
   },
   repliesContainer: {
     marginTop: SPACING.SM,
+    width: '100%',
   },
 });

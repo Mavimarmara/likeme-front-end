@@ -5,6 +5,7 @@ import { CachedImage } from '@/components/ui/media/CachedImage';
 import { styles } from './styles';
 import communityService from '@/services/community/communityService';
 import { logger } from '@/utils/logger';
+import { personNameLabel } from '@/utils/user/personNameLabel';
 
 type Comment = {
   id: string;
@@ -34,6 +35,8 @@ type Props = {
   onToggleReplies?: () => void;
   level?: number;
 };
+
+const CONTENT_COLLAPSED_LIMIT = 120;
 
 const CommentCard: React.FC<Props> = ({
   comment,
@@ -95,16 +98,7 @@ const CommentCard: React.FC<Props> = ({
 
   const handleToggleReplies = () => {
     setIsExpanded(!isExpanded);
-    if (onToggleReplies) {
-      onToggleReplies();
-    }
-  };
-
-  const capitalizeWords = (text: string): string => {
-    return text
-      .split(' ')
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(' ');
+    onToggleReplies?.();
   };
 
   const formatRelativeTime = (iso: string): string => {
@@ -121,7 +115,6 @@ const CommentCard: React.FC<Props> = ({
     return '';
   };
 
-  const CONTENT_COLLAPSED_LIMIT = 120;
   const shouldTruncate = comment.content.length > CONTENT_COLLAPSED_LIMIT;
   const collapsedContent = comment.content.substring(0, CONTENT_COLLAPSED_LIMIT).trim();
   const displayedContent = isContentExpanded || !shouldTruncate ? comment.content : collapsedContent;
@@ -129,7 +122,6 @@ const CommentCard: React.FC<Props> = ({
   return (
     <View style={[styles.container, level > 0 && styles.replyContainer]}>
       <View style={styles.bodyRow}>
-        {/* Coluna 1: imagem/avatar */}
         <View style={styles.imageColumn}>
           {comment.author.avatar ? (
             isAvatarUri ? (
@@ -152,9 +144,24 @@ const CommentCard: React.FC<Props> = ({
           )}
         </View>
 
-        {/* Coluna 2: conteúdo */}
         <View style={styles.contentColumn}>
-          <Text style={styles.authorName}>{capitalizeWords(comment.author.name)}</Text>
+          <View style={styles.headerRow}>
+            <Text style={styles.authorName} numberOfLines={2}>
+              {personNameLabel(comment.author.name)}
+            </Text>
+
+            <TouchableOpacity
+              style={styles.likeBubble}
+              onPress={handleUpvotePress}
+              activeOpacity={0.7}
+              disabled={reactionLoading}
+              accessibilityRole='button'
+              accessibilityLabel='Curtir'
+            >
+              <Icon name={currentReaction === 'like' ? 'thumb-up' : 'thumb-up-off-alt'} size={18} color='#0154f8' />
+              <Text style={styles.likeCount}>{upvotes}</Text>
+            </TouchableOpacity>
+          </View>
 
           <Text style={styles.content}>
             {displayedContent}
@@ -168,46 +175,32 @@ const CommentCard: React.FC<Props> = ({
             )}
           </Text>
 
-          <Text style={styles.timeText}>{formatRelativeTime(comment.createdAt)}</Text>
-        </View>
-
-        {/* Coluna 3: replies */}
-        <View style={styles.metaColumn}>
-          <TouchableOpacity
-            style={styles.likeBubble}
-            onPress={handleUpvotePress}
-            activeOpacity={0.7}
-            disabled={reactionLoading}
-            accessibilityRole='button'
-            accessibilityLabel='Curtir'
-          >
-            <Icon name={currentReaction === 'like' ? 'thumb-up' : 'thumb-up-off-alt'} size={18} color='#0154f8' />
-            <Text style={styles.likeCount}>{upvotes}</Text>
-          </TouchableOpacity>
-
-          {hasReplies && (
-            <TouchableOpacity style={styles.hideButton} onPress={handleToggleReplies} activeOpacity={0.7}>
-              <Text style={styles.hideText}>{isExpanded ? 'hide' : 'show'}</Text>
-            </TouchableOpacity>
-          )}
-
-          {hasReplies && isExpanded && showReplies && (
-            <View style={styles.repliesContainer}>
-              {comment.replies?.map((reply) => (
-                <CommentCard
-                  key={reply.id}
-                  comment={reply}
-                  onReply={onReply}
-                  onUpvote={onUpvote}
-                  onDownvote={_onDownvote}
-                  showReplies={showReplies}
-                  level={level + 1}
-                />
-              ))}
-            </View>
-          )}
+          <View style={styles.footerRow}>
+            <Text style={styles.timeText}>{formatRelativeTime(comment.createdAt)}</Text>
+            {hasReplies ? (
+              <TouchableOpacity style={styles.hideButton} onPress={handleToggleReplies} activeOpacity={0.7}>
+                <Text style={styles.hideText}>{isExpanded ? 'hide' : 'show'}</Text>
+              </TouchableOpacity>
+            ) : null}
+          </View>
         </View>
       </View>
+
+      {hasReplies && isExpanded && showReplies ? (
+        <View style={styles.repliesContainer}>
+          {comment.replies?.map((reply) => (
+            <CommentCard
+              key={reply.id}
+              comment={reply}
+              onReply={onReply}
+              onUpvote={onUpvote}
+              onDownvote={_onDownvote}
+              showReplies={showReplies}
+              level={level + 1}
+            />
+          ))}
+        </View>
+      ) : null}
     </View>
   );
 };
