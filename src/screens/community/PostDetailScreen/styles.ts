@@ -1,7 +1,29 @@
 import { StyleSheet } from 'react-native';
-import { COLORS, SPACING, FONT_SIZES } from '@/constants';
+import { COLORS, SPACING } from '@/constants';
 
 export const styles = StyleSheet.create({
+  screenRoot: {
+    flex: 1,
+  },
+  screenContent: {
+    flex: 1,
+    paddingBottom: 0,
+  },
+  composerOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 100,
+    elevation: 100,
+  },
+  composerDock: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    paddingHorizontal: 12,
+    paddingVertical: SPACING.SM,
+    backgroundColor: COLORS.PRIMARY.LIGHT,
+    overflow: 'hidden',
+  },
   gradientBackground: {
     ...StyleSheet.absoluteFillObject,
     zIndex: 0,
@@ -62,37 +84,5 @@ export const styles = StyleSheet.create({
     fontWeight: '400',
     color: COLORS.TEXT,
     lineHeight: 26,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.LG,
-    paddingVertical: SPACING.LG,
-    gap: SPACING.SM,
-    backgroundColor: COLORS.PRIMARY.LIGHT,
-  },
-  textInputWrapper: {
-    flex: 1,
-    backgroundColor: COLORS.NEUTRAL.LOW.PURE,
-    borderRadius: 18,
-    paddingHorizontal: SPACING.MD,
-    paddingVertical: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  textInputWrapperDisabled: {
-    backgroundColor: COLORS.NEUTRAL.LOW.MEDIUM,
-  },
-  textInput: {
-    flex: 1,
-    fontSize: FONT_SIZES.SM,
-    fontFamily: 'DM Sans',
-    fontWeight: '400',
-    color: COLORS.SECONDARY.LIGHT,
-    letterSpacing: 0.2,
-    padding: 0,
   },
 });

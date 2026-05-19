@@ -8,6 +8,7 @@ import { useFeatureFlag } from '@/hooks';
 import { useIsFloatingMenuVisible } from '@/contexts/FloatingMenuContext';
 import { SUPPORT_CONFIG } from '@/config/environment';
 import { getFocusedRouteNameFromNavState, getRootRouteName } from '@/utils/floatingMenuRoutePolicy';
+import { supportFloatingBottomOffset } from '@/utils/layout/supportFloatingBottomOffset';
 import { buildWhatsAppWaMeUrl } from '@/utils/messaging/buildWhatsAppWaMeUrl';
 import { logger } from '@/utils/logger';
 import { styles } from './styles';
@@ -15,10 +16,6 @@ import { styles } from './styles';
 const SUPPORT_ICON_SIZE = 16;
 const SUPPORT_ACCESSIBILITY_LABEL = 'Abrir suporte';
 const SUPPORT_LABEL = 'Suporte';
-const SUPPORT_BUTTON_DEFAULT_BOTTOM_OFFSET = 20;
-const FLOATING_MENU_HEIGHT = 64;
-const SUPPORT_BUTTON_MENU_GAP = 15;
-
 function buildSupportWhatsappUrl(): string {
   return buildWhatsAppWaMeUrl({
     fullUrl: SUPPORT_CONFIG.whatsappUrl,
@@ -40,13 +37,10 @@ const SupportFloatingButton: React.FC = () => {
     [focusedRouteName, rootRouteName],
   );
 
-  const bottomOffset = useMemo(() => {
-    if (isFloatingMenuVisible) {
-      return FLOATING_MENU_HEIGHT + SUPPORT_BUTTON_MENU_GAP;
-    }
-
-    return insets.bottom + SUPPORT_BUTTON_DEFAULT_BOTTOM_OFFSET;
-  }, [insets.bottom, isFloatingMenuVisible]);
+  const bottomOffset = useMemo(
+    () => supportFloatingBottomOffset(focusedRouteName, isFloatingMenuVisible, insets.bottom),
+    [focusedRouteName, insets.bottom, isFloatingMenuVisible],
+  );
 
   const handlePressSupport = useCallback(async () => {
     const supportUrl = buildSupportWhatsappUrl();

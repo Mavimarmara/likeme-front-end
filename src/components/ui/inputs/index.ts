@@ -5,3 +5,4 @@ export { default as SymptomSlider } from './SymptomSlider';
 export type { SymptomLevel } from './SymptomSlider';
 export { default as NumberScale } from './NumberScale';
 export { default as PeriodSelector } from './PeriodSelector';
+export { default as ReplyInput } from './ReplyInput';
