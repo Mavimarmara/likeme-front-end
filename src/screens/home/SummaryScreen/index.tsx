@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react';
-import { Alert, View, ScrollView, Text } from 'react-native';
+import { View, ScrollView, Text } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { GradientBackground, ScreenWithHeader } from '@/components/ui/layout';
 import {
@@ -23,6 +23,7 @@ import ProfileFloatingMenu from '@/components/sections/profile/ProfileFloatingMe
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import { useAnalyticsScreen } from '@/analytics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { getCommunityStackNavigator } from '@/navigation/rootStackScreenLoaders';
 import { styles } from './styles';
 
 type Props = {
@@ -57,6 +58,13 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
     };
     loadUser();
   }, []);
+
+  useEffect(() => {
+    if (!hasSessionToken) {
+      return;
+    }
+    getCommunityStackNavigator();
+  }, [hasSessionToken]);
 
   const handleCartPress = () => {
     rootNavigation.navigate('Cart' as never);
@@ -183,15 +191,22 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleJoinCommunity = useCallback(
-    async (community: JoinCardItem) => {
-      try {
-        await communityService.joinCommunity(community.id);
-        rootNavigation.navigate('Community' as never);
-      } catch (error) {
-        Alert.alert(t('common.error'), t('home.joinCommunityError'));
-      }
+    (community: JoinCardItem) => {
+      rootNavigation.navigate(
+        'Community' as never,
+        {
+          screen: 'CommunityList',
+          params: { openFeedFromMenu: true },
+        } as never,
+      );
+      void communityService.joinCommunity(community.id).catch((error) => {
+        logger.error('[SummaryScreen] Falha ao entrar na comunidade em background', {
+          communityId: community.id,
+          cause: error,
+        });
+      });
     },
-    [rootNavigation, t],
+    [rootNavigation],
   );
 
   const handleProgramPress = useCallback(
