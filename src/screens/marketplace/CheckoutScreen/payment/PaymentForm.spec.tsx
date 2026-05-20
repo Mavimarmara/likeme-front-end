@@ -24,23 +24,6 @@ jest.mock('@/hooks', () => ({
   },
 }));
 
-jest.mock('@/components/ui/buttons', () => {
-  const React = require('react');
-  const { TouchableOpacity, Text } = require('react-native');
-  return {
-    PrimaryButton: ({ label, onPress }: any) => (
-      <TouchableOpacity onPress={onPress}>
-        <Text>{label}</Text>
-      </TouchableOpacity>
-    ),
-    SecondaryButton: ({ label, onPress }: any) => (
-      <TouchableOpacity onPress={onPress}>
-        <Text>{label}</Text>
-      </TouchableOpacity>
-    ),
-  };
-});
-
 jest.mock('@/components/ui/inputs/TextInput', () => {
   const React = require('react');
   const { TextInput: RNTextInput, View, Text } = require('react-native');
@@ -78,7 +61,6 @@ describe('PaymentForm', () => {
     expiryDate: '',
     cvv: '',
     cpf: '',
-    couponCode: '',
     billingAddressData: mockAddressData,
     deliverySameAsBilling: true,
     onCardholderNameChange: jest.fn(),
@@ -86,8 +68,6 @@ describe('PaymentForm', () => {
     onExpiryDateChange: jest.fn(),
     onCvvChange: jest.fn(),
     onCpfChange: jest.fn(),
-    onCouponCodeChange: jest.fn(),
-    onApplyCoupon: jest.fn(),
     onSaveBillingAddress: jest.fn(),
     onDeliverySameAsBillingChange: jest.fn(),
   };
@@ -143,32 +123,6 @@ describe('PaymentForm', () => {
     expect(mockProps.onCvvChange).toHaveBeenCalledWith('123');
   });
 
-  it('should render coupon section', () => {
-    const { getByText, getByPlaceholderText } = render(<PaymentForm {...mockProps} />);
-
-    expect(getByText('checkout.discountCoupon')).toBeTruthy();
-    expect(getByPlaceholderText('checkout.couponPlaceholder')).toBeTruthy();
-    expect(getByText('common.apply')).toBeTruthy();
-  });
-
-  it('should call onCouponCodeChange when coupon code is changed', () => {
-    const { getByPlaceholderText } = render(<PaymentForm {...mockProps} />);
-
-    const input = getByPlaceholderText('checkout.couponPlaceholder');
-    fireEvent.changeText(input, 'DISCOUNT10');
-
-    expect(mockProps.onCouponCodeChange).toHaveBeenCalledWith('DISCOUNT10');
-  });
-
-  it('should call onApplyCoupon when apply button is pressed', () => {
-    const { getByText } = render(<PaymentForm {...mockProps} />);
-
-    const applyButton = getByText('common.apply');
-    fireEvent.press(applyButton);
-
-    expect(mockProps.onApplyCoupon).toHaveBeenCalled();
-  });
-
   it('should display current values correctly', () => {
     const propsWithValues = {
       ...mockProps,
@@ -176,7 +130,6 @@ describe('PaymentForm', () => {
       cardNumber: '4111 1111 1111 1111',
       expiryDate: '12/25',
       cvv: '123',
-      couponCode: 'TESTCODE',
     };
 
     const { getByDisplayValue } = render(<PaymentForm {...propsWithValues} />);
@@ -185,20 +138,6 @@ describe('PaymentForm', () => {
     expect(getByDisplayValue('4111 1111 1111 1111')).toBeTruthy();
     expect(getByDisplayValue('12/25')).toBeTruthy();
     expect(getByDisplayValue('123')).toBeTruthy();
-    expect(getByDisplayValue('TESTCODE')).toBeTruthy();
-  });
-
-  it('should render applied coupon and remove action when coupon is applied', () => {
-    const onRemoveCoupon = jest.fn();
-    const { getByText } = render(
-      <PaymentForm {...mockProps} appliedCouponCode='SAVE10' onRemoveCoupon={onRemoveCoupon} />,
-    );
-
-    expect(getByText('checkout.couponApplied')).toBeTruthy();
-    expect(getByText('checkout.removeCoupon')).toBeTruthy();
-
-    fireEvent.press(getByText('checkout.removeCoupon'));
-    expect(onRemoveCoupon).toHaveBeenCalled();
   });
 
   it('should render CVV field as secure text entry', () => {

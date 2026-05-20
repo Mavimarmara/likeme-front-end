@@ -14,6 +14,7 @@ import { logger } from '@/utils/logger';
 import { styles } from './styles';
 import AddressForm, { AddressData, EMPTY_ADDRESS, isAddressFilled } from './address/AddressForm';
 import PaymentForm from './payment/PaymentForm';
+import CheckoutVoucherSection from './voucher/CheckoutVoucherSection';
 import { ProductItemCard } from '@/components/ui/cards';
 import OrderSummary from './order/OrderSummary';
 import OrderScreen from './order/OrderScreen';
@@ -399,6 +400,17 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
               ))}
             </View>
 
+            <CheckoutVoucherSection
+              couponCode={checkoutVoucher.couponCode}
+              couponError={checkoutVoucher.couponError}
+              appliedCouponCode={checkoutVoucher.appliedPreview?.code ?? null}
+              couponApplying={checkoutVoucher.isValidating}
+              applyDisabled={isShippingBlocking}
+              onCouponCodeChange={checkoutVoucher.onCouponCodeChange}
+              onApplyCoupon={handleApplyCoupon}
+              onRemoveCoupon={checkoutVoucher.removeCoupon}
+            />
+
             {orderSummary}
           </>
         )}
@@ -411,10 +423,6 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
               expiryDate={payment.expiryDate}
               cvv={payment.cvv}
               cpf={payment.cpf}
-              couponCode={checkoutVoucher.couponCode}
-              couponError={checkoutVoucher.couponError}
-              appliedCouponCode={checkoutVoucher.appliedPreview?.code ?? null}
-              couponApplying={checkoutVoucher.isValidating}
               paymentFieldErrors={payment.paymentFieldErrors}
               billingAddressData={billingAddressData}
               deliverySameAsBilling={deliverySameAsBilling}
@@ -423,12 +431,21 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
               onExpiryDateChange={payment.onExpiryDateChange}
               onCvvChange={payment.onCvvChange}
               onCpfChange={payment.onCpfChange}
-              onCouponCodeChange={checkoutVoucher.onCouponCodeChange}
-              onApplyCoupon={handleApplyCoupon}
-              onRemoveCoupon={checkoutVoucher.removeCoupon}
               onSaveBillingAddress={handleSaveBillingAddress}
               onDeliverySameAsBillingChange={handleDeliverySameAsBillingChange}
             />
+
+            <CheckoutVoucherSection
+              couponCode={checkoutVoucher.couponCode}
+              couponError={checkoutVoucher.couponError}
+              appliedCouponCode={checkoutVoucher.appliedPreview?.code ?? null}
+              couponApplying={checkoutVoucher.isValidating}
+              applyDisabled={isShippingBlocking}
+              onCouponCodeChange={checkoutVoucher.onCouponCodeChange}
+              onApplyCoupon={handleApplyCoupon}
+              onRemoveCoupon={checkoutVoucher.removeCoupon}
+            />
+
             {orderSummary}
           </>
         )}
