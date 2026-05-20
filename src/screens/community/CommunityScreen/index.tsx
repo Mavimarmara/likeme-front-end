@@ -19,7 +19,7 @@ import type { Post } from '@/types';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
 import { GradientBackground, HeroImage, ScreenWithHeader } from '@/components/ui/layout';
 import type { FeedEvent } from '@/types/event';
-import { SPACING, COMMUNITY_FEED_POSTS_PAGE_SIZE } from '@/constants';
+import { SPACING, COMMUNITY_FEED_POSTS_PAGE_SIZE, ADVERTISER_STATUS } from '@/constants';
 import { styles } from './styles';
 import type { CommunityStackParamList, RootStackParamList } from '@/types/navigation';
 import {
@@ -105,6 +105,9 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     storageService.setCommunityShoppingTipDismissed(true);
   }, []);
 
+  const isFeedMode = selectedMode === COMMUNITY_VIEW.FEED;
+  const loadCommunityEvents = isFeedMode;
+
   const {
     communities: rawCommunities,
     categories,
@@ -124,13 +127,13 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
       sortBy: 'createdAt',
       includeDeleted: false,
     },
-    loadEvents: true,
+    loadEvents: loadCommunityEvents,
   });
 
   const selectedCommunityId = rawCommunities[0]?.communityId;
 
   const { termsAccepted: communityTermsAccepted, toggleTermsAccepted: toggleCommunityTermsAccepted } = useCommunity({
-    communityId: selectedCommunityId,
+    communityId: activeInfoTab === 'agreements' ? selectedCommunityId : undefined,
   });
 
   useEffect(() => {
@@ -147,9 +150,11 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     };
   }, [selectedCommunityId]);
 
-  const { advertisers: communityAdvertisers } = useAdvertisers({
+  const { advertisers: communityAdvertisers, loading: communityAdvertisersLoading } = useAdvertisers({
     communityId: selectedCommunityId,
-    fetchAllPages: true,
+    listOptions: { page: 1, limit: 20, status: ADVERTISER_STATUS.ACTIVE },
+    fetchAllPages: false,
+    enabled: !!selectedCommunityId,
   });
   const advertiser = communityAdvertisers[0] ?? null;
   const communityProviderId = advertiser?.id;
@@ -158,7 +163,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   const communityProviderName = advertiser?.name?.trim() ?? null;
 
   const { eventBanner, eventJoinUrl, closeEventSession, handleEventBannerPress } = useEventJoin({
-    loadEvents: true,
+    loadEvents: loadCommunityEvents,
     events,
     communityAvatarUrl: rawCommunities[0]?.avatarUrl,
     communityProviderName,
@@ -181,15 +186,25 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     rootNavigation?.navigate('ProviderProfile', { providerId: advertiser.id } as never);
   };
 
+  const feedRecommendationsEnabled =
+    isFeedMode && (activeInfoTab === 'posts' || activeInfoTab === 'about') && (!loading || posts.length > 0);
+
   const { products: suggestedProducts } = useSuggestedProducts({
     ...SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS,
-    enabled: true,
+    enabled: feedRecommendationsEnabled,
   });
 
   const [selectedShopTabId, setSelectedShopTabId] = useState<ShopTabId>('products');
   const [shopProductsPage, setShopProductsPage] = useState(1);
   const [shopServicesPage, setShopServicesPage] = useState(1);
   const [shopProgramsPage, setShopProgramsPage] = useState(1);
+
+  const shopProfessionalsTabActive = solutionsMode && selectedShopTabId === 'professionals';
+  const { advertisers: shopProfessionals, loading: shopProfessionalsLoading } = useAdvertisers({
+    listOptions: { page: 1, limit: 50, status: ADVERTISER_STATUS.ACTIVE },
+    fetchAllPages: true,
+    enabled: shopProfessionalsTabActive,
+  });
 
   const {
     ads: shopProductsAdsRaw,
@@ -200,7 +215,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     advertiserId: communityProviderId,
     selectedCategory: 'products',
     page: shopProductsPage,
-    enabled: solutionsMode && !!communityProviderId,
+    enabled: solutionsMode && !!communityProviderId && selectedShopTabId === 'products',
   });
   const {
     ads: shopServicesAdsRaw,
@@ -211,7 +226,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     advertiserId: communityProviderId,
     selectedCategory: 'services',
     page: shopServicesPage,
-    enabled: solutionsMode && !!communityProviderId,
+    enabled: solutionsMode && !!communityProviderId && selectedShopTabId === 'services',
   });
   const {
     ads: shopProgramsAdsRaw,
@@ -222,7 +237,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     advertiserId: communityProviderId,
     selectedCategory: 'programs',
     page: shopProgramsPage,
-    enabled: solutionsMode && !!communityProviderId,
+    enabled: solutionsMode && !!communityProviderId && selectedShopTabId === 'programs',
   });
 
   const filterShopAdsByCommunityProvider = useCallback(
@@ -248,8 +263,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     [filterShopAdsByCommunityProvider, shopProgramsAdsRaw],
   );
 
-  const shopProfessionals = useMemo(() => communityAdvertisers, [communityAdvertisers]);
-
   useEffect(() => {
     setShopProductsPage(1);
     setShopServicesPage(1);
@@ -257,19 +270,19 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   }, [communityProviderId]);
 
   useEffect(() => {
-    if (!solutionsMode) return;
+    if (!solutionsMode || selectedShopTabId !== 'products') return;
     loadShopProductsAds();
-  }, [solutionsMode, shopProductsPage, loadShopProductsAds]);
+  }, [solutionsMode, selectedShopTabId, shopProductsPage, loadShopProductsAds]);
 
   useEffect(() => {
-    if (!solutionsMode) return;
+    if (!solutionsMode || selectedShopTabId !== 'services') return;
     loadShopServicesAds();
-  }, [solutionsMode, shopServicesPage, loadShopServicesAds]);
+  }, [solutionsMode, selectedShopTabId, shopServicesPage, loadShopServicesAds]);
 
   useEffect(() => {
-    if (!solutionsMode) return;
+    if (!solutionsMode || selectedShopTabId !== 'programs') return;
     loadShopProgramsAds();
-  }, [solutionsMode, shopProgramsPage, loadShopProgramsAds]);
+  }, [solutionsMode, selectedShopTabId, shopProgramsPage, loadShopProgramsAds]);
 
   const shopTabState = useMemo(() => {
     switch (selectedShopTabId) {
@@ -295,6 +308,11 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     shopProgramsLoading,
     shopProgramsHasMore,
   ]);
+
+  const shopListLoading =
+    selectedShopTabId === 'professionals'
+      ? shopProfessionalsLoading && shopProfessionals.length === 0
+      : (!communityProviderId && communityAdvertisersLoading) || shopTabState.loading;
 
   const handleShopLoadMore = useCallback(() => {
     if (selectedShopTabId === 'products') {
@@ -473,7 +491,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     });
   }, [selectedCommunityId, isCommunityFavorite]);
 
-  const isFeedMode = selectedMode === COMMUNITY_VIEW.FEED;
   const showVirtualizedFeed = isFeedMode && activeInfoTab === 'posts';
   const showFeedRecommendations = isFeedMode && (activeInfoTab === 'posts' || activeInfoTab === 'about');
 
@@ -645,7 +662,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
                     selectedTabId={selectedShopTabId}
                     onTabChange={setSelectedShopTabId}
                     ads={shopTabState.ads}
-                    loading={shopTabState.loading}
+                    loading={shopListLoading}
                     hasMore={shopTabState.hasMore}
                     onLoadMore={handleShopLoadMore}
                     navigation={shopNavigation}

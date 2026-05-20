@@ -22,6 +22,7 @@ export interface UseAdvertisersParams {
   communityId?: string;
   listOptions?: UseAdvertisersListOptions;
   fetchAllPages?: boolean;
+  enabled?: boolean;
 }
 
 export interface UseAdvertisersReturn {
@@ -32,7 +33,7 @@ export interface UseAdvertisersReturn {
 }
 
 export const useAdvertisers = (params: UseAdvertisersParams = {}): UseAdvertisersReturn => {
-  const { advertiserId, communityId, listOptions, fetchAllPages = false } = params;
+  const { advertiserId, communityId, listOptions, fetchAllPages = false, enabled = true } = params;
   const [advertisers, setAdvertisers] = useState<Advertiser[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -88,7 +89,7 @@ export const useAdvertisers = (params: UseAdvertisersParams = {}): UseAdvertiser
   }, [advertiserId, communityId, finishRequest, startRequest]);
 
   const loadList = useCallback(async () => {
-    if (!shouldLoadList) {
+    if (!enabled || !shouldLoadList) {
       return Promise.resolve();
     }
     const requestId = ++requestIdRef.current;
@@ -157,6 +158,7 @@ export const useAdvertisers = (params: UseAdvertisersParams = {}): UseAdvertiser
       finishRequest(requestId);
     }
   }, [
+    enabled,
     shouldLoadList,
     fetchAllPages,
     page,
@@ -179,6 +181,15 @@ export const useAdvertisers = (params: UseAdvertisersParams = {}): UseAdvertiser
   useEffect(() => {
     cancelledRef.current = false;
 
+    if (!enabled) {
+      setAdvertisers([]);
+      setLoading(false);
+      setError(null);
+      return () => {
+        cancelledRef.current = true;
+      };
+    }
+
     if (shouldLoadList) {
       loadList();
     } else if (advertiserId) {
@@ -191,6 +202,7 @@ export const useAdvertisers = (params: UseAdvertisersParams = {}): UseAdvertiser
       cancelledRef.current = true;
     };
   }, [
+    enabled,
     shouldLoadList,
     advertiserId,
     communityId,

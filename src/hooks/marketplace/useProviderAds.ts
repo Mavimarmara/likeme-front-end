@@ -41,6 +41,7 @@ export const useProviderAds = ({
     }
     setAds([]);
     setHasMore(true);
+    setLoading(true);
   }, [advertiserId, selectedCategory, enabled]);
 
   const loadAds = useCallback(async () => {

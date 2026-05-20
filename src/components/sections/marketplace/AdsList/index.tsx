@@ -61,6 +61,7 @@ type AdsListProps = {
 };
 
 const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
+const ADS_LIST_INITIAL_SKELETON_COUNT = 4;
 
 const AdsList: React.FC<AdsListProps> = ({
   navigation,
@@ -123,16 +124,9 @@ const AdsList: React.FC<AdsListProps> = ({
 
   const sectionTitle = title ?? t('marketplace.allProducts');
 
-  if (!isSimpleMode && loading && ads.length === 0) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ProductItemCardSkeleton />
-        <ProductItemCardSkeleton />
-        <ProductItemCardSkeleton />
-        <ProductItemCardSkeleton />
-      </View>
-    );
-  }
+  const showControlledTabbedInitialLoad = showAdsListInTabbedMode && loading && ads.length === 0;
+  const showUncontrolledInitialLoad = !isSimpleMode && loading && ads.length === 0;
+  const showInitialLoadSkeleton = showControlledTabbedInitialLoad || showUncontrolledInitialLoad;
 
   const listLength = showAdsListInTabbedMode
     ? ads.length
@@ -218,6 +212,32 @@ const AdsList: React.FC<AdsListProps> = ({
         />
       </View>
     ) : null;
+
+  const renderInitialLoadSkeleton = () => (
+    <View style={styles.loadingContainer}>
+      {Array.from({ length: ADS_LIST_INITIAL_SKELETON_COUNT }).map((_, index) => (
+        <ProductItemCardSkeleton key={`ads-list-skeleton-${index}`} />
+      ))}
+    </View>
+  );
+
+  if (showInitialLoadSkeleton) {
+    return (
+      <View style={[styles.section, styles.sectionMarketplace, contentContainerStyle]}>
+        {hasSolutionTabStrip && !suppressInlineListChrome && (
+          <ToggleTabs
+            tabs={solutionTabs!.map((tab) => ({ id: tab.id, label: tab.label }))}
+            selectedId={selectedTabId}
+            onSelect={setSelectedTabId}
+            containerStyle={[styles.solutionTabsRow, tabsContainerStyle]}
+            fixedWidth={false}
+          />
+        )}
+        {orderFilterRow}
+        {renderInitialLoadSkeleton()}
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.section, styles.sectionMarketplace, contentContainerStyle]}>
