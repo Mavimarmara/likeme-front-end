@@ -10,6 +10,9 @@ interface OrderSummaryProps {
   shippingLoading?: boolean;
   /** Quando false, oculta a linha de frete (carrinho só com programs/services). */
   showShipping?: boolean;
+  voucherDiscount?: number;
+  /** Total exibido; quando omitido, calcula a partir de subtotal, desconto e frete. */
+  total?: number;
 }
 
 const OrderSummary: React.FC<OrderSummaryProps> = ({
@@ -18,9 +21,13 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
   formatPrice,
   shippingLoading,
   showShipping = true,
+  voucherDiscount = 0,
+  total: totalOverride,
 }) => {
   const { t } = useTranslation();
-  const total = subtotal + (showShipping ? shipping : 0);
+  const shippingAmount = showShipping ? shipping : 0;
+  const computedTotal = subtotal - voucherDiscount + shippingAmount;
+  const displayTotal = Math.max(0, totalOverride ?? computedTotal);
 
   return (
     <View style={cartStyles.orderSummary}>
@@ -29,6 +36,12 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
         <Text style={cartStyles.summaryLabel}>{t('cart.subtotal')}</Text>
         <Text style={cartStyles.summaryValue}>{formatPrice(subtotal)}</Text>
       </View>
+      {voucherDiscount > 0 && (
+        <View style={cartStyles.summaryRow}>
+          <Text style={cartStyles.summaryLabel}>{t('checkout.voucherDiscount')}</Text>
+          <Text style={cartStyles.summaryValue}>-{formatPrice(voucherDiscount)}</Text>
+        </View>
+      )}
       {showShipping && (
         <View style={cartStyles.summaryRow}>
           <Text style={cartStyles.summaryLabel}>{t('cart.shipping')}</Text>
@@ -38,7 +51,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
       <View style={cartStyles.separator} />
       <View style={cartStyles.totalRow}>
         <Text style={cartStyles.totalLabel}>{t('cart.total')}</Text>
-        <Text style={cartStyles.totalValue}>{formatPrice(total)}</Text>
+        <Text style={cartStyles.totalValue}>{formatPrice(displayTotal)}</Text>
       </View>
     </View>
   );

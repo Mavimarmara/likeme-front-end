@@ -200,6 +200,19 @@ export const styles = StyleSheet.create({
   couponInputField: {
     height: 42,
   },
+  couponAppliedBlock: {
+    marginTop: SPACING.SM,
+    gap: SPACING.SM,
+  },
+  couponAppliedText: {
+    fontSize: FONT_SIZES.SM,
+    fontFamily: 'DM Sans',
+    color: '#0154f8',
+    fontWeight: '500',
+  },
+  removeCouponButton: {
+    alignSelf: 'flex-start',
+  },
   applyButton: {
     backgroundColor: '#001137',
     paddingHorizontal: SPACING.MD,

@@ -24,6 +24,23 @@ jest.mock('@/hooks', () => ({
   },
 }));
 
+jest.mock('@/components/ui/buttons', () => {
+  const React = require('react');
+  const { TouchableOpacity, Text } = require('react-native');
+  return {
+    PrimaryButton: ({ label, onPress }: any) => (
+      <TouchableOpacity onPress={onPress}>
+        <Text>{label}</Text>
+      </TouchableOpacity>
+    ),
+    SecondaryButton: ({ label, onPress }: any) => (
+      <TouchableOpacity onPress={onPress}>
+        <Text>{label}</Text>
+      </TouchableOpacity>
+    ),
+  };
+});
+
 jest.mock('@/components/ui/inputs/TextInput', () => {
   const React = require('react');
   const { TextInput: RNTextInput, View, Text } = require('react-native');
@@ -169,6 +186,19 @@ describe('PaymentForm', () => {
     expect(getByDisplayValue('12/25')).toBeTruthy();
     expect(getByDisplayValue('123')).toBeTruthy();
     expect(getByDisplayValue('TESTCODE')).toBeTruthy();
+  });
+
+  it('should render applied coupon and remove action when coupon is applied', () => {
+    const onRemoveCoupon = jest.fn();
+    const { getByText } = render(
+      <PaymentForm {...mockProps} appliedCouponCode='SAVE10' onRemoveCoupon={onRemoveCoupon} />,
+    );
+
+    expect(getByText('checkout.couponApplied')).toBeTruthy();
+    expect(getByText('checkout.removeCoupon')).toBeTruthy();
+
+    fireEvent.press(getByText('checkout.removeCoupon'));
+    expect(onRemoveCoupon).toHaveBeenCalled();
   });
 
   it('should render CVV field as secure text entry', () => {

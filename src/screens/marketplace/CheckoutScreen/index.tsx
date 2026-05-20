@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { View, Text, ScrollView, Alert } from 'react-native';
 import { ScreenWithHeader } from '@/components/ui/layout';
 import { SecondaryButton } from '@/components/ui/buttons';
@@ -8,7 +8,8 @@ import { getShippingQuote } from '@/services/shipping/shippingService';
 import { formatZipCodeDisplay } from '@/services/address/cepService';
 import { formatPrice, formatAddress, formatBillingAddress } from '@/utils';
 import { catalogTypeTranslatedBadgeLabels, PRODUCT_CATALOG_TYPE } from '@/types/product';
-import { useTranslation, usePayment, useCartShippingPolicy } from '@/hooks';
+import { useTranslation, usePayment, useCheckoutVoucher, useCartShippingPolicy } from '@/hooks';
+import { checkoutDisplayAmounts } from '@/utils/marketplace/checkoutDisplayAmounts';
 import { logger } from '@/utils/logger';
 import { styles } from './styles';
 import AddressForm, { AddressData, EMPTY_ADDRESS, isAddressFilled } from './address/AddressForm';
@@ -47,6 +48,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
   const [addressLoadError, setAddressLoadError] = useState<string | null>(null);
   const [addressSaveError, setAddressSaveError] = useState<string | null>(null);
   const payment = usePayment();
+  const checkoutVoucher = useCheckoutVoucher();
   const [shipping, setShipping] = useState(0);
   const [shippingLoading, setShippingLoading] = useState(false);
   const [orderId, setOrderId] = useState('');
@@ -117,6 +119,26 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
       cancelled = true;
     };
   }, [zipCodeForShipping, currentStep, isShippingDisabled, productIds]);
+
+  const checkoutAmountsRef = useRef({ subtotal, shipping: effectiveShipping });
+
+  useEffect(() => {
+    if (!checkoutVoucher.appliedPreview) {
+      checkoutAmountsRef.current = { subtotal, shipping: effectiveShipping };
+      return;
+    }
+
+    const previous = checkoutAmountsRef.current;
+    if (previous.subtotal === subtotal && previous.shipping === effectiveShipping) {
+      return;
+    }
+
+    checkoutAmountsRef.current = { subtotal, shipping: effectiveShipping };
+    void checkoutVoucher.syncAppliedWithAmounts(
+      { subtotal, shippingCost: effectiveShipping },
+      t('checkout.invalidCoupon'),
+    );
+  }, [subtotal, effectiveShipping, checkoutVoucher.appliedPreview?.code, t]);
 
   useEffect(() => {
     if (currentStep !== 'payment') payment.setPaymentError(null);
@@ -227,6 +249,12 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
         orderData.billingPeriod = 'MONTHLY';
       }
 
+      const appliedVoucher = checkoutVoucher.appliedPreview;
+      if (appliedVoucher) {
+        orderData.voucherCode = appliedVoucher.code;
+        orderData.shippingCost = isShippingDisabled ? 0 : appliedVoucher.shippingCost;
+      }
+
       logger.debug('Dados do pedido completos:', orderData);
 
       const orderResponse = await orderService.createOrder(orderData);
@@ -281,9 +309,19 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   const handleApplyCoupon = () => {
-    if (!payment.couponCode.trim()) return;
-    payment.setCouponError(t('checkout.invalidCoupon'));
+    void checkoutVoucher.applyCoupon({ subtotal, shippingCost: effectiveShipping }, t('checkout.invalidCoupon'));
   };
+
+  const summaryAmounts = useMemo(
+    () =>
+      checkoutDisplayAmounts({
+        subtotal,
+        shipping: effectiveShipping,
+        showShipping: !isShippingDisabled,
+        appliedVoucher: checkoutVoucher.appliedPreview,
+      }),
+    [subtotal, effectiveShipping, isShippingDisabled, checkoutVoucher.appliedPreview],
+  );
 
   const stepperSteps = useMemo(
     () => [
@@ -297,7 +335,9 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
   const orderSummary = (
     <OrderSummary
       subtotal={subtotal}
-      shipping={effectiveShipping}
+      shipping={summaryAmounts.shipping}
+      voucherDiscount={summaryAmounts.voucherDiscount}
+      total={summaryAmounts.total}
       formatPrice={formatPrice}
       shippingLoading={!isShippingDisabled && (shippingLoading || shippingPolicyLoading)}
       showShipping={!isShippingDisabled}
@@ -371,8 +411,10 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
               expiryDate={payment.expiryDate}
               cvv={payment.cvv}
               cpf={payment.cpf}
-              couponCode={payment.couponCode}
-              couponError={payment.couponError}
+              couponCode={checkoutVoucher.couponCode}
+              couponError={checkoutVoucher.couponError}
+              appliedCouponCode={checkoutVoucher.appliedPreview?.code ?? null}
+              couponApplying={checkoutVoucher.isValidating}
               paymentFieldErrors={payment.paymentFieldErrors}
               billingAddressData={billingAddressData}
               deliverySameAsBilling={deliverySameAsBilling}
@@ -381,8 +423,9 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
               onExpiryDateChange={payment.onExpiryDateChange}
               onCvvChange={payment.onCvvChange}
               onCpfChange={payment.onCpfChange}
-              onCouponCodeChange={payment.onCouponCodeChange}
+              onCouponCodeChange={checkoutVoucher.onCouponCodeChange}
               onApplyCoupon={handleApplyCoupon}
+              onRemoveCoupon={checkoutVoucher.removeCoupon}
               onSaveBillingAddress={handleSaveBillingAddress}
               onDeliverySameAsBillingChange={handleDeliverySameAsBillingChange}
             />

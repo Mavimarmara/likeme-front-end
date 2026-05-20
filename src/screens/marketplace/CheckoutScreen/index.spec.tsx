@@ -206,8 +206,6 @@ jest.mock('@/hooks', () => {
       expiryDate: '',
       cvv: '',
       cpf: '',
-      couponCode: '',
-      couponError: null,
       paymentFieldErrors: {},
       paymentError: null,
       isProcessing: false,
@@ -219,8 +217,6 @@ jest.mock('@/hooks', () => {
       onExpiryDateChange: jest.fn(),
       onCvvChange: jest.fn(),
       onCpfChange: jest.fn(),
-      onCouponCodeChange: jest.fn(),
-      setCouponError: jest.fn(),
       isPaymentStepValid: () => true,
       validatePaymentFields: () => null,
       getCardData: () => ({
@@ -230,6 +226,16 @@ jest.mock('@/hooks', () => {
         cardCvv: '123',
         cpf: '12345678901',
       }),
+    }),
+    useCheckoutVoucher: () => ({
+      couponCode: '',
+      couponError: null,
+      appliedPreview: null,
+      isValidating: false,
+      onCouponCodeChange: jest.fn(),
+      applyCoupon: jest.fn(),
+      removeCoupon: jest.fn(),
+      syncAppliedWithAmounts: jest.fn(),
     }),
     useCart: () => {
       const { storageService: storage } = require('@/services');

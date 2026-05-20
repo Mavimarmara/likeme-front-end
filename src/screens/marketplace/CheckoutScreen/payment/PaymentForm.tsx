@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import TextInput from '@/components/ui/inputs/TextInput';
-import { PrimaryButton } from '@/components/ui/buttons';
+import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import { useFormattedInput } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import { styles } from '../styles';
@@ -16,6 +16,8 @@ interface PaymentFormProps {
   cpf: string;
   couponCode: string;
   couponError?: string | null;
+  appliedCouponCode?: string | null;
+  couponApplying?: boolean;
   paymentFieldErrors?: Record<string, string>;
   billingAddressData: AddressData;
   deliverySameAsBilling: boolean;
@@ -26,6 +28,7 @@ interface PaymentFormProps {
   onCpfChange: (text: string) => void;
   onCouponCodeChange: (text: string) => void;
   onApplyCoupon: () => void;
+  onRemoveCoupon?: () => void;
   onSaveBillingAddress: (address: AddressData) => void | Promise<void>;
   onDeliverySameAsBillingChange: (value: boolean) => void;
 }
@@ -38,6 +41,8 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   cpf,
   couponCode,
   couponError,
+  appliedCouponCode = null,
+  couponApplying = false,
   paymentFieldErrors = {},
   billingAddressData,
   deliverySameAsBilling,
@@ -48,6 +53,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   onCpfChange,
   onCouponCodeChange,
   onApplyCoupon,
+  onRemoveCoupon,
   onSaveBillingAddress,
   onDeliverySameAsBillingChange,
 }) => {
@@ -122,19 +128,40 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
       {/* Discount Coupon */}
       <View style={styles.couponSection}>
         <Text style={styles.sectionTitle}>{t('checkout.discountCoupon')}</Text>
-        <View style={styles.couponRow}>
-          <TextInput
-            placeholder={t('checkout.couponPlaceholder')}
-            value={couponCode}
-            onChangeText={onCouponCodeChange}
-            containerStyle={styles.couponInput}
-            style={styles.couponInputField}
-            errorText={couponError ?? undefined}
-          />
-          <View style={styles.applyButtonWrap}>
-            <PrimaryButton label={t('common.apply')} onPress={onApplyCoupon} size='medium' />
+        {appliedCouponCode ? (
+          <View style={styles.couponAppliedBlock}>
+            <Text style={styles.couponAppliedText}>{t('checkout.couponApplied', { code: appliedCouponCode })}</Text>
+            {onRemoveCoupon ? (
+              <SecondaryButton
+                label={t('checkout.removeCoupon')}
+                onPress={onRemoveCoupon}
+                size='medium'
+                style={styles.removeCouponButton}
+              />
+            ) : null}
           </View>
-        </View>
+        ) : (
+          <View style={styles.couponRow}>
+            <TextInput
+              placeholder={t('checkout.couponPlaceholder')}
+              value={couponCode}
+              onChangeText={onCouponCodeChange}
+              containerStyle={styles.couponInput}
+              style={styles.couponInputField}
+              errorText={couponError ?? undefined}
+              editable={!couponApplying}
+            />
+            <View style={styles.applyButtonWrap}>
+              <PrimaryButton
+                label={t('common.apply')}
+                onPress={onApplyCoupon}
+                size='medium'
+                loading={couponApplying}
+                disabled={couponApplying || !couponCode.trim()}
+              />
+            </View>
+          </View>
+        )}
       </View>
 
       {/* Endereço de cobrança */}

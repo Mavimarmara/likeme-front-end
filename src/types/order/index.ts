@@ -86,6 +86,8 @@ export interface CreateOrderData {
   cardData?: CardData; // Obrigatório quando paymentMethod é 'credit_card'
   notes?: string;
   paymentMethod?: string;
+  /** Código do voucher; desconto calculado no servidor. */
+  voucherCode?: string;
   /** Periodicidade da assinatura quando o carrinho contém protocolos. */
   billingPeriod?: SubscriptionBillingPeriod;
   trackingNumber?: string;

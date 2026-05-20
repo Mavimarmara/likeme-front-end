@@ -10,8 +10,6 @@ export function usePayment() {
   const [expiryDate, setExpiryDate] = useState('');
   const [cvv, setCvv] = useState('');
   const [cpf, setCpf] = useState('');
-  const [couponCode, setCouponCode] = useState('');
-  const [couponError, setCouponError] = useState<string | null>(null);
   const [paymentFieldErrors, setPaymentFieldErrors] = useState<Record<string, string>>({});
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -69,11 +67,6 @@ export function usePayment() {
     [handleCpfChange, clearFieldError],
   );
 
-  const onCouponCodeChange = useCallback((text: string) => {
-    setCouponCode(text);
-    setCouponError(null);
-  }, []);
-
   const isPaymentStepValid = useCallback(
     (billingAddressFilled: boolean) =>
       cardholderName.trim() !== '' &&
@@ -120,8 +113,6 @@ export function usePayment() {
     expiryDate,
     cvv,
     cpf,
-    couponCode,
-    couponError,
     paymentFieldErrors,
     paymentError,
     isProcessing,
@@ -133,8 +124,6 @@ export function usePayment() {
     onExpiryDateChange,
     onCvvChange,
     onCpfChange,
-    onCouponCodeChange,
-    setCouponError,
     isPaymentStepValid,
     validatePaymentFields,
     getCardData,
