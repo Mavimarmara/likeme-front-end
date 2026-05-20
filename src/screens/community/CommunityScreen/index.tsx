@@ -150,16 +150,32 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     };
   }, [selectedCommunityId]);
 
+  const solutionsMode = selectedMode === COMMUNITY_VIEW.SOLUTIONS;
+  const feedFilterParams = useMemo(() => ({}), []);
+
+  const {
+    posts,
+    loading: feedLoading,
+    loadingMore,
+    error,
+    loadMore,
+  } = useUserFeed({
+    enabled: isFeedMode,
+    searchQuery: '',
+    pageSize: COMMUNITY_FEED_POSTS_PAGE_SIZE,
+    params: feedFilterParams,
+  });
+
+  const communityAdvertiserFetchEnabled = !!selectedCommunityId && (solutionsMode || !feedLoading || posts.length > 0);
+
   const { advertisers: communityAdvertisers, loading: communityAdvertisersLoading } = useAdvertisers({
     communityId: selectedCommunityId,
     listOptions: { page: 1, limit: 20, status: ADVERTISER_STATUS.ACTIVE },
     fetchAllPages: false,
-    enabled: !!selectedCommunityId,
+    enabled: communityAdvertiserFetchEnabled,
   });
   const advertiser = communityAdvertisers[0] ?? null;
   const communityProviderId = advertiser?.id;
-
-  const solutionsMode = selectedMode === COMMUNITY_VIEW.SOLUTIONS;
   const communityProviderName = advertiser?.name?.trim() ?? null;
 
   const { eventBanner, eventJoinUrl, closeEventSession, handleEventBannerPress } = useEventJoin({
@@ -167,15 +183,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     events,
     communityAvatarUrl: rawCommunities[0]?.avatarUrl,
     communityProviderName,
-  });
-
-  const feedFilterParams = useMemo(() => ({}), []);
-
-  const { posts, loading, loadingMore, error, loadMore } = useUserFeed({
-    enabled: selectedMode === COMMUNITY_VIEW.FEED,
-    searchQuery: '',
-    pageSize: COMMUNITY_FEED_POSTS_PAGE_SIZE,
-    params: feedFilterParams,
   });
 
   const handleProductPress = (product: Product) => {
@@ -187,7 +194,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const feedRecommendationsEnabled =
-    isFeedMode && (activeInfoTab === 'posts' || activeInfoTab === 'about') && (!loading || posts.length > 0);
+    isFeedMode && (activeInfoTab === 'posts' || activeInfoTab === 'about') && (!feedLoading || posts.length > 0);
 
   const { products: suggestedProducts } = useSuggestedProducts({
     ...SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS,
@@ -578,7 +585,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     </View>
   );
 
-  const feedListEmpty = loading ? (
+  const feedListEmpty = feedLoading ? (
     <View style={styles.feedInitialLoading}>
       <View style={styles.feedItemWrapper}>
         <PostCardSkeleton />

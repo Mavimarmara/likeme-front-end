@@ -8,18 +8,15 @@ jest.mock('@/services', () => ({
   },
 }));
 
-jest.mock('@/utils', () => ({
-  mapCommunityPostToPost: jest.fn((communityPost: { postId?: string; _id?: string } | null) => {
-    if (communityPost == null) return null;
-    const id = communityPost.postId ?? communityPost._id;
-    if (!id) return null;
-    return {
-      id,
+jest.mock('@/utils/community/mappers', () => ({
+  mapCommunityPostsForFeedList: jest.fn((posts: Array<{ postId: string }>) =>
+    posts.map((p) => ({
+      id: p.postId,
       content: '',
       comments: [],
       createdAt: new Date('2026-01-01T00:00:00.000Z'),
-    };
-  }),
+    })),
+  ),
 }));
 
 jest.mock('@/utils/logger', () => ({

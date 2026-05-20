@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { communityService } from '@/services';
 import type { Post } from '@/types';
 import type { CommunityFeedData, UserFeedParams } from '@/types/community';
-import { mapCommunityPostToPost } from '@/utils';
+import { mapCommunityPostsForFeedList } from '@/utils/community/mappers';
 import { prefetchImageUris } from '@/utils/image/prefetchImageUris';
 import { PAGINATION } from '@/constants';
 import { logger } from '@/utils/logger';
@@ -69,7 +69,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
   const initialCacheIsFresh = initialCacheEntry != null && isFeedCacheEntryFresh(initialCacheEntry);
 
   const [posts, setPosts] = useState<Post[]>(() => (initialCacheIsFresh ? initialCacheEntry.posts : []));
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(() => !initialCacheIsFresh);
   const [loadingMore, setLoadingMore] = useState(false);
   const [currentPage, setCurrentPage] = useState(() => (initialCacheIsFresh ? initialCacheEntry.currentPage : 1));
   const [hasMore, setHasMore] = useState(() => (initialCacheIsFresh ? initialCacheEntry.hasMore : true));
@@ -87,6 +87,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
   const previousParamsKey = useRef<string>(initialCacheIsFresh ? paramsKey : '');
   const isLoadingRef = useRef(false);
   const hasErrorRef = useRef(false);
+  const backgroundRefreshStartedRef = useRef(false);
 
   const loadPosts = useCallback(
     async (page: number, search?: string, append = false) => {
@@ -111,7 +112,9 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
         hasErrorRef.current = false;
 
         if (page === 1) {
-          setLoading(true);
+          if (postsRef.current.length === 0) {
+            setLoading(true);
+          }
         } else {
           setLoadingMore(true);
         }
@@ -143,19 +146,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
         }
 
         const feedPosts = feedData.posts ?? [];
-        const mappedPostsPromises = feedPosts.map((communityPost) =>
-          mapCommunityPostToPost(
-            communityPost,
-            feedData.files,
-            feedData.users,
-            feedData.comments,
-            feedData.postChildren,
-            feedPosts,
-          ),
-        );
-
-        const mappedPostsResults = await Promise.all(mappedPostsPromises);
-        const mappedPosts: Post[] = mappedPostsResults.filter((post): post is Post => post !== null);
+        const mappedPosts = mapCommunityPostsForFeedList(feedPosts, feedData);
 
         const nextPosts = append ? [...postsRef.current, ...mappedPosts] : mappedPosts;
         setPosts(nextPosts);
@@ -275,6 +266,14 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
       loadPosts(1, searchQuery);
     }
   }, [searchQuery, enabled, loadPosts, paramsKey]);
+
+  useEffect(() => {
+    if (!enabled || !initialCacheIsFresh || backgroundRefreshStartedRef.current) {
+      return;
+    }
+    backgroundRefreshStartedRef.current = true;
+    void loadPosts(1, searchQuery);
+  }, [enabled, initialCacheIsFresh, loadPosts, searchQuery]);
 
   return {
     posts,

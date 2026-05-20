@@ -5,6 +5,7 @@ import type {
   CommunityComment,
   Community,
   CommunityCategory,
+  CommunityFeedData,
 } from '@/types/community';
 import type { Post, Comment, Poll } from '@/types';
 import type { Program } from '@/types/program';
@@ -186,6 +187,11 @@ const mapRawMyReactionsToStrings = (raw: unknown): string[] => {
   return out;
 };
 
+export type MapCommunityPostToPostOptions = {
+  /** Na listagem do feed só usamos commentsCount; evita mapear todos os comentários do payload. */
+  includeComments?: boolean;
+};
+
 export const mapCommunityPostToPost = (
   communityPost: CommunityPost,
   files?: CommunityFile[],
@@ -193,7 +199,9 @@ export const mapCommunityPostToPost = (
   comments?: CommunityComment[],
   postChildren?: CommunityPost[],
   feedPosts?: CommunityPost[],
+  options?: MapCommunityPostToPostOptions,
 ): Post | null => {
+  const includeComments = options?.includeComments !== false;
   const postId = communityPost.postId || communityPost._id || '';
   const userId = communityPost.postedUserId || communityPost.userId || '';
 
@@ -220,12 +228,14 @@ export const mapCommunityPostToPost = (
 
   const likes = communityPost.reactionsCount || 0;
 
-  const postComments: Post['comments'] = (comments || [])
-    .filter((comment) => {
-      const referenceId = comment.referenceId;
-      return referenceId === postId || referenceId === communityPost._id;
-    })
-    .map((comment) => mapCommunityCommentToComment(comment, users, files));
+  const postComments: Post['comments'] = includeComments
+    ? (comments || [])
+        .filter((comment) => {
+          const referenceId = comment.referenceId;
+          return referenceId === postId || referenceId === communityPost._id;
+        })
+        .map((comment) => mapCommunityCommentToComment(comment, users, files))
+    : [];
 
   let content = '';
   let title: string | undefined;
@@ -305,6 +315,28 @@ export const mapCommunityPostToPost = (
 
   return post;
 };
+
+export function mapCommunityPostsForFeedList(
+  feedPosts: CommunityPost[],
+  feedData: Pick<CommunityFeedData, 'files' | 'users' | 'comments' | 'postChildren'>,
+): Post[] {
+  const mapped: Post[] = [];
+  for (const communityPost of feedPosts) {
+    const post = mapCommunityPostToPost(
+      communityPost,
+      feedData.files,
+      feedData.users,
+      feedData.comments,
+      feedData.postChildren,
+      feedPosts,
+      { includeComments: false },
+    );
+    if (post) {
+      mapped.push(post);
+    }
+  }
+  return mapped;
+}
 
 const HTTP_URL_PREFIX = /^https?:\/\//i;
 
