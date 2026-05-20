@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo } from 'react';
 import { BackHandler, Platform, Text, View } from 'react-native';
-import { CachedImage } from '@/components/ui/media/CachedImage';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { STORE_LISTING_BADGES_IMAGE } from '@/assets/ui';
+import { GradientForceUpdate } from '@/assets/auth';
+import { LogoMini } from '@/assets/ui';
+import { CachedImage } from '@/components/ui/media/CachedImage';
 import { PrimaryButton } from '@/components/ui/buttons';
 import { STORE_URL_CONFIG } from '@/config';
 import { useTranslation } from '@/hooks/i18n';
@@ -13,7 +14,7 @@ import {
   openStoreListingWithFallback,
   sanitizeExternalHttpUrl,
 } from '@/utils/url/storeListingUrl';
-import { styles } from './styles';
+import { GRADIENT_HEIGHT, GRADIENT_WIDTH, styles } from './styles';
 
 type Props = {
   navigation: { navigate: (name: string) => void };
@@ -59,7 +60,6 @@ const ForcedUpdateScreen: React.FC<Props> = ({ route }) => {
   }, []);
 
   const title = t('appUpdate.requiredTitle');
-  const body = customMessage && customMessage.length > 0 ? customMessage : t('appUpdate.requiredBody');
 
   const openStore = () => {
     if (!effectiveStoreUrl) {
@@ -73,21 +73,38 @@ const ForcedUpdateScreen: React.FC<Props> = ({ route }) => {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
-      <View style={styles.container}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.body}>{body}</Text>
-        <CachedImage
-          source={STORE_LISTING_BADGES_IMAGE}
-          style={styles.storeBadges}
-          contentFit='contain'
-          accessibilityIgnoresInvertColors
-        />
-        <View style={styles.buttonWrap}>
+      <View style={styles.root}>
+        <View style={styles.header}>
+          <LogoMini width={87} height={16} />
+        </View>
+
+        <View style={styles.gradientWrap}>
+          <CachedImage
+            source={GradientForceUpdate}
+            style={{ width: GRADIENT_WIDTH, height: GRADIENT_HEIGHT }}
+            contentFit='contain'
+            accessibilityIgnoresInvertColors
+          />
+        </View>
+
+        <View style={styles.content}>
+          <Text style={styles.title}>{title}</Text>
+          <Text style={styles.body}>
+            {t('appUpdate.requiredBodyIntro')}
+            {'\n\n'}
+            {t('appUpdate.requiredBodyContinuePrefix')}
+            <Text style={styles.bodyEmphasis}>{t('appUpdate.requiredBodyContinueEmphasis')}</Text>
+          </Text>
+        </View>
+
+        <View style={styles.footer}>
           <PrimaryButton
             label={t('appUpdate.updateButton')}
             onPress={openStore}
             disabled={!effectiveStoreUrl}
             loading={false}
+            size='large'
+            style={styles.updateButton}
           />
         </View>
       </View>
