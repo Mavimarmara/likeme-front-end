@@ -427,7 +427,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
                 <View style={styles.aboutSection}>
                   {positioningProfile && (
                     <View style={styles.highlightContainer}>
-                      <Text style={styles.highlightQuote}>{`“${positioningProfile.value}”`}</Text>
+                      <Text style={styles.highlightQuote}>{positioningProfile.value}</Text>
                       <Text style={styles.highlightSubtitle}>Conheça meu impacto dentro dos pilares Like:Me</Text>
                     </View>
                   )}

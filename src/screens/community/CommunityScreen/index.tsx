@@ -29,7 +29,7 @@ import {
   useSuggestedProducts,
   SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS,
   useAdvertisers,
-  useMarketplaceAds,
+  useProviderAds,
   useMenuItems,
   useEventJoin,
 } from '@/hooks';
@@ -39,6 +39,7 @@ import { useAnalyticsScreen, logTabSelect } from '@/analytics';
 import { storageService } from '@/services';
 import { logger } from '@/utils/logger';
 import { resolveCommunityHeroImageUri } from '@/utils/community/mappers';
+import { filterAdsForProviderProfile } from '@/utils/marketplace/filterAdsForProviderProfile';
 import type { Advertiser } from '@/types/ad';
 import type { ShopTabId } from '@/components/sections/community/ShoppingList';
 import Toggle from '@/components/ui/buttons/Toggle';
@@ -151,11 +152,9 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     fetchAllPages: true,
   });
   const advertiser = communityAdvertisers[0] ?? null;
+  const communityProviderId = advertiser?.id;
 
   const solutionsMode = selectedMode === COMMUNITY_VIEW.SOLUTIONS;
-  const { advertisers: shopProfessionals } = useAdvertisers(
-    solutionsMode ? { listOptions: { limit: 50 }, fetchAllPages: true } : {},
-  );
   const communityProviderName = advertiser?.name?.trim() ?? null;
 
   const { eventBanner, eventJoinUrl, closeEventSession, handleEventBannerPress } = useEventJoin({
@@ -193,35 +192,69 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   const [shopProgramsPage, setShopProgramsPage] = useState(1);
 
   const {
-    ads: shopProductsAds,
+    ads: shopProductsAdsRaw,
     loading: shopProductsLoading,
     hasMore: shopProductsHasMore,
     loadAds: loadShopProductsAds,
-  } = useMarketplaceAds({
+  } = useProviderAds({
+    advertiserId: communityProviderId,
     selectedCategory: 'products',
     page: shopProductsPage,
-    enabled: solutionsMode,
+    enabled: solutionsMode && !!communityProviderId,
   });
   const {
-    ads: shopServicesAds,
+    ads: shopServicesAdsRaw,
     loading: shopServicesLoading,
     hasMore: shopServicesHasMore,
     loadAds: loadShopServicesAds,
-  } = useMarketplaceAds({
+  } = useProviderAds({
+    advertiserId: communityProviderId,
     selectedCategory: 'services',
     page: shopServicesPage,
-    enabled: solutionsMode,
+    enabled: solutionsMode && !!communityProviderId,
   });
   const {
-    ads: shopProgramsAds,
+    ads: shopProgramsAdsRaw,
     loading: shopProgramsLoading,
     hasMore: shopProgramsHasMore,
     loadAds: loadShopProgramsAds,
-  } = useMarketplaceAds({
+  } = useProviderAds({
+    advertiserId: communityProviderId,
     selectedCategory: 'programs',
     page: shopProgramsPage,
-    enabled: solutionsMode,
+    enabled: solutionsMode && !!communityProviderId,
   });
+
+  const filterShopAdsByCommunityProvider = useCallback(
+    (ads: typeof shopProductsAdsRaw) => {
+      if (!communityProviderId) {
+        return [];
+      }
+      return filterAdsForProviderProfile(ads, communityProviderId, advertiser?.userId);
+    },
+    [communityProviderId, advertiser?.userId],
+  );
+
+  const shopProductsAds = useMemo(
+    () => filterShopAdsByCommunityProvider(shopProductsAdsRaw),
+    [filterShopAdsByCommunityProvider, shopProductsAdsRaw],
+  );
+  const shopServicesAds = useMemo(
+    () => filterShopAdsByCommunityProvider(shopServicesAdsRaw),
+    [filterShopAdsByCommunityProvider, shopServicesAdsRaw],
+  );
+  const shopProgramsAds = useMemo(
+    () => filterShopAdsByCommunityProvider(shopProgramsAdsRaw),
+    [filterShopAdsByCommunityProvider, shopProgramsAdsRaw],
+  );
+
+  const shopProfessionals = useMemo(() => communityAdvertisers, [communityAdvertisers]);
+
+  useEffect(() => {
+    setShopProductsPage(1);
+    setShopServicesPage(1);
+    setShopProgramsPage(1);
+  }, [communityProviderId]);
 
   useEffect(() => {
     if (!solutionsMode) return;
