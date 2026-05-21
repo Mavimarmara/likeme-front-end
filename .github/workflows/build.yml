@@ -132,7 +132,12 @@ jobs:
           p12-password: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
           keychain-password: ${{ secrets.KEYCHAIN_PASSWORD }}
 
-      - name: Instalar provisioning profile (App Store)
+      - name: Configurar App Store Connect API Key (assinatura Xcode)
+        env:
+          ASC_API_KEY_P8: ${{ secrets.ASC_API_KEY_P8 }}
+        run: bash scripts/ci-setup-asc-api-key.sh
+
+      - name: Instalar provisioning profile (opcional, só App Store)
         env:
           IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
         run: bash scripts/ci-install-ios-provisioning-profile.sh
@@ -143,10 +148,10 @@ jobs:
       - name: CocoaPods (store / Production)
         run: npm run ios:pod-install:store
 
-      - name: Xcode — build (Production, assinatura manual CI)
+      - name: Xcode — build (Production)
         run: bash scripts/ci-xcode-production.sh build
 
-      - name: Xcode — archive (Production, assinatura manual CI)
+      - name: Xcode — archive (Production)
         run: bash scripts/ci-xcode-production.sh archive
 
       - name: Upload Xcode archive (.xcarchive)
@@ -246,13 +251,10 @@ jobs:
           p12-password: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
           keychain-password: ${{ secrets.KEYCHAIN_PASSWORD }}
 
-      - name: Instalar provisioning profile (App Store)
+      - name: Configurar App Store Connect API Key (assinatura Xcode)
         env:
-          IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
-        run: bash scripts/ci-install-ios-provisioning-profile.sh
-
-      - name: ExportOptions App Store (manual, perfil CI)
-        run: bash scripts/ci-write-export-options-appstore.sh
+          ASC_API_KEY_P8: ${{ secrets.ASC_API_KEY_P8 }}
+        run: bash scripts/ci-setup-asc-api-key.sh
 
       - name: Download Xcode archive
         uses: actions/download-artifact@v4
@@ -275,14 +277,11 @@ jobs:
             exit 1
           fi
 
-      - name: Create App Store Connect API Key file
-        run: echo '${{ secrets.ASC_API_KEY_P8 }}' > ./AuthKey_6QJ886URZD.p8
-
       - name: Export + Validate + Upload (App Store)
         run: |
           set -eo pipefail
           mkdir -p ci-logs
-          npm run ios:xcode:export 2>&1 | tee ci-logs/ios-appstore-pipeline.log
+          bash scripts/ci-xcode-production.sh export 2>&1 | tee ci-logs/ios-appstore-pipeline.log
           npm run ios:appstore:validate 2>&1 | tee -a ci-logs/ios-appstore-pipeline.log
           npm run ios:appstore:upload 2>&1 | tee -a ci-logs/ios-appstore-pipeline.log
 
