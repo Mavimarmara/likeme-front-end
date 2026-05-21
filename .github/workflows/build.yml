@@ -137,11 +137,17 @@ jobs:
           IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
         run: bash scripts/ci-install-ios-provisioning-profile.sh
 
-      - name: Xcode — build (Production)
-        run: npm run ios:xcode:build:production
+      - name: Identidades de assinatura (diagnóstico)
+        run: security find-identity -v -p codesigning | head -20 || true
 
-      - name: Xcode — archive (Production)
-        run: npm run ios:xcode:archive:production
+      - name: CocoaPods (store / Production)
+        run: npm run ios:pod-install:store
+
+      - name: Xcode — build (Production, assinatura manual CI)
+        run: bash scripts/ci-xcode-production.sh build
+
+      - name: Xcode — archive (Production, assinatura manual CI)
+        run: bash scripts/ci-xcode-production.sh archive
 
       - name: Upload Xcode archive (.xcarchive)
         uses: actions/upload-artifact@v4
@@ -244,6 +250,9 @@ jobs:
         env:
           IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
         run: bash scripts/ci-install-ios-provisioning-profile.sh
+
+      - name: ExportOptions App Store (manual, perfil CI)
+        run: bash scripts/ci-write-export-options-appstore.sh
 
       - name: Download Xcode archive
         uses: actions/download-artifact@v4

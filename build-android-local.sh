@@ -65,11 +65,9 @@ echo "1) Emulador (mais rápido, para testes)"
 echo "2) Dispositivo físico (requer USB debugging habilitado)"
 echo "3) APK de release (para testes/distribuição direta)"
 echo "4) AAB de release (para Google Play Store)"
-echo "5) EAS Build local (staging - APK)"
-echo "6) EAS Build local (production - APK)"
-echo "7) EAS Build na nuvem (staging)"
-echo "8) EAS Build na nuvem (production)"
-read -p "Escolha (1-8): " build_type
+echo "5) EAS Build local (production - APK)"
+echo "6) EAS Build na nuvem (production)"
+read -p "Escolha (1-6): " build_type
 
 case $build_type in
   1)
@@ -272,31 +270,6 @@ case $build_type in
     ;;
   5)
     echo ""
-    echo "🚀 Iniciando EAS Build local (staging - APK)..."
-    echo "📦 Isso criará um APK usando EAS Build localmente"
-    echo ""
-    
-    # Auto-confirmar se não for interativo
-    if [ -t 0 ]; then
-      read -p "Continuar? (y/n): " confirm
-      if [ "$confirm" != "y" ]; then
-        echo "❌ Build cancelado"
-        exit 0
-      fi
-    else
-      echo "✅ Modo não-interativo: continuando automaticamente..."
-    fi
-
-    export JAVA_HOME=$(/usr/libexec/java_home -v 17 2>/dev/null || /usr/libexec/java_home -v 21 2>/dev/null || true)
-    if [ -n "$JAVA_HOME" ]; then
-      export PATH="$JAVA_HOME/bin:$PATH"
-      echo "✓ JAVA_HOME=$JAVA_HOME"
-    fi
-    
-    eas build --local --platform android --profile staging
-    ;;
-  6)
-    echo ""
     echo "🚀 Iniciando EAS Build local (production - APK)..."
     echo "📦 Isso criará um APK de produção (backend production) usando EAS Build localmente"
     echo ""
@@ -320,41 +293,7 @@ case $build_type in
     
     eas build --local --platform android --profile production-apk
     ;;
-  7)
-    echo ""
-    echo "🚀 Iniciando EAS Build na nuvem (staging)..."
-    echo "📦 Isso criará um build na nuvem do EAS (pode levar alguns minutos)"
-    echo "📱 Você receberá um link para download quando concluir"
-    echo ""
-    
-    # Sincronizar variáveis do .env com EAS Secrets (para o build na nuvem usar o mesmo .env)
-    if [ -f .env ]; then
-      echo "📤 Sincronizando variáveis do .env com EAS Secrets..."
-      if node scripts/sync-env-to-eas-secrets.js; then
-        echo "✓ Variáveis EXPO_PUBLIC_* do .env foram enviadas para o EAS"
-      else
-        echo "⚠️  Sync de secrets falhou (ex: eas login). O build usará eas.json + EAS Secrets já configuradas."
-      fi
-      echo ""
-    else
-      echo "⚠️  Arquivo .env não encontrado. O build usará apenas variáveis do eas.json e EAS Secrets."
-      echo ""
-    fi
-    
-    # Auto-confirmar se não for interativo
-    if [ -t 0 ]; then
-      read -p "Continuar? (y/n): " confirm
-      if [ "$confirm" != "y" ]; then
-        echo "❌ Build cancelado"
-        exit 0
-      fi
-    else
-      echo "✅ Modo não-interativo: continuando automaticamente..."
-    fi
-    
-    eas build --platform android --profile staging
-    ;;
-  8)
+  6)
     echo ""
     echo "🚀 Iniciando EAS Build na nuvem (production)..."
     echo "📦 Isso criará um build de produção na nuvem do EAS (pode levar alguns minutos)"

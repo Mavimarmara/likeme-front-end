@@ -1,6 +1,6 @@
 {
   "name": "likeme-front-end",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "React Native app for health and wellness",
   "main": "index.js",
   "scripts": {
@@ -9,7 +9,6 @@
     "start:reset": "npm run start:clear",
     "start:tunnel": "npx expo start --reset-cache --clear --tunnel",
     "start:dev:tunnel": "npx expo start --dev-client --reset-cache --clear --tunnel",
-    "start:staging": "env-cmd -f .env.staging npx expo start",
     "start:production": "env-cmd -f .env.production npx expo start",
     "start:local": "cp .env.local .env && npx expo start --reset-cache --clear --tunnel",
     "start:dev": "expo start --dev-client",

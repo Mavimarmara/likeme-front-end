@@ -21,12 +21,32 @@ if ! security cms -D -i "$tmp_profile" >"$tmp_plist" 2>/dev/null; then
 fi
 
 uuid="$(/usr/libexec/PlistBuddy -c 'Print UUID' "$tmp_plist")"
-if [[ -z "$uuid" || "$uuid" == "" ]]; then
+if [[ -z "$uuid" ]]; then
   echo "::error::Não foi possível ler UUID do perfil." >&2
+  exit 1
+fi
+
+profile_name="$(/usr/libexec/PlistBuddy -c 'Print Name' "$tmp_plist" 2>/dev/null || true)"
+app_identifier="$(/usr/libexec/PlistBuddy -c 'Print Entitlements:application-identifier' "$tmp_plist" 2>/dev/null || true)"
+
+if [[ -z "$app_identifier" || "$app_identifier" != *"app.likeme.com" ]]; then
+  echo "::error::Perfil não é para app.likeme.com (application-identifier=${app_identifier:-vazio})." >&2
+  exit 1
+fi
+
+if /usr/libexec/PlistBuddy -c 'Print ProvisionedDevices' "$tmp_plist" >/dev/null 2>&1; then
+  echo "::error::Perfil parece Development/Ad Hoc (tem ProvisionedDevices). Use perfil App Store Distribution." >&2
   exit 1
 fi
 
 dest_dir="${HOME}/Library/MobileDevice/Provisioning Profiles"
 mkdir -p "$dest_dir"
 cp "$tmp_profile" "${dest_dir}/${uuid}.mobileprovision"
-echo "Provisioning profile instalado: UUID=${uuid}"
+echo "Provisioning profile instalado: UUID=${uuid} name=${profile_name:-?}"
+
+if [[ -n "${GITHUB_ENV:-}" ]]; then
+  {
+    echo "IOS_PROVISIONING_PROFILE_UUID=${uuid}"
+    echo "IOS_PROVISIONING_PROFILE_NAME=${profile_name}"
+  } >>"$GITHUB_ENV"
+fi

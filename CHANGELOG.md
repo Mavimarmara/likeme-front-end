@@ -27,15 +27,29 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ## [1.4.0] - 2026-05-19
 
 ### Adicionado
+- Cupom de desconto no checkout: aplicar código, ver desconto no resumo e remover antes de pagar
 - Label "Recomendado por" e parceiro em detalhes de produto e produto afiliado
-- Tela de aquisições no perfil (AcquisitionListScreen)
-- Assinatura de protocolo no checkout com billingPeriod mensal
-- Cliente HTTP para assinatura de protocolo e verificação de acesso
+- Tela de aquisições no perfil
+- Assinatura mensal de protocolos no checkout
+- Acesso a protocolos contratados após a compra
 
 ### Alterado
-- Remoção do CommunityPreview do fluxo de perfil
+- Comunidade e marketplace mais fluidos ao navegar entre telas, com menos recarregamento
+- Feed e loja da comunidade com carregamento mais rápido
+- Tela de atualização obrigatória do app com visual renovado
+- Remoção do preview antigo da comunidade no perfil
 
 ### Corrigido
-- Comentários e respostas: autor, data relativa, expandir e layout sem duplicação de nome
-- Preservação da capitalização do displayName vindo do payload
-- ReplyInput fixo no PostDetail com suporte acima do dock inferior
+- Comentários e respostas: autor, data relativa, expandir respostas e layout do nome
+- Campo de resposta fixo ao comentar em posts, acima da barra inferior
+- Loja da comunidade e perfil do profissional alinhados ao anunciante
+- Card recomendado na Home abre a comunidade na hora
+- Cupom de desconto visível nas etapas de endereço e pagamento do checkout
+
+## [1.4.1] - 2026-05-21
+
+### Alterado
+- Remoção do ambiente staging (sync de branch, perfis EAS e documentação obsoleta)
+
+### Corrigido
+- Pipeline iOS no CI: assinatura manual com perfil App Store para build e archive em produção

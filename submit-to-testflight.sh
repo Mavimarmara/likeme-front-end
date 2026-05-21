@@ -23,7 +23,6 @@ if [ -f .env ]; then
       const easPath = path.join(process.cwd(), 'eas.json');
       const eas = JSON.parse(fs.readFileSync(easPath, 'utf8'));
       if (eas.submit) {
-        if (eas.submit.staging?.ios) eas.submit.staging.ios.appleId = appleId;
         if (eas.submit.production?.ios) eas.submit.production.ios.appleId = appleId;
         fs.writeFileSync(easPath, JSON.stringify(eas, null, 2));
         console.log('[submit-to-testflight] eas.json atualizado com APPLE_ID do .env');

@@ -1,26 +1,18 @@
 {
-  "version": "1.4.0",
-  "releasedAt": "2026-05-19",
+  "version": "1.4.1",
+  "releasedAt": "2026-05-21",
   "android": {
-    "versionCode": 5
+    "versionCode": 6
   },
   "ios": {
-    "buildNumber": 10
+    "buildNumber": 11
   },
   "changelog": {
-    "added": [
-      "Label \"Recomendado por\" e parceiro em detalhes de produto e produto afiliado",
-      "Tela de aquisições no perfil (AcquisitionListScreen)",
-      "Assinatura de protocolo no checkout com billingPeriod mensal",
-      "Cliente HTTP para assinatura de protocolo e verificação de acesso"
+    "fixed": [
+      "Pipeline iOS no CI: assinatura manual com perfil App Store para build e archive em produção"
     ],
     "changed": [
-      "Remoção do CommunityPreview do fluxo de perfil"
-    ],
-    "fixed": [
-      "Comentários e respostas: autor, data relativa, expandir e layout sem duplicação de nome",
-      "Preservação da capitalização do displayName vindo do payload",
-      "ReplyInput fixo no PostDetail com suporte acima do dock inferior"
+      "Remoção do ambiente staging (sync de branch, perfis EAS e documentação obsoleta)"
     ]
   }
 }

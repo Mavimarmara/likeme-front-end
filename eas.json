@@ -36,18 +36,8 @@
       }
     },
     "preview": {
-      "extends": "staging",
-      "distribution": "internal",
+      "extends": "production-internal",
       "autoIncrement": false
-    },
-    "staging": {
-      "extends": "store-common",
-      "env": {
-        "EXPO_PUBLIC_BACKEND_URL": "https://likeme-back-end-git-staging-pixel-pulse-labs.vercel.app"
-      },
-      "android": {
-        "buildType": "apk"
-      }
     },
     "production-internal": {
       "extends": "production",
@@ -75,20 +65,6 @@
     }
   },
   "submit": {
-    "staging": {
-      "ios": {
-        "appleId": "eduarda.s.weber@gmail.com",
-        "ascAppId": "6757706434",
-        "appleTeamId": "VS752K4DT8",
-        "ascApiKeyPath": "./AuthKey_6QJ886URZD.p8",
-        "ascApiKeyIssuerId": "f4a624c3-e2af-4ad0-a365-f60b90c2dc9d",
-        "ascApiKeyId": "6QJ886URZD"
-      },
-      "android": {
-        "track": "internal",
-        "serviceAccountKeyPath": "./google-service-account.json"
-      }
-    },
     "production": {
       "ios": {
         "appleId": "eduarda.s.weber@gmail.com",

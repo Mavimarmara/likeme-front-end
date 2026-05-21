@@ -279,53 +279,13 @@ jest.mock('react-native-safe-area-context', () => ({
 
 ## 📚 Documentação
 
-Este projeto possui documentação detalhada em vários arquivos:
-
-### 📖 Documentação Principal
-
-- **[README.md](./README.md)** - Este arquivo com visão geral do projeto
-- **[src/ARCHITECTURE.md](./src/ARCHITECTURE.md)** - Arquitetura detalhada e princípios do projeto
-
-### 🏗 Documentação de Desenvolvimento
-
-- **[src/screens/TEMPLATE.md](./src/screens/TEMPLATE.md)** - Template para criar novas telas
-- **[src/onboarding/README.md](./src/onboarding/README.md)** - Documentação dos componentes de onboarding
-
-### 🔧 Documentação Técnica
-
-- **[.expo/README.md](./.expo/README.md)** - Documentação sobre a pasta .expo (gerada automaticamente)
-
-### 📁 Estrutura de Documentação
-
-```
-likeme-front-end/
-├── README.md                    # 📖 Visão geral do projeto
-├── .expo/
-│   └── README.md                # 🔧 Documentação do Expo (auto-gerada)
-├── src/
-│   ├── ARCHITECTURE.md         # 🏗 Arquitetura e princípios
-│   ├── screens/
-│   │   └── TEMPLATE.md          # 📝 Template para novas telas
-│   └── onboarding/
-│       └── README.md            # 🚀 Documentação do onboarding
-```
-
-### 🎯 Como Usar a Documentação
-
-1. **Para entender o projeto**: Comece pelo [README.md](./README.md)
-2. **Para entender a arquitetura**: Leia [src/ARCHITECTURE.md](./src/ARCHITECTURE.md)
-3. **Para criar novas telas**: Use [src/screens/TEMPLATE.md](./src/screens/TEMPLATE.md)
-4. **Para trabalhar com onboarding**: Consulte [src/onboarding/README.md](./src/onboarding/README.md)
-5. **Para entender o Expo**: Veja [.expo/README.md](./.expo/README.md) (informações técnicas)
-
-### 📝 Contribuindo com Documentação
-
-Ao adicionar novas funcionalidades, lembre-se de:
-
-- Atualizar a documentação correspondente
-- Seguir os templates estabelecidos
-- Manter a consistência com a arquitetura documentada
-- Adicionar exemplos práticos quando necessário
+- [README.md](./README.md) — visão geral
+- [src/ARCHITECTURE.md](./src/ARCHITECTURE.md) — arquitetura do app
+- [src/screens/TEMPLATE.md](./src/screens/TEMPLATE.md) — template de telas
+- [src/i18n/README.md](./src/i18n/README.md) — traduções (API + cache)
+- [BUILD_TESTFLIGHT.md](./BUILD_TESTFLIGHT.md) — build iOS local / TestFlight
+- [.github/workflows/README.md](./.github/workflows/README.md) — CI (EAS)
+- [maestro/README.md](./maestro/README.md) — testes E2E
 
 ## 📄 Licença
 
