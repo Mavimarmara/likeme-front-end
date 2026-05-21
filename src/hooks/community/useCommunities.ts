@@ -14,6 +14,8 @@ import { logger } from '@/utils/logger';
 import { prefetchImageUris } from '@/utils/image/prefetchImageUris';
 import { useEventList } from '@/hooks/event/useEventList';
 import { resolveCommunityHeroImageUri } from '@/utils/community/mappers';
+import { isCommunitiesCacheEntryFresh, useCommunitiesCache } from '@/contexts/CommunitiesCacheContext';
+import { communitiesListCacheKey } from '@/utils/community/communitiesCacheKey';
 
 import type { JoinCardItem } from '@/components/ui/cards/JoinCard';
 
@@ -85,27 +87,63 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
     firstCardImageUrl,
   } = options;
 
-  const [communities, setCommunities] = useState<Community[]>([]);
-  const [categories, setCategories] = useState<CommunityCategory[]>([]);
-  const [communityUsers, setCommunityUsers] = useState<CommunityUserRelation[]>([]);
-  const [loading, setLoading] = useState(false);
+  const paramsKey = JSON.stringify(params ?? {});
+  const memoizedParams = useMemo(() => params ?? {}, [paramsKey]);
+  const communitiesCache = useCommunitiesCache();
+  const cacheKey = communitiesListCacheKey(paramsKey, pageSize);
+  const initialCacheEntry = communitiesCache.read(cacheKey);
+  const initialCacheIsFresh = initialCacheEntry != null && isCommunitiesCacheEntryFresh(initialCacheEntry);
+
+  const [communities, setCommunities] = useState<Community[]>(() =>
+    initialCacheIsFresh ? initialCacheEntry.communities : [],
+  );
+  const [categories, setCategories] = useState<CommunityCategory[]>(() =>
+    initialCacheIsFresh ? initialCacheEntry.categories : [],
+  );
+  const [communityUsers, setCommunityUsers] = useState<CommunityUserRelation[]>(() =>
+    initialCacheIsFresh ? initialCacheEntry.communityUsers : [],
+  );
+  const [loading, setLoading] = useState(() => enabled && !initialCacheIsFresh);
   const [loadingMore, setLoadingMore] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
+  const [hasMore, setHasMore] = useState(() => (initialCacheIsFresh ? initialCacheEntry.hasMore : true));
   const [error, setError] = useState<string | null>(null);
   const [paging, setPaging] = useState<{
     next: string | null;
     previous: string | null;
-  } | null>(null);
+  } | null>(() => (initialCacheIsFresh ? initialCacheEntry.paging : null));
   const emptyFeedEvents = useMemo((): FeedEvent[] => [], []);
-  const [communityFiles, setCommunityFiles] = useState<CommunityFile[]>([]);
-  const paramsKey = JSON.stringify(params ?? {});
-  const memoizedParams = useMemo(() => params ?? {}, [paramsKey]);
+  const [communityFiles, setCommunityFiles] = useState<CommunityFile[]>(() =>
+    initialCacheIsFresh ? initialCacheEntry.communityFiles : [],
+  );
 
-  const hasLoadedInitially = useRef(false);
-  const previousParamsKey = useRef<string>('');
+  const hasLoadedInitially = useRef(initialCacheIsFresh);
+  const previousParamsKey = useRef<string>(initialCacheIsFresh ? paramsKey : '');
   const isLoadingRef = useRef(false);
   const hasErrorRef = useRef(false);
+  const backgroundRefreshStartedRef = useRef(false);
+
+  const persistFirstPageCache = useCallback(
+    (
+      communitiesList: Community[],
+      categoriesList: CommunityCategory[],
+      communityUsersList: CommunityUserRelation[],
+      filesList: CommunityFile[],
+      pagingData: { next: string | null; previous: string | null } | null,
+      nextHasMore: boolean,
+    ) => {
+      communitiesCache.write(cacheKey, {
+        communities: communitiesList,
+        categories: categoriesList,
+        communityUsers: communityUsersList,
+        communityFiles: filesList,
+        paging: pagingData,
+        hasMore: nextHasMore,
+        fetchedAt: Date.now(),
+      });
+    },
+    [communitiesCache, cacheKey],
+  );
 
   const loadCommunities = useCallback(
     async (page: number, append = false) => {
@@ -118,7 +156,9 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
         hasErrorRef.current = false;
 
         if (page === 1) {
-          setLoading(true);
+          if (!append && communities.length === 0) {
+            setLoading(true);
+          }
         } else {
           setLoadingMore(true);
         }
@@ -193,7 +233,24 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
         const pagination = response.data.pagination || response.pagination;
         const hasMoreFromPagination = pagination ? page < pagination.totalPages : false;
 
-        setHasMore(hasMorePages || hasMoreFromPagination);
+        const resolvedHasMore = hasMorePages || hasMoreFromPagination;
+        setHasMore(resolvedHasMore);
+
+        if (page === 1 && !append) {
+          persistFirstPageCache(
+            communitiesList,
+            categoriesList,
+            communityUsersList,
+            filesList,
+            pagingData
+              ? {
+                  next: pagingData.next ?? null,
+                  previous: pagingData.previous ?? null,
+                }
+              : null,
+            resolvedHasMore,
+          );
+        }
       } catch (err) {
         hasErrorRef.current = true;
         const errorMessage = err instanceof Error ? err.message : 'Erro ao listar comunidades';
@@ -213,8 +270,16 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
         isLoadingRef.current = false;
       }
     },
-    [pageSize, memoizedParams],
+    [communities.length, pageSize, memoizedParams, persistFirstPageCache],
   );
+
+  useEffect(() => {
+    if (!enabled || !initialCacheIsFresh || backgroundRefreshStartedRef.current) {
+      return;
+    }
+    backgroundRefreshStartedRef.current = true;
+    void loadCommunities(1);
+  }, [enabled, initialCacheIsFresh, loadCommunities]);
 
   const loadMore = useCallback(() => {
     if (!loadingMore && hasMore && !loading && enabled) {

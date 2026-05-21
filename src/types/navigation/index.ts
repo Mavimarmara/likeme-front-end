@@ -5,7 +5,7 @@ export type CommunityStackParamList = {
   PostDetail: { post: import('@/types').Post };
 };
 
-export type RootStackParamList = {
+type RootStackParamListCore = {
   ForcedUpdate: { storeUrl: string; message?: string };
   Unauthenticated: undefined;
   Authenticated: undefined;
@@ -89,6 +89,20 @@ export type RootStackParamList = {
       rating?: number;
       specialties?: string[];
     };
+  };
+};
+
+export type AppLoadingNavigateTarget =
+  | { name: 'ProductDetails'; params: RootStackParamListCore['ProductDetails'] }
+  | { name: 'AffiliateProduct'; params: RootStackParamListCore['AffiliateProduct'] }
+  | { name: 'Community'; params?: RootStackParamListCore['Community'] }
+  | { name: 'Marketplace' }
+  | { name: 'ProviderProfile'; params: RootStackParamListCore['ProviderProfile'] };
+
+export type RootStackParamList = RootStackParamListCore & {
+  AppLoading: {
+    target: AppLoadingNavigateTarget;
+    loadingMessage?: string;
   };
 };
 

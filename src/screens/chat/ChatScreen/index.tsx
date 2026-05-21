@@ -22,6 +22,7 @@ import { useBlockedUser, useUserAvatar, useTranslation, useChat, useFeatureFlag 
 import type { ChatStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
 import { logger } from '@/utils/logger';
+import { navigateToCommunity } from '@/utils/navigation/communityNavigation';
 import { styles } from './styles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -106,7 +107,7 @@ const ChatScreen: React.FC = () => {
   useEffect(() => {
     if (!isChatFlagLoading && !isChatEnabled) {
       Alert.alert('Chat indisponivel', 'Esta funcionalidade esta desativada no momento.');
-      (navigation.getParent() ?? navigation).navigate('Community' as never);
+      navigateToCommunity(navigation.getParent() ?? navigation);
     }
   }, [isChatEnabled, isChatFlagLoading, navigation]);
 

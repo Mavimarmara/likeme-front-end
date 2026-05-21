@@ -5,6 +5,10 @@ import type { Product, ProductCategorySummary } from '@/types/product';
 
 export const PRODUCT_LIST_CATEGORY_TAGS_LIMIT = 2;
 
+function productHasCategoryNamesFromApi(product: Product): boolean {
+  return (product.categoryNames ?? []).some((name) => typeof name === 'string' && name.trim() !== '');
+}
+
 async function fetchCategoriesByProductIds(productIds: string[]): Promise<Map<string, ProductCategorySummary[]>> {
   const rows = await Promise.all(
     productIds.map(async (productId) => {
@@ -56,7 +60,13 @@ export async function enrichProductsWithCategoriesFromByProductApi(products: Pro
   if (products.length === 0) {
     return [];
   }
-  const map = await fetchCategoriesByProductIds(products.map((p) => p.id));
+
+  const needsFetch = products.filter((p) => !productHasCategoryNamesFromApi(p));
+  if (needsFetch.length === 0) {
+    return products.map((p) => mergeCategoryFields(p, []));
+  }
+
+  const map = await fetchCategoriesByProductIds(needsFetch.map((p) => p.id));
   return products.map((p) => mergeCategoryFields(p, map.get(p.id) ?? []));
 }
 

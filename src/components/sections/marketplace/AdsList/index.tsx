@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, StyleProp, ViewStyle } from 'react-native';
-import { ProductItemCard, ProductItemCardSkeleton } from '@/components/ui/cards';
+import { ProductItemCard } from '@/components/ui/cards';
 import { ToggleTabs } from '@/components/ui/tabs';
 import type { ButtonCarouselOption } from '@/components/ui/carousel';
 import { StickyFilterCarouselRow } from '@/components/ui/menu';
@@ -61,8 +61,6 @@ type AdsListProps = {
 };
 
 const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
-const ADS_LIST_INITIAL_SKELETON_COUNT = 4;
-
 const AdsList: React.FC<AdsListProps> = ({
   navigation,
   ads = [],
@@ -213,11 +211,10 @@ const AdsList: React.FC<AdsListProps> = ({
       </View>
     ) : null;
 
-  const renderInitialLoadSkeleton = () => (
+  const renderInitialLoading = () => (
     <View style={styles.loadingContainer}>
-      {Array.from({ length: ADS_LIST_INITIAL_SKELETON_COUNT }).map((_, index) => (
-        <ProductItemCardSkeleton key={`ads-list-skeleton-${index}`} />
-      ))}
+      <ActivityIndicator size='large' color='#2196F3' />
+      <Text style={styles.loadingText}>{t('common.loading')}</Text>
     </View>
   );
 
@@ -234,7 +231,7 @@ const AdsList: React.FC<AdsListProps> = ({
           />
         )}
         {orderFilterRow}
-        {renderInitialLoadSkeleton()}
+        {renderInitialLoading()}
       </View>
     );
   }

@@ -72,9 +72,17 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#2196F3',
   },
-  listLoadingInitial: {
-    paddingTop: SPACING.SM,
-    gap: SPACING.MD,
+  listLoadingFullScreen: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: SPACING.XL,
+  },
+  listLoadingText: {
+    marginTop: SPACING.MD,
+    fontSize: 16,
+    color: '#666666',
+    fontFamily: 'DM Sans',
   },
   listEmptyContainer: {
     paddingHorizontal: SPACING.MD,

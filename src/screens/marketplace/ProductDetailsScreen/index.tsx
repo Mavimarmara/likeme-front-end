@@ -32,6 +32,8 @@ import {
 import { MARKETPLACE_PRODUCT_PLACEHOLDER_IMAGE_URI } from '@/constants';
 import type { RootStackParamList } from '@/types/navigation';
 import { PRODUCT_CATALOG_TYPE, catalogTypeTranslatedBadgeLabels } from '@/types/product';
+import { navigateToProviderProfile } from '@/utils/navigation/marketplaceNavigation';
+import { navigateToProductDetailsScreen } from '@/utils/navigation/productNavigation';
 import { styles } from './styles';
 
 type ProductDetailsScreenProps = {
@@ -253,7 +255,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       item_id: providerId,
     });
 
-    navigation.navigate('ProviderProfile', {
+    navigateToProviderProfile(navigation, {
       providerId,
     });
   };
@@ -481,7 +483,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
               item_name: p.title,
               screen_name: 'product_details',
             });
-            navigation.navigate('ProductDetails', {
+            navigateToProductDetailsScreen(navigation, {
               productId: p.id,
               product: {
                 id: p.id,

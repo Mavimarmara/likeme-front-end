@@ -14,7 +14,7 @@ import { EmptyState } from '@/components/ui/feedback';
 import { GradientBackgroundByCategory } from '@/components/sections';
 import { FilterCategoryModal, type FilterCategoryResult, type SolutionId } from '@/components/ui/modals';
 import { WeekHighlightCard } from '@/components/sections/marketplace';
-import { ProductItemCard, ProductItemCardSkeleton } from '@/components/ui/cards';
+import { ProductItemCard } from '@/components/ui/cards';
 import {
   useMarketplaceAds,
   useProducts,
@@ -28,6 +28,7 @@ import {
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 import { handleAdNavigation } from '@/utils';
+import { navigateToProviderProfile } from '@/utils/navigation/marketplaceNavigation';
 import type { Ad, Advertiser } from '@/types/ad';
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import type { RootStackParamList } from '@/types/navigation';
@@ -51,7 +52,6 @@ const MARKETPLACE_SOLUTION_ID_SET = new Set<SolutionFilterId>(marketplaceSolutio
 
 const DEFAULT_HIGHLIGHT_IMAGE = 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
 const DEFAULT_PRODUCT_IMAGE = 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
-const MARKETPLACE_LIST_SKELETON_COUNT = 4;
 const MARKETPLACE_LIST_END_REACHED_THRESHOLD = 0.5;
 type MarketplaceSolutionTab = SolutionTab | MarketplaceSolutionFilterId;
 
@@ -305,7 +305,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
 
   const handleProfessionalPress = useCallback(
     (advertiser: Advertiser) => {
-      navigation.navigate('ProviderProfile', {
+      navigateToProviderProfile(navigation, {
         providerId: advertiser.id,
         provider: {
           name: advertiser.name,
@@ -415,6 +415,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
 
   const isProfessionalsTab = selectedSolutionTab === 'professionals';
   const listData = isProfessionalsTab ? [] : listAdsForCurrentTab;
+  const showMarketplaceInitialLoading = !isProfessionalsTab && loading && listData.length === 0;
   const showProfessionalsAfterAllTab =
     selectedSolutionTab === SOLUTION_ALL && professionalsContent != null && listAdsForCurrentTab.length > 0;
 
@@ -459,15 +460,6 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
         )
       );
     }
-    if (loading) {
-      return (
-        <View style={styles.listLoadingInitial}>
-          {Array.from({ length: MARKETPLACE_LIST_SKELETON_COUNT }).map((_, index) => (
-            <ProductItemCardSkeleton key={`mkt-skeleton-${index}`} />
-          ))}
-        </View>
-      );
-    }
     return (
       <View style={styles.listEmptyContainer}>
         <EmptyState
@@ -479,7 +471,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
         />
       </View>
     );
-  }, [isProfessionalsTab, professionalsContent, loading, t, handleClearFilterCategory]);
+  }, [isProfessionalsTab, professionalsContent, t, handleClearFilterCategory]);
 
   return (
     <ScreenWithHeader
@@ -500,25 +492,32 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       </View>
       <View style={styles.content}>
         {renderCustomHeader()}
-        <FlatList<Ad>
-          testID='marketplace-list'
-          style={styles.scrollView}
-          contentContainerStyle={styles.listContentContainer}
-          showsVerticalScrollIndicator={false}
-          data={listData}
-          keyExtractor={adKeyExtractor}
-          renderItem={renderAdItem}
-          ItemSeparatorComponent={renderItemSeparator}
-          ListHeaderComponent={renderWeekHighlights()}
-          ListFooterComponent={listFooter}
-          ListEmptyComponent={listEmpty}
-          onEndReached={handleLoadMore}
-          onEndReachedThreshold={MARKETPLACE_LIST_END_REACHED_THRESHOLD}
-          initialNumToRender={10}
-          maxToRenderPerBatch={10}
-          windowSize={11}
-          removeClippedSubviews
-        />
+        {showMarketplaceInitialLoading ? (
+          <View style={styles.listLoadingFullScreen}>
+            <ActivityIndicator size='large' color='#2196F3' />
+            <Text style={styles.listLoadingText}>{t('common.loading')}</Text>
+          </View>
+        ) : (
+          <FlatList<Ad>
+            testID='marketplace-list'
+            style={styles.scrollView}
+            contentContainerStyle={styles.listContentContainer}
+            showsVerticalScrollIndicator={false}
+            data={listData}
+            keyExtractor={adKeyExtractor}
+            renderItem={renderAdItem}
+            ItemSeparatorComponent={renderItemSeparator}
+            ListHeaderComponent={renderWeekHighlights()}
+            ListFooterComponent={listFooter}
+            ListEmptyComponent={listEmpty}
+            onEndReached={handleLoadMore}
+            onEndReachedThreshold={MARKETPLACE_LIST_END_REACHED_THRESHOLD}
+            initialNumToRender={10}
+            maxToRenderPerBatch={10}
+            windowSize={11}
+            removeClippedSubviews
+          />
+        )}
       </View>
     </ScreenWithHeader>
   );

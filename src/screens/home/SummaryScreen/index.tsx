@@ -24,6 +24,9 @@ import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import { useAnalyticsScreen } from '@/analytics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getCommunityStackNavigator } from '@/navigation/rootStackScreenLoaders';
+import { navigateToCommunity } from '@/utils/navigation/communityNavigation';
+import { navigateToProviderProfile } from '@/utils/navigation/marketplaceNavigation';
+import { navigateToProductDetailsScreen } from '@/utils/navigation/productNavigation';
 import { styles } from './styles';
 
 type Props = {
@@ -178,27 +181,19 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   );
 
   const handleProductPress = (product: Product) => {
-    rootNavigation.navigate('ProductDetails', {
-      productId: product.id,
-    } as never);
+    navigateToProductDetailsScreen(rootNavigation, { productId: product.id });
   };
 
   const handleProviderPress = (provider: Provider) => {
-    rootNavigation.navigate('ProviderProfile', {
+    navigateToProviderProfile(rootNavigation, {
       providerId: provider.id,
       provider: { name: provider.name, avatar: provider.avatar },
-    } as never);
+    });
   };
 
   const handleJoinCommunity = useCallback(
     (community: JoinCardItem) => {
-      rootNavigation.navigate(
-        'Community' as never,
-        {
-          screen: 'CommunityList',
-          params: { openFeedFromMenu: true },
-        } as never,
-      );
+      navigateToCommunity(rootNavigation, { openFeedFromMenu: true });
       void communityService.joinCommunity(community.id).catch((error) => {
         logger.error('[SummaryScreen] Falha ao entrar na comunidade em background', {
           communityId: community.id,
@@ -211,9 +206,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleProgramPress = useCallback(
     (program: JoinCardItem) => {
-      rootNavigation.navigate('ProductDetails', {
-        productId: program.id,
-      } as never);
+      navigateToProductDetailsScreen(rootNavigation, { productId: program.id });
     },
     [rootNavigation],
   );

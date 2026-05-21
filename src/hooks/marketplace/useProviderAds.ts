@@ -1,9 +1,16 @@
-import { enrichAdsProductsWithCategoriesFromByProductApi } from '@/hooks/marketplace/productCategoryEnrichment';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import {
+  isMarketplaceListingsCacheEntryFresh,
+  useMarketplaceListingsCache,
+} from '@/contexts/MarketplaceListingsCacheContext';
 import { adService } from '@/services';
 import { mapUICategoryToApiCategory } from '@/utils';
+import { providerAdsCacheKey } from '@/utils/marketplace/marketplaceListingsCacheKey';
 import { logger } from '@/utils/logger';
+import { prefetchImageUris } from '@/utils/image/prefetchImageUris';
 import type { Ad, ListAdsParams } from '@/types/ad';
+
+const PROVIDER_ADS_PREFETCH_FIRST_N = 6;
 
 interface UseProviderAdsParams {
   advertiserId: string | undefined;
@@ -28,21 +35,61 @@ export const useProviderAds = ({
   selectedCategory,
   enabled = true,
 }: UseProviderAdsParams): UseProviderAdsReturn => {
-  const [ads, setAds] = useState<Ad[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
+  const listingsCache = useMarketplaceListingsCache();
+  const cacheKey = providerAdsCacheKey(advertiserId, selectedCategory);
+  const initialCacheEntry = listingsCache.read(cacheKey);
+  const initialCacheIsFresh = initialCacheEntry != null && isMarketplaceListingsCacheEntryFresh(initialCacheEntry);
+
+  const [ads, setAds] = useState<Ad[]>(() => (initialCacheIsFresh ? initialCacheEntry.ads : []));
+  const [loading, setLoading] = useState(() => enabled && !initialCacheIsFresh);
+  const [hasMore, setHasMore] = useState(() => (initialCacheIsFresh ? initialCacheEntry.hasMore : true));
+
+  const adsRef = useRef(ads);
+  adsRef.current = ads;
+  const backgroundRefreshStartedRef = useRef(false);
 
   useEffect(() => {
     if (!enabled) {
       setAds([]);
       setLoading(false);
       setHasMore(false);
+    }
+  }, [enabled]);
+
+  useEffect(() => {
+    backgroundRefreshStartedRef.current = false;
+    if (!enabled) {
+      return;
+    }
+    const entry = listingsCache.read(cacheKey);
+    const fresh = entry != null && isMarketplaceListingsCacheEntryFresh(entry);
+    if (fresh) {
+      setAds(entry.ads);
+      setHasMore(entry.hasMore);
+      setLoading(false);
+      return;
+    }
+    if (!advertiserId) {
+      setAds([]);
+      setHasMore(false);
+      setLoading(false);
       return;
     }
     setAds([]);
     setHasMore(true);
     setLoading(true);
-  }, [advertiserId, selectedCategory, enabled]);
+  }, [advertiserId, cacheKey, enabled, listingsCache]);
+
+  const persistCache = useCallback(
+    (nextAds: Ad[], nextHasMore: boolean) => {
+      listingsCache.write(cacheKey, {
+        ads: nextAds,
+        hasMore: nextHasMore,
+        fetchedAt: Date.now(),
+      });
+    },
+    [listingsCache, cacheKey],
+  );
 
   const loadAds = useCallback(async () => {
     if (!enabled) {
@@ -56,7 +103,12 @@ export const useProviderAds = ({
     }
 
     try {
-      setLoading(true);
+      if (page === 1 && adsRef.current.length > 0) {
+        setLoading(false);
+      } else {
+        setLoading(true);
+      }
+
       const params: ListAdsParams = {
         advertiserId,
         page,
@@ -71,24 +123,29 @@ export const useProviderAds = ({
       const response = await adService.listAds(params);
 
       if (!response.success || !response.data) {
-        if (page === 1) setAds([]);
+        if (page === 1) {
+          setAds([]);
+          persistCache([], false);
+        }
         setHasMore(false);
         return;
       }
 
-      const adsArray = await enrichAdsProductsWithCategoriesFromByProductApi(response.data.ads || []);
-      if (page === 1) {
-        setAds(adsArray);
-      } else {
-        setAds((prev) => [...prev, ...adsArray]);
-      }
+      const adsArray = response.data.ads || [];
+      void prefetchImageUris(adsArray.slice(0, PROVIDER_ADS_PREFETCH_FIRST_N).map((ad) => ad.product?.image));
 
+      const nextAds = page === 1 ? adsArray : [...adsRef.current, ...adsArray];
+      setAds(nextAds);
+
+      let nextHasMore = false;
       const pagination = response.data.pagination;
       if (pagination) {
-        setHasMore(pagination.page < pagination.totalPages);
+        nextHasMore = pagination.page < pagination.totalPages;
       } else {
-        setHasMore(adsArray.length >= limit);
+        nextHasMore = adsArray.length >= limit;
       }
+      setHasMore(nextHasMore);
+      persistCache(nextAds, nextHasMore);
     } catch (error) {
       logger.error('useProviderAds: falha ao listar anúncios do provider', {
         error,
@@ -96,12 +153,23 @@ export const useProviderAds = ({
         page,
         selectedCategory,
       });
-      if (page === 1) setAds([]);
+      if (page === 1) {
+        setAds([]);
+        persistCache([], false);
+      }
       setHasMore(false);
     } finally {
       setLoading(false);
     }
-  }, [advertiserId, page, limit, selectedCategory, enabled]);
+  }, [advertiserId, enabled, limit, page, persistCache, selectedCategory]);
+
+  useEffect(() => {
+    if (!enabled || !initialCacheIsFresh || backgroundRefreshStartedRef.current) {
+      return;
+    }
+    backgroundRefreshStartedRef.current = true;
+    void loadAds();
+  }, [enabled, initialCacheIsFresh, loadAds]);
 
   return {
     ads,

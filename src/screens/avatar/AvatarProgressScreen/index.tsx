@@ -21,6 +21,8 @@ import { ProductsCarousel, type Product } from '@/components/sections/product';
 import Carousel from '@/components/sections/product/Carousel';
 import { useAnalyticsScreen } from '@/analytics';
 import { logger } from '@/utils/logger';
+import { navigateToCommunity } from '@/utils/navigation/communityNavigation';
+import { navigateToProductDetailsScreen } from '@/utils/navigation/productNavigation';
 import { styles } from './styles';
 
 type Props = {
@@ -241,13 +243,11 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleProductPress = (product: Product) => {
-    rootNavigation.navigate('ProductDetails', {
-      productId: product.id,
-    } as never);
+    navigateToProductDetailsScreen(rootNavigation, { productId: product.id });
   };
 
-  const handleJoinCommunityPress = (community: JoinCardItem) => {
-    rootNavigation.navigate('Community' as never);
+  const handleJoinCommunityPress = (_community: JoinCardItem) => {
+    navigateToCommunity(rootNavigation);
   };
 
   useEffect(() => {

@@ -16,6 +16,7 @@ import { COLORS, FEATURE_FLAGS } from '@/constants';
 import { storageService } from '@/services';
 import type { ChatStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
+import { navigateToCommunity } from '@/utils/navigation/communityNavigation';
 import { styles } from './styles';
 
 type ChatListNavigationProp = StackNavigationProp<ChatStackParamList, 'ChatList'>;
@@ -55,7 +56,7 @@ const ChatListScreen: React.FC<Props> = () => {
   useEffect(() => {
     if (!isChatFlagLoading && !isChatEnabled) {
       Alert.alert('Chat indisponivel', 'Esta funcionalidade esta desativada no momento.');
-      rootNavigation.navigate('Community' as never);
+      navigateToCommunity(rootNavigation);
     }
   }, [isChatEnabled, isChatFlagLoading, rootNavigation]);
 

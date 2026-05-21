@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GradientBackground, ScreenWithHeader } from '@/components/ui/layout';
 import type { RootStackParamList } from '@/types/navigation';
 import { formatPrice } from '@/utils';
+import { navigateToMarketplace } from '@/utils/navigation/marketplaceNavigation';
 import { catalogTypeTranslatedBadgeLabels } from '@/types/product';
 import { Alert } from 'react-native';
 import { SecondaryButton } from '@/components/ui/buttons';
@@ -241,11 +242,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
   ) : (
     <View style={styles.emptyCartContainer}>
       <Text style={styles.emptyCartText}>{t('cart.emptyCart')}</Text>
-      <TouchableOpacity
-        style={styles.shopButton}
-        onPress={() => navigation.navigate('Marketplace')}
-        activeOpacity={0.8}
-      >
+      <TouchableOpacity style={styles.shopButton} onPress={() => navigateToMarketplace(navigation)} activeOpacity={0.8}>
         <Text style={styles.shopButtonText}>{t('cart.startShopping')}</Text>
       </TouchableOpacity>
     </View>

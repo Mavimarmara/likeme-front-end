@@ -7,7 +7,6 @@ import {
   ShoppingList,
   EventBanner,
   PostCard,
-  PostCardSkeleton,
   NextEventsSection,
   CommunityDescriptionSection,
   type CommunityDescriptionSpecialist,
@@ -39,6 +38,8 @@ import { useAnalyticsScreen, logTabSelect } from '@/analytics';
 import { storageService } from '@/services';
 import { logger } from '@/utils/logger';
 import { resolveCommunityHeroImageUri } from '@/utils/community/mappers';
+import { navigateToProviderProfile } from '@/utils/navigation/marketplaceNavigation';
+import { navigateToProductDetailsScreen } from '@/utils/navigation/productNavigation';
 import { filterAdsForProviderProfile } from '@/utils/marketplace/filterAdsForProviderProfile';
 import type { Advertiser } from '@/types/ad';
 import type { ShopTabId } from '@/components/sections/community/ShoppingList';
@@ -186,11 +187,13 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   });
 
   const handleProductPress = (product: Product) => {
-    rootNavigation?.navigate('ProductDetails', { productId: product.id } as never);
+    if (!rootNavigation) return;
+    navigateToProductDetailsScreen(rootNavigation, { productId: product.id });
   };
 
   const handleProfessionalPress = (advertiser: Advertiser) => {
-    rootNavigation?.navigate('ProviderProfile', { providerId: advertiser.id } as never);
+    if (!rootNavigation) return;
+    navigateToProviderProfile(rootNavigation, { providerId: advertiser.id });
   };
 
   const feedRecommendationsEnabled =
@@ -499,6 +502,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   }, [selectedCommunityId, isCommunityFavorite]);
 
   const showVirtualizedFeed = isFeedMode && activeInfoTab === 'posts';
+  const showFeedInitialLoading = showVirtualizedFeed && feedLoading && posts.length === 0;
   const showFeedRecommendations = isFeedMode && (activeInfoTab === 'posts' || activeInfoTab === 'about');
 
   const heroBlock = primaryCommunity?.displayName != null && (
@@ -585,21 +589,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     </View>
   );
 
-  const feedListEmpty = feedLoading ? (
-    <View style={styles.feedInitialLoading}>
-      <View style={styles.feedItemWrapper}>
-        <PostCardSkeleton />
-      </View>
-      <View style={styles.feedItemSeparator} />
-      <View style={styles.feedItemWrapper}>
-        <PostCardSkeleton />
-      </View>
-      <View style={styles.feedItemSeparator} />
-      <View style={styles.feedItemWrapper}>
-        <PostCardSkeleton />
-      </View>
-    </View>
-  ) : error ? (
+  const feedListEmpty = error ? (
     <View style={styles.feedEmptyContainer}>
       <Text style={styles.feedEmptyText}>{`Erro: ${error}`}</Text>
     </View>
@@ -624,7 +614,12 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
         <View pointerEvents='none' style={styles.gradientBackground}>
           <GradientBackground />
         </View>
-        {showVirtualizedFeed ? (
+        {showFeedInitialLoading ? (
+          <View style={styles.feedLoadingContainer}>
+            <ActivityIndicator size='large' color='#2196F3' />
+            <Text style={styles.feedLoadingText}>{t('common.loading')}</Text>
+          </View>
+        ) : showVirtualizedFeed ? (
           <FlatList
             style={[{ flex: 1 }, { zIndex: 1 }]}
             contentContainerStyle={styles.feedContentContainer}

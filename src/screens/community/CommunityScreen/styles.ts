@@ -66,9 +66,18 @@ export const styles = StyleSheet.create({
     fontSize: 12,
     color: COLORS.TEXT_LIGHT,
   },
-  feedInitialLoading: {
-    paddingTop: SPACING.SM,
-    paddingBottom: SPACING.XL,
+  feedLoadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: SPACING.XL,
+    zIndex: 1,
+  },
+  feedLoadingText: {
+    marginTop: SPACING.MD,
+    fontSize: 16,
+    color: '#666666',
+    fontFamily: 'DM Sans',
   },
   feedEmptyContainer: {
     paddingHorizontal: SPACING.MD,

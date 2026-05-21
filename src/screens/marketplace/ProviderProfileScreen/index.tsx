@@ -28,6 +28,9 @@ import { logger } from '@/utils/logger';
 import { buildAdvertiserContactButtons, type AdvertiserContactButton } from '@/utils/advertiser/contactButtons';
 import { formatAdvertiserDocumentsLine } from '@/utils/advertiser/documents';
 import { resolveCommunityHeroImageUri } from '@/utils/community/mappers';
+import { navigateToCommunity } from '@/utils/navigation/communityNavigation';
+import { navigateToProviderProfile } from '@/utils/navigation/marketplaceNavigation';
+import { navigateToProductDetailsScreen } from '@/utils/navigation/productNavigation';
 import { getProductModeTranslationKey } from '@/utils';
 import { filterAdsForProviderProfile } from '@/utils/marketplace/filterAdsForProviderProfile';
 import { getMarketplaceSortOptions } from '@/utils/marketplace/sortOptions';
@@ -276,14 +279,14 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
 
   const handleCommunityShopProductPress = useCallback(
     (product: Product) => {
-      rootNavigation.navigate('ProductDetails', { productId: product.id } as never);
+      navigateToProductDetailsScreen(rootNavigation, { productId: product.id });
     },
     [rootNavigation],
   );
 
   const handleCommunityShopProfessionalPress = useCallback(
     (professional: Advertiser) => {
-      rootNavigation.navigate('ProviderProfile', { providerId: professional.id } as never);
+      navigateToProviderProfile(rootNavigation, { providerId: professional.id });
     },
     [rootNavigation],
   );
@@ -323,7 +326,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
     async (community: JoinCardItem) => {
       try {
         await communityService.joinCommunity(community.id);
-        rootNavigation.navigate('Community' as never);
+        navigateToCommunity(rootNavigation);
       } catch {
         Alert.alert(t('common.error'), t('home.joinCommunityError'));
       }

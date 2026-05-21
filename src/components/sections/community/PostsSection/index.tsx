@@ -55,7 +55,8 @@ const PostsSection: React.FC<Props> = ({ posts, loading, loadingMore, error, onL
     return (
       <View style={styles.container}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size='large' color='#4CAF50' />
+          <ActivityIndicator size='large' color='#2196F3' />
+          <Text style={styles.loadingText}>{t('common.loading')}</Text>
         </View>
       </View>
     );

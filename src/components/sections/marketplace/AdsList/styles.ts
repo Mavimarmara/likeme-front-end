@@ -22,8 +22,9 @@ export const styles = StyleSheet.create({
   },
   loadingContainer: {
     paddingHorizontal: SPACING.MD,
-    paddingVertical: SPACING.MD,
-    gap: SPACING.SM,
+    paddingVertical: SPACING.XXL,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   loadingText: {
     marginTop: SPACING.MD,

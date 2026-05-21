@@ -1,15 +1,20 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { adService } from '@/services';
-import { enrichAdsProductsWithCategoriesFromByProductApi } from '@/hooks/marketplace/productCategoryEnrichment';
+import {
+  isMarketplaceListingsCacheEntryFresh,
+  useMarketplaceListingsCache,
+} from '@/contexts/MarketplaceListingsCacheContext';
 import { mapUICategoryToApiCategory } from '@/utils';
+import { marketplaceAdsCacheKey } from '@/utils/marketplace/marketplaceListingsCacheKey';
 import { logger } from '@/utils/logger';
 import { prefetchImageUris } from '@/utils/image/prefetchImageUris';
 import type { Ad, ListAdsParams } from '@/types/ad';
 
 const MARKETPLACE_ADS_PREFETCH_FIRST_N = 6;
+const LIST_LIMIT = 20;
 
 interface UseMarketplaceAdsParams {
-  selectedCategory: string;
+  selectedCategory?: string;
   selectedCategoryId?: string | null;
   page: number;
   searchQuery?: string;
@@ -30,9 +35,18 @@ export const useMarketplaceAds = ({
   searchQuery,
   enabled = true,
 }: UseMarketplaceAdsParams): UseMarketplaceAdsReturn => {
-  const [ads, setAds] = useState<Ad[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [hasMore, setHasMore] = useState(true);
+  const listingsCache = useMarketplaceListingsCache();
+  const cacheKey = marketplaceAdsCacheKey(searchQuery, { selectedCategory, selectedCategoryId });
+  const initialCacheEntry = listingsCache.read(cacheKey);
+  const initialCacheIsFresh = initialCacheEntry != null && isMarketplaceListingsCacheEntryFresh(initialCacheEntry);
+
+  const [ads, setAds] = useState<Ad[]>(() => (initialCacheIsFresh ? initialCacheEntry.ads : []));
+  const [loading, setLoading] = useState(() => enabled && !initialCacheIsFresh);
+  const [hasMore, setHasMore] = useState(() => (initialCacheIsFresh ? initialCacheEntry.hasMore : true));
+
+  const adsRef = useRef(ads);
+  adsRef.current = ads;
+  const backgroundRefreshStartedRef = useRef(false);
 
   useEffect(() => {
     if (!enabled) {
@@ -42,10 +56,28 @@ export const useMarketplaceAds = ({
     }
   }, [enabled]);
 
+  useEffect(() => {
+    backgroundRefreshStartedRef.current = false;
+    if (!enabled) {
+      return;
+    }
+    const entry = listingsCache.read(cacheKey);
+    const fresh = entry != null && isMarketplaceListingsCacheEntryFresh(entry);
+    if (fresh) {
+      setAds(entry.ads);
+      setHasMore(entry.hasMore);
+      setLoading(false);
+      return;
+    }
+    setAds([]);
+    setHasMore(true);
+    setLoading(true);
+  }, [cacheKey, enabled, listingsCache]);
+
   const buildParams = useCallback((): ListAdsParams => {
     const params: ListAdsParams = {
       page,
-      limit: 20,
+      limit: LIST_LIMIT,
       activeOnly: true,
     };
 
@@ -65,24 +97,56 @@ export const useMarketplaceAds = ({
     return params;
   }, [selectedCategory, selectedCategoryId, page, searchQuery]);
 
+  const persistCache = useCallback(
+    (nextAds: Ad[], nextHasMore: boolean) => {
+      listingsCache.write(cacheKey, {
+        ads: nextAds,
+        hasMore: nextHasMore,
+        fetchedAt: Date.now(),
+      });
+    },
+    [listingsCache, cacheKey],
+  );
+
   const loadAds = useCallback(async () => {
     if (!enabled) {
       return;
     }
 
     try {
-      setLoading(true);
+      if (page === 1 && adsRef.current.length > 0) {
+        setLoading(false);
+      } else {
+        setLoading(true);
+      }
+
       const params = buildParams();
       const response = await adService.listAds(params);
 
       if (!response.success || !response.data) {
-        handleEmptyResponse();
+        if (page === 1) {
+          setAds([]);
+          persistCache([], false);
+        }
+        setHasMore(false);
         return;
       }
 
-      const adsArray = await enrichAdsProductsWithCategoriesFromByProductApi(response.data.ads || []);
-      updateAds(adsArray);
-      updatePagination(response.data.pagination, adsArray.length, params.limit);
+      const adsArray = response.data.ads || [];
+      void prefetchImageUris(adsArray.slice(0, MARKETPLACE_ADS_PREFETCH_FIRST_N).map((ad) => ad.product?.image));
+
+      const nextAds = page === 1 ? adsArray : [...adsRef.current, ...adsArray];
+      setAds(nextAds);
+
+      let nextHasMore = false;
+      const pagination = response.data.pagination;
+      if (pagination) {
+        nextHasMore = pagination.page < pagination.totalPages;
+      } else {
+        nextHasMore = adsArray.length >= LIST_LIMIT;
+      }
+      setHasMore(nextHasMore);
+      persistCache(nextAds, nextHasMore);
     } catch (error) {
       logger.error('useMarketplaceAds: falha ao listar anúncios', {
         error,
@@ -91,37 +155,23 @@ export const useMarketplaceAds = ({
         categoryId: selectedCategoryId,
         selectedCategory,
       });
-      handleEmptyResponse();
+      if (page === 1) {
+        setAds([]);
+        persistCache([], false);
+      }
+      setHasMore(false);
     } finally {
       setLoading(false);
     }
-  }, [buildParams, enabled]);
+  }, [buildParams, enabled, page, persistCache, searchQuery, selectedCategory, selectedCategoryId]);
 
-  const handleEmptyResponse = () => {
-    if (page === 1) {
-      setAds([]);
-    }
-    setHasMore(false);
-  };
-
-  const updateAds = (adsArray: Ad[]) => {
-    const prefetchSlice = adsArray.slice(0, MARKETPLACE_ADS_PREFETCH_FIRST_N);
-    void prefetchImageUris(prefetchSlice.map((ad) => ad.product?.image));
-
-    if (page === 1) {
-      setAds(adsArray);
+  useEffect(() => {
+    if (!enabled || !initialCacheIsFresh || backgroundRefreshStartedRef.current) {
       return;
     }
-    setAds((prev) => [...prev, ...adsArray]);
-  };
-
-  const updatePagination = (pagination: any, adsLength: number, limit: number) => {
-    if (pagination) {
-      setHasMore(pagination.page < pagination.totalPages);
-      return;
-    }
-    setHasMore(adsLength >= limit);
-  };
+    backgroundRefreshStartedRef.current = true;
+    void loadAds();
+  }, [enabled, initialCacheIsFresh, loadAds]);
 
   return {
     ads,

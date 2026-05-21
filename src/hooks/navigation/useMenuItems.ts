@@ -4,6 +4,8 @@ import { HOME_MVP_ASSETS } from '@/assets/homeMvp';
 import { useTranslation } from '@/hooks/i18n';
 import { FEATURE_FLAGS } from '@/constants';
 import { useFeatureFlag } from '@/hooks/featureFlags/useFeatureFlag';
+import { navigateToCommunity } from '@/utils/navigation/communityNavigation';
+import { navigateToMarketplace } from '@/utils/navigation/marketplaceNavigation';
 
 type MenuItem = {
   id: string;
@@ -36,14 +38,7 @@ export const useMenuItems = (navigation: any): MenuItem[] => {
         iconImage: HOME_MVP_ASSETS.navCommunity,
         label: 'Comunidade',
         fullLabel: 'Comunidade',
-        onPress: () =>
-          rootNavigation.navigate(
-            'Community' as never,
-            {
-              screen: 'CommunityList',
-              params: { openFeedFromMenu: true },
-            } as never,
-          ),
+        onPress: () => navigateToCommunity(rootNavigation, { openFeedFromMenu: true }),
       },
       {
         id: 'marketplace',
@@ -51,7 +46,7 @@ export const useMenuItems = (navigation: any): MenuItem[] => {
         iconImage: HOME_MVP_ASSETS.navMarketplace,
         label: shopLabel,
         fullLabel: shopLabel,
-        onPress: () => rootNavigation.navigate('Marketplace' as never),
+        onPress: () => navigateToMarketplace(rootNavigation),
       },
     ];
 

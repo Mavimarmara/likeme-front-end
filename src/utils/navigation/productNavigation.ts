@@ -1,7 +1,9 @@
 import type { Ad } from '@/types/ad';
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
+import type { RootStackParamList } from '@/types/navigation';
 import { formatPriceLabel } from '@/utils/formatters/priceFormatter';
 import { advertiserToRouteProductProvider } from '@/utils/marketplace/routeProductProvider';
+import { navigateWithAppLoading } from '@/utils/navigation/appLoadingNavigation';
 
 const priceForNav = (raw: number | null | undefined) => formatPriceLabel(raw);
 
@@ -37,10 +39,13 @@ export const navigateToAmazonProduct = (ad: Ad, navigation: Navigation): boolean
       }
     : undefined;
 
-  navigation.navigate('AffiliateProduct', {
-    productId,
-    adId: ad.id,
-    product: productParams,
+  navigateWithAppLoading(navigation, {
+    name: 'AffiliateProduct',
+    params: {
+      productId,
+      adId: ad.id,
+      product: productParams,
+    },
   });
 
   return true;
@@ -56,18 +61,20 @@ export const navigateToExternalProduct = (ad: Ad, navigation: Navigation): boole
   }
 
   const productId = ad.productId || ad.product.id;
-  navigation.navigate('AffiliateProduct', {
-    productId,
-    adId: ad.id,
-    product: {
-      id: ad.product.id,
-      title: ad.product.name,
-      price: priceForNav(ad.product.price),
-      image: ad.product.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
-      type: ad.product.type,
-      description: ad.product.description,
-      externalUrl: ad.product.externalUrl,
-      provider: advertiserToRouteProductProvider(ad.advertiser),
+  navigateWithAppLoading(navigation, {
+    name: 'AffiliateProduct',
+    params: {
+      productId,
+      adId: ad.id,
+      product: {
+        id: ad.product.id,
+        title: ad.product.name,
+        price: priceForNav(ad.product.price),
+        image: ad.product.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
+        description: ad.product.description,
+        externalUrl: ad.product.externalUrl,
+        provider: advertiserToRouteProductProvider(ad.advertiser),
+      },
     },
   });
 
@@ -79,21 +86,30 @@ export const navigateToProductDetails = (ad: Ad, navigation: Navigation): boolea
     return false;
   }
 
-  navigation.navigate('ProductDetails', {
-    productId: ad.productId,
-    product: {
-      id: ad.product.id,
-      title: ad.product.name,
-      price: priceForNav(ad.product.price),
-      image: ad.product.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
-      type: ad.product.type,
-      description: ad.product.description,
-      provider: advertiserToRouteProductProvider(ad.advertiser),
+  navigateWithAppLoading(navigation, {
+    name: 'ProductDetails',
+    params: {
+      productId: ad.productId,
+      product: {
+        id: ad.product.id,
+        title: ad.product.name,
+        price: priceForNav(ad.product.price),
+        image: ad.product.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400',
+        description: ad.product.description,
+        provider: advertiserToRouteProductProvider(ad.advertiser),
+      },
     },
   });
 
   return true;
 };
+
+export function navigateToProductDetailsScreen(
+  navigation: Navigation,
+  params: RootStackParamList['ProductDetails'],
+): void {
+  navigateWithAppLoading(navigation, { name: 'ProductDetails', params });
+}
 
 export const handleAdNavigation = (ad: Ad, navigation: Navigation): void => {
   if (navigateToAmazonProduct(ad, navigation)) {

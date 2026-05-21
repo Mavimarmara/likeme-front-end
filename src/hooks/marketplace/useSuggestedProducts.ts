@@ -5,7 +5,6 @@ import type { Product as ApiProduct } from '@/types/product';
 import { useCategories } from '@/hooks/category/useCategories';
 import { logger } from '@/utils/logger';
 import { buildMarketplaceCategoryBadgeLabels } from '@/utils/marketplace/buildMarketplaceCategoryBadgeLabels';
-import { enrichProductsWithCategoriesFromByProductApi } from './productCategoryEnrichment';
 import { pickRandomItems } from '@/utils/array/shuffleArray';
 import { prefetchImageUris } from '@/utils/image/prefetchImageUris';
 
@@ -86,13 +85,8 @@ export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}):
       });
 
       if (productsResponse.success && productsResponse.data) {
-        // Sorteio acontece ANTES do enrichment para evitar o N+1: como o enrich
-        // dispara uma chamada por produto pra montar categoryNames/categoryIds,
-        // limitar a `limit` itens antes corta o numero de requisicoes de
-        // pool inteiro (ate 24) para apenas `limit` (default 4).
         const shuffled = pickRandomItems(productsResponse.data.products, limit);
-        const enriched = await enrichProductsWithCategoriesFromByProductApi(shuffled);
-        setShuffledApiProducts(enriched);
+        setShuffledApiProducts(shuffled);
       } else {
         setShuffledApiProducts([]);
       }
@@ -106,7 +100,7 @@ export const useSuggestedProducts = (options: UseSuggestedProductsOptions = {}):
   }, [enabled, limit, status, categoryId, type]);
 
   /**
-   * Tags vêm de `categoryNames` (preenchido pelo enrichment) ou do array `categories`.
+   * Tags vêm de `categoryNames` na resposta da API (join no banco).
    * Mantemos o mapping em `useMemo` para que a chegada tardia de `categories` não
    * dispare um segundo fetch — antes ela estava nas deps de `loadProducts`.
    */

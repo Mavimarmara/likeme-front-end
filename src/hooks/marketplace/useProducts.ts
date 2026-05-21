@@ -1,12 +1,15 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { productService } from '@/services';
+import {
+  isMarketplaceListingsCacheEntryFresh,
+  useMarketplaceListingsCache,
+} from '@/contexts/MarketplaceListingsCacheContext';
+import { marketplaceProgramsCacheKey } from '@/utils/marketplace/marketplaceListingsCacheKey';
 import { logger } from '@/utils/logger';
 import { prefetchImageUris } from '@/utils/image/prefetchImageUris';
 import type { Ad } from '@/types/ad';
 import type { Product } from '@/types/product';
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
-import { enrichProductsWithCategoriesFromByProductApi } from './productCategoryEnrichment';
-
 const PRODUCTS_PREFETCH_FIRST_N = 6;
 
 const adIsUsableForListing = (ad: Ad): boolean => {
@@ -76,9 +79,18 @@ export const useProducts = ({
   searchQuery,
   enabled = true,
 }: UseProductsParams): UseProductsReturn => {
-  const [ads, setAds] = useState<Ad[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [hasMore, setHasMore] = useState(true);
+  const listingsCache = useMarketplaceListingsCache();
+  const cacheKey = marketplaceProgramsCacheKey(searchQuery, { categoryId });
+  const initialCacheEntry = listingsCache.read(cacheKey);
+  const initialCacheIsFresh = initialCacheEntry != null && isMarketplaceListingsCacheEntryFresh(initialCacheEntry);
+
+  const [ads, setAds] = useState<Ad[]>(() => (initialCacheIsFresh ? initialCacheEntry.ads : []));
+  const [loading, setLoading] = useState(() => enabled && !initialCacheIsFresh);
+  const [hasMore, setHasMore] = useState(() => (initialCacheIsFresh ? initialCacheEntry.hasMore : true));
+
+  const adsRef = useRef(ads);
+  adsRef.current = ads;
+  const backgroundRefreshStartedRef = useRef(false);
 
   useEffect(() => {
     if (!enabled) {
@@ -88,13 +100,47 @@ export const useProducts = ({
     }
   }, [enabled]);
 
+  useEffect(() => {
+    backgroundRefreshStartedRef.current = false;
+    if (!enabled) {
+      return;
+    }
+    const entry = listingsCache.read(cacheKey);
+    const fresh = entry != null && isMarketplaceListingsCacheEntryFresh(entry);
+    if (fresh) {
+      setAds(entry.ads);
+      setHasMore(entry.hasMore);
+      setLoading(false);
+      return;
+    }
+    setAds([]);
+    setHasMore(true);
+    setLoading(true);
+  }, [cacheKey, enabled, listingsCache]);
+
+  const persistCache = useCallback(
+    (nextAds: Ad[], nextHasMore: boolean) => {
+      listingsCache.write(cacheKey, {
+        ads: nextAds,
+        hasMore: nextHasMore,
+        fetchedAt: Date.now(),
+      });
+    },
+    [listingsCache, cacheKey],
+  );
+
   const loadProducts = useCallback(async () => {
     if (!enabled) {
       return;
     }
 
     try {
-      setLoading(true);
+      if (page === 1 && adsRef.current.length > 0) {
+        setLoading(false);
+      } else {
+        setLoading(true);
+      }
+
       const trimmedSearch = searchQuery?.trim();
       const response = await productService.listProducts({
         page,
@@ -108,28 +154,28 @@ export const useProducts = ({
       if (!response.success || !response.data) {
         if (page === 1) {
           setAds([]);
+          persistCache([], false);
         }
         setHasMore(false);
         return;
       }
 
-      const products = await enrichProductsWithCategoriesFromByProductApi(response.data.products ?? []);
-      const rows = products.map(listingAdFromProduct);
+      const rows = (response.data.products ?? []).map(listingAdFromProduct);
 
       void prefetchImageUris(rows.slice(0, PRODUCTS_PREFETCH_FIRST_N).map((ad) => ad.product?.image));
 
-      if (page === 1) {
-        setAds(rows);
-      } else {
-        setAds((prev) => [...prev, ...rows]);
-      }
+      const nextAds = page === 1 ? rows : [...adsRef.current, ...rows];
+      setAds(nextAds);
 
       const pag = response.data.pagination;
+      let nextHasMore = false;
       if (pag) {
-        setHasMore(pag.page < pag.totalPages);
+        nextHasMore = pag.page < pag.totalPages;
       } else {
-        setHasMore(rows.length >= LIST_LIMIT);
+        nextHasMore = rows.length >= LIST_LIMIT;
       }
+      setHasMore(nextHasMore);
+      persistCache(nextAds, nextHasMore);
     } catch (error) {
       logger.error('useProducts: falha ao listar programas', {
         error,
@@ -139,12 +185,21 @@ export const useProducts = ({
       });
       if (page === 1) {
         setAds([]);
+        persistCache([], false);
       }
       setHasMore(false);
     } finally {
       setLoading(false);
     }
-  }, [enabled, categoryId, page, searchQuery]);
+  }, [enabled, categoryId, page, searchQuery, persistCache]);
+
+  useEffect(() => {
+    if (!enabled || !initialCacheIsFresh || backgroundRefreshStartedRef.current) {
+      return;
+    }
+    backgroundRefreshStartedRef.current = true;
+    void loadProducts();
+  }, [enabled, initialCacheIsFresh, loadProducts]);
 
   return {
     ads,

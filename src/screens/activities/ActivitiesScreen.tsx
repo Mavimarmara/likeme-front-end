@@ -29,6 +29,7 @@ import type { Order } from '@/types/order';
 import type { RootStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
 import { logger } from '@/utils/logger';
+import { navigateToProductDetailsScreen } from '@/utils/navigation/productNavigation';
 import { styles } from './styles';
 
 type ActivitiesScreenProps = {
@@ -826,9 +827,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation, route }
                     subtitle={t('activities.discoverOptions')}
                     products={suggestedProducts}
                     onProductPress={(product) => {
-                      rootNavigation.navigate('ProductDetails', {
-                        productId: product.id,
-                      } as never);
+                      navigateToProductDetailsScreen(rootNavigation, { productId: product.id });
                     }}
                   />
                 </View>

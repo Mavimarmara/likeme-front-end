@@ -13,6 +13,7 @@ import { useAnalyticsScreen } from '@/analytics';
 import type { AcquisitionListItem } from '@/types/acquisition/acquisition';
 import type { RootStackParamList } from '@/types/navigation';
 import { COLORS } from '@/constants';
+import { navigateToProductDetailsScreen } from '@/utils/navigation/productNavigation';
 import { styles } from './styles';
 
 type Props = StackScreenProps<RootStackParamList, 'AcquisitionList'>;
@@ -31,7 +32,7 @@ const AcquisitionListScreen: React.FC<Props> = ({ navigation }) => {
 
   const openAcquisition = useCallback(
     (item: AcquisitionListItem) => {
-      navigation.navigate('ProductDetails', { productId: item.productId });
+      navigateToProductDetailsScreen(navigation, { productId: item.productId });
     },
     [navigation],
   );

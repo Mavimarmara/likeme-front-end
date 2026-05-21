@@ -24,6 +24,12 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: SPACING.XXL,
   },
+  loadingText: {
+    marginTop: SPACING.MD,
+    fontSize: 16,
+    color: '#666666',
+    fontFamily: 'DM Sans',
+  },
   loadingFooter: {
     paddingVertical: SPACING.MD,
     alignItems: 'center',

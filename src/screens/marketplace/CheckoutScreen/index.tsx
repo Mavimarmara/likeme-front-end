@@ -11,6 +11,7 @@ import { catalogTypeTranslatedBadgeLabels, PRODUCT_CATALOG_TYPE } from '@/types/
 import { useTranslation, usePayment, useCheckoutVoucher, useCartShippingPolicy } from '@/hooks';
 import { checkoutDisplayAmounts } from '@/utils/marketplace/checkoutDisplayAmounts';
 import { logger } from '@/utils/logger';
+import { navigateToProductDetailsScreen } from '@/utils/navigation/productNavigation';
 import { styles } from './styles';
 import AddressForm, { AddressData, EMPTY_ADDRESS, isAddressFilled } from './address/AddressForm';
 import PaymentForm from './payment/PaymentForm';
@@ -280,7 +281,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   const handleProductPress = (itemId: string) => {
-    navigation.navigate('ProductDetails', { productId: itemId });
+    navigateToProductDetailsScreen(navigation, { productId: itemId });
   };
 
   const handleSaveAddress = async (address: AddressData) => {
