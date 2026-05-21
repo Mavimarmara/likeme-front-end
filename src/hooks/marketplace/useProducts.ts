@@ -94,9 +94,7 @@ export const useProducts = ({
 
   useEffect(() => {
     if (!enabled) {
-      setAds([]);
       setLoading(false);
-      setHasMore(false);
     }
   }, [enabled]);
 
@@ -132,6 +130,21 @@ export const useProducts = ({
   const loadProducts = useCallback(async () => {
     if (!enabled) {
       return;
+    }
+
+    const cachedEntry = listingsCache.read(cacheKey);
+    const cachedFresh = cachedEntry != null && isMarketplaceListingsCacheEntryFresh(cachedEntry);
+
+    if (page === 1 && cachedFresh) {
+      const cachedAds = cachedEntry.ads;
+      if (adsRef.current.length === 0 && cachedAds.length > 0) {
+        setAds(cachedAds);
+        setHasMore(cachedEntry.hasMore);
+      }
+      if (cachedAds.length > 0 || adsRef.current.length > 0) {
+        setLoading(false);
+        return;
+      }
     }
 
     try {
@@ -191,7 +204,7 @@ export const useProducts = ({
     } finally {
       setLoading(false);
     }
-  }, [enabled, categoryId, page, searchQuery, persistCache]);
+  }, [cacheKey, categoryId, enabled, listingsCache, page, persistCache, searchQuery]);
 
   useEffect(() => {
     if (!enabled || !initialCacheIsFresh || backgroundRefreshStartedRef.current) {

@@ -50,9 +50,7 @@ export const useProviderAds = ({
 
   useEffect(() => {
     if (!enabled) {
-      setAds([]);
       setLoading(false);
-      setHasMore(false);
     }
   }, [enabled]);
 
@@ -100,6 +98,21 @@ export const useProviderAds = ({
       setAds([]);
       setHasMore(false);
       return;
+    }
+
+    const cachedEntry = listingsCache.read(cacheKey);
+    const cachedFresh = cachedEntry != null && isMarketplaceListingsCacheEntryFresh(cachedEntry);
+
+    if (page === 1 && cachedFresh) {
+      const cachedAds = cachedEntry.ads;
+      if (adsRef.current.length === 0 && cachedAds.length > 0) {
+        setAds(cachedAds);
+        setHasMore(cachedEntry.hasMore);
+      }
+      if (cachedAds.length > 0 || adsRef.current.length > 0) {
+        setLoading(false);
+        return;
+      }
     }
 
     try {
@@ -161,7 +174,7 @@ export const useProviderAds = ({
     } finally {
       setLoading(false);
     }
-  }, [advertiserId, enabled, limit, page, persistCache, selectedCategory]);
+  }, [advertiserId, cacheKey, enabled, limit, listingsCache, page, persistCache, selectedCategory]);
 
   useEffect(() => {
     if (!enabled || !initialCacheIsFresh || backgroundRefreshStartedRef.current) {

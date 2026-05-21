@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { advertiserService } from '@/services';
+import { isAdvertisersCacheEntryFresh, useAdvertisersCache } from '@/contexts/AdvertisersCacheContext';
+import { advertisersListCacheKey } from '@/utils/marketplace/advertisersCacheKey';
 import { logger } from '@/utils/logger';
 import { prefetchImageUris } from '@/utils/image/prefetchImageUris';
 import type { Advertiser } from '@/types/ad';
@@ -34,11 +36,32 @@ export interface UseAdvertisersReturn {
 
 export const useAdvertisers = (params: UseAdvertisersParams = {}): UseAdvertisersReturn => {
   const { advertiserId, communityId, listOptions, fetchAllPages = false, enabled = true } = params;
-  const [advertisers, setAdvertisers] = useState<Advertiser[]>([]);
-  const [loading, setLoading] = useState(false);
+  const advertisersCache = useAdvertisersCache();
+  const listCacheKey =
+    listOptions != null || (!advertiserId && !!communityId)
+      ? advertisersListCacheKey({
+          communityId,
+          fetchAllPages,
+          page: listOptions?.page,
+          limit: listOptions?.limit,
+          status: listOptions?.status,
+          search: listOptions?.search,
+          categoryId: listOptions?.categoryId,
+        })
+      : null;
+
+  const initialCacheEntry = listCacheKey != null ? advertisersCache.read(listCacheKey) : undefined;
+  const initialCacheIsFresh = initialCacheEntry != null && isAdvertisersCacheEntryFresh(initialCacheEntry);
+
+  const [advertisers, setAdvertisers] = useState<Advertiser[]>(() =>
+    initialCacheIsFresh ? initialCacheEntry.advertisers : [],
+  );
+  const [loading, setLoading] = useState(() => enabled && listCacheKey != null && !initialCacheIsFresh);
   const [error, setError] = useState<Error | null>(null);
   const cancelledRef = useRef(false);
   const requestIdRef = useRef(0);
+  const advertisersRef = useRef(advertisers);
+  advertisersRef.current = advertisers;
 
   const hasListOptions = listOptions != null;
   const shouldLoadList = hasListOptions || (!advertiserId && !!communityId);
@@ -47,6 +70,19 @@ export const useAdvertisers = (params: UseAdvertisersParams = {}): UseAdvertiser
   const status = listOptions?.status ?? ADVERTISER_STATUS.ACTIVE;
   const search = listOptions?.search?.trim() ?? '';
   const categoryId = listOptions?.categoryId?.trim() ?? '';
+
+  const persistListCache = useCallback(
+    (list: Advertiser[]) => {
+      if (listCacheKey == null) {
+        return;
+      }
+      advertisersCache.write(listCacheKey, {
+        advertisers: list,
+        fetchedAt: Date.now(),
+      });
+    },
+    [advertisersCache, listCacheKey],
+  );
 
   const startRequest = useCallback((requestId: number, options?: { clear?: boolean }) => {
     if (options?.clear !== false) {
@@ -88,115 +124,158 @@ export const useAdvertisers = (params: UseAdvertisersParams = {}): UseAdvertiser
     }
   }, [advertiserId, communityId, finishRequest, startRequest]);
 
-  const loadList = useCallback(async () => {
-    if (!enabled || !shouldLoadList) {
-      return Promise.resolve();
-    }
-    const requestId = ++requestIdRef.current;
-    startRequest(requestId);
-    const baseQuery = {
+  const loadList = useCallback(
+    async (options?: { skipCache?: boolean }) => {
+      if (!enabled || !shouldLoadList || listCacheKey == null) {
+        return Promise.resolve();
+      }
+
+      const cachedEntry = advertisersCache.read(listCacheKey);
+      const cachedFresh = cachedEntry != null && isAdvertisersCacheEntryFresh(cachedEntry) && !options?.skipCache;
+
+      if (cachedFresh) {
+        const cachedList = cachedEntry.advertisers;
+        if (advertisersRef.current.length === 0 && cachedList.length > 0) {
+          setAdvertisers(cachedList);
+        }
+        if (cachedList.length > 0 || advertisersRef.current.length > 0) {
+          setLoading(false);
+          setError(null);
+          return;
+        }
+      }
+
+      const requestId = ++requestIdRef.current;
+      startRequest(requestId, { clear: !cachedFresh });
+      const baseQuery = {
+        limit,
+        status,
+        communityId,
+        ...(search ? { search } : {}),
+        ...(categoryId ? { categoryId } : {}),
+      };
+      try {
+        if (!fetchAllPages) {
+          const response = await advertiserService.getAdvertisers({
+            page,
+            ...baseQuery,
+          });
+          if (cancelledRef.current || requestId !== requestIdRef.current) return;
+          const list = response.success ? response.data?.advertisers ?? [] : [];
+          setAdvertisers(list);
+          persistListCache(list);
+          void prefetchImageUris(list.slice(0, ADVERTISERS_PREFETCH_FIRST_N).map((a) => a.logo));
+          return;
+        }
+
+        const first = await advertiserService.getAdvertisers({
+          page: 1,
+          ...baseQuery,
+        });
+        if (cancelledRef.current || requestId !== requestIdRef.current) return;
+        if (!first.success || !first.data) {
+          setAdvertisers([]);
+          persistListCache([]);
+          return;
+        }
+
+        const merged: Advertiser[] = [...(first.data.advertisers ?? [])];
+        const seenIds = new Set(merged.map((a) => a.id).filter(Boolean));
+        const totalPages = first.data.pagination?.totalPages ?? 1;
+
+        for (let p = 2; p <= totalPages; p += 1) {
+          if (cancelledRef.current || requestId !== requestIdRef.current) return;
+          const next = await advertiserService.getAdvertisers({
+            page: p,
+            ...baseQuery,
+          });
+          if (cancelledRef.current || requestId !== requestIdRef.current) return;
+          if (!next.success || !next.data) {
+            break;
+          }
+          for (const adv of next.data.advertisers ?? []) {
+            if (!adv.id || seenIds.has(adv.id)) {
+              continue;
+            }
+            seenIds.add(adv.id);
+            merged.push(adv);
+          }
+        }
+
+        setAdvertisers(merged);
+        persistListCache(merged);
+        void prefetchImageUris(merged.slice(0, ADVERTISERS_PREFETCH_FIRST_N).map((a) => a.logo));
+      } catch (err) {
+        if (cancelledRef.current || requestId !== requestIdRef.current) return;
+        logger.error('Error loading advertisers list:', err);
+        setError(err instanceof Error ? err : new Error('Failed to load advertisers'));
+        setAdvertisers([]);
+        persistListCache([]);
+      } finally {
+        finishRequest(requestId);
+      }
+    },
+    [
+      enabled,
+      shouldLoadList,
+      listCacheKey,
+      advertisersCache,
+      fetchAllPages,
+      page,
       limit,
       status,
       communityId,
-      ...(search ? { search } : {}),
-      ...(categoryId ? { categoryId } : {}),
-    };
-    try {
-      if (!fetchAllPages) {
-        const response = await advertiserService.getAdvertisers({
-          page,
-          ...baseQuery,
-        });
-        if (cancelledRef.current || requestId !== requestIdRef.current) return;
-        const list = response.success ? response.data?.advertisers ?? [] : [];
-        setAdvertisers(list);
-        void prefetchImageUris(list.slice(0, ADVERTISERS_PREFETCH_FIRST_N).map((a) => a.logo));
-        return;
-      }
-
-      const first = await advertiserService.getAdvertisers({
-        page: 1,
-        ...baseQuery,
-      });
-      if (cancelledRef.current || requestId !== requestIdRef.current) return;
-      if (!first.success || !first.data) {
-        setAdvertisers([]);
-        return;
-      }
-
-      const merged: Advertiser[] = [...(first.data.advertisers ?? [])];
-      const seenIds = new Set(merged.map((a) => a.id).filter(Boolean));
-      const totalPages = first.data.pagination?.totalPages ?? 1;
-
-      for (let p = 2; p <= totalPages; p += 1) {
-        if (cancelledRef.current || requestId !== requestIdRef.current) return;
-        const next = await advertiserService.getAdvertisers({
-          page: p,
-          ...baseQuery,
-        });
-        if (cancelledRef.current || requestId !== requestIdRef.current) return;
-        if (!next.success || !next.data) {
-          break;
-        }
-        for (const adv of next.data.advertisers ?? []) {
-          if (!adv.id || seenIds.has(adv.id)) {
-            continue;
-          }
-          seenIds.add(adv.id);
-          merged.push(adv);
-        }
-      }
-
-      setAdvertisers(merged);
-      void prefetchImageUris(merged.slice(0, ADVERTISERS_PREFETCH_FIRST_N).map((a) => a.logo));
-    } catch (err) {
-      if (cancelledRef.current || requestId !== requestIdRef.current) return;
-      logger.error('Error loading advertisers list:', err);
-      setError(err instanceof Error ? err : new Error('Failed to load advertisers'));
-      setAdvertisers([]);
-    } finally {
-      finishRequest(requestId);
-    }
-  }, [
-    enabled,
-    shouldLoadList,
-    fetchAllPages,
-    page,
-    limit,
-    status,
-    communityId,
-    search,
-    categoryId,
-    finishRequest,
-    startRequest,
-  ]);
+      search,
+      categoryId,
+      finishRequest,
+      startRequest,
+      persistListCache,
+    ],
+  );
 
   const refresh = useCallback(async (): Promise<void> => {
     if (shouldLoadList) {
-      return loadList();
+      return loadList({ skipCache: true });
     }
     return loadById();
   }, [shouldLoadList, loadList, loadById]);
 
   useEffect(() => {
+    if (!enabled || listCacheKey == null) {
+      return;
+    }
+    const entry = advertisersCache.read(listCacheKey);
+    const fresh = entry != null && isAdvertisersCacheEntryFresh(entry);
+    if (fresh) {
+      setAdvertisers(entry.advertisers);
+      setLoading(false);
+      return;
+    }
+    if (!shouldLoadList) {
+      return;
+    }
+    setAdvertisers([]);
+    setLoading(true);
+  }, [advertisersCache, enabled, listCacheKey, shouldLoadList]);
+
+  useEffect(() => {
     cancelledRef.current = false;
 
     if (!enabled) {
-      setAdvertisers([]);
       setLoading(false);
-      setError(null);
       return () => {
         cancelledRef.current = true;
       };
     }
 
     if (shouldLoadList) {
-      loadList();
+      void loadList();
     } else if (advertiserId) {
-      loadById();
+      void loadById();
     } else {
       setAdvertisers([]);
       setError(null);
+      setLoading(false);
     }
     return () => {
       cancelledRef.current = true;

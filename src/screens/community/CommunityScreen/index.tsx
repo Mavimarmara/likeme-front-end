@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { View, ScrollView, FlatList, Text, ActivityIndicator, type ListRenderItem } from 'react-native';
 import type { RouteProp } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/native';
@@ -209,11 +209,14 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   const [shopServicesPage, setShopServicesPage] = useState(1);
   const [shopProgramsPage, setShopProgramsPage] = useState(1);
 
-  const shopProfessionalsTabActive = solutionsMode && selectedShopTabId === 'professionals';
+  const communityShopSolutionsActive = solutionsMode;
+  const communityShopTabsEnabled = solutionsMode && !!communityProviderId;
+  const shopTabsPrefetchForProviderRef = useRef<string | null>(null);
+
   const { advertisers: shopProfessionals, loading: shopProfessionalsLoading } = useAdvertisers({
     listOptions: { page: 1, limit: 50, status: ADVERTISER_STATUS.ACTIVE },
     fetchAllPages: true,
-    enabled: shopProfessionalsTabActive,
+    enabled: communityShopSolutionsActive,
   });
 
   const {
@@ -225,7 +228,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     advertiserId: communityProviderId,
     selectedCategory: 'products',
     page: shopProductsPage,
-    enabled: solutionsMode && !!communityProviderId && selectedShopTabId === 'products',
+    enabled: communityShopTabsEnabled,
   });
   const {
     ads: shopServicesAdsRaw,
@@ -236,7 +239,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     advertiserId: communityProviderId,
     selectedCategory: 'services',
     page: shopServicesPage,
-    enabled: solutionsMode && !!communityProviderId && selectedShopTabId === 'services',
+    enabled: communityShopTabsEnabled,
   });
   const {
     ads: shopProgramsAdsRaw,
@@ -247,7 +250,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     advertiserId: communityProviderId,
     selectedCategory: 'programs',
     page: shopProgramsPage,
-    enabled: solutionsMode && !!communityProviderId && selectedShopTabId === 'programs',
+    enabled: communityShopTabsEnabled,
   });
 
   const filterShopAdsByCommunityProvider = useCallback(
@@ -277,22 +280,49 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     setShopProductsPage(1);
     setShopServicesPage(1);
     setShopProgramsPage(1);
+    shopTabsPrefetchForProviderRef.current = null;
   }, [communityProviderId]);
 
   useEffect(() => {
-    if (!solutionsMode || selectedShopTabId !== 'products') return;
+    if (!communityShopTabsEnabled || !communityProviderId) {
+      return;
+    }
+    if (shopTabsPrefetchForProviderRef.current === communityProviderId) {
+      return;
+    }
+    shopTabsPrefetchForProviderRef.current = communityProviderId;
+    if (selectedShopTabId !== 'products') {
+      void loadShopProductsAds();
+    }
+    if (selectedShopTabId !== 'services') {
+      void loadShopServicesAds();
+    }
+    if (selectedShopTabId !== 'programs') {
+      void loadShopProgramsAds();
+    }
+  }, [
+    communityShopTabsEnabled,
+    communityProviderId,
+    selectedShopTabId,
+    loadShopProductsAds,
+    loadShopServicesAds,
+    loadShopProgramsAds,
+  ]);
+
+  useEffect(() => {
+    if (!communityShopTabsEnabled || selectedShopTabId !== 'products') return;
     loadShopProductsAds();
-  }, [solutionsMode, selectedShopTabId, shopProductsPage, loadShopProductsAds]);
+  }, [communityShopTabsEnabled, selectedShopTabId, shopProductsPage, loadShopProductsAds]);
 
   useEffect(() => {
-    if (!solutionsMode || selectedShopTabId !== 'services') return;
+    if (!communityShopTabsEnabled || selectedShopTabId !== 'services') return;
     loadShopServicesAds();
-  }, [solutionsMode, selectedShopTabId, shopServicesPage, loadShopServicesAds]);
+  }, [communityShopTabsEnabled, selectedShopTabId, shopServicesPage, loadShopServicesAds]);
 
   useEffect(() => {
-    if (!solutionsMode || selectedShopTabId !== 'programs') return;
+    if (!communityShopTabsEnabled || selectedShopTabId !== 'programs') return;
     loadShopProgramsAds();
-  }, [solutionsMode, selectedShopTabId, shopProgramsPage, loadShopProgramsAds]);
+  }, [communityShopTabsEnabled, selectedShopTabId, shopProgramsPage, loadShopProgramsAds]);
 
   const shopTabState = useMemo(() => {
     switch (selectedShopTabId) {

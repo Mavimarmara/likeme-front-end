@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState, useEffect } from 'react';
+import React, { useCallback, useMemo, useState, useEffect, useRef } from 'react';
 import { ActivityIndicator, FlatList, type ListRenderItem, TouchableOpacity, View, Text } from 'react-native';
 import { CachedImage } from '@/components/ui/media/CachedImage';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -46,7 +46,6 @@ import {
   type SolutionTab,
 } from '@/types/solution';
 
-const CATEGORY_SPECIALISTS = 'specialists';
 const SOLUTION_ALL: SolutionTab = 'all';
 const MARKETPLACE_SOLUTION_ID_SET = new Set<SolutionFilterId>(marketplaceSolutionOptions.map((option) => option.id));
 
@@ -69,17 +68,17 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   const [searchQuery, setSearchQuery] = useState('');
   const [appliedSearchQuery, setAppliedSearchQuery] = useState('');
   const [selectedSolutionTab, setSelectedSolutionTab] = useState<MarketplaceSolutionTab>(SOLUTION_ALL);
-  const selectedCategory =
-    selectedSolutionTab === 'professionals'
-      ? CATEGORY_SPECIALISTS
-      : selectedSolutionTab === SOLUTION_ALL
-      ? undefined
-      : selectedSolutionTab;
   const [selectedCategoryName, setSelectedCategoryName] = useState<CategoryName | null>(null);
-  const [page, setPage] = useState(1);
   const [isFilterCategoryModalVisible, setIsFilterCategoryModalVisible] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>(undefined);
   const [selectedSolutionIds, setSelectedSolutionIds] = useState<SolutionId[]>([]);
+  const [allTabPage, setAllTabPage] = useState(1);
+  const [productsTabPage, setProductsTabPage] = useState(1);
+  const [servicesTabPage, setServicesTabPage] = useState(1);
+  const [programsTabPage, setProgramsTabPage] = useState(1);
+
+  const marketplaceListingsEnabled = selectedSolutionTab !== 'professionals';
+  const marketplaceTabsPrefetchKeyRef = useRef<string | null>(null);
 
   const { categories } = useCategories({ enabled: true });
   const { getCategoryName } = useCategoryDisplayLabel();
@@ -96,18 +95,45 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   const solutionTabs = useMemo(() => marketplaceCarouselOptions, [marketplaceCarouselOptions]);
 
   const isProgramsTab = selectedSolutionTab === 'programs';
+  const listingsSearchQuery = appliedSearchQuery || undefined;
 
   const {
-    ads: listingAds,
-    loading: adsLoading,
-    hasMore: adsHasMore,
-    loadAds,
+    ads: allTabAds,
+    loading: allTabLoading,
+    hasMore: allTabHasMore,
+    loadAds: loadAllTabAds,
   } = useMarketplaceAds({
-    selectedCategory,
+    selectedCategory: undefined,
     selectedCategoryId,
-    page,
-    searchQuery: appliedSearchQuery || undefined,
-    enabled: !isProgramsTab,
+    page: allTabPage,
+    searchQuery: listingsSearchQuery,
+    enabled: marketplaceListingsEnabled,
+  });
+
+  const {
+    ads: productsTabAds,
+    loading: productsTabLoading,
+    hasMore: productsTabHasMore,
+    loadAds: loadProductsTabAds,
+  } = useMarketplaceAds({
+    selectedCategory: 'products',
+    selectedCategoryId,
+    page: productsTabPage,
+    searchQuery: listingsSearchQuery,
+    enabled: marketplaceListingsEnabled,
+  });
+
+  const {
+    ads: servicesTabAds,
+    loading: servicesTabLoading,
+    hasMore: servicesTabHasMore,
+    loadAds: loadServicesTabAds,
+  } = useMarketplaceAds({
+    selectedCategory: 'services',
+    selectedCategoryId,
+    page: servicesTabPage,
+    searchQuery: listingsSearchQuery,
+    enabled: marketplaceListingsEnabled,
   });
 
   const {
@@ -117,14 +143,65 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     loadProducts,
   } = useProducts({
     categoryId: selectedCategoryId,
-    page,
-    searchQuery: appliedSearchQuery || undefined,
-    enabled: isProgramsTab,
+    page: programsTabPage,
+    searchQuery: listingsSearchQuery,
+    enabled: marketplaceListingsEnabled,
   });
 
-  const ads = isProgramsTab ? programCatalogAds : listingAds;
-  const loading = isProgramsTab ? programsLoading : adsLoading;
-  const hasMore = isProgramsTab ? programsHasMore : adsHasMore;
+  const listingTabState = useMemo(() => {
+    switch (selectedSolutionTab) {
+      case 'products':
+        return {
+          ads: productsTabAds,
+          loading: productsTabLoading,
+          hasMore: productsTabHasMore,
+          page: productsTabPage,
+        };
+      case 'services':
+        return {
+          ads: servicesTabAds,
+          loading: servicesTabLoading,
+          hasMore: servicesTabHasMore,
+          page: servicesTabPage,
+        };
+      case 'programs':
+        return {
+          ads: programCatalogAds,
+          loading: programsLoading,
+          hasMore: programsHasMore,
+          page: programsTabPage,
+        };
+      case 'professionals':
+        return { ads: [], loading: false, hasMore: false, page: 1 };
+      default:
+        return {
+          ads: allTabAds,
+          loading: allTabLoading,
+          hasMore: allTabHasMore,
+          page: allTabPage,
+        };
+    }
+  }, [
+    selectedSolutionTab,
+    allTabAds,
+    allTabLoading,
+    allTabHasMore,
+    allTabPage,
+    productsTabAds,
+    productsTabLoading,
+    productsTabHasMore,
+    productsTabPage,
+    servicesTabAds,
+    servicesTabLoading,
+    servicesTabHasMore,
+    servicesTabPage,
+    programCatalogAds,
+    programsLoading,
+    programsHasMore,
+    programsTabPage,
+  ]);
+
+  const { ads, loading, hasMore, page: activeListingPage } = listingTabState;
 
   const handleCartPress = () => {
     navigation.navigate('Cart');
@@ -139,7 +216,11 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       const next = searchQuery.trim();
       setAppliedSearchQuery((prev) => {
         if (prev === next) return prev;
-        setPage(1);
+        setAllTabPage(1);
+        setProductsTabPage(1);
+        setServicesTabPage(1);
+        setProgramsTabPage(1);
+        marketplaceTabsPrefetchKeyRef.current = null;
         return next;
       });
     }, 450);
@@ -147,12 +228,75 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   }, [searchQuery]);
 
   useEffect(() => {
+    setAllTabPage(1);
+    setProductsTabPage(1);
+    setServicesTabPage(1);
+    setProgramsTabPage(1);
+    marketplaceTabsPrefetchKeyRef.current = null;
+  }, [selectedCategoryId]);
+
+  useEffect(() => {
+    if (!marketplaceListingsEnabled) {
+      return;
+    }
+    const prefetchKey = `${listingsSearchQuery ?? ''}::${selectedCategoryId ?? ''}`;
+    if (marketplaceTabsPrefetchKeyRef.current === prefetchKey) {
+      return;
+    }
+    marketplaceTabsPrefetchKeyRef.current = prefetchKey;
+    if (selectedSolutionTab !== SOLUTION_ALL) {
+      void loadAllTabAds();
+    }
+    if (selectedSolutionTab !== 'products') {
+      void loadProductsTabAds();
+    }
+    if (selectedSolutionTab !== 'services') {
+      void loadServicesTabAds();
+    }
+    if (selectedSolutionTab !== 'programs') {
+      void loadProducts();
+    }
+  }, [
+    marketplaceListingsEnabled,
+    listingsSearchQuery,
+    selectedCategoryId,
+    selectedSolutionTab,
+    loadAllTabAds,
+    loadProductsTabAds,
+    loadServicesTabAds,
+    loadProducts,
+  ]);
+
+  useEffect(() => {
+    if (!marketplaceListingsEnabled) {
+      return;
+    }
     if (isProgramsTab) {
       loadProducts();
       return;
     }
-    loadAds();
-  }, [isProgramsTab, loadAds, loadProducts, selectedCategory, selectedCategoryId, page, appliedSearchQuery]);
+    if (selectedSolutionTab === 'products') {
+      loadProductsTabAds();
+      return;
+    }
+    if (selectedSolutionTab === 'services') {
+      loadServicesTabAds();
+      return;
+    }
+    loadAllTabAds();
+  }, [
+    marketplaceListingsEnabled,
+    isProgramsTab,
+    selectedSolutionTab,
+    allTabPage,
+    productsTabPage,
+    servicesTabPage,
+    programsTabPage,
+    loadAllTabAds,
+    loadProductsTabAds,
+    loadServicesTabAds,
+    loadProducts,
+  ]);
 
   const handleAdPress = useCallback(
     (ad: Ad) => {
@@ -163,8 +307,20 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
 
   const handleLoadMore = useCallback(() => {
     if (loading || !hasMore) return;
-    setPage((prev) => prev + 1);
-  }, [loading, hasMore]);
+    if (isProgramsTab) {
+      setProgramsTabPage((prev) => prev + 1);
+      return;
+    }
+    if (selectedSolutionTab === 'products') {
+      setProductsTabPage((prev) => prev + 1);
+      return;
+    }
+    if (selectedSolutionTab === 'services') {
+      setServicesTabPage((prev) => prev + 1);
+      return;
+    }
+    setAllTabPage((prev) => prev + 1);
+  }, [isProgramsTab, loading, hasMore, selectedSolutionTab]);
 
   const menuItems = useMenuItems(navigation);
   useSetFloatingMenu(menuItems, 'marketplace');
@@ -185,7 +341,11 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       setSelectedSolutionTab(SOLUTION_ALL);
     }
 
-    setPage(1);
+    setAllTabPage(1);
+    setProductsTabPage(1);
+    setServicesTabPage(1);
+    setProgramsTabPage(1);
+    marketplaceTabsPrefetchKeyRef.current = null;
   };
 
   const handleClearFilterCategory = useCallback(() => {
@@ -195,7 +355,11 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     setSelectedCategoryName(null);
     setSearchQuery('');
     setAppliedSearchQuery('');
-    setPage(1);
+    setAllTabPage(1);
+    setProductsTabPage(1);
+    setServicesTabPage(1);
+    setProgramsTabPage(1);
+    marketplaceTabsPrefetchKeyRef.current = null;
   }, []);
 
   const selectedCategoryFromId =
@@ -224,7 +388,11 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
             onChangeText={setSearchQuery}
             onSearchPress={() => {
               setAppliedSearchQuery(searchQuery.trim());
-              setPage(1);
+              setAllTabPage(1);
+              setProductsTabPage(1);
+              setServicesTabPage(1);
+              setProgramsTabPage(1);
+              marketplaceTabsPrefetchKeyRef.current = null;
             }}
             showFilterButton={false}
           />
@@ -246,7 +414,10 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
             } else {
               setSelectedSolutionIds([solutionId as SolutionId]);
             }
-            setPage(1);
+            setAllTabPage(1);
+            setProductsTabPage(1);
+            setServicesTabPage(1);
+            setProgramsTabPage(1);
           }}
         />
       </View>
@@ -300,8 +471,8 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     if (skipHighlightSlice) {
       return filteredAdsBySolution;
     }
-    return page === 1 ? filteredAdsBySolution.slice(1) : filteredAdsBySolution;
-  }, [filteredAdsBySolution, page, appliedSearchQuery, selectedSolutionTab]);
+    return activeListingPage === 1 ? filteredAdsBySolution.slice(1) : filteredAdsBySolution;
+  }, [filteredAdsBySolution, activeListingPage, appliedSearchQuery, selectedSolutionTab]);
 
   const handleProfessionalPress = useCallback(
     (advertiser: Advertiser) => {
