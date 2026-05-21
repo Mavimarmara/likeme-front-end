@@ -62,6 +62,13 @@ jest.mock('@/analytics', () => ({
   useAnalyticsScreen: jest.fn(),
 }));
 
+jest.mock('@/utils/navigation/marketplaceNavigation', () => ({
+  navigateToMarketplace: jest.fn((navigation: { navigate: (screen: string, params?: unknown) => void }) => {
+    navigation.navigate('AppLoading', { target: { name: 'Marketplace' } });
+  }),
+  navigateToProviderProfile: jest.fn(),
+}));
+
 jest.mock('@/contexts/FloatingMenuContext', () => ({
   useSetFloatingMenu: jest.fn(),
   useIsFloatingMenuVisible: () => false,
@@ -398,6 +405,8 @@ describe('CartScreen', () => {
     const shopButton = getByText('cart.startShopping');
     fireEvent.press(shopButton);
 
-    expect(mockNavigation.navigate).toHaveBeenCalledWith('Marketplace');
+    expect(mockNavigation.navigate).toHaveBeenCalledWith('AppLoading', {
+      target: { name: 'Marketplace' },
+    });
   });
 });
