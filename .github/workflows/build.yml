@@ -103,6 +103,7 @@ jobs:
     if: ${{ !failure() && !cancelled() }}
     env:
       SKIP_IOS_POD_INSTALL: 'false'
+      EXPO_PUBLIC_BACKEND_URL: 'https://likeme-back-end-one.vercel.app'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
