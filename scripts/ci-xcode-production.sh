@@ -67,11 +67,39 @@ case "$ACTION" in
       archive
     ;;
   export)
+    EXPORT_PLIST="$PWD/ExportOptions-AppStore.plist"
+    if [[ -n "${IOS_PROVISIONING_PROFILE_UUID:-}" ]]; then
+      EXPORT_PLIST="$PWD/build/ExportOptions-CI.plist"
+      cat > "$EXPORT_PLIST" <<EPLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>method</key>
+	<string>app-store-connect</string>
+	<key>teamID</key>
+	<string>${TEAM_ID}</string>
+	<key>signingStyle</key>
+	<string>manual</string>
+	<key>signingCertificate</key>
+	<string>Apple Distribution</string>
+	<key>provisioningProfiles</key>
+	<dict>
+		<key>app.likeme.com</key>
+		<string>${IOS_PROVISIONING_PROFILE_UUID}</string>
+	</dict>
+	<key>uploadSymbols</key>
+	<true/>
+</dict>
+</plist>
+EPLIST
+      echo "ExportOptions: manual signing (profile ${IOS_PROVISIONING_PROFILE_UUID})"
+    fi
     xcodebuild \
       -exportArchive \
       -archivePath "$PWD/build/LikeMe.xcarchive" \
       -exportPath "$PWD/build/export" \
-      -exportOptionsPlist "$PWD/ExportOptions-AppStore.plist" \
+      -exportOptionsPlist "$EXPORT_PLIST" \
       "${ALLOW[@]}" \
       "${XCODE_AUTH[@]}"
     ;;

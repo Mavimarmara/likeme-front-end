@@ -250,6 +250,11 @@ jobs:
           ASC_API_KEY_P8: ${{ secrets.ASC_API_KEY_P8 }}
         run: bash scripts/ci-setup-asc-api-key.sh
 
+      - name: Instalar provisioning profile (opcional, só App Store)
+        env:
+          IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+        run: bash scripts/ci-install-ios-provisioning-profile.sh
+
       - name: Download Xcode archive
         uses: actions/download-artifact@v4
         with:
