@@ -265,12 +265,49 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
         throw new Error('Falha ao criar pedido');
       }
 
+      const orderPaymentStatus = orderResponse.data.paymentStatus;
+
+      if (orderPaymentStatus === 'failed') {
+        throw new Error(
+          t('checkout.paymentDeclined', {
+            defaultValue: 'Pagamento recusado. Verifique os dados do cartão e tente novamente.',
+          }),
+        );
+      }
+
+      if (orderPaymentStatus === 'pending') {
+        logger.warn('[CheckoutScreen] Pagamento retornou como pendente', {
+          orderId: orderResponse.data.id,
+        });
+        Alert.alert(
+          t('checkout.paymentPendingTitle', { defaultValue: 'Pagamento em processamento' }),
+          t('checkout.paymentPendingMessage', {
+            defaultValue:
+              'Seu pedido foi criado, mas o pagamento ainda está sendo processado. Acompanhe o status nos seus pedidos.',
+          }),
+        );
+      }
+
       setOrderId(orderResponse.data.id);
       await storageService.clearCart();
       setCurrentStep('order');
     } catch (error: any) {
       logger.error('[CheckoutScreen] Erro ao concluir pedido', error);
-      Alert.alert(t('errors.error'), t('checkout.orderError'));
+
+      const serverMessage = typeof error?.message === 'string' && error.message.trim() ? error.message : null;
+
+      const isPaymentError =
+        serverMessage &&
+        (serverMessage.includes('Pagamento') ||
+          serverMessage.includes('recusado') ||
+          serverMessage.includes('cartão') ||
+          serverMessage.includes('CPF') ||
+          serverMessage.includes('Pagarme'));
+
+      const userMessage = isPaymentError ? serverMessage : t('checkout.orderError');
+
+      payment.setPaymentError(userMessage);
+      Alert.alert(t('errors.error'), userMessage);
     } finally {
       payment.setIsProcessing(false);
     }
