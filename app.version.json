@@ -1,18 +1,15 @@
 {
-  "version": "1.4.1",
-  "releasedAt": "2026-05-21",
+  "version": "1.4.2",
+  "releasedAt": "2026-05-26",
   "android": {
-    "versionCode": 6
+    "versionCode": 7
   },
   "ios": {
-    "buildNumber": 11
+    "buildNumber": 12
   },
   "changelog": {
-    "fixed": [
-      "Pipeline iOS no CI: assinatura manual com perfil App Store para build e archive em produção"
-    ],
     "changed": [
-      "Remoção do ambiente staging (sync de branch, perfis EAS e documentação obsoleta)"
+      "Suporte a .env.production via dotenv-cli nos scripts e config do backend"
     ]
   }
 }

@@ -53,3 +53,8 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ### Corrigido
 - Pipeline iOS no CI: assinatura manual com perfil App Store para build e archive em produção
+
+## [1.4.2] - 2026-05-26
+
+### Alterado
+- Suporte a .env.production via dotenv-cli nos scripts e config do backend
