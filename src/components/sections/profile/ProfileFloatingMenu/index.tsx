@@ -91,6 +91,11 @@ const ProfileFloatingMenu: React.FC<Props> = ({ visible, navigation, onClose }) 
     }
   }, [t]);
 
+  const handleGoToSubscriptions = () => {
+    onClose();
+    rootNavigation.navigate('SubscriptionList' as never);
+  };
+
   const handleGoToOrders = () => {
     onClose();
     rootNavigation.navigate('Activities' as never, { initialTab: 'history', initialFilter: 'orders' } as never);
@@ -147,13 +152,13 @@ const ProfileFloatingMenu: React.FC<Props> = ({ visible, navigation, onClose }) 
             </TouchableOpacity>
             <View style={styles.separator} />
 
-            <View style={styles.menuItemDisabled}>
+            <TouchableOpacity onPress={handleGoToSubscriptions} style={styles.menuItem} activeOpacity={0.7}>
               <View style={styles.menuItemLeft}>
-                <Icon name='credit-card' size={22} color='#9aa2b1' />
-                <Text style={styles.menuItemDisabledLabel}>Meus Protocolos e Servicos</Text>
+                <Icon name='credit-card' size={22} color={COLORS.TEXT} />
+                <Text style={styles.menuItemLabel}>Meus Protocolos e Serviços</Text>
               </View>
-              <Icon name='chevron-right' size={22} color='#C7CED8' />
-            </View>
+              <Icon name='chevron-right' size={22} color='#6e6a6a' />
+            </TouchableOpacity>
             <View style={styles.separator} />
 
             <TouchableOpacity onPress={handleGoToActivities} style={styles.menuItem} activeOpacity={0.7}>

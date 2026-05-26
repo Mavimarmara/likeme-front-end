@@ -5,7 +5,7 @@ import { IconButton } from '@/components/ui/buttons';
 import { COLORS, IMAGE_PRIORITY_HIGH } from '@/constants';
 import { styles } from './styles';
 
-export type AcquisitionCatalogCardProps = {
+export type SubscriptionCatalogCardProps = {
   title: string;
   image: string;
   badges?: string[];
@@ -13,7 +13,7 @@ export type AcquisitionCatalogCardProps = {
   testID?: string;
 };
 
-export const AcquisitionCatalogCard: React.FC<AcquisitionCatalogCardProps> = ({
+export const SubscriptionCatalogCard: React.FC<SubscriptionCatalogCardProps> = ({
   title,
   image,
   badges = [],

@@ -65,6 +65,10 @@ export const styles = StyleSheet.create({
     paddingHorizontal: SPACING.MD,
     gap: SPACING.MD,
   },
+  cartItemWrapper: {
+    marginHorizontal: SPACING.MD,
+    marginBottom: SPACING.MD,
+  },
   shippingSection: {
     paddingHorizontal: SPACING.LG,
     paddingVertical: SPACING.MD,

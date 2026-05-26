@@ -64,7 +64,22 @@ type RootStackParamListCore = {
     };
   };
   Profile: undefined;
-  AcquisitionList: undefined;
+  SubscriptionList: undefined;
+  ProtocolDetail: {
+    protocol: {
+      id: string;
+      name: string;
+      image?: string;
+      badges?: string[];
+      rating?: number;
+      shortDescription?: string;
+      description?: string;
+      agreements?: string;
+      providerName?: string;
+      nextSessionDate?: string;
+      modules?: import('@/types/program').ProgramModule[];
+    };
+  };
   PrivacyPolicies: { userName?: string };
   Home: undefined;
   Summary: undefined;

@@ -68,8 +68,10 @@ export const getProviderProfileScreen = (): RootStackScreen =>
   asScreen(require('../screens/marketplace/ProviderProfileScreen') as { default: RootStackScreen });
 export const getProfileScreen = (): RootStackScreen =>
   asScreen(require('../screens/profile/ProfileScreen') as { default: RootStackScreen });
-export const getAcquisitionListScreen = (): RootStackScreen =>
-  asScreen(require('../screens/profile/AcquisitionListScreen') as { default: RootStackScreen });
+export const getProtocolDetailScreen = (): RootStackScreen =>
+  asScreen(require('../screens/profile/ProtocolDetailScreen') as { default: RootStackScreen });
+export const getSubscriptionListScreen = (): RootStackScreen =>
+  asScreen(require('../screens/profile/SubscriptionListScreen') as { default: RootStackScreen });
 export const getPrivacyPoliciesScreen = (): RootStackScreen =>
   asScreen(require('../screens/policies/PrivacyPoliciesScreen') as { default: RootStackScreen });
 export const getHomeScreen = (): RootStackScreen =>

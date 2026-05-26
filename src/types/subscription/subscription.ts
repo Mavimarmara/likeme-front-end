@@ -1,8 +1,8 @@
-export type AcquisitionKind = 'protocol' | 'service';
+export type SubscriptionKind = 'protocol' | 'service';
 
-export interface AcquisitionListItem {
+export interface SubscriptionListItem {
   id: string;
-  kind: AcquisitionKind;
+  kind: SubscriptionKind;
   productId: string;
   title: string;
   image: string;

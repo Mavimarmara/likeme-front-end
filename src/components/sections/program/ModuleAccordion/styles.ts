@@ -1,22 +1,19 @@
 import { StyleSheet } from 'react-native';
-import { SPACING } from '@/constants';
+import { COLORS, SPACING } from '@/constants';
 
 export const styles = StyleSheet.create({
   container: {
     width: '100%',
-    alignItems: 'center',
+    paddingHorizontal: SPACING.MD,
   },
-  header: {
+  moduleItem: {
+    paddingTop: SPACING.LG,
+  },
+  moduleHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: SPACING.MD,
-    paddingRight: SPACING.MD,
-    paddingTop: SPACING.MD,
-    width: '100%',
-  },
-  headerExpanded: {
-    backgroundColor: '#fbf7e5',
+    paddingBottom: SPACING.MD,
   },
   headerLeft: {
     flexDirection: 'row',
@@ -24,35 +21,28 @@ export const styles = StyleSheet.create({
     gap: SPACING.SM,
     flex: 1,
   },
-  checkContainer: {
-    width: 30,
-    height: 26,
+  checkCircle: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    borderWidth: 2,
+    borderColor: COLORS.NEUTRAL.LOW.MEDIUM,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  checkCircle: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    borderWidth: 2,
-    borderColor: '#001137',
+  checkCircleCompleted: {
+    backgroundColor: COLORS.PRIMARY.PURE,
+    borderColor: COLORS.PRIMARY.PURE,
   },
   moduleTitle: {
     fontSize: 20,
+    fontFamily: 'DM Sans',
     fontWeight: '700',
-    color: '#001137',
+    color: COLORS.NEUTRAL.LOW.PURE,
     lineHeight: 24,
-  },
-  content: {
-    backgroundColor: '#fbf7e5',
-    paddingVertical: 16,
-    gap: SPACING.LG,
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
   },
   separator: {
     height: 1,
-    backgroundColor: '#E1DFCF',
-    marginTop: 24,
+    backgroundColor: COLORS.NEUTRAL.LOW.LIGHT,
   },
 });

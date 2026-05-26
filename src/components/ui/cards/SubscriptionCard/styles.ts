@@ -1,0 +1,80 @@
+import { StyleSheet } from 'react-native';
+import { COLORS, SPACING } from '@/constants';
+
+export const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+    height: 160,
+    borderRadius: 24,
+    overflow: 'hidden',
+    position: 'relative',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 16,
+    elevation: 3,
+  },
+  image: {
+    ...StyleSheet.absoluteFillObject,
+    width: '100%',
+    height: '100%',
+  },
+  gradient: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  content: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'space-between',
+    padding: SPACING.MD,
+  },
+  badgesRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: SPACING.SM,
+  },
+  badge: {
+    backgroundColor: 'rgba(0, 17, 55, 0.64)',
+    paddingHorizontal: 14,
+    minHeight: 24,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    borderBottomLeftRadius: 11,
+    borderBottomRightRadius: 11,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  badgeText: {
+    fontSize: 12,
+    fontFamily: 'DM Sans',
+    fontWeight: '500',
+    color: COLORS.PRIMARY.LIGHT,
+    letterSpacing: 0.2,
+    lineHeight: 22,
+  },
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+  },
+  title: {
+    flex: 1,
+    fontSize: 20,
+    fontFamily: 'DM Sans',
+    fontWeight: '500',
+    color: COLORS.WHITE,
+    marginRight: SPACING.SM,
+  },
+  chevronCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: COLORS.SECONDARY.LIGHT,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+});

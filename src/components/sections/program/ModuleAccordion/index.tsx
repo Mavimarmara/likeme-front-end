@@ -1,51 +1,56 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { COLORS } from '@/constants';
 import { styles } from './styles';
-import type { ProgramModule } from '@/types/program';
-import VideoContent from '../VideoContent';
-import ActivityContent from '../ActivityContent';
 
-type Props = {
-  module: ProgramModule;
-  onToggle: (moduleId: string) => void;
+export type ModuleItem = {
+  id: string;
+  title: string;
+  completed?: boolean;
 };
 
-const ModuleAccordion: React.FC<Props> = ({ module, onToggle }) => {
-  const isExpanded = module.isExpanded || false;
+type Props = {
+  modules: ModuleItem[];
+  onModulePress?: (module: ModuleItem) => void;
+};
+
+const ModuleAccordion: React.FC<Props> = ({ modules, onModulePress }) => {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const toggleExpand = (module: ModuleItem) => {
+    if (expandedId === module.id) {
+      setExpandedId(null);
+    } else {
+      setExpandedId(module.id);
+      onModulePress?.(module);
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        style={[styles.header, isExpanded && styles.headerExpanded]}
-        onPress={() => onToggle(module.id)}
-        activeOpacity={0.7}
-      >
-        <View style={styles.headerLeft}>
-          <View style={styles.checkContainer}>
-            {module.isCompleted ? (
-              <Icon name='check-circle' size={26} color='#b2b2b2' />
-            ) : (
-              <View style={styles.checkCircle} />
-            )}
+      {modules.map((module) => {
+        const isExpanded = expandedId === module.id;
+
+        return (
+          <View key={module.id} style={styles.moduleItem}>
+            <TouchableOpacity style={styles.moduleHeader} onPress={() => toggleExpand(module)} activeOpacity={0.7}>
+              <View style={styles.headerLeft}>
+                <View style={[styles.checkCircle, module.completed && styles.checkCircleCompleted]}>
+                  {module.completed && <Icon name='check' size={16} color={COLORS.WHITE} />}
+                </View>
+                <Text style={styles.moduleTitle}>{module.title}</Text>
+              </View>
+              <Icon
+                name={isExpanded ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
+                size={28}
+                color={COLORS.NEUTRAL.LOW.PURE}
+              />
+            </TouchableOpacity>
+            <View style={styles.separator} />
           </View>
-          <Text style={styles.moduleTitle}>{module.title}</Text>
-        </View>
-        <Icon name={isExpanded ? 'keyboard-arrow-up' : 'keyboard-arrow-down'} size={28} color='#001137' />
-      </TouchableOpacity>
-
-      {isExpanded && (
-        <View style={styles.content}>
-          {module.content?.map((item) => (
-            <VideoContent key={item.id} content={item} />
-          ))}
-          {module.activities?.map((activity) => (
-            <ActivityContent key={activity.id} activity={activity} />
-          ))}
-        </View>
-      )}
-
-      <View style={styles.separator} />
+        );
+      })}
     </View>
   );
 };

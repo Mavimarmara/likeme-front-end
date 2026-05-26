@@ -1,15 +1,15 @@
 import {
-  filterAcquisitionItems,
-  mapSubscriptionToAcquisitionItem,
-  serviceAcquisitionsFromOrders,
-} from '@/utils/profile/acquisitionListMapper';
+  filterSubscriptionItems,
+  mapSubscriptionToListItem,
+  serviceSubscriptionsFromOrders,
+} from '@/utils/profile/subscriptionListMapper';
 import type { UserSubscriptionListItem } from '@/services/payment/subscriptionService';
 import type { Order } from '@/types/order';
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 
 const t = (key: string) => key;
 
-describe('acquisitionListMapper', () => {
+describe('subscriptionListMapper', () => {
   it('mapeia assinatura para item de protocolo', () => {
     const row: UserSubscriptionListItem = {
       id: 'sub-1',
@@ -25,10 +25,9 @@ describe('acquisitionListMapper', () => {
       },
     };
 
-    const item = mapSubscriptionToAcquisitionItem(row, t);
+    const item = mapSubscriptionToListItem(row, t);
     expect(item.kind).toBe('protocol');
     expect(item.title).toBe('Protocolo X');
-    expect(item.badges).toContain('profile.acquisitionList.statusActive');
   });
 
   it('extrai serviços pagos dos pedidos', () => {
@@ -68,7 +67,7 @@ describe('acquisitionListMapper', () => {
       },
     ];
 
-    const services = serviceAcquisitionsFromOrders(orders);
+    const services = serviceSubscriptionsFromOrders(orders);
     expect(services).toHaveLength(1);
     expect(services[0].kind).toBe('service');
     expect(services[0].title).toBe('Yoga');
@@ -96,6 +95,6 @@ describe('acquisitionListMapper', () => {
       },
     ];
 
-    expect(filterAcquisitionItems(items, 'beta')).toHaveLength(1);
+    expect(filterSubscriptionItems(items, 'beta')).toHaveLength(1);
   });
 });

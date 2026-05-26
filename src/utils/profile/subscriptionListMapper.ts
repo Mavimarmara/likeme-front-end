@@ -1,29 +1,14 @@
-import type { AcquisitionListItem } from '@/types/acquisition/acquisition';
+import type { SubscriptionListItem } from '@/types/subscription/subscription';
 import type { UserSubscriptionListItem } from '@/services/payment/subscriptionService';
-import type { Order, OrderItem } from '@/types/order';
-import { PRODUCT_CATALOG_TYPE } from '@/types/product';
+import type { Order } from '@/types/order';
+import { PRODUCT_CATALOG_TYPE, catalogTypeTranslatedBadgeLabels } from '@/types/product';
 
 const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
 
 type TranslateFn = (key: string) => string;
 
-function subscriptionStatusBadge(status: string, t: TranslateFn): string {
-  switch (status.toUpperCase()) {
-    case 'ACTIVE':
-      return t('profile.acquisitionList.statusActive');
-    case 'PENDING':
-      return t('profile.acquisitionList.statusPending');
-    case 'PAST_DUE':
-      return t('profile.acquisitionList.statusPastDue');
-    case 'CANCELED':
-      return t('profile.acquisitionList.statusCanceled');
-    default:
-      return status;
-  }
-}
-
-export function mapSubscriptionToAcquisitionItem(row: UserSubscriptionListItem, t: TranslateFn): AcquisitionListItem {
-  const badges = [subscriptionStatusBadge(row.status, t), t('profile.acquisitionList.badgeOnline')].filter(Boolean);
+export function mapSubscriptionToListItem(row: UserSubscriptionListItem, t: TranslateFn): SubscriptionListItem {
+  const badges = catalogTypeTranslatedBadgeLabels(row.product.type, t);
 
   return {
     id: row.id,
@@ -37,8 +22,8 @@ export function mapSubscriptionToAcquisitionItem(row: UserSubscriptionListItem, 
   };
 }
 
-export function serviceAcquisitionsFromOrders(orders: Order[]): AcquisitionListItem[] {
-  const byProductId = new Map<string, AcquisitionListItem>();
+export function serviceSubscriptionsFromOrders(orders: Order[]): SubscriptionListItem[] {
+  const byProductId = new Map<string, SubscriptionListItem>();
 
   for (const order of orders) {
     if (order.paymentStatus !== 'paid') {
@@ -74,7 +59,7 @@ export function serviceAcquisitionsFromOrders(orders: Order[]): AcquisitionListI
   );
 }
 
-export function filterAcquisitionItems(items: AcquisitionListItem[], query: string): AcquisitionListItem[] {
+export function filterSubscriptionItems(items: SubscriptionListItem[], query: string): SubscriptionListItem[] {
   const normalized = query.trim().toLowerCase();
   if (!normalized) {
     return items;

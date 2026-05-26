@@ -112,30 +112,32 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
 
   const renderCartItem = useCallback<ListRenderItem<CartItem>>(
     ({ item }) => (
-      <ProductItemCard
-        image={item.image}
-        title={item.title}
-        price={item.price}
-        onPress={noop}
-        badges={catalogTypeTranslatedBadgeLabels(item.type, t)}
-        subtitle={
-          item.subtitle
-            ? item.date
-              ? `${item.subtitle} · ${t('cart.date')}: ${item.date}`
-              : item.subtitle
-            : item.date
-            ? `${t('cart.date')}: ${item.date}`
-            : undefined
-        }
-        quantity={item.quantity}
-        showDelete={true}
-        onRemove={() => removeItem(item.id)}
-        onIncreaseQuantity={() => increaseQuantity(item.id)}
-        onDecreaseQuantity={() => decreaseQuantity(item.id)}
-        deleteButtonTestID={`delete-item-${item.id}`}
-        increaseQuantityTestID={`increase-quantity-${item.id}`}
-        decreaseQuantityTestID={`decrease-quantity-${item.id}`}
-      />
+      <View style={styles.cartItemWrapper}>
+        <ProductItemCard
+          image={item.image}
+          title={item.title}
+          price={item.price}
+          onPress={noop}
+          badges={catalogTypeTranslatedBadgeLabels(item.type, t)}
+          subtitle={
+            item.subtitle
+              ? item.date
+                ? `${item.subtitle} · ${t('cart.date')}: ${item.date}`
+                : item.subtitle
+              : item.date
+              ? `${t('cart.date')}: ${item.date}`
+              : undefined
+          }
+          quantity={item.quantity}
+          showDelete={true}
+          onRemove={() => removeItem(item.id)}
+          onIncreaseQuantity={() => increaseQuantity(item.id)}
+          onDecreaseQuantity={() => decreaseQuantity(item.id)}
+          deleteButtonTestID={`delete-item-${item.id}`}
+          increaseQuantityTestID={`increase-quantity-${item.id}`}
+          decreaseQuantityTestID={`decrease-quantity-${item.id}`}
+        />
+      </View>
     ),
     [t, noop, removeItem, increaseQuantity, decreaseQuantity],
   );

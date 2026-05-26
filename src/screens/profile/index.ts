@@ -1,2 +1,3 @@
 export { default as ProfileScreen } from './ProfileScreen';
-export { default as AcquisitionListScreen } from './AcquisitionListScreen';
+export { default as ProtocolDetailScreen } from './ProtocolDetailScreen';
+export { default as SubscriptionListScreen } from './SubscriptionListScreen';
