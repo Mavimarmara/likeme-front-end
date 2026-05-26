@@ -42,7 +42,7 @@
     "build:android:local": "./build-android-local.sh",
     "sync:eas-secrets": "node scripts/sync-env-to-eas-secrets.js",
     "build:android:gradle": "EXCLUDE_EXPO_DEV_CLIENT=1 npx expo prebuild --platform android && cd android && ./gradlew assembleRelease && cd ..",
-    "build:android:production": "./build-android-production.sh",
+    "android:build:production": "env-cmd -f .env.production bash -c 'export JAVA_HOME=$(/usr/libexec/java_home -v 17) && cd android && ./gradlew :app:bundleRelease'",
     "build:android:apk": "./build-android-apk.sh",
     "ios:pod-install:store": "cd ios && EXCLUDE_EXPO_DEV_CLIENT=1 pod install",
     "ios:simulator": "bash scripts/ios-simulator.sh",

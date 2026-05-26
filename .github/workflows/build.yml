@@ -70,15 +70,27 @@ jobs:
         run: echo "Deploy aprovado. Seguindo para build e submit."
 
   build-android:
-    name: Build Android
+    name: Build Android (Gradle Production)
     runs-on: ubuntu-latest
     needs: approve
     if: ${{ !failure() && !cancelled() }}
-    outputs:
-      build_id: ${{ steps.build.outputs.build_id }}
+    env:
+      EXPO_PUBLIC_AUTH0_DOMAIN: 'likeme.us.auth0.com'
+      EXPO_PUBLIC_AUTH0_CLIENT_ID: 'BoUNLHdItmGpq8rr1A4VS7ea2ceXsWPy'
+      EXPO_PUBLIC_AUTH0_AUDIENCE: 'https://likeme.us.auth0.com/api/v2/'
+      EXPO_PUBLIC_BACKEND_URL: 'https://likeme-back-end-one.vercel.app'
+      EXPO_PUBLIC_USE_AUTH_PROXY: 'true'
+      EXPO_PUBLIC_AUTH_SCHEME: 'likeme'
+      EXPO_PUBLIC_AUTH_REDIRECT_PATH: 'auth'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -89,24 +101,24 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Setup EAS CLI
-        uses: expo/expo-github-action@v8
-        with:
-          eas-version: 19.0.8
-          token: ${{ secrets.EXPO_TOKEN }}
-          packager: npm
+      - name: Decode Android keystore
+        run: echo '${{ secrets.ANDROID_KEYSTORE_BASE64 }}' | base64 -d > android/app/release.keystore
 
-      - name: Build Android (Production)
-        id: build
+      - name: Build AAB (bundleRelease)
         run: |
           set -euo pipefail
-          OUTPUT=$(eas build --platform android --profile production --non-interactive --clear-cache --json)
-          BUILD_ID=$(echo "$OUTPUT" | jq -r '.[0].id // empty')
-          if [ -z "$BUILD_ID" ] || [ "$BUILD_ID" = "null" ]; then
-            echo "::error::eas build (Android) não retornou id de build."
-            exit 1
-          fi
-          echo "build_id=$BUILD_ID" >> "$GITHUB_OUTPUT"
+          cd android && ./gradlew :app:bundleRelease \
+            -Pandroid.injected.signing.store.file=$PWD/app/release.keystore \
+            -Pandroid.injected.signing.store.password='${{ secrets.ANDROID_KEYSTORE_STORE_PASSWORD }}' \
+            -Pandroid.injected.signing.key.alias='${{ secrets.ANDROID_KEYSTORE_KEY_ALIAS }}' \
+            -Pandroid.injected.signing.key.password='${{ secrets.ANDROID_KEYSTORE_KEY_PASSWORD }}'
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-aab
+          path: android/app/build/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
 
   build-ios:
     name: Build iOS (Xcode Production)
@@ -180,37 +192,20 @@ jobs:
     needs: build-android
     if: ${{ needs.build-android.result == 'success' }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Download AAB artifact
+        uses: actions/download-artifact@v4
         with:
-          node-version: '20.19.4'
-          cache: 'npm'
+          name: android-aab
+          path: android-aab-dl
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Setup EAS CLI
-        uses: expo/expo-github-action@v8
+      - name: Upload to Google Play (internal track)
+        uses: r0adkll/upload-google-play@v1
         with:
-          eas-version: 19.0.8
-          token: ${{ secrets.EXPO_TOKEN }}
-          packager: npm
-
-      - name: Create Google Service Account file
-        run: echo '${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}' > ./google-service-account.json
-
-      - name: Submit to Google Play (faixa internal; eas.json submit.production.android.track)
-        run: |
-          set -euo pipefail
-          BUILD_ID='${{ needs.build-android.outputs.build_id }}'
-          if [ -z "$BUILD_ID" ]; then
-            echo "::error::build_id do job build-android está vazio; não use submit sem artefato deste pipeline."
-            exit 1
-          fi
-          eas submit --platform android --profile production --id "$BUILD_ID" --non-interactive
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          packageName: com.likeme.app
+          releaseFiles: android-aab-dl/app-release.aab
+          track: internal
+          status: completed
 
   ios-appstore-pipeline:
     name: iOS App Store Pipeline
