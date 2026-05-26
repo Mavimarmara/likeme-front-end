@@ -1,15 +1,15 @@
 {
-  "version": "1.4.2",
+  "version": "1.4.3",
   "releasedAt": "2026-05-26",
   "android": {
-    "versionCode": 7
+    "versionCode": 8
   },
   "ios": {
-    "buildNumber": 12
+    "buildNumber": 13
   },
   "changelog": {
-    "changed": [
-      "Suporte a .env.production via dotenv-cli nos scripts e config do backend"
+    "fixed": [
+      "Correção do pipeline iOS: extração do xcarchive e export para App Store"
     ]
   }
 }

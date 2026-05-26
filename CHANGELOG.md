@@ -58,3 +58,8 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ### Alterado
 - Suporte a .env.production via dotenv-cli nos scripts e config do backend
+
+## [1.4.3] - 2026-05-26
+
+### Corrigido
+- Correção do pipeline iOS: extração do xcarchive e export para App Store
