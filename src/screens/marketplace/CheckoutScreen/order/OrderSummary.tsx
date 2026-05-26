@@ -38,7 +38,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
       </View>
       {voucherDiscount > 0 && (
         <View style={cartStyles.summaryRow}>
-          <Text style={cartStyles.summaryLabel}>{t('checkout.voucherDiscount')}</Text>
+          <Text style={cartStyles.summaryLabel}>{t('checkout.voucherDiscount', { defaultValue: 'Desconto' })}</Text>
           <Text style={cartStyles.summaryValue}>-{formatPrice(voucherDiscount)}</Text>
         </View>
       )}

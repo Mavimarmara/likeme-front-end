@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { View, Text, ScrollView, Alert } from 'react-native';
+import { View, Text, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { ScreenWithHeader } from '@/components/ui/layout';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { Stepper } from '@/components/ui/tabs';
@@ -138,7 +138,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
     checkoutAmountsRef.current = { subtotal, shipping: effectiveShipping };
     void checkoutVoucher.syncAppliedWithAmounts(
       { subtotal, shippingCost: effectiveShipping },
-      t('checkout.invalidCoupon'),
+      t('checkout.invalidCoupon', { defaultValue: 'Cupom inválido' }),
     );
   }, [subtotal, effectiveShipping, checkoutVoucher.appliedPreview?.code, t]);
 
@@ -290,6 +290,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
 
       setOrderId(orderResponse.data.id);
       await storageService.clearCart();
+      checkoutVoucher.removeCoupon();
       setCurrentStep('order');
     } catch (error: any) {
       logger.error('[CheckoutScreen] Erro ao concluir pedido', error);
@@ -348,7 +349,10 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   const handleApplyCoupon = () => {
-    void checkoutVoucher.applyCoupon({ subtotal, shippingCost: effectiveShipping }, t('checkout.invalidCoupon'));
+    void checkoutVoucher.applyCoupon(
+      { subtotal, shippingCost: effectiveShipping },
+      t('checkout.invalidCoupon', { defaultValue: 'Cupom inválido' }),
+    );
   };
 
   const summaryAmounts = useMemo(
@@ -389,119 +393,125 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
       headerProps={{ onBackPress: () => navigation.goBack() }}
       contentContainerStyle={styles.container}
     >
-      <ScrollView
+      <KeyboardAvoidingView
         style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
       >
-        <Stepper
-          steps={stepperSteps}
-          currentStepId={currentStep}
-          onStepPress={(stepId) => setCurrentStep(stepId as CheckoutStep)}
-        />
-
-        {currentStep === 'address' && (
-          <>
-            <AddressForm
-              addressData={addressData}
-              onSaveAddress={handleSaveAddress}
-              startWithEditOpen={addressLoaded && !addressData.addressLine1?.trim()}
-              addressLoadError={addressLoadError}
-              addressSaveError={addressSaveError}
-            />
-
-            <Text style={styles.deliveriesTitle}>{t('checkout.yourDeliveries')}</Text>
-            <View style={styles.cartItemsList} testID='cart-items-list'>
-              {cartItems.map((item) => (
-                <ProductItemCard
-                  key={item.id}
-                  image={item.image}
-                  title={item.title}
-                  price={item.price}
-                  onPress={noop}
-                  badges={catalogTypeTranslatedBadgeLabels(item.type, t)}
-                  subtitle={
-                    item.subtitle
-                      ? item.date
-                        ? `${item.subtitle} · ${t('cart.date')}: ${item.date}`
-                        : item.subtitle
-                      : item.date
-                      ? `${t('cart.date')}: ${item.date}`
-                      : undefined
-                  }
-                  quantity={item.quantity}
-                  showDelete={true}
-                  onRemove={() => removeItem(item.id)}
-                  onIncreaseQuantity={() => increaseQuantity(item.id)}
-                  onDecreaseQuantity={() => decreaseQuantity(item.id)}
-                />
-              ))}
-            </View>
-
-            <CheckoutVoucherSection
-              couponCode={checkoutVoucher.couponCode}
-              couponError={checkoutVoucher.couponError}
-              appliedCouponCode={checkoutVoucher.appliedPreview?.code ?? null}
-              couponApplying={checkoutVoucher.isValidating}
-              applyDisabled={isShippingBlocking}
-              onCouponCodeChange={checkoutVoucher.onCouponCodeChange}
-              onApplyCoupon={handleApplyCoupon}
-              onRemoveCoupon={checkoutVoucher.removeCoupon}
-            />
-
-            {orderSummary}
-          </>
-        )}
-
-        {currentStep === 'payment' && (
-          <>
-            <PaymentForm
-              cardholderName={payment.cardholderName}
-              cardNumber={payment.cardNumber}
-              expiryDate={payment.expiryDate}
-              cvv={payment.cvv}
-              cpf={payment.cpf}
-              paymentFieldErrors={payment.paymentFieldErrors}
-              billingAddressData={billingAddressData}
-              deliverySameAsBilling={deliverySameAsBilling}
-              onCardholderNameChange={payment.onCardholderNameChange}
-              onCardNumberChange={payment.onCardNumberChange}
-              onExpiryDateChange={payment.onExpiryDateChange}
-              onCvvChange={payment.onCvvChange}
-              onCpfChange={payment.onCpfChange}
-              onSaveBillingAddress={handleSaveBillingAddress}
-              onDeliverySameAsBillingChange={handleDeliverySameAsBillingChange}
-            />
-
-            <CheckoutVoucherSection
-              couponCode={checkoutVoucher.couponCode}
-              couponError={checkoutVoucher.couponError}
-              appliedCouponCode={checkoutVoucher.appliedPreview?.code ?? null}
-              couponApplying={checkoutVoucher.isValidating}
-              applyDisabled={isShippingBlocking}
-              onCouponCodeChange={checkoutVoucher.onCouponCodeChange}
-              onApplyCoupon={handleApplyCoupon}
-              onRemoveCoupon={checkoutVoucher.removeCoupon}
-            />
-
-            {orderSummary}
-          </>
-        )}
-
-        {currentStep === 'order' && (
-          <OrderScreen
-            orderId={orderId}
-            subtotal={subtotal}
-            shipping={effectiveShipping}
-            showShipping={!isShippingDisabled}
-            addressData={deliverySameAsBilling ? billingAddressData : addressData}
-            cartItems={cartItems}
-            onViewProgram={handleProductPress}
-            onAddToCalendar={handleProductPress}
-            onHomePress={handleHomePress}
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps='handled'
+        >
+          <Stepper
+            steps={stepperSteps}
+            currentStepId={currentStep}
+            onStepPress={(stepId) => setCurrentStep(stepId as CheckoutStep)}
           />
-        )}
-      </ScrollView>
+
+          {currentStep === 'address' && (
+            <>
+              <AddressForm
+                addressData={addressData}
+                onSaveAddress={handleSaveAddress}
+                startWithEditOpen={addressLoaded && !addressData.addressLine1?.trim()}
+                addressLoadError={addressLoadError}
+                addressSaveError={addressSaveError}
+              />
+
+              <Text style={styles.deliveriesTitle}>{t('checkout.yourDeliveries')}</Text>
+              <View style={styles.cartItemsList} testID='cart-items-list'>
+                {cartItems.map((item) => (
+                  <ProductItemCard
+                    key={item.id}
+                    image={item.image}
+                    title={item.title}
+                    price={item.price}
+                    onPress={noop}
+                    badges={catalogTypeTranslatedBadgeLabels(item.type, t)}
+                    subtitle={
+                      item.subtitle
+                        ? item.date
+                          ? `${item.subtitle} · ${t('cart.date')}: ${item.date}`
+                          : item.subtitle
+                        : item.date
+                        ? `${t('cart.date')}: ${item.date}`
+                        : undefined
+                    }
+                    quantity={item.quantity}
+                    showDelete={true}
+                    onRemove={() => removeItem(item.id)}
+                    onIncreaseQuantity={() => increaseQuantity(item.id)}
+                    onDecreaseQuantity={() => decreaseQuantity(item.id)}
+                  />
+                ))}
+              </View>
+
+              <CheckoutVoucherSection
+                couponCode={checkoutVoucher.couponCode}
+                couponError={checkoutVoucher.couponError}
+                appliedCouponCode={checkoutVoucher.appliedPreview?.code ?? null}
+                couponApplying={checkoutVoucher.isValidating}
+                applyDisabled={isShippingBlocking}
+                onCouponCodeChange={checkoutVoucher.onCouponCodeChange}
+                onApplyCoupon={handleApplyCoupon}
+                onRemoveCoupon={checkoutVoucher.removeCoupon}
+              />
+
+              {orderSummary}
+            </>
+          )}
+
+          {currentStep === 'payment' && (
+            <>
+              <PaymentForm
+                cardholderName={payment.cardholderName}
+                cardNumber={payment.cardNumber}
+                expiryDate={payment.expiryDate}
+                cvv={payment.cvv}
+                cpf={payment.cpf}
+                paymentFieldErrors={payment.paymentFieldErrors}
+                billingAddressData={billingAddressData}
+                deliverySameAsBilling={deliverySameAsBilling}
+                onCardholderNameChange={payment.onCardholderNameChange}
+                onCardNumberChange={payment.onCardNumberChange}
+                onExpiryDateChange={payment.onExpiryDateChange}
+                onCvvChange={payment.onCvvChange}
+                onCpfChange={payment.onCpfChange}
+                onSaveBillingAddress={handleSaveBillingAddress}
+                onDeliverySameAsBillingChange={handleDeliverySameAsBillingChange}
+              />
+
+              <CheckoutVoucherSection
+                couponCode={checkoutVoucher.couponCode}
+                couponError={checkoutVoucher.couponError}
+                appliedCouponCode={checkoutVoucher.appliedPreview?.code ?? null}
+                couponApplying={checkoutVoucher.isValidating}
+                applyDisabled={isShippingBlocking}
+                onCouponCodeChange={checkoutVoucher.onCouponCodeChange}
+                onApplyCoupon={handleApplyCoupon}
+                onRemoveCoupon={checkoutVoucher.removeCoupon}
+              />
+
+              {orderSummary}
+            </>
+          )}
+
+          {currentStep === 'order' && (
+            <OrderScreen
+              orderId={orderId}
+              subtotal={subtotal}
+              shipping={effectiveShipping}
+              showShipping={!isShippingDisabled}
+              addressData={deliverySameAsBilling ? billingAddressData : addressData}
+              cartItems={cartItems}
+              onViewProgram={handleProductPress}
+              onAddToCalendar={handleProductPress}
+              onHomePress={handleHomePress}
+            />
+          )}
+        </ScrollView>
+      </KeyboardAvoidingView>
 
       <View style={styles.buttonContainer}>
         {currentStep === 'order' ? (

@@ -1,6 +1,9 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { voucherCheckoutService } from '@/services/voucher/voucherCheckoutService';
 import type { VoucherCheckoutPreview } from '@/types/voucher/checkout';
+
+const VOUCHER_STORAGE_KEY = '@likeme/checkout_voucher';
 
 export type ApplyCheckoutVoucherInput = {
   subtotal: number;
@@ -16,7 +19,24 @@ export function useCheckoutVoucher() {
 
   useEffect(() => {
     appliedPreviewRef.current = appliedPreview;
+    if (appliedPreview) {
+      void AsyncStorage.setItem(VOUCHER_STORAGE_KEY, JSON.stringify(appliedPreview));
+    }
   }, [appliedPreview]);
+
+  useEffect(() => {
+    void AsyncStorage.getItem(VOUCHER_STORAGE_KEY).then((stored) => {
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored) as VoucherCheckoutPreview;
+          setAppliedPreview(parsed);
+          setCouponCode(parsed.code);
+        } catch {
+          /* ignore corrupt data */
+        }
+      }
+    });
+  }, []);
 
   const onCouponCodeChange = useCallback((text: string) => {
     setCouponCode(text);
@@ -60,6 +80,7 @@ export function useCheckoutVoucher() {
     setAppliedPreview(null);
     setCouponError(null);
     setCouponCode('');
+    void AsyncStorage.removeItem(VOUCHER_STORAGE_KEY);
   }, []);
 
   const syncAppliedWithAmounts = useCallback(

@@ -30,12 +30,14 @@ const CheckoutVoucherSection: React.FC<CheckoutVoucherSectionProps> = ({
 
   return (
     <View style={styles.couponSection}>
-      <Text style={styles.sectionTitle}>{t('checkout.discountCoupon')}</Text>
+      <Text style={styles.sectionTitle}>{t('checkout.discountCoupon', { defaultValue: 'Cupom de desconto' })}</Text>
       {appliedCouponCode ? (
         <View style={styles.couponAppliedBlock}>
-          <Text style={styles.couponAppliedText}>{t('checkout.couponApplied', { code: appliedCouponCode })}</Text>
+          <Text style={styles.couponAppliedText}>
+            {t('checkout.couponApplied', { code: appliedCouponCode, defaultValue: 'Cupom {{code}} aplicado' })}
+          </Text>
           <SecondaryButton
-            label={t('checkout.removeCoupon')}
+            label={t('checkout.removeCoupon', { defaultValue: 'Remover cupom' })}
             onPress={onRemoveCoupon}
             size='medium'
             style={styles.removeCouponButton}
@@ -44,13 +46,14 @@ const CheckoutVoucherSection: React.FC<CheckoutVoucherSectionProps> = ({
       ) : (
         <View style={styles.couponRow}>
           <TextInput
-            placeholder={t('checkout.couponPlaceholder')}
+            placeholder={t('checkout.couponPlaceholder', { defaultValue: 'Digite o código' })}
             value={couponCode}
-            onChangeText={onCouponCodeChange}
+            onChangeText={(text) => onCouponCodeChange(text.toUpperCase())}
             containerStyle={styles.couponInput}
             style={styles.couponInputField}
             errorText={couponError ?? undefined}
             editable={!couponApplying}
+            autoCapitalize='characters'
           />
           <View style={styles.applyButtonWrap}>
             <PrimaryButton
