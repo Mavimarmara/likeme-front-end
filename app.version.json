@@ -1,15 +1,21 @@
 {
-  "version": "1.4.3",
+  "version": "1.5.0",
   "releasedAt": "2026-05-26",
   "android": {
-    "versionCode": 8
+    "versionCode": 9
   },
   "ios": {
-    "buildNumber": 13
+    "buildNumber": 14
   },
   "changelog": {
-    "fixed": [
-      "Correção do pipeline iOS: extração do xcarchive e export para App Store"
+    "added": [
+      "Nova tela de detalhe de protocolo com hero, sessões e próxima live",
+      "Lista de protocolos e serviços com novo layout de cards",
+      "Seção de protocolos na Home com empty state para quem não tem subscription",
+      "Menu de perfil agora abre Meus Protocolos e Serviços"
+    ],
+    "changed": [
+      "AcquisitionList substituída por SubscriptionList com design atualizado"
     ]
   }
 }

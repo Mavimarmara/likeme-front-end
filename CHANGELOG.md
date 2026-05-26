@@ -63,3 +63,14 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ### Corrigido
 - Correção do pipeline iOS: extração do xcarchive e export para App Store
+
+## [1.5.0] - 2026-05-26
+
+### Adicionado
+- Nova tela de detalhe de protocolo com hero, sessões e próxima live
+- Lista de protocolos e serviços com novo layout de cards
+- Seção de protocolos na Home com empty state para quem não tem subscription
+- Menu de perfil agora abre Meus Protocolos e Serviços
+
+### Alterado
+- AcquisitionList substituída por SubscriptionList com design atualizado
