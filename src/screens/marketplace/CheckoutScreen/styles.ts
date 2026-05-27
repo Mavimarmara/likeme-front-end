@@ -333,6 +333,14 @@ export const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   // Order Screen Styles
+  orderCreatedMessage: {
+    fontSize: FONT_SIZES.MD,
+    fontFamily: 'DM Sans',
+    fontWeight: '700',
+    color: '#001137',
+    marginBottom: SPACING.LG,
+    letterSpacing: 0.2,
+  },
   orderSummarySection: {
     marginBottom: SPACING.LG,
   },

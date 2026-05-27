@@ -128,7 +128,10 @@ const OrderScreen: React.FC<OrderScreenProps> = ({
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.scrollContent}
     >
-      {/* Order Summary Section */}
+      <Text style={styles.orderCreatedMessage}>
+        {t('checkout.orderCreated', { defaultValue: 'Pedido criado com sucesso!' })}
+      </Text>
+
       <View style={styles.orderSummarySection}>
         <Text style={styles.orderSummaryTitle}>{t('checkout.orderSummary')}</Text>
         <Text style={styles.orderId}>#{orderId}</Text>

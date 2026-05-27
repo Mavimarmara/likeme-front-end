@@ -4,6 +4,7 @@ import { ScreenWithHeader } from '@/components/ui/layout';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { Stepper } from '@/components/ui/tabs';
 import { storageService, orderService, userService } from '@/services';
+import { isHttpRequestTimeoutError } from '@/utils/network/isHttpRequestTimeoutError';
 import { getShippingQuote } from '@/services/shipping/shippingService';
 import { formatZipCodeDisplay } from '@/services/address/cepService';
 import { formatPrice, formatAddress, formatBillingAddress } from '@/utils';
@@ -173,6 +174,10 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
     }
   };
 
+  const showOrderCreatedAlert = () => {
+    Alert.alert(t('checkout.orderCreated', { defaultValue: 'Pedido criado com sucesso!' }));
+  };
+
   const handleCompleteOrder = async () => {
     try {
       payment.setIsProcessing(true);
@@ -276,26 +281,31 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
       }
 
       if (orderPaymentStatus === 'pending') {
-        logger.warn('[CheckoutScreen] Pagamento retornou como pendente', {
+        logger.warn('[CheckoutScreen] Pedido criado com pagamento pendente', {
           orderId: orderResponse.data.id,
         });
-        Alert.alert(
-          t('checkout.paymentPendingTitle', { defaultValue: 'Pagamento em processamento' }),
-          t('checkout.paymentPendingMessage', {
-            defaultValue:
-              'Seu pedido foi criado, mas o pagamento ainda está sendo processado. Acompanhe o status nos seus pedidos.',
-          }),
-        );
       }
+
+      showOrderCreatedAlert();
 
       setOrderId(orderResponse.data.id);
       await storageService.clearCart();
       checkoutVoucher.removeCoupon();
       setCurrentStep('order');
-    } catch (error: any) {
+    } catch (error: unknown) {
+      if (isHttpRequestTimeoutError(error)) {
+        logger.warn('[CheckoutScreen] Criação do pedido excedeu API_HTTP_REQUEST_TIMEOUT_MS');
+        const timeoutMessage = t('checkout.orderTimeout', {
+          defaultValue: 'A requisição demorou demais. Confira seus pedidos antes de tentar novamente.',
+        });
+        payment.setPaymentError(timeoutMessage);
+        Alert.alert(t('errors.error'), timeoutMessage);
+        return;
+      }
+
       logger.error('[CheckoutScreen] Erro ao concluir pedido', error);
 
-      const serverMessage = typeof error?.message === 'string' && error.message.trim() ? error.message : null;
+      const serverMessage = error instanceof Error && error.message.trim() ? error.message.trim() : null;
 
       const isPaymentError =
         serverMessage &&
