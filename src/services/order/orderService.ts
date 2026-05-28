@@ -1,4 +1,5 @@
 import apiClient from '../infrastructure/apiClient';
+import { CHECKOUT_CREATE_ORDER_HTTP_TIMEOUT_MS } from '@/constants/networkTimeouts';
 import { logger } from '@/utils/logger';
 import type {
   Order,
@@ -16,7 +17,12 @@ class OrderService {
 
   async createOrder(data: CreateOrderData): Promise<ApiResponse<CreateOrderResponse>> {
     try {
-      const response = await apiClient.post<ApiResponse<CreateOrderResponse>>(this.ordersEndpoint, data, true);
+      const response = await apiClient.post<ApiResponse<CreateOrderResponse>>(
+        this.ordersEndpoint,
+        data,
+        true,
+        CHECKOUT_CREATE_ORDER_HTTP_TIMEOUT_MS,
+      );
 
       logger.debug('Order created:', {
         orderId: response.data?.id,

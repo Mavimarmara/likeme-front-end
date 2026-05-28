@@ -51,6 +51,12 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
   const [addressLoadError, setAddressLoadError] = useState<string | null>(null);
   const [addressSaveError, setAddressSaveError] = useState<string | null>(null);
   const payment = usePayment();
+  const checkoutSubmitInFlightRef = useRef(false);
+  const checkoutSubmitCompletedRef = useRef(false);
+  const checkoutSubmitBlockedRef = useRef(false);
+  const [checkoutSubmitCompleted, setCheckoutSubmitCompleted] = useState(false);
+  const [checkoutSubmitBlocked, setCheckoutSubmitBlocked] = useState(false);
+  const [isOrderSubmitLocked, setIsOrderSubmitLocked] = useState(false);
   const checkoutVoucher = useCheckoutVoucher();
   const [shipping, setShipping] = useState(0);
   const [shippingLoading, setShippingLoading] = useState(false);
@@ -158,10 +164,11 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
   const canProceedFromAddress = isAddressValid && (deliverySameAsBilling || isAddressFilled(billingAddressData));
 
   const isShippingBlocking = !isShippingDisabled && (shipping === 0 || shippingLoading || shippingPolicyLoading);
+  const isPaymentSubmitBlocked = checkoutSubmitCompleted || isOrderSubmitLocked || checkoutSubmitBlocked;
   const isContinueDisabled =
-    payment.isProcessing ||
     (currentStep === 'address' && (!canProceedFromAddress || isShippingBlocking)) ||
-    (currentStep === 'payment' && isShippingBlocking);
+    (currentStep === 'payment' && (isShippingBlocking || payment.isProcessing || isPaymentSubmitBlocked));
+  const isContinueLoading = currentStep === 'payment' && payment.isProcessing;
 
   const handleContinue = async () => {
     if (currentStep === 'address' && !canProceedFromAddress) {
@@ -170,6 +177,12 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
     if (currentStep === 'address') {
       setCurrentStep('payment');
     } else if (currentStep === 'payment') {
+      if (isPaymentSubmitBlocked || checkoutSubmitInFlightRef.current || payment.isProcessing) {
+        return;
+      }
+      checkoutSubmitInFlightRef.current = true;
+      setIsOrderSubmitLocked(true);
+      payment.setIsProcessing(true);
       await handleCompleteOrder();
     }
   };
@@ -178,19 +191,41 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
     Alert.alert(t('checkout.orderCreated', { defaultValue: 'Pedido criado com sucesso!' }));
   };
 
-  const handleCompleteOrder = async () => {
-    try {
-      payment.setIsProcessing(true);
+  const releaseCheckoutSubmitLock = () => {
+    checkoutSubmitInFlightRef.current = false;
+    setIsOrderSubmitLocked(false);
+    payment.setIsProcessing(false);
+  };
 
+  const blockCheckoutSubmitPermanently = () => {
+    checkoutSubmitBlockedRef.current = true;
+    setCheckoutSubmitBlocked(true);
+    checkoutSubmitInFlightRef.current = true;
+    setIsOrderSubmitLocked(true);
+    payment.setIsProcessing(false);
+  };
+
+  const handleCompleteOrder = async () => {
+    if (checkoutSubmitCompleted || checkoutSubmitBlockedRef.current) {
+      return;
+    }
+
+    if (!checkoutSubmitInFlightRef.current) {
+      checkoutSubmitInFlightRef.current = true;
+      setIsOrderSubmitLocked(true);
+      payment.setIsProcessing(true);
+    }
+
+    try {
       if (cartItems.length === 0) {
         Alert.alert(t('errors.error'), t('checkout.orderError'));
-        payment.setIsProcessing(false);
+        releaseCheckoutSubmitLock();
         return;
       }
 
       if (!isShippingDisabled && (shipping === 0 || shippingLoading)) {
         Alert.alert(t('errors.error'), t('checkout.shippingRequired'));
-        payment.setIsProcessing(false);
+        releaseCheckoutSubmitLock();
         return;
       }
 
@@ -199,7 +234,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
         if (errors) {
           payment.setPaymentFieldErrors(errors);
           payment.setPaymentError(null);
-          payment.setIsProcessing(false);
+          releaseCheckoutSubmitLock();
           return;
         }
       }
@@ -226,7 +261,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
       const shippingAddressData = deliverySameAsBilling ? billingAddressData : addressData;
       if (!isAddressFilled(billingAddressData)) {
         Alert.alert(t('errors.error'), t('checkout.orderError'));
-        payment.setIsProcessing(false);
+        releaseCheckoutSubmitLock();
         return;
       }
 
@@ -246,7 +281,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
       if (PAYMENT_METHOD === 'credit_card') {
         if (!cardDataObj) {
           Alert.alert(t('errors.error'), t('checkout.orderError'));
-          payment.setIsProcessing(false);
+          releaseCheckoutSubmitLock();
           return;
         }
         orderData.cardData = cardDataObj;
@@ -286,6 +321,9 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
         });
       }
 
+      checkoutSubmitCompletedRef.current = true;
+      setCheckoutSubmitCompleted(true);
+
       showOrderCreatedAlert();
 
       setOrderId(orderResponse.data.id);
@@ -300,12 +338,17 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
         });
         payment.setPaymentError(timeoutMessage);
         Alert.alert(t('errors.error'), timeoutMessage);
+        blockCheckoutSubmitPermanently();
         return;
       }
 
       logger.error('[CheckoutScreen] Erro ao concluir pedido', error);
 
       const serverMessage = error instanceof Error && error.message.trim() ? error.message.trim() : null;
+
+      const isDuplicateEnrollmentError =
+        serverMessage &&
+        (serverMessage.includes('já possui uma assinatura') || serverMessage.includes('Consulte seus pedidos'));
 
       const isPaymentError =
         serverMessage &&
@@ -319,8 +362,23 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
 
       payment.setPaymentError(userMessage);
       Alert.alert(t('errors.error'), userMessage);
+
+      if (isDuplicateEnrollmentError) {
+        releaseCheckoutSubmitLock();
+        return;
+      }
+
+      if (isPaymentError && serverMessage?.includes('recusado')) {
+        releaseCheckoutSubmitLock();
+        return;
+      }
+
+      releaseCheckoutSubmitLock();
     } finally {
-      payment.setIsProcessing(false);
+      if (checkoutSubmitCompletedRef.current) {
+        setIsOrderSubmitLocked(true);
+        payment.setIsProcessing(false);
+      }
     }
   };
 
@@ -538,7 +596,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
             onPress={handleContinue}
             style={styles.completeButton}
             size='large'
-            loading={payment.isProcessing}
+            loading={isContinueLoading}
             disabled={isContinueDisabled}
           />
         )}

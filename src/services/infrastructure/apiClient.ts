@@ -61,8 +61,12 @@ class ApiClient {
     return headers;
   }
 
-  private async fetchWithRequestTimeout(url: string, init: RequestInit): Promise<Response> {
-    return fetchWithTimeout(url, init, API_HTTP_REQUEST_TIMEOUT_MS);
+  private async fetchWithRequestTimeout(
+    url: string,
+    init: RequestInit,
+    timeoutMs: number = API_HTTP_REQUEST_TIMEOUT_MS,
+  ): Promise<Response> {
+    return fetchWithTimeout(url, init, timeoutMs);
   }
 
   private async handleResponse<T>(response: Response): Promise<T> {
@@ -235,17 +239,27 @@ class ApiClient {
     }
   }
 
-  async post<T>(endpoint: string, data?: any, includeAuth = true): Promise<T> {
+  async post<T>(
+    endpoint: string,
+    data?: any,
+    includeAuth = true,
+    timeoutMs: number = API_HTTP_REQUEST_TIMEOUT_MS,
+    extraHeaders?: Record<string, string>,
+  ): Promise<T> {
     try {
       const execute = async () => {
         const url = `${this.baseUrl}${endpoint}`;
-        const headers = await this.getHeaders(includeAuth);
+        const headers = { ...(await this.getHeaders(includeAuth)), ...extraHeaders };
         this.logAuthHeader('POST', url, headers);
-        return this.fetchWithRequestTimeout(url, {
-          method: 'POST',
-          headers,
-          body: data ? JSON.stringify(data) : undefined,
-        });
+        return this.fetchWithRequestTimeout(
+          url,
+          {
+            method: 'POST',
+            headers,
+            body: data ? JSON.stringify(data) : undefined,
+          },
+          timeoutMs,
+        );
       };
 
       const response = await this.requestWithRefresh(execute, includeAuth);

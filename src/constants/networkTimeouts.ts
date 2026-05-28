@@ -7,6 +7,9 @@ export const APP_RELEASE_POLICY_FETCH_TIMEOUT_MS = 5_000;
 /** `apiClient` (GET/POST/…): limite padrão para não pendurar a UI em rede ruim. */
 export const API_HTTP_REQUEST_TIMEOUT_MS = 45_000;
 
+/** Checkout com Pagarme + poll no back-end: evita abortar antes da resposta e duplicar pedido. */
+export const CHECKOUT_CREATE_ORDER_HTTP_TIMEOUT_MS = 60_000;
+
 /** Logout e aceite de política no backend: não precisa esperar tanto quanto requests gerais. */
 export const AUTH_LOGOUT_AND_POLICY_HTTP_TIMEOUT_MS = 20_000;
 
