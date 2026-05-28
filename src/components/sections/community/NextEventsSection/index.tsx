@@ -7,19 +7,22 @@ import { styles } from './styles';
 
 type Props = {
   events: FeedEvent[];
+  title?: string;
   onEventPress?: (event: FeedEvent) => void;
   onEventSave?: (event: FeedEvent) => void;
 };
 
-const NextEventsSection: React.FC<Props> = ({ events, onEventPress, onEventSave }) => {
+const NextEventsSection: React.FC<Props> = ({ events, title, onEventPress, onEventSave }) => {
   const { t } = useTranslation();
   if (!events || events.length === 0) {
     return null;
   }
 
+  const sectionTitle = title ?? t('home.nextEvents');
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{t('home.nextEvents')}</Text>
+      <Text style={styles.title}>{sectionTitle}</Text>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}

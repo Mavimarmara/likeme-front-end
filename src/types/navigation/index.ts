@@ -65,6 +65,17 @@ type RootStackParamListCore = {
   };
   Profile: undefined;
   SubscriptionList: undefined;
+  MemberProtocols: undefined;
+  CommunityProtocolDetail: {
+    community: {
+      communityId: string;
+      name: string;
+      image?: string;
+      badges?: string[];
+      description?: string;
+      agreement?: string;
+    };
+  };
   ProtocolDetail: {
     protocol: {
       id: string;

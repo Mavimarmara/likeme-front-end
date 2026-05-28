@@ -87,6 +87,8 @@ export interface CommunityUser {
 export interface Community {
   communityId: string;
   displayName: string;
+  tags?: string[];
+  categoryIds?: string[];
   description?: string | null;
   socialDescription?: string | null;
   /** Texto de acordo/termos da comunidade (campo `community.agreement` no backend). */

@@ -40,6 +40,8 @@ import {
   getProfileScreen,
   getProtocolDetailScreen,
   getSubscriptionListScreen,
+  getMemberProtocolsScreen,
+  getCommunityProtocolDetailScreen,
   getPrivacyPoliciesScreen,
   getHomeScreen,
   getSummaryScreen,
@@ -208,6 +210,16 @@ const RootNavigator: React.FC = () => {
                       name='SubscriptionList'
                       getComponent={getSubscriptionListScreen}
                       options={{ title: 'Meus Protocolos e Serviços' }}
+                    />
+                    <Stack.Screen
+                      name='MemberProtocols'
+                      getComponent={getMemberProtocolsScreen}
+                      options={{ title: 'Meus Protocolos' }}
+                    />
+                    <Stack.Screen
+                      name='CommunityProtocolDetail'
+                      getComponent={getCommunityProtocolDetailScreen}
+                      options={{ title: 'Protocolo' }}
                     />
                     <Stack.Screen
                       name='PrivacyPolicies'

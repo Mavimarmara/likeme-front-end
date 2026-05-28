@@ -306,6 +306,39 @@ class CommunityService {
     }
   }
 
+  async listMemberProtocolCommunities(params: ListCommunitiesParams = {}): Promise<ListCommunitiesApiResponse> {
+    try {
+      const queryParams: Record<string, string> = {};
+
+      if (params.page !== undefined) {
+        queryParams.page = String(params.page);
+      }
+
+      if (params.limit !== undefined) {
+        queryParams.limit = String(params.limit);
+      }
+
+      const communitiesResponse = await apiClient.get<ListCommunitiesApiResponse>(
+        `${this.communitiesEndpoint}/member-protocols`,
+        queryParams,
+        true,
+        false,
+      );
+
+      logger.debug('Member protocol communities response:', {
+        page: params.page,
+        limit: params.limit,
+        success: communitiesResponse.success,
+        count: communitiesResponse.data?.communities?.length ?? 0,
+      });
+
+      return communitiesResponse;
+    } catch (error) {
+      logger.error('Error fetching member protocol communities:', error);
+      throw error;
+    }
+  }
+
   async listCommunities(params: ListCommunitiesParams = {}): Promise<ListCommunitiesApiResponse> {
     try {
       const queryParams: Record<string, string> = {};

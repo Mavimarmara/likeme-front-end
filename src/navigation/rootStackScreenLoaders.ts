@@ -72,6 +72,10 @@ export const getProtocolDetailScreen = (): RootStackScreen =>
   asScreen(require('../screens/profile/ProtocolDetailScreen') as { default: RootStackScreen });
 export const getSubscriptionListScreen = (): RootStackScreen =>
   asScreen(require('../screens/profile/SubscriptionListScreen') as { default: RootStackScreen });
+export const getMemberProtocolsScreen = (): RootStackScreen =>
+  asScreen(require('../screens/profile/MemberProtocolsScreen') as { default: RootStackScreen });
+export const getCommunityProtocolDetailScreen = (): RootStackScreen =>
+  asScreen(require('../screens/profile/CommunityProtocolDetailScreen') as { default: RootStackScreen });
 export const getPrivacyPoliciesScreen = (): RootStackScreen =>
   asScreen(require('../screens/policies/PrivacyPoliciesScreen') as { default: RootStackScreen });
 export const getHomeScreen = (): RootStackScreen =>
