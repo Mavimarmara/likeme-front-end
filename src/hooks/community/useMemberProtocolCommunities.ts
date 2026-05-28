@@ -17,17 +17,6 @@ export type MemberProtocolCardItem = {
   agreement?: string | null;
 };
 
-function filterProtocolsBySearch(items: MemberProtocolCardItem[], searchQuery: string): MemberProtocolCardItem[] {
-  const query = searchQuery.trim().toLowerCase();
-  if (!query) {
-    return items;
-  }
-  return items.filter(
-    (item) =>
-      item.title.toLowerCase().includes(query) || item.badges.some((badge) => badge.toLowerCase().includes(query)),
-  );
-}
-
 function mergeCommunitiesById(existing: Community[], incoming: Community[]): Community[] {
   const byId = new Map<string, Community>();
   for (const community of [...existing, ...incoming]) {
@@ -40,20 +29,23 @@ function mergeCommunitiesById(existing: Community[], incoming: Community[]): Com
   return Array.from(byId.values());
 }
 
-export function useMemberProtocolCommunities() {
+export function useMemberProtocolCommunities(appliedSearchQuery = '') {
   const [communities, setCommunities] = useState<Community[]>([]);
   const [categories, setCategories] = useState<CommunityCategory[]>([]);
   const [communityFiles, setCommunityFiles] = useState<CommunityFile[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [hasContent, setHasContent] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const loadingRef = useRef(false);
+  const appliedSearchRef = useRef(appliedSearchQuery);
+  appliedSearchRef.current = appliedSearchQuery;
 
   const loadProtocols = useCallback(async () => {
     if (loadingRef.current) {
       return;
     }
     loadingRef.current = true;
+    const searchTerm = appliedSearchRef.current.trim();
 
     try {
       setLoading(true);
@@ -62,6 +54,7 @@ export function useMemberProtocolCommunities() {
       const response = await communityService.listMemberProtocolCommunities({
         page: 1,
         limit: MEMBER_PROTOCOLS_FETCH_LIMIT,
+        search: searchTerm || undefined,
       });
 
       const isSuccess = response.success === true || response.status === 'success';
@@ -76,6 +69,10 @@ export function useMemberProtocolCommunities() {
       setCommunities(mergeCommunitiesById([], nextCommunities));
       setCategories(nextCategories);
       setCommunityFiles(nextFiles);
+
+      if (!searchTerm) {
+        setHasContent(nextCommunities.length > 0);
+      }
     } catch (loadError) {
       logger.error('[useMemberProtocolCommunities] Falha ao carregar protocolos', loadError);
       setError(loadError instanceof Error ? loadError.message : 'Erro ao listar protocolos');
@@ -88,7 +85,7 @@ export function useMemberProtocolCommunities() {
 
   useEffect(() => {
     void loadProtocols();
-  }, [loadProtocols]);
+  }, [loadProtocols, appliedSearchQuery]);
 
   const protocolCards = useMemo((): MemberProtocolCardItem[] => {
     return communities.map((community) => ({
@@ -101,17 +98,12 @@ export function useMemberProtocolCommunities() {
     }));
   }, [categories, communities, communityFiles]);
 
-  const filteredProtocols = useMemo(
-    () => filterProtocolsBySearch(protocolCards, searchQuery),
-    [protocolCards, searchQuery],
-  );
-
   return {
-    searchQuery,
-    setSearchQuery,
     loading,
     error,
-    protocols: filteredProtocols,
+    protocols: protocolCards,
+    allProtocols: protocolCards,
+    hasContent,
     reload: loadProtocols,
   };
 }

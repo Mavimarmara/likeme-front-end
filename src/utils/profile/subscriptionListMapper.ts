@@ -67,5 +67,9 @@ export function filterSubscriptionItems(items: SubscriptionListItem[], query: st
   if (!normalized) {
     return items;
   }
-  return items.filter((item) => item.title.toLowerCase().includes(normalized));
+  return items.filter(
+    (item) =>
+      item.title.toLowerCase().includes(normalized) ||
+      item.badges.some((badge) => badge.toLowerCase().includes(normalized)),
+  );
 }

@@ -178,6 +178,7 @@ export interface UserFeedParams {
 export interface ListCommunitiesParams {
   page?: number;
   limit?: number;
+  search?: string;
   sortBy?: 'createdAt' | 'updatedAt' | 'displayName' | 'membersCount' | 'postsCount';
   includeDeleted?: boolean;
 }

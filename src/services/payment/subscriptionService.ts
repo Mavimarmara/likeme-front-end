@@ -69,6 +69,22 @@ export interface UserSubscriptionListItem {
   } | null;
 }
 
+export interface UserAcquiredServiceItem {
+  productId: string;
+  acquiredAt: string;
+  product: {
+    id: string;
+    name: string;
+    image: string | null;
+    type: string | null;
+    description?: string | null;
+  };
+}
+
+export interface ListUserSubscriptionsParams {
+  search?: string;
+}
+
 class SubscriptionService {
   async createProtocolSubscription(
     data: CreateProtocolSubscriptionRequest,
@@ -86,8 +102,18 @@ class SubscriptionService {
     return apiClient.get<ApiResponse<unknown>>(`/api/payment/subscriptions/${encodeURIComponent(subscriptionId)}`);
   }
 
-  async listUserSubscriptions(): Promise<ApiResponse<{ subscriptions: UserSubscriptionListItem[] }>> {
-    return apiClient.get<ApiResponse<{ subscriptions: UserSubscriptionListItem[] }>>('/api/payment/subscriptions');
+  async listUserSubscriptions(
+    params: ListUserSubscriptionsParams = {},
+  ): Promise<ApiResponse<{ subscriptions: UserSubscriptionListItem[]; services: UserAcquiredServiceItem[] }>> {
+    const queryParams: Record<string, string> = {};
+    const search = params.search?.trim();
+    if (search) {
+      queryParams.search = search;
+    }
+
+    return apiClient.get<
+      ApiResponse<{ subscriptions: UserSubscriptionListItem[]; services: UserAcquiredServiceItem[] }>
+    >('/api/payment/subscriptions', queryParams);
   }
 }
 

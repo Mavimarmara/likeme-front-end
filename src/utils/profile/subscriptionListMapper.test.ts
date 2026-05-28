@@ -97,4 +97,21 @@ describe('subscriptionListMapper', () => {
 
     expect(filterSubscriptionItems(items, 'beta')).toHaveLength(1);
   });
+
+  it('filtra por badge na busca', () => {
+    const items = [
+      {
+        id: '1',
+        kind: 'protocol' as const,
+        productId: 'a',
+        title: 'Protocolo X',
+        image: '',
+        badges: ['Relacionamentos', 'Online'],
+        acquiredAt: '2026-01-01',
+      },
+    ];
+
+    expect(filterSubscriptionItems(items, 'relacionamentos')).toHaveLength(1);
+    expect(filterSubscriptionItems(items, 'movimento')).toHaveLength(0);
+  });
 });

@@ -28,6 +28,14 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: SPACING.XXL,
   },
+  noResultsText: {
+    fontSize: FONT_SIZES.SM,
+    fontFamily: 'DM Sans',
+    fontWeight: '400',
+    color: COLORS.TEXT_LIGHT,
+    textAlign: 'center',
+    paddingHorizontal: SPACING.MD,
+  },
   section: {
     paddingTop: SPACING.SM,
   },

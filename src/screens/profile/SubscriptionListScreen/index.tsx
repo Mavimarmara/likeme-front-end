@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import type { StackScreenProps } from '@react-navigation/stack';
 import { useFocusEffect } from '@react-navigation/native';
@@ -21,6 +21,8 @@ import type { RootStackParamList } from '@/types/navigation';
 import { COLORS } from '@/constants';
 import { styles } from './styles';
 
+const SEARCH_DEBOUNCE_MS = 450;
+
 type Props = StackScreenProps<RootStackParamList, 'SubscriptionList'>;
 
 const SubscriptionListScreen: React.FC<Props> = ({ navigation }) => {
@@ -28,25 +30,33 @@ const SubscriptionListScreen: React.FC<Props> = ({ navigation }) => {
   const { t } = useTranslation();
   const menuItems = useMenuItems(navigation);
   const { setMenu } = useFloatingMenuActions();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [appliedSearchQuery, setAppliedSearchQuery] = useState('');
+
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setAppliedSearchQuery(searchQuery.trim());
+    }, SEARCH_DEBOUNCE_MS);
+
+    return () => clearTimeout(handle);
+  }, [searchQuery]);
 
   const {
-    searchQuery: subscriptionSearch,
-    setSearchQuery: setSubscriptionSearch,
     loading: subscriptionLoading,
     error: subscriptionError,
     protocols: subscriptionProtocols,
     services,
+    hasContent: hasSubscriptionContent,
     reload: reloadSubscriptions,
-  } = useSubscriptionList();
+  } = useSubscriptionList(appliedSearchQuery);
 
   const {
-    searchQuery: communitySearch,
-    setSearchQuery: setCommunitySearch,
     loading: communityLoading,
     error: communityError,
     protocols: communityProtocols,
+    hasContent: hasCommunityContent,
     reload: reloadCommunityProtocols,
-  } = useMemberProtocolCommunities();
+  } = useMemberProtocolCommunities(appliedSearchQuery);
 
   useFocusEffect(
     useCallback(() => {
@@ -98,7 +108,7 @@ const SubscriptionListScreen: React.FC<Props> = ({ navigation }) => {
 
   const loading = subscriptionLoading || communityLoading;
   const error = subscriptionError ?? communityError;
-  const hasSubscriptionItems = subscriptionProtocols.length > 0 || services.length > 0;
+
   const subscriptionCommunityIds = useMemo(() => {
     const ids = new Set<string>();
     for (const item of subscriptionProtocols) {
@@ -116,17 +126,12 @@ const SubscriptionListScreen: React.FC<Props> = ({ navigation }) => {
   );
 
   const hasCommunityProtocols = communityProtocolsWithoutSubscription.length > 0;
-  const isFullyEmpty = !loading && !error && !hasSubscriptionItems && !hasCommunityProtocols;
-
-  const handleSearchChange = useCallback(
-    (value: string) => {
-      setSubscriptionSearch(value);
-      setCommunitySearch(value);
-    },
-    [setCommunitySearch, setSubscriptionSearch],
-  );
-
-  const searchQuery = subscriptionSearch || communitySearch;
+  const isFullyEmpty = !loading && !error && !hasSubscriptionContent && !hasCommunityContent;
+  const hasSearchResults =
+    !loading &&
+    !error &&
+    !isFullyEmpty &&
+    (subscriptionProtocols.length > 0 || services.length > 0 || hasCommunityProtocols);
 
   const reload = useCallback(() => {
     void reloadSubscriptions();
@@ -151,7 +156,7 @@ const SubscriptionListScreen: React.FC<Props> = ({ navigation }) => {
             <SearchBar
               placeholder={t('profile.memberProtocols.searchPlaceholder', { defaultValue: 'Buscar' })}
               value={searchQuery}
-              onChangeText={handleSearchChange}
+              onChangeText={setSearchQuery}
               showFilterButton={false}
             />
           </View>
@@ -170,6 +175,12 @@ const SubscriptionListScreen: React.FC<Props> = ({ navigation }) => {
               onSubscriptionPress={() => undefined}
               onExplorePress={handleExploreMarketplace}
             />
+          </View>
+        ) : !hasSearchResults ? (
+          <View style={styles.centered}>
+            <Text style={styles.noResultsText}>
+              {t('profile.memberProtocols.searchNoResults', { defaultValue: 'Nenhum resultado encontrado.' })}
+            </Text>
           </View>
         ) : (
           <>

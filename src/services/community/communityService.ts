@@ -318,6 +318,10 @@ class CommunityService {
         queryParams.limit = String(params.limit);
       }
 
+      if (params.search && params.search.trim() !== '') {
+        queryParams.search = params.search.trim();
+      }
+
       const communitiesResponse = await apiClient.get<ListCommunitiesApiResponse>(
         `${this.communitiesEndpoint}/member-protocols`,
         queryParams,
