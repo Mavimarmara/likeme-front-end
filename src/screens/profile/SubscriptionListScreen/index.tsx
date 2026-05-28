@@ -7,7 +7,6 @@ import { SearchBar } from '@/components/ui/inputs';
 import { EmptyState } from '@/components/ui/feedback';
 import { JoinCard } from '@/components/ui/cards';
 import ProtocolList from '@/components/sections/subscription/ProtocolList';
-import CommunityProtocolEmptyState from '@/components/sections/community/CommunityProtocolEmptyState';
 import { useSubscriptionList } from '@/hooks/subscription/useSubscriptionList';
 import {
   useMemberProtocolCommunities,
@@ -17,7 +16,6 @@ import { useMenuItems } from '@/hooks';
 import { useFloatingMenuActions } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen } from '@/analytics';
-import { navigateToCommunity } from '@/utils/navigation/communityNavigation';
 import type { SubscriptionListItem } from '@/types/subscription/subscription';
 import type { RootStackParamList } from '@/types/navigation';
 import { COLORS } from '@/constants';
@@ -98,11 +96,6 @@ const SubscriptionListScreen: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('Marketplace' as never);
   }, [navigation]);
 
-  const handleExploreCommunity = useCallback(() => {
-    const rootNavigation = navigation.getParent()?.getParent?.() ?? navigation.getParent();
-    navigateToCommunity(rootNavigation ?? navigation);
-  }, [navigation]);
-
   const loading = subscriptionLoading || communityLoading;
   const error = subscriptionError ?? communityError;
   const hasSubscriptionItems = subscriptionProtocols.length > 0 || services.length > 0;
@@ -153,14 +146,16 @@ const SubscriptionListScreen: React.FC<Props> = ({ navigation }) => {
       >
         <Text style={styles.screenTitle}>Meus Protocolos e Serviços</Text>
 
-        <View style={styles.searchWrap}>
-          <SearchBar
-            placeholder={t('profile.memberProtocols.searchPlaceholder', { defaultValue: 'Buscar' })}
-            value={searchQuery}
-            onChangeText={handleSearchChange}
-            showFilterButton={false}
-          />
-        </View>
+        {!isFullyEmpty && (
+          <View style={styles.searchWrap}>
+            <SearchBar
+              placeholder={t('profile.memberProtocols.searchPlaceholder', { defaultValue: 'Buscar' })}
+              value={searchQuery}
+              onChangeText={handleSearchChange}
+              showFilterButton={false}
+            />
+          </View>
+        )}
 
         {loading ? (
           <View style={styles.centered}>
@@ -175,7 +170,6 @@ const SubscriptionListScreen: React.FC<Props> = ({ navigation }) => {
               onSubscriptionPress={() => undefined}
               onExplorePress={handleExploreMarketplace}
             />
-            <CommunityProtocolEmptyState onExplorePress={handleExploreCommunity} />
           </View>
         ) : (
           <>
