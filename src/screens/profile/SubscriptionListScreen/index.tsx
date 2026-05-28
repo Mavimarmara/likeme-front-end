@@ -106,6 +106,11 @@ const SubscriptionListScreen: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('Marketplace' as never);
   }, [navigation]);
 
+  const handleClearSearch = useCallback(() => {
+    setSearchQuery('');
+    setAppliedSearchQuery('');
+  }, []);
+
   const loading = subscriptionLoading || communityLoading;
   const error = subscriptionError ?? communityError;
 
@@ -177,10 +182,14 @@ const SubscriptionListScreen: React.FC<Props> = ({ navigation }) => {
             />
           </View>
         ) : !hasSearchResults ? (
-          <View style={styles.centered}>
-            <Text style={styles.noResultsText}>
-              {t('profile.memberProtocols.searchNoResults', { defaultValue: 'Nenhum resultado encontrado.' })}
-            </Text>
+          <View style={styles.searchEmptyWrap}>
+            <EmptyState
+              title={t('marketplace.noAdsFound')}
+              description={t('marketplace.noAdsFoundDescription')}
+              iconName='storefront'
+              actionLabel={t('home.clearFilters')}
+              onActionPress={handleClearSearch}
+            />
           </View>
         ) : (
           <>

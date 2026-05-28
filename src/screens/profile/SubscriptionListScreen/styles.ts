@@ -28,13 +28,9 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: SPACING.XXL,
   },
-  noResultsText: {
-    fontSize: FONT_SIZES.SM,
-    fontFamily: 'DM Sans',
-    fontWeight: '400',
-    color: COLORS.TEXT_LIGHT,
-    textAlign: 'center',
+  searchEmptyWrap: {
     paddingHorizontal: SPACING.MD,
+    paddingVertical: SPACING.LG,
   },
   section: {
     paddingTop: SPACING.SM,
