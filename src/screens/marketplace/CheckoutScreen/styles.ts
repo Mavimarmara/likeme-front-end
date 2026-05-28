@@ -14,6 +14,21 @@ export const styles = StyleSheet.create({
     paddingHorizontal: SPACING.MD,
     paddingBottom: SPACING.XL,
   },
+  scrollContentOrderStep: {
+    flexGrow: 1,
+    paddingHorizontal: 0,
+    paddingBottom: SPACING.XXL * 1.5,
+  },
+  contentFloatingMenuReserve: {
+    paddingBottom: SPACING.XXL * 1.5,
+  },
+  backgroundLayer: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 0,
+  },
+  orderStepStepperPadding: {
+    paddingHorizontal: SPACING.MD,
+  },
   addressCard: {
     backgroundColor: '#fbf7e5',
     borderRadius: 28,
@@ -280,14 +295,6 @@ export const styles = StyleSheet.create({
     marginTop: SPACING.XS,
     marginBottom: SPACING.SM,
   },
-  completeButton: {
-    borderRadius: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 4,
-  },
   editAddressContainer: {
     marginBottom: SPACING.LG,
     shadowColor: '#000',
@@ -333,14 +340,6 @@ export const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   // Order Screen Styles
-  orderCreatedMessage: {
-    fontSize: FONT_SIZES.MD,
-    fontFamily: 'DM Sans',
-    fontWeight: '700',
-    color: '#001137',
-    marginBottom: SPACING.LG,
-    letterSpacing: 0.2,
-  },
   orderSummarySection: {
     marginBottom: SPACING.LG,
   },

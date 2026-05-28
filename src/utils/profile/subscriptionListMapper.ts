@@ -21,7 +21,6 @@ export function mapSubscriptionToListItem(row: UserSubscriptionListItem, t: Tran
     subscriptionId: row.id,
     communityId: row.programCommunity?.communityId,
     description: row.programCommunity?.description ?? row.product.description ?? null,
-    agreement: row.programCommunity?.agreement ?? null,
   };
 }
 

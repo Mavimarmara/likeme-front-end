@@ -186,6 +186,14 @@ jest.mock('@/services', () => {
   };
 });
 
+jest.mock('@/contexts/FloatingMenuContext', () => ({
+  useFloatingMenuActions: () => ({
+    setMenu: jest.fn(),
+    clearMenu: jest.fn(),
+  }),
+  useIsFloatingMenuVisible: () => false,
+}));
+
 jest.mock('@/hooks', () => {
   const mockCartItems = [
     {
@@ -261,6 +269,7 @@ jest.mock('@/hooks', () => {
       };
     },
     useCartShippingPolicy: () => ({ shippingRequired: true, isResolving: false }),
+    useMenuItems: () => [],
   };
 });
 

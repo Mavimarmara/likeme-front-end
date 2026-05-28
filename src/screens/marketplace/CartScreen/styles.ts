@@ -191,12 +191,6 @@ export const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: SPACING.LG,
     marginBottom: 0,
-    borderRadius: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 2,
   },
   buyButtonContainer: {
     marginHorizontal: SPACING.MD,

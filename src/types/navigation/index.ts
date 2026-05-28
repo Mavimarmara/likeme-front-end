@@ -76,7 +76,8 @@ type RootStackParamListCore = {
       rating?: number;
       shortDescription?: string;
       description?: string;
-      agreement?: string;
+      productId?: string;
+      /** Mesmo conteúdo da aba Acordos em ProductDetails (`Product.technicalSpecifications`). */
       agreements?: string;
       providerName?: string;
       nextSessionDate?: string;

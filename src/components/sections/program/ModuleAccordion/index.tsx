@@ -15,10 +15,27 @@ export type ModuleItem = {
 type Props = {
   modules: ModuleItem[];
   onModulePress?: (module: ModuleItem) => void;
+  expandedModuleId?: string | null;
+  onExpandedModuleChange?: (moduleId: string | null) => void;
 };
 
-const ModuleAccordion: React.FC<Props> = ({ modules, onModulePress }) => {
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+const ModuleAccordion: React.FC<Props> = ({
+  modules,
+  onModulePress,
+  expandedModuleId: expandedModuleIdProp,
+  onExpandedModuleChange,
+}) => {
+  const [internalExpandedId, setInternalExpandedId] = useState<string | null>(null);
+  const isControlled = onExpandedModuleChange != null;
+  const expandedId = isControlled ? expandedModuleIdProp ?? null : internalExpandedId;
+
+  const setExpandedId = (moduleId: string | null) => {
+    if (isControlled) {
+      onExpandedModuleChange(moduleId);
+    } else {
+      setInternalExpandedId(moduleId);
+    }
+  };
 
   const toggleExpand = (module: ModuleItem) => {
     if (expandedId === module.id) {

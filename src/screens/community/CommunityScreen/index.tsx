@@ -152,8 +152,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   }, [selectedCommunityId]);
 
   const solutionsMode = selectedMode === COMMUNITY_VIEW.SOLUTIONS;
-  const feedFilterParams = useMemo(() => ({}), []);
-
   const {
     posts,
     loading: feedLoading,
@@ -164,7 +162,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     enabled: isFeedMode,
     searchQuery: '',
     pageSize: COMMUNITY_FEED_POSTS_PAGE_SIZE,
-    params: feedFilterParams,
   });
 
   const communityAdvertiserFetchEnabled = !!selectedCommunityId && (solutionsMode || !feedLoading || posts.length > 0);

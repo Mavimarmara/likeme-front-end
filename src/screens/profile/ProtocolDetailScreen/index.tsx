@@ -1,35 +1,29 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import type { StackScreenProps } from '@react-navigation/stack';
 import { useFocusEffect } from '@react-navigation/native';
 import { ScreenWithHeader, HeroImage } from '@/components/ui/layout';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
-import { ModuleAccordion } from '@/components/sections/program';
-import { NextEventsSection } from '@/components/sections/community';
+import { ModuleAccordion, ProgramContentHighlightsRow, type ProgramLessonPreview } from '@/components/sections/program';
 import { MarkdownText } from '@/components/ui/text/MarkdownText';
-import { useEventList, useMenuItems, useProgramCourse } from '@/hooks';
+import { useEventJoin, useEventList, useMenuItems, useProgramCourse } from '@/hooks';
 import { useFloatingMenuActions } from '@/contexts/FloatingMenuContext';
 import { useAnalyticsScreen, logTabSelect } from '@/analytics';
 import { useTranslation } from '@/hooks/i18n';
-import { scheduledCommunityEventsToFeedEvents } from '@/utils/event/communityEventToFeedEvent';
 import { MEMBER_PROTOCOL_COMMUNITY_IMAGE_FALLBACK } from '@/constants/community/communityProtocol';
+import { toEventBanner } from '@/utils/event/toEventBanner';
 import type { RootStackParamList } from '@/types/navigation';
+import type { Event } from '@/types/event';
 import type { ModuleItem } from '@/components/sections/program/ModuleAccordion';
+import productService from '@/services/product/productService';
 import { COLORS } from '@/constants';
 import { styles } from './styles';
 
 type Props = StackScreenProps<RootStackParamList, 'ProtocolDetail'>;
 
-type ProtocolTabId = 'content' | 'events' | 'about' | 'agreements';
+type ProtocolTabId = 'content' | 'about' | 'agreements';
 
 const TAB_OPTIONS: ButtonCarouselOption<ProtocolTabId>[] = [
-  { id: 'content', label: 'Conteúdo' },
-  { id: 'events', label: 'Eventos' },
-  { id: 'about', label: 'Sobre' },
-  { id: 'agreements', label: 'Acordos' },
-];
-
-const TAB_OPTIONS_WITHOUT_EVENTS: ButtonCarouselOption<ProtocolTabId>[] = [
   { id: 'content', label: 'Conteúdo' },
   { id: 'about', label: 'Sobre' },
   { id: 'agreements', label: 'Acordos' },
@@ -44,19 +38,78 @@ const ProtocolDetailScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const communityId = protocol.communityId?.trim() ?? '';
   const hasCommunity = Boolean(communityId);
+  const productId = protocol.productId?.trim() ?? '';
 
   const [activeTab, setActiveTab] = useState<ProtocolTabId>('content');
+  const [agreementsText, setAgreementsText] = useState(protocol.agreements?.trim() ?? '');
+  const [expandedModuleId, setExpandedModuleId] = useState<string | null>(null);
+
+  const heroImageUri = protocol.image?.trim() || (hasCommunity ? MEMBER_PROTOCOL_COMMUNITY_IMAGE_FALLBACK : '');
 
   const { course, loading: courseLoading, error: courseError } = useProgramCourse(communityId, hasCommunity);
-  const { events, loading: eventsLoading } = useEventList({
+  const { events, error: eventsError } = useEventList({
     enabled: hasCommunity,
     communityId,
   });
 
-  const scheduledFeedEvents = useMemo(
+  const nextEvent = useMemo(() => {
+    const eventStartMillis = (event: Event) => {
+      const record = event as unknown as Record<string, unknown>;
+      const metadata =
+        record.metadata && typeof record.metadata === 'object' && !Array.isArray(record.metadata)
+          ? (record.metadata as Record<string, unknown>)
+          : null;
+
+      for (const field of ['startsAt', 'startAt', 'startTime', 'start']) {
+        const raw = record[field] ?? metadata?.[field];
+        if (typeof raw === 'string' && raw.trim()) {
+          const parsed = Date.parse(raw.trim());
+          if (!Number.isNaN(parsed)) {
+            return parsed;
+          }
+        }
+      }
+
+      return Number.POSITIVE_INFINITY;
+    };
+
+    const isUpcoming = (event: Event) => {
+      if (event.status === 'live') {
+        return true;
+      }
+      if (event.status === 'scheduled') {
+        return true;
+      }
+      if (event.status === 'unknown') {
+        return eventStartMillis(event) >= Date.now() - 2 * 60 * 60 * 1000;
+      }
+      return false;
+    };
+
+    const upcoming = events.filter(isUpcoming);
+    const liveNow = upcoming.filter((event) => event.status === 'live');
+    const candidates = liveNow.length > 0 ? liveNow : upcoming;
+    return [...candidates].sort((left, right) => eventStartMillis(left) - eventStartMillis(right))[0];
+  }, [events]);
+
+  const { handleEventBannerPress } = useEventJoin({
+    loadEvents: hasCommunity,
+    events: nextEvent ? [nextEvent] : [],
+    communityAvatarUrl: heroImageUri,
+    communityProviderName: protocol.name,
+    defaultThumbnailUrl: heroImageUri,
+  });
+
+  const eventBanner = useMemo(
     () =>
-      scheduledCommunityEventsToFeedEvents(events, protocol.image?.trim() || MEMBER_PROTOCOL_COMMUNITY_IMAGE_FALLBACK),
-    [events, protocol.image],
+      toEventBanner({
+        loadEvents: Boolean(nextEvent),
+        events: nextEvent ? [nextEvent] : [],
+        communityAvatarUrl: heroImageUri,
+        communityProviderName: protocol.name,
+        defaultThumbnailUrl: heroImageUri,
+      }),
+    [heroImageUri, nextEvent, protocol.name],
   );
 
   const courseModules: ModuleItem[] = useMemo(() => {
@@ -76,12 +129,51 @@ const ProtocolDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     }));
   }, [course?.steps, protocol.modules]);
 
-  const heroImageUri = protocol.image?.trim() || (hasCommunity ? MEMBER_PROTOCOL_COMMUNITY_IMAGE_FALLBACK : '');
+  const upcomingLesson: ProgramLessonPreview | null = useMemo(() => {
+    const nextModule = courseModules.find((module) => !module.completed) ?? courseModules[0];
+    if (!nextModule) {
+      return null;
+    }
+    return { id: nextModule.id, title: nextModule.title };
+  }, [courseModules]);
 
   const aboutText = protocol.description?.trim() || null;
-  const agreementsText = (protocol.agreement ?? protocol.agreements)?.trim() || null;
 
-  const tabOptions = hasCommunity ? TAB_OPTIONS : TAB_OPTIONS_WITHOUT_EVENTS;
+  useEffect(() => {
+    const fromRoute = protocol.agreements?.trim();
+    if (fromRoute) {
+      setAgreementsText(fromRoute);
+      return;
+    }
+
+    if (!productId) {
+      setAgreementsText('');
+      return;
+    }
+
+    let cancelled = false;
+
+    void (async () => {
+      try {
+        const response = await productService.getProductById(productId);
+        const isSuccess = response.success === true || (response as { status?: string }).status === 'success';
+        if (cancelled || !isSuccess || !response.data) {
+          return;
+        }
+        setAgreementsText(response.data.technicalSpecifications?.trim() ?? '');
+      } catch {
+        if (!cancelled) {
+          setAgreementsText('');
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [productId, protocol.agreements]);
+
+  const contentLoading = hasCommunity && courseLoading;
 
   useFocusEffect(
     useCallback(() => {
@@ -97,6 +189,16 @@ const ProtocolDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     logTabSelect({ screen_name: 'protocol_detail', tab_id: tabId });
     setActiveTab(tabId);
   };
+
+  const handleLessonPress = useCallback((lesson: ProgramLessonPreview) => {
+    setExpandedModuleId(lesson.id);
+  }, []);
+
+  const handleEventPress = useCallback(() => {
+    if (eventBanner) {
+      void handleEventBannerPress(eventBanner);
+    }
+  }, [eventBanner, handleEventBannerPress]);
 
   const renderContentTab = () => {
     if (!hasCommunity) {
@@ -115,7 +217,7 @@ const ProtocolDetailScreen: React.FC<Props> = ({ navigation, route }) => {
       );
     }
 
-    if (courseLoading) {
+    if (contentLoading) {
       return (
         <View style={styles.loaderWrap}>
           <ActivityIndicator size='large' color={COLORS.PRIMARY.PURE} />
@@ -123,60 +225,45 @@ const ProtocolDetailScreen: React.FC<Props> = ({ navigation, route }) => {
       );
     }
 
-    if (courseError) {
-      return (
-        <View style={styles.tabContent}>
-          <Text style={styles.emptyText}>{courseError}</Text>
-        </View>
-      );
-    }
+    const showLessons = courseModules.length > 0;
+    const showHighlights = Boolean(nextEvent || upcomingLesson);
 
-    if (courseModules.length === 0) {
+    if (!showHighlights && !showLessons) {
       return (
         <View style={styles.tabContent}>
-          <Text style={styles.emptyText}>
-            {t('profile.protocolDetail.noCourseSteps', {
-              defaultValue: 'Nenhuma sessão de leitura disponível no momento.',
-            })}
-          </Text>
+          {courseError ? <Text style={styles.emptyText}>{courseError}</Text> : null}
+          {eventsError ? <Text style={styles.emptyText}>{eventsError}</Text> : null}
+          {!courseError && !eventsError ? (
+            <Text style={styles.emptyText}>
+              {t('profile.protocolDetail.noCourseSteps', {
+                defaultValue: 'Nenhuma aula disponível no momento.',
+              })}
+            </Text>
+          ) : null}
         </View>
       );
     }
 
     return (
       <View style={styles.tabContent}>
-        <ModuleAccordion modules={courseModules} />
-      </View>
-    );
-  };
-
-  const renderEventsTab = () => {
-    if (eventsLoading) {
-      return (
-        <View style={styles.loaderWrap}>
-          <ActivityIndicator size='large' color={COLORS.PRIMARY.PURE} />
-        </View>
-      );
-    }
-
-    if (scheduledFeedEvents.length === 0) {
-      return (
-        <Text style={styles.emptyText}>
-          {t('profile.memberProtocols.noScheduledEvents', {
-            defaultValue: 'Nenhum evento agendado no momento.',
-          })}
-        </Text>
-      );
-    }
-
-    return (
-      <View style={styles.tabContent}>
-        <NextEventsSection
-          events={scheduledFeedEvents}
-          title={t('profile.memberProtocols.scheduledEventsTitle', {
-            defaultValue: 'Eventos agendados',
-          })}
-        />
+        {showHighlights ? (
+          <ProgramContentHighlightsRow
+            coverImageUri={heroImageUri}
+            upcomingLesson={upcomingLesson}
+            nextEvent={nextEvent}
+            hostName={protocol.name}
+            onLessonPress={handleLessonPress}
+            onEventPress={nextEvent?.externalUrl?.trim() ? handleEventPress : undefined}
+          />
+        ) : null}
+        {courseError ? <Text style={styles.emptyText}>{courseError}</Text> : null}
+        {showLessons ? (
+          <ModuleAccordion
+            modules={courseModules}
+            expandedModuleId={expandedModuleId}
+            onExpandedModuleChange={setExpandedModuleId}
+          />
+        ) : null}
       </View>
     );
   };
@@ -195,12 +282,12 @@ const ProtocolDetailScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const renderAgreementsTab = () => (
     <View style={styles.tabContent}>
-      {agreementsText ? (
+      {agreementsText.length > 0 ? (
         <MarkdownText style={styles.descriptionText} text={agreementsText} />
       ) : (
         <Text style={styles.emptyText}>
-          {t('profile.memberProtocols.noAgreements', {
-            defaultValue: 'Sem acordos registrados.',
+          {t('marketplace.noDescriptionAvailable', {
+            defaultValue: 'Descrição não disponível.',
           })}
         </Text>
       )}
@@ -211,8 +298,6 @@ const ProtocolDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     switch (activeTab) {
       case 'content':
         return renderContentTab();
-      case 'events':
-        return renderEventsTab();
       case 'about':
         return renderAboutTab();
       case 'agreements':
@@ -243,7 +328,7 @@ const ProtocolDetailScreen: React.FC<Props> = ({ navigation, route }) => {
 
         <View style={styles.infoSection}>
           <Text style={styles.sectionTitle}>{t('community.informationTitle', { defaultValue: 'Informações' })}</Text>
-          <ButtonCarousel options={tabOptions} selectedId={activeTab} onSelect={handleTabSelect} />
+          <ButtonCarousel options={TAB_OPTIONS} selectedId={activeTab} onSelect={handleTabSelect} />
         </View>
 
         {renderTabContent()}

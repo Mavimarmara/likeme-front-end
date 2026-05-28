@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { courseService } from '@/services/course/courseService';
 import type { ProgramCourse } from '@/types/course/course';
 import { logger } from '@/utils/logger';
@@ -7,7 +7,6 @@ export function useProgramCourse(communityId: string, enabled: boolean) {
   const [course, setCourse] = useState<ProgramCourse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const loadingRef = useRef(false);
 
   const load = useCallback(async () => {
     const trimmed = communityId.trim();
@@ -18,17 +17,13 @@ export function useProgramCourse(communityId: string, enabled: boolean) {
       return;
     }
 
-    if (loadingRef.current) {
-      return;
-    }
-
-    loadingRef.current = true;
     try {
       setLoading(true);
       setError(null);
 
       const response = await courseService.getProgramCourseByCommunityId(trimmed);
-      if (!response.success || !response.data) {
+      const isSuccess = response.success === true || (response as { status?: string }).status === 'success';
+      if (!isSuccess || !response.data) {
         throw new Error(response.message || 'Erro ao carregar conteúdo do protocolo');
       }
 
@@ -38,7 +33,6 @@ export function useProgramCourse(communityId: string, enabled: boolean) {
       setCourse(null);
       setError(loadError instanceof Error ? loadError.message : 'Erro ao carregar conteúdo do protocolo');
     } finally {
-      loadingRef.current = false;
       setLoading(false);
     }
   }, [communityId, enabled]);

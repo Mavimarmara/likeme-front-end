@@ -15,6 +15,7 @@ export const ROUTES_SHOW_MENU = new Set<string>([
   'AffiliateProduct',
   'ProviderProfile',
   'Cart',
+  'Checkout',
   'SubscriptionList',
   'Profile',
   CHAT_STACK_LIST_ROUTE,

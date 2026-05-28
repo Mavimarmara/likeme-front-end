@@ -123,7 +123,7 @@ export function useSubscriptionList(appliedSearchQuery = '') {
         subscriptionId: sub.id,
         communityId: sub.programCommunity?.communityId,
         description: sub.programCommunity?.description ?? fullProduct?.description ?? sub.product.description ?? null,
-        agreement: sub.programCommunity?.agreement ?? null,
+        agreements: fullProduct?.technicalSpecifications?.trim() || null,
       };
     });
   }, [subscriptions, productMap, categories]);

@@ -124,9 +124,10 @@ describe('floatingMenuRoutePolicy', () => {
       expect(getSelectedIdFromRoute('ProviderProfile')).toBe('marketplace');
     });
 
-    it('Checkout não está em ROUTES_SHOW_MENU', () => {
+    it('Checkout permite overlay na confirmação do pedido', () => {
       const state = makeStack(0, ['Checkout']);
-      expect(shouldShowFloatingMenuByRoute(state)).toBe(false);
+      expect(shouldShowFloatingMenuByRoute(state)).toBe(true);
+      expect(getSelectedIdFromRoute('Checkout')).toBe('marketplace');
     });
   });
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { View, Text, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
-import { ScreenWithHeader } from '@/components/ui/layout';
+import { GradientBackground, ScreenWithHeader } from '@/components/ui/layout';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { Stepper } from '@/components/ui/tabs';
 import { storageService, orderService, userService } from '@/services';
@@ -9,7 +9,8 @@ import { getShippingQuote } from '@/services/shipping/shippingService';
 import { formatZipCodeDisplay } from '@/services/address/cepService';
 import { formatPrice, formatAddress, formatBillingAddress } from '@/utils';
 import { catalogTypeTranslatedBadgeLabels, PRODUCT_CATALOG_TYPE } from '@/types/product';
-import { useTranslation, usePayment, useCheckoutVoucher, useCartShippingPolicy } from '@/hooks';
+import { useTranslation, usePayment, useCheckoutVoucher, useCartShippingPolicy, useMenuItems } from '@/hooks';
+import { useFloatingMenuActions } from '@/contexts/FloatingMenuContext';
 import { checkoutDisplayAmounts } from '@/utils/marketplace/checkoutDisplayAmounts';
 import { logger } from '@/utils/logger';
 import { navigateToActivitiesOrders } from '@/utils/navigation/activitiesNavigation';
@@ -40,6 +41,8 @@ type Props = {
 const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
   useAnalyticsScreen({ screenName: 'Checkout', screenClass: 'CheckoutScreen' });
   const { t } = useTranslation();
+  const menuItems = useMenuItems(navigation);
+  const { setMenu, clearMenu } = useFloatingMenuActions();
   const { cartItems, loadCartItems, increaseQuantity, decreaseQuantity, removeItem, subtotal } = useCart({
     onEmpty: () => navigation.navigate('Cart'),
   });
@@ -81,6 +84,18 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
     loadCartItems();
     loadUserAddress();
   }, []);
+
+  useEffect(() => {
+    if (currentStep === 'order') {
+      setMenu(menuItems, 'marketplace');
+      return () => clearMenu();
+    }
+    clearMenu();
+  }, [currentStep, menuItems, setMenu, clearMenu]);
+
+  useEffect(() => {
+    return () => clearMenu();
+  }, [clearMenu]);
 
   const loadUserAddress = async () => {
     try {
@@ -186,10 +201,6 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
       payment.setIsProcessing(true);
       await handleCompleteOrder();
     }
-  };
-
-  const showOrderCreatedAlert = () => {
-    Alert.alert(t('checkout.orderCreated', { defaultValue: 'Pedido criado com sucesso!' }));
   };
 
   const releaseCheckoutSubmitLock = () => {
@@ -325,8 +336,6 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
       checkoutSubmitCompletedRef.current = true;
       setCheckoutSubmitCompleted(true);
 
-      showOrderCreatedAlert();
-
       setOrderId(orderResponse.data.id);
       await storageService.clearCart();
       checkoutVoucher.removeCoupon();
@@ -456,12 +465,18 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
     />
   );
 
+  const isOrderStep = currentStep === 'order';
+
   return (
     <ScreenWithHeader
       navigation={navigation}
       headerProps={{ onBackPress: () => navigation.goBack() }}
-      contentContainerStyle={styles.container}
+      contentContainerStyle={[styles.container, isOrderStep && styles.contentFloatingMenuReserve]}
+      contentBackgroundColor='transparent'
     >
+      <View pointerEvents='none' style={styles.backgroundLayer}>
+        <GradientBackground />
+      </View>
       <KeyboardAvoidingView
         style={styles.scrollView}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -469,14 +484,16 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
       >
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={[styles.scrollContent, isOrderStep && styles.scrollContentOrderStep]}
           keyboardShouldPersistTaps='handled'
         >
-          <Stepper
-            steps={stepperSteps}
-            currentStepId={currentStep}
-            onStepPress={(stepId) => setCurrentStep(stepId as CheckoutStep)}
-          />
+          <View style={isOrderStep ? styles.orderStepStepperPadding : undefined}>
+            <Stepper
+              steps={stepperSteps}
+              currentStepId={currentStep}
+              onStepPress={(stepId) => setCurrentStep(stepId as CheckoutStep)}
+            />
+          </View>
 
           {currentStep === 'address' && (
             <>
@@ -576,7 +593,6 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
             testID='button-continue'
             label={t('common.continue')}
             onPress={handleContinue}
-            style={styles.completeButton}
             size='large'
             loading={isContinueLoading}
             disabled={isContinueDisabled}

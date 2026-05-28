@@ -11,5 +11,5 @@ export interface SubscriptionListItem {
   subscriptionId?: string;
   communityId?: string;
   description?: string | null;
-  agreement?: string | null;
+  agreements?: string | null;
 }

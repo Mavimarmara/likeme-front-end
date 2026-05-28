@@ -77,8 +77,9 @@ const SubscriptionListScreen: React.FC<Props> = ({ navigation }) => {
           image: item.image,
           badges: item.badges,
           communityId: item.communityId,
+          productId: item.productId,
           description: item.description ?? undefined,
-          agreement: item.agreement ?? undefined,
+          agreements: item.agreements ?? undefined,
         },
       });
     },
@@ -95,7 +96,6 @@ const SubscriptionListScreen: React.FC<Props> = ({ navigation }) => {
           image: item.image,
           badges: item.badges,
           description: item.description ?? undefined,
-          agreement: item.agreement ?? undefined,
         },
       });
     },
