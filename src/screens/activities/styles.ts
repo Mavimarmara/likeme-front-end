@@ -71,6 +71,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingBottom: SPACING.SM,
   },
   badgeContainer: {
     width: 110,
@@ -97,8 +98,7 @@ export const styles = StyleSheet.create({
     fontWeight: '500',
   },
   cardContent: {
-    gap: SPACING.LG,
-    marginBottom: SPACING.SM,
+    gap: SPACING.XS,
   },
   cardTitleRow: {
     flexDirection: 'row',
@@ -172,9 +172,37 @@ export const styles = StyleSheet.create({
     fontSize: FONT_SIZES.SM,
     color: COLORS.TEXT_LIGHT,
   },
+  orderCardTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  orderCardCartIcon: {
+    width: 32,
+    height: 32,
+  },
+  orderCardTitle: {
+    flex: 1,
+    fontSize: FONT_SIZES.MD,
+    fontFamily: 'DM Sans',
+    fontWeight: '700',
+    color: COLORS.TEXT,
+    letterSpacing: 0,
+  },
+  orderCardDetails: {},
+  orderCardDetailLine: {
+    fontSize: FONT_SIZES.SM,
+    fontFamily: 'DM Sans',
+    fontWeight: '400',
+    color: COLORS.TEXT,
+    letterSpacing: 0.2,
+    lineHeight: 20,
+  },
+  orderCardStatusAction: {
+    marginTop: SPACING.SM,
+  },
   cardActions: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     alignItems: 'flex-end',
   },
   actionButton: {

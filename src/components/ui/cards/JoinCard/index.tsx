@@ -10,13 +10,18 @@ export type JoinCardItem = {
   image: string;
 };
 
+export type JoinCardLayout = 'carousel' | 'list';
+
 export type JoinCardProps<T extends JoinCardItem = JoinCardItem> = {
   items: readonly T[];
   onItemPress?: (item: T) => void;
+  layout?: JoinCardLayout;
 };
 
-export function JoinCard<T extends JoinCardItem>({ items, onItemPress }: JoinCardProps<T>) {
+export function JoinCard<T extends JoinCardItem>({ items, onItemPress, layout = 'carousel' }: JoinCardProps<T>) {
   if (!items || items.length === 0) return null;
+
+  const cardWrapperStyle = layout === 'list' ? styles.cardWrapperList : styles.cardWrapper;
 
   const renderCard = (item: T) => {
     const handlePress = () => onItemPress?.(item);
@@ -49,7 +54,7 @@ export function JoinCard<T extends JoinCardItem>({ items, onItemPress }: JoinCar
     );
 
     return (
-      <View key={item.id} style={styles.cardWrapper}>
+      <View key={item.id} style={cardWrapperStyle}>
         <BlurCard
           backgroundImage={item.image}
           topSection={topSection}
@@ -60,6 +65,10 @@ export function JoinCard<T extends JoinCardItem>({ items, onItemPress }: JoinCar
       </View>
     );
   };
+
+  if (layout === 'list') {
+    return <View style={styles.listContent}>{items.map(renderCard)}</View>;
+  }
 
   if (items.length === 1) {
     return <View style={styles.container}>{renderCard(items[0])}</View>;

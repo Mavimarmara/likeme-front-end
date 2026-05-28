@@ -22,6 +22,7 @@ export interface Order {
   id: string;
   userId: string;
   status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  deliveryStatus?: string | null;
   total: number;
   subtotal: number;
   shippingCost: number;

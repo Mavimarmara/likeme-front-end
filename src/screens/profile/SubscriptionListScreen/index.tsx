@@ -6,7 +6,6 @@ import { ScreenWithHeader } from '@/components/ui/layout';
 import { SearchBar } from '@/components/ui/inputs';
 import { EmptyState } from '@/components/ui/feedback';
 import { JoinCard } from '@/components/ui/cards';
-import SubscriptionCard from '@/components/ui/cards/SubscriptionCard';
 import ProtocolList from '@/components/sections/subscription/ProtocolList';
 import CommunityProtocolEmptyState from '@/components/sections/community/CommunityProtocolEmptyState';
 import { useSubscriptionList } from '@/hooks/subscription/useSubscriptionList';
@@ -183,14 +182,14 @@ const SubscriptionListScreen: React.FC<Props> = ({ navigation }) => {
             {subscriptionProtocols.length > 0 && (
               <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Protocolos</Text>
-                <JoinCard items={subscriptionProtocols} onItemPress={openSubscriptionItem} />
+                <JoinCard layout='list' items={subscriptionProtocols} onItemPress={openSubscriptionItem} />
               </View>
             )}
 
             {services.length > 0 && (
               <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Serviços</Text>
-                <JoinCard items={services} onItemPress={openSubscriptionItem} />
+                <JoinCard layout='list' items={services} onItemPress={openSubscriptionItem} />
               </View>
             )}
 
@@ -201,18 +200,23 @@ const SubscriptionListScreen: React.FC<Props> = ({ navigation }) => {
                     defaultValue: 'Protocolos na comunidade',
                   })}
                 </Text>
-                <View style={styles.cardsList}>
-                  {communityProtocolsWithoutSubscription.map((item) => (
-                    <SubscriptionCard
-                      key={item.communityId}
-                      title={item.title}
-                      image={item.image}
-                      badges={item.badges}
-                      onPress={() => openCommunityProtocol(item)}
-                      testID={`community-protocol-card-${item.communityId}`}
-                    />
-                  ))}
-                </View>
+                <JoinCard
+                  layout='list'
+                  items={communityProtocolsWithoutSubscription.map((item) => ({
+                    id: item.communityId,
+                    title: item.title,
+                    badges: item.badges,
+                    image: item.image,
+                  }))}
+                  onItemPress={(card) => {
+                    const item = communityProtocolsWithoutSubscription.find(
+                      (protocol) => protocol.communityId === card.id,
+                    );
+                    if (item) {
+                      openCommunityProtocol(item);
+                    }
+                  }}
+                />
               </View>
             )}
           </>

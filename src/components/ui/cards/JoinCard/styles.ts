@@ -9,8 +9,15 @@ export const styles = StyleSheet.create({
   scrollContent: {
     gap: SPACING.SM,
   },
+  listContent: {
+    gap: SPACING.MD,
+    paddingHorizontal: SPACING.MD,
+  },
   cardWrapper: {
     width: CARD_WIDTH,
+  },
+  cardWrapperList: {
+    width: '100%',
   },
   card: {
     height: 164,

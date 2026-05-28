@@ -6,10 +6,11 @@ import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { StickyFilterCarouselRow, type ButtonCarouselOption } from '@/components/ui/menu';
 import { GradientBackground, ScreenWithHeader } from '@/components/ui/layout';
-import { Toggle, PrimaryButton, Badge } from '@/components/ui';
+import { Toggle, PrimaryButton, Badge, IconButton } from '@/components/ui';
 import { CreateActivityModal } from '@/components/sections/activity';
 import ProfileFloatingMenu from '@/components/sections/profile/ProfileFloatingMenu';
 import { DoneIcon, CloseIcon } from '@/assets/ui';
+import { HOME_MVP_ASSETS } from '@/assets/homeMvp';
 import { ProductsCarousel, PlansCarousel, type Plan } from '@/components/sections/product';
 import { EventReminder } from '@/components/ui/cards';
 import { orderService, activityService } from '@/services';
@@ -31,6 +32,7 @@ import { useAnalyticsScreen } from '@/analytics';
 import { logger } from '@/utils/logger';
 import { formatOrderDisplayId } from '@/utils/marketplace/orderDisplayId';
 import { navigateToOrderDetail } from '@/utils/navigation/activitiesNavigation';
+import { orderCardStatusPresentation, orderCardTitle } from '@/utils/marketplace/orderStatusDisplay';
 import { navigateToProductDetailsScreen } from '@/utils/navigation/productNavigation';
 import { styles } from './styles';
 
@@ -567,22 +569,8 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation, route }
   }, [orders, daySortOrder]);
 
   const renderOrderCard = (order: Order) => {
-    const orderDate = new Date(order.createdAt).toLocaleDateString('en-US', {
-      day: 'numeric',
-      month: 'short',
-    });
-
-    const itemsCount = order.items?.length || 0;
-
-    const getStatusText = () => {
-      if (order.paymentStatus === 'paid') {
-        return t('activities.paid');
-      }
-      if (order.paymentStatus === 'pending') {
-        return t('activities.pending');
-      }
-      return order.status.charAt(0).toUpperCase() + order.status.slice(1);
-    };
+    const statusPresentation = orderCardStatusPresentation(order);
+    const cardTitle = orderCardTitle(order) || t('activities.order');
 
     return (
       <TouchableOpacity
@@ -598,27 +586,37 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation, route }
             <Badge label={t('activities.order')} color='orange' />
           </View>
 
-          <View>
-            <Text style={styles.cardTitle}>
-              {t('activities.order')} {formatOrderDisplayId(order.id, 8)}
+          <View style={styles.orderCardTitleRow}>
+            <CachedImage source={HOME_MVP_ASSETS.cart} style={styles.orderCardCartIcon} contentFit='contain' />
+            <Text style={styles.orderCardTitle} numberOfLines={2}>
+              {cardTitle}
             </Text>
-            <Text style={styles.cardDescription}>
-              {itemsCount} {itemsCount === 1 ? t('activities.item') : t('activities.items')} •{' '}
-              {formatPrice(order.total)}
-            </Text>
-            {order.createdAt && (
-              <View style={styles.dateTimeContainer}>
-                <Icon name='event' size={16} color={COLORS.TEXT} />
-                <Text style={styles.dateTimeText}>{orderDate}</Text>
-              </View>
-            )}
           </View>
 
-          <View style={styles.cardActions}>
-            <View style={[styles.actionButton, styles.doneButton]}>
-              <Icon name='check' size={16} color={COLORS.TEXT} />
-              <Text style={styles.doneButtonText}>{getStatusText()}</Text>
-            </View>
+          <View style={styles.orderCardDetails}>
+            <Text style={styles.orderCardDetailLine}>
+              {t('activities.orderNumberShort', { defaultValue: 'Pedido' })}: {formatOrderDisplayId(order.id)}
+            </Text>
+            <Text style={styles.orderCardDetailLine}>
+              {t('activities.orderTotal', { defaultValue: 'Total' })} {formatPrice(order.total)}
+            </Text>
+            <Text style={styles.orderCardDetailLine}>
+              {t(statusPresentation.deliveryLabelKey, {
+                defaultValue: statusPresentation.deliveryLabelDefault,
+              })}
+            </Text>
+          </View>
+
+          <View style={[styles.cardActions, styles.orderCardStatusAction]}>
+            <IconButton
+              icon={statusPresentation.icon}
+              variant={statusPresentation.variant}
+              backgroundTintColor={statusPresentation.backgroundTintColor}
+              iconColor={statusPresentation.iconColor}
+              backgroundSize='medium'
+              iconSize={24}
+              onPress={() => navigateToOrderDetail(rootNavigation, order.id)}
+            />
           </View>
         </View>
       </TouchableOpacity>
