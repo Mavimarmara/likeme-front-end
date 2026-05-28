@@ -205,6 +205,8 @@ jest.mock('@/constants', () => ({
     TEXT_LIGHT: '#6e6a6a',
     PRIMARY: { PURE: '#0154F8', LIGHT: '#D8E4D6', MEDIUM: '#8FA3A1' },
     SECONDARY: { LIGHT: '#FDFBEE', PURE: '#FBF7E5', MEDIUM: '#E1DFCF', DARK: '#CCCABC' },
+    NEUTRAL: { LOW: { MEDIUM: '#B2B2B2' } },
+    FEEDBACK: { WARNING: '#E30F3C', NOTIFICATION_PURE: '#FC8B5C' },
     BACKGROUND: '#FFFFFF',
     WHITE: '#FFFFFF',
     BLACK: '#000000',
