@@ -27,6 +27,7 @@ type RootStackParamListCore = {
         initialFilter?: 'all' | 'activities' | 'appointments' | 'orders';
       }
     | undefined;
+  OrderDetail: { orderId: string };
   Marketplace: undefined;
   ProductDetails: {
     productId: string;
@@ -65,26 +66,17 @@ type RootStackParamListCore = {
   };
   Profile: undefined;
   SubscriptionList: undefined;
-  MemberProtocols: undefined;
-  CommunityProtocolDetail: {
-    community: {
-      communityId: string;
-      name: string;
-      image?: string;
-      badges?: string[];
-      description?: string;
-      agreement?: string;
-    };
-  };
   ProtocolDetail: {
     protocol: {
       id: string;
       name: string;
       image?: string;
       badges?: string[];
+      communityId?: string;
       rating?: number;
       shortDescription?: string;
       description?: string;
+      agreement?: string;
       agreements?: string;
       providerName?: string;
       nextSessionDate?: string;

@@ -12,6 +12,7 @@ import { catalogTypeTranslatedBadgeLabels, PRODUCT_CATALOG_TYPE } from '@/types/
 import { useTranslation, usePayment, useCheckoutVoucher, useCartShippingPolicy } from '@/hooks';
 import { checkoutDisplayAmounts } from '@/utils/marketplace/checkoutDisplayAmounts';
 import { logger } from '@/utils/logger';
+import { navigateToActivitiesOrders } from '@/utils/navigation/activitiesNavigation';
 import { navigateToProductDetailsScreen } from '@/utils/navigation/productNavigation';
 import { styles } from './styles';
 import AddressForm, { AddressData, EMPTY_ADDRESS, isAddressFilled } from './address/AddressForm';
@@ -382,8 +383,8 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
     }
   };
 
-  const handleHomePress = () => {
-    navigation.navigate('Home');
+  const handleViewOrdersPress = () => {
+    navigateToActivitiesOrders(navigation);
   };
 
   const handleProductPress = (itemId: string) => {
@@ -565,31 +566,12 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
             </>
           )}
 
-          {currentStep === 'order' && (
-            <OrderScreen
-              orderId={orderId}
-              subtotal={subtotal}
-              shipping={effectiveShipping}
-              showShipping={!isShippingDisabled}
-              addressData={deliverySameAsBilling ? billingAddressData : addressData}
-              cartItems={cartItems}
-              onViewProgram={handleProductPress}
-              onAddToCalendar={handleProductPress}
-              onHomePress={handleHomePress}
-            />
-          )}
+          {currentStep === 'order' && <OrderScreen onViewOrdersPress={handleViewOrdersPress} />}
         </ScrollView>
       </KeyboardAvoidingView>
 
-      <View style={styles.buttonContainer}>
-        {currentStep === 'order' ? (
-          <SecondaryButton
-            label={t('common.home')}
-            onPress={handleHomePress}
-            style={styles.completeButton}
-            size='large'
-          />
-        ) : (
+      {currentStep !== 'order' && (
+        <View style={styles.buttonContainer}>
           <SecondaryButton
             testID='button-continue'
             label={t('common.continue')}
@@ -599,8 +581,8 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
             loading={isContinueLoading}
             disabled={isContinueDisabled}
           />
-        )}
-      </View>
+        </View>
+      )}
     </ScreenWithHeader>
   );
 };

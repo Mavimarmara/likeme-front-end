@@ -47,5 +47,6 @@ export const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingTop: SPACING.XXL * 2,
+    gap: SPACING.XL,
   },
 });

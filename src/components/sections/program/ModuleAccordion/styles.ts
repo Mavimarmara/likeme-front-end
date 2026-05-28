@@ -41,6 +41,15 @@ export const styles = StyleSheet.create({
     color: COLORS.NEUTRAL.LOW.PURE,
     lineHeight: 24,
   },
+  moduleBody: {
+    paddingBottom: SPACING.MD,
+    paddingLeft: 36,
+  },
+  moduleBodyText: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: COLORS.NEUTRAL.LOW.MEDIUM,
+  },
   separator: {
     height: 1,
     backgroundColor: COLORS.NEUTRAL.LOW.LIGHT,

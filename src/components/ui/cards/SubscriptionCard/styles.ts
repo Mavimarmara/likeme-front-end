@@ -4,8 +4,11 @@ import { COLORS, SPACING } from '@/constants';
 export const styles = StyleSheet.create({
   container: {
     width: '100%',
-    height: 160,
-    borderRadius: 24,
+    height: 164,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 28,
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 32,
     overflow: 'hidden',
     position: 'relative',
     shadowColor: '#000',

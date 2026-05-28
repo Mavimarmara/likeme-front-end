@@ -60,7 +60,13 @@ export interface UserSubscriptionListItem {
     name: string;
     image: string | null;
     type: string | null;
+    description?: string | null;
   };
+  programCommunity?: {
+    communityId: string;
+    description?: string | null;
+    agreement?: string | null;
+  } | null;
 }
 
 class SubscriptionService {

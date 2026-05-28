@@ -54,6 +54,8 @@ export const getChatStackNavigator = (): RootStackScreen =>
   asScreen(require('./ChatStackNavigator') as { default: RootStackScreen });
 export const getActivitiesScreen = (): RootStackScreen =>
   asScreen(require('../screens/activities/ActivitiesScreen') as { default: RootStackScreen });
+export const getOrderDetailScreen = (): RootStackScreen =>
+  asScreen(require('../screens/activities/OrderDetailScreen') as { default: RootStackScreen });
 export const getMarketplaceScreen = (): RootStackScreen =>
   asScreen(require('../screens/marketplace/MarketplaceScreen') as { default: RootStackScreen });
 export const getProductDetailsScreen = (): RootStackScreen =>
@@ -72,10 +74,6 @@ export const getProtocolDetailScreen = (): RootStackScreen =>
   asScreen(require('../screens/profile/ProtocolDetailScreen') as { default: RootStackScreen });
 export const getSubscriptionListScreen = (): RootStackScreen =>
   asScreen(require('../screens/profile/SubscriptionListScreen') as { default: RootStackScreen });
-export const getMemberProtocolsScreen = (): RootStackScreen =>
-  asScreen(require('../screens/profile/MemberProtocolsScreen') as { default: RootStackScreen });
-export const getCommunityProtocolDetailScreen = (): RootStackScreen =>
-  asScreen(require('../screens/profile/CommunityProtocolDetailScreen') as { default: RootStackScreen });
 export const getPrivacyPoliciesScreen = (): RootStackScreen =>
   asScreen(require('../screens/policies/PrivacyPoliciesScreen') as { default: RootStackScreen });
 export const getHomeScreen = (): RootStackScreen =>

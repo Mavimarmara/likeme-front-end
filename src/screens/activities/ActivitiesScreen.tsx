@@ -29,6 +29,8 @@ import type { Order } from '@/types/order';
 import type { RootStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
 import { logger } from '@/utils/logger';
+import { formatOrderDisplayId } from '@/utils/marketplace/orderDisplayId';
+import { navigateToOrderDetail } from '@/utils/navigation/activitiesNavigation';
 import { navigateToProductDetailsScreen } from '@/utils/navigation/productNavigation';
 import { styles } from './styles';
 
@@ -583,7 +585,14 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation, route }
     };
 
     return (
-      <View key={`order-${order.id}`} style={styles.activityCard}>
+      <TouchableOpacity
+        key={`order-${order.id}`}
+        style={styles.activityCard}
+        onPress={() => navigateToOrderDetail(rootNavigation, order.id)}
+        activeOpacity={0.7}
+        accessibilityRole='button'
+        accessibilityLabel={`${t('activities.order')} ${formatOrderDisplayId(order.id)}`}
+      >
         <View style={styles.cardContent}>
           <View style={styles.cardHeader}>
             <Badge label={t('activities.order')} color='orange' />
@@ -591,7 +600,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation, route }
 
           <View>
             <Text style={styles.cardTitle}>
-              {t('activities.order')} #{order.id.slice(0, 8).toUpperCase()}
+              {t('activities.order')} {formatOrderDisplayId(order.id, 8)}
             </Text>
             <Text style={styles.cardDescription}>
               {itemsCount} {itemsCount === 1 ? t('activities.item') : t('activities.items')} •{' '}
@@ -610,18 +619,9 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation, route }
               <Icon name='check' size={16} color={COLORS.TEXT} />
               <Text style={styles.doneButtonText}>{getStatusText()}</Text>
             </View>
-
-            {activeTab === 'actives' && (
-              <TouchableOpacity
-                onPress={() => logger.debug('[ActivitiesScreen] view order (stub)', { orderId: order.id })}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.viewLink}>{t('common.view')}</Text>
-              </TouchableOpacity>
-            )}
           </View>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 

@@ -9,6 +9,7 @@ import type { StoredUser } from '@/types/auth';
 import { COLORS } from '@/constants';
 import { ACCOUNT_CONFIG } from '@/config/environment';
 import { logger } from '@/utils/logger';
+import { navigateToActivitiesOrders } from '@/utils/navigation/activitiesNavigation';
 import { styles } from './styles';
 
 type Props = {
@@ -96,14 +97,9 @@ const ProfileFloatingMenu: React.FC<Props> = ({ visible, navigation, onClose }) 
     rootNavigation.navigate('SubscriptionList' as never);
   };
 
-  const handleGoToMemberProtocols = () => {
-    onClose();
-    rootNavigation.navigate('MemberProtocols' as never);
-  };
-
   const handleGoToOrders = () => {
     onClose();
-    rootNavigation.navigate('Activities' as never, { initialTab: 'history', initialFilter: 'orders' } as never);
+    navigateToActivitiesOrders(rootNavigation);
   };
 
   const handleGoToActivities = () => {
@@ -161,15 +157,6 @@ const ProfileFloatingMenu: React.FC<Props> = ({ visible, navigation, onClose }) 
               <View style={styles.menuItemLeft}>
                 <Icon name='credit-card' size={22} color={COLORS.TEXT} />
                 <Text style={styles.menuItemLabel}>Meus Protocolos e Serviços</Text>
-              </View>
-              <Icon name='chevron-right' size={22} color='#6e6a6a' />
-            </TouchableOpacity>
-            <View style={styles.separator} />
-
-            <TouchableOpacity onPress={handleGoToMemberProtocols} style={styles.menuItem} activeOpacity={0.7}>
-              <View style={styles.menuItemLeft}>
-                <Icon name='groups' size={22} color={COLORS.TEXT} />
-                <Text style={styles.menuItemLabel}>Meus Protocolos</Text>
               </View>
               <Icon name='chevron-right' size={22} color='#6e6a6a' />
             </TouchableOpacity>

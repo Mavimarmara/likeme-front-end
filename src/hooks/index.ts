@@ -81,6 +81,7 @@ export { useMenuItems } from './navigation/useMenuItems';
 
 // Subscription hooks
 export { useSubscriptionList } from './subscription/useSubscriptionList';
+export { useProgramCourse } from './course/useProgramCourse';
 
 // i18n hooks
 export { useTranslation } from './i18n';

@@ -102,6 +102,9 @@ export function useSubscriptionList() {
         badges,
         acquiredAt: sub.createdAt,
         subscriptionId: sub.id,
+        communityId: sub.programCommunity?.communityId,
+        description: sub.programCommunity?.description ?? fullProduct?.description ?? sub.product.description ?? null,
+        agreement: sub.programCommunity?.agreement ?? null,
       };
     });
   }, [subscriptions, productMap, categories]);

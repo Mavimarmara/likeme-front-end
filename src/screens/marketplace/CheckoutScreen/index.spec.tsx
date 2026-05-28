@@ -450,10 +450,13 @@ describe('CheckoutScreen', () => {
       { timeout: 3000 },
     );
 
-    // Na etapa order, Home button deve navegar para Home
-    const homeButton = getByText('common.home');
-    fireEvent.press(homeButton);
-    expect(mockNavigation.navigate).toHaveBeenCalledWith('Home');
+    // Na etapa order, botão Ver pedidos deve navegar para Activities (histórico / pedidos)
+    const viewOrdersButton = getByText('checkout.viewOrders');
+    fireEvent.press(viewOrdersButton);
+    expect(mockNavigation.navigate).toHaveBeenCalledWith('Activities', {
+      initialTab: 'history',
+      initialFilter: 'orders',
+    });
   });
 
   it('saves address when AddressForm calls onSaveAddress', async () => {

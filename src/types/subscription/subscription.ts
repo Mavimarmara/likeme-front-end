@@ -9,4 +9,7 @@ export interface SubscriptionListItem {
   badges: string[];
   acquiredAt: string;
   subscriptionId?: string;
+  communityId?: string;
+  description?: string | null;
+  agreement?: string | null;
 }

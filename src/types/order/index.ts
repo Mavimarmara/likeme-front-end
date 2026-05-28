@@ -1,6 +1,10 @@
 import type { ApiResponse } from '@/types/infrastructure';
 import type { Product } from '@/types/product';
 
+export interface OrderVoucherSummary {
+  code: string;
+}
+
 export interface OrderItem {
   id: string;
   orderId: string;
@@ -28,6 +32,9 @@ export interface Order {
   paymentMethod?: string;
   paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
   trackingNumber?: string;
+  voucherId?: string | null;
+  voucherDiscount?: number;
+  voucher?: OrderVoucherSummary | null;
   createdAt: string;
   updatedAt: string;
   deletedAt?: string;

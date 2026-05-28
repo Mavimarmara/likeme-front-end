@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { MarkdownText } from '@/components/ui/text/MarkdownText';
 import { COLORS } from '@/constants';
 import { styles } from './styles';
 
@@ -8,6 +9,7 @@ export type ModuleItem = {
   id: string;
   title: string;
   completed?: boolean;
+  body?: string | null;
 };
 
 type Props = {
@@ -47,6 +49,11 @@ const ModuleAccordion: React.FC<Props> = ({ modules, onModulePress }) => {
                 color={COLORS.NEUTRAL.LOW.PURE}
               />
             </TouchableOpacity>
+            {isExpanded && module.body?.trim() ? (
+              <View style={styles.moduleBody}>
+                <MarkdownText style={styles.moduleBodyText} text={module.body.trim()} />
+              </View>
+            ) : null}
             <View style={styles.separator} />
           </View>
         );

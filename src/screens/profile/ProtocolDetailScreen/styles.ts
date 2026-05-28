@@ -41,6 +41,10 @@ export const styles = StyleSheet.create({
     color: COLORS.NEUTRAL.LOW.DARK,
     paddingHorizontal: SPACING.LG,
   },
+  loaderWrap: {
+    paddingVertical: SPACING.XXL,
+    alignItems: 'center',
+  },
   heroFooter: {
     width: '100%',
   },
