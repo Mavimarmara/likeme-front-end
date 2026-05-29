@@ -25,7 +25,7 @@ set +a
 echo "Usando: $ENV_FILE"
 
 KEYSTORE_REL="${ANDROID_KEYSTORE_STORE_FILE:-likeme-release.keystore}"
-STORE_PASS="${ANDROID_KEYSTORE_STORE_PASSWORD:-${ANDROID_KEYSTORE_PASSWORD:-}}"
+STORE_PASS="${ANDROID_KEYSTORE_STORE_PASSWORD:-}"
 KEY_PASS="${ANDROID_KEYSTORE_KEY_PASSWORD:-$STORE_PASS}"
 ALIAS="${ANDROID_KEYSTORE_KEY_ALIAS:-likeme-key-alias}"
 
@@ -48,7 +48,7 @@ if [[ -z "$KEYSTORE_PATH" ]]; then
 fi
 
 if [[ -z "$STORE_PASS" ]]; then
-  echo "Defina ANDROID_KEYSTORE_STORE_PASSWORD (ou ANDROID_KEYSTORE_PASSWORD) no .env" >&2
+  echo "Defina ANDROID_KEYSTORE_STORE_PASSWORD no .env" >&2
   exit 1
 fi
 
@@ -86,4 +86,4 @@ echo "BASE64 gerado: $OUT_B64 ($b64_len caracteres)"
 echo "Atualize no GitHub → Settings → Secrets → ANDROID_KEYSTORE_BASE64"
 echo "Senhas no GitHub devem ser iguais ao .env:"
 echo "  ANDROID_KEYSTORE_STORE_PASSWORD"
-echo "  ANDROID_KEYSTORE_KEY_PASSWORD (ou ANDROID_KEYSTORE_PASSWORD)"
+echo "  ANDROID_KEYSTORE_KEY_PASSWORD"

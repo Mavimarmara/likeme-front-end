@@ -106,7 +106,6 @@ jobs:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           ANDROID_KEYSTORE_STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_STORE_PASSWORD }}
           ANDROID_KEYSTORE_KEY_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_KEY_PASSWORD }}
-          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEYSTORE_KEY_ALIAS: ${{ secrets.ANDROID_KEYSTORE_KEY_ALIAS }}
         run: bash scripts/ci-android-release-signing.sh
 
@@ -114,18 +113,9 @@ jobs:
         env:
           ANDROID_KEYSTORE_STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_STORE_PASSWORD }}
           ANDROID_KEYSTORE_KEY_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_KEY_PASSWORD }}
-          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEYSTORE_KEY_ALIAS: ${{ secrets.ANDROID_KEYSTORE_KEY_ALIAS }}
         run: |
           set -euo pipefail
-          if [[ -z "${ANDROID_KEYSTORE_STORE_PASSWORD:-}" && -n "${ANDROID_KEYSTORE_PASSWORD:-}" ]]; then
-            ANDROID_KEYSTORE_STORE_PASSWORD="$ANDROID_KEYSTORE_PASSWORD"
-          fi
-          if [[ -z "${ANDROID_KEYSTORE_KEY_PASSWORD:-}" && -n "${ANDROID_KEYSTORE_PASSWORD:-}" ]]; then
-            ANDROID_KEYSTORE_KEY_PASSWORD="$ANDROID_KEYSTORE_PASSWORD"
-          fi
-          if [[ -z "${ANDROID_KEYSTORE_KEY_PASSWORD:-}" && -n "${ANDROID_KEYSTORE_STORE_PASSWORD:-}" ]]; then
-            ANDROID_KEYSTORE_KEY_PASSWORD="$ANDROID_KEYSTORE_STORE_PASSWORD"
-          fi
           KEY_ALIAS="${ANDROID_KEYSTORE_KEY_ALIAS:-likeme-key-alias}"
           echo "Gradle key.alias=${KEY_ALIAS}"
           cd android && ./gradlew :app:bundleRelease \

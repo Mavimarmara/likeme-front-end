@@ -26,7 +26,7 @@ for env_file in "$ROOT/.env.production" "$ROOT/.env"; do
   fi
 done
 
-STORE_PASS="${ANDROID_KEYSTORE_STORE_PASSWORD:-${ANDROID_KEYSTORE_PASSWORD:-}}"
+STORE_PASS="${ANDROID_KEYSTORE_STORE_PASSWORD:-}"
 ALIAS="${ANDROID_KEYSTORE_KEY_ALIAS:-likeme-key-alias}"
 TMP_KS="$(mktemp)"
 trap 'rm -f "$TMP_KS"' EXIT

@@ -70,13 +70,9 @@ A pipeline tem um **step de aprovação** antes dos submits: o job **"Aprovar en
 | Secret | Obrigatório | Notas |
 |--------|-------------|--------|
 | `ANDROID_KEYSTORE_BASE64` | Sim | Keystore em base64 (uma linha) |
-| `ANDROID_KEYSTORE_STORE_PASSWORD` | Sim* | Senha do keystore |
-| `ANDROID_KEYSTORE_KEY_PASSWORD` | Sim* | Em geral igual à store |
-| `ANDROID_KEYSTORE_PASSWORD` | Alternativa | Um secret só para store + key |
-
-\*Ou só `ANDROID_KEYSTORE_PASSWORD` se store e key forem iguais.
-
-Alias no CI: `likeme-key-alias` (fixo, sem secret).
+| `ANDROID_KEYSTORE_STORE_PASSWORD` | Sim | Senha do keystore (EAS) |
+| `ANDROID_KEYSTORE_KEY_PASSWORD` | Sim | Senha da chave (EAS; pode diferir da store) |
+| `ANDROID_KEYSTORE_KEY_ALIAS` | Sim | Alias UUID da EAS (ex. `95c2a3e1...`) |
 
 iOS e submit continuam com secrets do **repositório** (sem environment extra).
 

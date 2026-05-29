@@ -56,14 +56,11 @@ key_entry_list_ok() {
   )
   [[ -n "$KEYSTORE_STORE_TYPE" ]] && args+=(-storetype "$KEYSTORE_STORE_TYPE")
 
-  if keytool "${args[@]}" >/dev/null 2>&1; then
-    return 0
-  fi
+  # EAS (PKCS12): key password costuma ser obrigatória e diferente da store password
   if [[ -n "$ANDROID_KEYSTORE_KEY_PASSWORD" ]]; then
-    keytool "${args[@]}" -keypass "$ANDROID_KEYSTORE_KEY_PASSWORD" >/dev/null 2>&1
-    return $?
+    keytool "${args[@]}" -keypass "$ANDROID_KEYSTORE_KEY_PASSWORD" >/dev/null 2>&1 && return 0
   fi
-  return 1
+  keytool "${args[@]}" >/dev/null 2>&1
 }
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -75,14 +72,7 @@ fi
 
 ANDROID_KEYSTORE_STORE_PASSWORD="$(trim_secret "${ANDROID_KEYSTORE_STORE_PASSWORD:-}")"
 ANDROID_KEYSTORE_KEY_PASSWORD="$(trim_secret "${ANDROID_KEYSTORE_KEY_PASSWORD:-}")"
-ANDROID_KEYSTORE_PASSWORD="$(trim_secret "${ANDROID_KEYSTORE_PASSWORD:-}")"
 
-if [[ -z "$ANDROID_KEYSTORE_STORE_PASSWORD" && -n "$ANDROID_KEYSTORE_PASSWORD" ]]; then
-  ANDROID_KEYSTORE_STORE_PASSWORD="$ANDROID_KEYSTORE_PASSWORD"
-fi
-if [[ -z "$ANDROID_KEYSTORE_KEY_PASSWORD" && -n "$ANDROID_KEYSTORE_PASSWORD" ]]; then
-  ANDROID_KEYSTORE_KEY_PASSWORD="$ANDROID_KEYSTORE_PASSWORD"
-fi
 if [[ -z "$ANDROID_KEYSTORE_KEY_PASSWORD" && -n "$ANDROID_KEYSTORE_STORE_PASSWORD" ]]; then
   ANDROID_KEYSTORE_KEY_PASSWORD="$ANDROID_KEYSTORE_STORE_PASSWORD"
 fi
@@ -105,7 +95,7 @@ done
 
 if [[ ${#missing[@]} -gt 0 ]]; then
   echo "::error::Secrets Android ausentes: ${missing[*]}." >&2
-  echo "::error::Crie em Settings → Secrets and variables → Actions (nível repositório). Pode usar um único ANDROID_KEYSTORE_PASSWORD." >&2
+  echo "::error::Crie em Settings → Secrets and variables → Actions (nível repositório)." >&2
   exit 1
 fi
 
@@ -176,7 +166,7 @@ fi
 if ! key_entry_list_ok "$ANDROID_KEYSTORE_KEY_ALIAS"; then
   echo "::error::Não foi possível validar alias '${ANDROID_KEYSTORE_KEY_ALIAS}' (store/key password ou alias incorreto)." >&2
   if [[ "$KEYSTORE_STORE_TYPE" == "PKCS12" ]]; then
-    echo "::error::PKCS12 (EAS): use a mesma senha em ANDROID_KEYSTORE_STORE_PASSWORD e ANDROID_KEYSTORE_KEY_PASSWORD se a key password estiver vazia no Expo." >&2
+    echo "::error::PKCS12 (EAS): confira ANDROID_KEYSTORE_STORE_PASSWORD, ANDROID_KEYSTORE_KEY_PASSWORD (ex. 196409e1...) e ANDROID_KEYSTORE_KEY_ALIAS (ex. 95c2a3e1...)." >&2
   fi
   rm -f "$keystore_list_err"
   exit 1
