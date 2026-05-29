@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Build / archive / export Production no CI (sem conta Apple no Xcode).
-# Preferência: assinatura automática + API Key ASC (-allowProvisioningUpdates).
-# Alternativa: perfil App Store manual via IOS_PROVISIONING_PROFILE_UUID.
+# Build/archive: preferência ASC automático. Export: automático com fallback manual se houver perfil instalado.
 set -euo pipefail
 
 ACTION="${1:?Uso: ci-xcode-production.sh build|archive|export}"
@@ -21,17 +20,17 @@ if [[ -n "${ASC_API_KEY_PATH:-}" && -f "${ASC_API_KEY_PATH}" ]]; then
   )
 fi
 
+HAS_ASC=false
+[[ ${#XCODE_AUTH[@]} -gt 0 ]] && HAS_ASC=true
+
 USE_MANUAL_SIGNING=false
 SIGNING_ARGS=()
-if [[ ${#XCODE_AUTH[@]} -gt 0 ]]; then
+if [[ "$HAS_ASC" == true ]]; then
   SIGNING_ARGS=(
     "DEVELOPMENT_TEAM=${TEAM_ID}"
     CODE_SIGN_STYLE=Automatic
   )
   echo "Assinatura CI: Automatic + App Store Connect API Key"
-  if [[ -n "${IOS_PROVISIONING_PROFILE_UUID:-}" ]]; then
-    echo "Perfil manual (${IOS_PROVISIONING_PROFILE_UUID}) ignorado — ASC API Key gerencia certificado e provisioning."
-  fi
 elif [[ -n "${IOS_PROVISIONING_PROFILE_UUID:-}" ]]; then
   USE_MANUAL_SIGNING=true
   SIGNING_ARGS=(
@@ -45,6 +44,68 @@ else
   echo "::error::Configure ASC_API_KEY_P8 no GitHub, ou IOS_PROVISIONING_PROFILE_BASE64 com perfil App Store Distribution (sem ProvisionedDevices)." >&2
   exit 1
 fi
+
+write_manual_export_plist() {
+  local profile_ref="${IOS_PROVISIONING_PROFILE_NAME:-${IOS_PROVISIONING_PROFILE_UUID:-}}"
+  if [[ -z "$profile_ref" ]]; then
+    echo "::error::Perfil manual necessário mas IOS_PROVISIONING_PROFILE_UUID/NAME ausente." >&2
+    return 1
+  fi
+  mkdir -p "$PWD/build"
+  EXPORT_PLIST="$PWD/build/ExportOptions-CI.plist"
+  cat > "$EXPORT_PLIST" <<EPLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>method</key>
+	<string>app-store-connect</string>
+	<key>teamID</key>
+	<string>${TEAM_ID}</string>
+	<key>signingStyle</key>
+	<string>manual</string>
+	<key>signingCertificate</key>
+	<string>Apple Distribution</string>
+	<key>provisioningProfiles</key>
+	<dict>
+		<key>app.likeme.com</key>
+		<string>${profile_ref}</string>
+	</dict>
+	<key>uploadSymbols</key>
+	<true/>
+</dict>
+</plist>
+EPLIST
+  echo "ExportOptions: manual (perfil ${profile_ref})"
+}
+
+run_export_archive() {
+  local export_plist="$1"
+  local export_log
+  export_log="$(mktemp)"
+  set +e
+  xcodebuild \
+    -exportArchive \
+    -archivePath "$PWD/build/LikeMe.xcarchive" \
+    -exportPath "$PWD/build/export" \
+    -exportOptionsPlist "$export_plist" \
+    "${ALLOW[@]}" \
+    "${XCODE_AUTH[@]}" \
+    2>&1 | tee "$export_log"
+  local status="${PIPESTATUS[0]}"
+  set -e
+
+  if [[ "$status" -ne 0 ]]; then
+    if grep -q "Cloud signing permission error" "$export_log" 2>/dev/null; then
+      echo "::warning::ASC API Key sem permissão de assinatura na nuvem (Certificates/Profiles no App Store Connect)." >&2
+    fi
+    if grep -q "No profiles for" "$export_log" 2>/dev/null; then
+      echo "::warning::Nenhum perfil App Store automático para app.likeme.com." >&2
+    fi
+  fi
+  rm -f "$export_log"
+  return "$status"
+}
 
 case "$ACTION" in
   build)
@@ -72,59 +133,29 @@ case "$ACTION" in
       archive
     ;;
   export)
-    EXPORT_PLIST="$PWD/ExportOptions-AppStore.plist"
-    echo "ExportOptions: ${EXPORT_PLIST} (signingStyle automatic)"
+    mkdir -p "$PWD/build/export"
+    export_status=0
+
     if [[ "$USE_MANUAL_SIGNING" == true ]]; then
-      EXPORT_PLIST="$PWD/build/ExportOptions-CI.plist"
-      cat > "$EXPORT_PLIST" <<EPLIST
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>method</key>
-	<string>app-store-connect</string>
-	<key>teamID</key>
-	<string>${TEAM_ID}</string>
-	<key>signingStyle</key>
-	<string>manual</string>
-	<key>signingCertificate</key>
-	<string>Apple Distribution</string>
-	<key>provisioningProfiles</key>
-	<dict>
-		<key>app.likeme.com</key>
-		<string>${IOS_PROVISIONING_PROFILE_UUID}</string>
-	</dict>
-	<key>uploadSymbols</key>
-	<true/>
-</dict>
-</plist>
-EPLIST
-      echo "ExportOptions: manual signing (profile ${IOS_PROVISIONING_PROFILE_UUID})"
+      write_manual_export_plist
+      run_export_archive "$EXPORT_PLIST" && export_status=0 || export_status=$?
+    else
+      echo "ExportOptions: $PWD/ExportOptions-AppStore.plist (signingStyle automatic)"
+      if run_export_archive "$PWD/ExportOptions-AppStore.plist"; then
+        export_status=0
+      elif [[ -n "${IOS_PROVISIONING_PROFILE_UUID:-}" ]]; then
+        echo "Export automático falhou — tentando export manual com perfil instalado..."
+        write_manual_export_plist
+        run_export_archive "$EXPORT_PLIST" && export_status=0 || export_status=$?
+      else
+        export_status=1
+      fi
     fi
-    set +e
-    export_log="$(mktemp)"
-    xcodebuild \
-      -exportArchive \
-      -archivePath "$PWD/build/LikeMe.xcarchive" \
-      -exportPath "$PWD/build/export" \
-      -exportOptionsPlist "$EXPORT_PLIST" \
-      "${ALLOW[@]}" \
-      "${XCODE_AUTH[@]}" \
-      2>&1 | tee "$export_log"
-    export_status="${PIPESTATUS[0]}"
-    set -e
 
     if [[ "$export_status" -ne 0 ]]; then
-      if grep -q "Cloud signing permission error" "$export_log" 2>/dev/null; then
-        echo "::error::API Key ASC sem permissão de assinatura na nuvem. Em App Store Connect → Users and Access → Integrations → chave API: role Admin/App Manager e acesso a Certificates, Identifiers & Profiles." >&2
-      fi
-      if grep -q "No profiles for" "$export_log" 2>/dev/null; then
-        echo "::error::Nenhum perfil App Store para app.likeme.com. Confira ASC API Key ou gere perfil App Store novo (IOS_PROVISIONING_PROFILE_BASE64) alinhado ao certificado P12." >&2
-      fi
-      rm -f "$export_log"
+      echo "::error::Export falhou. Corrija permissões da API Key ASC (Admin + Certificates/Profiles) ou atualize IOS_PROVISIONING_PROFILE_BASE64 com perfil App Store do mesmo certificado do P12." >&2
       exit "$export_status"
     fi
-    rm -f "$export_log"
 
     if [[ ! -f "$PWD/build/export/LikeMe.ipa" ]]; then
       echo "::error::Export concluiu sem gerar ios/build/export/LikeMe.ipa" >&2
