@@ -1,7 +1,7 @@
 {
   "cli": {
     "version": ">= 16.26.0",
-    "appVersionSource": "remote"
+    "appVersionSource": "local"
   },
   "build": {
     "development": {
@@ -16,7 +16,7 @@
     },
     "store-common": {
       "distribution": "store",
-      "autoIncrement": true,
+      "autoIncrement": false,
       "env": {
         "EXCLUDE_EXPO_DEV_CLIENT": "1",
         "EXPO_PUBLIC_AUTH0_DOMAIN": "likeme.us.auth0.com",
