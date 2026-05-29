@@ -81,9 +81,20 @@ if [[ "$opened" != true ]]; then
   exit 1
 fi
 
-if [[ -n "$STORE_PASS" ]] && keytool -list -keystore "$TMP_KS" -storepass "$STORE_PASS" -alias "$ALIAS" >/dev/null 2>&1; then
+alias_ok=false
+if [[ -n "$STORE_PASS" ]]; then
+  if keytool -list -keystore "$TMP_KS" -storepass "$STORE_PASS" -alias "$ALIAS" >/dev/null 2>&1; then
+    alias_ok=true
+  elif keytool -list -keystore "$TMP_KS" -storepass "$STORE_PASS" -storetype PKCS12 -alias "$ALIAS" >/dev/null 2>&1; then
+    alias_ok=true
+  fi
+fi
+
+if [[ "$alias_ok" == true ]]; then
   echo "Alias '$ALIAS' encontrado com senha do .env."
-  echo "Secrets no GitHub devem usar exatamente essa senha (copie de novo, sem espaço no fim)."
+  echo "Secrets no GitHub: ANDROID_KEYSTORE_STORE_PASSWORD, ANDROID_KEYSTORE_KEY_PASSWORD (igual à store se vazio no EAS), ANDROID_KEYSTORE_KEY_ALIAS=$ALIAS"
 else
-  echo "Arquivo abre, mas alias '$ALIAS' não confere — veja aliases acima."
+  echo "Arquivo abre, mas alias '$ALIAS' não confere — liste aliases:"
+  keytool -list -keystore "$TMP_KS" -storepass "$STORE_PASS" 2>/dev/null \
+    | grep -E '^(Alias name:|Entry alias:|[^,]+,.*PrivateKeyEntry)' || true
 fi

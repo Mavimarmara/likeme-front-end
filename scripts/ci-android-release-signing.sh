@@ -9,21 +9,61 @@ trim_secret() {
 list_keystore_aliases() {
   local list_file="$1"
   local aliases=()
-  local line name
+  local line name seen=""
 
   while IFS= read -r line; do
     if [[ "$line" =~ ^Alias\ name:\ (.+)$ ]]; then
-      aliases+=("${BASH_REMATCH[1]}")
+      name="${BASH_REMATCH[1]}"
+      name="${name#"${name%%[![:space:]]*}"}"
+      name="${name%"${name##*[![:space:]]}"}"
+      if [[ -n "$name" && "$seen" != *"|${name}|"* ]]; then
+        aliases+=("$name")
+        seen+="|${name}|"
+      fi
       continue
     fi
-    if [[ "$line" == *,\ PrivateKeyEntry, || "$line" == *,\ SecretKeyEntry, ]]; then
-      name="${line%%,*}"
+    if [[ "$line" =~ ^Entry\ alias:\ (.+)$ ]]; then
+      name="${BASH_REMATCH[1]}"
       name="${name#"${name%%[![:space:]]*}"}"
-      [[ -n "$name" ]] && aliases+=("$name")
+      name="${name%"${name##*[![:space:]]}"}"
+      if [[ -n "$name" && "$seen" != *"|${name}|"* ]]; then
+        aliases+=("$name")
+        seen+="|${name}|"
+      fi
+      continue
+    fi
+    if [[ "$line" =~ ^([^,]+),[[:space:]].*,[[:space:]]*(PrivateKeyEntry|SecretKeyEntry),[[:space:]]*$ ]]; then
+      name="${BASH_REMATCH[1]}"
+      name="${name#"${name%%[![:space:]]*}"}"
+      name="${name%"${name##*[![:space:]]}"}"
+      if [[ -n "$name" && "$seen" != *"|${name}|"* ]]; then
+        aliases+=("$name")
+        seen+="|${name}|"
+      fi
     fi
   done <"$list_file"
 
   printf '%s\n' "${aliases[@]}"
+}
+
+key_entry_list_ok() {
+  local alias="$1"
+  local args=(
+    -list
+    -keystore "$KEYSTORE_PATH"
+    -storepass "$ANDROID_KEYSTORE_STORE_PASSWORD"
+    -alias "$alias"
+  )
+  [[ -n "$KEYSTORE_STORE_TYPE" ]] && args+=(-storetype "$KEYSTORE_STORE_TYPE")
+
+  if keytool "${args[@]}" >/dev/null 2>&1; then
+    return 0
+  fi
+  if [[ -n "$ANDROID_KEYSTORE_KEY_PASSWORD" ]]; then
+    keytool "${args[@]}" -keypass "$ANDROID_KEYSTORE_KEY_PASSWORD" >/dev/null 2>&1
+    return $?
+  fi
+  return 1
 }
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -105,30 +145,39 @@ for a in "${keystore_aliases[@]}"; do
   fi
 done
 
+if [[ "$alias_known" != true ]] && key_entry_list_ok "$ANDROID_KEYSTORE_KEY_ALIAS"; then
+  echo "Alias confirmado via keytool (secret): ${ANDROID_KEYSTORE_KEY_ALIAS}"
+  alias_known=true
+fi
+
 if [[ "$alias_known" != true ]]; then
-  if [[ "${#keystore_aliases[@]}" -eq 1 ]]; then
+  if [[ "${#keystore_aliases[@]}" -eq 1 && -n "${keystore_aliases[0]}" ]]; then
     ANDROID_KEYSTORE_KEY_ALIAS="${keystore_aliases[0]}"
     echo "Alias único no keystore (${KEYSTORE_STORE_TYPE}): ${ANDROID_KEYSTORE_KEY_ALIAS}"
     alias_known=true
   else
-    echo "::error::Alias configurado não existe neste keystore." >&2
-    echo "::error::Aliases no arquivo (${#keystore_aliases[@]}):" >&2
-    for a in "${keystore_aliases[@]}"; do
-      echo "::error::  - ${a}" >&2
-    done
-    echo "::error::Defina secret ANDROID_KEYSTORE_KEY_ALIAS com um dos nomes acima (EAS costuma diferir de likeme-key-alias)." >&2
+    echo "::error::Alias '${ANDROID_KEYSTORE_KEY_ALIAS}' não encontrado neste keystore." >&2
+    echo "::error::Aliases detectados (${#keystore_aliases[@]}):" >&2
+    if [[ "${#keystore_aliases[@]}" -eq 0 ]]; then
+      echo "::error::  (nenhum — saída keytool pode ser formato PKCS12 não reconhecido)" >&2
+      grep -E '^(Alias name:|Entry alias:|[^,]+,.*PrivateKeyEntry)' "$keystore_list_err" 2>/dev/null \
+        | head -5 | sed 's/^/::error::  keytool: /' >&2 || true
+    else
+      for a in "${keystore_aliases[@]}"; do
+        echo "::error::  - ${a}" >&2
+      done
+    fi
+    echo "::error::Secret ANDROID_KEYSTORE_KEY_ALIAS deve ser ex.: 95c2a3e191b04854e03c7d67381f94a0 (EAS), sem espaços." >&2
     rm -f "$keystore_list_err"
     exit 1
   fi
 fi
 
-if ! keytool -list \
-  -keystore "$KEYSTORE_PATH" \
-  -storepass "$ANDROID_KEYSTORE_STORE_PASSWORD" \
-  -keypass "$ANDROID_KEYSTORE_KEY_PASSWORD" \
-  -alias "$ANDROID_KEYSTORE_KEY_ALIAS" \
-  ${KEYSTORE_STORE_TYPE:+-storetype "$KEYSTORE_STORE_TYPE"} >/dev/null 2>&1; then
-  echo "::error::Senha da chave incorreta para o alias ${ANDROID_KEYSTORE_KEY_ALIAS}." >&2
+if ! key_entry_list_ok "$ANDROID_KEYSTORE_KEY_ALIAS"; then
+  echo "::error::Não foi possível validar alias '${ANDROID_KEYSTORE_KEY_ALIAS}' (store/key password ou alias incorreto)." >&2
+  if [[ "$KEYSTORE_STORE_TYPE" == "PKCS12" ]]; then
+    echo "::error::PKCS12 (EAS): use a mesma senha em ANDROID_KEYSTORE_STORE_PASSWORD e ANDROID_KEYSTORE_KEY_PASSWORD se a key password estiver vazia no Expo." >&2
+  fi
   rm -f "$keystore_list_err"
   exit 1
 fi
