@@ -181,6 +181,8 @@ jobs:
       - name: Configurar App Store Connect API Key (assinatura Xcode)
         env:
           ASC_API_KEY_P8: ${{ secrets.ASC_API_KEY_P8 }}
+          ASC_API_KEY_ID: ${{ secrets.ASC_API_KEY_ID }}
+          ASC_API_ISSUER_ID: ${{ secrets.ASC_API_ISSUER_ID }}
         run: bash scripts/ci-setup-asc-api-key.sh
 
       - name: Instalar provisioning profile (opcional, só App Store)
@@ -250,6 +252,8 @@ jobs:
       - name: Configurar App Store Connect API Key (validate/upload)
         env:
           ASC_API_KEY_P8: ${{ secrets.ASC_API_KEY_P8 }}
+          ASC_API_KEY_ID: ${{ secrets.ASC_API_KEY_ID }}
+          ASC_API_ISSUER_ID: ${{ secrets.ASC_API_ISSUER_ID }}
         run: bash scripts/ci-setup-asc-api-key.sh
 
       - name: Download IPA

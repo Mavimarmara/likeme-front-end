@@ -7,7 +7,7 @@ if [[ -z "${ASC_API_KEY_P8:-}" ]]; then
 fi
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-KEY_ID="${ASC_API_KEY_ID:-6QJ886URZD}"
+KEY_ID="${ASC_API_KEY_ID:-74BTTLL273}"
 ISSUER_ID="${ASC_API_ISSUER_ID:-f4a624c3-e2af-4ad0-a365-f60b90c2dc9d}"
 KEY_PATH="${ROOT}/AuthKey_${KEY_ID}.p8"
 

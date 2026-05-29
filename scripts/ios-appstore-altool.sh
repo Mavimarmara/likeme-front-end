@@ -13,7 +13,7 @@ if [[ "$ACTION" != "validate" && "$ACTION" != "upload" ]]; then
 fi
 
 IPA_PATH="${ASC_IPA_PATH:-$ROOT/ios/build/export/LikeMe.ipa}"
-KEY_ID="${ASC_API_KEY_ID:-6QJ886URZD}"
+KEY_ID="${ASC_API_KEY_ID:-74BTTLL273}"
 ISSUER_ID="${ASC_API_ISSUER_ID:-f4a624c3-e2af-4ad0-a365-f60b90c2dc9d}"
 export API_PRIVATE_KEYS_DIR="${API_PRIVATE_KEYS_DIR:-$ROOT}"
 

@@ -15,7 +15,7 @@ XCODE_AUTH=()
 if [[ -n "${ASC_API_KEY_PATH:-}" && -f "${ASC_API_KEY_PATH}" ]]; then
   XCODE_AUTH=(
     -authenticationKeyPath "$ASC_API_KEY_PATH"
-    -authenticationKeyID "${ASC_API_KEY_ID:-6QJ886URZD}"
+    -authenticationKeyID "${ASC_API_KEY_ID:-74BTTLL273}"
     -authenticationKeyIssuerID "${ASC_API_ISSUER_ID:-f4a624c3-e2af-4ad0-a365-f60b90c2dc9d}"
   )
 fi

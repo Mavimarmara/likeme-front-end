@@ -81,4 +81,4 @@ Alias no CI: `likeme-key-alias` (fixo, sem secret).
 iOS e submit continuam com secrets do **repositório** (sem environment extra).
 
 - **Submit Android**: usa `GOOGLE_SERVICE_ACCOUNT_JSON` (secret)
-- **Submit iOS**: usa `ASC_API_KEY_P8` (secret)
+- **Submit iOS / assinatura Xcode**: `ASC_API_KEY_P8` (conteúdo do `.p8`); opcional `ASC_API_KEY_ID` (ex. `74BTTLL273`), `ASC_API_ISSUER_ID` (UUID em Integrations)
