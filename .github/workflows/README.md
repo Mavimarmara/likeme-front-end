@@ -63,19 +63,22 @@ A pipeline tem um **step de aprovação** antes dos submits: o job **"Aprovar en
 4. Marque **Required reviewers** e adicione as pessoas que podem aprovar o envio
 5. Salve
 
-Só o job **Aprovar envio para lojas** usa o environment `store-submit` (uma aprovação por run). Os jobs de build/submit usam **secrets do repositório** (Settings → Secrets and variables → Actions).
+**Aprovação:** job **Aprovar envio para lojas** + job **Build Android** usam `store-submit`. O GitHub costuma pedir **uma aprovação por execução** do workflow para o mesmo environment (não uma por step).
 
-Quando os testes passarem, o job de aprovação ficará pendente. Um revisor deve ir em **Actions** → workflow em execução → **Review pending deployments** → aprovar **uma vez**; em seguida Android e iOS buildam em paralelo.
+**Secrets Android:** podem ficar no **repositório** ou no **environment `store-submit`** (o build Android lê os dois). O `ANDROID_KEYSTORE_BASE64` costuma estar no repo; senhas muitas vezes só no environment — por isso o job Android declara `store-submit`.
 
-### Secrets Android (AAB release) — no repositório
+| Secret | Obrigatório | Notas |
+|--------|-------------|--------|
+| `ANDROID_KEYSTORE_BASE64` | Sim | Keystore em base64 (uma linha) |
+| `ANDROID_KEYSTORE_STORE_PASSWORD` | Sim* | Senha do keystore |
+| `ANDROID_KEYSTORE_KEY_PASSWORD` | Sim* | Em geral igual à store |
+| `ANDROID_KEYSTORE_PASSWORD` | Alternativa | Um secret só para store + key |
 
-| Secret | Exemplo / notas |
-|--------|-----------------|
-| `ANDROID_KEYSTORE_BASE64` | `base64 -i likeme-release.keystore \| tr -d '\n'` |
-| `ANDROID_KEYSTORE_STORE_PASSWORD` | Senha do keystore |
-| `ANDROID_KEYSTORE_KEY_PASSWORD` | Geralmente igual à store |
+\*Ou só `ANDROID_KEYSTORE_PASSWORD` se store e key forem iguais.
 
-Alias fixo no CI: `likeme-key-alias` (não precisa de secret).
+Alias no CI: `likeme-key-alias` (fixo, sem secret).
+
+iOS e submit continuam com secrets do **repositório** (sem environment extra).
 
 - **Submit Android**: usa `GOOGLE_SERVICE_ACCOUNT_JSON` (secret)
 - **Submit iOS**: usa `ASC_API_KEY_P8` (secret)
