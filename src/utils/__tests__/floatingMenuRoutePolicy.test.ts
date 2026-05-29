@@ -129,6 +129,12 @@ describe('floatingMenuRoutePolicy', () => {
       expect(shouldShowFloatingMenuByRoute(state)).toBe(true);
       expect(getSelectedIdFromRoute('Checkout')).toBe('marketplace');
     });
+
+    it('ProtocolDetail permite overlay com aba profile selecionada', () => {
+      const state = makeStack(0, ['ProtocolDetail']);
+      expect(shouldShowFloatingMenuByRoute(state)).toBe(true);
+      expect(getSelectedIdFromRoute('ProtocolDetail')).toBe('profile');
+    });
   });
 
   describe('getSelectedIdFromRoute', () => {
@@ -136,6 +142,7 @@ describe('floatingMenuRoutePolicy', () => {
       expect(getSelectedIdFromRoute('ChatList')).toBe('chat');
       expect(getSelectedIdFromRoute('CommunityList')).toBe('community');
       expect(getSelectedIdFromRoute('Cart')).toBe('marketplace');
+      expect(getSelectedIdFromRoute('ProtocolDetail')).toBe('profile');
       expect(getSelectedIdFromRoute('Profile')).toBe('profile');
     });
   });

@@ -14,6 +14,7 @@ const PRIVACY_POLICY_ACCEPTED_AT_KEY = '@likeme:privacy_policy_accepted_at';
 const COMMUNITY_WELCOME_DISMISSED_KEY = '@likeme:community_welcome_dismissed';
 const COMMUNITY_SHOPPING_TIP_DISMISSED_KEY = '@likeme:community_shopping_tip_dismissed';
 const COMMUNITY_FAVORITE_IDS_KEY = '@likeme:community_favorite_ids';
+const PROGRAM_MODULE_COMPLETED_IDS_KEY = '@likeme:program_module_completed_ids';
 
 class StorageService {
   async setToken(token: string): Promise<void> {
@@ -344,6 +345,68 @@ class StorageService {
     }
   }
 
+  private async readProgramModuleCompletedMap(): Promise<Record<string, string[]>> {
+    try {
+      const raw = await AsyncStorage.getItem(PROGRAM_MODULE_COMPLETED_IDS_KEY);
+      if (!raw) {
+        return {};
+      }
+      const parsed = JSON.parse(raw) as unknown;
+      if (typeof parsed !== 'object' || parsed == null || Array.isArray(parsed)) {
+        return {};
+      }
+      const map: Record<string, string[]> = {};
+      for (const [scopeId, moduleIds] of Object.entries(parsed)) {
+        if (typeof scopeId !== 'string' || !Array.isArray(moduleIds)) {
+          continue;
+        }
+        map[scopeId] = moduleIds.filter((id): id is string => typeof id === 'string' && id.length > 0);
+      }
+      return map;
+    } catch (error) {
+      logger.error('Error reading program module completed map:', error);
+      return {};
+    }
+  }
+
+  async getProgramModuleCompletedIds(programScopeId: string): Promise<string[]> {
+    if (!programScopeId) {
+      return [];
+    }
+    const map = await this.readProgramModuleCompletedMap();
+    return map[programScopeId] ?? [];
+  }
+
+  async setProgramModuleCompleted(programScopeId: string, moduleId: string, completed: boolean): Promise<void> {
+    if (!programScopeId || !moduleId) {
+      logger.warn('setProgramModuleCompleted chamado sem programScopeId ou moduleId', { programScopeId, moduleId });
+      return;
+    }
+    try {
+      const map = await this.readProgramModuleCompletedMap();
+      const current = new Set(map[programScopeId] ?? []);
+      if (completed) {
+        current.add(moduleId);
+      } else {
+        current.delete(moduleId);
+      }
+      const nextIds = [...current];
+      if (nextIds.length === 0) {
+        delete map[programScopeId];
+      } else {
+        map[programScopeId] = nextIds;
+      }
+      if (Object.keys(map).length === 0) {
+        await AsyncStorage.removeItem(PROGRAM_MODULE_COMPLETED_IDS_KEY);
+      } else {
+        await AsyncStorage.setItem(PROGRAM_MODULE_COMPLETED_IDS_KEY, JSON.stringify(map));
+      }
+    } catch (error) {
+      logger.error('Error saving program module completed state:', { programScopeId, moduleId, completed, error });
+      throw error;
+    }
+  }
+
   async clearAll(): Promise<void> {
     try {
       await this.removeToken();
@@ -357,6 +420,7 @@ class StorageService {
       await AsyncStorage.removeItem(COMMUNITY_WELCOME_DISMISSED_KEY);
       await AsyncStorage.removeItem(COMMUNITY_SHOPPING_TIP_DISMISSED_KEY);
       await AsyncStorage.removeItem(COMMUNITY_FAVORITE_IDS_KEY);
+      await AsyncStorage.removeItem(PROGRAM_MODULE_COMPLETED_IDS_KEY);
       await this.clearCart();
     } catch (error) {
       logger.error('Error clearing storage:', error);

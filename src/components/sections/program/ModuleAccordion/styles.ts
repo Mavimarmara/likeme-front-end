@@ -1,13 +1,15 @@
 import { StyleSheet } from 'react-native';
-import { COLORS, SPACING } from '@/constants';
+import { COLORS, FONT_SIZES, SPACING } from '@/constants';
 
 export const styles = StyleSheet.create({
   container: {
     width: '100%',
     paddingHorizontal: SPACING.MD,
+    paddingVertical: SPACING.SM,
   },
   moduleItem: {
     paddingTop: SPACING.LG,
+    backgroundColor: 'transparent',
   },
   moduleHeader: {
     flexDirection: 'row',
@@ -21,34 +23,36 @@ export const styles = StyleSheet.create({
     gap: SPACING.SM,
     flex: 1,
   },
-  checkCircle: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    borderWidth: 2,
-    borderColor: COLORS.NEUTRAL.LOW.MEDIUM,
-    justifyContent: 'center',
-    alignItems: 'center',
+  moduleTitleButton: {
+    flex: 1,
   },
-  checkCircleCompleted: {
-    backgroundColor: COLORS.PRIMARY.PURE,
-    borderColor: COLORS.PRIMARY.PURE,
+  sessionIndicatorButton: {
+    padding: 0,
+  },
+  sessionIndicator: {
+    width: 29,
+    height: 26,
   },
   moduleTitle: {
-    fontSize: 20,
     fontFamily: 'DM Sans',
+    fontSize: FONT_SIZES.XL,
     fontWeight: '700',
-    color: COLORS.NEUTRAL.LOW.PURE,
     lineHeight: 24,
+    color: COLORS.NEUTRAL.LOW.PURE,
   },
   moduleBody: {
-    paddingBottom: SPACING.MD,
-    paddingLeft: 36,
+    marginLeft: SPACING.MD,
+    marginBottom: SPACING.MD,
+    paddingTop: SPACING.SM,
+    paddingBottom: SPACING.SM,
+    paddingRight: SPACING.MD,
   },
   moduleBodyText: {
-    fontSize: 16,
-    lineHeight: 24,
-    color: COLORS.NEUTRAL.LOW.MEDIUM,
+    fontFamily: 'DM Sans',
+    fontSize: FONT_SIZES.SM,
+    fontWeight: '400',
+    letterSpacing: 0.2,
+    color: COLORS.TEXT,
   },
   separator: {
     height: 1,

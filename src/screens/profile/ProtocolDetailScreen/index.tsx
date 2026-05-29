@@ -4,14 +4,14 @@ import type { StackScreenProps } from '@react-navigation/stack';
 import { useFocusEffect } from '@react-navigation/native';
 import { ScreenWithHeader, HeroImage } from '@/components/ui/layout';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
-import { ModuleAccordion, ProgramContentHighlightsRow, type ProgramLessonPreview } from '@/components/sections/program';
+import { ModuleAccordion } from '@/components/sections/program';
+import { EventBanner } from '@/components/sections/community';
 import { MarkdownText } from '@/components/ui/text/MarkdownText';
 import { useEventJoin, useEventList, useMenuItems, useProgramCourse } from '@/hooks';
 import { useFloatingMenuActions } from '@/contexts/FloatingMenuContext';
 import { useAnalyticsScreen, logTabSelect } from '@/analytics';
 import { useTranslation } from '@/hooks/i18n';
 import { MEMBER_PROTOCOL_COMMUNITY_IMAGE_FALLBACK } from '@/constants/community/communityProtocol';
-import { toEventBanner } from '@/utils/event/toEventBanner';
 import type { RootStackParamList } from '@/types/navigation';
 import type { Event } from '@/types/event';
 import type { ModuleItem } from '@/components/sections/program/ModuleAccordion';
@@ -92,25 +92,13 @@ const ProtocolDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     return [...candidates].sort((left, right) => eventStartMillis(left) - eventStartMillis(right))[0];
   }, [events]);
 
-  const { handleEventBannerPress } = useEventJoin({
+  const { eventBanner, handleEventBannerPress } = useEventJoin({
     loadEvents: hasCommunity,
     events: nextEvent ? [nextEvent] : [],
     communityAvatarUrl: heroImageUri,
     communityProviderName: protocol.name,
     defaultThumbnailUrl: heroImageUri,
   });
-
-  const eventBanner = useMemo(
-    () =>
-      toEventBanner({
-        loadEvents: Boolean(nextEvent),
-        events: nextEvent ? [nextEvent] : [],
-        communityAvatarUrl: heroImageUri,
-        communityProviderName: protocol.name,
-        defaultThumbnailUrl: heroImageUri,
-      }),
-    [heroImageUri, nextEvent, protocol.name],
-  );
 
   const courseModules: ModuleItem[] = useMemo(() => {
     if (course?.steps?.length) {
@@ -129,15 +117,7 @@ const ProtocolDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     }));
   }, [course?.steps, protocol.modules]);
 
-  const upcomingLesson: ProgramLessonPreview | null = useMemo(() => {
-    const nextModule = courseModules.find((module) => !module.completed) ?? courseModules[0];
-    if (!nextModule) {
-      return null;
-    }
-    return { id: nextModule.id, title: nextModule.title };
-  }, [courseModules]);
-
-  const aboutText = protocol.description?.trim() || null;
+  const aboutText = protocol.description?.trim() || protocol.shortDescription?.trim() || null;
 
   useEffect(() => {
     const fromRoute = protocol.agreements?.trim();
@@ -174,6 +154,7 @@ const ProtocolDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   }, [productId, protocol.agreements]);
 
   const contentLoading = hasCommunity && courseLoading;
+  const moduleStorageScopeId = communityId || protocol.id || productId;
 
   useFocusEffect(
     useCallback(() => {
@@ -190,22 +171,12 @@ const ProtocolDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     setActiveTab(tabId);
   };
 
-  const handleLessonPress = useCallback((lesson: ProgramLessonPreview) => {
-    setExpandedModuleId(lesson.id);
-  }, []);
-
-  const handleEventPress = useCallback(() => {
-    if (eventBanner) {
-      void handleEventBannerPress(eventBanner);
-    }
-  }, [eventBanner, handleEventBannerPress]);
-
   const renderContentTab = () => {
     if (!hasCommunity) {
       return (
         <View style={styles.tabContent}>
           {courseModules.length > 0 ? (
-            <ModuleAccordion modules={courseModules} />
+            <ModuleAccordion modules={courseModules} storageScopeId={moduleStorageScopeId} />
           ) : (
             <Text style={styles.emptyText}>
               {t('profile.protocolDetail.noCommunityLinked', {
@@ -226,9 +197,8 @@ const ProtocolDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     }
 
     const showLessons = courseModules.length > 0;
-    const showHighlights = Boolean(nextEvent || upcomingLesson);
 
-    if (!showHighlights && !showLessons) {
+    if (!eventBanner && !showLessons) {
       return (
         <View style={styles.tabContent}>
           {courseError ? <Text style={styles.emptyText}>{courseError}</Text> : null}
@@ -246,20 +216,16 @@ const ProtocolDetailScreen: React.FC<Props> = ({ navigation, route }) => {
 
     return (
       <View style={styles.tabContent}>
-        {showHighlights ? (
-          <ProgramContentHighlightsRow
-            coverImageUri={heroImageUri}
-            upcomingLesson={upcomingLesson}
-            nextEvent={nextEvent}
-            hostName={protocol.name}
-            onLessonPress={handleLessonPress}
-            onEventPress={nextEvent?.externalUrl?.trim() ? handleEventPress : undefined}
-          />
+        {eventBanner ? (
+          <View style={styles.eventBannerContainer}>
+            <EventBanner event={eventBanner} onPress={handleEventBannerPress} />
+          </View>
         ) : null}
         {courseError ? <Text style={styles.emptyText}>{courseError}</Text> : null}
         {showLessons ? (
           <ModuleAccordion
             modules={courseModules}
+            storageScopeId={moduleStorageScopeId}
             expandedModuleId={expandedModuleId}
             onExpandedModuleChange={setExpandedModuleId}
           />
@@ -310,6 +276,7 @@ const ProtocolDetailScreen: React.FC<Props> = ({ navigation, route }) => {
       navigation={navigation}
       headerProps={{ showBackButton: true, onBackPress: handleBack }}
       contentContainerStyle={styles.container}
+      contentBackgroundColor={COLORS.BACKGROUND}
     >
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <HeroImage
@@ -318,9 +285,9 @@ const ProtocolDetailScreen: React.FC<Props> = ({ navigation, route }) => {
           badges={protocol.badges ?? []}
           heightRatio={0.6}
           footer={
-            !hasCommunity && protocol.shortDescription ? (
+            aboutText ? (
               <View style={styles.heroFooter}>
-                <Text style={styles.heroDescription}>{protocol.shortDescription}</Text>
+                <Text style={styles.heroDescription}>{aboutText}</Text>
               </View>
             ) : undefined
           }

@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { BackgroundIconOutline } from '@/assets/ui';
+import { IconButton } from '@/components/ui/buttons';
 import { MarkdownText } from '@/components/ui/text/MarkdownText';
+import { storageService } from '@/services';
 import { COLORS } from '@/constants';
+import { logger } from '@/utils/logger';
 import { styles } from './styles';
 
 export type ModuleItem = {
@@ -14,6 +18,7 @@ export type ModuleItem = {
 
 type Props = {
   modules: ModuleItem[];
+  storageScopeId?: string;
   onModulePress?: (module: ModuleItem) => void;
   expandedModuleId?: string | null;
   onExpandedModuleChange?: (moduleId: string | null) => void;
@@ -21,13 +26,67 @@ type Props = {
 
 const ModuleAccordion: React.FC<Props> = ({
   modules,
+  storageScopeId,
   onModulePress,
   expandedModuleId: expandedModuleIdProp,
   onExpandedModuleChange,
 }) => {
   const [internalExpandedId, setInternalExpandedId] = useState<string | null>(null);
+  const [completedModuleIds, setCompletedModuleIds] = useState<Set<string>>(() => {
+    const initial = new Set<string>();
+    for (const module of modules) {
+      if (module.completed) {
+        initial.add(module.id);
+      }
+    }
+    return initial;
+  });
+
   const isControlled = onExpandedModuleChange != null;
   const expandedId = isControlled ? expandedModuleIdProp ?? null : internalExpandedId;
+  const moduleIdsKey = useMemo(() => modules.map((module) => module.id).join('|'), [modules]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    void (async () => {
+      const initialCompleted = new Set<string>();
+      for (const module of modules) {
+        if (module.completed) {
+          initialCompleted.add(module.id);
+        }
+      }
+
+      if (!storageScopeId) {
+        if (!cancelled) {
+          setCompletedModuleIds(initialCompleted);
+        }
+        return;
+      }
+
+      try {
+        const storedCompleted = await storageService.getProgramModuleCompletedIds(storageScopeId);
+        for (const moduleId of storedCompleted) {
+          initialCompleted.add(moduleId);
+        }
+        if (!cancelled) {
+          setCompletedModuleIds(initialCompleted);
+        }
+      } catch (error) {
+        logger.error('Falha ao carregar módulos concluídos do programa', {
+          storageScopeId,
+          cause: error,
+        });
+        if (!cancelled) {
+          setCompletedModuleIds(initialCompleted);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [storageScopeId, moduleIdsKey, modules]);
 
   const setExpandedId = (moduleId: string | null) => {
     if (isControlled) {
@@ -46,26 +105,84 @@ const ModuleAccordion: React.FC<Props> = ({
     }
   };
 
+  const toggleModuleCompleted = useCallback(
+    (moduleId: string) => {
+      setCompletedModuleIds((current) => {
+        const next = new Set(current);
+        const completed = !next.has(moduleId);
+        if (completed) {
+          next.add(moduleId);
+        } else {
+          next.delete(moduleId);
+        }
+
+        if (storageScopeId) {
+          void storageService.setProgramModuleCompleted(storageScopeId, moduleId, completed).catch((error) => {
+            logger.error('Falha ao salvar módulo concluído do programa', {
+              storageScopeId,
+              moduleId,
+              completed,
+              cause: error,
+            });
+            setCompletedModuleIds(current);
+          });
+        }
+
+        return next;
+      });
+    },
+    [storageScopeId],
+  );
+
+  const isAccordionExpanded = expandedId != null;
+  const accordionBackgroundColor = isAccordionExpanded ? COLORS.BACKGROUND_SECONDARY : COLORS.BACKGROUND;
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: accordionBackgroundColor }]}>
       {modules.map((module) => {
         const isExpanded = expandedId === module.id;
+        const isCompleted = completedModuleIds.has(module.id);
 
         return (
           <View key={module.id} style={styles.moduleItem}>
-            <TouchableOpacity style={styles.moduleHeader} onPress={() => toggleExpand(module)} activeOpacity={0.7}>
+            <View style={styles.moduleHeader}>
               <View style={styles.headerLeft}>
-                <View style={[styles.checkCircle, module.completed && styles.checkCircleCompleted]}>
-                  {module.completed && <Icon name='check' size={16} color={COLORS.WHITE} />}
-                </View>
-                <Text style={styles.moduleTitle}>{module.title}</Text>
+                {isCompleted ? (
+                  <IconButton
+                    showBackground
+                    icon='check'
+                    iconSize={16}
+                    variant='dark'
+                    backgroundTintColor={COLORS.NEUTRAL.LOW.PURE}
+                    backgroundSize='small'
+                    onPress={() => toggleModuleCompleted(module.id)}
+                    containerStyle={styles.sessionIndicatorButton}
+                    iconContainerStyle={styles.sessionIndicator}
+                  />
+                ) : (
+                  <IconButton
+                    showBackground={false}
+                    iconElement={<BackgroundIconOutline width={29} height={26} color={accordionBackgroundColor} />}
+                    onPress={() => toggleModuleCompleted(module.id)}
+                    containerStyle={styles.sessionIndicatorButton}
+                  />
+                )}
+                <TouchableOpacity
+                  style={styles.moduleTitleButton}
+                  onPress={() => toggleExpand(module)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.moduleTitle}>{module.title}</Text>
+                </TouchableOpacity>
               </View>
-              <Icon
-                name={isExpanded ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
-                size={28}
-                color={COLORS.NEUTRAL.LOW.PURE}
-              />
-            </TouchableOpacity>
+              <TouchableOpacity onPress={() => toggleExpand(module)} activeOpacity={0.7}>
+                <Icon
+                  name={isExpanded ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
+                  size={28}
+                  color={COLORS.NEUTRAL.LOW.PURE}
+                />
+              </TouchableOpacity>
+            </View>
             {isExpanded && module.body?.trim() ? (
               <View style={styles.moduleBody}>
                 <MarkdownText style={styles.moduleBodyText} text={module.body.trim()} />

@@ -4,6 +4,7 @@ import { COLORS, SPACING, FLOATING_NAV_MENU_BAR_OFFSET } from '@/constants';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: COLORS.BACKGROUND,
   },
   scrollContent: {
     paddingBottom: SPACING.XL + FLOATING_NAV_MENU_BAR_OFFSET,
@@ -23,8 +24,10 @@ export const styles = StyleSheet.create({
     paddingTop: SPACING.LG,
     gap: SPACING.LG,
   },
-  eventCardWrap: {
+  eventBannerContainer: {
     paddingHorizontal: SPACING.MD,
+    width: '100%',
+    alignSelf: 'stretch',
   },
   descriptionText: {
     fontSize: 14,
@@ -54,5 +57,6 @@ export const styles = StyleSheet.create({
     fontWeight: '500',
     lineHeight: 20,
     color: '#FFFFFF',
+    marginBottom: 8,
   },
 });

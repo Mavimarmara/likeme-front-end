@@ -17,6 +17,7 @@ export const ROUTES_SHOW_MENU = new Set<string>([
   'Cart',
   'Checkout',
   'SubscriptionList',
+  'ProtocolDetail',
   'Profile',
   CHAT_STACK_LIST_ROUTE,
 ]);
@@ -38,6 +39,7 @@ export const ROUTE_TO_SELECTED_ID: Record<string, string> = {
   Checkout: 'marketplace',
   ProviderProfile: 'marketplace',
   SubscriptionList: 'profile',
+  ProtocolDetail: 'profile',
   Profile: 'profile',
 };
 
