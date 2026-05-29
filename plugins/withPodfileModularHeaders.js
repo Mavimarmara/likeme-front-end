@@ -9,7 +9,7 @@ const REQUIRED_PODS = [
   "pod 'FirebaseRemoteConfig', :modular_headers => true",
   "pod 'JWTDecode', :modular_headers => true",
   "pod 'SimpleKeychain', :modular_headers => true",
-  "pod 'Auth0', '2.14', :modular_headers => true",
+  "pod 'Auth0', '2.19.0', :modular_headers => true",
 ];
 
 const RN_FIREBASE_ANALYTICS_NO_AD_ID = '$RNFirebaseAnalyticsWithoutAdIdSupport = true';
