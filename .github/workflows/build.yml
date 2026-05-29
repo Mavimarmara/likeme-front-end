@@ -128,6 +128,7 @@ jobs:
             ANDROID_KEYSTORE_KEY_PASSWORD="$ANDROID_KEYSTORE_STORE_PASSWORD"
           fi
           KEY_ALIAS="${ANDROID_KEYSTORE_KEY_ALIAS:-likeme-key-alias}"
+          echo "Gradle key.alias=${KEY_ALIAS}"
           cd android && ./gradlew :app:bundleRelease \
             -Pandroid.injected.signing.store.file=$PWD/app/release.keystore \
             -Pandroid.injected.signing.store.password="$ANDROID_KEYSTORE_STORE_PASSWORD" \
