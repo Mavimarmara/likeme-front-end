@@ -15,8 +15,35 @@ const REQUIRED_PODS = [
 const RN_FIREBASE_ANALYTICS_NO_AD_ID = '$RNFirebaseAnalyticsWithoutAdIdSupport = true';
 
 const POST_INSTALL_MARKER = '# likeme-podfile-post-install';
+const FMT_XCODE26_MARKER = '# likeme-fmt-xcode26-workaround';
+
+const FMT_XCODE26_SNIPPET = `
+    ${FMT_XCODE26_MARKER} — fmt 11.0.2 + Clang Xcode 26 (react-native#55601)
+    fmt_base = File.join(installer.sandbox.root, 'fmt', 'include', 'fmt', 'base.h')
+    if File.exist?(fmt_base)
+      content = File.read(fmt_base)
+      unless content.include?('likeme-xcode26-fmt-workaround')
+        patched = content.gsub(
+          /(#elif defined\\(__cpp_consteval\\)\\s*\\n#\\s*define FMT_USE_CONSTEVAL)\\s+1/m,
+          "// likeme-xcode26-fmt-workaround\\n\\\\1 0"
+        )
+        if patched != content
+          File.chmod(0644, fmt_base)
+          File.write(fmt_base, patched)
+        end
+      end
+    end
+    installer.pods_project.targets.each do |target|
+      next unless target.name == 'fmt'
+
+      target.build_configurations.each do |config|
+        config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
+      end
+    end
+`;
 
 const POST_INSTALL_SNIPPET = `
+    ${FMT_XCODE26_SNIPPET}
     ${POST_INSTALL_MARKER}
     deployment_target = podfile_properties['ios.deploymentTarget'] || '15.1'
     installer.pods_project.targets.each do |target|
@@ -56,8 +83,12 @@ function ensureRnFirebaseAnalyticsWithoutAdIdSupport(contents) {
 }
 
 function ensureLikemePostInstall(contents) {
-  if (contents.includes(POST_INSTALL_MARKER)) {
+  if (contents.includes(POST_INSTALL_MARKER) && contents.includes(FMT_XCODE26_MARKER)) {
     return contents;
+  }
+
+  if (contents.includes(POST_INSTALL_MARKER) && !contents.includes(FMT_XCODE26_MARKER)) {
+    return contents.replace(POST_INSTALL_MARKER, `${FMT_XCODE26_SNIPPET}\n    ${POST_INSTALL_MARKER}`);
   }
 
   const anchors = [':ccache_enabled => ccache_enabled?(podfile_properties),', ':mac_catalyst_enabled => false,'];
