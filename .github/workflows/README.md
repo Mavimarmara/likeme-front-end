@@ -65,5 +65,16 @@ A pipeline tem um **step de aprovação** antes dos submits: o job **"Aprovar en
 
 Quando os builds terminarem, o job **Aprovar envio para lojas** ficará pendente. Um revisor deve ir em **Actions** → workflow em execução → **Review pending deployments** → aprovar para a pipeline seguir com os submits.
 
+Os jobs de **build e submit** usam o environment `store-submit`. Secrets de assinatura devem existir **nesse environment** (ou no repositório — environment tem prioridade). Se estiverem só no environment e o job não declarar `environment: store-submit`, o Gradle recebe senha/alias vazios.
+
+### Secrets Android (AAB release)
+
+| Secret | Exemplo / notas |
+|--------|-----------------|
+| `ANDROID_KEYSTORE_BASE64` | `base64 -i likeme-release.keystore \| tr -d '\n'` |
+| `ANDROID_KEYSTORE_STORE_PASSWORD` | Senha do keystore |
+| `ANDROID_KEYSTORE_KEY_PASSWORD` | Geralmente igual à store |
+| `ANDROID_KEYSTORE_KEY_ALIAS` | `likeme-key-alias` (ver `env.example`) |
+
 - **Submit Android**: usa `GOOGLE_SERVICE_ACCOUNT_JSON` (secret)
 - **Submit iOS**: usa `ASC_API_KEY_P8` (secret)

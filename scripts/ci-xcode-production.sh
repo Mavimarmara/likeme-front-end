@@ -21,8 +21,19 @@ if [[ -n "${ASC_API_KEY_PATH:-}" && -f "${ASC_API_KEY_PATH}" ]]; then
   )
 fi
 
+USE_MANUAL_SIGNING=false
 SIGNING_ARGS=()
-if [[ -n "${IOS_PROVISIONING_PROFILE_UUID:-}" ]]; then
+if [[ ${#XCODE_AUTH[@]} -gt 0 ]]; then
+  SIGNING_ARGS=(
+    "DEVELOPMENT_TEAM=${TEAM_ID}"
+    CODE_SIGN_STYLE=Automatic
+  )
+  echo "Assinatura CI: Automatic + App Store Connect API Key"
+  if [[ -n "${IOS_PROVISIONING_PROFILE_UUID:-}" ]]; then
+    echo "Perfil manual (${IOS_PROVISIONING_PROFILE_UUID}) ignorado — ASC API Key gerencia certificado e provisioning."
+  fi
+elif [[ -n "${IOS_PROVISIONING_PROFILE_UUID:-}" ]]; then
+  USE_MANUAL_SIGNING=true
   SIGNING_ARGS=(
     "DEVELOPMENT_TEAM=${TEAM_ID}"
     CODE_SIGN_STYLE=Manual
@@ -30,12 +41,6 @@ if [[ -n "${IOS_PROVISIONING_PROFILE_UUID:-}" ]]; then
     "PROVISIONING_PROFILE_SPECIFIER=${IOS_PROVISIONING_PROFILE_UUID}"
   )
   echo "Assinatura CI: manual (profile ${IOS_PROVISIONING_PROFILE_UUID})"
-elif [[ ${#XCODE_AUTH[@]} -gt 0 ]]; then
-  SIGNING_ARGS=(
-    "DEVELOPMENT_TEAM=${TEAM_ID}"
-    CODE_SIGN_STYLE=Automatic
-  )
-  echo "Assinatura CI: Automatic + App Store Connect API Key"
 else
   echo "::error::Configure ASC_API_KEY_P8 no GitHub, ou IOS_PROVISIONING_PROFILE_BASE64 com perfil App Store Distribution (sem ProvisionedDevices)." >&2
   exit 1
@@ -68,7 +73,7 @@ case "$ACTION" in
     ;;
   export)
     EXPORT_PLIST="$PWD/ExportOptions-AppStore.plist"
-    if [[ -n "${IOS_PROVISIONING_PROFILE_UUID:-}" ]]; then
+    if [[ "$USE_MANUAL_SIGNING" == true ]]; then
       EXPORT_PLIST="$PWD/build/ExportOptions-CI.plist"
       cat > "$EXPORT_PLIST" <<EPLIST
 <?xml version="1.0" encoding="UTF-8"?>
