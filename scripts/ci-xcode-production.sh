@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Build / archive / export Production no CI (sem conta Apple no Xcode).
-# Build/archive: preferência ASC automático. Export: automático com fallback manual se houver perfil instalado.
+# Prioridade: Automatic + ASC API Key quando configurada; senão manual (perfil App Store + P12).
+# Export: automático primeiro; se falhar e houver perfil instalado, fallback manual.
 set -euo pipefail
 
 ACTION="${1:?Uso: ci-xcode-production.sh build|archive|export}"
@@ -31,6 +32,9 @@ if [[ "$HAS_ASC" == true ]]; then
     CODE_SIGN_STYLE=Automatic
   )
   echo "Assinatura CI: Automatic + App Store Connect API Key"
+  if [[ -n "${IOS_PROVISIONING_PROFILE_UUID:-}" ]]; then
+    echo "Perfil manual (${IOS_PROVISIONING_PROFILE_UUID}) instalado — usado só se o export automático falhar."
+  fi
 elif [[ -n "${IOS_PROVISIONING_PROFILE_UUID:-}" ]]; then
   USE_MANUAL_SIGNING=true
   SIGNING_ARGS=(
