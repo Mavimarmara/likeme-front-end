@@ -63,9 +63,9 @@ A pipeline tem um **step de aprovação** antes dos submits: o job **"Aprovar en
 4. Marque **Required reviewers** e adicione as pessoas que podem aprovar o envio
 5. Salve
 
-**Aprovação:** job **Aprovar envio para lojas** + job **Build Android** usam `store-submit`. O GitHub costuma pedir **uma aprovação por execução** do workflow para o mesmo environment (não uma por step).
+**Aprovação:** só o job **Aprovar envio para lojas** usa `store-submit` (uma aprovação). Build Android/iOS rodam depois, **sem** novo approve.
 
-**Secrets Android:** podem ficar no **repositório** ou no **environment `store-submit`** (o build Android lê os dois). O `ANDROID_KEYSTORE_BASE64` costuma estar no repo; senhas muitas vezes só no environment — por isso o job Android declara `store-submit`.
+**Secrets Android:** no **repositório** (Actions → Secrets). O environment `store-submit` não é usado no build Android (evita segunda aprovação).
 
 | Secret | Obrigatório | Notas |
 |--------|-------------|--------|

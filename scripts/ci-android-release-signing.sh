@@ -35,7 +35,7 @@ done
 
 if [[ ${#missing[@]} -gt 0 ]]; then
   echo "::error::Secrets Android ausentes: ${missing[*]}." >&2
-  echo "::error::Crie no repositório (Actions → Secrets) ou no environment store-submit (job build-android). Pode usar um único secret ANDROID_KEYSTORE_PASSWORD para as duas senhas." >&2
+  echo "::error::Crie em Settings → Secrets and variables → Actions (nível repositório, não só environment). Pode usar um único ANDROID_KEYSTORE_PASSWORD para as duas senhas." >&2
   exit 1
 fi
 
