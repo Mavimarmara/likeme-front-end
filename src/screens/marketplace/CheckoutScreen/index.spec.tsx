@@ -22,6 +22,7 @@ jest.mock('@/components/ui/layout', () => {
   return {
     Header,
     Background: () => null,
+    GradientBackground: () => null,
     ScreenWithHeader: ({ children, headerProps }: any) => (
       <View>
         <Header {...headerProps} />
