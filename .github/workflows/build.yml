@@ -107,6 +107,7 @@ jobs:
           ANDROID_KEYSTORE_STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_STORE_PASSWORD }}
           ANDROID_KEYSTORE_KEY_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_KEY_PASSWORD }}
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEYSTORE_KEY_ALIAS: ${{ secrets.ANDROID_KEYSTORE_KEY_ALIAS }}
         run: bash scripts/ci-android-release-signing.sh
 
       - name: Build AAB (bundleRelease)
@@ -114,6 +115,7 @@ jobs:
           ANDROID_KEYSTORE_STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_STORE_PASSWORD }}
           ANDROID_KEYSTORE_KEY_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_KEY_PASSWORD }}
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEYSTORE_KEY_ALIAS: ${{ secrets.ANDROID_KEYSTORE_KEY_ALIAS }}
         run: |
           set -euo pipefail
           if [[ -z "${ANDROID_KEYSTORE_STORE_PASSWORD:-}" && -n "${ANDROID_KEYSTORE_PASSWORD:-}" ]]; then
@@ -125,10 +127,11 @@ jobs:
           if [[ -z "${ANDROID_KEYSTORE_KEY_PASSWORD:-}" && -n "${ANDROID_KEYSTORE_STORE_PASSWORD:-}" ]]; then
             ANDROID_KEYSTORE_KEY_PASSWORD="$ANDROID_KEYSTORE_STORE_PASSWORD"
           fi
+          KEY_ALIAS="${ANDROID_KEYSTORE_KEY_ALIAS:-likeme-key-alias}"
           cd android && ./gradlew :app:bundleRelease \
             -Pandroid.injected.signing.store.file=$PWD/app/release.keystore \
             -Pandroid.injected.signing.store.password="$ANDROID_KEYSTORE_STORE_PASSWORD" \
-            -Pandroid.injected.signing.key.alias=likeme-key-alias \
+            -Pandroid.injected.signing.key.alias="$KEY_ALIAS" \
             -Pandroid.injected.signing.key.password="$ANDROID_KEYSTORE_KEY_PASSWORD"
 
       - name: Upload AAB artifact
