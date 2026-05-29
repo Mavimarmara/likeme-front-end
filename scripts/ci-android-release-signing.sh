@@ -56,9 +56,19 @@ if [[ "$size_bytes" -lt 100 ]]; then
 fi
 
 keystore_list_err="$(mktemp)"
-if ! keytool -list -keystore "$KEYSTORE_PATH" -storepass "$ANDROID_KEYSTORE_STORE_PASSWORD" >"$keystore_list_err" 2>&1; then
-  echo "::error::Senha do keystore incorreta ou arquivo BASE64 não é um .keystore válido." >&2
-  echo "::error::Confira ANDROID_KEYSTORE_STORE_PASSWORD (mesmo valor do .env local) e regenere BASE64 do mesmo arquivo." >&2
+keystore_opened=false
+for storetype in PKCS12 JKS; do
+  if keytool -list -keystore "$KEYSTORE_PATH" -storepass "$ANDROID_KEYSTORE_STORE_PASSWORD" -storetype "$storetype" >"$keystore_list_err" 2>&1; then
+    keystore_opened=true
+    break
+  fi
+done
+
+if [[ "$keystore_opened" != true ]]; then
+  file_hint="$(file -b "$KEYSTORE_PATH" 2>/dev/null || echo 'tipo desconhecido')"
+  echo "::error::Senha incorreta ou ANDROID_KEYSTORE_BASE64 não é do mesmo .keystore do .env." >&2
+  echo "::error::Arquivo decodificado: ${size_bytes} bytes, ${file_hint}" >&2
+  echo "::error::Local: bash scripts/android-keystore-verify-local.sh → regenere o secret BASE64." >&2
   exit 1
 fi
 

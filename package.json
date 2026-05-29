@@ -41,6 +41,7 @@
     "build:android": "eas build --platform android --clear-cache",
     "build:android:local": "./build-android-local.sh",
     "sync:eas-secrets": "node scripts/sync-env-to-eas-secrets.js",
+    "android:keystore:verify": "bash scripts/android-keystore-verify-local.sh",
     "build:android:gradle": "EXCLUDE_EXPO_DEV_CLIENT=1 npx expo prebuild --platform android && cd android && ./gradlew assembleRelease && cd ..",
     "android:build:production": "env-cmd -f .env.production bash -c 'export JAVA_HOME=$(/usr/libexec/java_home -v 17) && cd android && ./gradlew :app:bundleRelease'",
     "build:android:apk": "./build-android-apk.sh",
