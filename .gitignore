@@ -169,6 +169,8 @@ src/constants/onboardingDebug.ts
 android/keystore.properties
 android/app/*.keystore
 android/app/*.jks
+*.jks
+@pixelpulselab__*.jks
 !android/app/debug.keystore
 
 # Credenciais de serviço (NUNCA commitar!)

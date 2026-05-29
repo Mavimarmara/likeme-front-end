@@ -3,11 +3,18 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-ENV_FILE="$ROOT/.env"
+ENV_FILE="${ENV_FILE:-}"
+if [[ -z "$ENV_FILE" ]]; then
+  for candidate in "$ROOT/.env.production" "$ROOT/.env"; do
+    if [[ -f "$candidate" ]]; then
+      ENV_FILE="$candidate"
+      break
+    fi
+  done
+fi
 
-if [[ ! -f "$ENV_FILE" ]]; then
-  echo "Arquivo .env não encontrado em $ROOT" >&2
-  echo "Copie env.example → .env e preencha ANDROID_KEYSTORE_*" >&2
+if [[ -z "$ENV_FILE" || ! -f "$ENV_FILE" ]]; then
+  echo "Nenhum .env ou .env.production com ANDROID_KEYSTORE_* em $ROOT" >&2
   exit 1
 fi
 
@@ -15,6 +22,7 @@ set -a
 # shellcheck disable=SC1090
 source "$ENV_FILE"
 set +a
+echo "Usando: $ENV_FILE"
 
 KEYSTORE_REL="${ANDROID_KEYSTORE_STORE_FILE:-likeme-release.keystore}"
 STORE_PASS="${ANDROID_KEYSTORE_STORE_PASSWORD:-${ANDROID_KEYSTORE_PASSWORD:-}}"
