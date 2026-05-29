@@ -73,6 +73,7 @@ case "$ACTION" in
     ;;
   export)
     EXPORT_PLIST="$PWD/ExportOptions-AppStore.plist"
+    echo "ExportOptions: ${EXPORT_PLIST} (signingStyle automatic)"
     if [[ "$USE_MANUAL_SIGNING" == true ]]; then
       EXPORT_PLIST="$PWD/build/ExportOptions-CI.plist"
       cat > "$EXPORT_PLIST" <<EPLIST
@@ -100,13 +101,36 @@ case "$ACTION" in
 EPLIST
       echo "ExportOptions: manual signing (profile ${IOS_PROVISIONING_PROFILE_UUID})"
     fi
+    set +e
+    export_log="$(mktemp)"
     xcodebuild \
       -exportArchive \
       -archivePath "$PWD/build/LikeMe.xcarchive" \
       -exportPath "$PWD/build/export" \
       -exportOptionsPlist "$EXPORT_PLIST" \
       "${ALLOW[@]}" \
-      "${XCODE_AUTH[@]}"
+      "${XCODE_AUTH[@]}" \
+      2>&1 | tee "$export_log"
+    export_status="${PIPESTATUS[0]}"
+    set -e
+
+    if [[ "$export_status" -ne 0 ]]; then
+      if grep -q "Cloud signing permission error" "$export_log" 2>/dev/null; then
+        echo "::error::API Key ASC sem permissão de assinatura na nuvem. Em App Store Connect → Users and Access → Integrations → chave API: role Admin/App Manager e acesso a Certificates, Identifiers & Profiles." >&2
+      fi
+      if grep -q "No profiles for" "$export_log" 2>/dev/null; then
+        echo "::error::Nenhum perfil App Store para app.likeme.com. Confira ASC API Key ou gere perfil App Store novo (IOS_PROVISIONING_PROFILE_BASE64) alinhado ao certificado P12." >&2
+      fi
+      rm -f "$export_log"
+      exit "$export_status"
+    fi
+    rm -f "$export_log"
+
+    if [[ ! -f "$PWD/build/export/LikeMe.ipa" ]]; then
+      echo "::error::Export concluiu sem gerar ios/build/export/LikeMe.ipa" >&2
+      exit 1
+    fi
+    echo "IPA gerado: ios/build/export/LikeMe.ipa"
     ;;
   *)
     echo "::error::Ação inválida: ${ACTION} (use build, archive ou export)" >&2

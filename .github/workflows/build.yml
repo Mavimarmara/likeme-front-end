@@ -200,12 +200,22 @@ jobs:
       - name: Xcode — archive (Production)
         run: bash scripts/ci-xcode-production.sh archive
 
+      - name: Xcode — export IPA (mesmo runner do archive)
+        run: bash scripts/ci-xcode-production.sh export
+
+      - name: Upload IPA (App Store)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-ipa
+          path: ios/build/export/LikeMe.ipa
+          if-no-files-found: error
+
       - name: Upload Xcode archive (.xcarchive)
         uses: actions/upload-artifact@v4
         with:
           name: ios-xcarchive
           path: ios/build/LikeMe.xcarchive
-          if-no-files-found: error
+          if-no-files-found: warn
 
   submit-android:
     name: Submit Android → Play Store
@@ -233,73 +243,32 @@ jobs:
     runs-on: macos-15
     needs: build-ios
     if: ${{ needs.build-ios.result == 'success' }}
-    env:
-      SKIP_IOS_POD_INSTALL: 'false'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Selecionar Xcode 16.4
-        run: sudo xcode-select -s /Applications/Xcode_16.4.app/Contents/Developer
-
-      - name: Mostrar versão do Xcode
-        run: xcodebuild -version
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.19.4'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Importar certificado de distribuição (iOS)
-        uses: Apple-Actions/import-codesign-certs@v7
-        with:
-          p12-file-base64: ${{ secrets.IOS_CERTIFICATE_P12_BASE64 }}
-          p12-password: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
-          keychain-password: ${{ secrets.KEYCHAIN_PASSWORD }}
-
-      - name: Configurar App Store Connect API Key (assinatura Xcode)
+      - name: Configurar App Store Connect API Key (validate/upload)
         env:
           ASC_API_KEY_P8: ${{ secrets.ASC_API_KEY_P8 }}
         run: bash scripts/ci-setup-asc-api-key.sh
 
-      - name: Instalar provisioning profile (opcional, só App Store)
-        env:
-          IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
-        run: bash scripts/ci-install-ios-provisioning-profile.sh
-
-      - name: Download Xcode archive
+      - name: Download IPA
         uses: actions/download-artifact@v4
         with:
-          name: ios-xcarchive
-          path: archive-dl
+          name: ios-ipa
+          path: ipa-dl
 
-      - name: Colocar .xcarchive no path do pipeline iOS
+      - name: Colocar IPA no path esperado pelo altool
         run: |
           set -euo pipefail
-          mkdir -p ios/build
-          rm -rf ios/build/LikeMe.xcarchive
-          if [ -d archive-dl/LikeMe.xcarchive ]; then
-            mv archive-dl/LikeMe.xcarchive ios/build/LikeMe.xcarchive
-          elif [ -d archive-dl/ios/build/LikeMe.xcarchive ]; then
-            mv archive-dl/ios/build/LikeMe.xcarchive ios/build/LikeMe.xcarchive
-          elif [ -d archive-dl/Products ] && [ -d archive-dl/dSYMs ]; then
-            mv archive-dl ios/build/LikeMe.xcarchive
-          else
-            echo "::error::LikeMe.xcarchive não encontrado no artefato ios-xcarchive."
-            find archive-dl -maxdepth 5 -type d
-            exit 1
-          fi
+          mkdir -p ios/build/export
+          cp ipa-dl/LikeMe.ipa ios/build/export/LikeMe.ipa
 
-      - name: Export + Validate + Upload (App Store)
+      - name: Validate + Upload (App Store)
         run: |
           set -eo pipefail
           mkdir -p ci-logs
-          bash scripts/ci-xcode-production.sh export 2>&1 | tee ci-logs/ios-appstore-pipeline.log
-          npm run ios:appstore:validate 2>&1 | tee -a ci-logs/ios-appstore-pipeline.log
+          npm run ios:appstore:validate 2>&1 | tee ci-logs/ios-appstore-pipeline.log
           npm run ios:appstore:upload 2>&1 | tee -a ci-logs/ios-appstore-pipeline.log
 
       - name: Resumo de erro iOS (quando falhar)

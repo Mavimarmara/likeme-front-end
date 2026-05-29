@@ -2,6 +2,11 @@
 # Opcional: instala .mobileprovision só se for App Store Distribution (sem lista de devices).
 set -euo pipefail
 
+if [[ -n "${ASC_API_KEY_PATH:-}" && -f "${ASC_API_KEY_PATH}" ]]; then
+  echo "ASC API Key ativa — perfil manual não instalado (evita conflito com assinatura automática)."
+  exit 0
+fi
+
 if [[ -z "${IOS_PROVISIONING_PROFILE_BASE64:-}" ]]; then
   echo "IOS_PROVISIONING_PROFILE_BASE64 vazio — CI usará assinatura automática (ASC API Key)."
   exit 0
