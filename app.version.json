@@ -1,21 +1,17 @@
 {
-  "version": "1.5.0",
-  "releasedAt": "2026-05-26",
+  "version": "1.6.0",
+  "releasedAt": "2026-06-01",
   "android": {
-    "versionCode": 237
+    "versionCode": 238
   },
   "ios": {
-    "buildNumber": 14
+    "buildNumber": 15
   },
   "changelog": {
-    "added": [
-      "Nova tela de detalhe de protocolo com hero, sessões e próxima live",
-      "Lista de protocolos e serviços com novo layout de cards",
-      "Seção de protocolos na Home com empty state para quem não tem subscription",
-      "Menu de perfil agora abre Meus Protocolos e Serviços"
-    ],
+    "added": [],
     "changed": [
-      "AcquisitionList substituída por SubscriptionList com design atualizado"
-    ]
+      "Abertura da release 1.6"
+    ],
+    "fixed": []
   }
 }

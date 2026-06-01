@@ -74,3 +74,8 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ### Alterado
 - AcquisitionList substituída por SubscriptionList com design atualizado
+
+## [1.6.0] - 2026-06-01
+
+### Alterado
+- Abertura da release 1.6
