@@ -34,7 +34,7 @@ Um aplicativo React Native completo para saúde e bem-estar, com funcionalidades
 - **React Native Vector Icons**
 - **Expo Linear Gradient**
 - **TypeScript**
-- **EAS Build** (Builds nativos)
+- **Gradle / Xcode** (builds nativos locais e CI)
 - **Auth0** (Autenticação)
 
 ## 📦 Instalação
@@ -50,15 +50,45 @@ cd likeme-front-end
 
 ```bash
 npm install
-# ou
-yarn install
 ```
 
-3. Fluxo de desenvolvimento, testes, builds e limpezas: use os **scripts** definidos em `package.json` na raiz do projeto (nomes e descrições mantêm-se aí).
+3. Configure o ambiente local — copie `env.example` para `.env` e preencha as variáveis `EXPO_PUBLIC_*` (Auth0, backend, etc.).
+
+## 🏃 Desenvolvimento local
+
+O fluxo padrão para rodar o app no emulador ou dispositivo:
+
+1. Na raiz do projeto, inicie o Metro com cache limpo:
+
+```bash
+npm run start:clear
+```
+
+2. Quando o menu do Expo aparecer no terminal, escolha a plataforma:
+   - **`a`** — Android (emulador ou dispositivo conectado)
+   - **`i`** — iOS (simulador; requer macOS + Xcode)
+
+O projeto usa **Expo dev client** e módulos nativos — **Expo Go** não cobre tudo. Na primeira vez ou após mudanças nativas, pode ser necessário buildar o cliente de desenvolvimento (`npm run android` ou abrir o app já instalado no simulador/dispositivo).
+
+### Emuladores
+
+- **iOS:** `npm run run:emulator:ios` abre o Simulator antes de pressionar `i`
+- **Android:** `npm run run:emulator:android` sobe um AVD (se configurado)
+
+### Outros scripts úteis
+
+| Comando | Uso |
+|---------|-----|
+| `npm run start:dev:tunnel` | Metro com dev client + tunnel (rede externa) |
+| `npm run android` | Build e instalação nativa Android |
+| `npm run doctor` | Diagnóstico do ambiente Expo |
+| `npm test` | Testes unitários |
+
+Lista completa em `package.json`.
 
 ## 📱 Executando no dispositivo
 
-O projeto usa **Expo dev client** e módulos nativos; **Expo Go** costuma não cobrir tudo. Para iPhone em desenvolvimento, use o fluxo que a equipa tiver acordado (Metro + cliente de desenvolvimento ou build nativo via Xcode), alinhado com os scripts em `package.json` e com a documentação oficial do Expo / React Native.
+Com o Metro rodando (`npm run start:clear`), use **`a`** ou **`i`** no terminal do Expo para abrir no Android ou iOS. Para dispositivo físico Android, ative USB debugging; para iPhone, use simulador ou build de desenvolvimento instalado no aparelho.
 
 ## 🏗 Estrutura do Projeto
 
@@ -136,7 +166,10 @@ Os scripts npm estão definidos em **`package.json`** na raiz do repositório.
 
 ## 🛠 Desenvolvimento
 
-Para cache, tunnel, dev client e diagnóstico do ambiente Expo, siga a documentação oficial do **Expo CLI** e os scripts em `package.json`.
+- **Início do dia:** `npm run start:clear` → `a` (Android) ou `i` (iOS)
+- **Cache estranho:** `start:clear` já limpa Metro e `.expo`; em casos extremos, `npm run clean`
+- **Tunnel / dev client explícito:** `npm run start:dev:tunnel`
+- Documentação Expo: [Expo CLI](https://docs.expo.dev/workflow/expo-cli/)
 
 ## 🧪 Testes
 
@@ -259,23 +292,22 @@ jest.mock('react-native-safe-area-context', () => ({
 3. **Notificações**: Push notifications com Expo Notifications
 4. **Offline**: Funcionalidades offline com Expo SQLite
 5. **Testes**: Testes unitários e de integração
-6. **Deploy**: Configuração para produção com EAS
+6. **Deploy**: Builds locais (Gradle/Xcode) e CI no GitHub Actions
 
 ## 🔧 Troubleshooting
 
 ### Problemas comuns
 
-- **Cache / Metro / dependências**: reinstalar `node_modules`, limpar caches do Metro ou do Expo conforme a documentação oficial.
+- **Cache / Metro / dependências:** `npm run start:clear`; se persistir, `npm run clean` e reinstalar `node_modules`
 - **Testes (SVG, navegação)**: usar mocks como nos exemplos em TypeScript mais abaixo nesta página.
-- **Build**: validar ambiente com as ferramentas indicadas na documentação do Expo e nos perfis do repositório.
+- **Build**: validar ambiente com `npm run doctor`, Gradle/Xcode e o workflow `.github/workflows/build.yml`.
 
 ### Requisitos do sistema
 
 - **Node.js**: conforme `engines` em `package.json` (atualmente `>=20.19.4`)
 - **npm**: compatível com o Node acima
-- **EAS CLI**: quando usar builds ou submissões na infraestrutura Expo (instalação conforme documentação Expo)
 - **iOS**: Xcode recente e CocoaPods para a pasta `ios/`
-- **Android**: Android Studio / SDK para a pasta `android/`
+- **Android**: Android Studio / SDK e Java 17+ para a pasta `android/`
 
 ## 📚 Documentação
 
@@ -284,7 +316,7 @@ jest.mock('react-native-safe-area-context', () => ({
 - [src/screens/TEMPLATE.md](./src/screens/TEMPLATE.md) — template de telas
 - [src/i18n/README.md](./src/i18n/README.md) — traduções (API + cache)
 - [BUILD_TESTFLIGHT.md](./BUILD_TESTFLIGHT.md) — build iOS local / TestFlight
-- [.github/workflows/README.md](./.github/workflows/README.md) — CI (EAS)
+- [.github/workflows/README.md](./.github/workflows/README.md) — CI (Gradle + Xcode)
 - [maestro/README.md](./maestro/README.md) — testes E2E
 
 ## 📄 Licença

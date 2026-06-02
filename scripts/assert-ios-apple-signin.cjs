@@ -45,7 +45,7 @@ function assertAppleSignInInExpoConfig(config) {
   if (!ok) {
     console.error(
       '[assert-ios-apple-signin] expo config (introspect) não expõe ios.entitlements.com.apple.developer.applesignin.',
-      'O EAS usa isso para sincronizar capabilities com a Apple — corrija app.config.js antes do build.',
+      'Corrija app.config.js antes do build iOS.',
     );
     process.exit(1);
   }
@@ -54,7 +54,7 @@ function assertAppleSignInInExpoConfig(config) {
 function warnIfCapabilitySyncDisabled() {
   if (process.env.EXPO_NO_CAPABILITY_SYNC === '1') {
     console.warn(
-      '[assert-ios-apple-signin] AVISO: EXPO_NO_CAPABILITY_SYNC=1 — sync de capabilities desligado por completo no EAS; perfis/App ID podem ficar desalinhados dos entitlements.',
+      '[assert-ios-apple-signin] AVISO: EXPO_NO_CAPABILITY_SYNC=1 — sync de capabilities desligado; perfis/App ID podem ficar desalinhados dos entitlements.',
     );
   }
 }
@@ -73,5 +73,5 @@ assertAppleSignInInExpoConfig(config);
 warnIfCapabilitySyncDisabled();
 
 console.log(
-  '[assert-ios-apple-signin] OK: Sign in with Apple presente na config introspectada (o que o EAS usa para capability sync).',
+  '[assert-ios-apple-signin] OK: Sign in with Apple presente na config introspectada.',
 );

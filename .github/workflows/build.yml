@@ -48,7 +48,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Validar Sign in with Apple na config iOS (EAS capability sync)
+      - name: Validar Sign in with Apple na config iOS
         run: npm run assert:ios-apple-signin
 
       - name: Run linter
@@ -173,7 +173,7 @@ jobs:
       - name: Sincronizar versão nativa (app.version.json → iOS)
         run: npm run version:sync
 
-      - name: Validar Sign in with Apple na config iOS (EAS capability sync)
+      - name: Validar Sign in with Apple na config iOS
         run: npm run assert:ios-apple-signin
 
       - name: Importar certificado de distribuição (iOS)

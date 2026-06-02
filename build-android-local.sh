@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script para build local do Android sem usar EAS (evita filas)
+# Script para build local do Android (Gradle / expo run:android)
 
 # Carregar variáveis de ambiente do .env
 if [ -f .env ]; then
@@ -65,9 +65,7 @@ echo "1) Emulador (mais rápido, para testes)"
 echo "2) Dispositivo físico (requer USB debugging habilitado)"
 echo "3) APK de release (para testes/distribuição direta)"
 echo "4) AAB de release (para Google Play Store)"
-echo "5) EAS Build local (production - APK)"
-echo "6) EAS Build na nuvem (production)"
-read -p "Escolha (1-6): " build_type
+read -p "Escolha (1-4): " build_type
 
 case $build_type in
   1)
@@ -247,17 +245,16 @@ case $build_type in
       echo "   2. Vá em: Production → Releases → Create new release"
       echo "   3. Faça upload do arquivo .aab acima"
       echo ""
-      echo "   Ou use o comando EAS Submit:"
-      echo "   eas submit --platform android --latest"
+      echo "   Ou use o workflow de CI no GitHub Actions (build.yml)."
     elif [ $BUILD_EXIT_CODE -eq 0 ] && [ ! -f "app/build/outputs/bundle/release/app-release.aab" ]; then
       echo ""
       echo "⚠️  Gradle concluiu mas AAB não foi gerado."
-      echo "   Isso é um problema conhecido com Expo 54 / React Native 0.81 e Gradle 8.14"
-      echo "   em builds locais com includeBuild."
+      echo "   Isso pode ocorrer com Expo 54 / React Native 0.81 e Gradle 8.14 em builds locais."
       echo ""
       echo "   Alternativas:"
-      echo "   • EAS Build (recomendado): eas build --platform android --profile production"
-      echo "   • Ou use um emulador/dispositivo: npx expo run:android --variant release"
+      echo "   • npm run build:android (Gradle bundleRelease)"
+      echo "   • GitHub Actions: workflow build.yml"
+      echo "   • npx expo run:android --variant release (emulador/dispositivo)"
       echo ""
       exit 1
     else
@@ -267,65 +264,6 @@ case $build_type in
       exit 1
     fi
     cd ..
-    ;;
-  5)
-    echo ""
-    echo "🚀 Iniciando EAS Build local (production - APK)..."
-    echo "📦 Isso criará um APK de produção (backend production) usando EAS Build localmente"
-    echo ""
-    
-    # Auto-confirmar se não for interativo
-    if [ -t 0 ]; then
-      read -p "Continuar? (y/n): " confirm
-      if [ "$confirm" != "y" ]; then
-        echo "❌ Build cancelado"
-        exit 0
-      fi
-    else
-      echo "✅ Modo não-interativo: continuando automaticamente..."
-    fi
-
-    export JAVA_HOME=$(/usr/libexec/java_home -v 17 2>/dev/null || /usr/libexec/java_home -v 21 2>/dev/null || true)
-    if [ -n "$JAVA_HOME" ]; then
-      export PATH="$JAVA_HOME/bin:$PATH"
-      echo "✓ JAVA_HOME=$JAVA_HOME"
-    fi
-    
-    eas build --local --platform android --profile production-apk
-    ;;
-  6)
-    echo ""
-    echo "🚀 Iniciando EAS Build na nuvem (production)..."
-    echo "📦 Isso criará um build de produção na nuvem do EAS (pode levar alguns minutos)"
-    echo "📱 Você receberá um link para download quando concluir"
-    echo ""
-    
-    # Sincronizar variáveis do .env com EAS Secrets (para o build na nuvem usar o mesmo .env)
-    if [ -f .env ]; then
-      echo "📤 Sincronizando variáveis do .env com EAS Secrets..."
-      if node scripts/sync-env-to-eas-secrets.js; then
-        echo "✓ Variáveis EXPO_PUBLIC_* do .env foram enviadas para o EAS"
-      else
-        echo "⚠️  Sync de secrets falhou (ex: eas login). O build usará eas.json + EAS Secrets já configuradas."
-      fi
-      echo ""
-    else
-      echo "⚠️  Arquivo .env não encontrado. O build usará apenas variáveis do eas.json e EAS Secrets."
-      echo ""
-    fi
-    
-    # Auto-confirmar se não for interativo
-    if [ -t 0 ]; then
-      read -p "Continuar? (y/n): " confirm
-      if [ "$confirm" != "y" ]; then
-        echo "❌ Build cancelado"
-        exit 0
-      fi
-    else
-      echo "✅ Modo não-interativo: continuando automaticamente..."
-    fi
-    
-    eas build --platform android --profile production
     ;;
   *)
     echo "❌ Opção inválida"

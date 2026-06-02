@@ -1,6 +1,6 @@
-# 🚀 Como Gerar Build para TestFlight (100% Local - Sem EAS)
+# Como gerar build para TestFlight (local)
 
-Este guia mostra como gerar uma versão do app para distribuição no TestFlight sem usar EAS (Expo Application Services).
+Este guia descreve como gerar uma versão do app para distribuição no TestFlight com Xcode/Gradle, sem infraestrutura de build na nuvem da Expo.
 
 ## 📋 Pré-requisitos
 

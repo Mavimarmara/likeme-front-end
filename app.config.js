@@ -54,8 +54,8 @@ function ensureEnvFileInCurrentDir() {
   return originalEnvPath;
 }
 
-// IMPORTANTE: Durante builds do EAS local, o processo pode não herdar todas as variáveis
-// do shell. Por isso, sempre copiamos o .env para o diretório atual e carregamos dele.
+// Durante builds locais/CI, o processo pode não herdar todas as variáveis
+// do shell. Por isso, copiamos o .env para o diretório atual e carregamos dele.
 // As variáveis em process.env têm prioridade, mas carregamos o .env para garantir que
 // todas as variáveis estejam disponíveis.
 const hasEnvVarsInProcess = Object.keys(process.env).some((key) => key.startsWith('EXPO_PUBLIC_'));

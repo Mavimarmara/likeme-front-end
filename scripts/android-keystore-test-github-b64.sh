@@ -92,7 +92,7 @@ fi
 
 if [[ "$alias_ok" == true ]]; then
   echo "Alias '$ALIAS' encontrado com senha do .env."
-  echo "Secrets no GitHub: ANDROID_KEYSTORE_STORE_PASSWORD, ANDROID_KEYSTORE_KEY_PASSWORD (igual à store se vazio no EAS), ANDROID_KEYSTORE_KEY_ALIAS=$ALIAS"
+  echo "Secrets no GitHub: ANDROID_KEYSTORE_STORE_PASSWORD, ANDROID_KEYSTORE_KEY_PASSWORD, ANDROID_KEYSTORE_KEY_ALIAS=$ALIAS"
 else
   echo "Arquivo abre, mas alias '$ALIAS' não confere — liste aliases:"
   keytool -list -keystore "$TMP_KS" -storepass "$STORE_PASS" 2>/dev/null \

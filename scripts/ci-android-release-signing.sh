@@ -56,7 +56,7 @@ key_entry_list_ok() {
   )
   [[ -n "$KEYSTORE_STORE_TYPE" ]] && args+=(-storetype "$KEYSTORE_STORE_TYPE")
 
-  # EAS (PKCS12): key password costuma ser obrigatória e diferente da store password
+  # PKCS12: key password pode ser obrigatória e diferente da store password
   if [[ -n "$ANDROID_KEYSTORE_KEY_PASSWORD" ]]; then
     keytool "${args[@]}" -keypass "$ANDROID_KEYSTORE_KEY_PASSWORD" >/dev/null 2>&1 && return 0
   fi
@@ -157,7 +157,7 @@ if [[ "$alias_known" != true ]]; then
         echo "::error::  - ${a}" >&2
       done
     fi
-    echo "::error::Secret ANDROID_KEYSTORE_KEY_ALIAS deve ser ex.: 95c2a3e191b04854e03c7d67381f94a0 (EAS), sem espaços." >&2
+    echo "::error::Secret ANDROID_KEYSTORE_KEY_ALIAS deve ser o alias da upload key, sem espaços." >&2
     rm -f "$keystore_list_err"
     exit 1
   fi
@@ -166,7 +166,7 @@ fi
 if ! key_entry_list_ok "$ANDROID_KEYSTORE_KEY_ALIAS"; then
   echo "::error::Não foi possível validar alias '${ANDROID_KEYSTORE_KEY_ALIAS}' (store/key password ou alias incorreto)." >&2
   if [[ "$KEYSTORE_STORE_TYPE" == "PKCS12" ]]; then
-    echo "::error::PKCS12 (EAS): confira ANDROID_KEYSTORE_STORE_PASSWORD, ANDROID_KEYSTORE_KEY_PASSWORD (ex. 196409e1...) e ANDROID_KEYSTORE_KEY_ALIAS (ex. 95c2a3e1...)." >&2
+    echo "::error::PKCS12: confira ANDROID_KEYSTORE_STORE_PASSWORD, ANDROID_KEYSTORE_KEY_PASSWORD e ANDROID_KEYSTORE_KEY_ALIAS." >&2
   fi
   rm -f "$keystore_list_err"
   exit 1

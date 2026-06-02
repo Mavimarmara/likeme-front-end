@@ -34,9 +34,7 @@ npx expo start
 npm run test:e2e:expo-go
 ```
 
-Os testes usam `openLink` com a URL do Expo (formato `exp://IP:PORT`).
-
-📖 **Veja mais detalhes em:** [README-EXPO-GO.md](./README-EXPO-GO.md)
+Os testes usam `openLink` com a URL do Expo (formato `exp://IP:PORT`). O IP/porta vêm do terminal onde o Metro está rodando (`npm run start:clear`).
 
 ## Estrutura dos Testes
 

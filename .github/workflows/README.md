@@ -2,7 +2,7 @@
 
 Workflow em `build.yml`: testes → aprovação manual → build Android (Gradle) + iOS (Xcode) → submit Play Store / App Store Connect.
 
-**Não usa EAS Build.** Versões vêm de `app.version.json` (fonte única).
+**Builds via Gradle (Android) e Xcode (iOS).** Versões vêm de `app.version.json` (fonte única).
 
 ## Configuração
 
@@ -47,7 +47,7 @@ O job **Aprovar envio para lojas** pausa até aprovação; builds e submits segu
 
 Antes de cada release, **incremente manualmente**:
 
-- **Android:** `android.versionCode` — inteiro **maior** que o último publicado na Play (consulte Play Console → Versões). Builds antigos via EAS chegaram a ~236; o CI atual usa o valor do repo (ex. 237).
+- **Android:** `android.versionCode` — inteiro **maior** que o último publicado na Play (consulte Play Console → Versões).
 - **iOS:** `ios.buildNumber` — maior que o último na App Store Connect.
 
 Depois edite só `app.version.json` e rode `npm run version:sync` (o CI roda isso automaticamente antes do Gradle/Xcode).

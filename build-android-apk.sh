@@ -2,7 +2,7 @@
 
 set -e
 
-echo "🚀 Iniciando build de APK para Android (sem EAS)..."
+echo "🚀 Iniciando build de APK para Android (Gradle local)..."
 
 # Carregar variáveis de ambiente
 if [ -f .env ]; then

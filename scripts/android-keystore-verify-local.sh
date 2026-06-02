@@ -66,7 +66,7 @@ done
 
 if [[ "$list_ok" != true ]]; then
   echo "Falha: senha do .env não abre este arquivo." >&2
-  echo "Use a senha definida na criação do keystore ou baixe o keystore correto (EAS/Play)." >&2
+  echo "Use a senha definida na criação do keystore ou baixe o keystore correto (Play Console / CI)." >&2
   exit 1
 fi
 
