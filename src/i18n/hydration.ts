@@ -4,7 +4,7 @@ import type { ApiResponse } from '@/types/infrastructure';
 import { logger } from '@/utils/logger';
 import i18n from './index';
 
-type I18nTranslationDict = Record<string, any>;
+type I18nTranslationDict = Record<string, unknown>;
 
 export type I18nLabelsApiResponse = {
   version?: string;
@@ -29,29 +29,44 @@ let lastFetchAtMs = 0;
 
 const buildStorageKey = (lang: string) => `${STORAGE_KEY_PREFIX}${lang}`;
 
-const applyTranslationBundle = (lang: string, translation: I18nTranslationDict) => {
-  // Namespace default que o i18next usa aqui: 'translation'
+const replaceTranslationBundle = (lang: string, translation: I18nTranslationDict) => {
+  if (i18n.hasResourceBundle(lang, 'translation')) {
+    i18n.removeResourceBundle(lang, 'translation');
+  }
   i18n.addResourceBundle(lang, 'translation', translation, true, true);
+
+  if (i18n.language === lang) {
+    void i18n.changeLanguage(lang);
+  }
 };
 
-const loadFromCache = async (lang: string): Promise<boolean> => {
+const readCachedPayload = async (lang: string): Promise<I18nCachePayload | null> => {
   try {
     const raw = await AsyncStorage.getItem(buildStorageKey(lang));
     if (!raw) {
-      return false;
+      return null;
     }
 
     const parsed = JSON.parse(raw) as Partial<I18nCachePayload>;
     if (!parsed.translation || typeof parsed.translation !== 'object') {
-      return false;
+      return null;
     }
 
-    applyTranslationBundle(lang, parsed.translation);
-    return true;
+    return parsed as I18nCachePayload;
   } catch (error) {
     logger.warn('[i18n] Falha ao ler traducoes do AsyncStorage:', error);
+    return null;
+  }
+};
+
+const applyCachedTranslations = async (lang: string): Promise<boolean> => {
+  const cached = await readCachedPayload(lang);
+  if (!cached) {
     return false;
   }
+
+  replaceTranslationBundle(lang, cached.translation);
+  return true;
 };
 
 const saveToCache = async (lang: string, payload: I18nCachePayload): Promise<void> => {
@@ -60,6 +75,22 @@ const saveToCache = async (lang: string, payload: I18nCachePayload): Promise<voi
   } catch (error) {
     logger.warn('[i18n] Falha ao salvar traducoes no AsyncStorage:', error);
   }
+};
+
+const fetchRemoteTranslationBundle = async (lang: string): Promise<I18nLabelsApiResponse | null> => {
+  const response = await apiClient.get<ApiResponse<I18nLabelsApiResponse>>('/api/i18n/labels', { lang }, false);
+
+  if (!response?.success) {
+    logger.warn('[i18n] GET /api/i18n/labels retornou erro:', response?.message);
+    return null;
+  }
+
+  const payload = response.data;
+  if (!payload?.translation || typeof payload.translation !== 'object') {
+    return null;
+  }
+
+  return payload;
 };
 
 export const startI18nHydration = (lang: string = DEFAULT_LANGUAGE, options?: { force?: boolean }): Promise<void> => {
@@ -77,27 +108,23 @@ export const startI18nHydration = (lang: string = DEFAULT_LANGUAGE, options?: { 
   lastFetchAtMs = now;
 
   hydrationPromise = (async () => {
-    // 1) aplica cache primeiro (para reduzir chance de exibir keys)
-    await loadFromCache(lang);
-
-    // 2) busca no backend e atualiza cache + i18n
-    // Endpoint sugerido no backend:
-    // GET /api/i18n/labels?lang=pt-BR
-    // Response: { version?, etag?, updatedAt?, translation: { ...arvore de chaves i18n... } }
-    const response = await apiClient.get<ApiResponse<I18nLabelsApiResponse>>('/api/i18n/labels', { lang }, false);
-
-    const payload = response?.data;
-    if (!payload?.translation || typeof payload.translation !== 'object') {
-      return;
+    try {
+      const remote = await fetchRemoteTranslationBundle(lang);
+      if (remote?.translation) {
+        replaceTranslationBundle(lang, remote.translation);
+        await saveToCache(lang, {
+          version: remote.version,
+          etag: remote.etag,
+          updatedAt: remote.updatedAt,
+          translation: remote.translation,
+        });
+        return;
+      }
+    } catch (error) {
+      logger.warn('[i18n] Falha ao buscar traducoes no backend:', error);
     }
 
-    applyTranslationBundle(lang, payload.translation);
-    await saveToCache(lang, {
-      version: payload.version,
-      etag: payload.etag,
-      updatedAt: payload.updatedAt,
-      translation: payload.translation,
-    });
+    await applyCachedTranslations(lang);
   })()
     .then(() => {
       hydrationPromise = null;
@@ -112,7 +139,7 @@ export const startI18nHydration = (lang: string = DEFAULT_LANGUAGE, options?: { 
 
 export const ensureI18nHydrated = async ({
   lang = DEFAULT_LANGUAGE,
-  timeoutMs = 2500,
+  timeoutMs = 8000,
 }: {
   lang?: string;
   timeoutMs?: number;

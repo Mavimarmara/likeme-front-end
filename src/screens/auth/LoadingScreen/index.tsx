@@ -201,7 +201,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
       }
 
       try {
-        await ensureI18nHydrated({ lang: 'pt-BR', timeoutMs: 2500 });
+        await ensureI18nHydrated({ lang: 'pt-BR', timeoutMs: 8000 });
       } catch (hydrationError) {
         logger.error('[LoadingScreen] Falha ao aguardar i18n', hydrationError);
       }
