@@ -21,6 +21,8 @@ const styles = StyleSheet.create({
   },
 });
 
+import { wrapAppWithRevopush } from '@/infrastructure/revopush/configureRevopush';
+
 const App: React.FC = () => {
   const navBarHideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const splashHiddenRef = useRef(false);
@@ -187,4 +189,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default wrapAppWithRevopush(App);

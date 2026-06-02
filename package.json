@@ -64,6 +64,9 @@
     "clean:project": "./scripts/clean-project.sh",
     "clean:android": "cd android && ./gradlew clean && cd ..",
     "clean:ios": "cd ios && rm -rf Pods Podfile.lock build && pod install && cd ..",
+    "revopush:release:ios": "bash scripts/revopush-release.sh ios",
+    "revopush:release:android": "bash scripts/revopush-release.sh android",
+    "revopush:release:all": "bash scripts/revopush-release.sh ios Production && bash scripts/revopush-release.sh android Production",
     "postinstall": "node scripts/ensure-onboarding-debug.cjs && node scripts/patch-slider-podspec.js && node scripts/patch-rn-third-party-components-provider.js && if [ -d ios ] && [ -f ios/Podfile ] && [ \"$SKIP_IOS_POD_INSTALL\" != \"true\" ]; then cd ios && pod install && cd ..; fi",
     "run:emulator:ios": "open -a Simulator",
     "prepare": "husky || true"
@@ -83,6 +86,8 @@
     "@react-navigation/bottom-tabs": "^6.5.11",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/stack": "^6.3.20",
+    "@revopush/expo-code-push-plugin": "^1.1.0",
+    "@revopush/react-native-code-push": "^2.5.0",
     "expo": "~54.0.33",
     "expo-application": "~7.0.8",
     "expo-asset": "~12.0.12",
@@ -122,6 +127,7 @@
     "@react-native/babel-preset": "^0.81.0",
     "@react-native/eslint-config": "^0.81.0",
     "@react-native/metro-config": "^0.81.0",
+    "@revopush/code-push-cli": "^0.0.12",
     "@testing-library/react-native": "^13.3.3",
     "@tsconfig/react-native": "^3.0.0",
     "@types/jest": "29.5.14",
@@ -144,7 +150,7 @@
   "jest": {
     "preset": "react-native",
     "transformIgnorePatterns": [
-      "node_modules/(?!(react-native|@react-native|react-native-vector-icons|react-native-video|expo|@expo|expo-auth-session|@react-navigation|@react-native-community)/)"
+      "node_modules/(?!(react-native|@react-native|react-native-vector-icons|react-native-video|expo|@expo|expo-auth-session|@react-navigation|@react-native-community|@revopush)/)"
     ],
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/src/$1",

@@ -164,6 +164,49 @@ const getEnvVar = (key, defaultValue = '') => {
   return defaultValue;
 };
 
+const REVOPUSH_SERVER_URL = 'https://api.revopush.org';
+
+function revopushDeploymentKey(platform) {
+  const storeBuild = process.env.EXCLUDE_EXPO_DEV_CLIENT === '1';
+  const productionKey = getEnvVar(`REVOPUSH_DEPLOYMENT_KEY_${platform}_PRODUCTION`, '');
+  const stagingKey = getEnvVar(`REVOPUSH_DEPLOYMENT_KEY_${platform}_STAGING`, '');
+  const legacyKey = getEnvVar(`REVOPUSH_DEPLOYMENT_KEY_${platform}`, '');
+
+  if (storeBuild) {
+    return productionKey || legacyKey;
+  }
+
+  return stagingKey || legacyKey;
+}
+
+function buildRevopushPluginConfig() {
+  const iosKey = revopushDeploymentKey('IOS');
+  const androidKey = revopushDeploymentKey('ANDROID');
+
+  if (!iosKey || !androidKey) {
+    console.warn(
+      '[app.config.js] Revopush: defina REVOPUSH_DEPLOYMENT_KEY_IOS e REVOPUSH_DEPLOYMENT_KEY_ANDROID (ou *_STAGING / *_PRODUCTION) antes do prebuild.',
+    );
+    return null;
+  }
+
+  return [
+    '@revopush/expo-code-push-plugin',
+    {
+      ios: {
+        CodePushDeploymentKey: iosKey,
+        CodePushServerUrl: REVOPUSH_SERVER_URL,
+      },
+      android: {
+        CodePushDeploymentKey: androidKey,
+        CodePushServerUrl: REVOPUSH_SERVER_URL,
+      },
+    },
+  ];
+}
+
+const revopushPlugin = buildRevopushPluginConfig();
+
 module.exports = {
   expo: {
     name: 'LikeMe',
@@ -190,7 +233,7 @@ module.exports = {
       [
         'expo-build-properties',
         {
-          ios: { newArchEnabled: false },
+          ios: { newArchEnabled: false, deploymentTarget: '15.5' },
           android: {
             newArchEnabled: false,
             minSdkVersion: 28,
@@ -209,6 +252,7 @@ module.exports = {
       './plugins/withIosIphoneOnlyDestinations.js',
       '@react-native-firebase/app',
       '@react-native-firebase/messaging',
+      ...(revopushPlugin ? [revopushPlugin] : []),
     ],
     scheme: 'likeme',
     icon: './assets/app/icon.png',
