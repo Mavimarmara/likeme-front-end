@@ -1,0 +1,29 @@
+---
+description: Compatibilidade com versões antigas do app em produção (contrato com API)
+globs: src/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Regra — não quebrar versões antigas do app
+
+Builds antigas (ex.: **1.5**) continuam em produção sem OTA. O front **não pode** depender só de params ou rotas que só existem em versões novas sem o backend compensar.
+
+## Ao mudar `services/` ou `hooks/` que chamam API
+
+1. **Params novos são opcionais no client** — não envie `communityId` no feed até decisão de produto; flags novas só quando a tela souber o valor.
+2. **Não exija resposta reshaped** — se o backend ainda pode devolver envelope antigo, normalize **uma vez** no service (padrão `mapEventFromApi`), não espalhe breaking change nas telas.
+3. **Comunidade / feed** — alinhar com o backend (`likeme-back-end/.cursor/rules/compatibilidade-app-legado.mdc`):
+   - **Padrão 1.5:** `useUserFeed` **sem** `communityId` na query; primeira comunidade (`createdAt`) fica no backend.
+   - **Não reintroduzir 1.6** no feed (`communityId` na query, `enabled` condicionado ao id, seleção por `route.params`) sem decisão explícita de produto.
+4. **Paginação (1.5 no repo)** — `page`/`limit`; scroll só com `paging.next` na página anterior; load more reenvia esse valor como `token` na query. Backend aceita `page` sem `token` para binário da loja.
+
+## Evitar no front
+
+- Tornar query/body novo obrigatório em `communityService.getUserFeed` ou equivalente.
+- Assumir que “backend em preview” = comportamento dos usuários na loja.
+- Remover fallback de parsing de resposta que apps antigos ainda recebem.
+
+## Checklist (feature de comunidade/API)
+
+- [ ] Funciona se o usuário **não** envia params novos (validar contra API de produção).
+- [ ] Versão nova melhora o comportamento sem tornar a antiga inválida no contrato HTTP.
