@@ -1,7 +1,6 @@
 export { APP_VERSION } from './appVersion.generated';
 export { FONT_FAMILY, dmSansFontFamily } from './fonts';
 export type { DmSansWeight } from './fonts';
-export { LIKEME_FONT_LOADER_MAP } from './fontLoader';
 export { TYPOGRAPHY } from './typography';
 
 export const APP_CONFIG = {
