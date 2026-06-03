@@ -1,5 +1,5 @@
 import { Dimensions, StyleSheet } from 'react-native';
-import { COLORS, SPACING } from '@/constants';
+import { BORDER_RADIUS, COLORS, SPACING, TYPOGRAPHY } from '@/constants';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -32,27 +32,21 @@ export const styles = StyleSheet.create({
   content: {
     flex: 1,
     justifyContent: 'center',
-    gap: 40,
+    gap: SPACING.SECTION,
     alignSelf: 'center',
     width: '100%',
     paddingHorizontal: SPACING.XXL,
   },
   title: {
+    ...TYPOGRAPHY.displayLg,
     color: COLORS.TEXT,
-    fontFamily: 'Bricolage Grotesque',
-    fontSize: 40,
-    fontWeight: '700',
-    lineHeight: 44,
   },
   body: {
+    ...TYPOGRAPHY.bodyLg,
     color: COLORS.TEXT,
-    fontFamily: 'DM Sans',
-    fontSize: 20,
-    fontWeight: '400',
-    lineHeight: 25,
   },
   bodyEmphasis: {
-    fontWeight: '600',
+    ...TYPOGRAPHY.bodyLgSemibold,
   },
   footer: {
     paddingBottom: SPACING.MD,
@@ -62,10 +56,10 @@ export const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   updateButton: {
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    borderBottomLeftRadius: 22,
-    borderBottomRightRadius: 22,
+    borderTopLeftRadius: BORDER_RADIUS.BUTTON_TOP,
+    borderTopRightRadius: BORDER_RADIUS.BUTTON_TOP,
+    borderBottomLeftRadius: BORDER_RADIUS.BUTTON_BOTTOM,
+    borderBottomRightRadius: BORDER_RADIUS.BUTTON_BOTTOM,
     shadowColor: COLORS.BLACK,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,

@@ -1,4 +1,8 @@
 export { APP_VERSION } from './appVersion.generated';
+export { FONT_FAMILY, dmSansFontFamily } from './fonts';
+export type { DmSansWeight } from './fonts';
+export { LIKEME_FONT_LOADER_MAP } from './fontLoader';
+export { TYPOGRAPHY } from './typography';
 
 export const APP_CONFIG = {
   NAME: 'LIKE:ME',
@@ -70,10 +74,15 @@ export const DEFAULT_BACKGROUND_GRADIENT = [
 export const SPACING = {
   XS: 4,
   SM: 8,
+  MD_PLUS: 12,
   MD: 16,
+  /** Espaçamento intermediário comum em frames Figma (entre SM e MD). */
+  GAP_20: 20,
   LG: 24,
   XL: 32,
   XXL: 48,
+  /** Gap vertical entre blocos de conteúdo (ex.: force update Figma). */
+  SECTION: 40,
 } as const;
 
 /** Altura ocupada pela barra do `FloatingMenu` (pills + padding) para posicionar CTAs acima do menu. */
@@ -94,6 +103,10 @@ export const BORDER_RADIUS = {
   MD: 12,
   LG: 16,
   XL: 24,
+  /** Botão primário grande — cantos superiores (Figma force update). */
+  BUTTON_TOP: 24,
+  /** Botão primário grande — cantos inferiores (Figma force update). */
+  BUTTON_BOTTOM: 22,
   ROUND: 50,
 } as const;
 

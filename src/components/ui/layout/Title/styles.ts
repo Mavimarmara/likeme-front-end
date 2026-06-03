@@ -1,5 +1,5 @@
-import { SPACING } from '@/constants';
 import { StyleSheet } from 'react-native';
+import { COLORS, SPACING, TYPOGRAPHY } from '@/constants';
 
 export const styles = StyleSheet.create({
   container: {
@@ -8,27 +8,22 @@ export const styles = StyleSheet.create({
   },
 
   title: {
+    ...TYPOGRAPHY.titleScreenScaled,
     alignSelf: 'flex-start',
-    color: 'rgba(0, 17, 55, 1)',
-    fontFamily: 'Bricolage Grotesque',
-    fontWeight: '700',
-    letterSpacing: -2,
+    color: COLORS.TEXT,
     textAlign: 'left',
-    transform: [{ scaleX: 0.92 }],
   },
 
   large: {
-    fontSize: 48,
-    lineHeight: 48,
+    fontSize: TYPOGRAPHY.titleScreen.fontSize,
+    lineHeight: TYPOGRAPHY.titleScreen.lineHeight,
   },
 
   medium: {
-    fontSize: 32,
-    lineHeight: 32,
+    ...TYPOGRAPHY.displayMd,
   },
 
   small: {
-    fontSize: 24,
-    lineHeight: 24,
+    ...TYPOGRAPHY.displaySm,
   },
 });

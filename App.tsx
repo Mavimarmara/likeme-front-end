@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState, Platform, StatusBar, StyleSheet, View } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
+import { LIKEME_FONT_LOADER_MAP } from '@/constants/fontLoader';
+import { AppThemeProvider } from '@/theme/AppThemeProvider';
 import * as NavigationBar from 'expo-navigation-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { RootNavigator } from './src/navigation';
@@ -26,9 +28,7 @@ import { wrapAppWithRevopush } from '@/infrastructure/revopush/configureRevopush
 const App: React.FC = () => {
   const navBarHideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const splashHiddenRef = useRef(false);
-  const [fontsLoaded, fontError] = useFonts({
-    'Bricolage Grotesque': require('./assets/fonts/BricolageGrotesque-Regular.ttf'),
-  });
+  const [fontsLoaded, fontError] = useFonts(LIKEME_FONT_LOADER_MAP);
   // Mesmo se as fontes nao carregarem dentro do tempo limite, libera o
   // RootNavigator para nao prender o usuario no splash indefinidamente.
   const [forceRenderApp, setForceRenderApp] = useState(false);
@@ -178,12 +178,14 @@ const App: React.FC = () => {
   return (
     <View style={styles.rootSurface} onLayout={onLayoutRootView}>
       <SafeAreaProvider style={styles.rootSurface}>
-        <StatusBar hidden={Platform.OS === 'android'} />
-        {shouldRenderApp ? (
-          <RootErrorBoundary>
-            <RootNavigator />
-          </RootErrorBoundary>
-        ) : null}
+        <AppThemeProvider>
+          <StatusBar hidden={Platform.OS === 'android'} />
+          {shouldRenderApp ? (
+            <RootErrorBoundary>
+              <RootNavigator />
+            </RootErrorBoundary>
+          ) : null}
+        </AppThemeProvider>
       </SafeAreaProvider>
     </View>
   );

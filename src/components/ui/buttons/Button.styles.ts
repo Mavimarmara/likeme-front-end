@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { COLORS, FONT_SIZES, BORDER_RADIUS, SPACING } from '@/constants';
+import { COLORS, FONT_SIZES, BORDER_RADIUS, SPACING, TYPOGRAPHY } from '@/constants';
 
 export const styles = StyleSheet.create({
   base: {
@@ -10,10 +10,10 @@ export const styles = StyleSheet.create({
 
   // Variants
   primary: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: COLORS.PRIMARY.PURE,
   },
   secondary: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: COLORS.HIGHLIGHT.PURE,
   },
   outline: {
     backgroundColor: 'transparent',
@@ -42,7 +42,7 @@ export const styles = StyleSheet.create({
 
   // Text styles
   text: {
-    fontWeight: '600',
+    ...TYPOGRAPHY.bodyMdMedium,
   },
 
   // Text variants
@@ -53,7 +53,7 @@ export const styles = StyleSheet.create({
     color: COLORS.BLACK,
   },
   outlineText: {
-    color: '#4CAF50',
+    color: COLORS.PRIMARY.PURE,
   },
 
   // Text sizes

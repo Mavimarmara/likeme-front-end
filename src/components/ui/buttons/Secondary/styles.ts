@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { COLORS } from '@/constants';
+import { COLORS, TYPOGRAPHY } from '@/constants';
 
 export const styles = StyleSheet.create({
   button: {
@@ -40,12 +40,8 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   label: {
-    color: 'rgba(0, 17, 55, 1)',
-    fontFamily: 'DM Sans',
-    fontSize: 14,
-    fontWeight: '500',
-    letterSpacing: 0,
-    lineHeight: 20,
+    ...TYPOGRAPHY.labelMd,
+    color: COLORS.TEXT,
     textAlign: 'center',
   },
   labelDark: {

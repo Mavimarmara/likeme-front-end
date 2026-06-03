@@ -1,0 +1,49 @@
+---
+description: Usar tokens de design (cores, tipografia, spacing) no app mobile
+globs: src/**/*.{ts,tsx}
+alwaysApply: true
+---
+
+# Tokens de design (Figma → código)
+
+Ao estilizar UI no `likeme-front-end`, **prefira tokens** de `@/constants` em vez de valores soltos do Figma.
+
+## Onde buscar
+
+| Necessidade | Token / módulo |
+|-------------|----------------|
+| Cores | `COLORS` |
+| Espaçamento | `SPACING` (inclui `MD_PLUS`, `GAP_20`, `SECTION`) |
+| Raio | `BORDER_RADIUS` |
+| Tamanhos de fonte legados | `FONT_SIZES` (preferir `TYPOGRAPHY`) |
+| Texto completo (Figma text styles) | `TYPOGRAPHY` |
+| Família de fonte | `FONT_FAMILY` ou `dmSansFontFamily(400 \| 500 \| 600 \| 700)` |
+
+## Tipografia
+
+- Use `...TYPOGRAPHY.bodyMd`, `TYPOGRAPHY.labelMd`, `TYPOGRAPHY.displayLg`, etc. em `StyleSheet.create`.
+- **Não** combine `fontFamily: 'DM Sans'` + `fontWeight` — o peso já está no arquivo carregado (`DMSans_500Medium`, etc.).
+- Bricolage: `FONT_FAMILY.BRICOLAGE_BOLD` / tokens `TYPOGRAPHY.titleScreen*`, `display*`.
+
+## Evitar em `styles.ts` e componentes
+
+- Hex soltos (`#0154F8`) → `COLORS.*`
+- `padding`/`margin`/`gap` numéricos sem token → `SPACING.*` (crie token novo em `constants/index.ts` se o Figma repetir o valor)
+- `fontSize` + `lineHeight` + `letterSpacing` copiados do inspect → estilo em `TYPOGRAPHY` ou estenda `typography.ts`
+- `borderRadius` mágico → `BORDER_RADIUS.*`
+
+## Quando criar token novo
+
+1. O valor aparece no Figma **2+ vezes** ou em mais de uma tela.
+2. Adicione em `constants/index.ts` ou `typography.ts` com nome de domínio (ex.: `SPACING.SECTION`, `BORDER_RADIUS.BUTTON_TOP`).
+3. Reutilize no mesmo PR — não deixe literal na tela piloto só.
+
+## Exemplo
+
+```typescript
+// ❌ BAD
+title: { fontFamily: 'DM Sans', fontSize: 14, fontWeight: '500', color: '#001137' }
+
+// ✅ GOOD
+title: { ...TYPOGRAPHY.bodyMdMedium, color: COLORS.TEXT }
+```

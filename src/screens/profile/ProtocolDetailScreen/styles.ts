@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { COLORS, SPACING, FLOATING_NAV_MENU_BAR_OFFSET } from '@/constants';
+import { COLORS, SPACING, FLOATING_NAV_MENU_BAR_OFFSET, TYPOGRAPHY } from '@/constants';
 
 export const styles = StyleSheet.create({
   container: {
@@ -15,9 +15,7 @@ export const styles = StyleSheet.create({
     gap: SPACING.SM,
   },
   sectionTitle: {
-    fontSize: 14,
-    fontFamily: 'DM Sans',
-    fontWeight: '500',
+    ...TYPOGRAPHY.bodyMdMedium,
     color: COLORS.NEUTRAL.LOW.PURE,
   },
   tabContent: {
@@ -30,17 +28,12 @@ export const styles = StyleSheet.create({
     alignSelf: 'stretch',
   },
   descriptionText: {
-    fontSize: 14,
-    fontFamily: 'DM Sans',
-    fontWeight: '400',
+    ...TYPOGRAPHY.bodyMd,
     color: COLORS.NEUTRAL.LOW.DARK,
-    letterSpacing: 0.2,
-    lineHeight: 22,
     paddingHorizontal: SPACING.LG,
   },
   emptyText: {
-    fontSize: 14,
-    fontFamily: 'DM Sans',
+    ...TYPOGRAPHY.bodyMd,
     color: COLORS.NEUTRAL.LOW.DARK,
     paddingHorizontal: SPACING.LG,
   },
@@ -52,11 +45,8 @@ export const styles = StyleSheet.create({
     width: '100%',
   },
   heroDescription: {
-    fontSize: 12,
-    fontFamily: 'DM Sans',
-    fontWeight: '500',
-    lineHeight: 20,
-    color: '#FFFFFF',
-    marginBottom: 8,
+    ...TYPOGRAPHY.bodySm,
+    color: COLORS.WHITE,
+    marginBottom: SPACING.SM,
   },
 });

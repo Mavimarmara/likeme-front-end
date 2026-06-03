@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { COLORS } from '@/constants';
+import { COLORS, TYPOGRAPHY } from '@/constants';
 
 export const styles = StyleSheet.create({
   button: {
@@ -31,21 +31,13 @@ export const styles = StyleSheet.create({
     borderRadius: 24,
   },
   label: {
+    ...TYPOGRAPHY.labelMd,
     color: COLORS.WHITE,
-    fontFamily: 'DM Sans',
-    fontSize: 14,
-    fontWeight: '500',
-    letterSpacing: 0,
-    lineHeight: 20,
     textAlign: 'center',
   },
   labelLight: {
+    ...TYPOGRAPHY.labelMd,
     color: COLORS.TEXT,
-    fontFamily: 'DM Sans',
-    fontSize: 14,
-    fontWeight: '500',
-    letterSpacing: 0,
-    lineHeight: 20,
     textAlign: 'center',
   },
   buttonDisabled: {
