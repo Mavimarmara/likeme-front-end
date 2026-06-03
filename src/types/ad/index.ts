@@ -23,7 +23,7 @@ export type AdvertiserDocumentType = 'crm' | 'rqe';
 
 export interface AdvertiserDocument {
   id?: string;
-  type: AdvertiserDocumentType;
+  type?: AdvertiserDocumentType | null;
   value: string;
 }
 
