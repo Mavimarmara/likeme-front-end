@@ -1,9 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Linking, StyleSheet } from 'react-native';
+import { SecondaryButton } from '@/components/ui/buttons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import { PartnerSection } from '@/components/sections/advertiser';
 import { ScreenWithHeader } from '@/components/ui/layout';
 import { CachedImage } from '@/components/ui/media/CachedImage';
@@ -289,10 +289,16 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
           {renderSpecialistPartnerSection()}
 
           <View style={styles.buySection}>
-            <TouchableOpacity style={styles.buyButton} onPress={handleBuyOnAmazon} activeOpacity={0.7}>
-              <Text style={styles.buyButtonText}>{t('marketplace.buyOnAmazon')}</Text>
-              <Icon name='shopping-cart' size={24} color='#001137' />
-            </TouchableOpacity>
+            <SecondaryButton
+              label={t('marketplace.buyOnAmazon')}
+              onPress={handleBuyOnAmazon}
+              icon='shopping-cart'
+              iconPosition='right'
+              iconSize={24}
+              size='large'
+              style={styles.buyButton}
+              testID='affiliate-buy-on-amazon'
+            />
             <Text style={styles.disclaimerText}>
               {t('marketplace.amazonDisclaimer')} <Text style={styles.learnMoreLink}>{t('marketplace.learnMore')}</Text>
             </Text>

@@ -5,9 +5,9 @@ export const styles = StyleSheet.create({
   button: {
     alignItems: 'center',
     alignSelf: 'stretch',
-    backgroundColor: 'rgba(240, 238, 225, 0.16)',
+    backgroundColor: COLORS.SECONDARY.PURE,
     borderWidth: 1,
-    borderColor: 'rgba(0, 17, 55, 1)',
+    borderColor: COLORS.TEXT,
     display: 'flex',
     gap: 2,
     justifyContent: 'center',
