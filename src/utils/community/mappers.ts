@@ -10,6 +10,10 @@ import type {
 import type { Post, Comment, Poll } from '@/types';
 import type { Program } from '@/types/program';
 import { logger } from '@/utils/logger';
+import {
+  firstImageAndVideoFromAttachments,
+  resolveCommunityPostAttachmentsWithChildren,
+} from '@/utils/community/resolvePostAttachments';
 import { resolveCommunityPostMediaWithChildren } from '@/utils/community/resolvePostMedia';
 import { resolveCommentAuthorDisplayName } from '@/utils/community/commentAuthorDisplayName';
 
@@ -215,7 +219,11 @@ export const mapCommunityPostToPost = (
     return null;
   }
 
-  const { imageUrl, videoUrl } = resolveCommunityPostMediaWithChildren(communityPost, files, postChildren, feedPosts);
+  const attachments = resolveCommunityPostAttachmentsWithChildren(communityPost, files, postChildren, feedPosts);
+  const fromAttachments = firstImageAndVideoFromAttachments(attachments);
+  const legacyMedia = resolveCommunityPostMediaWithChildren(communityPost, files, postChildren, feedPosts);
+  const imageUrl = attachments.length > 0 ? fromAttachments.imageUrl : legacyMedia.imageUrl;
+  const videoUrl = attachments.length > 0 ? fromAttachments.videoUrl : legacyMedia.videoUrl;
 
   const user = users?.find((u) => u.userId === userId);
   const userName = user?.displayName || undefined;
@@ -297,6 +305,7 @@ export const mapCommunityPostToPost = (
     content,
     image: imageUrl,
     videoUrl,
+    attachments: attachments.length > 0 ? attachments : undefined,
     likes,
     comments: postComments,
     commentsCount,

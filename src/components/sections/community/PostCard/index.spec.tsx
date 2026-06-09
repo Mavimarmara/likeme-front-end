@@ -50,6 +50,28 @@ const basePost = (): Post => ({
 });
 
 describe('PostCard', () => {
+  it('renderiza card de arquivo quando há anexo PDF', () => {
+    const { getByLabelText } = render(
+      <PostCard
+        post={{
+          ...basePost(),
+          attachments: [
+            {
+              id: 'doc-1',
+              url: 'https://cdn.example.com/guide.pdf',
+              kind: 'pdf',
+              fileName: 'guide.pdf',
+              extension: '.pdf',
+            },
+          ],
+        }}
+        postEngagement={{ likeCount: 0, isLiked: false, isLiking: false, togglePostLike: jest.fn() }}
+      />,
+    );
+
+    expect(getByLabelText('Abrir arquivo guide.pdf')).toBeTruthy();
+  });
+
   it('renderiza Image com URI quando há imagem (sem vídeo)', () => {
     const uri = 'https://cdn.example.com/post-photo.png';
     const { getByTestId } = render(

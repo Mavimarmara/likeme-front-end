@@ -94,5 +94,27 @@ describe('mapCommunityPostToPost (mídia)', () => {
     expect(post).not.toBeNull();
     expect(post!.videoUrl).toBe('https://cdn.example.com/clip.mp4');
     expect(post!.image).toBe('https://cdn.example.com/clip_thumb.jpg');
+    expect(post!.attachments?.some((item) => item.kind === 'video')).toBe(true);
+  });
+
+  it('mapeia PDF como anexo de arquivo', () => {
+    const communityPost: CommunityPost = {
+      postId: 'p-pdf',
+      createdAt: '2026-01-02T00:00:00.000Z',
+      data: { text: 'PDF', fileId: 'doc-1' },
+    } as CommunityPost;
+
+    const files: CommunityFile[] = [
+      {
+        fileId: 'doc-1',
+        fileUrl: 'https://cdn.example.com/guide.pdf',
+        attributes: { mimeType: 'application/pdf', name: 'guide.pdf' },
+      } as CommunityFile,
+    ];
+
+    const post = mapCommunityPostToPost(communityPost, files);
+
+    expect(post?.attachments?.[0]?.kind).toBe('pdf');
+    expect(post?.image).toBeUndefined();
   });
 });

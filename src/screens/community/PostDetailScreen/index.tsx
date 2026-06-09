@@ -31,7 +31,7 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     isLiked: post.isLiked ?? false,
     myReactions: post.myReactions,
   });
-  const [snapshotMedia, setSnapshotMedia] = useState<{ image?: string; videoUrl?: string } | null>(null);
+  const [snapshotMedia, setSnapshotMedia] = useState<Pick<Post, 'image' | 'videoUrl' | 'attachments'> | null>(null);
 
   useEffect(() => {
     setLikeBootstrap({
@@ -64,7 +64,11 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
           isLiked: mapped.isLiked ?? false,
           myReactions: mapped.myReactions,
         });
-        setSnapshotMedia({ image: mapped.image, videoUrl: mapped.videoUrl });
+        setSnapshotMedia({
+          image: mapped.image,
+          videoUrl: mapped.videoUrl,
+          attachments: mapped.attachments,
+        });
       } catch (error) {
         logger.warn('Sincronização do like no detalhe do post falhou:', { postId: post.id, cause: error });
       }
@@ -89,6 +93,7 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
       ...post,
       image: snapshotMedia?.image ?? post.image,
       videoUrl: snapshotMedia?.videoUrl ?? post.videoUrl,
+      attachments: snapshotMedia?.attachments ?? post.attachments,
     }),
     [post, snapshotMedia],
   );

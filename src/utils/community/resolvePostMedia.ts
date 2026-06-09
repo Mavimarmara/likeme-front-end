@@ -12,7 +12,10 @@ type VideoFileIdMap = Partial<Record<(typeof VIDEO_FILE_ID_QUALITIES)[number], s
 
 type FeedFileRow = Record<string, unknown>;
 
-function mergeFeedFileSources(rootFiles: CommunityFile[] | undefined, post: { files?: unknown[] }): FeedFileRow[] {
+export function mergeFeedFileSources(
+  rootFiles: CommunityFile[] | undefined,
+  post: { files?: unknown[] },
+): FeedFileRow[] {
   const out: FeedFileRow[] = [];
   const seen = new Set<string>();
 
@@ -32,7 +35,7 @@ function mergeFeedFileSources(rootFiles: CommunityFile[] | undefined, post: { fi
   return out;
 }
 
-function rowUrl(row: FeedFileRow | undefined): string | undefined {
+export function rowUrl(row: FeedFileRow | undefined): string | undefined {
   if (!row) return undefined;
   const pick = (key: string): string | undefined => {
     const v = row[key];
@@ -56,7 +59,7 @@ function rowUrl(row: FeedFileRow | undefined): string | undefined {
   return undefined;
 }
 
-function lookupRowByFileId(id: string | undefined, rows: FeedFileRow[]): FeedFileRow | undefined {
+export function lookupRowByFileId(id: string | undefined, rows: FeedFileRow[]): FeedFileRow | undefined {
   if (!id?.trim() || rows.length === 0) return undefined;
   const trimmed = id.trim();
   return rows.find((r) => {
@@ -88,7 +91,7 @@ function pickHttpUrlFromVideoUrlObject(o: Record<string, unknown>): string | und
 }
 
 /** Amity envia `videoUrl` no item de `files` (mapa 720p, 480p, …), não só em `post.data`. */
-function pickVideoPlaybackUrlFromFileRow(row: FeedFileRow | undefined): string | undefined {
+export function pickVideoPlaybackUrlFromFileRow(row: FeedFileRow | undefined): string | undefined {
   if (!row) return undefined;
   const raw = row.videoUrl;
   if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
@@ -99,7 +102,7 @@ function pickVideoPlaybackUrlFromFileRow(row: FeedFileRow | undefined): string |
 }
 
 /** Miniatura de vídeo Amity: outro registro em `files` com `fileId` tipo `…_thumbnail.…` e/ou `metadata.thumbnail`. */
-function findThumbnailUrlForVideoBaseId(videoBaseFileId: string, rows: FeedFileRow[]): string | undefined {
+export function findThumbnailUrlForVideoBaseId(videoBaseFileId: string, rows: FeedFileRow[]): string | undefined {
   const base = videoBaseFileId.trim();
   if (!base) return undefined;
   for (const r of rows) {
@@ -117,7 +120,7 @@ function findThumbnailUrlForVideoBaseId(videoBaseFileId: string, rows: FeedFileR
   return undefined;
 }
 
-function isVideoRow(row: FeedFileRow | undefined): boolean {
+export function isVideoRow(row: FeedFileRow | undefined): boolean {
   if (!row) return false;
   const attr = row.attributes;
   if (attr && typeof attr === 'object' && attr !== null && !Array.isArray(attr)) {
@@ -139,7 +142,7 @@ function isVideoRow(row: FeedFileRow | undefined): boolean {
   return /\.(mp4|webm|mov|m3u8)(\?|$)/i.test(u);
 }
 
-function extractFileIdFromField(raw: unknown): string | undefined {
+export function extractFileIdFromField(raw: unknown): string | undefined {
   if (raw == null) return undefined;
   if (typeof raw === 'string') {
     const t = raw.trim();
@@ -224,7 +227,7 @@ function isCommunityPostLike(item: unknown): item is CommunityPost {
   );
 }
 
-function collectChildPostsForParent(
+export function collectChildPostsForParent(
   parent: Pick<CommunityPost, 'postId' | '_id' | 'path' | 'children' | 'childrenPosts'>,
   postChildren?: CommunityPost[],
   feedPosts?: CommunityPost[],

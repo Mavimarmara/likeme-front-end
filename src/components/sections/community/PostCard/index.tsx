@@ -18,8 +18,7 @@ import {
   getPostTypeBadgeColor,
   getTitleFromPost,
 } from '@/utils/community/postCardUtils';
-import { logger } from '@/utils/logger';
-import { PostEmbeddedVideo } from './PostEmbeddedVideo';
+import PostAttachmentsSection from '../PostAttachments/PostAttachmentsSection';
 
 type Props = {
   post: Post;
@@ -60,9 +59,9 @@ const PostCardView: React.FC<ViewProps> = ({
   const postPreviewContent = getContentPreviewFromPost(post);
   const commentsCount = post.commentsCount !== undefined ? post.commentsCount : post.comments?.length || 0;
 
-  const imageUri = post.image?.trim() ? post.image.trim() : undefined;
-  const videoUri = post.videoUrl?.trim() ? post.videoUrl.trim() : undefined;
-  const showMediaBlock = Boolean((imageUri || videoUri) && !activePoll);
+  const showMediaBlock = Boolean(
+    (post.attachments?.length || post.image?.trim() || post.videoUrl?.trim()) && !activePoll,
+  );
   const [videoPlaybackOpen, setVideoPlaybackOpen] = useState(false);
   const [descriptionWidth, setDescriptionWidth] = useState<number | null>(null);
   const [textExceedsMaxLines, setTextExceedsMaxLines] = useState<boolean | null>(null);
@@ -70,7 +69,7 @@ const PostCardView: React.FC<ViewProps> = ({
 
   useEffect(() => {
     setVideoPlaybackOpen(false);
-  }, [post.id, videoUri]);
+  }, [post.id, post.videoUrl, post.attachments?.length]);
 
   useFocusEffect(
     useCallback(() => {
@@ -143,10 +142,6 @@ const PostCardView: React.FC<ViewProps> = ({
     onPress?.(post);
   };
 
-  const onPostImageError = () => {
-    logger.warn('Falha ao carregar imagem do post', { postId: post.id, uri: imageUri });
-  };
-
   const cardInner = (
     <>
       <View style={cardStyles.contentContainer}>
@@ -216,62 +211,11 @@ const PostCardView: React.FC<ViewProps> = ({
           ) : null}
 
           {showMediaBlock ? (
-            <View style={cardStyles.mediaContainer}>
-              {videoUri ? (
-                videoPlaybackOpen ? (
-                  <PostEmbeddedVideo
-                    videoUri={videoUri}
-                    onCollapse={() => setVideoPlaybackOpen(false)}
-                    containerStyle={forceContentExpanded ? cardStyles.mediaImageExpanded : cardStyles.mediaImage}
-                  />
-                ) : (
-                  <Pressable
-                    onPress={(e) => {
-                      e?.stopPropagation?.();
-                      setVideoPlaybackOpen(true);
-                    }}
-                    accessibilityRole='button'
-                    accessibilityLabel='Reproduzir vídeo'
-                  >
-                    <View style={cardStyles.videoPosterInner}>
-                      {imageUri ? (
-                        <CachedImage
-                          testID='post-card-video-poster'
-                          accessibilityLabel='Imagem do post'
-                          source={{ uri: imageUri }}
-                          style={forceContentExpanded ? cardStyles.mediaImageExpanded : cardStyles.mediaImage}
-                          recyclingKey={`post-${post.id}-media`}
-                          onError={onPostImageError}
-                        />
-                      ) : (
-                        <View
-                          style={[
-                            forceContentExpanded ? cardStyles.mediaImageExpanded : cardStyles.mediaImage,
-                            cardStyles.videoPlaceholder,
-                          ]}
-                        />
-                      )}
-                      <View style={cardStyles.playOverlay} pointerEvents='none'>
-                        <Icon
-                          name='play-circle-outline'
-                          size={forceContentExpanded ? 56 : 44}
-                          color='rgba(255,255,255,0.95)'
-                        />
-                      </View>
-                    </View>
-                  </Pressable>
-                )
-              ) : imageUri ? (
-                <CachedImage
-                  testID='post-card-image-only'
-                  accessibilityLabel='Imagem do post'
-                  source={{ uri: imageUri }}
-                  style={forceContentExpanded ? cardStyles.mediaImageExpanded : cardStyles.mediaImage}
-                  recyclingKey={`post-${post.id}-media`}
-                  onError={onPostImageError}
-                />
-              ) : null}
-            </View>
+            <PostAttachmentsSection
+              post={post}
+              expanded={forceContentExpanded}
+              onVideoPlaybackChange={setVideoPlaybackOpen}
+            />
           ) : null}
         </View>
       </View>
@@ -338,7 +282,9 @@ const PostCardView: React.FC<ViewProps> = ({
     </>
   );
 
-  const videoExpandedBlocksPostNavigation = Boolean(videoUri && videoPlaybackOpen);
+  const videoExpandedBlocksPostNavigation = Boolean(
+    videoPlaybackOpen && (post.videoUrl?.trim() || post.attachments?.some((item) => item.kind === 'video')),
+  );
 
   if (onPress != null) {
     if (videoExpandedBlocksPostNavigation) {
@@ -395,6 +341,7 @@ const PostCard = React.memo(PostCardInner, (prev, next) => {
     if (prev.post.comments?.length !== next.post.comments?.length) return false;
     if (prev.post.image !== next.post.image) return false;
     if (prev.post.videoUrl !== next.post.videoUrl) return false;
+    if (prev.post.attachments?.length !== next.post.attachments?.length) return false;
     if (prev.post.userAvatar !== next.post.userAvatar) return false;
     if (prev.post.userName !== next.post.userName) return false;
   }
