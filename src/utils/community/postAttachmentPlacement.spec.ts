@@ -37,6 +37,32 @@ describe('postAttachmentPlacement', () => {
     expect(postHasEndOfPostAttachments(post)).toBe(true);
   });
 
+  it('detecta vídeo via videoUrl mesmo com várias imagens nos anexos', () => {
+    const post = {
+      ...basePost,
+      videoUrl: 'https://cdn.example.com/clip.mp4',
+      attachments: [
+        {
+          id: 'i1',
+          url: 'https://cdn.example.com/a.jpg',
+          kind: 'image' as const,
+          fileName: 'a.jpg',
+          extension: '.jpg',
+        },
+        {
+          id: 'i2',
+          url: 'https://cdn.example.com/b.jpg',
+          kind: 'image' as const,
+          fileName: 'b.jpg',
+          extension: '.jpg',
+        },
+      ],
+    };
+
+    expect(postHasBeforeTextAttachments(post)).toBe(true);
+    expect(postHasAfterTextAttachments(post)).toBe(true);
+  });
+
   it('imagem e arquivo se separam: imagem antes, arquivo no final', () => {
     const post = {
       ...basePost,

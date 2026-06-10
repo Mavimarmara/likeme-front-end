@@ -219,11 +219,26 @@ export const mapCommunityPostToPost = (
     return null;
   }
 
-  const attachments = resolveCommunityPostAttachmentsWithChildren(communityPost, files, postChildren, feedPosts);
+  let attachments = resolveCommunityPostAttachmentsWithChildren(communityPost, files, postChildren, feedPosts);
   const fromAttachments = firstImageAndVideoFromAttachments(attachments);
   const legacyMedia = resolveCommunityPostMediaWithChildren(communityPost, files, postChildren, feedPosts);
   const imageUrl = attachments.length > 0 ? fromAttachments.imageUrl : legacyMedia.imageUrl;
-  const videoUrl = attachments.length > 0 ? fromAttachments.videoUrl : legacyMedia.videoUrl;
+  const videoUrl = attachments.length > 0 ? fromAttachments.videoUrl ?? legacyMedia.videoUrl : legacyMedia.videoUrl;
+
+  if (videoUrl && !attachments.some((item) => item.kind === 'video')) {
+    attachments = [
+      ...attachments,
+      {
+        id: `${postId}-resolved-video`,
+        url: videoUrl,
+        kind: 'video',
+        fileName: 'Vídeo',
+        extension: '',
+        posterUrl:
+          fromAttachments.imageUrl ?? legacyMedia.imageUrl ?? attachments.find((item) => item.kind === 'image')?.url,
+      },
+    ];
+  }
 
   const user = users?.find((u) => u.userId === userId);
   const userName = user?.displayName || undefined;

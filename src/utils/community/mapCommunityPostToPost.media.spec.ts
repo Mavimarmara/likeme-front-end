@@ -97,6 +97,58 @@ describe('mapCommunityPostToPost (mídia)', () => {
     expect(post!.attachments?.some((item) => item.kind === 'video')).toBe(true);
   });
 
+  it('preenche videoUrl quando há várias imagens e um vídeo nos anexos', () => {
+    const parent: CommunityPost = {
+      postId: 'p-parent',
+      createdAt: '2026-01-01T00:00:00.000Z',
+      data: { text: 'Combo' },
+      childrenPosts: [
+        {
+          postId: 'p-img-1',
+          sequenceNumber: 1,
+          createdAt: '2026-01-01T00:00:00.000Z',
+          data: { fileId: 'img-1' },
+        } as CommunityPost,
+        {
+          postId: 'p-img-2',
+          sequenceNumber: 2,
+          createdAt: '2026-01-01T00:00:00.000Z',
+          data: { fileId: 'img-2' },
+        } as CommunityPost,
+        {
+          postId: 'p-video',
+          sequenceNumber: 3,
+          structureType: 'video',
+          createdAt: '2026-01-01T00:00:00.000Z',
+          data: { fileId: 'vid-1' },
+        } as CommunityPost,
+      ],
+    } as CommunityPost;
+
+    const files: CommunityFile[] = [
+      {
+        fileId: 'img-1',
+        fileUrl: 'https://cdn.example.com/a.png',
+        attributes: { mimeType: 'image/png' },
+      } as CommunityFile,
+      {
+        fileId: 'img-2',
+        fileUrl: 'https://cdn.example.com/b.png',
+        attributes: { mimeType: 'image/png' },
+      } as CommunityFile,
+      {
+        fileId: 'vid-1',
+        fileUrl: 'https://cdn.example.com/clip.mp4',
+        attributes: { mimeType: 'video/mp4' },
+      } as CommunityFile,
+    ];
+
+    const post = mapCommunityPostToPost(parent, files);
+
+    expect(post?.attachments?.filter((item) => item.kind === 'image')).toHaveLength(2);
+    expect(post?.videoUrl).toBe('https://cdn.example.com/clip.mp4');
+  });
+
   it('mapeia PDF como anexo de arquivo', () => {
     const communityPost: CommunityPost = {
       postId: 'p-pdf',

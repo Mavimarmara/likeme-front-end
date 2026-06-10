@@ -203,7 +203,7 @@ const PostAttachmentsSection: React.FC<Props> = ({
   const renderVideoBlock = () => {
     if (!primaryVideo || !showAfterText) return null;
 
-    const posterUri = primaryVideo.posterUrl ?? images[0]?.url;
+    const posterUri = primaryVideo.posterUrl ?? (images.length <= 1 ? images[0]?.url : undefined);
 
     return (
       <View style={videoBlockContainerStyle}>

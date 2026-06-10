@@ -4,6 +4,29 @@ const FILE_KINDS = new Set<PostAttachment['kind']>(['pdf', 'spreadsheet', 'docum
 
 export type PostAttachmentPlacement = 'beforeText' | 'afterText' | 'endOfPost' | 'all';
 
+const VIDEO_URL_PATTERN = /\.(mp4|webm|mov|m3u8)(\?|$)/i;
+
+function attachmentLooksLikeVideo(item: PostAttachment): boolean {
+  if (item.kind === 'video') {
+    return true;
+  }
+  const mime = item.mimeType?.trim().toLowerCase() ?? '';
+  if (mime.startsWith('video/')) {
+    return true;
+  }
+  return VIDEO_URL_PATTERN.test(item.url);
+}
+
+function normalizeAttachmentKind(item: PostAttachment): PostAttachment {
+  if (item.kind !== 'generic' && item.kind !== 'image') {
+    return item;
+  }
+  if (!attachmentLooksLikeVideo(item)) {
+    return item;
+  }
+  return { ...item, kind: 'video' };
+}
+
 function legacyAttachmentsFromPost(post: Pick<Post, 'id' | 'image' | 'videoUrl'>): PostAttachment[] {
   const out: PostAttachment[] = [];
   const imageUri = post.image?.trim();
@@ -33,8 +56,28 @@ function legacyAttachmentsFromPost(post: Pick<Post, 'id' | 'image' | 'videoUrl'>
   return out;
 }
 
+function attachmentsWithLegacyVideo(post: Pick<Post, 'id' | 'image' | 'videoUrl' | 'attachments'>): PostAttachment[] {
+  const base = post.attachments?.length ? [...post.attachments] : legacyAttachmentsFromPost(post);
+  const normalized = base.map(normalizeAttachmentKind);
+
+  const videoUri = post.videoUrl?.trim();
+  if (videoUri && !normalized.some((item) => item.kind === 'video')) {
+    const posterUrl = normalized.find((item) => item.kind === 'image')?.url ?? post.image?.trim();
+    normalized.push({
+      id: `${post.id}-legacy-video`,
+      url: videoUri,
+      kind: 'video',
+      fileName: 'Vídeo',
+      extension: '',
+      posterUrl,
+    });
+  }
+
+  return normalized;
+}
+
 export function postAttachmentsForPlacement(post: Pick<Post, 'id' | 'image' | 'videoUrl' | 'attachments'>) {
-  const attachments = post.attachments?.length ? post.attachments : legacyAttachmentsFromPost(post);
+  const attachments = attachmentsWithLegacyVideo(post);
   const images = attachments.filter((item) => item.kind === 'image');
   const videos = attachments.filter((item) => item.kind === 'video');
   const files = attachments.filter((item) => FILE_KINDS.has(item.kind));

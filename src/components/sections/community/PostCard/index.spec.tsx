@@ -125,6 +125,44 @@ describe('PostCard', () => {
     expect(getByTestId('post-card-embedded-video')).toBeTruthy();
   });
 
+  it('exibe play de vídeo quando há várias imagens e um vídeo', () => {
+    const { getByLabelText, queryByTestId } = render(
+      <PostCard
+        post={{
+          ...basePost(),
+          attachments: [
+            {
+              id: 'i1',
+              url: 'https://cdn.example.com/a.png',
+              kind: 'image',
+              fileName: 'a.png',
+              extension: '.png',
+            },
+            {
+              id: 'i2',
+              url: 'https://cdn.example.com/b.png',
+              kind: 'image',
+              fileName: 'b.png',
+              extension: '.png',
+            },
+            {
+              id: 'v1',
+              url: 'https://cdn.example.com/clip.mp4',
+              kind: 'video',
+              fileName: 'clip.mp4',
+              extension: '.mp4',
+              posterUrl: 'https://cdn.example.com/thumb.jpg',
+            },
+          ],
+        }}
+        postEngagement={{ likeCount: 0, isLiked: false, isLiking: false, togglePostLike: jest.fn() }}
+      />,
+    );
+
+    expect(queryByTestId('post-card-image-only')).toBeNull();
+    expect(getByLabelText('community.attachments.playVideo')).toBeTruthy();
+  });
+
   it('ao tocar no poster do vídeo, não dispara onPress do card', () => {
     const poster = 'https://cdn.example.com/thumb.jpg';
     const video = 'https://cdn.example.com/video.mp4';

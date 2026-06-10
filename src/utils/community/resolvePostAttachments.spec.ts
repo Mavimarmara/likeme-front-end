@@ -66,6 +66,94 @@ describe('resolveCommunityPostAttachmentsWithChildren', () => {
     expect(attachments.map((item) => item.kind)).toEqual(['image', 'spreadsheet']);
   });
 
+  it('mantém vídeo quando há várias imagens em posts filhos', () => {
+    const parent: CommunityPost = {
+      postId: 'p-parent',
+      createdAt: '2026-01-01T00:00:00.000Z',
+      data: { text: 'Combo mídia' },
+      childrenPosts: [
+        {
+          postId: 'p-img-1',
+          sequenceNumber: 1,
+          createdAt: '2026-01-01T00:00:00.000Z',
+          data: { fileId: 'img-1' },
+        } as CommunityPost,
+        {
+          postId: 'p-img-2',
+          sequenceNumber: 2,
+          createdAt: '2026-01-01T00:00:00.000Z',
+          data: { fileId: 'img-2' },
+        } as CommunityPost,
+        {
+          postId: 'p-video',
+          sequenceNumber: 3,
+          structureType: 'video',
+          createdAt: '2026-01-01T00:00:00.000Z',
+          data: { fileId: 'vid-1' },
+        } as CommunityPost,
+      ],
+    } as CommunityPost;
+
+    const files: CommunityFile[] = [
+      {
+        fileId: 'img-1',
+        fileUrl: 'https://cdn.example.com/a.png',
+        attributes: { mimeType: 'image/png' },
+      } as CommunityFile,
+      {
+        fileId: 'img-2',
+        fileUrl: 'https://cdn.example.com/b.png',
+        attributes: { mimeType: 'image/png' },
+      } as CommunityFile,
+      {
+        fileId: 'vid-1',
+        fileUrl: 'https://cdn.example.com/clip.mp4',
+        attributes: { mimeType: 'video/mp4' },
+      } as CommunityFile,
+      {
+        fileId: 'vid-1_thumbnail_1',
+        fileUrl: 'https://cdn.example.com/clip_thumb.jpg',
+        attributes: { mimeType: 'image/jpeg', metadata: { thumbnail: true } },
+      } as CommunityFile,
+    ];
+
+    const attachments = resolveCommunityPostAttachmentsWithChildren(parent, files);
+
+    expect(attachments.filter((item) => item.kind === 'image')).toHaveLength(2);
+    expect(attachments.find((item) => item.kind === 'video')?.url).toBe('https://cdn.example.com/clip.mp4');
+  });
+
+  it('mantém vídeo quando o pai tem vários fileIds', () => {
+    const communityPost: CommunityPost = {
+      postId: 'p-multi',
+      createdAt: '2026-01-01T00:00:00.000Z',
+      data: { text: 'Várias mídias', fileIds: ['img-1', 'img-2', 'vid-1'] },
+    } as CommunityPost;
+
+    const files: CommunityFile[] = [
+      {
+        fileId: 'img-1',
+        fileUrl: 'https://cdn.example.com/a.png',
+        attributes: { mimeType: 'image/png' },
+      } as CommunityFile,
+      {
+        fileId: 'img-2',
+        fileUrl: 'https://cdn.example.com/b.png',
+        attributes: { mimeType: 'image/png' },
+      } as CommunityFile,
+      {
+        fileId: 'vid-1',
+        fileUrl: 'https://cdn.example.com/clip.mp4',
+        attributes: { mimeType: 'video/mp4' },
+      } as CommunityFile,
+    ];
+
+    const attachments = resolveCommunityPostAttachmentsWithChildren(communityPost, files);
+
+    expect(attachments.filter((item) => item.kind === 'image')).toHaveLength(2);
+    expect(attachments.some((item) => item.kind === 'video')).toBe(true);
+  });
+
   it('não duplica thumbnail de vídeo como imagem separada', () => {
     const videoId = 'vid-1';
     const communityPost: CommunityPost = {
