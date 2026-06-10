@@ -3,14 +3,16 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { BackgroundIconOutline } from '@/assets/ui';
 import { IconButton } from '@/components/ui/buttons';
+import PostAttachmentsSection, {
+  type PostMediaSource,
+} from '@/components/sections/community/PostAttachments/PostAttachmentsSection';
 import { MarkdownText } from '@/components/ui/text/MarkdownText';
 import { storageService } from '@/services';
 import { COLORS } from '@/constants';
 import { logger } from '@/utils/logger';
 import { styles } from './styles';
 
-export type ModuleItem = {
-  id: string;
+export type ModuleItem = PostMediaSource & {
   title: string;
   completed?: boolean;
   body?: string | null;
@@ -183,9 +185,13 @@ const ModuleAccordion: React.FC<Props> = ({
                 />
               </TouchableOpacity>
             </View>
-            {isExpanded && module.body?.trim() ? (
+            {isExpanded ? (
               <View style={styles.moduleBody}>
-                <MarkdownText style={styles.moduleBodyText} text={module.body.trim()} />
+                <PostAttachmentsSection post={module} expanded>
+                  {module.body?.trim() ? (
+                    <MarkdownText style={styles.moduleBodyText} text={module.body.trim()} />
+                  ) : null}
+                </PostAttachmentsSection>
               </View>
             ) : null}
             <View style={styles.separator} />

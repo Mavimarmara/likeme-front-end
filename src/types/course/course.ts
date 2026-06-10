@@ -1,3 +1,5 @@
+import type { CommunityFile, CommunityPost } from '@/types/community';
+
 export type CourseStep = {
   stepNumber: number;
   title: string;
@@ -11,4 +13,7 @@ export type ProgramCourse = {
   type: 'program';
   communityId: string;
   steps: CourseStep[];
+  files?: CommunityFile[];
+  postChildren?: CommunityPost[];
+  posts?: CommunityPost[];
 };

@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { CachedImage } from '@/components/ui/media/CachedImage';
 import { useTranslation } from '@/hooks/i18n';
+import PostAttachmentsSection from '@/components/sections/community/PostAttachments/PostAttachmentsSection';
 import { styles } from './styles';
 import type { Post } from '@/types';
 
@@ -100,30 +101,13 @@ const YourCommunitiesSection: React.FC<Props> = ({ community, onCommunityPress, 
                   {getPostTitle(post)}
                 </Text>
 
-                {getPostContent(post) && (
-                  <Text style={styles.postContent} numberOfLines={2}>
-                    {getPostContent(post)}
-                  </Text>
-                )}
-
-                {(post.image || post.videoUrl) && (
-                  <View style={styles.postMediaWrap}>
-                    {post.image ? (
-                      <CachedImage
-                        source={{ uri: post.image }}
-                        style={styles.postMedia}
-                        recyclingKey={`post-${post.id}-media`}
-                      />
-                    ) : (
-                      <View style={[styles.postMedia, styles.postMediaVideoFallback]} />
-                    )}
-                    {post.videoUrl ? (
-                      <View style={styles.postMediaPlay} pointerEvents='none'>
-                        <Icon name='play-circle-outline' size={28} color='rgba(255,255,255,0.95)' />
-                      </View>
-                    ) : null}
-                  </View>
-                )}
+                <PostAttachmentsSection post={post} compact>
+                  {getPostContent(post) ? (
+                    <Text style={styles.postContent} numberOfLines={2}>
+                      {getPostContent(post)}
+                    </Text>
+                  ) : null}
+                </PostAttachmentsSection>
 
                 <View style={styles.postFooter}>
                   <View style={styles.postAction}>

@@ -17,6 +17,7 @@ import type { Event } from '@/types/event';
 import type { ModuleItem } from '@/components/sections/program/ModuleAccordion';
 import productService from '@/services/product/productService';
 import { COLORS } from '@/constants';
+import { moduleItemsFromProgramCourse } from '@/utils/course/programCourseModules';
 import { styles } from './styles';
 
 type Props = StackScreenProps<RootStackParamList, 'ProtocolDetail'>;
@@ -102,12 +103,7 @@ const ProtocolDetailScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const courseModules: ModuleItem[] = useMemo(() => {
     if (course?.steps?.length) {
-      return course.steps.map((step) => ({
-        id: step.postId,
-        title: step.title,
-        completed: false,
-        body: step.body,
-      }));
+      return moduleItemsFromProgramCourse(course);
     }
 
     return (protocol.modules ?? []).map((mod, index) => ({
@@ -115,7 +111,7 @@ const ProtocolDetailScreen: React.FC<Props> = ({ navigation, route }) => {
       title: mod.title ?? `Sessão ${String(index + 1).padStart(2, '0')}`,
       completed: mod.isCompleted ?? false,
     }));
-  }, [course?.steps, protocol.modules]);
+  }, [course, protocol.modules]);
 
   const aboutText = protocol.description?.trim() || protocol.shortDescription?.trim() || null;
 

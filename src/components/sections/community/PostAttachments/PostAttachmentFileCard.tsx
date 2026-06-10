@@ -1,42 +1,74 @@
-import React from 'react';
-import { Pressable, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useTranslation } from '@/hooks/i18n';
 import type { PostAttachment } from '@/types';
+import { downloadCommunityAttachment } from '@/utils/community/communityAttachmentDownload';
 import { communityFileKindIconName } from '@/utils/community/communityFileKind';
-import { openCommunityAttachmentUrl } from './PostImageFullscreenModal';
+import { communityFileKindVisual } from '@/utils/community/communityFileKindVisual';
 import { attachmentStyles as styles } from './styles';
 
 type Props = {
   attachment: PostAttachment;
+  compact?: boolean;
 };
 
-const PostAttachmentFileCard: React.FC<Props> = ({ attachment }) => {
+const PostAttachmentFileCard: React.FC<Props> = ({ attachment, compact = false }) => {
+  const { t } = useTranslation();
+  const [isDownloading, setIsDownloading] = useState(false);
   const iconName = communityFileKindIconName(attachment.kind);
+  const visual = communityFileKindVisual(attachment.kind);
   const extensionLabel = attachment.extension || attachment.fileName.split('.').pop()?.toUpperCase() || 'FILE';
+
+  const onDownloadPress = async () => {
+    if (isDownloading) return;
+    setIsDownloading(true);
+    try {
+      await downloadCommunityAttachment(attachment);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   return (
     <Pressable
-      style={({ pressed }) => [styles.fileCard, pressed ? { opacity: 0.9 } : undefined]}
+      style={({ pressed }) => [
+        styles.fileCard,
+        compact ? styles.fileCardCompact : undefined,
+        pressed && !isDownloading ? { opacity: 0.9 } : undefined,
+        isDownloading ? { opacity: 0.75 } : undefined,
+      ]}
       onPress={(event) => {
         event?.stopPropagation?.();
-        void openCommunityAttachmentUrl(attachment.url, {
-          attachmentId: attachment.id,
-          kind: attachment.kind,
-        });
+        void onDownloadPress();
       }}
+      disabled={isDownloading}
       accessibilityRole='button'
-      accessibilityLabel={`Abrir arquivo ${attachment.fileName}`}
+      accessibilityLabel={t('community.attachments.downloadFile', { fileName: attachment.fileName })}
+      accessibilityState={{ busy: isDownloading }}
     >
-      <View style={styles.fileIconWrap}>
-        <Icon name={iconName} size={22} color='#001137' />
+      <View
+        style={[
+          styles.fileIconWrap,
+          compact ? styles.fileIconWrapCompact : undefined,
+          { backgroundColor: visual.iconBackground },
+        ]}
+      >
+        <Icon name={iconName} size={compact ? 18 : 22} color={visual.iconColor} />
       </View>
-      <View style={styles.fileTextWrap}>
-        <Text style={styles.fileName} numberOfLines={1}>
+      <View style={[styles.fileTextWrap, compact ? styles.fileTextWrapCompact : undefined]}>
+        <Text style={[styles.fileName, compact ? styles.fileNameCompact : undefined]} numberOfLines={compact ? 2 : 1}>
           {attachment.fileName}
         </Text>
-        <Text style={styles.fileExtension}>{extensionLabel.replace(/^\./, '')}</Text>
+        <Text style={[styles.fileExtension, compact ? styles.fileExtensionCompact : undefined]}>
+          {extensionLabel.replace(/^\./, '')}
+        </Text>
       </View>
-      <Icon name='open-in-new' size={18} color='#0154f8' />
+      {isDownloading ? (
+        <ActivityIndicator size='small' color='#0154f8' style={styles.fileActionIcon} />
+      ) : (
+        <Icon name='file-download' size={20} color='#0154f8' style={styles.fileActionIcon} />
+      )}
     </Pressable>
   );
 };

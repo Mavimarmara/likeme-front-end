@@ -69,7 +69,7 @@ describe('PostCard', () => {
       />,
     );
 
-    expect(getByLabelText('Abrir arquivo guide.pdf')).toBeTruthy();
+    expect(getByLabelText('community.attachments.downloadFile')).toBeTruthy();
   });
 
   it('renderiza Image com URI quando há imagem (sem vídeo)', () => {
@@ -121,7 +121,25 @@ describe('PostCard', () => {
       />,
     );
 
-    fireEvent.press(getByLabelText('Reproduzir vídeo'));
+    fireEvent.press(getByLabelText('community.attachments.playVideo'));
+    expect(getByTestId('post-card-embedded-video')).toBeTruthy();
+  });
+
+  it('ao tocar no poster do vídeo, não dispara onPress do card', () => {
+    const poster = 'https://cdn.example.com/thumb.jpg';
+    const video = 'https://cdn.example.com/video.mp4';
+    const onPress = jest.fn();
+    const { getByLabelText, getByTestId } = render(
+      <PostCard
+        post={{ ...basePost(), image: poster, videoUrl: video }}
+        onPress={onPress}
+        postEngagement={{ likeCount: 0, isLiked: false, isLiking: false, togglePostLike: jest.fn() }}
+      />,
+    );
+
+    fireEvent.press(getByLabelText('community.attachments.playVideo'));
+
+    expect(onPress).not.toHaveBeenCalled();
     expect(getByTestId('post-card-embedded-video')).toBeTruthy();
   });
 

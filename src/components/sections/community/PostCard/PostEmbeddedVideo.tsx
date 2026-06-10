@@ -1,33 +1,53 @@
+import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useRef } from 'react';
 import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
-import Video, { type VideoRef } from 'react-native-video';
+import Video, { type OnLoadData, type VideoRef } from 'react-native-video';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 type Props = {
   videoUri: string;
+  fillContainer?: boolean;
   onCollapse: () => void;
-  containerStyle: StyleProp<ViewStyle>;
+  containerStyle?: StyleProp<ViewStyle>;
 };
 
-const PostEmbeddedVideoInner: React.FC<Props> = ({ videoUri, onCollapse, containerStyle }) => {
+const PostEmbeddedVideoInner: React.FC<Props> = ({ videoUri, fillContainer = false, onCollapse, containerStyle }) => {
   const videoRef = useRef<VideoRef>(null);
+  const onCollapseRef = useRef(onCollapse);
+
+  onCollapseRef.current = onCollapse;
 
   const collapse = useCallback(() => {
     videoRef.current?.pause();
-    onCollapse();
-  }, [onCollapse]);
+    onCollapseRef.current();
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        videoRef.current?.pause();
+        onCollapseRef.current();
+      };
+    }, []),
+  );
+
+  const onVideoLoad = useCallback((_data: OnLoadData) => {
+    videoRef.current?.resume();
+  }, []);
 
   return (
-    <View style={containerStyle}>
+    <View style={[fillContainer ? styles.fillContainer : styles.container, containerStyle]}>
       <Video
         ref={videoRef}
         source={{ uri: videoUri }}
         style={styles.video}
         controls
-        resizeMode='cover'
+        paused={false}
+        resizeMode='contain'
         repeat={false}
         ignoreSilentSwitch='ignore'
         playInBackground={false}
+        onLoad={onVideoLoad}
       />
       <Pressable
         style={styles.collapseTouch}
@@ -49,10 +69,17 @@ const PostEmbeddedVideoInner: React.FC<Props> = ({ videoUri, onCollapse, contain
 export const PostEmbeddedVideo: React.FC<Props> = (props) => <PostEmbeddedVideoInner key={props.videoUri} {...props} />;
 
 const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+    aspectRatio: 16 / 9,
+    position: 'relative',
+  },
+  fillContainer: {
+    ...StyleSheet.absoluteFillObject,
+  },
   video: {
     width: '100%',
     height: '100%',
-    minHeight: 200,
   },
   collapseTouch: {
     position: 'absolute',

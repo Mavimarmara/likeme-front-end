@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
 import type { LayoutChangeEvent, NativeSyntheticEvent, TextLayoutEventData } from 'react-native';
 import { Pressable, StyleProp, Text, View, ViewStyle } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -59,25 +58,9 @@ const PostCardView: React.FC<ViewProps> = ({
   const postPreviewContent = getContentPreviewFromPost(post);
   const commentsCount = post.commentsCount !== undefined ? post.commentsCount : post.comments?.length || 0;
 
-  const showMediaBlock = Boolean(
-    (post.attachments?.length || post.image?.trim() || post.videoUrl?.trim()) && !activePoll,
-  );
-  const [videoPlaybackOpen, setVideoPlaybackOpen] = useState(false);
   const [descriptionWidth, setDescriptionWidth] = useState<number | null>(null);
   const [textExceedsMaxLines, setTextExceedsMaxLines] = useState<boolean | null>(null);
   const previousDescriptionWidthRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    setVideoPlaybackOpen(false);
-  }, [post.id, post.videoUrl, post.attachments?.length]);
-
-  useFocusEffect(
-    useCallback(() => {
-      return () => {
-        setVideoPlaybackOpen(false);
-      };
-    }, []),
-  );
 
   useEffect(() => {
     setTextExceedsMaxLines(null);
@@ -142,14 +125,65 @@ const PostCardView: React.FC<ViewProps> = ({
     onPress?.(post);
   };
 
+  const hasPostDetailNavigation = onPress != null;
+  const postHeaderPressableProps = hasPostDetailNavigation
+    ? {
+        onPress: handlePostPress,
+        accessibilityRole: 'button' as const,
+        accessibilityLabel: 'Ver detalhes do post',
+      }
+    : {};
+
+  const descriptionBlock = postPreviewContent ? (
+    <View
+      style={{ position: 'relative' }}
+      onLayout={handleDescriptionContainerLayout}
+      testID='post-card-description-wrap'
+    >
+      <Text
+        testID='post-card-description'
+        style={cardStyles.description}
+        {...(collapsedPreviewNumberOfLines != null ? { numberOfLines: collapsedPreviewNumberOfLines } : {})}
+        ellipsizeMode='tail'
+      >
+        {postPreviewContent}
+      </Text>
+      {shouldMeasurePreviewLines ? (
+        <Text
+          testID='post-card-description-measure'
+          style={[
+            cardStyles.description,
+            {
+              position: 'absolute',
+              opacity: 0,
+              width: descriptionWidth ?? undefined,
+              left: 0,
+              top: 0,
+              zIndex: -1,
+            },
+          ]}
+          pointerEvents='none'
+          accessible={false}
+          importantForAccessibility='no-hide-descendants'
+          onTextLayout={handlePreviewMeasureLayout}
+        >
+          {postPreviewContent}
+        </Text>
+      ) : null}
+    </View>
+  ) : null;
+
   const cardInner = (
     <>
       <View style={cardStyles.contentContainer}>
-        <View style={cardStyles.badgeContainer}>
-          <Badge label={contentTypeLabel} color={typeBadgeColor} />
-        </View>
+        <Pressable
+          {...postHeaderPressableProps}
+          style={({ pressed }) => [pressed && hasPostDetailNavigation ? { opacity: 0.92 } : undefined]}
+        >
+          <View style={cardStyles.badgeContainer}>
+            <Badge label={contentTypeLabel} color={typeBadgeColor} />
+          </View>
 
-        <View>
           <View style={cardStyles.authorSection}>
             {post.userAvatar ? (
               <CachedImage
@@ -170,54 +204,20 @@ const PostCardView: React.FC<ViewProps> = ({
               <Text style={cardStyles.title}>{postTitle}</Text>
             </View>
           ) : null}
+        </Pressable>
 
-          {postPreviewContent ? (
-            <View
-              style={{ position: 'relative' }}
-              onLayout={handleDescriptionContainerLayout}
-              testID='post-card-description-wrap'
-            >
-              <Text
-                testID='post-card-description'
-                style={cardStyles.description}
-                {...(collapsedPreviewNumberOfLines != null ? { numberOfLines: collapsedPreviewNumberOfLines } : {})}
-                ellipsizeMode='tail'
+        {postPreviewContent || post.attachments?.length || post.image?.trim() || post.videoUrl?.trim() ? (
+          <PostAttachmentsSection post={post} expanded={forceContentExpanded} mediaEnabled={!activePoll}>
+            {descriptionBlock ? (
+              <Pressable
+                {...postHeaderPressableProps}
+                style={({ pressed }) => [pressed && hasPostDetailNavigation ? { opacity: 0.92 } : undefined]}
               >
-                {postPreviewContent}
-              </Text>
-              {shouldMeasurePreviewLines ? (
-                <Text
-                  testID='post-card-description-measure'
-                  style={[
-                    cardStyles.description,
-                    {
-                      position: 'absolute',
-                      opacity: 0,
-                      width: descriptionWidth ?? undefined,
-                      left: 0,
-                      top: 0,
-                      zIndex: -1,
-                    },
-                  ]}
-                  pointerEvents='none'
-                  accessible={false}
-                  importantForAccessibility='no-hide-descendants'
-                  onTextLayout={handlePreviewMeasureLayout}
-                >
-                  {postPreviewContent}
-                </Text>
-              ) : null}
-            </View>
-          ) : null}
-
-          {showMediaBlock ? (
-            <PostAttachmentsSection
-              post={post}
-              expanded={forceContentExpanded}
-              onVideoPlaybackChange={setVideoPlaybackOpen}
-            />
-          ) : null}
-        </View>
+                {descriptionBlock}
+              </Pressable>
+            ) : null}
+          </PostAttachmentsSection>
+        ) : null}
       </View>
 
       {activePoll && <PollCard poll={activePoll} onVote={submitPollVote} disabled={false} />}
@@ -281,26 +281,6 @@ const PostCardView: React.FC<ViewProps> = ({
       </View>
     </>
   );
-
-  const videoExpandedBlocksPostNavigation = Boolean(
-    videoPlaybackOpen && (post.videoUrl?.trim() || post.attachments?.some((item) => item.kind === 'video')),
-  );
-
-  if (onPress != null) {
-    if (videoExpandedBlocksPostNavigation) {
-      return <View style={[cardStyles.container, containerStyles]}>{cardInner}</View>;
-    }
-    return (
-      <Pressable
-        style={({ pressed }) => [cardStyles.container, containerStyles, pressed ? { opacity: 0.92 } : undefined]}
-        onPress={handlePostPress}
-        accessibilityRole='button'
-        accessibilityLabel='Ver detalhes do post'
-      >
-        {cardInner}
-      </Pressable>
-    );
-  }
 
   return <View style={[cardStyles.container, containerStyles]}>{cardInner}</View>;
 };

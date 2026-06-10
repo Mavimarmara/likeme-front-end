@@ -67,6 +67,13 @@ jest.mock('expo-file-system', () => ({
   cacheDirectory: 'file:///mock/cache/',
 }));
 
+jest.mock('expo-file-system/legacy', () => ({
+  documentDirectory: 'file:///mock/',
+  cacheDirectory: 'file:///mock/cache/',
+  downloadAsync: jest.fn().mockResolvedValue({ uri: 'file:///mock/cache/file' }),
+  getContentUriAsync: jest.fn().mockResolvedValue('content://mock/file'),
+}));
+
 jest.mock('react-native-video', () => {
   const React = require('react');
   const { View } = require('react-native');
