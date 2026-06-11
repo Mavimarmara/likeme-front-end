@@ -1,7 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { COLORS, SPACING } from '@/constants';
-
-export const FILE_COLUMN_WIDTH = 156;
+import { COLORS, SPACING, TYPOGRAPHY } from '@/constants';
 
 export const attachmentStyles = StyleSheet.create({
   container: {
@@ -60,20 +58,6 @@ export const attachmentStyles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#2a2a2a',
   },
-  mixedRow: {
-    flexDirection: 'row',
-    alignItems: 'stretch',
-    gap: SPACING.SM,
-  },
-  mixedRowMedia: {
-    flex: 1,
-    minWidth: 0,
-  },
-  mixedRowFiles: {
-    width: FILE_COLUMN_WIDTH,
-    gap: SPACING.XS,
-    justifyContent: 'center',
-  },
   imageGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -123,70 +107,59 @@ export const attachmentStyles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '600',
   },
-  fileCard: {
+  fileList: {
+    gap: 10,
+  },
+  fileListSectionTitle: {
+    ...TYPOGRAPHY.bodyMdMedium,
+    color: COLORS.BLACK,
+    marginBottom: SPACING.XS,
+  },
+  fileDownloadButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: SPACING.MD,
-    backgroundColor: COLORS.WHITE,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#e1dfcf',
+    justifyContent: 'space-between',
+    width: '100%',
+    minHeight: 48,
     paddingHorizontal: SPACING.MD,
     paddingVertical: SPACING.MD_PLUS,
+    backgroundColor: 'rgba(240, 238, 225, 0.16)',
+    borderWidth: 1,
+    borderColor: COLORS.NEUTRAL.LOW.PURE,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    borderBottomLeftRadius: 22,
+    borderBottomRightRadius: 22,
   },
-  fileCardCompact: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    gap: SPACING.XS,
-    paddingHorizontal: SPACING.SM,
-    paddingVertical: SPACING.SM,
-    borderRadius: 12,
+  fileDownloadLeading: {
     flex: 1,
-  },
-  fileIconWrap: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    justifyContent: 'center',
+    flexDirection: 'row',
     alignItems: 'center',
-  },
-  fileIconWrapCompact: {
-    width: 32,
-    height: 32,
-    borderRadius: 10,
-  },
-  fileTextWrap: {
-    flex: 1,
+    gap: SPACING.SM,
     minWidth: 0,
-    gap: 2,
+    paddingRight: SPACING.SM,
   },
-  fileTextWrapCompact: {
-    flex: 0,
-    width: '100%',
+  fileDownloadKindIcon: {
+    width: 38,
+    height: 37,
   },
-  fileName: {
-    fontSize: 14,
+  fileDownloadName: {
+    flex: 1,
+    fontFamily: TYPOGRAPHY.bodySm.fontFamily,
+    fontSize: 10,
+    lineHeight: 14,
     fontWeight: '500',
     color: COLORS.TEXT,
   },
-  fileNameCompact: {
-    fontSize: 11,
-    lineHeight: 14,
+  fileDownloadAction: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.XS,
+    flexShrink: 0,
   },
-  fileExtension: {
-    fontSize: 12,
-    fontWeight: '400',
-    color: COLORS.TEXT_LIGHT,
-    textTransform: 'uppercase',
-  },
-  fileExtensionCompact: {
-    fontSize: 10,
-  },
-  fileList: {
-    gap: SPACING.SM,
-  },
-  fileActionIcon: {
-    marginLeft: 'auto',
+  fileDownloadActionLabel: {
+    ...TYPOGRAPHY.labelMd,
+    color: COLORS.NEUTRAL.LOW.PURE,
   },
   fullscreenBackdrop: {
     flex: 1,

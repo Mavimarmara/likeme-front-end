@@ -270,10 +270,13 @@ const PostAttachmentsSection: React.FC<Props> = ({
     if (!showEndOfPost || files.length === 0) return null;
 
     return (
-      <View style={styles.fileList} testID='post-attachment-file-list'>
-        {files.map((file) => (
-          <PostAttachmentFileCard key={file.id} attachment={file} compact={compact} />
-        ))}
+      <View testID='post-attachment-file-list'>
+        <Text style={styles.fileListSectionTitle}>{t('community.attachments.accessMaterials')}</Text>
+        <View style={styles.fileList}>
+          {files.map((file) => (
+            <PostAttachmentFileCard key={file.id} attachment={file} />
+          ))}
+        </View>
       </View>
     );
   };

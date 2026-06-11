@@ -34,6 +34,7 @@ function buildFeedParamsKey(params: Partial<UserFeedParams> | undefined): string
     params.order ?? '',
     params.categoryId ?? '',
     solutionIds,
+    params.communityId ?? '',
   ].join('|');
 }
 

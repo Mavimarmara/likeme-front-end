@@ -173,6 +173,7 @@ export interface UserFeedParams {
   order?: 'asc' | 'desc';
   categoryId?: string | null;
   solutionIds?: string[];
+  communityId?: string;
 }
 
 export interface ListCommunitiesParams {

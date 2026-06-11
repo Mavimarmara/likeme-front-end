@@ -9,6 +9,7 @@ import type {
   ListCommunitiesApiResponse,
 } from '@/types/community';
 import type { ApiError } from '@/types/infrastructure';
+import { shouldUseVariedMediaFeedMock, variedMediaTestFeedApiResponse } from '@/dev/community/variedMediaFeedMock';
 
 class CommunityService {
   private readonly userFeeEndpoint = '/api/communities/feed';
@@ -20,6 +21,12 @@ class CommunityService {
 
   async getUserFeed(params: UserFeedParams = {}): Promise<UserFeedApiResponse> {
     try {
+      if (shouldUseVariedMediaFeedMock(params)) {
+        const mockResponse = variedMediaTestFeedApiResponse(params);
+        logger.debug('[CommunityService] varied media test feed mock', mockResponse);
+        return mockResponse;
+      }
+
       const queryParams: Record<string, string> = {};
       const formatListParam = (value?: string | string[]) => {
         if (!value) {
@@ -79,6 +86,10 @@ class CommunityService {
 
       if (params.solutionIds != null && params.solutionIds.length > 0) {
         queryParams.solutionIds = params.solutionIds.join(',');
+      }
+
+      if (params.communityId != null && params.communityId.trim() !== '') {
+        queryParams.communityId = params.communityId.trim();
       }
 
       const userFeedResponse = await apiClient.get<UserFeedApiResponse>(this.userFeeEndpoint, queryParams, true, false);

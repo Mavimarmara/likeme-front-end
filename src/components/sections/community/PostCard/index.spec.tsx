@@ -51,7 +51,7 @@ const basePost = (): Post => ({
 
 describe('PostCard', () => {
   it('renderiza card de arquivo quando há anexo PDF', () => {
-    const { getByLabelText } = render(
+    const { getByLabelText, getByText } = render(
       <PostCard
         post={{
           ...basePost(),
@@ -70,6 +70,39 @@ describe('PostCard', () => {
     );
 
     expect(getByLabelText('community.attachments.downloadFile')).toBeTruthy();
+    expect(getByText('community.attachments.accessMaterials')).toBeTruthy();
+    expect(getByText('community.attachments.download')).toBeTruthy();
+  });
+
+  it('lista arquivos após o texto, um por linha, com imagem e PDF', () => {
+    const { getByTestId, queryByTestId } = render(
+      <PostCard
+        post={{
+          ...basePost(),
+          image: 'https://cdn.example.com/cover.jpg',
+          attachments: [
+            {
+              id: 'img-1',
+              url: 'https://cdn.example.com/cover.jpg',
+              kind: 'image',
+              fileName: 'cover.jpg',
+              extension: '.jpg',
+            },
+            {
+              id: 'doc-1',
+              url: 'https://cdn.example.com/guide.pdf',
+              kind: 'pdf',
+              fileName: 'guide.pdf',
+              extension: '.pdf',
+            },
+          ],
+        }}
+        postEngagement={{ likeCount: 0, isLiked: false, isLiking: false, togglePostLike: jest.fn() }}
+      />,
+    );
+
+    expect(getByTestId('post-attachment-file-list')).toBeTruthy();
+    expect(queryByTestId('post-attachment-mixed-row-image')).toBeNull();
   });
 
   it('renderiza Image com URI quando há imagem (sem vídeo)', () => {
