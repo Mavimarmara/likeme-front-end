@@ -17,6 +17,7 @@ import {
   getPostTypeBadgeColor,
   getTitleFromPost,
 } from '@/utils/community/postCardUtils';
+import { isPollClosed } from '@/utils/community/pollClosure';
 import PostAttachmentsSection from '../PostAttachments/PostAttachmentsSection';
 
 type Props = {
@@ -220,7 +221,15 @@ const PostCardView: React.FC<ViewProps> = ({
         ) : null}
       </View>
 
-      {activePoll && <PollCard poll={activePoll} onVote={submitPollVote} disabled={false} />}
+      {activePoll && (
+        <PollCard
+          poll={activePoll}
+          onVote={submitPollVote}
+          disabled={
+            activePoll.isFinished || isPollClosed({ endedAt: activePoll.endedAt, isFinished: activePoll.isFinished })
+          }
+        />
+      )}
 
       <View style={cardStyles.footer}>
         <View style={cardStyles.footerLeft}>

@@ -3,6 +3,7 @@ import type { Post } from '@/types';
 import communityService from '@/services/community/communityService';
 import { logger } from '@/utils/logger';
 import { mergePollDetailIntoPoll } from '@/utils/community/pollDetailMapper';
+import { isPollClosed } from '@/utils/community/pollClosure';
 
 export function usePost(post: Post) {
   const [livePoll, setLivePoll] = useState(post.poll);
@@ -15,10 +16,9 @@ export function usePost(post: Post) {
   postRef.current = post;
 
   const pollId = post.poll?.pollId;
-  const feedShowsUserVote = Boolean(post.poll?.options.some((o) => o.isSelected));
 
   useEffect(() => {
-    if (!pollId || feedShowsUserVote) {
+    if (!pollId) {
       return;
     }
 
@@ -32,12 +32,11 @@ export function usePost(post: Post) {
         setLivePoll((prev) => {
           const baseline = prev ?? latestPost.poll;
           if (!baseline?.options.length) return prev;
-          if (baseline.options.some((o) => o.isSelected)) return prev;
           return mergePollDetailIntoPoll(detail, baseline, latestPost.id);
         });
       } catch (error) {
         if (!cancelled) {
-          logger.error('Falha ao carregar voto existente na enquete', {
+          logger.error('Falha ao sincronizar enquete', {
             pollId,
             postId: postRef.current.id,
             cause: error,
@@ -49,7 +48,7 @@ export function usePost(post: Post) {
     return () => {
       cancelled = true;
     };
-  }, [post.id, pollId, feedShowsUserVote]);
+  }, [post.id, pollId]);
 
   const activePoll = livePoll ?? post.poll;
 
@@ -70,6 +69,15 @@ export function usePost(post: Post) {
 
       if (!baseline) {
         throw new Error('Dados da enquete ausentes');
+      }
+
+      const pollClosed = isPollClosed({
+        endedAt: baseline.endedAt,
+        isFinished: baseline.isFinished,
+      });
+
+      if (pollClosed) {
+        throw new Error('Enquete encerrada');
       }
 
       logger.debug('Votando na enquete:', {

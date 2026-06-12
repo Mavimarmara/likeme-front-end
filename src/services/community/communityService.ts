@@ -9,8 +9,6 @@ import type {
   ListCommunitiesApiResponse,
 } from '@/types/community';
 import type { ApiError } from '@/types/infrastructure';
-import { shouldUseVariedMediaFeedMock, variedMediaTestFeedApiResponse } from '@/dev/community/variedMediaFeedMock';
-
 class CommunityService {
   private readonly userFeeEndpoint = '/api/communities/feed';
   private readonly pollsBasePath = '/api/communities/polls';
@@ -21,12 +19,6 @@ class CommunityService {
 
   async getUserFeed(params: UserFeedParams = {}): Promise<UserFeedApiResponse> {
     try {
-      if (shouldUseVariedMediaFeedMock(params)) {
-        const mockResponse = variedMediaTestFeedApiResponse(params);
-        logger.debug('[CommunityService] varied media test feed mock', mockResponse);
-        return mockResponse;
-      }
-
       const queryParams: Record<string, string> = {};
       const formatListParam = (value?: string | string[]) => {
         if (!value) {

@@ -37,7 +37,6 @@ import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen, logTabSelect } from '@/analytics';
 import { storageService } from '@/services';
 import { logger } from '@/utils/logger';
-import { COMMUNITY_MEDIA_TEST_ID, isCommunityMediaTestId } from '@/constants/community/communityMediaTest';
 import { resolveCommunityHeroImageUri } from '@/utils/community/mappers';
 import { navigateToProviderProfile } from '@/utils/navigation/marketplaceNavigation';
 import { navigateToProductDetailsScreen } from '@/utils/navigation/productNavigation';
@@ -132,12 +131,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     loadEvents: loadCommunityEvents,
   });
 
-  const selectedCommunity = useMemo(() => {
-    if (__DEV__) {
-      return rawCommunities.find((community) => isCommunityMediaTestId(community.communityId)) ?? rawCommunities[0];
-    }
-    return rawCommunities[0];
-  }, [rawCommunities]);
+  const selectedCommunity = useMemo(() => rawCommunities[0], [rawCommunities]);
 
   const selectedCommunityId = selectedCommunity?.communityId;
 
@@ -170,8 +164,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     enabled: isFeedMode,
     searchQuery: '',
     pageSize: COMMUNITY_FEED_POSTS_PAGE_SIZE,
-    params:
-      __DEV__ && isCommunityMediaTestId(selectedCommunityId) ? { communityId: COMMUNITY_MEDIA_TEST_ID } : undefined,
   });
 
   const communityAdvertiserFetchEnabled = !!selectedCommunityId && (solutionsMode || !feedLoading || posts.length > 0);

@@ -16,7 +16,6 @@ import { useEventList } from '@/hooks/event/useEventList';
 import { resolveCommunityHeroImageUri } from '@/utils/community/mappers';
 import { isCommunitiesCacheEntryFresh, useCommunitiesCache } from '@/contexts/CommunitiesCacheContext';
 import { communitiesListCacheKey } from '@/utils/community/communitiesCacheKey';
-import { communitiesWithMediaTestStub } from '@/constants/community/communityMediaTest';
 
 import type { JoinCardItem } from '@/components/ui/cards/JoinCard';
 
@@ -96,9 +95,7 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
   const initialCacheIsFresh = initialCacheEntry != null && isCommunitiesCacheEntryFresh(initialCacheEntry);
 
   const [communities, setCommunities] = useState<Community[]>(() =>
-    initialCacheIsFresh
-      ? communitiesWithMediaTestStub(initialCacheEntry.communities)
-      : communitiesWithMediaTestStub([]),
+    initialCacheIsFresh ? initialCacheEntry.communities : [],
   );
   const [categories, setCategories] = useState<CommunityCategory[]>(() =>
     initialCacheIsFresh ? initialCacheEntry.categories : [],
@@ -179,7 +176,7 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
           throw new Error(response.message || 'Erro ao listar comunidades');
         }
 
-        const communitiesList = communitiesWithMediaTestStub(response.data.communities || []);
+        const communitiesList = response.data.communities || [];
         const categoriesList = response.data.categories || [];
         const communityUsersList = response.data.communityUsers || [];
         const pagingData = response.data.paging || null;

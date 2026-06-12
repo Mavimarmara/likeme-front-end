@@ -10,6 +10,7 @@ import type {
 import type { Post, Comment, Poll } from '@/types';
 import type { Program } from '@/types/program';
 import { logger } from '@/utils/logger';
+import { resolvePollState } from '@/utils/community/pollClosure';
 import {
   firstImageAndVideoFromAttachments,
   resolveCommunityPostAttachmentsWithChildren,
@@ -150,7 +151,13 @@ const mapCommunityPostToPoll = (communityPost: CommunityPost, _postChildren?: Co
     percentage: totalVotes > 0 ? Math.round((opt.votes / totalVotes) * 100) : 0,
   }));
 
-  const endedAt = communityPost.data?.endedAt || communityPost.data?.endDate;
+  const pollState = resolvePollState({
+    endedAt: communityPost.data?.endedAt,
+    endDate: communityPost.data?.endDate,
+    closedAt: typeof communityPost.data?.closedAt === 'string' ? communityPost.data.closedAt : undefined,
+    isFinished: communityPost.data?.isFinished === true,
+    status: typeof communityPost.data?.status === 'string' ? communityPost.data.status : undefined,
+  });
 
   let pollId = communityPost.data?.pollId;
 
@@ -164,8 +171,8 @@ const mapCommunityPostToPoll = (communityPost: CommunityPost, _postChildren?: Co
     question,
     options: pollOptionsWithPercentage,
     totalVotes,
-    endedAt: endedAt ? new Date(endedAt) : undefined,
-    isFinished: !!endedAt,
+    endedAt: pollState.endedAt,
+    isFinished: pollState.isClosed,
   };
 };
 

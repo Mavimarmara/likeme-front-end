@@ -5,6 +5,13 @@ export const styles = StyleSheet.create({
   container: {
     marginTop: SPACING.MD,
   },
+  closedDisclaimer: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#6e6a6a',
+    lineHeight: 18,
+    marginBottom: SPACING.SM,
+  },
   optionsContainer: {
     gap: SPACING.LG,
     marginBottom: SPACING.MD,
@@ -19,6 +26,9 @@ export const styles = StyleSheet.create({
     backgroundColor: '#fbf7e5',
     padding: SPACING.SM,
     borderRadius: BORDER_RADIUS.LG,
+  },
+  optionDisabled: {
+    opacity: 0.72,
   },
   optionHeader: {
     flexDirection: 'row',
@@ -43,6 +53,9 @@ export const styles = StyleSheet.create({
   radioButtonSelected: {
     borderColor: '#0154f8',
     borderWidth: 2,
+  },
+  radioButtonDisabled: {
+    borderColor: '#a8a8a8',
   },
   radioButtonInner: {
     width: 10,
@@ -71,9 +84,15 @@ export const styles = StyleSheet.create({
     color: '#0154f8',
     fontWeight: '600',
   },
+  optionTextDisabled: {
+    color: '#6e6a6a',
+  },
   percentageSelected: {
     color: '#0154f8',
     fontWeight: '600',
+  },
+  percentageDisabled: {
+    color: '#6e6a6a',
   },
   progressContainer: {
     height: 12,
@@ -95,6 +114,9 @@ export const styles = StyleSheet.create({
   },
   progressBarFillSelected: {
     backgroundColor: '#0154f8',
+  },
+  progressBarFillDisabled: {
+    backgroundColor: '#e4e4e4',
   },
   footerText: {
     fontSize: 12,

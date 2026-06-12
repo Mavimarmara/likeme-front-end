@@ -1,4 +1,5 @@
 import type { Poll } from '@/types';
+import { resolvePollState } from '@/utils/community/pollClosure';
 
 type PollDetailAnswer = {
   id?: string;
@@ -11,6 +12,9 @@ type PollDetailPayload = {
   pollId?: string;
   answers?: PollDetailAnswer[];
   endedAt?: string;
+  endDate?: string;
+  closedAt?: string;
+  isFinished?: boolean;
   status?: string;
 };
 
@@ -58,8 +62,13 @@ export function mergePollDetailIntoPoll(detailPayload: unknown, baseline: Poll, 
     };
   });
 
-  const endedRaw = entity.endedAt;
-  const endedAt = endedRaw ? new Date(endedRaw) : baseline.endedAt;
+  const pollState = resolvePollState({
+    endedAt: entity.endedAt ?? entity.endDate ?? entity.closedAt ?? baseline.endedAt?.toISOString(),
+    endDate: entity.endDate ?? entity.endedAt,
+    closedAt: entity.closedAt,
+    isFinished: entity.isFinished ?? baseline.isFinished,
+    status: entity.status,
+  });
 
   return {
     ...baseline,
@@ -67,7 +76,7 @@ export function mergePollDetailIntoPoll(detailPayload: unknown, baseline: Poll, 
     pollId: baseline.pollId ?? entity.pollId,
     options,
     totalVotes,
-    endedAt,
-    isFinished: Boolean(endedRaw) || baseline.isFinished,
+    endedAt: pollState.endedAt ?? baseline.endedAt,
+    isFinished: pollState.isClosed,
   };
 }
