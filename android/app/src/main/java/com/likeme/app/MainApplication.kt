@@ -6,6 +6,8 @@ import android.app.NotificationManager
 import android.content.res.Configuration
 import android.os.Build
 
+import com.microsoft.codepush.react.CodePush
+
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactNativeApplicationEntryPoint.loadReactNative
@@ -33,6 +35,8 @@ class MainApplication : Application(), ReactApplication {
           override fun getJSMainModuleName(): String = ".expo/.virtual-metro-entry"
 
           override fun getUseDeveloperSupport(): Boolean = BuildConfig.DEBUG
+
+          override fun getJSBundleFile(): String = CodePush.getJSBundleFile()
 
           override val isNewArchEnabled: Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
       }

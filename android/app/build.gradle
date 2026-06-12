@@ -81,6 +81,16 @@ def enableMinifyInReleaseBuilds = (findProperty('android.enableMinifyInReleaseBu
  */
 def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
 
+def revopushAndroidDeploymentKey = (
+    findProperty('REVOPUSH_DEPLOYMENT_KEY_ANDROID_PRODUCTION')
+        ?: System.getenv('REVOPUSH_DEPLOYMENT_KEY_ANDROID_PRODUCTION')
+        ?: findProperty('REVOPUSH_DEPLOYMENT_KEY_ANDROID_STAGING')
+        ?: System.getenv('REVOPUSH_DEPLOYMENT_KEY_ANDROID_STAGING')
+        ?: findProperty('REVOPUSH_DEPLOYMENT_KEY_ANDROID')
+        ?: System.getenv('REVOPUSH_DEPLOYMENT_KEY_ANDROID')
+        ?: ''
+).toString()
+
 android {
     ndkVersion rootProject.ext.ndkVersion
 
@@ -96,6 +106,8 @@ android {
         versionName "1.6.0"
 
         buildConfigField "String", "REACT_NATIVE_RELEASE_LEVEL", "\"${findProperty('reactNativeReleaseLevel') ?: 'stable'}\""
+        resValue "string", "CodePushDeploymentKey", "\"${revopushAndroidDeploymentKey}\""
+        resValue "string", "CodePushServerUrl", "\"https://api.revopush.org\""
     }
     signingConfigs {
         debug {
@@ -183,3 +195,6 @@ dependencies {
 }
 
 apply plugin: 'com.google.gms.google-services'
+
+// @revopush/gradle
+apply from: "../../node_modules/@revopush/react-native-code-push/android/codepush.gradle"
