@@ -111,6 +111,7 @@ export function shouldUseProgramMultiDocCourseMock(communityId: string): boolean
 export function programMultiDocCourseApiResponse(): ApiResponse<ProgramCourse> {
   return {
     success: true,
+    message: 'OK',
     data: programMultiDocCourseMock(),
   };
 }
