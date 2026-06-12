@@ -40,9 +40,6 @@ export const styles = StyleSheet.create({
   },
   profileButton: {
     width: '100%',
-    backgroundColor: 'rgba(240, 238, 225, 0.16)',
-    borderWidth: 1,
     borderColor: COLORS.NEUTRAL.LOW.PURE,
-    borderRadius: 24,
   },
 });

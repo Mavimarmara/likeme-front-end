@@ -32,7 +32,7 @@ type Props = {
   iconSize?: number;
   iconColor?: string;
   iconPosition?: 'left' | 'right';
-  variant?: 'default' | 'dark';
+  variant?: 'dark';
   testID?: string;
 };
 
@@ -50,7 +50,7 @@ const SecondaryButton: React.FC<Props> = ({
   iconSize = 16,
   iconColor,
   iconPosition = 'right',
-  variant = 'default',
+  variant,
   testID,
 }) => {
   const isDisabled = loading || disabled;
