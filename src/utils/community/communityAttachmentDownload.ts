@@ -65,3 +65,9 @@ export async function downloadCommunityAttachment(attachment: AttachmentContext)
     await openCommunityAttachmentUrl(url, { attachmentId: attachment.id, kind: attachment.kind });
   }
 }
+
+export async function downloadCommunityAttachmentsSequentially(attachments: AttachmentContext[]): Promise<void> {
+  for (const attachment of attachments) {
+    await downloadCommunityAttachment(attachment);
+  }
+}

@@ -1,11 +1,18 @@
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { COLORS, TYPOGRAPHY } from '@/constants';
+
+const androidFlatSurface = Platform.select({
+  android: {
+    elevation: 0,
+  },
+  default: {},
+});
 
 export const styles = StyleSheet.create({
   button: {
     alignItems: 'center',
     alignSelf: 'stretch',
-    backgroundColor: COLORS.SECONDARY.PURE,
+    backgroundColor: 'transparent',
     borderWidth: 1,
     borderColor: COLORS.TEXT,
     display: 'flex',
@@ -13,26 +20,38 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 9,
     paddingHorizontal: 16,
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    ...androidFlatSurface,
   },
   buttonSmall: {
     minHeight: 36,
     borderRadius: 18,
+    overflow: 'hidden',
   },
   buttonMedium: {
     minHeight: 48,
     borderRadius: 24,
+    overflow: 'hidden',
   },
   buttonDark: {
     backgroundColor: COLORS.SECONDARY.LIGHT,
     borderColor: COLORS.SECONDARY.LIGHT,
-    shadowColor: COLORS.BLACK,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    ...Platform.select({
+      ios: {
+        shadowColor: COLORS.BLACK,
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 0,
+      },
+      default: {},
+    }),
   },
   buttonContent: {
     flexDirection: 'row',

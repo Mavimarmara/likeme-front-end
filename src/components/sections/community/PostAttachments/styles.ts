@@ -107,19 +107,12 @@ export const attachmentStyles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '600',
   },
-  fileList: {
-    gap: 10,
-  },
-  fileListSectionTitle: {
-    ...TYPOGRAPHY.bodyMdMedium,
-    color: COLORS.BLACK,
-    marginBottom: SPACING.XS,
-  },
-  fileDownloadButton: {
+  fileDownloadActionButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '100%',
+    justifyContent: 'center',
+    alignSelf: 'flex-start',
+    gap: SPACING.XS,
     minHeight: 48,
     paddingHorizontal: SPACING.MD,
     paddingVertical: SPACING.MD_PLUS,
@@ -131,31 +124,10 @@ export const attachmentStyles = StyleSheet.create({
     borderBottomLeftRadius: 22,
     borderBottomRightRadius: 22,
   },
-  fileDownloadLeading: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.SM,
-    minWidth: 0,
-    paddingRight: SPACING.SM,
-  },
-  fileDownloadKindIcon: {
-    width: 38,
-    height: 37,
-  },
-  fileDownloadName: {
-    flex: 1,
-    fontFamily: TYPOGRAPHY.bodySm.fontFamily,
-    fontSize: 10,
-    lineHeight: 14,
-    fontWeight: '500',
-    color: COLORS.TEXT,
-  },
-  fileDownloadAction: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.XS,
-    flexShrink: 0,
+  fileListSectionTitle: {
+    ...TYPOGRAPHY.bodyMdMedium,
+    color: COLORS.BLACK,
+    marginBottom: SPACING.XS,
   },
   fileDownloadActionLabel: {
     ...TYPOGRAPHY.labelMd,

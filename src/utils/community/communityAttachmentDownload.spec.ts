@@ -1,6 +1,10 @@
 import * as FileSystem from 'expo-file-system/legacy';
 import { Linking, Share } from 'react-native';
-import { downloadCommunityAttachment, openCommunityAttachmentUrl } from './communityAttachmentDownload';
+import {
+  downloadCommunityAttachment,
+  downloadCommunityAttachmentsSequentially,
+  openCommunityAttachmentUrl,
+} from './communityAttachmentDownload';
 
 jest.mock('expo-file-system/legacy', () => ({
   cacheDirectory: 'file:///mock/cache/',
@@ -44,6 +48,26 @@ describe('communityAttachmentDownload', () => {
     });
 
     expect(Linking.openURL).toHaveBeenCalledWith('https://cdn.example.com/guide.pdf');
+  });
+
+  it('baixa anexos em sequência', async () => {
+    await downloadCommunityAttachmentsSequentially([
+      {
+        id: 'doc-1',
+        url: 'https://cdn.example.com/guide.pdf',
+        kind: 'pdf',
+        fileName: 'guide.pdf',
+      },
+      {
+        id: 'doc-2',
+        url: 'https://cdn.example.com/checklist.pdf',
+        kind: 'pdf',
+        fileName: 'checklist.pdf',
+      },
+    ]);
+
+    expect(FileSystem.downloadAsync).toHaveBeenCalledTimes(2);
+    expect(Share.share).toHaveBeenCalledTimes(2);
   });
 
   it('openCommunityAttachmentUrl valida canOpenURL', async () => {

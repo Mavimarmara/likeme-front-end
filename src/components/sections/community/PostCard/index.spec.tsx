@@ -1,6 +1,7 @@
 import { fireEvent, render } from '@testing-library/react-native';
 import PostCard from './index';
 import type { Post } from '@/types';
+import { COMMUNITY_ATTACHMENT_DOWNLOAD_MATERIAL_I18N_KEY } from '@/constants/community/communityAttachmentI18n';
 
 jest.mock('@react-navigation/native', () => ({
   useFocusEffect: jest.fn((effect: () => void | (() => void)) => {
@@ -69,9 +70,9 @@ describe('PostCard', () => {
       />,
     );
 
-    expect(getByLabelText('community.attachments.downloadFile')).toBeTruthy();
+    expect(getByLabelText(COMMUNITY_ATTACHMENT_DOWNLOAD_MATERIAL_I18N_KEY)).toBeTruthy();
     expect(getByText('community.attachments.accessMaterials')).toBeTruthy();
-    expect(getByText('community.attachments.download')).toBeTruthy();
+    expect(getByText(COMMUNITY_ATTACHMENT_DOWNLOAD_MATERIAL_I18N_KEY)).toBeTruthy();
   });
 
   it('lista arquivos após o texto, um por linha, com imagem e PDF', () => {

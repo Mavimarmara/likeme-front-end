@@ -14,7 +14,7 @@ import {
   postHasEndOfPostAttachments,
   type PostAttachmentPlacement,
 } from '@/utils/community/postAttachmentPlacement';
-import PostAttachmentFileCard from './PostAttachmentFileCard';
+import PostAttachmentDownloadButton from './PostAttachmentDownloadButton';
 import PostImageFullscreenModal from './PostImageFullscreenModal';
 import { PostEmbeddedVideo } from '../PostCard/PostEmbeddedVideo';
 import { attachmentStyles as styles } from './styles';
@@ -272,11 +272,7 @@ const PostAttachmentsSection: React.FC<Props> = ({
     return (
       <View testID='post-attachment-file-list'>
         <Text style={styles.fileListSectionTitle}>{t('community.attachments.accessMaterials')}</Text>
-        <View style={styles.fileList}>
-          {files.map((file) => (
-            <PostAttachmentFileCard key={file.id} attachment={file} />
-          ))}
-        </View>
+        <PostAttachmentDownloadButton attachments={files} />
       </View>
     );
   };

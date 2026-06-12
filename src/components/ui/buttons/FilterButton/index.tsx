@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, type ImageSourcePropType, type ImageStyle } from 'react-native';
+import { Platform, StyleSheet, type ImageSourcePropType, type ImageStyle } from 'react-native';
 import SecondaryButton from '../Secondary';
 import { ModalBase } from '@/components/ui/modals/shared';
 import { COLORS } from '@/constants';
@@ -25,6 +25,14 @@ const selectedButtonStyle = StyleSheet.create({
   root: {
     backgroundColor: COLORS.PRIMARY.PURE,
     borderColor: COLORS.PRIMARY.PURE,
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    ...Platform.select({
+      android: {
+        elevation: 0,
+      },
+      default: {},
+    }),
   },
   label: {
     color: COLORS.WHITE,

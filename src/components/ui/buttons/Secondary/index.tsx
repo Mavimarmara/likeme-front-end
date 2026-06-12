@@ -1,12 +1,13 @@
 import React from 'react';
 import {
   Text,
-  TouchableOpacity,
+  Pressable,
   GestureResponderEvent,
   ViewStyle,
   TextStyle,
   ActivityIndicator,
   View,
+  Platform,
   type ImageSourcePropType,
   type ImageStyle,
 } from 'react-native';
@@ -94,18 +95,19 @@ const SecondaryButton: React.FC<Props> = ({
   };
 
   return (
-    <TouchableOpacity
+    <Pressable
       testID={testID}
-      style={[
+      style={({ pressed }) => [
         styles.button,
         variant === 'dark' && styles.buttonDark,
         getSizeStyle(),
         style,
         isDisabled && styles.buttonDisabled,
+        pressed && !isDisabled ? { opacity: 0.7 } : undefined,
       ]}
       onPress={onPress}
       disabled={isDisabled}
-      activeOpacity={0.7}
+      android_ripple={Platform.OS === 'android' ? { color: 'rgba(0, 17, 55, 0.08)', borderless: false } : undefined}
     >
       {loading ? (
         <ActivityIndicator size='small' color={getTextColor()} />
@@ -116,7 +118,7 @@ const SecondaryButton: React.FC<Props> = ({
           {iconPosition === 'right' && renderIcon()}
         </View>
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
