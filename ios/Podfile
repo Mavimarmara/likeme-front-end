@@ -16,7 +16,7 @@ ENV['RCT_NEW_ARCH_ENABLED'] ||= '0' if podfile_properties['newArchEnabled'] == '
 ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] ||= podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
 ENV['RCT_USE_RN_DEP'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true' && podfile_properties['newArchEnabled'] != 'false'
 ENV['RCT_USE_PREBUILT_RNCORE'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true' && podfile_properties['newArchEnabled'] != 'false'
-platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
+platform :ios, podfile_properties['ios.deploymentTarget'] || '15.5'
 
 $RNFirebaseAnalyticsWithoutAdIdSupport = true
 
@@ -104,15 +104,13 @@ target 'LikeMe' do
     end
 
     # likeme-podfile-post-install
-    deployment_target = podfile_properties['ios.deploymentTarget'] || '15.1'
+    deployment_target = podfile_properties['ios.deploymentTarget'] || '15.5'
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
         current = config.build_settings['IPHONEOS_DEPLOYMENT_TARGET']
         next if current.nil?
 
-        current_major = current.to_s.split('.').first.to_i
-        min_major = deployment_target.to_s.split('.').first.to_i
-        if current_major.positive? && current_major < min_major
+        if Gem::Version.new(current.to_s) < Gem::Version.new(deployment_target.to_s)
           config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = deployment_target
         end
       end
