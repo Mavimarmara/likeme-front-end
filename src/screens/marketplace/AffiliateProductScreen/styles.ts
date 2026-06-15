@@ -218,12 +218,14 @@ export const styles = StyleSheet.create({
     gap: SPACING.MD,
   },
   buySection: {
+    width: '100%',
     gap: 10,
     alignItems: 'center',
     paddingTop: SPACING.MD,
   },
   buyButton: {
-    width: 330,
+    alignSelf: 'center',
+    width: '100%',
   },
   disclaimerText: {
     fontSize: 14,

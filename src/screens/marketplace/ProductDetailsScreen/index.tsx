@@ -268,7 +268,8 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     return (
       <View style={[styles.partnerSectionAbovePrice, atScreenEnd && styles.partnerSectionAtScreenEnd]}>
         <PartnerSection
-          name={`${t('marketplace.recommendedBy')} ${partnerDisplayName}`.trim()}
+          recommendedByLabel={t('marketplace.recommendedBy')}
+          name={partnerDisplayName}
           avatar={partnerData.avatar}
           specialistLabel={partnerData.description?.trim() || t('marketplace.specialistLabel')}
           profileButtonLabel={showProfileButton ? t('marketplace.seePartnerProfile') : undefined}

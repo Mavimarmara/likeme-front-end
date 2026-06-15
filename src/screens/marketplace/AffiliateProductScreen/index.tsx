@@ -183,7 +183,8 @@ const AffiliateProductScreen: React.FC<AffiliateProductScreenProps> = ({ navigat
     return (
       <View style={styles.partnerSection}>
         <PartnerSection
-          name={`${t('marketplace.recommendedBy')} ${partnerDisplayName}`.trim()}
+          recommendedByLabel={t('marketplace.recommendedBy')}
+          name={partnerDisplayName}
           avatar={partnerData.avatar}
           specialistLabel={partnerData.description?.trim() || t('marketplace.specialistLabel')}
         />

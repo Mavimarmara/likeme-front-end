@@ -79,3 +79,22 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ### Alterado
 - Abertura da release 1.6
+
+## [1.6.1] - 2026-06-15
+
+### Adicionado
+- Posts com anexos multimídia no feed da comunidade
+- Botão Baixar Material em anexos de posts e protocolos
+- Atualizações OTA via Revopush
+
+### Alterado
+- Tipografia e tokens visuais alinhados ao Figma
+- Traduções do app priorizam o bundle remoto do backend
+- Layout do parceiro recomendado em produto e afiliado Amazon
+
+### Corrigido
+- Enquetes encerradas não permitem mais votar ou interagir
+- Vídeo exibido corretamente em posts com várias imagens
+- Botões secundários com visual consistente no Android
+- Botão Comprar na Amazon centralizado na tela de afiliado
+- Documentos do profissional no perfil exibem apenas o valor cadastrado

@@ -5,10 +5,18 @@ export const styles = StyleSheet.create({
   container: {
     gap: SPACING.MD,
   },
+  recommendedByLabel: {
+    fontSize: 14,
+    fontFamily: 'DM Sans',
+    fontWeight: '500',
+    color: COLORS.NEUTRAL.LOW.PURE,
+  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+  },
+  rowWithRecommendedByLabel: {
+    paddingHorizontal: SPACING.MD,
   },
   avatar: {
     width: 39,

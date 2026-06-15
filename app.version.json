@@ -1,17 +1,29 @@
 {
-  "version": "1.6.0",
-  "releasedAt": "2026-06-01",
+  "version": "1.6.1",
+  "releasedAt": "2026-06-15",
   "android": {
-    "versionCode": 238
+    "versionCode": 239
   },
   "ios": {
-    "buildNumber": 15
+    "buildNumber": 16
   },
   "changelog": {
-    "added": [],
-    "changed": [
-      "Abertura da release 1.6"
+    "added": [
+      "Posts com anexos multimídia no feed da comunidade",
+      "Botão Baixar Material em anexos de posts e protocolos",
+      "Atualizações OTA via Revopush"
     ],
-    "fixed": []
+    "changed": [
+      "Tipografia e tokens visuais alinhados ao Figma",
+      "Traduções do app priorizam o bundle remoto do backend",
+      "Layout do parceiro recomendado em produto e afiliado Amazon"
+    ],
+    "fixed": [
+      "Enquetes encerradas não permitem mais votar ou interagir",
+      "Vídeo exibido corretamente em posts com várias imagens",
+      "Botões secundários com visual consistente no Android",
+      "Botão Comprar na Amazon centralizado na tela de afiliado",
+      "Documentos do profissional no perfil exibem apenas o valor cadastrado"
+    ]
   }
 }
