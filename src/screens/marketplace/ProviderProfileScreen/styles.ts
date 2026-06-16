@@ -25,10 +25,11 @@ export const styles = StyleSheet.create({
   },
   heroContent: {
     width: '100%',
-    paddingBottom: 30,
+    paddingTop: SPACING.SM,
+    paddingBottom: SPACING.LG,
   },
   heroTextGroup: {
-    gap: SPACING.MD,
+    gap: SPACING.SM,
   },
   heroTitle: {
     fontFamily: 'DM Sans',

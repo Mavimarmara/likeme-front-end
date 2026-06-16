@@ -85,6 +85,9 @@ export const styles = StyleSheet.create({
     marginBottom: 10,
     paddingTop: SPACING.MD,
   },
+  badgesContainerCompact: {
+    marginBottom: 4,
+  },
   badge: {
     backgroundColor: 'rgba(0, 17, 55, 0.64)',
     paddingHorizontal: 14,

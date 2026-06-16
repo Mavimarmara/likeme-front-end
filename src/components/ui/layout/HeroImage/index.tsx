@@ -64,21 +64,24 @@ const HeroImage = ({
               </View>
             )}
             <View style={styles.content}>
-              <>
-                {badges.length > 0 && (
-                  <View style={styles.badgesContainer}>
-                    {badges.map((badge, index) => (
-                      <View key={index} style={styles.badge}>
-                        <Text style={styles.badgeText}>{badge}</Text>
-                      </View>
-                    ))}
-                  </View>
-                )}
-                {title ? <Text style={styles.title}>{title}</Text> : null}
-                <Text style={styles.name}>{name}</Text>
-                {footer != null ? <View style={styles.footer}>{footer}</View> : <View style={styles.footer} />}
-              </>
-              {customOverlay && children}
+              {badges.length > 0 && (
+                <View style={[styles.badgesContainer, customOverlay && styles.badgesContainerCompact]}>
+                  {badges.map((badge, index) => (
+                    <View key={index} style={styles.badge}>
+                      <Text style={styles.badgeText}>{badge}</Text>
+                    </View>
+                  ))}
+                </View>
+              )}
+              {customOverlay ? (
+                children
+              ) : (
+                <>
+                  {title ? <Text style={styles.title}>{title}</Text> : null}
+                  {name ? <Text style={styles.name}>{name}</Text> : null}
+                  {footer != null ? <View style={styles.footer}>{footer}</View> : <View style={styles.footer} />}
+                </>
+              )}
             </View>
           </View>
         </View>
