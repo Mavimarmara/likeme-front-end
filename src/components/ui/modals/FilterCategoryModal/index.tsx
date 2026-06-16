@@ -41,7 +41,6 @@ type Props = {
   selectedCategoryId: string | undefined;
   onSelectCategory: (category: CommunityCategory | null, categoryName: CategoryName | null) => void;
   selectedSolutionIds: SolutionId[];
-  onToggleSolution: (id: SolutionId) => void;
   onFilter: (result: FilterCategoryResult) => void;
   onClear: () => void;
 };
@@ -53,7 +52,6 @@ const FilterCategoryModal: React.FC<Props> = ({
   selectedCategoryId,
   onSelectCategory,
   selectedSolutionIds,
-  onToggleSolution,
   onFilter,
   onClear,
 }) => {
@@ -63,12 +61,14 @@ const FilterCategoryModal: React.FC<Props> = ({
   /** Estado local da categoria selecionada para atualização imediata da UI ao toque */
   const [localSelectedCategoryId, setLocalSelectedCategoryId] = useState<string | undefined>(selectedCategoryId);
   const [localSelectedCategoryName, setLocalSelectedCategoryName] = useState<CategoryName | null>(null);
+  const [localSelectedSolutionIds, setLocalSelectedSolutionIds] = useState<SolutionId[]>(selectedSolutionIds);
   const prevVisible = useRef(false);
 
   /** Sincroniza com o pai apenas quando o modal abre; evita sobrescrever a seleção durante o uso */
   useEffect(() => {
     if (visible && !prevVisible.current) {
       setLocalSelectedCategoryId(selectedCategoryId);
+      setLocalSelectedSolutionIds(selectedSolutionIds);
       const cat = displayCategories.find((c) => String(c.categoryId) === String(selectedCategoryId));
       const resolved: CategoryName | null = cat ? getMarkerIdForCategory(cat.categoryId, cat.name) ?? null : null;
       setLocalSelectedCategoryName(resolved);
@@ -77,7 +77,7 @@ const FilterCategoryModal: React.FC<Props> = ({
     if (!visible) {
       prevVisible.current = false;
     }
-  }, [visible, selectedCategoryId, displayCategories]);
+  }, [visible, selectedCategoryId, selectedSolutionIds, displayCategories]);
 
   const handleSelectCategory = (cat: CommunityCategory | null) => {
     const nextId = cat ? String(cat.categoryId) : undefined;
@@ -88,10 +88,14 @@ const FilterCategoryModal: React.FC<Props> = ({
     onSelectCategory(cat, categoryName);
   };
 
+  const handleSelectSolution = (id: SolutionId) => {
+    setLocalSelectedSolutionIds((prev) => (prev.includes(id) ? [] : [id]));
+  };
+
   const handleFilter = () => {
-    const resolvedSolutionTab = resolveSolutionTabFromFilters(selectedSolutionIds);
+    const resolvedSolutionTab = resolveSolutionTabFromFilters(localSelectedSolutionIds);
     const solutionIdsToApply =
-      resolvedSolutionTab === 'all' && selectedSolutionIds.length === 0 ? [] : [...selectedSolutionIds];
+      resolvedSolutionTab === 'all' && localSelectedSolutionIds.length === 0 ? [] : [...localSelectedSolutionIds];
 
     const resolvedName: CategoryName | null =
       localSelectedCategoryName ??
@@ -111,6 +115,7 @@ const FilterCategoryModal: React.FC<Props> = ({
   const handleClear = () => {
     setLocalSelectedCategoryId(undefined);
     setLocalSelectedCategoryName(null);
+    setLocalSelectedSolutionIds([]);
     onClear();
     onClose();
   };
@@ -165,13 +170,13 @@ const FilterCategoryModal: React.FC<Props> = ({
             <Text style={styles.sectionTitle}>{t('filterCategory.solutionsTitle')}</Text>
             <View style={styles.solutionsGrid}>
               {solutionOptions.map((opt) => {
-                const isSelected = selectedSolutionIds.includes(opt.id);
+                const isSelected = localSelectedSolutionIds.includes(opt.id);
                 return (
                   <FilterModalButton
                     key={opt.id}
                     label={t(opt.labelKey)}
                     selected={isSelected}
-                    onPress={() => onToggleSolution(opt.id)}
+                    onPress={() => handleSelectSolution(opt.id)}
                     style={styles.chipWidth}
                   />
                 );

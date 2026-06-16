@@ -554,9 +554,6 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
             selectedCategoryId={selectedCategoryId}
             onSelectCategory={() => {}}
             selectedSolutionIds={selectedSolutionIds}
-            onToggleSolution={(id) => {
-              setSelectedSolutionIds((prev) => (prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]));
-            }}
             onFilter={handleFilterCategoryApply}
             onClear={handleClearFilterCategory}
           />
