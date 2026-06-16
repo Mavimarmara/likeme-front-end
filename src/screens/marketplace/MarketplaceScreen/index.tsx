@@ -51,6 +51,7 @@ import {
   hasMarketplaceSearchQuery,
   isMarketplaceAllTab,
   marketplaceSolutionIdsForTab,
+  marketplaceSolutionOptions,
   resolveMarketplaceSolutionTabFromFilters,
   type MarketplaceSolutionTab,
   type SolutionFilterId,
@@ -536,7 +537,6 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
           <View style={styles.filterMenuContainer}>
             <StickyFilterCarouselRow
               filterButtonLabel={categoryFilterButtonLabel}
-              filterButtonSelected={selectedSolutionIds.length > 0}
               onFilterButtonPress={() => setIsFilterCategoryModalVisible(true)}
               carouselOptions={marketplaceCarouselOptions}
               selectedCarouselId={selectedSolutionTab}
@@ -554,6 +554,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
             selectedCategoryId={selectedCategoryId}
             onSelectCategory={() => {}}
             selectedSolutionIds={selectedSolutionIds}
+            solutionOptions={marketplaceSolutionOptions}
             onFilter={handleFilterCategoryApply}
             onClear={handleClearFilterCategory}
           />

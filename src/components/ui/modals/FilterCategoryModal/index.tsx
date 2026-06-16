@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, Modal, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useTranslation } from '@/hooks/i18n';
@@ -41,6 +41,7 @@ type Props = {
   selectedCategoryId: string | undefined;
   onSelectCategory: (category: CommunityCategory | null, categoryName: CategoryName | null) => void;
   selectedSolutionIds: SolutionId[];
+  solutionOptions?: readonly SolutionOption[];
   onFilter: (result: FilterCategoryResult) => void;
   onClear: () => void;
 };
@@ -52,11 +53,17 @@ const FilterCategoryModal: React.FC<Props> = ({
   selectedCategoryId,
   onSelectCategory,
   selectedSolutionIds,
+  solutionOptions: solutionOptionsProp,
   onFilter,
   onClear,
 }) => {
   const { t } = useTranslation();
   const displayCategories = categories.length > 0 ? categories : FALLBACK_CATEGORIES;
+  const displaySolutionOptions = solutionOptionsProp ?? solutionOptions;
+  const allowedSolutionIds = useMemo(
+    () => new Set(displaySolutionOptions.map((option) => option.id)),
+    [displaySolutionOptions],
+  );
 
   /** Estado local da categoria selecionada para atualização imediata da UI ao toque */
   const [localSelectedCategoryId, setLocalSelectedCategoryId] = useState<string | undefined>(selectedCategoryId);
@@ -68,7 +75,7 @@ const FilterCategoryModal: React.FC<Props> = ({
   useEffect(() => {
     if (visible && !prevVisible.current) {
       setLocalSelectedCategoryId(selectedCategoryId);
-      setLocalSelectedSolutionIds(selectedSolutionIds);
+      setLocalSelectedSolutionIds(selectedSolutionIds.filter((id) => allowedSolutionIds.has(id)));
       const cat = displayCategories.find((c) => String(c.categoryId) === String(selectedCategoryId));
       const resolved: CategoryName | null = cat ? getMarkerIdForCategory(cat.categoryId, cat.name) ?? null : null;
       setLocalSelectedCategoryName(resolved);
@@ -77,7 +84,7 @@ const FilterCategoryModal: React.FC<Props> = ({
     if (!visible) {
       prevVisible.current = false;
     }
-  }, [visible, selectedCategoryId, selectedSolutionIds, displayCategories]);
+  }, [visible, selectedCategoryId, selectedSolutionIds, displayCategories, allowedSolutionIds]);
 
   const handleSelectCategory = (cat: CommunityCategory | null) => {
     const nextId = cat ? String(cat.categoryId) : undefined;
@@ -169,7 +176,7 @@ const FilterCategoryModal: React.FC<Props> = ({
 
             <Text style={styles.sectionTitle}>{t('filterCategory.solutionsTitle')}</Text>
             <View style={styles.solutionsGrid}>
-              {solutionOptions.map((opt) => {
+              {displaySolutionOptions.map((opt) => {
                 const isSelected = localSelectedSolutionIds.includes(opt.id);
                 return (
                   <FilterModalButton
