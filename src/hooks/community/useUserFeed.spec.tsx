@@ -38,7 +38,10 @@ const feedPayload = (options: {
   data: {
     status: 'ok' as const,
     data: {
-      posts: options.posts,
+      posts: options.posts.map((post) => ({
+        createdAt: '2026-01-01T00:00:00.000Z',
+        ...post,
+      })),
       files: [],
       users: [],
       comments: [],
