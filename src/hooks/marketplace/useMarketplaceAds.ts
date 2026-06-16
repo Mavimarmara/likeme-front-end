@@ -6,6 +6,7 @@ import {
 } from '@/contexts/MarketplaceListingsCacheContext';
 import { mapUICategoryToApiCategory } from '@/utils';
 import { marketplaceAdsCacheKey } from '@/utils/marketplace/marketplaceListingsCacheKey';
+import { appendUniqueAdsById, uniqueAdsById } from '@/utils/marketplace/uniqueAdsById';
 import { logger } from '@/utils/logger';
 import { prefetchImageUris } from '@/utils/image/prefetchImageUris';
 import type { Ad, ListAdsParams } from '@/types/ad';
@@ -148,7 +149,7 @@ export const useMarketplaceAds = ({
       const adsArray = response.data.ads || [];
       void prefetchImageUris(adsArray.slice(0, MARKETPLACE_ADS_PREFETCH_FIRST_N).map((ad) => ad.product?.image));
 
-      const nextAds = page === 1 ? adsArray : [...adsRef.current, ...adsArray];
+      const nextAds = page === 1 ? uniqueAdsById(adsArray) : appendUniqueAdsById(adsRef.current, adsArray);
       setAds(nextAds);
 
       let nextHasMore = false;

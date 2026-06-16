@@ -6,6 +6,7 @@ import { ScreenWithHeader } from '@/components/ui/layout';
 import { SearchBar } from '@/components/ui/inputs';
 import { EmptyState } from '@/components/ui/feedback';
 import { JoinCard } from '@/components/ui/cards';
+import { JoinCardList } from '@/components/ui/lists/JoinCardList';
 import ProtocolList from '@/components/sections/subscription/ProtocolList';
 import { useSubscriptionList } from '@/hooks/subscription/useSubscriptionList';
 import {
@@ -196,14 +197,18 @@ const SubscriptionListScreen: React.FC<Props> = ({ navigation }) => {
             {subscriptionProtocols.length > 0 && (
               <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Protocolos</Text>
-                <JoinCard layout='list' items={subscriptionProtocols} onItemPress={openSubscriptionItem} />
+                <View style={styles.cardsList}>
+                  <JoinCardList layout='list' items={subscriptionProtocols} onItemPress={openSubscriptionItem} />
+                </View>
               </View>
             )}
 
             {services.length > 0 && (
               <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Serviços</Text>
-                <JoinCard layout='list' items={services} onItemPress={openSubscriptionItem} />
+                <View style={styles.cardsList}>
+                  <JoinCardList layout='list' items={services} onItemPress={openSubscriptionItem} />
+                </View>
               </View>
             )}
 
@@ -214,23 +219,25 @@ const SubscriptionListScreen: React.FC<Props> = ({ navigation }) => {
                     defaultValue: 'Protocolos na comunidade',
                   })}
                 </Text>
-                <JoinCard
-                  layout='list'
-                  items={communityProtocolsWithoutSubscription.map((item) => ({
-                    id: item.communityId,
-                    title: item.title,
-                    badges: item.badges,
-                    image: item.image,
-                  }))}
-                  onItemPress={(card) => {
-                    const item = communityProtocolsWithoutSubscription.find(
-                      (protocol) => protocol.communityId === card.id,
-                    );
-                    if (item) {
-                      openCommunityProtocol(item);
-                    }
-                  }}
-                />
+                <View style={styles.cardsList}>
+                  <JoinCardList
+                    layout='list'
+                    items={communityProtocolsWithoutSubscription.map((item) => ({
+                      id: item.communityId,
+                      title: item.title,
+                      badges: item.badges,
+                      image: item.image,
+                    }))}
+                    onItemPress={(card) => {
+                      const item = communityProtocolsWithoutSubscription.find(
+                        (protocol) => protocol.communityId === card.id,
+                      );
+                      if (item) {
+                        openCommunityProtocol(item);
+                      }
+                    }}
+                  />
+                </View>
               </View>
             )}
           </>

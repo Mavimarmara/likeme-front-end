@@ -1,6 +1,14 @@
 import React, { useCallback, useMemo, useState, useEffect, useRef } from 'react';
-import { ActivityIndicator, FlatList, type ListRenderItem, TouchableOpacity, View, Text } from 'react-native';
-import { CachedImage } from '@/components/ui/media/CachedImage';
+import {
+  ActivityIndicator,
+  FlatList,
+  ScrollView,
+  type ListRenderItem,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
+  View,
+  Text,
+} from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { RouteProp } from '@react-navigation/native';
 import { SearchBar } from '@/components/ui/inputs';
@@ -8,13 +16,22 @@ import { IconButton } from '@/components/ui/buttons';
 import { StickyFilterCarouselRow } from '@/components/ui/menu';
 import { DEFAULT_MARKETPLACE_SORT_ORDER, type MarketplaceSortOrderId } from '@/constants/marketplaceSortOrder';
 import { buildMarketplaceCategoryBadgeLabels } from '@/utils/marketplace/buildMarketplaceCategoryBadgeLabels';
+import { groupMarketplaceAdsBySolutionKind } from '@/utils/marketplace/groupMarketplaceAdsBySolutionKind';
 import { sortAdsByMarketplaceOrder } from '@/utils/marketplace/sorting';
+import { uniqueAdsById } from '@/utils/marketplace/uniqueAdsById';
 import { ScreenWithHeader } from '@/components/ui/layout';
 import { EmptyState } from '@/components/ui/feedback';
 import { GradientBackgroundByCategory } from '@/components/sections';
 import { FilterCategoryModal, type FilterCategoryResult, type SolutionId } from '@/components/ui/modals';
-import { WeekHighlightCard } from '@/components/sections/marketplace';
-import { ProductItemCard } from '@/components/ui/cards';
+import {
+  MarketplaceCategoryBlocks,
+  MarketplaceProductCardsList,
+  MarketplaceProgramCardsRow,
+  MarketplaceProfessionalsBlock,
+  MarketplaceServiceCardsList,
+} from '@/components/sections/marketplace';
+import { JoinCard, ProductItemCard } from '@/components/ui/cards';
+import { adToJoinCardItem } from '@/utils/marketplace/adToJoinCardItem';
 import {
   useMarketplaceAds,
   useProducts,
@@ -32,10 +49,6 @@ import { navigateToProviderProfile } from '@/utils/navigation/marketplaceNavigat
 import type { Ad, Advertiser } from '@/types/ad';
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import type { RootStackParamList } from '@/types/navigation';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import { SecondaryButton } from '@/components/ui/buttons';
-import { COLORS } from '@/constants';
-import { styles as shoppingListStyles } from '@/components/sections/community/ShoppingList/styles';
 import { styles } from './styles';
 import { useAnalyticsScreen } from '@/analytics';
 import { CategoryName } from '@/types';
@@ -49,7 +62,6 @@ import {
 const SOLUTION_ALL: SolutionTab = 'all';
 const MARKETPLACE_SOLUTION_ID_SET = new Set<SolutionFilterId>(marketplaceSolutionOptions.map((option) => option.id));
 
-const DEFAULT_HIGHLIGHT_IMAGE = 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
 const DEFAULT_PRODUCT_IMAGE = 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
 const MARKETPLACE_LIST_END_REACHED_THRESHOLD = 0.5;
 type MarketplaceSolutionTab = SolutionTab | MarketplaceSolutionFilterId;
@@ -79,6 +91,8 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
 
   const marketplaceListingsEnabled = selectedSolutionTab !== 'professionals';
   const marketplaceTabsPrefetchKeyRef = useRef<string | null>(null);
+  const scrollNearBottomRef = useRef(false);
+  const flatListLoadMoreLockedRef = useRef(false);
 
   const { categories } = useCategories({ enabled: true });
   const { getCategoryName } = useCategoryDisplayLabel();
@@ -268,22 +282,18 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   ]);
 
   useEffect(() => {
-    if (!marketplaceListingsEnabled) {
-      return;
-    }
-    if (isProgramsTab) {
-      loadProducts();
+    if (!marketplaceListingsEnabled || isProgramsTab) {
       return;
     }
     if (selectedSolutionTab === 'products') {
-      loadProductsTabAds();
+      void loadProductsTabAds();
       return;
     }
     if (selectedSolutionTab === 'services') {
-      loadServicesTabAds();
+      void loadServicesTabAds();
       return;
     }
-    loadAllTabAds();
+    void loadAllTabAds();
   }, [
     marketplaceListingsEnabled,
     isProgramsTab,
@@ -291,10 +301,28 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     allTabPage,
     productsTabPage,
     servicesTabPage,
-    programsTabPage,
     loadAllTabAds,
     loadProductsTabAds,
     loadServicesTabAds,
+  ]);
+
+  useEffect(() => {
+    if (!marketplaceListingsEnabled) {
+      return;
+    }
+    const needsProgramCatalog =
+      isProgramsTab || (selectedSolutionTab === SOLUTION_ALL && appliedSearchQuery.trim().length === 0);
+    if (!needsProgramCatalog) {
+      return;
+    }
+    void loadProducts();
+  }, [
+    marketplaceListingsEnabled,
+    isProgramsTab,
+    selectedSolutionTab,
+    appliedSearchQuery,
+    selectedCategoryId,
+    programsTabPage,
     loadProducts,
   ]);
 
@@ -306,7 +334,25 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   );
 
   const handleLoadMore = useCallback(() => {
-    if (loading || !hasMore) return;
+    const usesAllTabGroupedPagination = selectedSolutionTab === SOLUTION_ALL && appliedSearchQuery.trim().length === 0;
+    if (usesAllTabGroupedPagination) {
+      if (allTabLoading || programsLoading) {
+        return;
+      }
+      if (!allTabHasMore && !programsHasMore) {
+        return;
+      }
+      if (allTabHasMore) {
+        setAllTabPage((prev) => prev + 1);
+      }
+      if (programsHasMore) {
+        setProgramsTabPage((prev) => prev + 1);
+      }
+      return;
+    }
+    if (loading || !hasMore) {
+      return;
+    }
     if (isProgramsTab) {
       setProgramsTabPage((prev) => prev + 1);
       return;
@@ -320,7 +366,17 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       return;
     }
     setAllTabPage((prev) => prev + 1);
-  }, [isProgramsTab, loading, hasMore, selectedSolutionTab]);
+  }, [
+    appliedSearchQuery,
+    allTabHasMore,
+    allTabLoading,
+    hasMore,
+    isProgramsTab,
+    loading,
+    programsHasMore,
+    programsLoading,
+    selectedSolutionTab,
+  ]);
 
   const menuItems = useMenuItems(navigation);
   useSetFloatingMenu(menuItems, 'marketplace');
@@ -371,6 +427,62 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     selectedCategoryName != null
       ? getCategoryName(selectedCategoryName)
       : selectedCategoryFromId?.name ?? t('marketplace.category');
+
+  const categoryDisplayName =
+    selectedCategoryName != null ? getCategoryName(selectedCategoryName) : selectedCategoryFromId?.name?.trim() ?? '';
+
+  const showCategoryBlocks =
+    selectedCategoryId != null && selectedSolutionTab === SOLUTION_ALL && appliedSearchQuery.trim().length === 0;
+
+  const showAllTabGroupedLayout =
+    selectedSolutionTab === SOLUTION_ALL && !showCategoryBlocks && appliedSearchQuery.trim().length === 0;
+
+  const showSolutionKindLayout =
+    showCategoryBlocks ||
+    showAllTabGroupedLayout ||
+    selectedSolutionTab === 'services' ||
+    selectedSolutionTab === 'programs';
+
+  const sortedAllTabAds = useMemo(() => {
+    return sortAdsByMarketplaceOrder(
+      uniqueAdsById(allTabAds),
+      DEFAULT_MARKETPLACE_SORT_ORDER as MarketplaceSortOrderId,
+    );
+  }, [allTabAds]);
+
+  const groupedCategoryAds = useMemo(() => groupMarketplaceAdsBySolutionKind(sortedAllTabAds), [sortedAllTabAds]);
+
+  const sortedProgramAds = useMemo(() => {
+    return sortAdsByMarketplaceOrder(programCatalogAds, DEFAULT_MARKETPLACE_SORT_ORDER as MarketplaceSortOrderId);
+  }, [programCatalogAds]);
+
+  const categoryProgramAds = useMemo(() => {
+    const seen = new Set<string>();
+    const merged: Ad[] = [];
+    for (const ad of [...sortedProgramAds, ...groupedCategoryAds.program]) {
+      if (seen.has(ad.id)) {
+        continue;
+      }
+      seen.add(ad.id);
+      merged.push(ad);
+    }
+    return merged;
+  }, [sortedProgramAds, groupedCategoryAds.program]);
+
+  const categoryIntroText =
+    showCategoryBlocks && categoryDisplayName
+      ? t('marketplace.categoryIntro', {
+          categoryName: categoryDisplayName,
+          defaultValue:
+            'Aqui você encontra uma curadoria de produtos, conteúdos e serviços alinhados com {{categoryName}}.',
+        })
+      : null;
+
+  const hasCategoryBlockContent =
+    groupedCategoryAds.product.length > 0 ||
+    groupedCategoryAds.service.length > 0 ||
+    categoryProgramAds.length > 0 ||
+    professionals.length > 0;
 
   const renderCustomHeader = () => (
     <View style={styles.customHeader}>
@@ -440,7 +552,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   );
 
   const sortedAds = useMemo(() => {
-    return sortAdsByMarketplaceOrder(ads, DEFAULT_MARKETPLACE_SORT_ORDER as MarketplaceSortOrderId);
+    return sortAdsByMarketplaceOrder(uniqueAdsById(ads), DEFAULT_MARKETPLACE_SORT_ORDER as MarketplaceSortOrderId);
   }, [ads]);
 
   const filteredAdsBySolution = useMemo(() => {
@@ -465,14 +577,66 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     });
   }, [sortedAds, selectedSolutionTab]);
 
+  const highlightAdId = useMemo(() => {
+    if (selectedSolutionTab !== SOLUTION_ALL || appliedSearchQuery.trim().length > 0) {
+      return null;
+    }
+    if (activeListingPage !== 1) {
+      return null;
+    }
+    return filteredAdsBySolution[0]?.id ?? null;
+  }, [selectedSolutionTab, appliedSearchQuery, activeListingPage, filteredAdsBySolution]);
+
+  const excludeHighlightFromAds = useCallback(
+    (adsList: readonly Ad[]) => {
+      if (highlightAdId == null) {
+        return adsList;
+      }
+      return adsList.filter((ad) => ad.id !== highlightAdId);
+    },
+    [highlightAdId],
+  );
+
+  const allTabServiceAds = useMemo(
+    () => excludeHighlightFromAds(groupedCategoryAds.service),
+    [excludeHighlightFromAds, groupedCategoryAds.service],
+  );
+
+  const allTabProgramAds = useMemo(
+    () => excludeHighlightFromAds(categoryProgramAds),
+    [excludeHighlightFromAds, categoryProgramAds],
+  );
+
+  const allTabProductAds = useMemo(
+    () => excludeHighlightFromAds(groupedCategoryAds.product),
+    [excludeHighlightFromAds, groupedCategoryAds.product],
+  );
+
+  const hasAllTabGroupedContent =
+    (highlightAdId != null && filteredAdsBySolution[0]?.product != null) ||
+    allTabServiceAds.length > 0 ||
+    allTabProgramAds.length > 0 ||
+    allTabProductAds.length > 0 ||
+    professionals.length > 0;
+
   const listAdsForCurrentTab = useMemo(() => {
+    if (showAllTabGroupedLayout) {
+      return allTabProductAds;
+    }
     const isSearching = appliedSearchQuery.trim().length > 0;
     const skipHighlightSlice = isSearching || selectedSolutionTab === 'programs' || selectedSolutionTab === 'services';
     if (skipHighlightSlice) {
       return filteredAdsBySolution;
     }
     return activeListingPage === 1 ? filteredAdsBySolution.slice(1) : filteredAdsBySolution;
-  }, [filteredAdsBySolution, activeListingPage, appliedSearchQuery, selectedSolutionTab]);
+  }, [
+    showAllTabGroupedLayout,
+    allTabProductAds,
+    filteredAdsBySolution,
+    activeListingPage,
+    appliedSearchQuery,
+    selectedSolutionTab,
+  ]);
 
   const handleProfessionalPress = useCallback(
     (advertiser: Advertiser) => {
@@ -521,40 +685,19 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     return (
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t('filterCategory.solutions.professionals')}</Text>
-        <View style={shoppingListStyles.list}>
-          {professionals.map((advertiser) => (
-            <View key={advertiser.id} style={shoppingListStyles.professionalCardWrapper}>
-              <View style={shoppingListStyles.professionalCardContent}>
-                {advertiser.logo ? (
-                  <CachedImage source={{ uri: advertiser.logo }} style={shoppingListStyles.professionalAvatar} />
-                ) : (
-                  <View style={shoppingListStyles.professionalAvatarPlaceholder}>
-                    <Icon name='person' size={32} color={COLORS.NEUTRAL.LOW.MEDIUM} />
-                  </View>
-                )}
-                <View style={shoppingListStyles.professionalInfo}>
-                  <Text style={shoppingListStyles.professionalName} numberOfLines={1}>
-                    {advertiser.name ?? ''}
-                  </Text>
-                  {advertiser.description ? (
-                    <Text style={shoppingListStyles.professionalProfession}>{advertiser.description}</Text>
-                  ) : null}
-                </View>
-                <SecondaryButton
-                  label={t('community.viewProfile')}
-                  onPress={() => handleProfessionalPress(advertiser)}
-                  size='medium'
-                  style={shoppingListStyles.professionalViewProfileButton}
-                />
-              </View>
-            </View>
-          ))}
-        </View>
+        <MarketplaceProfessionalsBlock
+          professionals={professionals}
+          onProfessionalPress={handleProfessionalPress}
+          viewProfileLabel={t('community.viewProfile')}
+        />
       </View>
     );
   }, [professionals, t, handleProfessionalPress]);
 
   const renderWeekHighlights = () => {
+    if (showCategoryBlocks) {
+      return null;
+    }
     if (selectedSolutionTab !== SOLUTION_ALL) {
       return null;
     }
@@ -567,18 +710,22 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       return null;
     }
 
-    const categoryBadgeLabels = buildMarketplaceCategoryBadgeLabels(highlight.product, categories);
-    const categoryBadge = categoryBadgeLabels.length > 0 ? categoryBadgeLabels.join(' · ') : undefined;
+    const highlightItem = adToJoinCardItem(highlight, {
+      categories,
+      includePrice: true,
+      fallbackTitle: t('marketplace.product', { defaultValue: 'Product' }),
+    });
 
     return (
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t('marketplace.weekHighlights')}</Text>
-        <WeekHighlightCard
-          title={highlight.product.name || t('marketplace.product')}
-          image={highlight.product.image || DEFAULT_HIGHLIGHT_IMAGE}
-          price={highlight.product.price}
+        <JoinCard
+          title={highlightItem.title}
+          badges={highlightItem.badges}
+          image={highlightItem.image}
+          price={highlightItem.price}
+          square
           onPress={() => handleAdPress(highlight)}
-          badge={categoryBadge}
         />
       </View>
     );
@@ -586,33 +733,86 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
 
   const isProfessionalsTab = selectedSolutionTab === 'professionals';
   const listData = isProfessionalsTab ? [] : listAdsForCurrentTab;
-  const showMarketplaceInitialLoading = !isProfessionalsTab && loading && listData.length === 0;
+  const showCategoryBlocksLoading =
+    showCategoryBlocks && (allTabLoading || programsLoading) && !hasCategoryBlockContent;
+  const showAllTabGroupedLoading =
+    showAllTabGroupedLayout && (allTabLoading || programsLoading) && !hasAllTabGroupedContent;
+  const showListInitialLoading =
+    !isProfessionalsTab && !showCategoryBlocks && !showAllTabGroupedLayout && loading && listData.length === 0;
   const showProfessionalsAfterAllTab =
-    selectedSolutionTab === SOLUTION_ALL && professionalsContent != null && listAdsForCurrentTab.length > 0;
+    !showCategoryBlocks &&
+    selectedSolutionTab === SOLUTION_ALL &&
+    professionalsContent != null &&
+    (showAllTabGroupedLayout ? hasAllTabGroupedContent : listAdsForCurrentTab.length > 0);
+  const groupedAllTabHasMore = allTabHasMore || programsHasMore;
+  const solutionKindHasMore = showCategoryBlocks || showAllTabGroupedLayout ? groupedAllTabHasMore : hasMore;
+  const solutionKindLoading =
+    showCategoryBlocks || showAllTabGroupedLayout ? allTabLoading || programsLoading : loading;
+  const productFallbackTitle = t('marketplace.product', { defaultValue: 'Product' });
+  const outOfStockLabel = t('marketplace.outOfStock', { defaultValue: 'Out of stock' });
+
+  const handleGroupedScrollEndReached = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+      const visibleBottom = layoutMeasurement.height + contentOffset.y;
+      const threshold = layoutMeasurement.height * MARKETPLACE_LIST_END_REACHED_THRESHOLD;
+      const isNearBottom = visibleBottom >= contentSize.height - threshold;
+
+      if (!isNearBottom) {
+        scrollNearBottomRef.current = false;
+        return;
+      }
+
+      if (scrollNearBottomRef.current || !solutionKindHasMore || solutionKindLoading) {
+        return;
+      }
+
+      scrollNearBottomRef.current = true;
+      handleLoadMore();
+    },
+    [solutionKindHasMore, solutionKindLoading, handleLoadMore],
+  );
+
+  const handleFlatListEndReached = useCallback(() => {
+    if (flatListLoadMoreLockedRef.current || loading || !hasMore) {
+      return;
+    }
+    flatListLoadMoreLockedRef.current = true;
+    handleLoadMore();
+  }, [loading, hasMore, handleLoadMore]);
+
+  const handleFlatListMomentumScrollBegin = useCallback(() => {
+    flatListLoadMoreLockedRef.current = false;
+  }, []);
 
   const listFooter = useMemo(() => {
+    const groupedLayoutActive = showCategoryBlocks || showAllTabGroupedLayout;
+    const groupedHasContent = showCategoryBlocks ? hasCategoryBlockContent : hasAllTabGroupedContent;
+    const showLoadMoreSpinner = showSolutionKindLayout
+      ? solutionKindLoading && (groupedLayoutActive ? groupedHasContent : filteredAdsBySolution.length > 0)
+      : !isProfessionalsTab && loading && listAdsForCurrentTab.length > 0;
+
     return (
       <View style={styles.listFooter}>
-        {!isProfessionalsTab && loading && listAdsForCurrentTab.length > 0 ? (
+        {showLoadMoreSpinner ? (
           <View style={styles.listLoadingMore}>
             <ActivityIndicator size='small' color='#2196F3' />
           </View>
-        ) : null}
-        {!isProfessionalsTab && hasMore && !loading && listAdsForCurrentTab.length > 0 ? (
-          <TouchableOpacity style={styles.listLoadMoreButton} onPress={handleLoadMore} activeOpacity={0.7}>
-            <Text style={styles.listLoadMoreText}>{t('marketplace.loadMore')}</Text>
-          </TouchableOpacity>
         ) : null}
         {showProfessionalsAfterAllTab ? professionalsContent : null}
       </View>
     );
   }, [
+    showSolutionKindLayout,
+    showCategoryBlocks,
+    showAllTabGroupedLayout,
+    solutionKindLoading,
+    hasCategoryBlockContent,
+    hasAllTabGroupedContent,
+    filteredAdsBySolution.length,
     isProfessionalsTab,
     loading,
     listAdsForCurrentTab.length,
-    hasMore,
-    handleLoadMore,
-    t,
     showProfessionalsAfterAllTab,
     professionalsContent,
   ]);
@@ -631,6 +831,19 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
         )
       );
     }
+    if (showCategoryBlocks && !hasCategoryBlockContent && !showCategoryBlocksLoading) {
+      return (
+        <View style={styles.listEmptyContainer}>
+          <EmptyState
+            title={t('marketplace.noAdsFound')}
+            description={t('marketplace.noAdsFoundDescription')}
+            iconName='storefront'
+            actionLabel={t('home.clearFilters')}
+            onActionPress={handleClearFilterCategory}
+          />
+        </View>
+      );
+    }
     return (
       <View style={styles.listEmptyContainer}>
         <EmptyState
@@ -642,7 +855,102 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
         />
       </View>
     );
-  }, [isProfessionalsTab, professionalsContent, t, handleClearFilterCategory]);
+  }, [
+    isProfessionalsTab,
+    professionalsContent,
+    showCategoryBlocks,
+    hasCategoryBlockContent,
+    showCategoryBlocksLoading,
+    t,
+    handleClearFilterCategory,
+  ]);
+
+  const renderSolutionKindContent = () => {
+    if (showCategoryBlocks) {
+      if (!hasCategoryBlockContent) {
+        return listEmpty;
+      }
+      return (
+        <MarketplaceCategoryBlocks
+          groupedAds={groupedCategoryAds}
+          programAds={categoryProgramAds}
+          professionals={professionals}
+          categories={categories}
+          onAdPress={handleAdPress}
+          onProfessionalPress={handleProfessionalPress}
+        />
+      );
+    }
+
+    if (showAllTabGroupedLayout) {
+      if (!hasAllTabGroupedContent) {
+        return listEmpty;
+      }
+
+      return (
+        <>
+          {allTabProgramAds.length > 0 ? (
+            <View style={styles.section} testID='marketplace-block-programs'>
+              <Text style={styles.sectionTitle}>{t('filterCategory.solutions.programs')}</Text>
+              <MarketplaceProgramCardsRow
+                ads={allTabProgramAds}
+                categories={categories}
+                onAdPress={handleAdPress}
+                fallbackTitle={productFallbackTitle}
+              />
+            </View>
+          ) : null}
+          {allTabProductAds.length > 0 ? (
+            <View style={styles.section} testID='marketplace-block-products'>
+              <Text style={styles.sectionTitle}>{t('marketplace.allProducts')}</Text>
+              <MarketplaceProductCardsList
+                ads={allTabProductAds}
+                categories={categories}
+                onAdPress={handleAdPress}
+                fallbackTitle={productFallbackTitle}
+                outOfStockLabel={outOfStockLabel}
+              />
+            </View>
+          ) : null}
+          {allTabServiceAds.length > 0 ? (
+            <View style={styles.section} testID='marketplace-block-services'>
+              <Text style={styles.sectionTitle}>{t('filterCategory.solutions.services')}</Text>
+              <MarketplaceServiceCardsList
+                ads={allTabServiceAds}
+                categories={categories}
+                onAdPress={handleAdPress}
+                fallbackTitle={productFallbackTitle}
+              />
+            </View>
+          ) : null}
+        </>
+      );
+    }
+
+    if (filteredAdsBySolution.length === 0) {
+      return listEmpty;
+    }
+
+    if (selectedSolutionTab === 'services') {
+      return (
+        <MarketplaceServiceCardsList
+          ads={filteredAdsBySolution}
+          categories={categories}
+          onAdPress={handleAdPress}
+          fallbackTitle={productFallbackTitle}
+        />
+      );
+    }
+
+    return (
+      <MarketplaceProgramCardsRow
+        ads={filteredAdsBySolution}
+        categories={categories}
+        onAdPress={handleAdPress}
+        fallbackTitle={productFallbackTitle}
+      />
+    );
+  };
 
   return (
     <ScreenWithHeader
@@ -663,11 +971,29 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       </View>
       <View style={styles.content}>
         {renderCustomHeader()}
-        {showMarketplaceInitialLoading ? (
+        {showCategoryBlocksLoading || showAllTabGroupedLoading || showListInitialLoading ? (
           <View style={styles.listLoadingFullScreen}>
             <ActivityIndicator size='large' color='#2196F3' />
             <Text style={styles.listLoadingText}>{t('common.loading')}</Text>
           </View>
+        ) : showSolutionKindLayout ? (
+          <ScrollView
+            testID='marketplace-scroll'
+            style={styles.scrollView}
+            contentContainerStyle={styles.listContentContainer}
+            showsVerticalScrollIndicator={false}
+            scrollEventThrottle={16}
+            onScroll={handleGroupedScrollEndReached}
+          >
+            {renderWeekHighlights()}
+            {categoryIntroText ? (
+              <Text style={styles.categoryIntro} testID='marketplace-category-intro'>
+                {categoryIntroText}
+              </Text>
+            ) : null}
+            {renderSolutionKindContent()}
+            {listFooter}
+          </ScrollView>
         ) : (
           <FlatList<Ad>
             testID='marketplace-list'
@@ -681,8 +1007,9 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
             ListHeaderComponent={renderWeekHighlights()}
             ListFooterComponent={listFooter}
             ListEmptyComponent={listEmpty}
-            onEndReached={handleLoadMore}
+            onEndReached={handleFlatListEndReached}
             onEndReachedThreshold={MARKETPLACE_LIST_END_REACHED_THRESHOLD}
+            onMomentumScrollBegin={handleFlatListMomentumScrollBegin}
             initialNumToRender={10}
             maxToRenderPerBatch={10}
             windowSize={11}

@@ -2,25 +2,25 @@ import { StyleSheet, Dimensions } from 'react-native';
 import { SPACING, FONT_SIZES } from '@/constants';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
-const CARD_WIDTH = SCREEN_WIDTH - SPACING.MD * 2 - SPACING.SM;
+export const JOIN_CARD_CAROUSEL_WIDTH = SCREEN_WIDTH - SPACING.MD * 2 - SPACING.SM;
 
 export const styles = StyleSheet.create({
-  container: {},
-  scrollContent: {
-    gap: SPACING.SM,
+  cardWrapperCarousel: {
+    width: JOIN_CARD_CAROUSEL_WIDTH,
   },
-  listContent: {
-    gap: SPACING.MD,
-    paddingHorizontal: SPACING.MD,
-  },
-  cardWrapper: {
-    width: CARD_WIDTH,
-  },
-  cardWrapperList: {
+  cardWrapperFullWidth: {
     width: '100%',
   },
   card: {
     height: 164,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 28,
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 32,
+    marginRight: 0,
+  },
+  cardSquare: {
+    aspectRatio: 1,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 28,
     borderBottomLeftRadius: 12,
@@ -59,6 +59,10 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: SPACING.SM,
   },
+  footerTextBlock: {
+    flex: 1,
+    gap: 4,
+  },
   title: {
     flex: 1,
     fontFamily: 'DM Sans',
@@ -69,5 +73,12 @@ export const styles = StyleSheet.create({
   },
   ctaIconButton: {
     alignSelf: 'flex-end',
+  },
+  price: {
+    fontFamily: 'DM Sans',
+    fontSize: FONT_SIZES.SM,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    lineHeight: 20,
   },
 });

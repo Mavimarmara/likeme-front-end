@@ -14,7 +14,8 @@ import { useTranslation } from '@/hooks/i18n';
 import { logger } from '@/utils/logger';
 import { communityService, storageService, advertiserService } from '@/services';
 import { PopularProvidersSection, type Provider } from '@/components/sections/community';
-import { JoinCard, type JoinCardItem } from '@/components/ui/cards';
+import { type JoinCardItem } from '@/components/ui/cards';
+import { JoinCardList } from '@/components/ui/lists/JoinCardList';
 import { ProductsCarousel, type Product } from '@/components/sections/product';
 import ProfileFloatingMenu from '@/components/sections/profile/ProfileFloatingMenu';
 // TODO: Temporariamente desabilitados
@@ -233,7 +234,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
             <View style={styles.sectionDivider}>
               <Text style={styles.sectionTitle}>{t('home.recommendedCommunitySectionTitle')}</Text>
               <View style={styles.sectionContainer}>
-                <JoinCard items={filteredJoinCommunities} onItemPress={handleJoinCommunity} />
+                <JoinCardList items={filteredJoinCommunities} onItemPress={handleJoinCommunity} />
               </View>
             </View>
           )}
@@ -242,7 +243,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
             <View style={styles.sectionDivider}>
               <Text style={styles.sectionTitle}>{t('home.recommendedProgramSectionTitle')}</Text>
               <View style={styles.sectionContainer}>
-                <JoinCard items={recommendedProgramCards} onItemPress={handleProgramPress} />
+                <JoinCardList items={recommendedProgramCards} onItemPress={handleProgramPress} />
               </View>
             </View>
           )}

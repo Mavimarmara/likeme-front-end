@@ -138,10 +138,10 @@ jest.mock('@/components/sections/community', () => {
   };
 });
 
-jest.mock('@/components/ui/cards', () => {
+jest.mock('@/components/ui/lists/JoinCardList', () => {
   const { View } = require('react-native');
   return {
-    JoinCard: () => <View testID='join-card' />,
+    JoinCardList: () => <View testID='join-card-list' />,
   };
 });
 

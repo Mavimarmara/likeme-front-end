@@ -5,4 +5,11 @@ export { ProgramParticipationTermsRequiredModal } from './ProgramParticipationTe
 export { ProductInfoTabs } from './ProductInfoTabs';
 export { default as AdsList } from './AdsList';
 export type { SimpleProductItem } from './AdsList';
+export { default as MarketplaceCategoryBlocks } from './MarketplaceCategoryBlocks';
+export {
+  MarketplaceProgramCardsRow,
+  MarketplaceServiceCardsList,
+  MarketplaceProductCardsList,
+  MarketplaceProfessionalsBlock,
+} from './MarketplaceCategoryBlocks';
 export { WeekHighlightCard } from './WeekHighlightCard';

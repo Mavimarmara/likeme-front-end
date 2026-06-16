@@ -5,6 +5,7 @@ import {
   useMarketplaceListingsCache,
 } from '@/contexts/MarketplaceListingsCacheContext';
 import { marketplaceProgramsCacheKey } from '@/utils/marketplace/marketplaceListingsCacheKey';
+import { appendUniqueAdsById, uniqueAdsById } from '@/utils/marketplace/uniqueAdsById';
 import { logger } from '@/utils/logger';
 import { prefetchImageUris } from '@/utils/image/prefetchImageUris';
 import type { Ad } from '@/types/ad';
@@ -177,7 +178,7 @@ export const useProducts = ({
 
       void prefetchImageUris(rows.slice(0, PRODUCTS_PREFETCH_FIRST_N).map((ad) => ad.product?.image));
 
-      const nextAds = page === 1 ? rows : [...adsRef.current, ...rows];
+      const nextAds = page === 1 ? uniqueAdsById(rows) : appendUniqueAdsById(adsRef.current, rows);
       setAds(nextAds);
 
       const pag = response.data.pagination;

@@ -91,13 +91,18 @@ jest.mock('@/components/ui/buttons', () => {
 });
 
 jest.mock('@/components/sections/marketplace', () => {
-  const { Text, TouchableOpacity } = require('react-native');
+  const { Text, TouchableOpacity, View } = require('react-native');
   return {
     WeekHighlightCard: ({ title, onPress }: any) => (
       <TouchableOpacity onPress={onPress} testID='week-highlight'>
         <Text>{title}</Text>
       </TouchableOpacity>
     ),
+    MarketplaceCategoryBlocks: () => <View testID='marketplace-category-blocks' />,
+    MarketplaceProgramCardsRow: () => <View testID='marketplace-program-cards' />,
+    MarketplaceServiceCardsList: () => <View testID='marketplace-service-cards' />,
+    MarketplaceProductCardsList: () => <View testID='marketplace-product-cards' />,
+    MarketplaceProfessionalsBlock: () => <View testID='marketplace-professionals-block' />,
   };
 });
 
@@ -110,6 +115,24 @@ jest.mock('@/components/ui/cards', () => {
       </TouchableOpacity>
     ),
     ProductItemCardSkeleton: () => <View testID='product-item-card-skeleton' />,
+    JoinCard: ({ title, onPress }: any) => (
+      <TouchableOpacity onPress={onPress} testID='join-card'>
+        <Text>{title}</Text>
+      </TouchableOpacity>
+    ),
+  };
+});
+
+jest.mock('@/components/ui/lists/JoinCardList', () => {
+  const { View, Text } = require('react-native');
+  return {
+    JoinCardList: ({ items }: any) => (
+      <View testID='join-card-list'>
+        {items?.map((item: any) => (
+          <Text key={item.id}>{item.title}</Text>
+        ))}
+      </View>
+    ),
   };
 });
 
@@ -135,18 +158,32 @@ jest.mock('@/components/ui/modals', () => {
   const { TouchableOpacity, Text } = require('react-native');
   return {
     FilterCategoryModal: ({ onFilter }: any) => (
-      <TouchableOpacity
-        testID='apply-filter-category'
-        onPress={() =>
-          onFilter({
-            categoryId: 'cat-1',
-            categoryName: null,
-            solutionIds: ['products'],
-          })
-        }
-      >
-        <Text>Aplicar filtro</Text>
-      </TouchableOpacity>
+      <>
+        <TouchableOpacity
+          testID='apply-filter-category'
+          onPress={() =>
+            onFilter({
+              categoryId: 'cat-1',
+              categoryName: null,
+              solutionIds: ['products'],
+            })
+          }
+        >
+          <Text>Aplicar filtro produtos</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          testID='apply-filter-category-all'
+          onPress={() =>
+            onFilter({
+              categoryId: 'cat-1',
+              categoryName: 'Autoestima',
+              solutionIds: [],
+            })
+          }
+        >
+          <Text>Aplicar filtro categoria</Text>
+        </TouchableOpacity>
+      </>
     ),
   };
 });
@@ -298,7 +335,7 @@ describe('MarketplaceScreen', () => {
     const { getByTestId } = render(<MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
-      expect(getByTestId('marketplace-list')).toBeTruthy();
+      expect(getByTestId('marketplace-scroll')).toBeTruthy();
     });
   });
 
@@ -306,7 +343,7 @@ describe('MarketplaceScreen', () => {
     const { getByTestId } = render(<MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
-      expect(getByTestId('marketplace-list')).toBeTruthy();
+      expect(getByTestId('marketplace-scroll')).toBeTruthy();
     });
   });
 
@@ -314,7 +351,7 @@ describe('MarketplaceScreen', () => {
     const { getByTestId } = render(<MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
-      expect(getByTestId('marketplace-list')).toBeTruthy();
+      expect(getByTestId('marketplace-scroll')).toBeTruthy();
     });
 
     expect(mockNavigation.navigate).toBeDefined();
@@ -352,5 +389,17 @@ describe('MarketplaceScreen', () => {
         }),
       }),
     );
+  });
+
+  it('exibe blocos por categoria quando filtro de categoria está ativo na aba Todos', async () => {
+    const { getByTestId } = render(<MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />);
+
+    fireEvent.press(getByTestId('apply-filter-category-all'));
+
+    await waitFor(() => {
+      expect(getByTestId('marketplace-category-intro')).toBeTruthy();
+      expect(getByTestId('marketplace-category-blocks')).toBeTruthy();
+      expect(getByTestId('marketplace-scroll')).toBeTruthy();
+    });
   });
 });

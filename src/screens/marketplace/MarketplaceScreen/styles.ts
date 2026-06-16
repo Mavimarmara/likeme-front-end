@@ -12,7 +12,6 @@ export const styles = StyleSheet.create({
   content: {
     flex: 1,
     zIndex: 1,
-    paddingBottom: SPACING.XXL,
     backgroundColor: 'transparent',
   },
   backgroundGradient: {
@@ -409,6 +408,16 @@ export const styles = StyleSheet.create({
   emptyText: {
     fontSize: 16,
     color: '#666666',
+  },
+  categoryIntro: {
+    fontSize: 14,
+    fontFamily: 'DM Sans',
+    fontWeight: '400',
+    color: '#666666',
+    lineHeight: 22,
+    letterSpacing: 0.2,
+    paddingHorizontal: SPACING.MD,
+    marginBottom: SPACING.LG,
   },
   outOfStockText: {
     fontSize: 12,

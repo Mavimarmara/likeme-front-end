@@ -16,7 +16,8 @@ import { COLORS } from '@/constants';
 import { useTranslation } from '@/hooks/i18n';
 import type { FeedEvent } from '@/types/event';
 import { NextEventsSection, PopularProvidersSection, type Provider } from '@/components/sections/community';
-import { JoinCard, type JoinCardItem } from '@/components/ui/cards';
+import { type JoinCardItem } from '@/components/ui/cards';
+import { JoinCardList } from '@/components/ui/lists/JoinCardList';
 import { ProductsCarousel, type Product } from '@/components/sections/product';
 import Carousel from '@/components/sections/product/Carousel';
 import { useAnalyticsScreen } from '@/analytics';
@@ -505,7 +506,7 @@ const AvatarProgressScreen: React.FC<Props> = ({ navigation }) => {
             </View>
           )}
 
-          <JoinCard items={joinCommunities} onItemPress={handleJoinCommunityPress} />
+          <JoinCardList items={joinCommunities} onItemPress={handleJoinCommunityPress} />
 
           <View style={styles.addWidgetsContainer}>
             <SecondaryButton

@@ -1,83 +1,65 @@
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text } from 'react-native';
 import BlurCard from '../BlurCard';
 import { IconButton } from '@/components/ui/buttons';
+import { formatPriceLabel } from '@/utils/formatters/priceFormatter';
+import type { JoinCardProps } from './types';
 import { styles } from './styles';
 
-export type JoinCardItem = {
-  id: string;
-  title: string;
-  badges: string[];
-  image: string;
-};
+export type { JoinCardItem, JoinCardProps } from './types';
 
-export type JoinCardLayout = 'carousel' | 'list';
+export function JoinCard({
+  title,
+  badges,
+  image,
+  price,
+  onPress,
+  square = false,
+  fullWidth = true,
+  testID,
+}: JoinCardProps) {
+  const visibleBadges = badges.map((label) => label.trim()).filter(Boolean);
+  const cardStyle = square ? styles.cardSquare : styles.card;
+  const wrapperStyle = fullWidth ? styles.cardWrapperFullWidth : styles.cardWrapperCarousel;
 
-export type JoinCardProps<T extends JoinCardItem = JoinCardItem> = {
-  items: readonly T[];
-  onItemPress?: (item: T) => void;
-  layout?: JoinCardLayout;
-};
+  const topSection = (
+    <View style={styles.badgesWrap}>
+      {visibleBadges.map((label, index) => (
+        <View key={`${label}-${index}`} style={styles.badge}>
+          <Text style={styles.badgeText}>{label}</Text>
+        </View>
+      ))}
+    </View>
+  );
 
-export function JoinCard<T extends JoinCardItem>({ items, onItemPress, layout = 'carousel' }: JoinCardProps<T>) {
-  if (!items || items.length === 0) return null;
-
-  const cardWrapperStyle = layout === 'list' ? styles.cardWrapperList : styles.cardWrapper;
-
-  const renderCard = (item: T) => {
-    const handlePress = () => onItemPress?.(item);
-    const badges = item.badges.map((label) => label.trim()).filter(Boolean);
-
-    const topSection = (
-      <View style={styles.badgesWrap}>
-        {badges.map((label, index) => (
-          <View key={`${label}-${index}`} style={styles.badge}>
-            <Text style={styles.badgeText}>{label}</Text>
-          </View>
-        ))}
-      </View>
-    );
-
-    const footerSection = (
-      <View style={styles.bottom}>
+  const footerSection = (
+    <View style={styles.bottom}>
+      <View style={styles.footerTextBlock}>
         <Text style={styles.title} numberOfLines={2}>
-          {item.title}
+          {title}
         </Text>
-        <IconButton
-          icon='chevron-right'
-          iconColor='#001137'
-          iconSize={28}
-          onPress={handlePress}
-          backgroundSize='large'
-          containerStyle={styles.ctaIconButton}
-        />
+        {price !== undefined ? <Text style={styles.price}>{formatPriceLabel(price)}</Text> : null}
       </View>
-    );
-
-    return (
-      <View key={item.id} style={cardWrapperStyle}>
-        <BlurCard
-          backgroundImage={item.image}
-          topSection={topSection}
-          footerSection={footerSection}
-          onPress={handlePress}
-          style={styles.card}
-        />
-      </View>
-    );
-  };
-
-  if (layout === 'list') {
-    return <View style={styles.listContent}>{items.map(renderCard)}</View>;
-  }
-
-  if (items.length === 1) {
-    return <View style={styles.container}>{renderCard(items[0])}</View>;
-  }
+      <IconButton
+        icon='chevron-right'
+        iconColor='#001137'
+        iconSize={28}
+        onPress={onPress}
+        backgroundSize='large'
+        containerStyle={styles.ctaIconButton}
+      />
+    </View>
+  );
 
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-      {items.map(renderCard)}
-    </ScrollView>
+    <View style={wrapperStyle} testID={testID}>
+      <BlurCard
+        backgroundImage={image}
+        topSection={topSection}
+        footerSection={footerSection}
+        onPress={onPress}
+        style={cardStyle}
+      />
+    </View>
   );
 }
 

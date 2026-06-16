@@ -8,7 +8,8 @@ import { ToggleTabs } from '@/components/ui/tabs';
 import { IconButton, SecondaryButton } from '@/components/ui/buttons';
 import { EmptyState } from '@/components/ui/feedback';
 import type { ButtonCarouselOption } from '@/components/ui/carousel';
-import { JoinCard, type JoinCardItem } from '@/components/ui/cards';
+import { type JoinCardItem } from '@/components/ui/cards';
+import { JoinCardList } from '@/components/ui/lists/JoinCardList';
 import { AdsList } from '@/components/sections/marketplace';
 import { Product } from '@/components/sections/product';
 import { useAdvertiser, useAdvertisers, useProviderAds, useCommunities, useFeatureFlag, useMenuItems } from '@/hooks';
@@ -488,7 +489,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
             {activeTab === 'communities' && (
               <View style={styles.communityPreviewContainer}>
                 <Text style={styles.communitiesSectionTitle}>{t('marketplace.curatedSpecialty')}</Text>
-                <JoinCard items={joinCommunities} onItemPress={handleJoinCommunity} />
+                <JoinCardList items={joinCommunities} onItemPress={handleJoinCommunity} />
                 {communityShopCatalogSorted.length > 0 ? (
                   <AdsList
                     products={communityShopCatalogSorted}
