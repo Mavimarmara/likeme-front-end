@@ -220,6 +220,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation, route
     return null;
   }, [selectedCategoryName, selectedCategoryFromId]);
   const hasActiveCategoryFilter = selectedCategoryId != null || selectedCategoryName != null;
+  const hasActiveFilterModalSelection = hasActiveCategoryFilter || selectedSolutionIds.length > 0;
   const categoryFilterButtonLabel =
     selectedCategoryName != null
       ? getCategoryName(selectedCategoryName)
@@ -616,6 +617,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation, route
           <View style={styles.filterMenuContainer}>
             <StickyFilterCarouselRow
               filterButtonLabel={categoryFilterButtonLabel}
+              filterButtonSelected={hasActiveFilterModalSelection}
               onFilterButtonPress={() => setIsFilterCategoryModalVisible(true)}
               carouselOptions={marketplaceCarouselOptions}
               selectedCarouselId={selectedSolutionTab}

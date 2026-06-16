@@ -26,6 +26,9 @@ export const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: COLORS.PRIMARY.PURE,
   },
+  labelSelected: {
+    color: COLORS.PRIMARY.PURE,
+  },
   content: {
     flexDirection: 'row',
     alignItems: 'center',

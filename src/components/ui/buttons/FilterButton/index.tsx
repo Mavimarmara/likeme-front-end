@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Platform, StyleSheet, type ImageSourcePropType, type ImageStyle } from 'react-native';
+import { StyleSheet, type ImageSourcePropType, type ImageStyle } from 'react-native';
 import SecondaryButton from '../Secondary';
 import { ModalBase } from '@/components/ui/modals/shared';
 import { COLORS } from '@/constants';
@@ -12,7 +12,7 @@ type Props = {
   iconImage?: ImageSourcePropType;
   iconImageStyle?: ImageStyle;
   iconPosition?: 'left' | 'right';
-  /** Quando true, o botão é exibido em azul (estado selecionado). */
+  /** Quando true, borda e texto ficam azuis (estado selecionado). */
   selected?: boolean;
   modalTitle?: string;
   modalContent?: React.ReactNode | ModalContentRender;
@@ -23,19 +23,11 @@ type Props = {
 
 const selectedButtonStyle = StyleSheet.create({
   root: {
-    backgroundColor: COLORS.PRIMARY.PURE,
     borderColor: COLORS.PRIMARY.PURE,
-    shadowOpacity: 0,
-    shadowRadius: 0,
-    ...Platform.select({
-      android: {
-        elevation: 0,
-      },
-      default: {},
-    }),
+    backgroundColor: 'transparent',
   },
   label: {
-    color: COLORS.WHITE,
+    color: COLORS.PRIMARY.PURE,
   },
 });
 
@@ -83,7 +75,7 @@ const FilterButton: React.FC<Props> = ({
         iconPosition={iconPosition}
         style={selected ? selectedButtonStyle.root : undefined}
         labelStyle={selected ? selectedButtonStyle.label : undefined}
-        iconColor={selected ? COLORS.WHITE : undefined}
+        iconColor={selected ? COLORS.PRIMARY.PURE : undefined}
       />
       {hasModal && (
         <ModalBase visible={isModalVisible} onClose={handleClose} title={modalTitle}>

@@ -24,7 +24,7 @@ const FilterModalButton: React.FC<Props> = ({ label, selected = false, onPress, 
             {icon}
           </View>
         )}
-        <Text style={styles.label} numberOfLines={1}>
+        <Text style={[styles.label, selected && styles.labelSelected]} numberOfLines={1}>
           {label}
         </Text>
       </View>

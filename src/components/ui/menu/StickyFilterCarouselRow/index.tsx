@@ -3,6 +3,7 @@ import { View, type ImageSourcePropType, type ImageStyle } from 'react-native';
 import { HOME_MVP_ASSETS } from '@/assets/homeMvp';
 import { FilterButton } from '@/components/ui/buttons';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
+import { COLORS } from '@/constants';
 import { styles } from './styles';
 
 type ModalContentRender = (api: { close: () => void; visible: boolean }) => ReactNode;
@@ -25,7 +26,7 @@ type Props<T = string> = {
 };
 
 const HOME_FILTER_ICON_DEFAULT_COLOR = '#001137';
-const HOME_FILTER_ICON_SELECTED_COLOR = '#FFFFFF';
+const HOME_FILTER_ICON_SELECTED_COLOR = COLORS.PRIMARY.PURE;
 
 const StickyFilterCarouselRow = <T extends string | number = string>({
   filterButtonLabel,
