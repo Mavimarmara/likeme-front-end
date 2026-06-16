@@ -9,7 +9,6 @@ export { default as MarketplaceCategoryBlocks } from './MarketplaceCategoryBlock
 export {
   MarketplaceProgramCardsRow,
   MarketplaceServiceCardsList,
-  MarketplaceProductCardsList,
   MarketplaceProfessionalsBlock,
 } from './MarketplaceCategoryBlocks';
 export { WeekHighlightCard } from './WeekHighlightCard';

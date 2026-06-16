@@ -7,7 +7,7 @@ type ProductCategorySource = Pick<Product, 'categoryId' | 'categoryIds' | 'categ
 
 export function buildMarketplaceCategoryBadgeLabels(
   product: ProductCategorySource | undefined,
-  categories: CommunityCategory[],
+  categories: readonly CommunityCategory[],
 ): string[] {
   if (!product) {
     return [];

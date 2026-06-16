@@ -7,7 +7,7 @@ import { COLORS } from '@/constants';
 import { formatPriceLabel } from '@/utils/formatters/priceFormatter';
 import { styles } from './styles';
 
-export type ProductItemCardProps = {
+export type ProductRowCardProps = {
   image: string;
   title: string;
   badges?: string[];
@@ -34,7 +34,7 @@ export type ProductItemCardProps = {
 
 const DEFAULT_PLACEHOLDER_URI = 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
 
-const ProductItemCard: React.FC<ProductItemCardProps> = ({
+const ProductRowCard: React.FC<ProductRowCardProps> = ({
   image,
   title,
   badges: badgesProp,
@@ -172,4 +172,4 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
   );
 };
 
-export default React.memo(ProductItemCard);
+export default React.memo(ProductRowCard);

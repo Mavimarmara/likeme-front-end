@@ -26,7 +26,7 @@ type Props = {
   onLike?: (product: Product) => void;
 };
 
-const ProductCard: React.FC<Props> = ({ product, onPress, onLike }) => {
+const ProductTileCard: React.FC<Props> = ({ product, onPress, onLike }) => {
   const { t } = useTranslation();
   const normalizedTags = normalizeProductListBadgeLabels(product.tags ?? [product.tag], t);
   const topSection = (
@@ -81,4 +81,4 @@ const ProductCard: React.FC<Props> = ({ product, onPress, onLike }) => {
   );
 };
 
-export default ProductCard;
+export default ProductTileCard;

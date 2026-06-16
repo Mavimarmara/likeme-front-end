@@ -19,7 +19,7 @@ import { styles } from './styles';
 import AddressForm, { AddressData, EMPTY_ADDRESS, isAddressFilled } from './address/AddressForm';
 import PaymentForm from './payment/PaymentForm';
 import CheckoutVoucherSection from './voucher/CheckoutVoucherSection';
-import { ProductItemCard } from '@/components/ui/cards';
+import { ProductRowCard } from '@/components/ui/cards';
 import OrderSummary from './order/OrderSummary';
 import OrderScreen from './order/OrderScreen';
 import type { CreateOrderData } from '@/types/order';
@@ -508,7 +508,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
               <Text style={styles.deliveriesTitle}>{t('checkout.yourDeliveries')}</Text>
               <View style={styles.cartItemsList} testID='cart-items-list'>
                 {cartItems.map((item) => (
-                  <ProductItemCard
+                  <ProductRowCard
                     key={item.id}
                     image={item.image}
                     title={item.title}

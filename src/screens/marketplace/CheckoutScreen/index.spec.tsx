@@ -134,8 +134,8 @@ jest.mock('@/components/ui/cards', () => {
   const React = require('react');
   const { View, Text } = require('react-native');
   return {
-    ProductItemCard: (props: any) =>
-      React.createElement(View, { testID: 'product-item-card' }, React.createElement(Text, null, props?.title ?? '')),
+    ProductRowCard: (props: any) =>
+      React.createElement(View, { testID: 'product-row-card' }, React.createElement(Text, null, props?.title ?? '')),
   };
 });
 

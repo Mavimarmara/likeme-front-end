@@ -12,9 +12,6 @@ export const styles = StyleSheet.create({
     marginBottom: SPACING.MD,
     fontFamily: 'DM Sans',
   },
-  productsList: {
-    gap: SPACING.MD,
-  },
   programScrollContent: {
     gap: SPACING.MD,
   },

@@ -6,6 +6,7 @@ const mockLoadAds = jest.fn();
 const mockUseMarketplaceAds = jest.fn();
 const mockLoadProducts = jest.fn();
 const mockUseProducts = jest.fn();
+const mockUseMarketplaceScreenListings = jest.fn();
 const mockUseAdvertisers = jest.fn().mockReturnValue({
   advertisers: [],
   loading: false,
@@ -101,7 +102,6 @@ jest.mock('@/components/sections/marketplace', () => {
     MarketplaceCategoryBlocks: () => <View testID='marketplace-category-blocks' />,
     MarketplaceProgramCardsRow: () => <View testID='marketplace-program-cards' />,
     MarketplaceServiceCardsList: () => <View testID='marketplace-service-cards' />,
-    MarketplaceProductCardsList: () => <View testID='marketplace-product-cards' />,
     MarketplaceProfessionalsBlock: () => <View testID='marketplace-professionals-block' />,
   };
 });
@@ -109,12 +109,12 @@ jest.mock('@/components/sections/marketplace', () => {
 jest.mock('@/components/ui/cards', () => {
   const { View, Text, TouchableOpacity } = require('react-native');
   return {
-    ProductItemCard: ({ title, onPress }: any) => (
-      <TouchableOpacity onPress={onPress} testID='product-item-card'>
+    ProductRowCard: ({ title, onPress }: any) => (
+      <TouchableOpacity onPress={onPress} testID='product-row-card'>
         <Text>{title}</Text>
       </TouchableOpacity>
     ),
-    ProductItemCardSkeleton: () => <View testID='product-item-card-skeleton' />,
+    ProductRowCardSkeleton: () => <View testID='product-row-card-skeleton' />,
     JoinCard: ({ title, onPress }: any) => (
       <TouchableOpacity onPress={onPress} testID='join-card'>
         <Text>{title}</Text>
@@ -189,6 +189,7 @@ jest.mock('@/components/ui/modals', () => {
 });
 
 jest.mock('@/hooks', () => ({
+  useMarketplaceScreenListings: (...args: any[]) => mockUseMarketplaceScreenListings(...args),
   useMarketplaceAds: (...args: any[]) => mockUseMarketplaceAds(...args),
   useProducts: (...args: any[]) => mockUseProducts(...args),
   useSolutions: () => ({
@@ -304,6 +305,27 @@ describe('MarketplaceScreen', () => {
       hasMore: false,
       loadProducts: mockLoadProducts,
     });
+    mockUseMarketplaceScreenListings.mockReturnValue({
+      resetPages: jest.fn(),
+      handleLoadMore: jest.fn(),
+      groupedCategoryAds: { product: mockAds, service: [], program: [] },
+      categoryProgramAds: [],
+      filteredAdsBySolution: mockAds,
+      allTabProductAds: mockAds,
+      allTabServiceAds: [],
+      allTabProgramAds: [],
+      listAdsForCurrentTab: mockAds.slice(1),
+      highlightAdId: mockAds[0]?.id ?? null,
+      weekHighlightAd: mockAds[0] ?? null,
+      loading: false,
+      hasMore: false,
+      allTabLoading: false,
+      programsLoading: false,
+      allTabHasMore: false,
+      programsHasMore: false,
+      hasCategoryBlockContent: true,
+      hasAllTabGroupedContent: true,
+    });
   });
 
   it('renders correctly', async () => {
@@ -314,11 +336,11 @@ describe('MarketplaceScreen', () => {
     });
   });
 
-  it('loads ads on mount', async () => {
+  it('loads listings on mount', async () => {
     render(<MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     await waitFor(() => {
-      expect(mockUseMarketplaceAds).toHaveBeenCalled();
+      expect(mockUseMarketplaceScreenListings).toHaveBeenCalled();
     });
   });
 
@@ -364,7 +386,7 @@ describe('MarketplaceScreen', () => {
       expect(getByText('marketplace.weekHighlights')).toBeTruthy();
     });
 
-    expect(mockUseMarketplaceAds).toHaveBeenCalled();
+    expect(mockUseMarketplaceScreenListings).toHaveBeenCalled();
   });
 
   it('keeps selected category context after applying filters', async () => {
@@ -376,7 +398,7 @@ describe('MarketplaceScreen', () => {
       expect(getByTestId('filter-button-label').props.children).toBe('Autoestima');
     });
 
-    expect(mockUseMarketplaceAds).toHaveBeenLastCalledWith(
+    expect(mockUseMarketplaceScreenListings).toHaveBeenCalledWith(
       expect.objectContaining({
         selectedCategoryId: 'cat-1',
       }),

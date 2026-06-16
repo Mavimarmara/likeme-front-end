@@ -9,7 +9,7 @@ import { navigateToMarketplace } from '@/utils/navigation/marketplaceNavigation'
 import { catalogTypeTranslatedBadgeLabels } from '@/types/product';
 import { Alert } from 'react-native';
 import { SecondaryButton } from '@/components/ui/buttons';
-import { ProductItemCard } from '@/components/ui/cards';
+import { ProductRowCard } from '@/components/ui/cards';
 import { useMenuItems, useTranslation, useCart, useFormattedInput, useCartShippingPolicy } from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useAnalyticsScreen } from '@/analytics';
@@ -113,7 +113,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
   const renderCartItem = useCallback<ListRenderItem<CartItem>>(
     ({ item }) => (
       <View style={styles.cartItemWrapper}>
-        <ProductItemCard
+        <ProductRowCard
           image={item.image}
           title={item.title}
           price={item.price}

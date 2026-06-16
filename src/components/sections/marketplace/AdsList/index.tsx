@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, StyleProp, ViewStyle } from 'react-native';
-import { ProductItemCard } from '@/components/ui/cards';
+import { ProductRowCard } from '@/components/ui/cards';
+import { ProductList } from '@/components/sections/product/ProductList';
 import { ToggleTabs } from '@/components/ui/tabs';
 import type { ButtonCarouselOption } from '@/components/ui/carousel';
 import { StickyFilterCarouselRow } from '@/components/ui/menu';
@@ -9,7 +10,6 @@ import { EmptyState } from '@/components/ui/feedback';
 import { useCategories } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
 import { handleAdNavigation } from '@/utils';
-import { buildMarketplaceCategoryBadgeLabels } from '@/utils/marketplace/buildMarketplaceCategoryBadgeLabels';
 import type { Ad } from '@/types/ad';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { RootStackParamList } from '@/types/navigation';
@@ -137,6 +137,9 @@ const AdsList: React.FC<AdsListProps> = ({
   const isEmptyTab = hasSolutionTabStrip && !isControlledTabbed && !isProfessionalsTab && listToShow.length === 0;
   const isEmptyControlledTabbed = isControlledTabbed && ads.length === 0;
 
+  const productFallbackTitle = t('marketplace.product', { defaultValue: 'Product' });
+  const outOfStockLabel = t('marketplace.outOfStock', { defaultValue: 'Out of stock' });
+
   const renderEmptyState = () => (
     <View style={styles.emptySection}>
       <EmptyState
@@ -149,32 +152,18 @@ const AdsList: React.FC<AdsListProps> = ({
     </View>
   );
 
-  const renderAdCard = (ad: Ad) => {
-    const product = ad.product;
-    const displayName = product?.name || t('marketplace.product', { defaultValue: 'Product' });
-    const displayImage = product?.image || DEFAULT_IMAGE;
-    const categoryBadges = buildMarketplaceCategoryBadgeLabels(product, categories);
-    const productPrice = product?.price;
-
-    return (
-      <ProductItemCard
-        key={ad.id}
-        image={displayImage}
-        title={displayName}
-        badges={categoryBadges}
-        price={productPrice}
-        outOfStock={product?.status === 'out_of_stock'}
-        outOfStockLabel={t('marketplace.outOfStock', {
-          defaultValue: 'Out of stock',
-        })}
-        onPress={() => handleAdPress(ad)}
-        showTrailingChevron={!!product}
-      />
-    );
-  };
+  const renderAdsProductList = () => (
+    <ProductList
+      ads={ads}
+      categories={categories}
+      onAdPress={handleAdPress}
+      fallbackTitle={productFallbackTitle}
+      outOfStockLabel={outOfStockLabel}
+    />
+  );
 
   const renderSimpleProductCard = (product: SimpleProductItem) => (
-    <ProductItemCard
+    <ProductRowCard
       key={product.id}
       image={product.image || DEFAULT_IMAGE}
       title={product.title}
@@ -266,11 +255,9 @@ const AdsList: React.FC<AdsListProps> = ({
             </View>
           )}
           <View style={styles.mAdsList}>
-            {showAdsListInTabbedMode
-              ? ads.map(renderAdCard)
-              : hasSolutionTabStrip || (isSimpleMode && simpleProducts)
-              ? (hasSolutionTabStrip ? listToShow : simpleProducts ?? []).map(renderSimpleProductCard)
-              : ads.map(renderAdCard)}
+            {showAdsListInTabbedMode || (!isSimpleMode && !hasSolutionTabStrip && !marketplaceListWithoutInlineChrome)
+              ? renderAdsProductList()
+              : (hasSolutionTabStrip ? listToShow : simpleProducts ?? []).map(renderSimpleProductCard)}
             {((!isSimpleMode && !hasSolutionTabStrip) || showAdsListInTabbedMode) && loading && (
               <View style={styles.loadingMoreContainer}>
                 <ActivityIndicator size='small' color='#2196F3' />

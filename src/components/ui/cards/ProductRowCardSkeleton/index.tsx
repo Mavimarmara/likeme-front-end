@@ -4,11 +4,11 @@ import { Skeleton } from '@/components/ui/feedback';
 import { COLORS, SPACING } from '@/constants';
 
 /**
- * Placeholder com a silhueta de um ProductItemCard. Usado no loading inicial
+ * Placeholder com a silhueta de um ProductRowCard. Usado no loading inicial
  * da AdsList (Marketplace/Community shop), no lugar do ActivityIndicator
  * de tela cheia.
  */
-const ProductItemCardSkeleton: React.FC = () => {
+const ProductRowCardSkeleton: React.FC = () => {
   return (
     <View style={styles.container}>
       <Skeleton width={88} height={88} borderRadius={12} />
@@ -51,4 +51,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProductItemCardSkeleton;
+export default ProductRowCardSkeleton;

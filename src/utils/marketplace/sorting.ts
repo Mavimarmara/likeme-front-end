@@ -4,7 +4,7 @@ import {
   MARKETPLACE_SORT_ORDER_IDS,
   type MarketplaceSortOrderId,
 } from '@/constants/marketplaceSortOrder';
-import type { Product as CarouselProduct } from '@/components/sections/product/ProductCard';
+import type { Product as CarouselProduct } from '@/components/ui/cards/ProductTileCard';
 
 export type SortableCarouselProduct = CarouselProduct & {
   createdAt?: string;

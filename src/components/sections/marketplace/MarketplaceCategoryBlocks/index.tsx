@@ -3,19 +3,18 @@ import { View, Text } from 'react-native';
 import { CachedImage } from '@/components/ui/media/CachedImage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { JoinCardList } from '@/components/ui/lists/JoinCardList';
-import { ProductItemCard, type JoinCardItem } from '@/components/ui/cards';
+import { type JoinCardItem } from '@/components/ui/cards';
+import { ProductList } from '@/components/sections/product/ProductList';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { COLORS } from '@/constants';
 import { useTranslation } from '@/hooks/i18n';
 import { adToJoinCardItem } from '@/utils/marketplace/adToJoinCardItem';
-import { buildMarketplaceCategoryBadgeLabels } from '@/utils/marketplace/buildMarketplaceCategoryBadgeLabels';
-import type { MarketplaceAdsBySolutionKind } from '@/utils/marketplace/groupMarketplaceAdsBySolutionKind';
 import { styles as shoppingListStyles } from '@/components/sections/community/ShoppingList/styles';
 import type { Ad, Advertiser } from '@/types/ad';
 import type { CommunityCategory } from '@/types/community';
 import { styles } from './styles';
 
-const DEFAULT_PRODUCT_IMAGE = 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
+export type MarketplaceCategoryBlocksLayout = 'categoryFilter' | 'allTab';
 
 type MarketplaceProgramCardsRowProps = {
   ads: readonly Ad[];
@@ -101,52 +100,6 @@ export function MarketplaceServiceCardsList({
   return <JoinCardList layout='list' square items={items} onItemPress={handleItemPress} />;
 }
 
-export type MarketplaceProductCardsListProps = {
-  ads: readonly Ad[];
-  categories: readonly CommunityCategory[];
-  onAdPress: (ad: Ad) => void;
-  fallbackTitle: string;
-  outOfStockLabel: string;
-};
-
-export function MarketplaceProductCardsList({
-  ads,
-  categories,
-  onAdPress,
-  fallbackTitle,
-  outOfStockLabel,
-}: MarketplaceProductCardsListProps) {
-  if (ads.length === 0) {
-    return null;
-  }
-
-  return (
-    <View style={styles.productsList}>
-      {ads.map((ad) => {
-        const product = ad.product;
-        const title = product?.name?.trim() || fallbackTitle;
-        const image = product?.image?.trim() || DEFAULT_PRODUCT_IMAGE;
-        const badges = buildMarketplaceCategoryBadgeLabels(product, categories);
-
-        return (
-          <ProductItemCard
-            key={ad.id}
-            image={image}
-            title={title}
-            badges={badges}
-            price={product?.price}
-            outOfStock={product?.status === 'out_of_stock'}
-            outOfStockLabel={outOfStockLabel}
-            onPress={() => onAdPress(ad)}
-            showTrailingChevron={!!product}
-            testID={`marketplace-product-card-${ad.id}`}
-          />
-        );
-      })}
-    </View>
-  );
-}
-
 export type MarketplaceProfessionalsBlockProps = {
   professionals: readonly Advertiser[];
   onProfessionalPress: (advertiser: Advertiser) => void;
@@ -196,7 +149,9 @@ export function MarketplaceProfessionalsBlock({
 }
 
 export type MarketplaceCategoryBlocksProps = {
-  groupedAds: MarketplaceAdsBySolutionKind;
+  layout?: MarketplaceCategoryBlocksLayout;
+  productAds: readonly Ad[];
+  serviceAds: readonly Ad[];
   programAds: readonly Ad[];
   professionals: readonly Advertiser[];
   categories: readonly CommunityCategory[];
@@ -204,8 +159,17 @@ export type MarketplaceCategoryBlocksProps = {
   onProfessionalPress: (advertiser: Advertiser) => void;
 };
 
+type MarketplaceBlockSection = 'products' | 'professionals' | 'services' | 'programs';
+
+const BLOCK_SECTION_ORDER: Record<MarketplaceCategoryBlocksLayout, readonly MarketplaceBlockSection[]> = {
+  categoryFilter: ['products', 'professionals', 'services', 'programs'],
+  allTab: ['programs', 'products', 'services'],
+};
+
 const MarketplaceCategoryBlocks: React.FC<MarketplaceCategoryBlocksProps> = ({
-  groupedAds,
+  layout = 'categoryFilter',
+  productAds,
+  serviceAds,
   programAds,
   professionals,
   categories,
@@ -216,58 +180,77 @@ const MarketplaceCategoryBlocks: React.FC<MarketplaceCategoryBlocksProps> = ({
   const fallbackTitle = t('marketplace.product', { defaultValue: 'Product' });
   const outOfStockLabel = t('marketplace.outOfStock', { defaultValue: 'Out of stock' });
   const viewProfileLabel = t('community.viewProfile');
+  const productsSectionTitle =
+    layout === 'allTab' ? t('marketplace.allProducts') : t('filterCategory.solutions.products');
 
-  return (
-    <>
-      {groupedAds.product.length > 0 ? (
-        <View style={styles.section} testID='marketplace-block-products'>
-          <Text style={styles.sectionTitle}>{t('filterCategory.solutions.products')}</Text>
-          <MarketplaceProductCardsList
-            ads={groupedAds.product}
-            categories={categories}
-            onAdPress={onAdPress}
-            fallbackTitle={fallbackTitle}
-            outOfStockLabel={outOfStockLabel}
-          />
-        </View>
-      ) : null}
+  const renderSection = (section: MarketplaceBlockSection) => {
+    switch (section) {
+      case 'products':
+        if (productAds.length === 0) {
+          return null;
+        }
+        return (
+          <View style={styles.section} testID='marketplace-block-products'>
+            <Text style={styles.sectionTitle}>{productsSectionTitle}</Text>
+            <ProductList
+              ads={productAds}
+              categories={categories}
+              onAdPress={onAdPress}
+              fallbackTitle={fallbackTitle}
+              outOfStockLabel={outOfStockLabel}
+            />
+          </View>
+        );
+      case 'professionals':
+        if (professionals.length === 0) {
+          return null;
+        }
+        return (
+          <View style={styles.section} testID='marketplace-block-professionals'>
+            <Text style={styles.sectionTitle}>{t('filterCategory.solutions.professionals')}</Text>
+            <MarketplaceProfessionalsBlock
+              professionals={professionals}
+              onProfessionalPress={onProfessionalPress}
+              viewProfileLabel={viewProfileLabel}
+            />
+          </View>
+        );
+      case 'services':
+        if (serviceAds.length === 0) {
+          return null;
+        }
+        return (
+          <View style={styles.section} testID='marketplace-block-services'>
+            <Text style={styles.sectionTitle}>{t('filterCategory.solutions.services')}</Text>
+            <MarketplaceServiceCardsList
+              ads={serviceAds}
+              categories={categories}
+              onAdPress={onAdPress}
+              fallbackTitle={fallbackTitle}
+            />
+          </View>
+        );
+      case 'programs':
+        if (programAds.length === 0) {
+          return null;
+        }
+        return (
+          <View style={styles.section} testID='marketplace-block-programs'>
+            <Text style={styles.sectionTitle}>{t('filterCategory.solutions.programs')}</Text>
+            <MarketplaceProgramCardsRow
+              ads={programAds}
+              categories={categories}
+              onAdPress={onAdPress}
+              fallbackTitle={fallbackTitle}
+            />
+          </View>
+        );
+      default:
+        return null;
+    }
+  };
 
-      {professionals.length > 0 ? (
-        <View style={styles.section} testID='marketplace-block-professionals'>
-          <Text style={styles.sectionTitle}>{t('filterCategory.solutions.professionals')}</Text>
-          <MarketplaceProfessionalsBlock
-            professionals={professionals}
-            onProfessionalPress={onProfessionalPress}
-            viewProfileLabel={viewProfileLabel}
-          />
-        </View>
-      ) : null}
-
-      {groupedAds.service.length > 0 ? (
-        <View style={styles.section} testID='marketplace-block-services'>
-          <Text style={styles.sectionTitle}>{t('filterCategory.solutions.services')}</Text>
-          <MarketplaceServiceCardsList
-            ads={groupedAds.service}
-            categories={categories}
-            onAdPress={onAdPress}
-            fallbackTitle={fallbackTitle}
-          />
-        </View>
-      ) : null}
-
-      {programAds.length > 0 ? (
-        <View style={styles.section} testID='marketplace-block-programs'>
-          <Text style={styles.sectionTitle}>{t('filterCategory.solutions.programs')}</Text>
-          <MarketplaceProgramCardsRow
-            ads={programAds}
-            categories={categories}
-            onAdPress={onAdPress}
-            fallbackTitle={fallbackTitle}
-          />
-        </View>
-      ) : null}
-    </>
-  );
+  return <>{BLOCK_SECTION_ORDER[layout].map((section) => renderSection(section))}</>;
 };
 
 export default MarketplaceCategoryBlocks;

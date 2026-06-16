@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import Carousel from '../Carousel';
-import ProductCard, { Product } from '../ProductCard';
+import ProductTileCard, { type Product } from '@/components/ui/cards/ProductTileCard';
 import PaginationActive from '../../../../../assets/home-mvp/pagination-active.svg';
 import PaginationDefault from '../../../../../assets/home-mvp/pagination-default.svg';
 import { styles } from './styles';
@@ -35,7 +35,9 @@ const ProductsCarousel: React.FC<Props> = ({ title, subtitle, products, onProduc
       <View style={styles.carouselContainer}>
         <Carousel
           data={products}
-          renderItem={(product) => <ProductCard product={product} onPress={onProductPress} onLike={onProductLike} />}
+          renderItem={(product) => (
+            <ProductTileCard product={product} onPress={onProductPress} onLike={onProductLike} />
+          )}
           keyExtractor={(product) => product.id}
           itemWidth={170}
           gap={10}
