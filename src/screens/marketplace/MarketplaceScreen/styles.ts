@@ -46,8 +46,10 @@ export const styles = StyleSheet.create({
     paddingBottom: SPACING.XXL,
   },
   listContentContainer: {
-    paddingHorizontal: SPACING.MD,
     paddingBottom: SPACING.XXL,
+  },
+  listItemWrapper: {
+    marginHorizontal: SPACING.MD,
   },
   listItemSeparator: {
     height: SPACING.MD,
@@ -84,10 +86,11 @@ export const styles = StyleSheet.create({
     fontFamily: 'DM Sans',
   },
   listEmptyContainer: {
-    paddingHorizontal: SPACING.MD,
+    marginHorizontal: SPACING.MD,
     paddingVertical: SPACING.LG,
   },
   section: {
+    marginHorizontal: SPACING.MD,
     marginBottom: SPACING.XL,
   },
   sectionHeader: {
@@ -413,7 +416,7 @@ export const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     color: '#000000',
-    paddingHorizontal: SPACING.MD,
+    marginHorizontal: SPACING.MD,
     marginBottom: SPACING.SM,
   },
   categoryIntro: {
@@ -423,7 +426,7 @@ export const styles = StyleSheet.create({
     color: '#666666',
     lineHeight: 22,
     letterSpacing: 0.2,
-    paddingHorizontal: SPACING.MD,
+    marginHorizontal: SPACING.MD,
     marginBottom: SPACING.LG,
   },
   outOfStockText: {

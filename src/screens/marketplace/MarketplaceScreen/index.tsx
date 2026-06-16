@@ -377,13 +377,15 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
 
   const renderAdItem = useCallback<ListRenderItem<Ad>>(
     ({ item: ad }) => (
-      <ProductListItem
-        ad={ad}
-        categories={categories}
-        onAdPress={handleAdPress}
-        fallbackTitle={productFallbackTitle}
-        outOfStockLabel={outOfStockLabel}
-      />
+      <View style={styles.listItemWrapper}>
+        <ProductListItem
+          ad={ad}
+          categories={categories}
+          onAdPress={handleAdPress}
+          fallbackTitle={productFallbackTitle}
+          outOfStockLabel={outOfStockLabel}
+        />
+      </View>
     ),
     [categories, productFallbackTitle, outOfStockLabel, handleAdPress],
   );
