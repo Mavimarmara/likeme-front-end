@@ -47,8 +47,6 @@ export const styles = StyleSheet.create({
     zIndex: 0,
     borderBottomLeftRadius: 40,
     borderBottomRightRadius: 40,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
   },
   gradient: {
     position: 'absolute',
@@ -58,8 +56,6 @@ export const styles = StyleSheet.create({
     bottom: 0,
     borderBottomLeftRadius: 40,
     borderBottomRightRadius: 40,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
     zIndex: 0,
   },
   blur: {
@@ -70,8 +66,6 @@ export const styles = StyleSheet.create({
     bottom: 0,
     borderBottomLeftRadius: 40,
     borderBottomRightRadius: 40,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
     overflow: 'hidden',
     zIndex: 0,
   },
