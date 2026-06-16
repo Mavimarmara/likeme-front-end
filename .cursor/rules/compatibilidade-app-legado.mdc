@@ -10,12 +10,13 @@ Builds antigas (ex.: **1.5**) continuam em produção sem OTA. O front **não po
 
 ## Ao mudar `services/` ou `hooks/` que chamam API
 
-1. **Params novos são opcionais no client** — não envie `communityId` no feed até decisão de produto; flags novas só quando a tela souber o valor.
+1. **Params novos são opcionais no client** — `communityId` no feed é opcional no HTTP; apps novos enviam na `CommunityScreen`. Flags novas só quando a tela souber o valor.
 2. **Não exija resposta reshaped** — se o backend ainda pode devolver envelope antigo, normalize **uma vez** no service (padrão `mapEventFromApi`), não espalhe breaking change nas telas.
 3. **Comunidade / feed** — alinhar com o backend (`likeme-back-end/.cursor/rules/compatibilidade-app-legado.mdc`):
-   - **Padrão 1.5:** `useUserFeed` **sem** `communityId` na query; primeira comunidade (`createdAt`) fica no backend.
-   - **Não reintroduzir 1.6** no feed (`communityId` na query, `enabled` condicionado ao id, seleção por `route.params`) sem decisão explícita de produto.
-4. **Paginação (1.5 no repo)** — `page`/`limit`; scroll só com `paging.next` na página anterior; load more reenvia esse valor como `token` na query. Backend aceita `page` sem `token` para binário da loja.
+   - **Padrão atual (1.6.1+):** `CommunityScreen` passa `communityId`; `useUserFeed` chama **`GET /api/communities/:communityId/posts`** (posts scoped via `getCommunityPosts` no backend).
+   - **Legado 1.5:** builds antigas podem continuar **sem** `communityId` (feed global no backend); não remover suporte no service.
+   - **Feed global:** reservado para uso futuro (ex.: timeline agregada); não é o fluxo da aba Comunidade.
+4. **Paginação** — feed por comunidade: `page`/`limit` no client; feed global legado: `token` de `paging.next` no load more.
 
 ## Evitar no front
 

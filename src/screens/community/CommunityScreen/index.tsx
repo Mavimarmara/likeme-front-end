@@ -154,6 +154,10 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   }, [selectedCommunityId]);
 
   const solutionsMode = selectedMode === COMMUNITY_VIEW.SOLUTIONS;
+  const feedParams = useMemo(
+    () => (selectedCommunityId?.trim() ? { communityId: selectedCommunityId.trim() } : {}),
+    [selectedCommunityId],
+  );
   const {
     posts,
     loading: feedLoading,
@@ -161,9 +165,10 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     error,
     loadMore,
   } = useUserFeed({
-    enabled: isFeedMode,
+    enabled: isFeedMode && Boolean(selectedCommunityId?.trim()),
     searchQuery: '',
     pageSize: COMMUNITY_FEED_POSTS_PAGE_SIZE,
+    params: feedParams,
   });
 
   const communityAdvertiserFetchEnabled = !!selectedCommunityId && (solutionsMode || !feedLoading || posts.length > 0);

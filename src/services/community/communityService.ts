@@ -17,78 +17,108 @@ class CommunityService {
   private readonly addCommentEndpoint = '/api/communities/comments';
   private readonly communitiesEndpoint = '/api/communities';
 
+  private buildFeedQueryParams(
+    params: UserFeedParams,
+    options?: { includeCommunityId?: boolean },
+  ): Record<string, string> {
+    const queryParams: Record<string, string> = {};
+    const formatListParam = (value?: string | string[]) => {
+      if (!value) {
+        return undefined;
+      }
+      if (Array.isArray(value)) {
+        return value.filter((item) => item && item.trim().length > 0).join(',');
+      }
+      return value.trim();
+    };
+
+    if (params.page !== undefined) {
+      queryParams.page = String(params.page);
+    }
+
+    if (params.limit !== undefined) {
+      queryParams.limit = String(params.limit);
+    }
+
+    if (params.token != null && params.token.trim() !== '') {
+      queryParams.token = params.token.trim();
+    }
+
+    if (params.search && params.search.trim() !== '') {
+      queryParams.search = params.search.trim();
+    }
+
+    const postTypesParam = formatListParam(params.postTypes);
+    if (postTypesParam) {
+      queryParams.postTypes = postTypesParam;
+    }
+
+    const authorIdsParam = formatListParam(params.authorIds);
+    if (authorIdsParam) {
+      queryParams.authorIds = authorIdsParam;
+    }
+
+    if (params.startDate) {
+      queryParams.startDate = params.startDate;
+    }
+
+    if (params.endDate) {
+      queryParams.endDate = params.endDate;
+    }
+
+    if (params.orderBy) {
+      queryParams.orderBy = params.orderBy;
+    }
+
+    if (params.order) {
+      queryParams.order = params.order;
+    }
+
+    if (params.categoryId != null && params.categoryId !== '') {
+      queryParams.categoryId = params.categoryId;
+    }
+
+    if (params.solutionIds != null && params.solutionIds.length > 0) {
+      queryParams.solutionIds = params.solutionIds.join(',');
+    }
+
+    if (options?.includeCommunityId !== false && params.communityId != null && params.communityId.trim() !== '') {
+      queryParams.communityId = params.communityId.trim();
+    }
+
+    return queryParams;
+  }
+
   async getUserFeed(params: UserFeedParams = {}): Promise<UserFeedApiResponse> {
     try {
-      const queryParams: Record<string, string> = {};
-      const formatListParam = (value?: string | string[]) => {
-        if (!value) {
-          return undefined;
-        }
-        if (Array.isArray(value)) {
-          return value.filter((item) => item && item.trim().length > 0).join(',');
-        }
-        return value.trim();
-      };
-
-      if (params.page !== undefined) {
-        queryParams.page = String(params.page);
-      }
-
-      if (params.limit !== undefined) {
-        queryParams.limit = String(params.limit);
-      }
-
-      if (params.token != null && params.token.trim() !== '') {
-        queryParams.token = params.token.trim();
-      }
-
-      if (params.search && params.search.trim() !== '') {
-        queryParams.search = params.search.trim();
-      }
-
-      const postTypesParam = formatListParam(params.postTypes);
-      if (postTypesParam) {
-        queryParams.postTypes = postTypesParam;
-      }
-
-      const authorIdsParam = formatListParam(params.authorIds);
-      if (authorIdsParam) {
-        queryParams.authorIds = authorIdsParam;
-      }
-
-      if (params.startDate) {
-        queryParams.startDate = params.startDate;
-      }
-
-      if (params.endDate) {
-        queryParams.endDate = params.endDate;
-      }
-
-      if (params.orderBy) {
-        queryParams.orderBy = params.orderBy;
-      }
-
-      if (params.order) {
-        queryParams.order = params.order;
-      }
-
-      if (params.categoryId != null && params.categoryId !== '') {
-        queryParams.categoryId = params.categoryId;
-      }
-
-      if (params.solutionIds != null && params.solutionIds.length > 0) {
-        queryParams.solutionIds = params.solutionIds.join(',');
-      }
-
-      if (params.communityId != null && params.communityId.trim() !== '') {
-        queryParams.communityId = params.communityId.trim();
-      }
+      const queryParams = this.buildFeedQueryParams(params);
 
       const userFeedResponse = await apiClient.get<UserFeedApiResponse>(this.userFeeEndpoint, queryParams, true, false);
       logger.debug('[CommunityService] userFeed response', userFeedResponse);
       return userFeedResponse;
     } catch (error) {
       logger.error('Error fetching user feed:', error);
+      throw error;
+    }
+  }
+
+  async getCommunityPosts(
+    communityId: string,
+    params: Omit<UserFeedParams, 'communityId'> = {},
+  ): Promise<UserFeedApiResponse> {
+    const trimmedCommunityId = communityId?.trim();
+    if (!trimmedCommunityId) {
+      throw new Error('communityId is required');
+    }
+
+    try {
+      const queryParams = this.buildFeedQueryParams(params, { includeCommunityId: false });
+      const endpoint = `${this.communitiesEndpoint}/${encodeURIComponent(trimmedCommunityId)}/posts`;
+      const response = await apiClient.get<UserFeedApiResponse>(endpoint, queryParams, true, false);
+      logger.debug('[CommunityService] communityPosts response', response);
+      return response;
+    } catch (error) {
+      logger.error('Error fetching community posts:', error);
       throw error;
     }
   }

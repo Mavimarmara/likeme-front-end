@@ -82,6 +82,14 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
   postsRef.current = posts;
 
   const memoizedParams = useMemo(() => params ?? {}, [paramsKey]);
+  const scopedCommunityId = memoizedParams.communityId?.trim() ?? '';
+  const feedFilterParams = useMemo(() => {
+    if (!scopedCommunityId) {
+      return memoizedParams;
+    }
+    const { communityId: _communityId, ...rest } = memoizedParams;
+    return rest;
+  }, [memoizedParams, scopedCommunityId]);
 
   const hasLoadedInitially = useRef(initialCacheIsFresh);
   const previousSearchQuery = useRef<string>(initialCacheIsFresh ? searchQuery : '');
@@ -100,7 +108,11 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
         nextFeedCursorRef.current = undefined;
       }
 
-      if (page > 1 && (nextFeedCursorRef.current == null || nextFeedCursorRef.current.trim() === '')) {
+      if (
+        page > 1 &&
+        !scopedCommunityId &&
+        (nextFeedCursorRef.current == null || nextFeedCursorRef.current.trim() === '')
+      ) {
         logger.warn('[useUserFeed] loadMore sem cursor: paging.next ausente na página anterior.');
         setHasMore(false);
         return;
@@ -120,13 +132,18 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
           setLoadingMore(true);
         }
         setError(null);
-        const userFeedResponse = await communityService.getUserFeed({
+
+        const requestParams = {
           page,
           limit: pageSize,
           search: search,
-          ...(feedCursor != null && feedCursor.length > 0 ? { token: feedCursor } : {}),
-          ...memoizedParams,
-        });
+          ...(feedCursor != null && feedCursor.length > 0 && !scopedCommunityId ? { token: feedCursor } : {}),
+          ...feedFilterParams,
+        };
+
+        const userFeedResponse = scopedCommunityId
+          ? await communityService.getCommunityPosts(scopedCommunityId, requestParams)
+          : await communityService.getUserFeed(requestParams);
 
         const isSuccess =
           userFeedResponse.success === true ||
@@ -206,7 +223,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
         isLoadingRef.current = false;
       }
     },
-    [pageSize, memoizedParams, feedCache, cacheKey],
+    [pageSize, memoizedParams, feedFilterParams, scopedCommunityId, feedCache, cacheKey],
   );
 
   const loadMore = useCallback(() => {
