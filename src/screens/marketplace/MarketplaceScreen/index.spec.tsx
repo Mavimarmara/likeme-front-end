@@ -308,6 +308,15 @@ describe('MarketplaceScreen', () => {
     mockUseMarketplaceScreenListings.mockReturnValue({
       resetPages: jest.fn(),
       handleLoadMore: jest.fn(),
+      showCategoryBlocks: false,
+      showAllTabGroupedLayout: true,
+      showSolutionKindLayout: true,
+      isProfessionalsTab: false,
+      listChrome: {
+        showFullScreenLoading: false,
+        footer: { showLoadMoreSpinner: false, showProfessionals: false },
+        groupedScrollPagination: { loading: false, hasMore: false },
+      },
       groupedCategoryAds: { product: mockAds, service: [], program: [] },
       categoryProgramAds: [],
       filteredAdsBySolution: mockAds,
@@ -414,11 +423,43 @@ describe('MarketplaceScreen', () => {
   });
 
   it('exibe blocos por categoria quando filtro de categoria está ativo na aba Todos', async () => {
+    mockUseMarketplaceScreenListings.mockReturnValue({
+      resetPages: jest.fn(),
+      handleLoadMore: jest.fn(),
+      showCategoryBlocks: true,
+      showAllTabGroupedLayout: false,
+      showSolutionKindLayout: true,
+      isProfessionalsTab: false,
+      listChrome: {
+        showFullScreenLoading: false,
+        footer: { showLoadMoreSpinner: false, showProfessionals: false },
+        groupedScrollPagination: { loading: false, hasMore: false },
+      },
+      groupedCategoryAds: { product: mockAds, service: [], program: [] },
+      categoryProgramAds: [],
+      filteredAdsBySolution: mockAds,
+      allTabProductAds: mockAds,
+      allTabServiceAds: [],
+      allTabProgramAds: [],
+      listAdsForCurrentTab: mockAds.slice(1),
+      highlightAdId: mockAds[0]?.id ?? null,
+      weekHighlightAd: mockAds[0] ?? null,
+      loading: false,
+      hasMore: false,
+      allTabLoading: false,
+      programsLoading: false,
+      allTabHasMore: false,
+      programsHasMore: false,
+      hasCategoryBlockContent: true,
+      hasAllTabGroupedContent: true,
+    });
+
     const { getByTestId } = render(<MarketplaceScreen navigation={mockNavigation as any} route={mockRoute as any} />);
 
     fireEvent.press(getByTestId('apply-filter-category-all'));
 
     await waitFor(() => {
+      expect(getByTestId('marketplace-category-title')).toBeTruthy();
       expect(getByTestId('marketplace-category-intro')).toBeTruthy();
       expect(getByTestId('marketplace-category-blocks')).toBeTruthy();
       expect(getByTestId('marketplace-scroll')).toBeTruthy();

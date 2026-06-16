@@ -36,6 +36,7 @@ import {
   useAdvertisers,
   useSolutions,
 } from '@/hooks';
+import { getMarkerIdForCategory } from '@/hooks/category/markerId';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 import { handleAdNavigation } from '@/utils';
@@ -49,12 +50,8 @@ import {
   SOLUTION_TAB_ALL,
   hasMarketplaceSearchQuery,
   isMarketplaceAllTab,
-  isMarketplaceAllTabGroupedBrowsing,
-  isMarketplaceCategoryBrowsing,
-  isMarketplaceProfessionalsTab,
   marketplaceSolutionIdsForTab,
   resolveMarketplaceSolutionTabFromFilters,
-  showMarketplaceSolutionKindLayout,
   type MarketplaceSolutionTab,
   type SolutionFilterId,
 } from '@/types/solution';
@@ -86,12 +83,6 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   const scrollNearBottomRef = useRef(false);
   const flatListLoadMoreLockedRef = useRef(false);
 
-  const listings = useMarketplaceScreenListings({
-    selectedSolutionTab,
-    selectedCategoryId,
-    appliedSearchQuery,
-  });
-
   const { advertisers: professionals } = useAdvertisers({
     listOptions: {
       status: 'active',
@@ -99,6 +90,13 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       ...(appliedSearchQuery.trim() ? { search: appliedSearchQuery.trim() } : {}),
       ...(selectedCategoryId ? { categoryId: selectedCategoryId } : {}),
     },
+  });
+
+  const listings = useMarketplaceScreenListings({
+    selectedSolutionTab,
+    selectedCategoryId,
+    appliedSearchQuery,
+    professionalsCount: professionals.length,
   });
 
   useEffect(() => {
@@ -113,30 +111,30 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     return () => clearTimeout(handle);
   }, [searchQuery, listings.resetPages]);
 
-  const showCategoryBlocks = isMarketplaceCategoryBrowsing(selectedSolutionTab, selectedCategoryId, appliedSearchQuery);
-  const showAllTabGroupedLayout = isMarketplaceAllTabGroupedBrowsing(
-    selectedSolutionTab,
-    selectedCategoryId,
-    appliedSearchQuery,
-  );
-  const showSolutionKindLayout = showMarketplaceSolutionKindLayout(
-    selectedSolutionTab,
-    selectedCategoryId,
-    appliedSearchQuery,
-  );
+  const {
+    showCategoryBlocks,
+    showAllTabGroupedLayout,
+    showSolutionKindLayout,
+    isProfessionalsTab,
+    listChrome,
+    hasCategoryBlockContent,
+    hasAllTabGroupedContent,
+    loading: listingsLoading,
+  } = listings;
 
-  const hasCategoryBlockContent = listings.hasCategoryBlockContent || professionals.length > 0;
-  const hasAllTabGroupedContent = listings.hasAllTabGroupedContent || professionals.length > 0;
-  const isProfessionalsTab = isMarketplaceProfessionalsTab(selectedSolutionTab);
+  useEffect(() => {
+    if (!listChrome.groupedScrollPagination.loading) {
+      scrollNearBottomRef.current = false;
+    }
+  }, [listChrome.groupedScrollPagination.loading]);
+
+  useEffect(() => {
+    if (!listingsLoading) {
+      flatListLoadMoreLockedRef.current = false;
+    }
+  }, [listingsLoading]);
+
   const listData = isProfessionalsTab ? [] : listings.listAdsForCurrentTab;
-  const solutionKindHasMore =
-    showCategoryBlocks || showAllTabGroupedLayout
-      ? listings.allTabHasMore || listings.programsHasMore
-      : listings.hasMore;
-  const solutionKindLoading =
-    showCategoryBlocks || showAllTabGroupedLayout
-      ? listings.allTabLoading || listings.programsLoading
-      : listings.loading;
 
   const productFallbackTitle = t('marketplace.product', { defaultValue: 'Product' });
   const outOfStockLabel = t('marketplace.outOfStock', { defaultValue: 'Out of stock' });
@@ -145,12 +143,29 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     selectedCategoryId != null
       ? categories.find((category) => String(category.categoryId) === String(selectedCategoryId))
       : null;
+  const activeCategoryMarker = useMemo((): CategoryName | null => {
+    if (selectedCategoryName != null) {
+      return selectedCategoryName;
+    }
+    if (selectedCategoryFromId != null) {
+      return getMarkerIdForCategory(String(selectedCategoryFromId.categoryId), selectedCategoryFromId.name ?? '');
+    }
+    return null;
+  }, [selectedCategoryName, selectedCategoryFromId]);
+  const hasActiveCategoryFilter = selectedCategoryId != null || selectedCategoryName != null;
   const categoryFilterButtonLabel =
     selectedCategoryName != null
       ? getCategoryName(selectedCategoryName)
       : selectedCategoryFromId?.name ?? t('marketplace.category');
   const categoryDisplayName =
     selectedCategoryName != null ? getCategoryName(selectedCategoryName) : selectedCategoryFromId?.name?.trim() ?? '';
+  const categoryTitleText =
+    hasActiveCategoryFilter && categoryDisplayName
+      ? t('marketplace.categoryTitle', {
+          categoryName: categoryDisplayName,
+          defaultValue: 'Curadoria de {{categoryName}}',
+        })
+      : null;
   const categoryIntroText =
     showCategoryBlocks && categoryDisplayName
       ? t('marketplace.categoryIntro', {
@@ -270,6 +285,20 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     [t, showCategoryBlocks, handleClearFilterCategory],
   );
 
+  const productListHeader = useMemo(
+    () => (
+      <>
+        {weekHighlights}
+        {categoryTitleText ? (
+          <Text style={styles.categoryTitle} testID='marketplace-category-title'>
+            {categoryTitleText}
+          </Text>
+        ) : null}
+      </>
+    ),
+    [weekHighlights, categoryTitleText],
+  );
+
   const renderSolutionKindContent = () => {
     if (showCategoryBlocks) {
       if (!hasCategoryBlockContent) {
@@ -332,47 +361,19 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     );
   };
 
-  const showCategoryBlocksLoading = showCategoryBlocks && solutionKindLoading && !hasCategoryBlockContent;
-  const showAllTabGroupedLoading = showAllTabGroupedLayout && solutionKindLoading && !hasAllTabGroupedContent;
-  const showListInitialLoading =
-    !isProfessionalsTab && !showCategoryBlocks && !showAllTabGroupedLayout && listings.loading && listData.length === 0;
-  const showProfessionalsAfterAllTab =
-    !showCategoryBlocks &&
-    isMarketplaceAllTab(selectedSolutionTab) &&
-    professionalsContent != null &&
-    (showAllTabGroupedLayout ? hasAllTabGroupedContent : listings.listAdsForCurrentTab.length > 0);
-
-  const listFooter = useMemo(() => {
-    const groupedLayoutActive = showCategoryBlocks || showAllTabGroupedLayout;
-    const groupedHasContent = showCategoryBlocks ? hasCategoryBlockContent : hasAllTabGroupedContent;
-    const showLoadMoreSpinner = showSolutionKindLayout
-      ? solutionKindLoading && (groupedLayoutActive ? groupedHasContent : listings.filteredAdsBySolution.length > 0)
-      : !isProfessionalsTab && listings.loading && listings.listAdsForCurrentTab.length > 0;
-
-    return (
+  const listFooter = useMemo(
+    () => (
       <View style={styles.listFooter}>
-        {showLoadMoreSpinner ? (
+        {listChrome.footer.showLoadMoreSpinner ? (
           <View style={styles.listLoadingMore}>
             <ActivityIndicator size='small' color='#2196F3' />
           </View>
         ) : null}
-        {showProfessionalsAfterAllTab ? professionalsContent : null}
+        {listChrome.footer.showProfessionals ? professionalsContent : null}
       </View>
-    );
-  }, [
-    showSolutionKindLayout,
-    showCategoryBlocks,
-    showAllTabGroupedLayout,
-    solutionKindLoading,
-    hasCategoryBlockContent,
-    hasAllTabGroupedContent,
-    listings.filteredAdsBySolution.length,
-    listings.listAdsForCurrentTab.length,
-    listings.loading,
-    isProfessionalsTab,
-    showProfessionalsAfterAllTab,
-    professionalsContent,
-  ]);
+    ),
+    [listChrome.footer.showLoadMoreSpinner, listChrome.footer.showProfessionals, professionalsContent],
+  );
 
   const renderAdItem = useCallback<ListRenderItem<Ad>>(
     ({ item: ad }) => (
@@ -387,6 +388,14 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     [categories, productFallbackTitle, outOfStockLabel, handleAdPress],
   );
 
+  const handleProductListEndReached = useCallback(() => {
+    if (flatListLoadMoreLockedRef.current || listings.loading || !listings.hasMore) {
+      return;
+    }
+    flatListLoadMoreLockedRef.current = true;
+    listings.handleLoadMore();
+  }, [listings.loading, listings.hasMore, listings.handleLoadMore]);
+
   const handleGroupedScrollEndReached = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
       const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
@@ -398,13 +407,67 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
         scrollNearBottomRef.current = false;
         return;
       }
-      if (scrollNearBottomRef.current || !solutionKindHasMore || solutionKindLoading) {
+      if (
+        scrollNearBottomRef.current ||
+        !listChrome.groupedScrollPagination.hasMore ||
+        listChrome.groupedScrollPagination.loading
+      ) {
         return;
       }
       scrollNearBottomRef.current = true;
       listings.handleLoadMore();
     },
-    [solutionKindHasMore, solutionKindLoading, listings.handleLoadMore],
+    [listChrome.groupedScrollPagination.hasMore, listChrome.groupedScrollPagination.loading, listings.handleLoadMore],
+  );
+
+  const renderGroupedContent = () => (
+    <ScrollView
+      testID='marketplace-scroll'
+      style={styles.scrollView}
+      contentContainerStyle={styles.listContentContainer}
+      showsVerticalScrollIndicator={false}
+      scrollEventThrottle={16}
+      onScroll={handleGroupedScrollEndReached}
+    >
+      {weekHighlights}
+      {categoryTitleText ? (
+        <Text style={styles.categoryTitle} testID='marketplace-category-title'>
+          {categoryTitleText}
+        </Text>
+      ) : null}
+      {categoryIntroText ? (
+        <Text style={styles.categoryIntro} testID='marketplace-category-intro'>
+          {categoryIntroText}
+        </Text>
+      ) : null}
+      {isProfessionalsTab ? professionalsContent ?? listEmpty : renderSolutionKindContent()}
+      {listFooter}
+    </ScrollView>
+  );
+
+  const renderProductList = () => (
+    <FlatList<Ad>
+      testID='marketplace-list'
+      style={styles.scrollView}
+      contentContainerStyle={styles.listContentContainer}
+      showsVerticalScrollIndicator={false}
+      data={listData}
+      keyExtractor={(ad) => ad.id}
+      renderItem={renderAdItem}
+      ItemSeparatorComponent={() => <View style={styles.listItemSeparator} />}
+      ListHeaderComponent={productListHeader}
+      ListFooterComponent={listFooter}
+      ListEmptyComponent={isProfessionalsTab ? professionalsContent ?? listEmpty : listEmpty}
+      onEndReached={handleProductListEndReached}
+      onEndReachedThreshold={MARKETPLACE_LIST_END_REACHED_THRESHOLD}
+      onMomentumScrollBegin={() => {
+        flatListLoadMoreLockedRef.current = false;
+      }}
+      initialNumToRender={10}
+      maxToRenderPerBatch={10}
+      windowSize={11}
+      removeClippedSubviews
+    />
   );
 
   return (
@@ -420,9 +483,9 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       }}
       contentContainerStyle={styles.container}
     >
-      <GradientBackgroundByCategory category={selectedCategoryName} />
+      <GradientBackgroundByCategory category={hasActiveCategoryFilter ? activeCategoryMarker : null} />
       <View pointerEvents='none' style={styles.backgroundGradient}>
-        <GradientBackgroundByCategory category={selectedCategoryName} />
+        <GradientBackgroundByCategory category={hasActiveCategoryFilter ? activeCategoryMarker : null} />
       </View>
       <View style={styles.content}>
         <View style={styles.customHeader}>
@@ -449,9 +512,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
           <View style={styles.filterMenuContainer}>
             <StickyFilterCarouselRow
               filterButtonLabel={categoryFilterButtonLabel}
-              filterButtonSelected={
-                selectedCategoryId != null || selectedCategoryName != null || selectedSolutionIds.length > 0
-              }
+              filterButtonSelected={selectedSolutionIds.length > 0}
               onFilterButtonPress={() => setIsFilterCategoryModalVisible(true)}
               carouselOptions={marketplaceCarouselOptions}
               selectedCarouselId={selectedSolutionTab}
@@ -477,58 +538,15 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
           />
         </View>
 
-        {showCategoryBlocksLoading || showAllTabGroupedLoading || showListInitialLoading ? (
+        {listChrome.showFullScreenLoading ? (
           <View style={styles.listLoadingFullScreen}>
             <ActivityIndicator size='large' color='#2196F3' />
             <Text style={styles.listLoadingText}>{t('common.loading')}</Text>
           </View>
         ) : showSolutionKindLayout ? (
-          <ScrollView
-            testID='marketplace-scroll'
-            style={styles.scrollView}
-            contentContainerStyle={styles.listContentContainer}
-            showsVerticalScrollIndicator={false}
-            scrollEventThrottle={16}
-            onScroll={handleGroupedScrollEndReached}
-          >
-            {weekHighlights}
-            {categoryIntroText ? (
-              <Text style={styles.categoryIntro} testID='marketplace-category-intro'>
-                {categoryIntroText}
-              </Text>
-            ) : null}
-            {isProfessionalsTab ? professionalsContent ?? listEmpty : renderSolutionKindContent()}
-            {listFooter}
-          </ScrollView>
+          renderGroupedContent()
         ) : (
-          <FlatList<Ad>
-            testID='marketplace-list'
-            style={styles.scrollView}
-            contentContainerStyle={styles.listContentContainer}
-            showsVerticalScrollIndicator={false}
-            data={listData}
-            keyExtractor={(ad) => ad.id}
-            renderItem={renderAdItem}
-            ItemSeparatorComponent={() => <View style={styles.listItemSeparator} />}
-            ListHeaderComponent={weekHighlights}
-            ListFooterComponent={listFooter}
-            ListEmptyComponent={isProfessionalsTab ? professionalsContent ?? listEmpty : listEmpty}
-            onEndReached={() => {
-              if (flatListLoadMoreLockedRef.current || listings.loading || !listings.hasMore) {
-                return;
-              }
-              flatListLoadMoreLockedRef.current = true;
-              listings.handleLoadMore();
-            }}
-            onEndReachedThreshold={MARKETPLACE_LIST_END_REACHED_THRESHOLD}
-            onMomentumScrollBegin={() => {
-              flatListLoadMoreLockedRef.current = false;
-            }}
-            initialNumToRender={10}
-            maxToRenderPerBatch={10}
-            windowSize={11}
-            removeClippedSubviews
-          />
+          renderProductList()
         )}
       </View>
     </ScreenWithHeader>

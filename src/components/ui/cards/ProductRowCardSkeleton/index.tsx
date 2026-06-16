@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Skeleton } from '@/components/ui/feedback';
 import { COLORS, SPACING } from '@/constants';
+import { PRODUCT_ROW_CARD_HEIGHT } from '@/components/ui/cards/ProductRowCard/styles';
 
 /**
  * Placeholder com a silhueta de um ProductRowCard. Usado no loading inicial
@@ -11,9 +12,9 @@ import { COLORS, SPACING } from '@/constants';
 const ProductRowCardSkeleton: React.FC = () => {
   return (
     <View style={styles.container}>
-      <Skeleton width={88} height={88} borderRadius={12} />
+      <Skeleton width={108} height={PRODUCT_ROW_CARD_HEIGHT} borderRadius={22} />
 
-      <View style={styles.bodyColumn}>
+      <View style={styles.contentColumn}>
         <Skeleton width='85%' height={14} borderRadius={6} />
         <Skeleton width='55%' height={12} borderRadius={6} />
 
@@ -24,6 +25,10 @@ const ProductRowCardSkeleton: React.FC = () => {
 
         <Skeleton width={88} height={16} borderRadius={6} style={styles.priceMark} />
       </View>
+
+      <View style={styles.actionColumn}>
+        <Skeleton width={44} height={44} borderRadius={22} />
+      </View>
     </View>
   );
 };
@@ -31,15 +36,22 @@ const ProductRowCardSkeleton: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'stretch',
+    height: PRODUCT_ROW_CARD_HEIGHT,
+    overflow: 'hidden',
     backgroundColor: COLORS.NEUTRAL.HIGH.LIGHT,
-    borderRadius: 16,
-    padding: SPACING.SM,
+    borderRadius: 22,
+    paddingRight: SPACING.SM,
     gap: SPACING.MD,
   },
-  bodyColumn: {
+  contentColumn: {
     flex: 1,
     gap: SPACING.XS,
+  },
+  actionColumn: {
+    justifyContent: 'flex-end',
+    paddingVertical: SPACING.MD,
+    marginRight: SPACING.SM,
   },
   badgesRow: {
     flexDirection: 'row',

@@ -11,7 +11,9 @@ import {
   hasMarketplaceSearchQuery,
   isMarketplaceAllTab,
   isMarketplaceAllTabGroupedBrowsing,
+  isMarketplaceCategoryBrowsing,
   isMarketplaceProfessionalsTab,
+  showMarketplaceSolutionKindLayout,
   type MarketplaceSolutionTab,
 } from '@/types/solution';
 
@@ -19,23 +21,104 @@ type UseMarketplaceScreenListingsParams = {
   selectedSolutionTab: MarketplaceSolutionTab;
   selectedCategoryId?: string;
   appliedSearchQuery: string;
+  professionalsCount: number;
 };
+
+export type MarketplaceScreenListChrome = {
+  showFullScreenLoading: boolean;
+  footer: {
+    showLoadMoreSpinner: boolean;
+    showProfessionals: boolean;
+  };
+  groupedScrollPagination: {
+    loading: boolean;
+    hasMore: boolean;
+  };
+};
+
+type MarketplaceScreenListChromeInput = {
+  showCategoryBlocks: boolean;
+  showAllTabGroupedLayout: boolean;
+  showSolutionKindLayout: boolean;
+  isProfessionalsTab: boolean;
+  isAllTab: boolean;
+  hasCategoryBlockContent: boolean;
+  hasAllTabGroupedContent: boolean;
+  listAdCount: number;
+  filteredAdsBySolutionCount: number;
+  hasProfessionalsContent: boolean;
+  listingsLoading: boolean;
+  listingsHasMore: boolean;
+  allTabLoading: boolean;
+  programsLoading: boolean;
+  allTabHasMore: boolean;
+  programsHasMore: boolean;
+};
+
+export function marketplaceScreenListChrome(input: MarketplaceScreenListChromeInput): MarketplaceScreenListChrome {
+  const groupedLayoutActive = input.showCategoryBlocks || input.showAllTabGroupedLayout;
+  const groupedLoading = input.allTabLoading || input.programsLoading;
+  const groupedHasMore = input.allTabHasMore || input.programsHasMore;
+  const groupedScrollLoading = groupedLayoutActive ? groupedLoading : input.listingsLoading;
+  const groupedScrollHasMore = groupedLayoutActive ? groupedHasMore : input.listingsHasMore;
+  const groupedHasContent = input.showCategoryBlocks ? input.hasCategoryBlockContent : input.hasAllTabGroupedContent;
+
+  const showFullScreenLoading =
+    (input.showCategoryBlocks && groupedLoading && !input.hasCategoryBlockContent) ||
+    (input.showAllTabGroupedLayout && groupedLoading && !input.hasAllTabGroupedContent) ||
+    (!input.isProfessionalsTab &&
+      !input.showCategoryBlocks &&
+      !input.showAllTabGroupedLayout &&
+      input.listingsLoading &&
+      input.listAdCount === 0);
+
+  const showLoadMoreSpinner = input.showSolutionKindLayout
+    ? groupedScrollLoading && (groupedLayoutActive ? groupedHasContent : input.filteredAdsBySolutionCount > 0)
+    : !input.isProfessionalsTab && input.listingsLoading && input.listAdCount > 0;
+
+  const showProfessionals =
+    !input.showCategoryBlocks &&
+    input.isAllTab &&
+    input.hasProfessionalsContent &&
+    (input.showAllTabGroupedLayout ? input.hasAllTabGroupedContent : input.listAdCount > 0);
+
+  return {
+    showFullScreenLoading,
+    footer: {
+      showLoadMoreSpinner,
+      showProfessionals,
+    },
+    groupedScrollPagination: {
+      loading: groupedScrollLoading,
+      hasMore: groupedScrollHasMore,
+    },
+  };
+}
 
 export function useMarketplaceScreenListings({
   selectedSolutionTab,
   selectedCategoryId,
   appliedSearchQuery,
+  professionalsCount,
 }: UseMarketplaceScreenListingsParams) {
   const [allTabPage, setAllTabPage] = useState(1);
   const [productsTabPage, setProductsTabPage] = useState(1);
   const [servicesTabPage, setServicesTabPage] = useState(1);
   const [programsTabPage, setProgramsTabPage] = useState(1);
   const prefetchKeyRef = useRef<string | null>(null);
+  const loadMoreInFlightRef = useRef(false);
 
   const listingsEnabled = !isMarketplaceProfessionalsTab(selectedSolutionTab);
   const listingsSearchQuery = appliedSearchQuery.trim() || undefined;
   const isProgramsTab = selectedSolutionTab === 'programs';
+  const isProfessionalsTab = isMarketplaceProfessionalsTab(selectedSolutionTab);
+  const showCategoryBlocks = isMarketplaceCategoryBrowsing(selectedSolutionTab, selectedCategoryId, appliedSearchQuery);
   const showAllTabGroupedLayout = isMarketplaceAllTabGroupedBrowsing(
+    selectedSolutionTab,
+    selectedCategoryId,
+    appliedSearchQuery,
+  );
+  const showSolutionKindLayout = showMarketplaceSolutionKindLayout(
     selectedSolutionTab,
     selectedCategoryId,
     appliedSearchQuery,
@@ -47,6 +130,7 @@ export function useMarketplaceScreenListings({
     setServicesTabPage(1);
     setProgramsTabPage(1);
     prefetchKeyRef.current = null;
+    loadMoreInFlightRef.current = false;
   }, []);
 
   const allTab = useMarketplaceAds({
@@ -79,6 +163,11 @@ export function useMarketplaceScreenListings({
     searchQuery: listingsSearchQuery,
     enabled: listingsEnabled,
   });
+
+  const loadAllTabAds = allTab.loadAds;
+  const loadProductsTabAds = productsTab.loadAds;
+  const loadServicesTabAds = servicesTab.loadAds;
+  const loadProgramsTabProducts = programsTab.loadProducts;
 
   const activeSource = useMemo(() => {
     switch (selectedSolutionTab) {
@@ -119,26 +208,26 @@ export function useMarketplaceScreenListings({
     }
     prefetchKeyRef.current = prefetchKey;
     if (selectedSolutionTab !== SOLUTION_TAB_ALL) {
-      void allTab.loadAds();
+      void loadAllTabAds();
     }
     if (selectedSolutionTab !== 'products') {
-      void productsTab.loadAds();
+      void loadProductsTabAds();
     }
     if (selectedSolutionTab !== 'services') {
-      void servicesTab.loadAds();
+      void loadServicesTabAds();
     }
     if (selectedSolutionTab !== 'programs') {
-      void programsTab.loadProducts();
+      void loadProgramsTabProducts();
     }
   }, [
     listingsEnabled,
     listingsSearchQuery,
     selectedCategoryId,
     selectedSolutionTab,
-    allTab,
-    productsTab,
-    servicesTab,
-    programsTab,
+    loadAllTabAds,
+    loadProductsTabAds,
+    loadServicesTabAds,
+    loadProgramsTabProducts,
   ]);
 
   useEffect(() => {
@@ -146,14 +235,14 @@ export function useMarketplaceScreenListings({
       return;
     }
     if (selectedSolutionTab === 'products') {
-      void productsTab.loadAds();
+      void loadProductsTabAds();
       return;
     }
     if (selectedSolutionTab === 'services') {
-      void servicesTab.loadAds();
+      void loadServicesTabAds();
       return;
     }
-    void allTab.loadAds();
+    void loadAllTabAds();
   }, [
     listingsEnabled,
     isProgramsTab,
@@ -161,9 +250,9 @@ export function useMarketplaceScreenListings({
     allTabPage,
     productsTabPage,
     servicesTabPage,
-    allTab,
-    productsTab,
-    servicesTab,
+    loadAllTabAds,
+    loadProductsTabAds,
+    loadServicesTabAds,
   ]);
 
   useEffect(() => {
@@ -175,7 +264,7 @@ export function useMarketplaceScreenListings({
     if (!needsPrograms) {
       return;
     }
-    void programsTab.loadProducts();
+    void loadProgramsTabProducts();
   }, [
     listingsEnabled,
     isProgramsTab,
@@ -183,10 +272,14 @@ export function useMarketplaceScreenListings({
     appliedSearchQuery,
     selectedCategoryId,
     programsTabPage,
-    programsTab,
+    loadProgramsTabProducts,
   ]);
 
   const handleLoadMore = useCallback(() => {
+    if (loadMoreInFlightRef.current) {
+      return;
+    }
+
     const groupedPagination =
       isMarketplaceAllTab(selectedSolutionTab) && !hasMarketplaceSearchQuery(appliedSearchQuery);
 
@@ -197,6 +290,7 @@ export function useMarketplaceScreenListings({
       if (!allTab.hasMore && !programsTab.hasMore) {
         return;
       }
+      loadMoreInFlightRef.current = true;
       if (allTab.hasMore) {
         setAllTabPage((prev) => prev + 1);
       }
@@ -209,6 +303,8 @@ export function useMarketplaceScreenListings({
     if (activeSource.loading || !activeSource.hasMore) {
       return;
     }
+
+    loadMoreInFlightRef.current = true;
 
     switch (selectedSolutionTab) {
       case 'products':
@@ -223,7 +319,22 @@ export function useMarketplaceScreenListings({
       default:
         setAllTabPage((prev) => prev + 1);
     }
-  }, [appliedSearchQuery, selectedSolutionTab, allTab, programsTab, activeSource]);
+  }, [
+    appliedSearchQuery,
+    selectedSolutionTab,
+    allTab.loading,
+    allTab.hasMore,
+    programsTab.loading,
+    programsTab.hasMore,
+    activeSource.loading,
+    activeSource.hasMore,
+  ]);
+
+  useEffect(() => {
+    if (!allTab.loading && !programsTab.loading && !activeSource.loading) {
+      loadMoreInFlightRef.current = false;
+    }
+  }, [allTab.loading, programsTab.loading, activeSource.loading]);
 
   const sortedAllTabAds = useMemo(
     () =>
@@ -310,9 +421,66 @@ export function useMarketplaceScreenListings({
     selectedSolutionTab,
   ]);
 
+  const hasCategoryBlockContent =
+    groupedCategoryAds.product.length > 0 ||
+    groupedCategoryAds.service.length > 0 ||
+    categoryProgramAds.length > 0 ||
+    professionalsCount > 0;
+  const hasAllTabGroupedContent =
+    (highlightAdId != null && filteredAdsBySolution[0]?.product != null) ||
+    allTabServiceAds.length > 0 ||
+    allTabProgramAds.length > 0 ||
+    allTabProductAds.length > 0 ||
+    professionalsCount > 0;
+
+  const listChrome = useMemo(
+    () =>
+      marketplaceScreenListChrome({
+        showCategoryBlocks,
+        showAllTabGroupedLayout,
+        showSolutionKindLayout,
+        isProfessionalsTab,
+        isAllTab: isMarketplaceAllTab(selectedSolutionTab),
+        hasCategoryBlockContent,
+        hasAllTabGroupedContent,
+        listAdCount: listAdsForCurrentTab.length,
+        filteredAdsBySolutionCount: filteredAdsBySolution.length,
+        hasProfessionalsContent: professionalsCount > 0,
+        listingsLoading: activeSource.loading,
+        listingsHasMore: activeSource.hasMore,
+        allTabLoading: allTab.loading,
+        programsLoading: programsTab.loading,
+        allTabHasMore: allTab.hasMore,
+        programsHasMore: programsTab.hasMore,
+      }),
+    [
+      showCategoryBlocks,
+      showAllTabGroupedLayout,
+      showSolutionKindLayout,
+      isProfessionalsTab,
+      selectedSolutionTab,
+      hasCategoryBlockContent,
+      hasAllTabGroupedContent,
+      listAdsForCurrentTab.length,
+      filteredAdsBySolution.length,
+      professionalsCount,
+      activeSource.loading,
+      activeSource.hasMore,
+      allTab.loading,
+      programsTab.loading,
+      allTab.hasMore,
+      programsTab.hasMore,
+    ],
+  );
+
   return {
     resetPages,
     handleLoadMore,
+    showCategoryBlocks,
+    showAllTabGroupedLayout,
+    showSolutionKindLayout,
+    isProfessionalsTab,
+    listChrome,
     groupedCategoryAds,
     categoryProgramAds,
     filteredAdsBySolution,
@@ -328,12 +496,7 @@ export function useMarketplaceScreenListings({
     programsLoading: programsTab.loading,
     allTabHasMore: allTab.hasMore,
     programsHasMore: programsTab.hasMore,
-    hasCategoryBlockContent:
-      groupedCategoryAds.product.length > 0 || groupedCategoryAds.service.length > 0 || categoryProgramAds.length > 0,
-    hasAllTabGroupedContent:
-      (highlightAdId != null && filteredAdsBySolution[0]?.product != null) ||
-      allTabServiceAds.length > 0 ||
-      allTabProgramAds.length > 0 ||
-      allTabProductAds.length > 0,
+    hasCategoryBlockContent,
+    hasAllTabGroupedContent,
   };
 }

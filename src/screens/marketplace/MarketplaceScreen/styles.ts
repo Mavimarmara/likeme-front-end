@@ -409,6 +409,13 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666666',
   },
+  categoryTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#000000',
+    paddingHorizontal: SPACING.MD,
+    marginBottom: SPACING.SM,
+  },
   categoryIntro: {
     fontSize: 14,
     fontFamily: 'DM Sans',

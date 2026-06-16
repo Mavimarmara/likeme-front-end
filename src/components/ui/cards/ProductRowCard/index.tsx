@@ -63,38 +63,38 @@ const ProductRowCard: React.FC<ProductRowCardProps> = ({
   const hasQuantityCallbacks = typeof onIncreaseQuantity === 'function' && typeof onDecreaseQuantity === 'function';
   const showQuantityRow = hasQuantityCallbacks && (quantity !== undefined || showDelete);
   const displayQuantity = quantity != null ? Number(quantity) : 0;
+  const showDeleteButton = showDelete && onRemove;
+  const showActionColumn = showDeleteButton || showQuantityRow || showTrailingChevron;
+  const stackActionColumn = Boolean(showDeleteButton && showQuantityRow);
+  const titleMaxLines = subtitle ? 1 : 2;
 
-  const content = (
-    <>
-      <CachedImage source={imageSource} style={styles.image} recyclingKey={image} />
-      <View style={styles.content}>
-        <View style={styles.topRow}>
-          {badges.length > 0 ? (
-            <View style={styles.badgesWrap}>
-              {badges.map((label, index) => (
-                <View key={`${label}-${index}`} style={styles.badge}>
-                  <Text style={styles.badgeText}>{label}</Text>
-                </View>
-              ))}
-            </View>
-          ) : null}
-          <View style={styles.topRowRight}>
-            {showDelete && onRemove && (
-              <Pressable
-                style={({ pressed }) => [styles.deleteButton, pressed && { opacity: 0.7 }]}
-                onPress={onRemove}
-                accessibilityRole='button'
-                accessibilityLabel='Remover do carrinho'
-                testID={deleteButtonTestID}
-              >
-                <Icon name='delete' size={24} color={iconColor} />
-              </Pressable>
-            )}
+  return (
+    <Pressable
+      style={({ pressed }) => [styles.card, pressed && { opacity: 0.8 }]}
+      onPress={onPress}
+      accessibilityRole='button'
+      accessibilityLabel={`${title}${outOfStock ? `, ${outOfStockLabel}` : ''}`}
+      accessibilityHint='Toque duas vezes para abrir o produto'
+      testID={testID}
+    >
+      <CachedImage source={imageSource} style={styles.imageColumn} recyclingKey={image} />
+
+      <View style={styles.contentColumn}>
+        {badges.length > 0 ? (
+          <View style={styles.badgesWrap}>
+            {badges.map((label, index) => (
+              <View key={`${label}-${index}`} style={styles.badge}>
+                <Text style={styles.badgeText} numberOfLines={1} ellipsizeMode='tail'>
+                  {label}
+                </Text>
+              </View>
+            ))}
           </View>
-        </View>
-        <View style={styles.middleRow}>
+        ) : null}
+
+        <View style={styles.titleRow}>
           <View style={styles.titleBlock}>
-            <Text style={styles.title} numberOfLines={subtitle ? 2 : 1} ellipsizeMode='tail'>
+            <Text style={styles.title} numberOfLines={titleMaxLines} ellipsizeMode='tail'>
               {title}
             </Text>
             {subtitle ? (
@@ -110,14 +110,30 @@ const ProductRowCard: React.FC<ProductRowCardProps> = ({
             </View>
           )}
         </View>
-        <View style={styles.bottomRow}>
-          <View style={styles.priceBlock}>
-            {outOfStock ? (
-              <Text style={styles.outOfStock}>{outOfStockLabel}</Text>
-            ) : (
-              <Text style={styles.price}>{formatPriceLabel(price)}</Text>
-            )}
-          </View>
+
+        <View style={styles.priceBlock}>
+          {outOfStock ? (
+            <Text style={styles.outOfStock}>{outOfStockLabel}</Text>
+          ) : (
+            <Text style={styles.price}>{formatPriceLabel(price)}</Text>
+          )}
+        </View>
+      </View>
+
+      {showActionColumn ? (
+        <View style={[styles.actionColumn, stackActionColumn && styles.actionColumnStacked]}>
+          {showDeleteButton ? (
+            <Pressable
+              style={({ pressed }) => [styles.deleteButton, pressed && { opacity: 0.7 }]}
+              onPress={onRemove}
+              accessibilityRole='button'
+              accessibilityLabel='Remover do carrinho'
+              testID={deleteButtonTestID}
+            >
+              <Icon name='delete' size={24} color={iconColor} />
+            </Pressable>
+          ) : null}
+
           {showQuantityRow ? (
             <View style={styles.quantityRow}>
               <Pressable
@@ -142,32 +158,18 @@ const ProductRowCard: React.FC<ProductRowCardProps> = ({
                 <Icon name='add-circle-outline' size={24} color={iconColor} />
               </Pressable>
             </View>
-          ) : (
-            showTrailingChevron && (
-              <IconButton
-                icon='chevron-right'
-                iconColor={COLORS.TEXT}
-                iconSize={28}
-                backgroundSize='large'
-                onPress={onPress}
-              />
-            )
-          )}
+          ) : showTrailingChevron ? (
+            <IconButton
+              icon='chevron-right'
+              iconColor={COLORS.TEXT}
+              iconSize={28}
+              backgroundSize='large'
+              backgroundTintColor={COLORS.SECONDARY.PURE}
+              onPress={onPress}
+            />
+          ) : null}
         </View>
-      </View>
-    </>
-  );
-
-  return (
-    <Pressable
-      style={({ pressed }) => [styles.card, pressed && { opacity: 0.8 }]}
-      onPress={onPress}
-      accessibilityRole='button'
-      accessibilityLabel={`${title}${outOfStock ? `, ${outOfStockLabel}` : ''}`}
-      accessibilityHint='Toque duas vezes para abrir o produto'
-      testID={testID}
-    >
-      {content}
+      ) : null}
     </Pressable>
   );
 };

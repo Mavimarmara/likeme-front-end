@@ -1,13 +1,16 @@
 import { StyleSheet } from 'react-native';
 import { COLORS, SPACING } from '@/constants';
 
+export const PRODUCT_ROW_CARD_HEIGHT = 122;
+
 export const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'stretch',
+    height: PRODUCT_ROW_CARD_HEIGHT,
+    overflow: 'hidden',
     backgroundColor: COLORS.SECONDARY.PURE,
     borderRadius: 22,
-    paddingRight: 16,
     gap: 12,
     shadowColor: COLORS.BLACK,
     shadowOpacity: 0.08,
@@ -15,39 +18,45 @@ export const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     elevation: 2,
   },
-  image: {
+  imageColumn: {
     width: 108,
-    height: 140,
+    height: PRODUCT_ROW_CARD_HEIGHT,
     borderRadius: 22,
     backgroundColor: COLORS.NEUTRAL.LOW.MEDIUM,
   },
-  content: {
+  contentColumn: {
     flex: 1,
-    gap: 10,
+    gap: 8,
     justifyContent: 'space-between',
     minWidth: 0,
-    marginVertical: SPACING.SM,
+    overflow: 'hidden',
+    paddingVertical: SPACING.MD_PLUS,
   },
-  topRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '100%',
-  },
-  topRowRight: {
+  actionColumn: {
     flexShrink: 0,
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
+    paddingRight: 16,
+    paddingVertical: SPACING.MD,
+    minWidth: 44,
+  },
+  actionColumnStacked: {
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
   },
   badgesWrap: {
     flexDirection: 'row',
     gap: 8,
     flexShrink: 1,
     minWidth: 0,
+    paddingTop: SPACING.XS,
   },
   badge: {
     backgroundColor: 'rgba(0, 17, 55, 0.64)',
     borderRadius: 12,
     paddingHorizontal: 14,
     minHeight: 24,
+    maxWidth: '100%',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -58,22 +67,21 @@ export const styles = StyleSheet.create({
     color: COLORS.PRIMARY.LIGHT,
     letterSpacing: 0.2,
   },
-  middleRow: {
+  titleRow: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
     width: '100%',
+    minWidth: 0,
+    minHeight: 0,
+    overflow: 'hidden',
     gap: 8,
   },
   titleBlock: {
     flex: 1,
     minWidth: 0,
-  },
-  bottomRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '100%',
+    overflow: 'hidden',
   },
   priceBlock: {
     flexShrink: 0,
@@ -85,6 +93,7 @@ export const styles = StyleSheet.create({
     fontFamily: 'DM Sans',
     color: COLORS.TEXT,
     letterSpacing: 0.2,
+    flexShrink: 1,
   },
   price: {
     fontSize: 14,
@@ -111,6 +120,7 @@ export const styles = StyleSheet.create({
     color: COLORS.TEXT,
     letterSpacing: 0.2,
     marginTop: 2,
+    flexShrink: 1,
   },
   ratingWrap: {
     flexDirection: 'row',
