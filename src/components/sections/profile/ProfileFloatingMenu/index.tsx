@@ -180,14 +180,14 @@ const ProfileFloatingMenu: React.FC<Props> = ({ visible, navigation, onClose }) 
               disabled={false}
               testID='profile-logout'
             />
-            <TouchableOpacity
+            <SecondaryButton
+              label='Encerrar a conta'
               onPress={handleDeleteAccountPress}
+              loading={deletingAccount}
               disabled={deletingAccount}
-              style={[styles.deleteButton, deletingAccount ? styles.deleteButtonDisabled : null]}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.deleteButtonLabel}>Encerrar a conta</Text>
-            </TouchableOpacity>
+              size='large'
+              testID='profile-delete-account'
+            />
             {ACCOUNT_CONFIG.deletionWebUrl ? (
               <Text
                 onPress={() => void handleOpenDeletionWebUrl()}
