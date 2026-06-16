@@ -11,7 +11,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     zIndex: 1,
     backgroundColor: 'transparent',
-    paddingVertical: SPACING.MD,
+    paddingVertical: SPACING.MD_PLUS,
   },
   gradientBackground: {
     ...StyleSheet.absoluteFillObject,
@@ -22,6 +22,10 @@ export const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
+  },
+  searchAndFilters: {
+    paddingBottom: SPACING.MD,
+    paddingHorizontal: SPACING.MD,
   },
   sectionTitle: {
     paddingHorizontal: SPACING.MD,

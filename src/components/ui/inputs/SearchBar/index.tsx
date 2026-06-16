@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TouchableOpacity, TextInput as RNTextInput, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, TextInput as RNTextInput, StyleSheet, type ViewStyle } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { BackgroundIconButton } from '@/assets/ui';
 import { IconButton } from '@/components/ui/buttons';
@@ -12,7 +12,10 @@ interface SearchBarProps {
   onChangeText: (text: string) => void;
   onSearchPress?: () => void;
   onFilterPress?: () => void;
+  onFocus?: () => void;
+  autoFocus?: boolean;
   showFilterButton?: boolean;
+  containerStyle?: ViewStyle;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
@@ -21,20 +24,25 @@ const SearchBar: React.FC<SearchBarProps> = ({
   onChangeText,
   onSearchPress,
   onFilterPress,
+  onFocus,
+  autoFocus = false,
   showFilterButton = true,
+  containerStyle,
 }) => {
   const handleSearchPress = () => {
     onSearchPress?.();
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, containerStyle]}>
       <View style={styles.searchBarContainer}>
         <RNTextInput
           placeholder={placeholder}
           placeholderTextColor='rgba(0,0,0,0.48)'
           value={value}
           onChangeText={onChangeText}
+          onFocus={onFocus}
+          autoFocus={autoFocus}
           onSubmitEditing={handleSearchPress}
           returnKeyType='search'
           style={styles.searchInput}

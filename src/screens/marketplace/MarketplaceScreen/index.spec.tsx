@@ -19,6 +19,12 @@ jest.mock('@/contexts/FloatingMenuContext', () => ({
   useIsFloatingMenuVisible: () => false,
 }));
 
+jest.mock('@react-navigation/native', () => ({
+  useFocusEffect: (callback: () => void | (() => void)) => {
+    callback();
+  },
+}));
+
 jest.mock('react-native-safe-area-context', () => {
   const ReactNative = require('react-native');
   return {
@@ -272,6 +278,7 @@ describe('MarketplaceScreen', () => {
   const mockNavigation = {
     navigate: jest.fn(),
     goBack: jest.fn(),
+    setParams: jest.fn(),
     addListener: jest.fn(() => jest.fn()),
     getParent: jest.fn(() => ({
       getParent: jest.fn(),

@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { RouteProp } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SearchBar } from '@/components/ui/inputs';
 import { IconButton } from '@/components/ui/buttons';
 import { StickyFilterCarouselRow } from '@/components/ui/menu';
@@ -43,6 +45,7 @@ import { handleAdNavigation } from '@/utils';
 import { navigateToProviderProfile } from '@/utils/navigation/marketplaceNavigation';
 import type { Ad, Advertiser } from '@/types/ad';
 import type { RootStackParamList } from '@/types/navigation';
+import { BOTTOM_DOCK_BAR_HEIGHT, SPACING } from '@/constants';
 import { styles } from './styles';
 import { useAnalyticsScreen } from '@/analytics';
 import { CategoryName } from '@/types';
@@ -64,9 +67,10 @@ type MarketplaceScreenProps = {
   route?: RouteProp<RootStackParamList, 'Marketplace'>;
 };
 
-const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => {
+const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation, route }) => {
   useAnalyticsScreen({ screenName: 'Marketplace', screenClass: 'MarketplaceScreen' });
   const { t } = useTranslation();
+  const { bottom: bottomInset } = useSafeAreaInsets();
   const { marketplaceCarouselOptions } = useSolutions();
   const rootNavigation = navigation.getParent() ?? navigation;
   const userAvatarUri = useUserAvatar();
@@ -80,9 +84,19 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
   const [isFilterCategoryModalVisible, setIsFilterCategoryModalVisible] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>(undefined);
   const [selectedSolutionIds, setSelectedSolutionIds] = useState<SolutionFilterId[]>([]);
+  const [searchAutoFocus, setSearchAutoFocus] = useState(false);
 
   const scrollNearBottomRef = useRef(false);
   const flatListLoadMoreLockedRef = useRef(false);
+  const appliedRouteParamsKeyRef = useRef<string | null>(null);
+  const resetPagesRef = useRef<() => void>(() => {});
+
+  const listScrollBottomPadding = useMemo(() => BOTTOM_DOCK_BAR_HEIGHT + bottomInset + SPACING.MD, [bottomInset]);
+
+  const listContentContainerStyle = useMemo(
+    () => [styles.listContentContainer, { paddingBottom: listScrollBottomPadding }],
+    [listScrollBottomPadding],
+  );
 
   const { advertisers: professionals } = useAdvertisers({
     listOptions: {
@@ -100,17 +114,69 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     professionalsCount: professionals.length,
   });
 
+  resetPagesRef.current = listings.resetPages;
+
+  useFocusEffect(
+    useCallback(() => {
+      const params = route?.params;
+      if (!params || Object.keys(params).length === 0) {
+        appliedRouteParamsKeyRef.current = null;
+        return;
+      }
+
+      const paramsKey = JSON.stringify(params);
+      if (appliedRouteParamsKeyRef.current === paramsKey) {
+        return;
+      }
+      appliedRouteParamsKeyRef.current = paramsKey;
+
+      if (params.initialSearch !== undefined) {
+        setSearchQuery(params.initialSearch);
+        setAppliedSearchQuery(params.initialSearch.trim());
+      }
+      if (params.initialCategoryId !== undefined) {
+        setSelectedCategoryId(params.initialCategoryId || undefined);
+      }
+      if (params.initialCategoryName !== undefined) {
+        setSelectedCategoryName(params.initialCategoryName);
+      }
+      if (params.initialSolutionTab !== undefined) {
+        setSelectedSolutionTab(params.initialSolutionTab);
+      }
+      if (params.initialSolutionIds !== undefined) {
+        setSelectedSolutionIds(params.initialSolutionIds);
+      }
+      if (params.openFilterModal) {
+        setIsFilterCategoryModalVisible(true);
+      }
+      if (params.focusSearch) {
+        setSearchAutoFocus(true);
+      }
+
+      resetPagesRef.current();
+      navigation.setParams({
+        initialSearch: undefined,
+        initialCategoryId: undefined,
+        initialCategoryName: undefined,
+        initialSolutionTab: undefined,
+        initialSolutionIds: undefined,
+        openFilterModal: undefined,
+        focusSearch: undefined,
+      });
+    }, [navigation, route?.params]),
+  );
+
   useEffect(() => {
     const handle = setTimeout(() => {
       const next = searchQuery.trim();
       setAppliedSearchQuery((prev) => {
         if (prev === next) return prev;
-        listings.resetPages();
+        resetPagesRef.current();
         return next;
       });
     }, 450);
     return () => clearTimeout(handle);
-  }, [searchQuery, listings.resetPages]);
+  }, [searchQuery]);
 
   const {
     showCategoryBlocks,
@@ -458,7 +524,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     <ScrollView
       testID='marketplace-scroll'
       style={styles.scrollView}
-      contentContainerStyle={styles.listContentContainer}
+      contentContainerStyle={listContentContainerStyle}
       showsVerticalScrollIndicator={false}
       scrollEventThrottle={16}
       onScroll={handleGroupedScrollEndReached}
@@ -470,11 +536,22 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     </ScrollView>
   );
 
+  const productListEmpty = useMemo(() => {
+    if (listingsLoading && listData.length === 0 && hasMarketplaceSearchQuery(appliedSearchQuery)) {
+      return (
+        <View style={styles.listLoadingMore}>
+          <ActivityIndicator size='small' color='#2196F3' />
+        </View>
+      );
+    }
+    return isProfessionalsTab ? professionalsContent ?? listEmpty : listEmpty;
+  }, [listingsLoading, listData.length, appliedSearchQuery, isProfessionalsTab, professionalsContent, listEmpty]);
+
   const renderProductList = () => (
     <FlatList<Ad>
       testID='marketplace-list'
       style={styles.scrollView}
-      contentContainerStyle={styles.listContentContainer}
+      contentContainerStyle={listContentContainerStyle}
       showsVerticalScrollIndicator={false}
       data={listData}
       keyExtractor={(ad) => ad.id}
@@ -482,7 +559,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       ItemSeparatorComponent={() => <View style={styles.listItemSeparator} />}
       ListHeaderComponent={productListHeader}
       ListFooterComponent={listFooter}
-      ListEmptyComponent={isProfessionalsTab ? professionalsContent ?? listEmpty : listEmpty}
+      ListEmptyComponent={productListEmpty}
       onEndReached={handleProductListEndReached}
       onEndReachedThreshold={MARKETPLACE_LIST_END_REACHED_THRESHOLD}
       onMomentumScrollBegin={() => {
@@ -506,7 +583,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
         showCartButton: true,
         onCartPress: () => navigation.navigate('Cart'),
       }}
-      contentContainerStyle={styles.container}
+      contentContainerStyle={[styles.container, styles.contentFloatingMenuReserve]}
     >
       <GradientBackgroundByCategory category={hasActiveCategoryFilter ? activeCategoryMarker : null} />
       <View pointerEvents='none' style={styles.backgroundGradient}>
@@ -526,11 +603,13 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
                 placeholder={t('marketplace.searchPlaceholder')}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
+                autoFocus={searchAutoFocus}
                 onSearchPress={() => {
                   setAppliedSearchQuery(searchQuery.trim());
                   listings.resetPages();
                 }}
                 showFilterButton={false}
+                containerStyle={styles.searchBarContainer}
               />
             </View>
           </View>

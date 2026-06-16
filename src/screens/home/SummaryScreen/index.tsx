@@ -2,13 +2,18 @@ import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { View, ScrollView, Text } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { GradientBackground, ScreenWithHeader } from '@/components/ui/layout';
+import { SearchBar } from '@/components/ui/inputs';
+import { StickyFilterCarouselRow } from '@/components/ui/menu';
 import {
   useCommunities,
   useSuggestedProducts,
   SUGGESTED_PRODUCTS_HOME_ACTIVITIES_DEFAULTS,
   useMenuItems,
+  useSolutions,
   useSessionTokenReady,
+  useCategories,
 } from '@/hooks';
+import { FilterCategoryModal, type FilterCategoryResult } from '@/components/ui/modals';
 import { useFloatingMenuActions } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
 import { logger } from '@/utils/logger';
@@ -23,10 +28,16 @@ import ProfileFloatingMenu from '@/components/sections/profile/ProfileFloatingMe
 // import { AvatarSection } from '@/components/sections/avatar';
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import { useAnalyticsScreen } from '@/analytics';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getCommunityStackNavigator } from '@/navigation/rootStackScreenLoaders';
 import { navigateToCommunity } from '@/utils/navigation/communityNavigation';
-import { navigateToProviderProfile } from '@/utils/navigation/marketplaceNavigation';
+import {
+  navigateToProviderProfile,
+  navigateToMarketplace,
+  marketplaceRouteParamsFromFilterApply,
+  marketplaceRouteParamsFromFilterClear,
+  marketplaceRouteParamsFromHomeCarousel,
+} from '@/utils/navigation/marketplaceNavigation';
+import { marketplaceSolutionOptions, SOLUTION_TAB_ALL, type MarketplaceSolutionTab } from '@/types/solution';
 import { navigateToProductDetailsScreen } from '@/utils/navigation/productNavigation';
 import { styles } from './styles';
 
@@ -38,11 +49,14 @@ type Props = {
 const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   useAnalyticsScreen({ screenName: 'Summary', screenClass: 'SummaryScreen' });
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
+  const { marketplaceCarouselOptions } = useSolutions();
   const rootNavigation = navigation.getParent() ?? navigation;
   const hasSessionToken = useSessionTokenReady();
   const [userAvatarUri, setUserAvatarUri] = useState<string | null>(null);
   const [isProfileMenuVisible, setIsProfileMenuVisible] = useState(false);
+  const [homeSearchQuery, setHomeSearchQuery] = useState('');
+  const [isHomeFilterModalVisible, setIsHomeFilterModalVisible] = useState(false);
+  const { categories } = useCategories({ enabled: hasSessionToken });
   // TODO: Temporariamente desabilitados
   // const [hasCompletedAnamnesis, setHasCompletedAnamnesis] = useState<boolean>(false);
   // const [hasAnyAnamnesisAnswers, setHasAnyAnamnesisAnswers] = useState<boolean>(false);
@@ -77,6 +91,42 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
   const handleMenuPress = () => {
     setIsProfileMenuVisible(true);
   };
+
+  const openMarketplaceFromHome = useCallback(
+    (params?: Parameters<typeof navigateToMarketplace>[1]) => {
+      navigateToMarketplace(rootNavigation, params);
+    },
+    [rootNavigation],
+  );
+
+  const handleHomeSearchPress = useCallback(() => {
+    const trimmed = homeSearchQuery.trim();
+    openMarketplaceFromHome(trimmed ? { initialSearch: trimmed } : undefined);
+  }, [homeSearchQuery, openMarketplaceFromHome]);
+
+  const handleHomeFilterPress = useCallback(() => {
+    setIsHomeFilterModalVisible(true);
+  }, []);
+
+  const handleHomeFilterApply = useCallback(
+    (result: FilterCategoryResult) => {
+      openMarketplaceFromHome(marketplaceRouteParamsFromFilterApply(result));
+    },
+    [openMarketplaceFromHome],
+  );
+
+  const handleHomeFilterClear = useCallback(() => {
+    openMarketplaceFromHome(marketplaceRouteParamsFromFilterClear());
+  }, [openMarketplaceFromHome]);
+
+  const handleHomeCarouselSelect = useCallback(
+    (solutionId: MarketplaceSolutionTab) => {
+      openMarketplaceFromHome(marketplaceRouteParamsFromHomeCarousel(solutionId));
+    },
+    [openMarketplaceFromHome],
+  );
+
+  const categoryFilterButtonLabel = t('marketplace.category');
 
   // TODO: Temporariamente desabilitados
   // const handleStartAnamnesis = () => {
@@ -230,6 +280,23 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
       </View>
       <View style={styles.content}>
         <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
+          <View style={styles.searchAndFilters}>
+            <SearchBar
+              placeholder={t('marketplace.searchPlaceholder')}
+              value={homeSearchQuery}
+              onChangeText={setHomeSearchQuery}
+              onSearchPress={handleHomeSearchPress}
+              showFilterButton={false}
+            />
+            <StickyFilterCarouselRow<MarketplaceSolutionTab>
+              filterButtonLabel={categoryFilterButtonLabel}
+              onFilterButtonPress={handleHomeFilterPress}
+              carouselOptions={marketplaceCarouselOptions}
+              selectedCarouselId={SOLUTION_TAB_ALL}
+              onCarouselSelect={handleHomeCarouselSelect}
+            />
+          </View>
+
           {filteredJoinCommunities.length > 0 && (
             <View style={styles.sectionDivider}>
               <Text style={styles.sectionTitle}>{t('home.recommendedCommunitySectionTitle')}</Text>
@@ -299,6 +366,17 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
         visible={isProfileMenuVisible}
         navigation={rootNavigation}
         onClose={() => setIsProfileMenuVisible(false)}
+      />
+      <FilterCategoryModal
+        visible={isHomeFilterModalVisible}
+        onClose={() => setIsHomeFilterModalVisible(false)}
+        categories={categories}
+        selectedCategoryId={undefined}
+        onSelectCategory={() => {}}
+        selectedSolutionIds={[]}
+        solutionOptions={marketplaceSolutionOptions}
+        onFilter={handleHomeFilterApply}
+        onClear={handleHomeFilterClear}
       />
     </ScreenWithHeader>
   );

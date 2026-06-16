@@ -9,10 +9,12 @@ export const styles = StyleSheet.create({
     position: 'relative',
     backgroundColor: 'transparent',
   },
+  contentFloatingMenuReserve: {},
   content: {
     flex: 1,
     zIndex: 1,
     backgroundColor: 'transparent',
+    paddingVertical: SPACING.SM,
   },
   backgroundGradient: {
     ...StyleSheet.absoluteFillObject,
@@ -25,16 +27,20 @@ export const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
     gap: SPACING.MD,
+    minHeight: 36,
+    paddingBottom: SPACING.MD,
   },
   searchRowBackButton: {
-    justifyContent: 'center',
-    paddingBottom: SPACING.MD,
+    padding: 0,
+    alignSelf: 'center',
   },
   searchRowSearch: {
     flex: 1,
     justifyContent: 'center',
+  },
+  searchBarContainer: {
+    paddingBottom: 0,
   },
   filterMenuContainer: {
     marginTop: 0,

@@ -53,6 +53,7 @@ type MarketplaceScreenListChromeInput = {
   programsLoading: boolean;
   allTabHasMore: boolean;
   programsHasMore: boolean;
+  hasActiveSearchQuery: boolean;
 };
 
 export function marketplaceScreenListChrome(input: MarketplaceScreenListChromeInput): MarketplaceScreenListChrome {
@@ -64,13 +65,14 @@ export function marketplaceScreenListChrome(input: MarketplaceScreenListChromeIn
   const groupedHasContent = input.showCategoryBlocks ? input.hasCategoryBlockContent : input.hasAllTabGroupedContent;
 
   const showFullScreenLoading =
-    (input.showCategoryBlocks && groupedLoading && !input.hasCategoryBlockContent) ||
-    (input.showAllTabGroupedLayout && groupedLoading && !input.hasAllTabGroupedContent) ||
-    (!input.isProfessionalsTab &&
-      !input.showCategoryBlocks &&
-      !input.showAllTabGroupedLayout &&
-      input.listingsLoading &&
-      input.listAdCount === 0);
+    !input.hasActiveSearchQuery &&
+    ((input.showCategoryBlocks && groupedLoading && !input.hasCategoryBlockContent) ||
+      (input.showAllTabGroupedLayout && groupedLoading && !input.hasAllTabGroupedContent) ||
+      (!input.isProfessionalsTab &&
+        !input.showCategoryBlocks &&
+        !input.showAllTabGroupedLayout &&
+        input.listingsLoading &&
+        input.listAdCount === 0));
 
   const showLoadMoreSpinner = input.showSolutionKindLayout
     ? groupedScrollLoading && (groupedLayoutActive ? groupedHasContent : input.filteredAdsBySolutionCount > 0)
@@ -452,6 +454,7 @@ export function useMarketplaceScreenListings({
         programsLoading: programsTab.loading,
         allTabHasMore: allTab.hasMore,
         programsHasMore: programsTab.hasMore,
+        hasActiveSearchQuery: hasMarketplaceSearchQuery(appliedSearchQuery),
       }),
     [
       showCategoryBlocks,
@@ -470,6 +473,7 @@ export function useMarketplaceScreenListings({
       programsTab.loading,
       allTab.hasMore,
       programsTab.hasMore,
+      appliedSearchQuery,
     ],
   );
 

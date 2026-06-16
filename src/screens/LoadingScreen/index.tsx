@@ -29,7 +29,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation, route }) => {
 
     const task = InteractionManager.runAfterInteractions(() => {
       if (target.name === 'Marketplace') {
-        navigation.replace('Marketplace');
+        navigation.replace('Marketplace', target.params as never);
         return;
       }
       if (!('params' in target)) {

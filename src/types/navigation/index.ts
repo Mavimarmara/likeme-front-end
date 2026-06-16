@@ -1,4 +1,16 @@
 import type { NavigatorScreenParams } from '@react-navigation/native';
+import type { CategoryName } from '@/types';
+import type { MarketplaceSolutionTab, SolutionFilterId } from '@/types/solution';
+
+export type MarketplaceRouteParams = {
+  initialSearch?: string;
+  initialCategoryId?: string;
+  initialCategoryName?: CategoryName | null;
+  initialSolutionTab?: MarketplaceSolutionTab;
+  initialSolutionIds?: SolutionFilterId[];
+  openFilterModal?: boolean;
+  focusSearch?: boolean;
+};
 
 export type CommunityStackParamList = {
   CommunityList: { openFeedFromMenu?: true } | undefined;
@@ -28,7 +40,7 @@ type RootStackParamListCore = {
       }
     | undefined;
   OrderDetail: { orderId: string };
-  Marketplace: undefined;
+  Marketplace: MarketplaceRouteParams | undefined;
   ProductDetails: {
     productId: string;
     product?: {
@@ -115,7 +127,7 @@ export type AppLoadingNavigateTarget =
   | { name: 'ProductDetails'; params: RootStackParamListCore['ProductDetails'] }
   | { name: 'AffiliateProduct'; params: RootStackParamListCore['AffiliateProduct'] }
   | { name: 'Community'; params?: RootStackParamListCore['Community'] }
-  | { name: 'Marketplace' }
+  | { name: 'Marketplace'; params?: MarketplaceRouteParams }
   | { name: 'ProviderProfile'; params: RootStackParamListCore['ProviderProfile'] };
 
 export type RootStackParamList = RootStackParamListCore & {
