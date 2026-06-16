@@ -1,5 +1,5 @@
 import { StyleSheet, Dimensions } from 'react-native';
-import { SPACING } from '@/constants';
+import { COLORS, SPACING, TYPOGRAPHY } from '@/constants';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -93,16 +93,35 @@ export const styles = StyleSheet.create({
     marginHorizontal: SPACING.MD,
     marginBottom: SPACING.XL,
   },
+  sectionName: {
+    ...TYPOGRAPHY.sectionName,
+    color: COLORS.BLACK,
+    marginBottom: SPACING.MD,
+  },
+  title3: {
+    ...TYPOGRAPHY.title3,
+    color: COLORS.BLACK,
+    marginBottom: SPACING.MD,
+  },
+  listHeaderWrap: {
+    marginHorizontal: SPACING.MD,
+  },
+  curationTitle: {
+    ...TYPOGRAPHY.title3,
+    color: COLORS.BLACK,
+    marginHorizontal: SPACING.MD,
+    marginBottom: SPACING.SM,
+  },
+  curationIntro: {
+    ...TYPOGRAPHY.bodyMd,
+    color: '#666666',
+    marginHorizontal: SPACING.MD,
+    marginBottom: SPACING.LG,
+  },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: SPACING.MD,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#000000',
     marginBottom: SPACING.MD,
   },
   // Week highlights styles
@@ -411,23 +430,6 @@ export const styles = StyleSheet.create({
   emptyText: {
     fontSize: 16,
     color: '#666666',
-  },
-  categoryTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#000000',
-    marginHorizontal: SPACING.MD,
-    marginBottom: SPACING.SM,
-  },
-  categoryIntro: {
-    fontSize: 14,
-    fontFamily: 'DM Sans',
-    fontWeight: '400',
-    color: '#666666',
-    lineHeight: 22,
-    letterSpacing: 0.2,
-    marginHorizontal: SPACING.MD,
-    marginBottom: SPACING.LG,
   },
   outOfStockText: {
     fontSize: 12,

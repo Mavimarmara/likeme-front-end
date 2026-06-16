@@ -90,4 +90,14 @@ export const TYPOGRAPHY = {
     lineHeight: 16,
     letterSpacing: 0.2,
   },
+  /** Figma Title 3 — ex.: “Destaque da semana”. */
+  title3: {
+    fontFamily: FONT_FAMILY.DM_SANS_BOLD,
+    fontSize: 20,
+  },
+  /** Figma Section Name — rótulo de bloco (Produtos, Serviços, …). */
+  sectionName: {
+    fontFamily: FONT_FAMILY.DM_SANS_MEDIUM,
+    fontSize: 14,
+  },
 } as const satisfies Record<string, TextStyle>;

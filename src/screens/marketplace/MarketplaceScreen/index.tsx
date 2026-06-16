@@ -136,8 +136,8 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
 
   const listData = isProfessionalsTab ? [] : listings.listAdsForCurrentTab;
 
-  const productFallbackTitle = t('marketplace.product', { defaultValue: 'Product' });
-  const outOfStockLabel = t('marketplace.outOfStock', { defaultValue: 'Out of stock' });
+  const productFallbackTitle = t('marketplace.product');
+  const outOfStockLabel = t('marketplace.outOfStock');
 
   const selectedCategoryFromId =
     selectedCategoryId != null
@@ -159,21 +159,39 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       : selectedCategoryFromId?.name ?? t('marketplace.category');
   const categoryDisplayName =
     selectedCategoryName != null ? getCategoryName(selectedCategoryName) : selectedCategoryFromId?.name?.trim() ?? '';
-  const categoryTitleText =
-    hasActiveCategoryFilter && categoryDisplayName
-      ? t('marketplace.categoryTitle', {
-          categoryName: categoryDisplayName,
-          defaultValue: 'Curadoria de {{categoryName}}',
-        })
-      : null;
-  const categoryIntroText =
-    showCategoryBlocks && categoryDisplayName
-      ? t('marketplace.categoryIntro', {
-          categoryName: categoryDisplayName,
-          defaultValue:
-            'Aqui você encontra uma curadoria de produtos, conteúdos e serviços alinhados com {{categoryName}}.',
-        })
-      : null;
+  const showCategoryCurationCopy = hasActiveCategoryFilter && Boolean(categoryDisplayName);
+  const categoryTitleText = showCategoryCurationCopy
+    ? t('marketplace.categoryTitle', { categoryName: categoryDisplayName })
+    : null;
+  const categoryIntroText = showCategoryCurationCopy
+    ? t('marketplace.categoryIntro', { categoryName: categoryDisplayName })
+    : null;
+
+  const showSelectedSolutionSectionTitle =
+    !showCategoryBlocks && !showAllTabGroupedLayout && !isProfessionalsTab && !isMarketplaceAllTab(selectedSolutionTab);
+
+  const selectedSolutionSectionTitle = useMemo(() => {
+    if (isMarketplaceAllTab(selectedSolutionTab) || isProfessionalsTab) {
+      return null;
+    }
+    return marketplaceCarouselOptions.find((option) => option.id === selectedSolutionTab)?.label ?? null;
+  }, [isProfessionalsTab, marketplaceCarouselOptions, selectedSolutionTab]);
+
+  const categoryCurationHeader = useMemo(() => {
+    if (!showCategoryCurationCopy || !categoryTitleText || !categoryIntroText) {
+      return null;
+    }
+    return (
+      <>
+        <Text style={styles.curationTitle} testID='marketplace-category-title'>
+          {categoryTitleText}
+        </Text>
+        <Text style={styles.curationIntro} testID='marketplace-category-intro'>
+          {categoryIntroText}
+        </Text>
+      </>
+    );
+  }, [showCategoryCurationCopy, categoryTitleText, categoryIntroText]);
 
   const handleAdPress = useCallback(
     (ad: Ad) => {
@@ -219,7 +237,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     }
     return (
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('filterCategory.solutions.professionals')}</Text>
+        <Text style={styles.sectionName}>{t('filterCategory.solutions.professionals')}</Text>
         <MarketplaceProfessionalsBlock
           professionals={professionals}
           onProfessionalPress={handleProfessionalPress}
@@ -248,7 +266,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     });
     return (
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('marketplace.weekHighlights')}</Text>
+        <Text style={styles.title3}>{t('marketplace.weekHighlights')}</Text>
         <JoinCard
           title={item.title}
           badges={item.badges}
@@ -289,14 +307,17 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
     () => (
       <>
         {weekHighlights}
-        {categoryTitleText ? (
-          <Text style={styles.categoryTitle} testID='marketplace-category-title'>
-            {categoryTitleText}
-          </Text>
+        {categoryCurationHeader}
+        {showSelectedSolutionSectionTitle && selectedSolutionSectionTitle ? (
+          <View style={styles.listHeaderWrap}>
+            <Text style={styles.sectionName} testID='marketplace-section-title'>
+              {selectedSolutionSectionTitle}
+            </Text>
+          </View>
         ) : null}
       </>
     ),
-    [weekHighlights, categoryTitleText],
+    [weekHighlights, categoryCurationHeader, showSelectedSolutionSectionTitle, selectedSolutionSectionTitle],
   );
 
   const renderSolutionKindContent = () => {
@@ -342,22 +363,32 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
 
     if (selectedSolutionTab === 'services') {
       return (
-        <MarketplaceServiceCardsList
+        <View style={styles.section}>
+          <Text style={styles.sectionName} testID='marketplace-section-title'>
+            {selectedSolutionSectionTitle ?? t('filterCategory.solutions.services')}
+          </Text>
+          <MarketplaceServiceCardsList
+            ads={listings.filteredAdsBySolution}
+            categories={categories}
+            onAdPress={handleAdPress}
+            fallbackTitle={productFallbackTitle}
+          />
+        </View>
+      );
+    }
+
+    return (
+      <View style={styles.section}>
+        <Text style={styles.sectionName} testID='marketplace-section-title'>
+          {selectedSolutionSectionTitle ?? t('filterCategory.solutions.programs')}
+        </Text>
+        <MarketplaceProgramCardsRow
           ads={listings.filteredAdsBySolution}
           categories={categories}
           onAdPress={handleAdPress}
           fallbackTitle={productFallbackTitle}
         />
-      );
-    }
-
-    return (
-      <MarketplaceProgramCardsRow
-        ads={listings.filteredAdsBySolution}
-        categories={categories}
-        onAdPress={handleAdPress}
-        fallbackTitle={productFallbackTitle}
-      />
+      </View>
     );
   };
 
@@ -432,16 +463,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation }) => 
       onScroll={handleGroupedScrollEndReached}
     >
       {weekHighlights}
-      {categoryTitleText ? (
-        <Text style={styles.categoryTitle} testID='marketplace-category-title'>
-          {categoryTitleText}
-        </Text>
-      ) : null}
-      {categoryIntroText ? (
-        <Text style={styles.categoryIntro} testID='marketplace-category-intro'>
-          {categoryIntroText}
-        </Text>
-      ) : null}
+      {categoryCurationHeader}
       {isProfessionalsTab ? professionalsContent ?? listEmpty : renderSolutionKindContent()}
       {listFooter}
     </ScrollView>

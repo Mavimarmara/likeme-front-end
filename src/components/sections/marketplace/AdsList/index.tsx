@@ -137,8 +137,8 @@ const AdsList: React.FC<AdsListProps> = ({
   const isEmptyTab = hasSolutionTabStrip && !isControlledTabbed && !isProfessionalsTab && listToShow.length === 0;
   const isEmptyControlledTabbed = isControlledTabbed && ads.length === 0;
 
-  const productFallbackTitle = t('marketplace.product', { defaultValue: 'Product' });
-  const outOfStockLabel = t('marketplace.outOfStock', { defaultValue: 'Out of stock' });
+  const productFallbackTitle = t('marketplace.product');
+  const outOfStockLabel = t('marketplace.outOfStock');
 
   const renderEmptyState = () => (
     <View style={styles.emptySection}>

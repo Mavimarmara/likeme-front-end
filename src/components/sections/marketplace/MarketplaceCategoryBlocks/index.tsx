@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { JoinCardList } from '@/components/ui/lists/JoinCardList';
 import { type JoinCardItem } from '@/components/ui/cards';
 import { ProductList } from '@/components/sections/product/ProductList';
+import { styles as marketplaceScreenStyles } from '@/screens/marketplace/MarketplaceScreen/styles';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { COLORS } from '@/constants';
 import { useTranslation } from '@/hooks/i18n';
@@ -177,8 +178,8 @@ const MarketplaceCategoryBlocks: React.FC<MarketplaceCategoryBlocksProps> = ({
   onProfessionalPress,
 }) => {
   const { t } = useTranslation();
-  const fallbackTitle = t('marketplace.product', { defaultValue: 'Product' });
-  const outOfStockLabel = t('marketplace.outOfStock', { defaultValue: 'Out of stock' });
+  const fallbackTitle = t('marketplace.product');
+  const outOfStockLabel = t('marketplace.outOfStock');
   const viewProfileLabel = t('community.viewProfile');
   const productsSectionTitle =
     layout === 'allTab' ? t('marketplace.allProducts') : t('filterCategory.solutions.products');
@@ -191,7 +192,7 @@ const MarketplaceCategoryBlocks: React.FC<MarketplaceCategoryBlocksProps> = ({
         }
         return (
           <View style={styles.section} testID='marketplace-block-products'>
-            <Text style={styles.sectionTitle}>{productsSectionTitle}</Text>
+            <Text style={marketplaceScreenStyles.sectionName}>{productsSectionTitle}</Text>
             <ProductList
               ads={productAds}
               categories={categories}
@@ -207,7 +208,7 @@ const MarketplaceCategoryBlocks: React.FC<MarketplaceCategoryBlocksProps> = ({
         }
         return (
           <View style={styles.section} testID='marketplace-block-professionals'>
-            <Text style={styles.sectionTitle}>{t('filterCategory.solutions.professionals')}</Text>
+            <Text style={marketplaceScreenStyles.sectionName}>{t('filterCategory.solutions.professionals')}</Text>
             <MarketplaceProfessionalsBlock
               professionals={professionals}
               onProfessionalPress={onProfessionalPress}
@@ -221,7 +222,7 @@ const MarketplaceCategoryBlocks: React.FC<MarketplaceCategoryBlocksProps> = ({
         }
         return (
           <View style={styles.section} testID='marketplace-block-services'>
-            <Text style={styles.sectionTitle}>{t('filterCategory.solutions.services')}</Text>
+            <Text style={marketplaceScreenStyles.sectionName}>{t('filterCategory.solutions.services')}</Text>
             <MarketplaceServiceCardsList
               ads={serviceAds}
               categories={categories}
@@ -236,7 +237,7 @@ const MarketplaceCategoryBlocks: React.FC<MarketplaceCategoryBlocksProps> = ({
         }
         return (
           <View style={styles.section} testID='marketplace-block-programs'>
-            <Text style={styles.sectionTitle}>{t('filterCategory.solutions.programs')}</Text>
+            <Text style={marketplaceScreenStyles.sectionName}>{t('filterCategory.solutions.programs')}</Text>
             <MarketplaceProgramCardsRow
               ads={programAds}
               categories={categories}

@@ -6,13 +6,6 @@ export const styles = StyleSheet.create({
     marginHorizontal: SPACING.MD,
     marginBottom: SPACING.XL,
   },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#000000',
-    marginBottom: SPACING.MD,
-    fontFamily: 'DM Sans',
-  },
   programScrollContent: {
     gap: SPACING.MD,
   },
