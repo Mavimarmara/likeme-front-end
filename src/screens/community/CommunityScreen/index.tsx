@@ -164,6 +164,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     loading: feedLoading,
     loadingMore,
     error,
+    hasMore: feedHasMore,
     loadMore,
   } = useUserFeed({
     enabled: isFeedMode && Boolean(selectedCommunityId?.trim()),
@@ -401,10 +402,10 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   }, []);
 
   const handleLoadMore = useCallback(() => {
-    if (selectedMode === COMMUNITY_VIEW.FEED) {
+    if (selectedMode === COMMUNITY_VIEW.FEED && feedHasMore) {
       loadMore();
     }
-  }, [selectedMode, loadMore]);
+  }, [selectedMode, feedHasMore, loadMore]);
 
   const handlePostCardPress = useCallback(
     (selectedPost: Post) => {

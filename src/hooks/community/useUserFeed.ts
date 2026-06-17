@@ -65,7 +65,10 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
 
   const feedCache = useFeedCache();
   const paramsKey = buildFeedParamsKey(params);
-  const cacheKey = `${searchQuery}::${paramsKey}`;
+  const scopedCommunityId = (params.communityId ?? '').trim();
+  const cacheKey = scopedCommunityId
+    ? `${searchQuery}::${paramsKey}::community-feed-v2`
+    : `${searchQuery}::${paramsKey}`;
   const initialCacheEntry = feedCache.read(cacheKey);
   const initialCacheIsFresh = initialCacheEntry != null && isFeedCacheEntryFresh(initialCacheEntry);
 
@@ -82,7 +85,6 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
   postsRef.current = posts;
 
   const memoizedParams = useMemo(() => params ?? {}, [paramsKey]);
-  const scopedCommunityId = memoizedParams.communityId?.trim() ?? '';
   const feedFilterParams = useMemo(() => {
     if (!scopedCommunityId) {
       return memoizedParams;
@@ -289,8 +291,11 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
       return;
     }
     backgroundRefreshStartedRef.current = true;
+    if (scopedCommunityId && (initialCacheEntry?.currentPage ?? 1) > 1) {
+      return;
+    }
     void loadPosts(1, searchQuery);
-  }, [enabled, initialCacheIsFresh, loadPosts, searchQuery]);
+  }, [enabled, initialCacheIsFresh, loadPosts, searchQuery, scopedCommunityId, initialCacheEntry?.currentPage]);
 
   return {
     posts,
