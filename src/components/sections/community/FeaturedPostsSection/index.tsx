@@ -21,4 +21,4 @@ const FeaturedPostsSection: React.FC<Props> = ({ post, onPostPress }) => {
   );
 };
 
-export default FeaturedPostsSection;
+export default React.memo(FeaturedPostsSection);

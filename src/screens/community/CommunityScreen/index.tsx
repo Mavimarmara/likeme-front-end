@@ -1,12 +1,11 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { View, ScrollView, FlatList, Text, ActivityIndicator, type ListRenderItem } from 'react-native';
+import { View, ScrollView, Text, ActivityIndicator } from 'react-native';
 import type { RouteProp } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import {
   ShoppingList,
   EventBanner,
-  PostCard,
   NextEventsSection,
   CommunityDescriptionSection,
   FeaturedPostsSection,
@@ -14,13 +13,13 @@ import {
 } from '@/components/sections/community';
 import { styles as socialListStyles } from '@/components/sections/community/SocialList/styles';
 import { Product, ProductsCarousel } from '@/components/sections/product';
-import { EmptyState } from '@/components/ui';
 import type { Post } from '@/types';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
 import { HeroImage, ScreenWithHeader } from '@/components/ui/layout';
 import type { FeedEvent } from '@/types/event';
 import { SPACING, COMMUNITY_FEED_POSTS_PAGE_SIZE, ADVERTISER_STATUS } from '@/constants';
 import { styles } from './styles';
+import CommunityPostsFeed from './CommunityPostsFeed';
 import type { CommunityStackParamList, RootStackParamList } from '@/types/navigation';
 import {
   useUserFeed,
@@ -192,10 +191,13 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     communityProviderName,
   });
 
-  const handleProductPress = (product: Product) => {
-    if (!rootNavigation) return;
-    navigateToProductDetailsScreen(rootNavigation, { productId: product.id });
-  };
+  const handleProductPress = useCallback(
+    (product: Product) => {
+      if (!rootNavigation) return;
+      navigateToProductDetailsScreen(rootNavigation, { productId: product.id });
+    },
+    [rootNavigation],
+  );
 
   const handleProfessionalPress = (advertiser: Advertiser) => {
     if (!rootNavigation) return;
@@ -390,19 +392,13 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     [toggleOptions],
   );
 
-  const handleEventPress = (event: FeedEvent) => {
+  const handleEventPress = useCallback((event: FeedEvent) => {
     logger.debug('[CommunityScreen] event press (stub)', { eventId: event.id });
-  };
+  }, []);
 
-  const handleEventSave = (event: FeedEvent) => {
+  const handleEventSave = useCallback((event: FeedEvent) => {
     logger.debug('[CommunityScreen] event save (stub)', { eventId: event.id });
-  };
-
-  const handleLoadMore = useCallback(() => {
-    if (selectedMode === COMMUNITY_VIEW.FEED) {
-      loadMore();
-    }
-  }, [selectedMode, loadMore]);
+  }, []);
 
   const handlePostCardPress = useCallback(
     (selectedPost: Post) => {
@@ -410,19 +406,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     },
     [navigation],
   );
-
-  const renderPostItem = useCallback<ListRenderItem<Post>>(
-    ({ item }) => (
-      <View style={styles.feedItemWrapper}>
-        <PostCard post={item} onPress={handlePostCardPress} />
-      </View>
-    ),
-    [handlePostCardPress],
-  );
-
-  const renderPostSeparator = useCallback(() => <View style={styles.feedItemSeparator} />, []);
-
-  const postKeyExtractor = useCallback((post: Post) => post.id, []);
 
   const communityHeroBadges = useMemo(() => {
     const firstTwo = categories?.slice(0, 2) ?? [];
@@ -540,118 +523,95 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   const showVirtualizedFeed = isFeedMode && activeInfoTab === 'posts';
   const featuredPost = useMemo(() => posts.find((post) => post.isFeatured) ?? null, [posts]);
   const feedPosts = useMemo(() => posts.filter((post) => !post.isFeatured), [posts]);
-  const feedViewabilityConfig = useRef({ itemVisiblePercentThreshold: 60 }).current;
-  const handleFeedViewableItemsChanged = useCallback(
-    ({ viewableItems }: { viewableItems: Array<{ index: number | null }> }) => {
-      if (activeInfoTab !== 'posts' || !feedHasMore || feedLoading || loadingMore) {
-        return;
-      }
-      const lastIndex = feedPosts.length - 1;
-      if (lastIndex < 0) {
-        return;
-      }
-      if (viewableItems.some((entry) => entry.index === lastIndex)) {
-        loadMore();
-      }
-    },
-    [activeInfoTab, feedHasMore, feedLoading, loadingMore, feedPosts.length, loadMore],
-  );
   const showFeedInitialLoading = showVirtualizedFeed && feedLoading && posts.length === 0;
   const showFeedRecommendations = isFeedMode && (activeInfoTab === 'posts' || activeInfoTab === 'about');
 
-  const heroBlock = primaryCommunity?.displayName != null && (
-    <HeroImage
-      imageUri={communityHeroImageUri}
-      name={primaryCommunity.displayName}
-      badges={communityHeroBadges}
-      footer={
-        heroDescription ? (
-          <View style={styles.heroFooter}>
-            <Text style={styles.heroDescription}>{heroDescription}</Text>
-          </View>
-        ) : undefined
-      }
-    />
+  const heroBlock = useMemo(
+    () =>
+      primaryCommunity?.displayName != null ? (
+        <HeroImage
+          imageUri={communityHeroImageUri}
+          name={primaryCommunity.displayName}
+          badges={communityHeroBadges}
+          footer={
+            heroDescription ? (
+              <View style={styles.heroFooter}>
+                <Text style={styles.heroDescription}>{heroDescription}</Text>
+              </View>
+            ) : undefined
+          }
+        />
+      ) : null,
+    [primaryCommunity?.displayName, communityHeroImageUri, communityHeroBadges, heroDescription],
   );
 
-  const toggleBlock = (
-    <View style={styles.toggleRow}>
-      <View style={styles.toggleContainer}>
-        <Toggle options={[...toggleOptions]} selected={toggleSelectedLabel} onSelect={handleModeSelect} />
+  const toggleBlock = useMemo(
+    () => (
+      <View style={styles.toggleRow}>
+        <View style={styles.toggleContainer}>
+          <Toggle options={[...toggleOptions]} selected={toggleSelectedLabel} onSelect={handleModeSelect} />
+        </View>
       </View>
-    </View>
+    ),
+    [toggleOptions, toggleSelectedLabel, handleModeSelect],
   );
 
-  const feedAuxiliaryBlock = (
-    <>
-      {eventBanner ? (
-        <View style={socialListStyles.eventBannerContainer}>
-          <EventBanner event={eventBanner} onPress={handleEventBannerPress} />
-        </View>
-      ) : null}
-      <CommunityDescriptionSection
-        variant='feed'
-        specialist={specialistData}
-        welcomeDismissed={welcomeDismissed}
-        onWelcomeClose={handleWelcomeClose}
-      />
-      {feedInformationSlot}
-    </>
+  const feedAuxiliaryBlock = useMemo(
+    () => (
+      <>
+        {eventBanner ? (
+          <View style={socialListStyles.eventBannerContainer}>
+            <EventBanner event={eventBanner} onPress={handleEventBannerPress} />
+          </View>
+        ) : null}
+        <CommunityDescriptionSection
+          variant='feed'
+          specialist={specialistData}
+          welcomeDismissed={welcomeDismissed}
+          onWelcomeClose={handleWelcomeClose}
+        />
+        {feedInformationSlot}
+      </>
+    ),
+    [eventBanner, handleEventBannerPress, specialistData, welcomeDismissed, handleWelcomeClose, feedInformationSlot],
   );
 
-  const feedRecommendationsBlock = showFeedRecommendations ? (
-    <>
-      {feedEvents && feedEvents.length > 0 && (
-        <View style={socialListStyles.sectionContainer}>
-          <NextEventsSection events={feedEvents} onEventPress={handleEventPress} onEventSave={handleEventSave} />
-        </View>
-      )}
-      {suggestedProducts.length > 0 && (
-        <View style={socialListStyles.recommendedSection}>
-          <ProductsCarousel
-            title={t('home.productsRecommended', { provider: '' })}
-            subtitle={t('home.discoverProducts')}
-            products={suggestedProducts}
-            onProductPress={handleProductPress}
-          />
-        </View>
-      )}
-    </>
-  ) : null;
-
-  const feedListHeader = (
-    <View style={styles.feedListHeader}>
-      {heroBlock}
-      {toggleBlock}
-      {feedAuxiliaryBlock}
-      {activeInfoTab === 'posts' && featuredPost ? (
-        <FeaturedPostsSection post={featuredPost} onPostPress={handlePostCardPress} />
-      ) : null}
-    </View>
+  const feedRecommendationsBlock = useMemo(
+    () =>
+      showFeedRecommendations ? (
+        <>
+          {feedEvents && feedEvents.length > 0 && (
+            <View style={socialListStyles.sectionContainer}>
+              <NextEventsSection events={feedEvents} onEventPress={handleEventPress} onEventSave={handleEventSave} />
+            </View>
+          )}
+          {suggestedProducts.length > 0 && (
+            <View style={socialListStyles.recommendedSection}>
+              <ProductsCarousel
+                title={t('home.productsRecommended', { provider: '' })}
+                subtitle={t('home.discoverProducts')}
+                products={suggestedProducts}
+                onProductPress={handleProductPress}
+              />
+            </View>
+          )}
+        </>
+      ) : null,
+    [showFeedRecommendations, feedEvents, handleEventPress, handleEventSave, suggestedProducts, handleProductPress, t],
   );
 
-  const feedListFooter = (
-    <View style={styles.feedListFooter}>
-      {loadingMore && feedPosts.length > 0 ? (
-        <View
-          style={styles.feedLoadingFooter}
-          accessibilityRole='progressbar'
-          accessibilityLabel={t('community.loadingMorePosts')}
-        >
-          <ActivityIndicator size='small' color='#4CAF50' />
-          <Text style={styles.feedLoadingFooterLabel}>{t('community.loadingMorePosts')}</Text>
-        </View>
-      ) : null}
-      {feedRecommendationsBlock}
-    </View>
-  );
-
-  const feedListEmpty = error ? (
-    <View style={styles.feedEmptyContainer}>
-      <Text style={styles.feedEmptyText}>{`Erro: ${error}`}</Text>
-    </View>
-  ) : (
-    <EmptyState title={t('community.noPostsFound')} description={t('community.noPostsFoundDescription')} />
+  const feedListHeader = useMemo(
+    () => (
+      <View style={styles.feedListHeader}>
+        {heroBlock}
+        {toggleBlock}
+        {feedAuxiliaryBlock}
+        {activeInfoTab === 'posts' && featuredPost ? (
+          <FeaturedPostsSection post={featuredPost} onPostPress={handlePostCardPress} />
+        ) : null}
+      </View>
+    ),
+    [heroBlock, toggleBlock, feedAuxiliaryBlock, activeInfoTab, featuredPost, handlePostCardPress],
   );
 
   return (
@@ -674,25 +634,16 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
             <Text style={styles.feedLoadingText}>{t('common.loading')}</Text>
           </View>
         ) : showVirtualizedFeed ? (
-          <FlatList
-            style={[{ flex: 1 }, { zIndex: 1 }]}
-            contentContainerStyle={styles.feedContentContainer}
-            showsVerticalScrollIndicator={false}
-            data={feedPosts}
-            keyExtractor={postKeyExtractor}
-            renderItem={renderPostItem}
-            ItemSeparatorComponent={renderPostSeparator}
-            ListHeaderComponent={feedListHeader}
-            ListFooterComponent={feedListFooter}
-            ListEmptyComponent={feedListEmpty}
-            onEndReached={handleLoadMore}
-            onEndReachedThreshold={0.2}
-            onViewableItemsChanged={handleFeedViewableItemsChanged}
-            viewabilityConfig={feedViewabilityConfig}
-            removeClippedSubviews
-            initialNumToRender={6}
-            maxToRenderPerBatch={4}
-            windowSize={7}
+          <CommunityPostsFeed
+            feedPosts={feedPosts}
+            loadingMore={loadingMore}
+            feedHasMore={feedHasMore}
+            feedLoading={feedLoading}
+            error={error}
+            onLoadMore={loadMore}
+            onPostPress={handlePostCardPress}
+            listHeader={feedListHeader}
+            recommendationsFooter={feedRecommendationsBlock}
           />
         ) : (
           <ScrollView
