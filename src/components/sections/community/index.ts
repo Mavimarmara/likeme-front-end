@@ -17,5 +17,6 @@ export {
 } from './CommunityDescriptionSection';
 export { default as SocialList } from './SocialList';
 export { default as PostsSection } from './PostsSection';
+export { default as FeaturedPostsSection } from './FeaturedPostsSection';
 export { default as ShoppingList } from './ShoppingList';
 export { default as PostReplies } from './PostReplies';

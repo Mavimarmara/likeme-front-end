@@ -35,6 +35,8 @@ export interface CommunityPost {
   commentsCount?: number;
   createdAt: string;
   updatedAt?: string;
+  /** Post em destaque na comunidade (page 1 do feed). */
+  isFeatured?: boolean;
 }
 
 export interface CommunityFile {

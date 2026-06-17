@@ -187,6 +187,14 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
         let hasMorePages = false;
         if (receivedCount === 0 && page === 1) {
           hasMorePages = false;
+        } else if (
+          scopedCommunityId &&
+          pagination &&
+          typeof pagination.page === 'number' &&
+          typeof pagination.totalPages === 'number' &&
+          pagination.totalPages > 0
+        ) {
+          hasMorePages = pagination.page < pagination.totalPages;
         } else if (hasNextToken) {
           hasMorePages = true;
         } else if (

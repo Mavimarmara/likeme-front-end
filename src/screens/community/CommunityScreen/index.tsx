@@ -9,6 +9,7 @@ import {
   PostCard,
   NextEventsSection,
   CommunityDescriptionSection,
+  FeaturedPostsSection,
   type CommunityDescriptionSpecialist,
 } from '@/components/sections/community';
 import { styles as socialListStyles } from '@/components/sections/community/SocialList/styles';
@@ -163,6 +164,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     loading: feedLoading,
     loadingMore,
     error,
+    hasMore: feedHasMore,
     loadMore,
   } = useUserFeed({
     enabled: isFeedMode && Boolean(selectedCommunityId?.trim()),
@@ -536,6 +538,24 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   }, [selectedCommunityId, isCommunityFavorite]);
 
   const showVirtualizedFeed = isFeedMode && activeInfoTab === 'posts';
+  const featuredPost = useMemo(() => posts.find((post) => post.isFeatured) ?? null, [posts]);
+  const feedPosts = useMemo(() => posts.filter((post) => !post.isFeatured), [posts]);
+  const feedViewabilityConfig = useRef({ itemVisiblePercentThreshold: 60 }).current;
+  const handleFeedViewableItemsChanged = useCallback(
+    ({ viewableItems }: { viewableItems: Array<{ index: number | null }> }) => {
+      if (activeInfoTab !== 'posts' || !feedHasMore || feedLoading || loadingMore) {
+        return;
+      }
+      const lastIndex = feedPosts.length - 1;
+      if (lastIndex < 0) {
+        return;
+      }
+      if (viewableItems.some((entry) => entry.index === lastIndex)) {
+        loadMore();
+      }
+    },
+    [activeInfoTab, feedHasMore, feedLoading, loadingMore, feedPosts.length, loadMore],
+  );
   const showFeedInitialLoading = showVirtualizedFeed && feedLoading && posts.length === 0;
   const showFeedRecommendations = isFeedMode && (activeInfoTab === 'posts' || activeInfoTab === 'about');
 
@@ -604,12 +624,15 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
       {heroBlock}
       {toggleBlock}
       {feedAuxiliaryBlock}
+      {activeInfoTab === 'posts' && featuredPost ? (
+        <FeaturedPostsSection post={featuredPost} onPostPress={handlePostCardPress} />
+      ) : null}
     </View>
   );
 
   const feedListFooter = (
     <View style={styles.feedListFooter}>
-      {loadingMore && posts.length > 0 ? (
+      {loadingMore && feedPosts.length > 0 ? (
         <View
           style={styles.feedLoadingFooter}
           accessibilityRole='progressbar'
@@ -655,7 +678,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
             style={[{ flex: 1 }, { zIndex: 1 }]}
             contentContainerStyle={styles.feedContentContainer}
             showsVerticalScrollIndicator={false}
-            data={posts}
+            data={feedPosts}
             keyExtractor={postKeyExtractor}
             renderItem={renderPostItem}
             ItemSeparatorComponent={renderPostSeparator}
@@ -663,7 +686,9 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
             ListFooterComponent={feedListFooter}
             ListEmptyComponent={feedListEmpty}
             onEndReached={handleLoadMore}
-            onEndReachedThreshold={0.5}
+            onEndReachedThreshold={0.2}
+            onViewableItemsChanged={handleFeedViewableItemsChanged}
+            viewabilityConfig={feedViewabilityConfig}
             removeClippedSubviews
             initialNumToRender={6}
             maxToRenderPerBatch={4}

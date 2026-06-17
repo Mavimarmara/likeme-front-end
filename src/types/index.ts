@@ -128,6 +128,8 @@ export interface Post {
   userName?: string;
   userAvatar?: string;
   poll?: Poll;
+  /** Post em destaque na comunidade (carrossel no topo do feed). */
+  isFeatured?: boolean;
 }
 
 export interface Reaction {

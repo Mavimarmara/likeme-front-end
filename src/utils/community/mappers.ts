@@ -201,6 +201,7 @@ const mapRawMyReactionsToStrings = (raw: unknown): string[] => {
 export type MapCommunityPostToPostOptions = {
   /** Na listagem do feed só usamos commentsCount; evita mapear todos os comentários do payload. */
   includeComments?: boolean;
+  isFeatured?: boolean;
 };
 
 export const mapCommunityPostToPost = (
@@ -342,6 +343,7 @@ export const mapCommunityPostToPost = (
     isLiked,
     myReactions: myReactions.length ? myReactions : undefined,
     poll,
+    ...(options?.isFeatured === true || communityPost.isFeatured === true ? { isFeatured: true as const } : {}),
   };
 
   return post;

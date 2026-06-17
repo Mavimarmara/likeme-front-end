@@ -13,19 +13,15 @@ jest.mock('@react-navigation/native', () => ({
   }),
 }));
 
-jest.mock('@/hooks', () => {
-  const actual = jest.requireActual('@/hooks');
-  return {
-    ...actual,
-    usePost: () => ({ activePoll: undefined, submitPollVote: jest.fn() }),
-    usePostReplies: () => ({
-      likeCount: 0,
-      isLiked: false,
-      isLiking: false,
-      togglePostLike: jest.fn(),
-    }),
-  };
-});
+jest.mock('@/hooks', () => ({
+  usePost: () => ({ activePoll: undefined, submitPollVote: jest.fn() }),
+  usePostReplies: () => ({
+    likeCount: 0,
+    isLiked: false,
+    isLiking: false,
+    togglePostLike: jest.fn(),
+  }),
+}));
 
 jest.mock('@/hooks/i18n', () => ({
   useTranslation: () => ({
