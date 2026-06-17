@@ -9,7 +9,7 @@ import { getShippingQuote } from '@/services/shipping/shippingService';
 import { formatZipCodeDisplay } from '@/services/address/cepService';
 import { formatPrice, formatAddress, formatBillingAddress } from '@/utils';
 import { catalogTypeTranslatedBadgeLabels, PRODUCT_CATALOG_TYPE } from '@/types/product';
-import { isProtocolCartItem } from '@/utils/profile/protocolProduct';
+import { isProtocolCartItem, cartProtocolProductIdsWithActiveAccess } from '@/utils/profile/protocolProduct';
 import { useTranslation, usePayment, useCheckoutVoucher, useCartShippingPolicy, useMenuItems } from '@/hooks';
 import { useFloatingMenuActions } from '@/contexts/FloatingMenuContext';
 import { checkoutDisplayAmounts } from '@/utils/marketplace/checkoutDisplayAmounts';
@@ -61,6 +61,7 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
   const checkoutSubmitBlockedRef = useRef(false);
   const [checkoutSubmitCompleted, setCheckoutSubmitCompleted] = useState(false);
   const [checkoutSubmitBlocked, setCheckoutSubmitBlocked] = useState(false);
+  const [ownedProtocolCheckoutBlocked, setOwnedProtocolCheckoutBlocked] = useState(false);
   const [isOrderSubmitLocked, setIsOrderSubmitLocked] = useState(false);
   const checkoutVoucher = useCheckoutVoucher();
   const [shipping, setShipping] = useState(0);
@@ -82,6 +83,29 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
     loadCartItems();
     loadUserAddress();
   }, []);
+
+  useEffect(() => {
+    if (!cartHasProgram) {
+      setOwnedProtocolCheckoutBlocked(false);
+      return;
+    }
+
+    let cancelled = false;
+    void (async () => {
+      try {
+        const ownedProductIds = await cartProtocolProductIdsWithActiveAccess(cartItems);
+        if (!cancelled) {
+          setOwnedProtocolCheckoutBlocked(ownedProductIds.length > 0);
+        }
+      } catch (error) {
+        logger.error('[CheckoutScreen] Falha ao verificar protocolos ativos no carrinho', error);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [cartItems, cartHasProgram]);
 
   useEffect(() => {
     if (currentStep === 'order') {
@@ -181,7 +205,8 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
   const isPaymentSubmitBlocked = checkoutSubmitCompleted || isOrderSubmitLocked || checkoutSubmitBlocked;
   const isContinueDisabled =
     (currentStep === 'address' && (!canProceedFromAddress || isShippingBlocking)) ||
-    (currentStep === 'payment' && (isShippingBlocking || payment.isProcessing || isPaymentSubmitBlocked));
+    (currentStep === 'payment' &&
+      (isShippingBlocking || payment.isProcessing || isPaymentSubmitBlocked || ownedProtocolCheckoutBlocked));
   const isContinueLoading = currentStep === 'payment' && payment.isProcessing;
 
   const handleContinue = async () => {
@@ -231,6 +256,16 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
         Alert.alert(t('errors.error'), t('checkout.orderError'));
         releaseCheckoutSubmitLock();
         return;
+      }
+
+      if (cartHasProgram) {
+        const ownedProductIds = await cartProtocolProductIdsWithActiveAccess(cartItems);
+        if (ownedProductIds.length > 0) {
+          setOwnedProtocolCheckoutBlocked(true);
+          Alert.alert(t('errors.error'), t('marketplace.programAlreadySubscribed'));
+          releaseCheckoutSubmitLock();
+          return;
+        }
       }
 
       if (!isShippingDisabled && (shipping === 0 || shippingLoading)) {
@@ -492,6 +527,10 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
               onStepPress={(stepId) => setCurrentStep(stepId as CheckoutStep)}
             />
           </View>
+
+          {ownedProtocolCheckoutBlocked ? (
+            <Text style={styles.protocolBlockedMessage}>{t('marketplace.programAlreadySubscribed')}</Text>
+          ) : null}
 
           {currentStep === 'address' && (
             <>

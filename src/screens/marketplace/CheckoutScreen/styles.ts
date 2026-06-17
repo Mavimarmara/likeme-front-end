@@ -29,6 +29,13 @@ export const styles = StyleSheet.create({
   orderStepStepperPadding: {
     paddingHorizontal: SPACING.MD,
   },
+  protocolBlockedMessage: {
+    color: '#b42318',
+    fontSize: FONT_SIZES.SM,
+    lineHeight: 20,
+    marginBottom: SPACING.MD,
+    paddingHorizontal: SPACING.XS,
+  },
   addressCard: {
     backgroundColor: '#fbf7e5',
     borderRadius: 28,

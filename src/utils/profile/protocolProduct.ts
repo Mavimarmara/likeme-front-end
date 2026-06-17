@@ -35,3 +35,21 @@ export async function userHasActiveProtocolProduct(productId: string): Promise<b
   const isSuccess = response.success === true || (response as { status?: string }).status === 'success';
   return isSuccess && response.data?.hasAccess === true;
 }
+
+/** Protocolos do carrinho que o usuário já possui (ACTIVE — mesma regra de Meus Protocolos). */
+export async function cartProtocolProductIdsWithActiveAccess(
+  cartItems: ReadonlyArray<{ id: string; type?: string | null; tags?: unknown }>,
+): Promise<string[]> {
+  const ownedProductIds: string[] = [];
+
+  for (const item of cartItems) {
+    if (!isProtocolCartItem(item)) {
+      continue;
+    }
+    if (await userHasActiveProtocolProduct(item.id)) {
+      ownedProductIds.push(item.id);
+    }
+  }
+
+  return ownedProductIds;
+}

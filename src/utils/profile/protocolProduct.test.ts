@@ -1,5 +1,6 @@
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import {
+  cartProtocolProductIdsWithActiveAccess,
   isProtocolCartItem,
   isProtocolProductCatalogType,
   protocolProductIdsFromSubscriptions,
@@ -54,5 +55,20 @@ describe('protocolProduct', () => {
 
     getProtocolAccess.mockResolvedValueOnce({ success: true, data: { hasAccess: false, subscription: null } });
     await expect(userHasActiveProtocolProduct('prog-2')).resolves.toBe(false);
+  });
+
+  it('cartProtocolProductIdsWithActiveAccess retorna ids de protocolos já possuídos', async () => {
+    getProtocolAccess.mockImplementation(async (productId: string) => ({
+      success: true,
+      data: { hasAccess: productId === 'owned-prog', subscription: null },
+    }));
+
+    const owned = await cartProtocolProductIdsWithActiveAccess([
+      { id: 'owned-prog', type: PRODUCT_CATALOG_TYPE.PROGRAM },
+      { id: 'new-prog', type: PRODUCT_CATALOG_TYPE.PROGRAM },
+      { id: 'physical-1', type: PRODUCT_CATALOG_TYPE.PHYSICAL },
+    ]);
+
+    expect(owned).toEqual(['owned-prog']);
   });
 });
