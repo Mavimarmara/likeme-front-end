@@ -6,16 +6,12 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-echo "🧪 Rodando testes..."
-npm test -- --no-coverage
-if [ $? -ne 0 ]; then
-  echo "❌ Push bloqueado: testes falharam."
-  exit 1
-fi
+. "$(dirname "$0")/../scripts/pre-push-release-tests.sh"
+
 echo "🔨 Validando build (typecheck + lint)..."
 npm run build
 if [ $? -ne 0 ]; then
   echo "❌ Push bloqueado: build falhou. Corrija os erros antes de fazer push."
   exit 1
 fi
-echo "✅ Testes + Build OK. Prosseguindo com o push."
+echo "✅ Testes (release) + Build OK. Prosseguindo com o push."
