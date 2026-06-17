@@ -96,13 +96,18 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
   const hasLoadedInitially = useRef(initialCacheIsFresh);
   const previousSearchQuery = useRef<string>(initialCacheIsFresh ? searchQuery : '');
   const previousParamsKey = useRef<string>(initialCacheIsFresh ? paramsKey : '');
-  const isLoadingRef = useRef(false);
+  const isLoadingFirstPageRef = useRef(false);
+  const isLoadingMoreRef = useRef(false);
   const hasErrorRef = useRef(false);
   const backgroundRefreshStartedRef = useRef(false);
 
   const loadPosts = useCallback(
     async (page: number, search?: string, append = false) => {
-      if (isLoadingRef.current) {
+      if (page > 1) {
+        if (isLoadingMoreRef.current) {
+          return;
+        }
+      } else if (isLoadingFirstPageRef.current) {
         return;
       }
 
@@ -123,16 +128,16 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
       const feedCursor = page === 1 ? undefined : nextFeedCursorRef.current?.trim();
 
       try {
-        isLoadingRef.current = true;
-        hasErrorRef.current = false;
-
-        if (page === 1) {
+        if (page > 1) {
+          isLoadingMoreRef.current = true;
+          setLoadingMore(true);
+        } else {
+          isLoadingFirstPageRef.current = true;
           if (postsRef.current.length === 0) {
             setLoading(true);
           }
-        } else {
-          setLoadingMore(true);
         }
+        hasErrorRef.current = false;
         setError(null);
 
         const requestParams = {
@@ -186,18 +191,26 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
 
         const receivedCount = mappedPosts.length;
         const hasNextToken = nextFromFeed != null;
-        let hasMorePages = false;
-        if (receivedCount === 0 && page === 1) {
-          hasMorePages = false;
-        } else if (hasNextToken) {
-          hasMorePages = true;
-        } else if (
+        const paginationSaysMore =
           pagination &&
           typeof pagination.page === 'number' &&
           typeof pagination.totalPages === 'number' &&
-          pagination.totalPages > 0
-        ) {
-          hasMorePages = pagination.page < pagination.totalPages;
+          pagination.totalPages > 0 &&
+          pagination.page < pagination.totalPages;
+
+        let hasMorePages = false;
+        if (receivedCount === 0 && page === 1) {
+          hasMorePages = false;
+        } else if (scopedCommunityId) {
+          if (page > 1 && receivedCount === 0) {
+            hasMorePages = false;
+          } else {
+            hasMorePages = paginationSaysMore || hasNextToken;
+          }
+        } else if (hasNextToken) {
+          hasMorePages = true;
+        } else if (paginationSaysMore) {
+          hasMorePages = true;
         } else {
           hasMorePages = receivedCount >= pageSize;
         }
@@ -220,9 +233,13 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
           setPosts([]);
         }
       } finally {
-        setLoading(false);
-        setLoadingMore(false);
-        isLoadingRef.current = false;
+        if (page > 1) {
+          isLoadingMoreRef.current = false;
+          setLoadingMore(false);
+        } else {
+          isLoadingFirstPageRef.current = false;
+          setLoading(false);
+        }
       }
     },
     [pageSize, memoizedParams, feedFilterParams, scopedCommunityId, feedCache, cacheKey],
@@ -263,7 +280,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
       return;
     }
 
-    if (isLoadingRef.current) {
+    if (isLoadingFirstPageRef.current) {
       return;
     }
 
@@ -292,11 +309,11 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
       return;
     }
     backgroundRefreshStartedRef.current = true;
-    if (scopedCommunityId && (initialCacheEntry?.currentPage ?? 1) > 1) {
+    if (scopedCommunityId) {
       return;
     }
     void loadPosts(1, searchQuery);
-  }, [enabled, initialCacheIsFresh, loadPosts, searchQuery, scopedCommunityId, initialCacheEntry?.currentPage]);
+  }, [enabled, initialCacheIsFresh, loadPosts, searchQuery, scopedCommunityId]);
 
   return {
     posts,

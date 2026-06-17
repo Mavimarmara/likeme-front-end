@@ -275,4 +275,31 @@ describe('useUserFeed (scroll infinito / paginação)', () => {
     expect(result.current.hasMore).toBe(false);
     expect(result.current.posts).toHaveLength(10);
   });
+
+  it('com communityId não usa heurística de page cheia quando backend não sinaliza próxima página', async () => {
+    const ten = Array.from({ length: 10 }, (_, i) => ({ postId: `c-heur-${i}` }));
+    getCommunityPostsMock.mockResolvedValue(
+      feedPayload({
+        posts: ten,
+        paging: {},
+      }),
+    );
+
+    const { result } = renderHook(() =>
+      useUserFeed({
+        pageSize: 10,
+        searchQuery: '',
+        params: { communityId: 'community-abc' },
+      }),
+    );
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.hasMore).toBe(false);
+
+    await act(async () => {
+      result.current.loadMore();
+    });
+
+    expect(getCommunityPostsMock).toHaveBeenCalledTimes(1);
+  });
 });
