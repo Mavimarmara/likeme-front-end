@@ -89,7 +89,7 @@ const RootNavigator: React.FC = () => {
             <MarketplaceListingsCacheProvider>
               <AdvertisersCacheProvider>
                 <FloatingMenuProvider>
-                  <PushNotificationsRoot activeRouteName={activeRouteName} />
+                  <PushNotificationsRoot activeRouteName={activeRouteName} navigationRef={navigationRef} />
                   <Stack.Navigator
                     initialRouteName='Loading'
                     screenOptions={{

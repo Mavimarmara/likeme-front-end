@@ -42,6 +42,7 @@ type ActivitiesScreenProps = {
     params?: {
       initialTab?: 'actives' | 'history';
       initialFilter?: 'all' | 'activities' | 'appointments' | 'orders';
+      focusActivityId?: string;
     };
   };
 };
@@ -50,6 +51,7 @@ type TabType = 'actives' | 'history';
 type FilterType = 'all' | 'activities' | 'appointments' | 'orders';
 
 import type { ActivityItem } from '@/types/activity/hooks';
+import type { UserActivity } from '@/types/activity';
 
 const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation, route }) => {
   useAnalyticsScreen({ screenName: 'Activities', screenClass: 'ActivitiesScreen' });
@@ -87,6 +89,23 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation, route }
     autoLoad: false, // Vamos controlar manualmente quando carregar
   });
 
+  const openActivityEditorFromUserActivity = useCallback((activity: UserActivity) => {
+    setEditingActivityData({
+      name: activity.name,
+      type: activity.type,
+      startDate: activity.startDate?.split('T')[0],
+      startTime: activity.startTime ?? undefined,
+      endDate: activity.endDate?.split('T')[0],
+      endTime: activity.endTime ?? undefined,
+      location: activity.location ?? undefined,
+      description: activity.description ?? undefined,
+      reminderEnabled: activity.reminderEnabled,
+      reminderMinutes: activity.reminderOffset ? Number.parseInt(activity.reminderOffset, 10) : 5,
+    });
+    setEditingActivityId(activity.id);
+    setIsCreateActivityModalVisible(true);
+  }, []);
+
   useEffect(() => {
     // Incluir atividades deletadas (skipadas) quando estiver na aba de histórico
     const includeDeleted = activeTab === 'history';
@@ -102,7 +121,7 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation, route }
   useFocusEffect(
     useCallback(() => {
       const p = route?.params;
-      if (p?.initialTab == null && p?.initialFilter == null) {
+      if (p?.initialTab == null && p?.initialFilter == null && p?.focusActivityId == null) {
         return;
       }
 
@@ -118,9 +137,50 @@ const ActivitiesScreen: React.FC<ActivitiesScreenProps> = ({ navigation, route }
         }
       }
 
-      navigation.setParams({ initialTab: undefined, initialFilter: undefined } as never);
-    }, [navigation, route?.params?.initialTab, route?.params?.initialFilter]),
+      navigation.setParams({
+        initialTab: undefined,
+        initialFilter: undefined,
+        focusActivityId: p?.focusActivityId,
+      } as never);
+    }, [navigation, route?.params?.initialTab, route?.params?.initialFilter, route?.params?.focusActivityId]),
   );
+
+  useEffect(() => {
+    const focusActivityId = route?.params?.focusActivityId?.trim();
+    if (!focusActivityId) {
+      return;
+    }
+
+    const fromList = rawActivities.find((entry) => entry.id === focusActivityId);
+    if (fromList) {
+      openActivityEditorFromUserActivity(fromList);
+      navigation.setParams({ focusActivityId: undefined } as never);
+      return;
+    }
+
+    if (_isLoadingActivities) {
+      return;
+    }
+
+    void activityService
+      .getActivityById(focusActivityId)
+      .then((response) => {
+        if (!response.success || !response.data) {
+          return;
+        }
+        openActivityEditorFromUserActivity(response.data);
+        navigation.setParams({ focusActivityId: undefined } as never);
+      })
+      .catch((error) => {
+        logger.error('[ActivitiesScreen] Falha ao abrir atividade do push', { focusActivityId, error });
+      });
+  }, [
+    navigation,
+    openActivityEditorFromUserActivity,
+    rawActivities,
+    route?.params?.focusActivityId,
+    _isLoadingActivities,
+  ]);
 
   useEffect(() => {
     const checkAnamnesisStatus = async () => {

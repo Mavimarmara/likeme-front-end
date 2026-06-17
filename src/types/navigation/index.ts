@@ -37,6 +37,7 @@ type RootStackParamListCore = {
     | {
         initialTab?: 'actives' | 'history';
         initialFilter?: 'all' | 'activities' | 'appointments' | 'orders';
+        focusActivityId?: string;
       }
     | undefined;
   OrderDetail: { orderId: string };
