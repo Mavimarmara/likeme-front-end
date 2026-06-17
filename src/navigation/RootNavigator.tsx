@@ -1,6 +1,7 @@
 import React, { lazy, Suspense, useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { DefaultTheme, NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
+import type { RootStackParamList } from '@/types/navigation';
 import { createStackNavigator } from '@react-navigation/stack';
 import { FloatingMenuProvider } from '@/contexts/FloatingMenuContext';
 import { AdvertisersCacheProvider } from '@/contexts/AdvertisersCacheContext';
@@ -68,7 +69,7 @@ const styles = StyleSheet.create({
 });
 
 const RootNavigator: React.FC = () => {
-  const navigationRef = useNavigationContainerRef();
+  const navigationRef = useNavigationContainerRef<RootStackParamList>();
   const [activeRouteName, setActiveRouteName] = useState<string | undefined>(undefined);
 
   const syncActiveRouteName = useCallback(() => {

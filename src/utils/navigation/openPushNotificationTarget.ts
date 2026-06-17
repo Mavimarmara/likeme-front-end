@@ -1,12 +1,25 @@
-import type { NavigationContainerRefWithCurrent } from '@react-navigation/native';
+import { CommonActions, type NavigationContainerRefWithCurrent } from '@react-navigation/native';
 import type { RootStackParamList } from '@/types/navigation';
 import {
   canNavigateFromPush,
   consumePendingPushNavigation,
   setPendingPushNavigation,
+  type PendingPushNavigationTarget,
 } from '@/utils/navigation/pendingPushNavigation';
-import { navigateToPushTarget, pushNavigationTargetFromData } from '@/utils/navigation/pushNotificationNavigation';
+import { pushNavigationTargetFromData } from '@/utils/navigation/pushNotificationNavigation';
 import type { RemoteMessage } from '@/services/notification/notificationService';
+
+function dispatchPushTarget(
+  navigationRef: NavigationContainerRefWithCurrent<RootStackParamList>,
+  target: PendingPushNavigationTarget,
+): void {
+  navigationRef.dispatch(
+    CommonActions.navigate({
+      name: target.screen,
+      params: target.params,
+    }),
+  );
+}
 
 export function openPushNotificationTarget(
   navigationRef: NavigationContainerRefWithCurrent<RootStackParamList>,
@@ -23,7 +36,7 @@ export function openPushNotificationTarget(
     return;
   }
 
-  navigateToPushTarget((screen, params) => navigationRef.navigate(screen, params), target);
+  dispatchPushTarget(navigationRef, target);
 }
 
 export function flushPendingPushNavigation(
@@ -39,5 +52,5 @@ export function flushPendingPushNavigation(
     return;
   }
 
-  navigateToPushTarget((screen, params) => navigationRef.navigate(screen, params), target);
+  dispatchPushTarget(navigationRef, target);
 }
