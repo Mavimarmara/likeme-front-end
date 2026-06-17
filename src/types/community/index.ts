@@ -176,8 +176,6 @@ export interface UserFeedParams {
   categoryId?: string | null;
   solutionIds?: string[];
   communityId?: string;
-  /** Posição no stream entregável (load more do feed scoped). Opcional; fallback no backend: (page-1)*limit. */
-  offset?: number;
 }
 
 export interface ListCommunitiesParams {

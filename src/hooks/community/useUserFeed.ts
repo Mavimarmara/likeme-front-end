@@ -139,7 +139,6 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
           page,
           limit: pageSize,
           search: search,
-          ...(scopedCommunityId && append ? { offset: postsRef.current.length } : {}),
           ...(feedCursor != null && feedCursor.length > 0 && !scopedCommunityId ? { token: feedCursor } : {}),
           ...feedFilterParams,
         };
