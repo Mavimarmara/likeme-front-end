@@ -252,4 +252,27 @@ describe('useUserFeed (scroll infinito / paginação)', () => {
     expect(getCommunityPostsMock.mock.calls[1][1]).not.toHaveProperty('token');
     expect(result.current.posts.map((p) => p.id)).toEqual(['c1', 'c2']);
   });
+
+  it('com communityId mantém hasMore heurístico quando pagination indica fim mas page veio cheia', async () => {
+    const ten = Array.from({ length: 10 }, (_, i) => ({ postId: `c-full-${i}` }));
+    getCommunityPostsMock.mockResolvedValue(
+      feedPayload({
+        posts: ten,
+        paging: {},
+        pagination: { page: 1, limit: 10, total: 10, totalPages: 1 },
+      }),
+    );
+
+    const { result } = renderHook(() =>
+      useUserFeed({
+        pageSize: 10,
+        searchQuery: '',
+        params: { communityId: 'community-abc' },
+      }),
+    );
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.hasMore).toBe(true);
+    expect(result.current.posts).toHaveLength(10);
+  });
 });

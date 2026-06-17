@@ -8,18 +8,6 @@ import { PAGINATION } from '@/constants';
 import { logger } from '@/utils/logger';
 import { isFeedCacheEntryFresh, useFeedCache } from '@/contexts/FeedCacheContext';
 
-function appendUniqueFeedPosts(existing: Post[], incoming: Post[]): Post[] {
-  if (incoming.length === 0) {
-    return existing;
-  }
-  const knownIds = new Set(existing.map((post) => post.id));
-  const uniqueIncoming = incoming.filter((post) => !knownIds.has(post.id));
-  if (uniqueIncoming.length === 0) {
-    return existing;
-  }
-  return [...existing, ...uniqueIncoming];
-}
-
 const FEED_PREFETCH_FIRST_N = 8;
 
 /**
@@ -67,7 +55,7 @@ interface UseUserFeedReturn {
   hasMore: boolean;
   currentPage: number;
   loadPosts: (page: number, search?: string, append?: boolean) => Promise<void>;
-  loadMore: () => boolean;
+  loadMore: () => void;
   refresh: () => void;
   search: (query: string) => void;
 }
@@ -178,16 +166,8 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
         const feedPosts = feedData.posts ?? [];
         const mappedPosts = mapCommunityPostsForFeedList(feedPosts, feedData);
 
-        const nextPosts = append ? appendUniqueFeedPosts(postsRef.current, mappedPosts) : mappedPosts;
+        const nextPosts = append ? [...postsRef.current, ...mappedPosts] : mappedPosts;
         setPosts(nextPosts);
-
-        if (append && mappedPosts.length > 0 && nextPosts.length === postsRef.current.length) {
-          logger.warn('[useUserFeed] loadMore retornou apenas posts já presentes no feed', {
-            page,
-            communityId: scopedCommunityId || undefined,
-            incomingCount: mappedPosts.length,
-          });
-        }
 
         const postsToPrefetch = mappedPosts.slice(0, FEED_PREFETCH_FIRST_N);
         const urisToPrefetch = postsToPrefetch.flatMap((p) => [p.userAvatar, p.image]);
@@ -204,28 +184,17 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
 
         const receivedCount = mappedPosts.length;
         const hasNextToken = nextFromFeed != null;
-        let hasMorePages = false;
-        if (receivedCount === 0 && page === 1) {
-          hasMorePages = false;
-        } else if (scopedCommunityId) {
-          const paginationHasMore =
-            pagination &&
-            typeof pagination.page === 'number' &&
-            typeof pagination.totalPages === 'number' &&
-            pagination.totalPages > 0 &&
-            pagination.page < pagination.totalPages;
-          hasMorePages = paginationHasMore || hasNextToken;
-        } else if (hasNextToken) {
-          hasMorePages = true;
-        } else if (
+        const paginationHasMore =
           pagination &&
           typeof pagination.page === 'number' &&
           typeof pagination.totalPages === 'number' &&
-          pagination.totalPages > 0
-        ) {
-          hasMorePages = pagination.page < pagination.totalPages;
+          pagination.totalPages > 0 &&
+          pagination.page < pagination.totalPages;
+        let hasMorePages = false;
+        if (receivedCount === 0 && page === 1) {
+          hasMorePages = false;
         } else {
-          hasMorePages = receivedCount >= pageSize;
+          hasMorePages = hasNextToken || paginationHasMore || receivedCount >= pageSize;
         }
         setHasMore(hasMorePages);
 
@@ -254,12 +223,10 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
     [pageSize, memoizedParams, feedFilterParams, scopedCommunityId, feedCache, cacheKey],
   );
 
-  const loadMore = useCallback((): boolean => {
-    if (!loadingMore && hasMore && !loading && enabled && !isLoadingRef.current) {
-      void loadPosts(currentPageRef.current + 1, searchQuery, true);
-      return true;
+  const loadMore = useCallback(() => {
+    if (!loadingMore && hasMore && !loading && enabled) {
+      loadPosts(currentPageRef.current + 1, searchQuery, true);
     }
-    return false;
   }, [hasMore, loadingMore, loading, searchQuery, enabled, loadPosts]);
 
   const refresh = useCallback(() => {

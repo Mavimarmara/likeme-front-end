@@ -1,11 +1,12 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { View, ScrollView, Text, ActivityIndicator } from 'react-native';
+import { View, ScrollView, FlatList, Text, ActivityIndicator, type ListRenderItem } from 'react-native';
 import type { RouteProp } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import {
   ShoppingList,
   EventBanner,
+  PostCard,
   NextEventsSection,
   CommunityDescriptionSection,
   FeaturedPostsSection,
@@ -13,13 +14,13 @@ import {
 } from '@/components/sections/community';
 import { styles as socialListStyles } from '@/components/sections/community/SocialList/styles';
 import { Product, ProductsCarousel } from '@/components/sections/product';
+import { EmptyState } from '@/components/ui';
 import type { Post } from '@/types';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
 import { HeroImage, ScreenWithHeader } from '@/components/ui/layout';
 import type { FeedEvent } from '@/types/event';
 import { SPACING, COMMUNITY_FEED_POSTS_PAGE_SIZE, ADVERTISER_STATUS } from '@/constants';
 import { styles } from './styles';
-import CommunityPostsFeed from './CommunityPostsFeed';
 import type { CommunityStackParamList, RootStackParamList } from '@/types/navigation';
 import {
   useUserFeed,
@@ -163,7 +164,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     loading: feedLoading,
     loadingMore,
     error,
-    hasMore: feedHasMore,
     loadMore,
   } = useUserFeed({
     enabled: isFeedMode && Boolean(selectedCommunityId?.trim()),
@@ -400,12 +400,31 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     logger.debug('[CommunityScreen] event save (stub)', { eventId: event.id });
   }, []);
 
+  const handleLoadMore = useCallback(() => {
+    if (selectedMode === COMMUNITY_VIEW.FEED) {
+      loadMore();
+    }
+  }, [selectedMode, loadMore]);
+
   const handlePostCardPress = useCallback(
     (selectedPost: Post) => {
       navigation.navigate('PostDetail' as never, { post: selectedPost } as never);
     },
     [navigation],
   );
+
+  const renderPostItem = useCallback<ListRenderItem<Post>>(
+    ({ item }) => (
+      <View style={styles.feedItemWrapper}>
+        <PostCard post={item} onPress={handlePostCardPress} />
+      </View>
+    ),
+    [handlePostCardPress],
+  );
+
+  const renderPostSeparator = useCallback(() => <View style={styles.feedItemSeparator} />, []);
+
+  const postKeyExtractor = useCallback((post: Post) => post.id, []);
 
   const communityHeroBadges = useMemo(() => {
     const firstTwo = categories?.slice(0, 2) ?? [];
@@ -614,6 +633,36 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     [heroBlock, toggleBlock, feedAuxiliaryBlock, activeInfoTab, featuredPost, handlePostCardPress],
   );
 
+  const feedListFooter = useMemo(
+    () => (
+      <View style={styles.feedListFooter}>
+        {loadingMore && feedPosts.length > 0 ? (
+          <View
+            style={styles.feedLoadingFooter}
+            accessibilityRole='progressbar'
+            accessibilityLabel={t('community.loadingMorePosts')}
+          >
+            <ActivityIndicator size='small' color='#4CAF50' />
+            <Text style={styles.feedLoadingFooterLabel}>{t('community.loadingMorePosts')}</Text>
+          </View>
+        ) : null}
+        {feedRecommendationsBlock}
+      </View>
+    ),
+    [loadingMore, feedPosts.length, t, feedRecommendationsBlock],
+  );
+
+  const feedListEmpty = useMemo(() => {
+    if (error) {
+      return (
+        <View style={styles.feedEmptyContainer}>
+          <Text style={styles.feedEmptyText}>{`Erro: ${error}`}</Text>
+        </View>
+      );
+    }
+    return <EmptyState title={t('community.noPostsFound')} description={t('community.noPostsFoundDescription')} />;
+  }, [error, t]);
+
   return (
     <View style={styles.screenRoot}>
       {eventJoinUrl ? <EventWebViewSession url={eventJoinUrl} onClose={closeEventSession} /> : null}
@@ -634,16 +683,23 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
             <Text style={styles.feedLoadingText}>{t('common.loading')}</Text>
           </View>
         ) : showVirtualizedFeed ? (
-          <CommunityPostsFeed
-            feedPosts={feedPosts}
-            loadingMore={loadingMore}
-            feedHasMore={feedHasMore}
-            feedLoading={feedLoading}
-            error={error}
-            onLoadMore={loadMore}
-            onPostPress={handlePostCardPress}
-            listHeader={feedListHeader}
-            recommendationsFooter={feedRecommendationsBlock}
+          <FlatList
+            style={[{ flex: 1 }, { zIndex: 1 }]}
+            contentContainerStyle={styles.feedContentContainer}
+            showsVerticalScrollIndicator={false}
+            data={feedPosts}
+            keyExtractor={postKeyExtractor}
+            renderItem={renderPostItem}
+            ItemSeparatorComponent={renderPostSeparator}
+            ListHeaderComponent={feedListHeader}
+            ListFooterComponent={feedListFooter}
+            ListEmptyComponent={feedListEmpty}
+            onEndReached={handleLoadMore}
+            onEndReachedThreshold={0.5}
+            removeClippedSubviews
+            initialNumToRender={6}
+            maxToRenderPerBatch={4}
+            windowSize={7}
           />
         ) : (
           <ScrollView
