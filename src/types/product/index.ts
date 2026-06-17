@@ -8,6 +8,7 @@ export {
   productCatalogTypeOptions,
   getProductCatalogTypeLabelKey,
   isProductCatalogType,
+  isProgramCatalogType,
   catalogTypeTranslatedBadgeLabels,
   resolveCartItemCatalogType,
   type ProductCatalogType,

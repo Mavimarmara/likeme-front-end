@@ -3,6 +3,7 @@ import storageService from '@/services/auth/storageService';
 import productService from '@/services/product/productService';
 import type { CartItem } from '@/types/cart';
 import { isProductCatalogType, resolveCartItemCatalogType } from '@/types/product';
+import { isProtocolCartItem, isProtocolProductCatalogType } from '@/utils/profile/protocolProduct';
 import { logger } from '@/utils/logger';
 
 type StoredCartItem = CartItem & { tags?: unknown; description?: string };
@@ -74,7 +75,12 @@ export function useCart(options: UseCartOptions = {}): UseCartReturn {
           }
 
           const product = productResponse.data;
-          const requestedQuantity = Number(item.quantity) || 1;
+          let requestedQuantity = Number(item.quantity) || 1;
+
+          if (isProtocolProductCatalogType(product.type)) {
+            requestedQuantity = 1;
+            item.quantity = 1;
+          }
 
           if (product.quantity !== null) {
             const availableQuantity = product.quantity;
@@ -119,6 +125,10 @@ export function useCart(options: UseCartOptions = {}): UseCartReturn {
 
   const increaseQuantity = useCallback(async (id: string) => {
     const items = await storageService.getCartItems();
+    const target = items.find((item: CartItem) => item.id === id);
+    if (target && isProtocolCartItem(target)) {
+      return;
+    }
     const updated = cartItemsFromStorage(
       items.map((item: CartItem) =>
         item.id === id ? { ...item, quantity: (Number(item.quantity) || 1) + 1 } : item,

@@ -43,6 +43,16 @@ export function isProductCatalogType(value: string | undefined | null): value is
   return value != null && value !== '' && PRODUCT_CATALOG_TYPE_VALUE_SET.has(value);
 }
 
+export function isProgramCatalogType(value: string | undefined | null): boolean {
+  if (value == null || value === '') {
+    return false;
+  }
+  if (value === PRODUCT_CATALOG_TYPE.PROGRAM) {
+    return true;
+  }
+  return value.trim().toLowerCase() === PRODUCT_CATALOG_TYPE.PROGRAM;
+}
+
 export function catalogTypeTranslatedBadgeLabels(
   catalogType: ProductCatalogType | string | undefined | null,
   translate: (key: string) => string,

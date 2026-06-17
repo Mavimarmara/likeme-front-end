@@ -31,7 +31,7 @@ import {
 } from '@/analytics';
 import { MARKETPLACE_PRODUCT_PLACEHOLDER_IMAGE_URI } from '@/constants';
 import type { RootStackParamList } from '@/types/navigation';
-import { PRODUCT_CATALOG_TYPE, catalogTypeTranslatedBadgeLabels } from '@/types/product';
+import { PRODUCT_CATALOG_TYPE, catalogTypeTranslatedBadgeLabels, isProgramCatalogType } from '@/types/product';
 import { navigateToProviderProfile } from '@/utils/navigation/marketplaceNavigation';
 import { navigateToProductDetailsScreen } from '@/utils/navigation/productNavigation';
 import { styles } from './styles';
@@ -141,7 +141,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     };
   }, [displayData?.description, product?.targetAudience, product?.technicalSpecifications]);
 
-  const isProgramProduct = product?.type === PRODUCT_CATALOG_TYPE.PROGRAM;
+  const isProgramProduct = isProgramCatalogType(product?.type);
 
   const productTabOptions: ButtonCarouselOption<'about' | 'agreements'>[] = useMemo(() => {
     const isPhysicalProduct = product?.type === PRODUCT_CATALOG_TYPE.PHYSICAL;
@@ -176,7 +176,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
 
   const usesPhysicalProductDetailLayout =
     product?.type === PRODUCT_CATALOG_TYPE.PHYSICAL ||
-    product?.type === PRODUCT_CATALOG_TYPE.PROGRAM ||
+    isProgramCatalogType(product?.type) ||
     product?.type === PRODUCT_CATALOG_TYPE.SERVICE;
 
   const quantityOptions = useMemo(() => {
@@ -215,7 +215,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
       item_name: displayData?.title,
       item_category: productCategory,
     });
-    void handleAddToCart(quantity);
+    void handleAddToCart(isProgramProduct ? 1 : quantity);
   };
 
   const handleAddToCartPress = () => {

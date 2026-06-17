@@ -1,6 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { logger } from '@/utils/logger';
 import type { StoredUser } from '@/types/auth';
+import { isProtocolCartItem } from '@/utils/profile/protocolProduct';
+
+export const PROGRAM_ALREADY_IN_CART_ERROR = 'PROGRAM_ALREADY_IN_CART';
 
 const TOKEN_KEY = '@likeme:auth_token';
 const USER_KEY = '@likeme:user';
@@ -224,18 +227,24 @@ class StorageService {
     try {
       const cartItems = await this.getCartItems();
       const existingItemIndex = cartItems.findIndex((cartItem) => cartItem.id === item.id);
-      const normalizedQuantity = Math.max(1, Math.floor(Number(quantity) || 1));
+      const catalogType = resolveCartItemCatalogType(item) ?? item.type;
+      const isProgram = isProtocolCartItem({ type: catalogType, tags: item.tags });
+      const normalizedQuantity = isProgram ? 1 : Math.max(1, Math.floor(Number(quantity) || 1));
 
       if (existingItemIndex >= 0) {
-        // Se o item já existe, aumenta pela quantidade solicitada
+        if (isProgram) {
+          throw new Error(PROGRAM_ALREADY_IN_CART_ERROR);
+        }
         cartItems[existingItemIndex].quantity = (cartItems[existingItemIndex].quantity || 1) + normalizedQuantity;
       } else {
-        // Adiciona novo item com a quantidade solicitada
         cartItems.push({ ...item, quantity: normalizedQuantity });
       }
 
       await this.setCartItems(cartItems);
     } catch (error) {
+      if (error instanceof Error && error.message === PROGRAM_ALREADY_IN_CART_ERROR) {
+        throw error;
+      }
       logger.error('Error adding to cart:', error);
     }
   }

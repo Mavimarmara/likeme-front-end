@@ -1,4 +1,5 @@
 import { renderHook, waitFor } from '@testing-library/react-native';
+import { Alert } from 'react-native';
 import { useProductDetails } from './useProductDetails';
 import { productService, adService } from '@/services';
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
@@ -17,10 +18,23 @@ jest.mock('@/services', () => ({
     getAdById: jest.fn(),
     listAds: jest.fn(),
   },
-  storageService: {
+}));
+
+jest.mock('@/services/auth/storageService', () => ({
+  __esModule: true,
+  default: {
     addToCart: jest.fn(),
   },
+  PROGRAM_ALREADY_IN_CART_ERROR: 'PROGRAM_ALREADY_IN_CART',
 }));
+
+jest.mock('@/utils/profile/protocolProduct', () => ({
+  isProtocolProductCatalogType: jest.fn((type?: string | null) => type === 'program'),
+  userHasActiveProtocolProduct: jest.fn(),
+}));
+
+import storageService, { PROGRAM_ALREADY_IN_CART_ERROR } from '@/services/auth/storageService';
+import { userHasActiveProtocolProduct } from '@/utils/profile/protocolProduct';
 
 jest.mock('@/utils/logger', () => ({
   logger: { error: jest.fn(), warn: jest.fn(), debug: jest.fn() },
@@ -209,5 +223,85 @@ describe('useProductDetails', () => {
     );
 
     await waitFor(() => expect(adService.getAdById).toHaveBeenCalledWith('ad-1'), { timeout: 8000 });
+  });
+
+  it('protocolo já no carrinho exibe alerta e não navega', async () => {
+    jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
+    (userHasActiveProtocolProduct as jest.Mock).mockResolvedValue(false);
+    (productService.getProductById as jest.Mock).mockResolvedValue({
+      success: true,
+      data: physicalProduct({
+        id: 'prog-1',
+        type: PRODUCT_CATALOG_TYPE.PROGRAM,
+      }),
+    });
+    (storageService.addToCart as jest.Mock).mockRejectedValue(new Error(PROGRAM_ALREADY_IN_CART_ERROR));
+
+    const { result } = renderHook(() =>
+      useProductDetails({
+        productId: 'prog-1',
+        navigation,
+      }),
+    );
+
+    await waitFor(() => expect(result.current.loading).toBe(false), { timeout: 8000 });
+
+    await result.current.handleAddToCart(1);
+
+    expect(Alert.alert).toHaveBeenCalledWith('errors.error', 'marketplace.programAlreadyInCart');
+    expect(navigation.navigate).not.toHaveBeenCalled();
+  });
+
+  it('protocolo adiciona ao carrinho com quantidade 1', async () => {
+    (userHasActiveProtocolProduct as jest.Mock).mockResolvedValue(false);
+    (productService.getProductById as jest.Mock).mockResolvedValue({
+      success: true,
+      data: physicalProduct({
+        id: 'prog-2',
+        type: PRODUCT_CATALOG_TYPE.PROGRAM,
+      }),
+    });
+    (storageService.addToCart as jest.Mock).mockResolvedValue(undefined);
+
+    const { result } = renderHook(() =>
+      useProductDetails({
+        productId: 'prog-2',
+        navigation,
+      }),
+    );
+
+    await waitFor(() => expect(result.current.loading).toBe(false), { timeout: 8000 });
+
+    await result.current.handleAddToCart(5);
+
+    expect(storageService.addToCart).toHaveBeenCalledWith(expect.objectContaining({ id: 'prog-2' }), 1);
+    expect(navigation.navigate).toHaveBeenCalledWith('Cart');
+  });
+
+  it('protocolo já assinado exibe alerta e não adiciona ao carrinho', async () => {
+    jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
+    (userHasActiveProtocolProduct as jest.Mock).mockResolvedValue(true);
+    (productService.getProductById as jest.Mock).mockResolvedValue({
+      success: true,
+      data: physicalProduct({
+        id: 'prog-owned',
+        type: PRODUCT_CATALOG_TYPE.PROGRAM,
+      }),
+    });
+
+    const { result } = renderHook(() =>
+      useProductDetails({
+        productId: 'prog-owned',
+        navigation,
+      }),
+    );
+
+    await waitFor(() => expect(result.current.loading).toBe(false), { timeout: 8000 });
+
+    await result.current.handleAddToCart(1);
+
+    expect(Alert.alert).toHaveBeenCalledWith('errors.error', 'marketplace.programAlreadySubscribed');
+    expect(storageService.addToCart).not.toHaveBeenCalled();
+    expect(navigation.navigate).not.toHaveBeenCalled();
   });
 });

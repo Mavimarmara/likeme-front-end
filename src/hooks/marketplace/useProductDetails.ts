@@ -2,10 +2,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { Alert } from 'react-native';
 import { useTranslation } from '@/hooks/i18n';
 import { MARKETPLACE_PRODUCT_PLACEHOLDER_IMAGE_URI } from '@/constants';
-import { productService, adService, storageService } from '@/services';
+import { productService, adService } from '@/services';
 import { mapProductToCartItem, formatPrice } from '@/utils';
 import type { Product as ApiProduct } from '@/types/product';
-import { PRODUCT_CATALOG_TYPE } from '@/types/product';
+import { PRODUCT_CATALOG_TYPE, isProgramCatalogType } from '@/types/product';
+import storageService, { PROGRAM_ALREADY_IN_CART_ERROR } from '@/services/auth/storageService';
+import { isProtocolProductCatalogType, userHasActiveProtocolProduct } from '@/utils/profile/protocolProduct';
 import type { Ad, Advertiser } from '@/types/ad';
 import type { ApiError } from '@/types/infrastructure';
 import { logger } from '@/utils/logger';
@@ -228,11 +230,25 @@ export const useProductDetails = ({
         return;
       }
 
+      const cartQuantity = isProtocolProductCatalogType(product.type) ? 1 : quantity;
+
+      if (isProtocolProductCatalogType(product.type)) {
+        const alreadySubscribed = await userHasActiveProtocolProduct(product.id);
+        if (alreadySubscribed) {
+          Alert.alert(t('errors.error'), t('marketplace.programAlreadySubscribed'));
+          return;
+        }
+      }
+
       try {
         const cartItem = mapProductToCartItem(product);
-        await storageService.addToCart(cartItem, quantity);
+        await storageService.addToCart(cartItem, cartQuantity);
         navigation.navigate('Cart');
       } catch (error) {
+        if (error instanceof Error && error.message === PROGRAM_ALREADY_IN_CART_ERROR) {
+          Alert.alert(t('errors.error'), t('marketplace.programAlreadyInCart'));
+          return;
+        }
         logger.error('[useProductDetails] Erro ao adicionar ao carrinho', error);
         Alert.alert(t('errors.error'), t('errors.addToCartError'));
       }
