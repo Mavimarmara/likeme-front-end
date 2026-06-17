@@ -7,6 +7,7 @@ import type { RootStackParamList } from '@/types/navigation';
 import { formatPrice } from '@/utils';
 import { navigateToMarketplace } from '@/utils/navigation/marketplaceNavigation';
 import { catalogTypeTranslatedBadgeLabels } from '@/types/product';
+import { isProtocolCartItem } from '@/utils/profile/protocolProduct';
 import { Alert } from 'react-native';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { ProductRowCard } from '@/components/ui/cards';

@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { logger } from '@/utils/logger';
 import type { StoredUser } from '@/types/auth';
+import { resolveCartItemCatalogType } from '@/types/product/productCatalogType';
 import { isProtocolCartItem } from '@/utils/profile/protocolProduct';
 
 export const PROGRAM_ALREADY_IN_CART_ERROR = 'PROGRAM_ALREADY_IN_CART';
