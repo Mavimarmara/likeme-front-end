@@ -302,4 +302,42 @@ describe('useUserFeed (scroll infinito / paginação)', () => {
 
     expect(getCommunityPostsMock).toHaveBeenCalledTimes(1);
   });
+
+  it('com communityId page 2 vazia no backend define hasMore false no client', async () => {
+    getCommunityPostsMock
+      .mockResolvedValueOnce(
+        feedPayload({
+          posts: [{ postId: 'c1' }],
+          paging: {},
+          pagination: { page: 1, limit: 10, total: 1, totalPages: 2 },
+        }),
+      )
+      .mockResolvedValueOnce(
+        feedPayload({
+          posts: [],
+          paging: {},
+          pagination: { page: 2, limit: 10, total: 0, totalPages: 2 },
+        }),
+      );
+
+    const { result } = renderHook(() =>
+      useUserFeed({
+        pageSize: 10,
+        searchQuery: '',
+        params: { communityId: 'community-abc' },
+      }),
+    );
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.hasMore).toBe(true);
+
+    await act(async () => {
+      result.current.loadMore();
+    });
+
+    await waitFor(() => expect(result.current.loadingMore).toBe(false));
+    expect(result.current.posts.map((p) => p.id)).toEqual(['c1']);
+    expect(result.current.hasMore).toBe(false);
+    expect(getCommunityPostsMock).toHaveBeenCalledTimes(2);
+  });
 });
