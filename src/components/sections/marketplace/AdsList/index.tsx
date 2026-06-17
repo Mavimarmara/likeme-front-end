@@ -1,8 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, type ReactNode } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, StyleProp, ViewStyle } from 'react-native';
 import { ProductRowCard } from '@/components/ui/cards';
 import { ProductList } from '@/components/sections/product/ProductList';
 import { ToggleTabs } from '@/components/ui/tabs';
+import type { ToggleVariant } from '@/components/ui/buttons/Toggle';
 import type { ButtonCarouselOption } from '@/components/ui/carousel';
 import { StickyFilterCarouselRow } from '@/components/ui/menu';
 import { FilterPickerModal } from '@/components/ui/modals';
@@ -46,6 +47,9 @@ type AdsListProps = {
   programsList?: SimpleProductItem[];
   professionalsContent?: React.ReactNode;
   tabsContainerStyle?: StyleProp<ViewStyle>;
+  tabsVariant?: ToggleVariant;
+  /** Nome do provedor da comunidade para o rótulo do shop (ex.: shop da comunidade). */
+  shopProviderName?: string | null;
   /** Modo controlado (ex.: Marketplace): tab selecionada e callback vêm do pai; o conteúdo é a lista ads. */
   selectedTabId?: string;
   onTabChange?: (tabId: string) => void;
@@ -82,6 +86,8 @@ const AdsList: React.FC<AdsListProps> = ({
   programsList = [],
   professionalsContent,
   tabsContainerStyle,
+  tabsVariant = 'default',
+  shopProviderName,
   selectedTabId: selectedTabIdProp,
   onTabChange,
   emptyActionLabel,
@@ -122,6 +128,35 @@ const AdsList: React.FC<AdsListProps> = ({
 
   const sectionTitle = title ?? t('marketplace.allProducts');
 
+  const activeSolutionTabTitle = useMemo(() => {
+    if (!hasSolutionTabStrip) {
+      return null;
+    }
+    return solutionTabs!.find((tab) => tab.id === selectedTabId)?.label ?? null;
+  }, [hasSolutionTabStrip, solutionTabs, selectedTabId]);
+
+  const showShopRecommendedByLabel =
+    hasSolutionTabStrip && !suppressInlineListChrome && activeSolutionTabTitle != null && !!shopProviderName?.trim();
+
+  const isCommunityShopLayout = Boolean(shopProviderName?.trim());
+
+  const renderShopRecommendedByLabel = () => {
+    if (!showShopRecommendedByLabel || activeSolutionTabTitle == null) {
+      return null;
+    }
+    return (
+      <Text
+        style={isCommunityShopLayout ? styles.shopRecommendedByLabel : styles.sectionName}
+        testID='ads-list-shop-recommended-by-label'
+      >
+        {t('community.shopTabRecommendedBy', {
+          solutionTab: activeSolutionTabTitle,
+          providerName: shopProviderName!.trim(),
+        })}
+      </Text>
+    );
+  };
+
   const showControlledTabbedInitialLoad = showAdsListInTabbedMode && loading && ads.length === 0;
   const showUncontrolledInitialLoad = !isSimpleMode && loading && ads.length === 0;
   const showInitialLoadSkeleton = showControlledTabbedInitialLoad || showUncontrolledInitialLoad;
@@ -159,6 +194,7 @@ const AdsList: React.FC<AdsListProps> = ({
       onAdPress={handleAdPress}
       fallbackTitle={productFallbackTitle}
       outOfStockLabel={outOfStockLabel}
+      listStyle={isCommunityShopLayout ? styles.shopAdsList : undefined}
     />
   );
 
@@ -176,28 +212,28 @@ const AdsList: React.FC<AdsListProps> = ({
 
   const orderFilterRow =
     orderOptions.length > 0 && showOrderFilter ? (
-      <View style={styles.mOrderFilterMenuContainer}>
-        <StickyFilterCarouselRow
-          filterButtonLabel={t('marketplace.orderBy')}
-          filterModalTitle={t('marketplace.orderBy')}
-          filterModalContent={({ close, visible }) => (
-            <FilterPickerModal
-              visible={visible}
-              sections={[{ options: orderOptions }]}
-              selectedId={selectedOrder}
-              confirmLabel={t('filterCategory.filter')}
-              onConfirm={(id) => {
-                onOrderSelect?.(String(id));
-                close();
-              }}
-            />
-          )}
-          carouselOptions={orderOptions}
-          selectedCarouselId={selectedOrder}
-          onCarouselSelect={(id) => onOrderSelect?.(String(id))}
-          carouselDisplay='selectedOnly'
-        />
-      </View>
+      <StickyFilterCarouselRow
+        filterButtonLabel={t('marketplace.orderBy')}
+        filterModalTitle={t('marketplace.orderBy')}
+        filterModalContent={({ close, visible }) => (
+          <FilterPickerModal
+            visible={visible}
+            sections={[{ options: orderOptions }]}
+            selectedId={selectedOrder}
+            confirmLabel={t('filterCategory.filter')}
+            onConfirm={(id) => {
+              onOrderSelect?.(String(id));
+              close();
+            }}
+          />
+        )}
+        carouselOptions={orderOptions}
+        selectedCarouselId={selectedOrder}
+        onCarouselSelect={(id) => onOrderSelect?.(String(id))}
+        carouselDisplay='selectedOnly'
+        containerStyle={isCommunityShopLayout ? styles.shopOrderFilterRow : styles.mOrderFilterMenuContainer}
+        carouselContentContainerStyle={isCommunityShopLayout ? styles.shopOrderCarouselContent : undefined}
+      />
     ) : null;
 
   const renderInitialLoading = () => (
@@ -207,54 +243,36 @@ const AdsList: React.FC<AdsListProps> = ({
     </View>
   );
 
-  if (showInitialLoadSkeleton) {
-    return (
-      <View style={[styles.section, styles.sectionMarketplace, contentContainerStyle]}>
-        {hasSolutionTabStrip && !suppressInlineListChrome && (
-          <ToggleTabs
-            tabs={solutionTabs!.map((tab) => ({ id: tab.id, label: tab.label }))}
-            selectedId={selectedTabId}
-            onSelect={setSelectedTabId}
-            containerStyle={[styles.solutionTabsRow, tabsContainerStyle]}
-            fixedWidth={false}
-          />
-        )}
-        {orderFilterRow}
-        {renderInitialLoading()}
-      </View>
-    );
-  }
+  const wrapShopChrome = (children: ReactNode) =>
+    isCommunityShopLayout ? <View style={styles.shopChrome}>{children}</View> : children;
 
-  return (
-    <View style={[styles.section, styles.sectionMarketplace, contentContainerStyle]}>
-      {hasSolutionTabStrip && !suppressInlineListChrome && (
-        <ToggleTabs
-          tabs={solutionTabs!.map((tab) => ({ id: tab.id, label: tab.label }))}
-          selectedId={selectedTabId}
-          onSelect={setSelectedTabId}
-          containerStyle={[styles.solutionTabsRow, tabsContainerStyle]}
-          fixedWidth={false}
-        />
-      )}
-      {orderFilterRow}
-      {isProfessionalsTab ? (
-        professionalsContent
-      ) : hasSolutionTabStrip && isEmptyTab ? (
-        renderEmptyState()
-      ) : isEmptyControlledTabbed ? (
-        showProfessionalsAfterAllTab ? (
-          professionalsContent
-        ) : (
-          renderEmptyState()
-        )
-      ) : !isEmpty || showAdsListInTabbedMode ? (
+  const renderShopMainContent = () => {
+    if (isProfessionalsTab) {
+      return professionalsContent;
+    }
+    if (hasSolutionTabStrip && isEmptyTab) {
+      return renderEmptyState();
+    }
+    if (isEmptyControlledTabbed) {
+      return showProfessionalsAfterAllTab ? professionalsContent : renderEmptyState();
+    }
+    if (!isEmpty || showAdsListInTabbedMode) {
+      return (
         <>
           {!isSimpleMode && !hasSolutionTabStrip && !marketplaceListWithoutInlineChrome && (
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>{sectionTitle}</Text>
             </View>
           )}
-          <View style={styles.mAdsList}>
+          <View
+            style={
+              showAdsListInTabbedMode || (!isSimpleMode && !hasSolutionTabStrip && !marketplaceListWithoutInlineChrome)
+                ? undefined
+                : isCommunityShopLayout
+                ? styles.shopAdsList
+                : styles.mAdsList
+            }
+          >
             {showAdsListInTabbedMode || (!isSimpleMode && !hasSolutionTabStrip && !marketplaceListWithoutInlineChrome)
               ? renderAdsProductList()
               : (hasSolutionTabStrip ? listToShow : simpleProducts ?? []).map(renderSimpleProductCard)}
@@ -271,7 +289,54 @@ const AdsList: React.FC<AdsListProps> = ({
           </View>
           {showProfessionalsAfterAllTab ? professionalsContent : null}
         </>
-      ) : null}
+      );
+    }
+    return null;
+  };
+
+  if (showInitialLoadSkeleton) {
+    return (
+      <View style={[styles.section, styles.sectionMarketplace, contentContainerStyle]}>
+        {hasSolutionTabStrip && !suppressInlineListChrome && (
+          <ToggleTabs
+            tabs={solutionTabs!.map((tab) => ({ id: tab.id, label: tab.label }))}
+            selectedId={selectedTabId}
+            onSelect={setSelectedTabId}
+            containerStyle={[styles.solutionTabsRow, tabsContainerStyle]}
+            fixedWidth={false}
+            variant={tabsVariant}
+          />
+        )}
+        {wrapShopChrome(
+          <>
+            {renderShopRecommendedByLabel()}
+            {orderFilterRow}
+            {renderInitialLoading()}
+          </>,
+        )}
+      </View>
+    );
+  }
+
+  return (
+    <View style={[styles.section, styles.sectionMarketplace, contentContainerStyle]}>
+      {hasSolutionTabStrip && !suppressInlineListChrome && (
+        <ToggleTabs
+          tabs={solutionTabs!.map((tab) => ({ id: tab.id, label: tab.label }))}
+          selectedId={selectedTabId}
+          onSelect={setSelectedTabId}
+          containerStyle={[styles.solutionTabsRow, tabsContainerStyle]}
+          fixedWidth={false}
+          variant={tabsVariant}
+        />
+      )}
+      {wrapShopChrome(
+        <>
+          {renderShopRecommendedByLabel()}
+          {orderFilterRow}
+          {renderShopMainContent()}
+        </>,
+      )}
     </View>
   );
 };

@@ -77,22 +77,22 @@ const ProductRowCard: React.FC<ProductRowCardProps> = ({
       accessibilityHint='Toque duas vezes para abrir o produto'
       testID={testID}
     >
-      <CachedImage source={imageSource} style={styles.imageColumn} recyclingKey={image} />
+      <View style={styles.imageColumnWrap}>
+        <CachedImage source={imageSource} style={styles.imageColumn} recyclingKey={image} />
+      </View>
 
       <View style={styles.contentColumn}>
         {badges.length > 0 ? (
-          <View style={styles.badgesWrap}>
+          <View style={[styles.badgesRow, showActionColumn && styles.badgesRowOverAction]} pointerEvents='none'>
             {badges.map((label, index) => (
               <View key={`${label}-${index}`} style={styles.badge}>
-                <Text style={styles.badgeText} numberOfLines={1} ellipsizeMode='tail'>
-                  {label}
-                </Text>
+                <Text style={styles.badgeText}>{label}</Text>
               </View>
             ))}
           </View>
         ) : null}
 
-        <View style={styles.titleRow}>
+        <View style={[styles.titleRow, badges.length > 0 && styles.titleRowWithBadges]}>
           <View style={styles.titleBlock}>
             <Text style={styles.title} numberOfLines={titleMaxLines} ellipsizeMode='tail'>
               {title}

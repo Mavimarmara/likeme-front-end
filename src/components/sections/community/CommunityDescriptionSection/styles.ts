@@ -33,4 +33,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: SPACING.MD,
     paddingBottom: SPACING.MD,
   },
+  specialistBlockCompact: {
+    paddingBottom: SPACING.XL,
+  },
 });

@@ -16,7 +16,7 @@ import { Product, ProductsCarousel } from '@/components/sections/product';
 import { EmptyState } from '@/components/ui';
 import type { Post } from '@/types';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
-import { GradientBackground, HeroImage, ScreenWithHeader } from '@/components/ui/layout';
+import { HeroImage, ScreenWithHeader } from '@/components/ui/layout';
 import type { FeedEvent } from '@/types/event';
 import { SPACING, COMMUNITY_FEED_POSTS_PAGE_SIZE, ADVERTISER_STATUS } from '@/constants';
 import { styles } from './styles';
@@ -645,9 +645,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
         }}
         contentContainerStyle={styles.container}
       >
-        <View pointerEvents='none' style={styles.gradientBackground}>
-          <GradientBackground />
-        </View>
         {showFeedInitialLoading ? (
           <View style={styles.feedLoadingContainer}>
             <ActivityIndicator size='large' color='#2196F3' />
@@ -704,6 +701,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
                     navigation={shopNavigation}
                     professionals={shopProfessionals}
                     onProfessionalPress={handleProfessionalPress}
+                    providerName={communityProviderName}
                     embedInParentScroll
                   />
                 </>

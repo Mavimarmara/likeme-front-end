@@ -28,6 +28,7 @@ type Props = {
   navigation: StackNavigationProp<RootStackParamList, keyof RootStackParamList>;
   professionals?: Advertiser[];
   onProfessionalPress?: (advertiser: Advertiser) => void;
+  providerName?: string | null;
   /** Quando true, não usa ScrollView próprio; o conteúdo é renderizado para ficar dentro do scroll do pai. */
   embedInParentScroll?: boolean;
 };
@@ -42,6 +43,7 @@ const ShoppingList: React.FC<Props> = ({
   navigation,
   professionals = [],
   onProfessionalPress,
+  providerName,
   embedInParentScroll = false,
 }) => {
   const { t } = useTranslation();
@@ -121,11 +123,13 @@ const ShoppingList: React.FC<Props> = ({
       selectedOrder={activeOrder}
       onOrderSelect={(id) => setActiveOrder(id as MarketplaceSortOrderId)}
       tabsContainerStyle={styles.solutionsTabsRow}
+      tabsVariant='primary'
+      shopProviderName={providerName}
     />
   );
 
   if (embedInParentScroll) {
-    return <View style={[styles.container, styles.content]}>{listContent}</View>;
+    return <View style={[styles.container, styles.contentEmbedded]}>{listContent}</View>;
   }
 
   return (

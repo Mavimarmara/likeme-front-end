@@ -9,8 +9,11 @@ export const styles = StyleSheet.create({
     paddingTop: SPACING.MD,
     paddingBottom: SPACING.XL,
   },
+  contentEmbedded: {
+    paddingBottom: SPACING.XL,
+  },
   solutionsTabsRow: {
-    marginTop: SPACING.MD,
+    marginTop: 0,
     width: '100%',
     alignSelf: 'stretch',
   },

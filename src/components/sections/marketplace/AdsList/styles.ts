@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { SPACING } from '@/constants';
+import { COLORS, SPACING, TYPOGRAPHY } from '@/constants';
 
 export const styles = StyleSheet.create({
   section: {
@@ -19,6 +19,26 @@ export const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#000000',
     marginBottom: SPACING.MD,
+  },
+  sectionName: {
+    ...TYPOGRAPHY.sectionName,
+    color: COLORS.TEXT,
+    marginBottom: SPACING.MD,
+  },
+  shopChrome: {
+    gap: SPACING.MD,
+  },
+  shopRecommendedByLabel: {
+    ...TYPOGRAPHY.sectionName,
+    color: COLORS.TEXT,
+    lineHeight: 18,
+  },
+  shopOrderFilterRow: {
+    marginBottom: 0,
+    gap: SPACING.MD,
+  },
+  shopOrderCarouselContent: {
+    gap: SPACING.XS,
   },
   loadingContainer: {
     paddingHorizontal: SPACING.MD,
@@ -62,8 +82,12 @@ export const styles = StyleSheet.create({
     gap: SPACING.MD,
     paddingBottom: SPACING.MD,
   },
+  shopAdsList: {
+    gap: SPACING.LG,
+    paddingBottom: 0,
+  },
   solutionTabsRow: {
-    marginTop: SPACING.MD,
+    marginTop: 0,
     width: '100%',
     alignSelf: 'stretch',
   },

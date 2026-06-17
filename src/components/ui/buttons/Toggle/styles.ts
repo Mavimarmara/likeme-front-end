@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { SPACING } from '@/constants';
+import { COLORS, SPACING } from '@/constants';
 
 export const styles = StyleSheet.create({
   container: {
@@ -22,6 +22,10 @@ export const styles = StyleSheet.create({
     marginVertical: SPACING.MD,
     height: 48,
     justifyContent: 'space-between',
+  },
+  containerPrimaryCompact: {
+    marginTop: 0,
+    marginBottom: SPACING.XL,
   },
   option: {
     flex: 1,
@@ -60,6 +64,17 @@ export const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 4,
   },
+  optionSelectedPrimary: {
+    backgroundColor: COLORS.TEXT,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 4,
+  },
   optionText: {
     fontSize: 14,
     fontWeight: '500',
@@ -68,6 +83,10 @@ export const styles = StyleSheet.create({
   },
   optionTextSelected: {
     color: '#001137',
+    fontWeight: '500',
+  },
+  optionTextSelectedPrimary: {
+    color: COLORS.WHITE,
     fontWeight: '500',
   },
 });

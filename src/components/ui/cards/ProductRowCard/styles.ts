@@ -3,12 +3,16 @@ import { COLORS, SPACING } from '@/constants';
 
 export const PRODUCT_ROW_CARD_HEIGHT = 122;
 
+/** Largura reservada à coluna de ações + gap — badges da coluna de conteúdo atravessam esse espaço. */
+const PRODUCT_ROW_ACTION_OVERFLOW = SPACING.MD + 44 + 16;
+
 export const styles = StyleSheet.create({
   card: {
+    position: 'relative',
     flexDirection: 'row',
     alignItems: 'stretch',
     height: PRODUCT_ROW_CARD_HEIGHT,
-    overflow: 'hidden',
+    overflow: 'visible',
     backgroundColor: COLORS.SECONDARY.PURE,
     borderRadius: 22,
     gap: 12,
@@ -18,18 +22,24 @@ export const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     elevation: 2,
   },
-  imageColumn: {
+  imageColumnWrap: {
     width: 108,
     height: PRODUCT_ROW_CARD_HEIGHT,
     borderRadius: 22,
+    overflow: 'hidden',
     backgroundColor: COLORS.NEUTRAL.LOW.MEDIUM,
   },
+  imageColumn: {
+    width: '100%',
+    height: '100%',
+  },
   contentColumn: {
+    position: 'relative',
     flex: 1,
     gap: 8,
     justifyContent: 'space-between',
     minWidth: 0,
-    overflow: 'hidden',
+    overflow: 'visible',
     paddingVertical: SPACING.MD_PLUS,
   },
   actionColumn: {
@@ -44,19 +54,26 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-end',
   },
-  badgesWrap: {
+  badgesRow: {
+    position: 'absolute',
+    top: SPACING.MD_PLUS,
+    left: 0,
+    right: 0,
     flexDirection: 'row',
+    flexWrap: 'nowrap',
+    alignItems: 'flex-start',
     gap: 8,
-    flexShrink: 1,
-    minWidth: 0,
-    paddingTop: SPACING.XS,
+    zIndex: 2,
+  },
+  badgesRowOverAction: {
+    right: -PRODUCT_ROW_ACTION_OVERFLOW,
   },
   badge: {
     backgroundColor: 'rgba(0, 17, 55, 0.64)',
     borderRadius: 12,
     paddingHorizontal: 14,
     minHeight: 24,
-    maxWidth: '100%',
+    flexShrink: 0,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -77,6 +94,9 @@ export const styles = StyleSheet.create({
     minHeight: 0,
     overflow: 'hidden',
     gap: 8,
+  },
+  titleRowWithBadges: {
+    paddingTop: 28,
   },
   titleBlock: {
     flex: 1,

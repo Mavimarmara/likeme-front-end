@@ -1,5 +1,5 @@
 import { useMemo, type ReactNode } from 'react';
-import { View, type ImageSourcePropType, type ImageStyle } from 'react-native';
+import { View, type ImageSourcePropType, type ImageStyle, type StyleProp, type ViewStyle } from 'react-native';
 import { HOME_MVP_ASSETS } from '@/assets/homeMvp';
 import { FilterButton } from '@/components/ui/buttons';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
@@ -23,6 +23,8 @@ type Props<T = string> = {
   onCarouselSelect: (optionId: T) => void;
   showCarousel?: boolean;
   carouselDisplay?: 'all' | 'selectedOnly';
+  containerStyle?: StyleProp<ViewStyle>;
+  carouselContentContainerStyle?: StyleProp<ViewStyle>;
 };
 
 const HOME_FILTER_ICON_DEFAULT_COLOR = '#001137';
@@ -40,6 +42,8 @@ const StickyFilterCarouselRow = <T extends string | number = string>({
   onCarouselSelect,
   showCarousel = true,
   carouselDisplay = 'all',
+  containerStyle,
+  carouselContentContainerStyle,
 }: Props<T>) => {
   const hasFilterButton = !!filterButtonLabel;
 
@@ -56,7 +60,7 @@ const StickyFilterCarouselRow = <T extends string | number = string>({
   } as ImageStyle;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, containerStyle]}>
       {hasFilterButton && (
         <FilterButton
           label={filterButtonLabel}
@@ -76,6 +80,7 @@ const StickyFilterCarouselRow = <T extends string | number = string>({
           options={carouselOptionsForDisplay}
           selectedId={selectedCarouselId}
           onSelect={onCarouselSelect}
+          contentContainerStyle={carouselContentContainerStyle}
         />
       )}
     </View>

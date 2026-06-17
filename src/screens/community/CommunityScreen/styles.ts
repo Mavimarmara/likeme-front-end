@@ -11,11 +11,6 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
     position: 'relative',
-    backgroundColor: 'transparent',
-  },
-  gradientBackground: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 0,
   },
   /** Header em posição absoluta no topo para o HeroImage começar logo abaixo. */
   headerWrapper: {

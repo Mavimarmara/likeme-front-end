@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleProp, ViewStyle } from 'react-native';
-import { Toggle } from '@/components/ui/buttons';
+import Toggle, { type ToggleVariant } from '@/components/ui/buttons/Toggle';
 import { styles } from './styles';
 
 export type ToggleTabItem = {
@@ -14,9 +14,17 @@ type ToggleTabsProps = {
   onSelect: (id: string) => void;
   containerStyle?: StyleProp<ViewStyle>;
   fixedWidth?: boolean;
+  variant?: ToggleVariant;
 };
 
-const ToggleTabs: React.FC<ToggleTabsProps> = ({ tabs, selectedId, onSelect, containerStyle, fixedWidth = true }) => {
+const ToggleTabs: React.FC<ToggleTabsProps> = ({
+  tabs,
+  selectedId,
+  onSelect,
+  containerStyle,
+  fixedWidth = true,
+  variant = 'default',
+}) => {
   const options = tabs.map((tab) => tab.label);
   const selectedLabel = tabs.find((tab) => tab.id === selectedId)?.label ?? tabs[0]?.label ?? '';
 
@@ -27,7 +35,13 @@ const ToggleTabs: React.FC<ToggleTabsProps> = ({ tabs, selectedId, onSelect, con
 
   return (
     <View style={[styles.container, containerStyle]}>
-      <Toggle options={options} selected={selectedLabel} onSelect={handleSelect} fixedWidth={fixedWidth} />
+      <Toggle
+        options={options}
+        selected={selectedLabel}
+        onSelect={handleSelect}
+        fixedWidth={fixedWidth}
+        variant={variant}
+      />
     </View>
   );
 };

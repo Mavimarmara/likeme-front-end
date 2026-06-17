@@ -37,7 +37,7 @@ const CommunityDescriptionSection: React.FC<CommunityDescriptionSectionProps> = 
 
   const specialistBlock =
     specialist != null ? (
-      <View style={styles.specialistBlock}>
+      <View style={[styles.specialistBlock, variant === 'solutions' && styles.specialistBlockCompact]}>
         <PartnerSection
           name={specialist.name}
           avatar={specialist.avatarUri ?? undefined}

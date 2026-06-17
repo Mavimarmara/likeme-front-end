@@ -1,4 +1,4 @@
-import { ViewStyle } from 'react-native';
+import { type StyleProp, type ViewStyle } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { PrimaryButton } from '@/components/ui/buttons';
 import { styles } from './styles';
@@ -13,6 +13,7 @@ type Props<T = string> = {
   selectedId?: T | null;
   onSelect: (optionId: T) => void;
   style?: ViewStyle;
+  contentContainerStyle?: StyleProp<ViewStyle>;
 };
 
 const ButtonCarousel = <T extends string | number = string>({
@@ -20,6 +21,7 @@ const ButtonCarousel = <T extends string | number = string>({
   selectedId,
   onSelect,
   style,
+  contentContainerStyle,
 }: Props<T>) => {
   if (!options || options.length === 0) {
     return null;
@@ -29,7 +31,7 @@ const ButtonCarousel = <T extends string | number = string>({
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.scrollContent}
+      contentContainerStyle={[styles.scrollContent, contentContainerStyle]}
       style={[styles.container, style]}
     >
       {options.map((option) => {

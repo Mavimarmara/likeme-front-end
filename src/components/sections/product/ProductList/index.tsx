@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import { View, type StyleProp, type ViewStyle } from 'react-native';
 import { ProductRowCard } from '@/components/ui/cards';
 import { buildMarketplaceCategoryBadgeLabels } from '@/utils/marketplace/buildMarketplaceCategoryBadgeLabels';
 import type { Ad } from '@/types/ad';
@@ -42,15 +42,23 @@ export type ProductListProps = {
   onAdPress: (ad: Ad) => void;
   fallbackTitle: string;
   outOfStockLabel: string;
+  listStyle?: StyleProp<ViewStyle>;
 };
 
-export function ProductList({ ads, categories, onAdPress, fallbackTitle, outOfStockLabel }: ProductListProps) {
+export function ProductList({
+  ads,
+  categories,
+  onAdPress,
+  fallbackTitle,
+  outOfStockLabel,
+  listStyle,
+}: ProductListProps) {
   if (ads.length === 0) {
     return null;
   }
 
   return (
-    <View style={styles.list}>
+    <View style={[styles.list, listStyle]}>
       {ads.map((ad) => (
         <ProductListItem
           key={ad.id}
