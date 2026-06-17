@@ -191,8 +191,10 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
           pagination.totalPages > 0 &&
           pagination.page < pagination.totalPages;
         let hasMorePages = false;
-        if (receivedCount === 0 && page === 1) {
+        if (receivedCount === 0) {
           hasMorePages = false;
+        } else if (scopedCommunityId) {
+          hasMorePages = hasNextToken || paginationHasMore;
         } else {
           hasMorePages = hasNextToken || paginationHasMore || receivedCount >= pageSize;
         }

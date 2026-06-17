@@ -253,7 +253,7 @@ describe('useUserFeed (scroll infinito / paginação)', () => {
     expect(result.current.posts.map((p) => p.id)).toEqual(['c1', 'c2']);
   });
 
-  it('com communityId mantém hasMore heurístico quando pagination indica fim mas page veio cheia', async () => {
+  it('com communityId respeita pagination do backend quando page veio cheia', async () => {
     const ten = Array.from({ length: 10 }, (_, i) => ({ postId: `c-full-${i}` }));
     getCommunityPostsMock.mockResolvedValue(
       feedPayload({
@@ -272,7 +272,7 @@ describe('useUserFeed (scroll infinito / paginação)', () => {
     );
 
     await waitFor(() => expect(result.current.loading).toBe(false));
-    expect(result.current.hasMore).toBe(true);
+    expect(result.current.hasMore).toBe(false);
     expect(result.current.posts).toHaveLength(10);
   });
 });
