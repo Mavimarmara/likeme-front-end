@@ -14,7 +14,8 @@ import {
 } from '@/components/sections/marketplace';
 import { Checkbox } from '@/components/ui/inputs';
 import { MarkdownText } from '@/components/ui/text/MarkdownText';
-import { PartnerSection } from '@/components/sections/advertiser';
+import { PartnerSection } from '@/components/sections/advertiser/PartnerSection';
+import { AdvertiserContactButtonsRow } from '@/components/sections/advertiser/AdvertiserContactButtonsRow';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
 import { useMenuItems, useProductDetails, useProductPartner, useSuggestedProducts } from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
@@ -82,7 +83,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     navigation,
   });
 
-  const { partnerData, hasSpecialistPartner, partnerDisplayName } = useProductPartner({
+  const { partnerData, hasSpecialistPartner, partnerDisplayName, partnerContacts } = useProductPartner({
     product,
     ad,
     advertiserId,
@@ -142,6 +143,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
   }, [displayData?.description, product?.targetAudience, product?.technicalSpecifications]);
 
   const isProgramProduct = isProgramCatalogType(product?.type);
+  const isServiceProduct = product?.type === PRODUCT_CATALOG_TYPE.SERVICE;
 
   const productTabOptions: ButtonCarouselOption<'about' | 'agreements'>[] = useMemo(() => {
     const isPhysicalProduct = product?.type === PRODUCT_CATALOG_TYPE.PHYSICAL;
@@ -384,6 +386,13 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
               </View>
             )}
             <View style={styles.content}>
+              {isServiceProduct ? (
+                <AdvertiserContactButtonsRow
+                  contacts={partnerContacts}
+                  providerId={advertiserId}
+                  testID='product-details-provider-contacts'
+                />
+              ) : null}
               {usesPhysicalProductDetailLayout ? (
                 <>
                   <View style={styles.contentCard}>

@@ -19,6 +19,7 @@ const emptyProductPartner = {
   },
   hasSpecialistPartner: false,
   partnerDisplayName: '',
+  partnerContacts: undefined as undefined | { type: string; value: string }[],
 };
 
 jest.mock('react-native-safe-area-context', () => {
@@ -82,6 +83,20 @@ jest.mock('@/components/ui', () => {
         ))}
       </View>
     ),
+  };
+});
+
+jest.mock('@/components/sections/advertiser/AdvertiserContactButtonsRow', () => {
+  const { View } = require('react-native');
+  return {
+    AdvertiserContactButtonsRow: ({ testID, contacts }: { testID?: string; contacts?: { type: string }[] }) =>
+      contacts?.length ? (
+        <View testID={testID}>
+          {contacts.map((contact) => (
+            <View key={contact.type} testID={`${testID}-${contact.type}`} />
+          ))}
+        </View>
+      ) : null,
   };
 });
 
@@ -471,6 +486,36 @@ describe('ProductDetailsScreen', () => {
 
     await waitFor(() => {
       expect(getByTestId('hero-image-uri').props.children).toBe('https://example.com/catalog-updated.jpg');
+    });
+  });
+
+  it('exibe ícones de contato do provider na PDP de serviço', async () => {
+    mockUseProductDetails.mockReturnValue({
+      product: { ...mockProduct, type: PRODUCT_CATALOG_TYPE.SERVICE },
+      ad: null,
+      advertiserId: 'adv-1',
+      relatedProducts: [],
+      loading: false,
+      isFavorite: false,
+      setIsFavorite: jest.fn(),
+      handleAddToCart: jest.fn(),
+      loadAd: jest.fn(),
+    });
+    mockUseProductPartner.mockReturnValue({
+      ...emptyProductPartner,
+      partnerData: { ...emptyProductPartner.partnerData, id: 'adv-1', name: 'Provider Test' },
+      hasSpecialistPartner: true,
+      partnerDisplayName: 'Provider Test',
+      partnerContacts: [{ type: 'email', value: 'provider@example.com' }],
+    });
+
+    const { getByTestId } = render(
+      <ProductDetailsScreen navigation={mockNavigation as any} route={{ params: { productId: 'product-1' } } as any} />,
+    );
+
+    await waitFor(() => {
+      expect(getByTestId('product-details-provider-contacts')).toBeTruthy();
+      expect(getByTestId('product-details-provider-contacts-email')).toBeTruthy();
     });
   });
 });

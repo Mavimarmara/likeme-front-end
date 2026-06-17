@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Linking } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { CachedImage } from '@/components/ui/media/CachedImage';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -14,7 +14,6 @@ import { AdsList } from '@/components/sections/marketplace';
 import { Product } from '@/components/sections/product';
 import { useAdvertiser, useAdvertisers, useProviderAds, useCommunities, useFeatureFlag, useMenuItems } from '@/hooks';
 import { useTranslation } from '@/hooks/i18n';
-import i18n from '@/i18n';
 import type { RootStackParamList } from '@/types/navigation';
 import { useAnalyticsScreen } from '@/analytics';
 import { styles } from './styles';
@@ -26,7 +25,7 @@ import { DEFAULT_MARKETPLACE_SORT_ORDER, type MarketplaceSortOrderId } from '@/c
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { logger } from '@/utils/logger';
-import { buildAdvertiserContactButtons, type AdvertiserContactButton } from '@/utils/advertiser/contactButtons';
+import { AdvertiserContactButtonsRow } from '@/components/sections/advertiser/AdvertiserContactButtonsRow';
 import { formatAdvertiserDocumentsLine } from '@/utils/advertiser/documents';
 import { resolveCommunityHeroImageUri } from '@/utils/community/mappers';
 import { navigateToCommunity } from '@/utils/navigation/communityNavigation';
@@ -36,7 +35,6 @@ import { getProductModeTranslationKey } from '@/utils';
 import { filterAdsForProviderProfile } from '@/utils/marketplace/filterAdsForProviderProfile';
 import { getMarketplaceSortOptions } from '@/utils/marketplace/sortOptions';
 import { sortShopProductsByMarketplaceOrder } from '@/utils/marketplace/sorting';
-import { resolveWaMePrefillFromI18n } from '@/utils/marketplace/resolveWaMePrefillFromI18n';
 
 const JOIN_CARD_COMMUNITY_IMAGE_FALLBACK = 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400';
 const CATALOG_PRODUCT_IMAGE_FALLBACK = 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400';
@@ -61,7 +59,7 @@ type ProviderProfileScreenProps = {
 
 const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigation, route }) => {
   useAnalyticsScreen({ screenName: 'ProviderProfile', screenClass: 'ProviderProfileScreen' });
-  const { t, currentLanguage } = useTranslation();
+  const { t } = useTranslation();
   const { isEnabled: isChatEnabled } = useFeatureFlag(FEATURE_FLAGS.CHAT_ENABLED);
   const { providerId, provider: providerFromParams } = route.params;
   const menuItems = useMenuItems(navigation);
@@ -74,17 +72,6 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
   const [loadingProfiles, setLoadingProfiles] = useState(false);
   const [communityShopSortOrder, setCommunityShopSortOrder] =
     useState<MarketplaceSortOrderId>(DEFAULT_MARKETPLACE_SORT_ORDER);
-  const [i18nBundleEpoch, setI18nBundleEpoch] = useState(0);
-
-  useEffect(() => {
-    const bump = () => setI18nBundleEpoch((n) => n + 1);
-    i18n.on('added', bump);
-    i18n.on('languageChanged', bump);
-    return () => {
-      i18n.off('added', bump);
-      i18n.off('languageChanged', bump);
-    };
-  }, []);
 
   const toggleSection = useCallback((profileId: string) => {
     setExpandedSectionIds((prev) => {
@@ -170,14 +157,6 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
     }
     return null;
   }, [advertiser, providerFromParams]);
-
-  const contactButtons = useMemo(
-    () =>
-      buildAdvertiserContactButtons(advertiser?.contacts, {
-        waMePrefillText: resolveWaMePrefillFromI18n(providerId),
-      }),
-    [advertiser?.contacts, providerId, i18nBundleEpoch, currentLanguage],
-  );
 
   const positioningProfile = useMemo(
     () => profiles.find((profile) => profile.key === 'profile.positioning'),
@@ -357,16 +336,6 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
     });
   };
 
-  const handleContactPress = (contactButton: AdvertiserContactButton) => {
-    Linking.openURL(contactButton.url).catch((error: Error) => {
-      logger.error('[ProviderProfileScreen] Erro ao abrir contato do provider', {
-        providerId,
-        contactType: contactButton.contact.type,
-        cause: error,
-      });
-    });
-  };
-
   return (
     <ScreenWithHeader
       navigation={navigation}
@@ -406,24 +375,12 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
                 onSelect={(id) => setActiveTab(id as 'about' | 'communities')}
               />
             </View>
-            {activeTab === 'about' && contactButtons.length > 0 ? (
-              <View style={styles.contactButtonsRow}>
-                {contactButtons.map((contactButton, index) => {
-                  const ContactIcon = contactButton.IconComponent;
-                  return (
-                    <IconButton
-                      key={`${contactButton.contact.type}-${contactButton.contact.value}-${index}`}
-                      onPress={() => handleContactPress(contactButton)}
-                      {...(ContactIcon
-                        ? { iconElement: <ContactIcon width={contactButton.size} height={contactButton.size} /> }
-                        : { icon: contactButton.materialIcon ?? 'link', iconSize: contactButton.size })}
-                      variant='dark'
-                      backgroundSize='medium'
-                      containerStyle={styles.contactIconButtonContainer}
-                    />
-                  );
-                })}
-              </View>
+            {activeTab === 'about' ? (
+              <AdvertiserContactButtonsRow
+                contacts={advertiser?.contacts}
+                providerId={providerId}
+                testID='provider-profile-contacts'
+              />
             ) : null}
 
             {activeTab === 'about' && (

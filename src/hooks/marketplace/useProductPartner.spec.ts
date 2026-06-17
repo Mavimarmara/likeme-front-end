@@ -58,6 +58,7 @@ describe('useProductPartner', () => {
             status: 'active',
             createdAt: '',
             updatedAt: '',
+            contacts: [{ type: 'email', value: 'contato@example.com' }],
           },
         },
         advertiserId: 'adv-2',
@@ -67,5 +68,46 @@ describe('useProductPartner', () => {
     expect(result.current.hasSpecialistPartner).toBe(true);
     expect(result.current.partnerData.name).toBe('Do Anuncio');
     expect(advertiserService.getAdvertiserById).not.toHaveBeenCalled();
+  });
+
+  it('busca advertiser quando o ad traz nome mas nao traz contatos', async () => {
+    (advertiserService.getAdvertiserById as jest.Mock).mockResolvedValue({
+      success: true,
+      data: {
+        id: 'adv-3',
+        name: 'Provider Completo',
+        status: 'active',
+        createdAt: '2023-01-01',
+        updatedAt: '2023-01-01',
+        contacts: [{ type: 'whatsapp', value: '5511999999999' }],
+      },
+    });
+
+    const { result } = renderHook(() =>
+      useProductPartner({
+        product: null,
+        ad: {
+          id: 'ad-1',
+          status: 'active',
+          createdAt: '',
+          updatedAt: '',
+          advertiser: {
+            id: 'adv-3',
+            name: 'Do Anuncio',
+            status: 'active',
+            createdAt: '',
+            updatedAt: '',
+          },
+        },
+        advertiserId: 'adv-3',
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.partnerContacts).toEqual([{ type: 'whatsapp', value: '5511999999999' }]);
+    });
+
+    expect(advertiserService.getAdvertiserById).toHaveBeenCalledWith('adv-3');
+    expect(result.current.partnerData.name).toBe('Do Anuncio');
   });
 });

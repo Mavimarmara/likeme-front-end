@@ -1,8 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import advertiserService from '@/services/advertiser/advertiserService';
 import type { Ad, Advertiser } from '@/types/ad';
+import type { Contact } from '@/types/contact';
 import type { Product as ApiProduct } from '@/types/product';
 import { logger } from '@/utils/logger';
+
+function hasUsableContacts(contacts: Contact[] | undefined): boolean {
+  return Array.isArray(contacts) && contacts.some((contact) => String(contact.value ?? '').trim().length > 0);
+}
 
 export type ProductPartnerRouteProduct = {
   provider?: {
@@ -37,7 +42,7 @@ export function useProductPartner({ product, ad, advertiserId, routeProduct, pro
   const nestedAdvertiser = ad?.advertiser;
 
   useEffect(() => {
-    if (nestedAdvertiser?.name?.trim()) {
+    if (hasUsableContacts(nestedAdvertiser?.contacts)) {
       setFetchedAdvertiser(null);
       return;
     }
@@ -70,7 +75,7 @@ export function useProductPartner({ product, ad, advertiserId, routeProduct, pro
     return () => {
       cancelled = true;
     };
-  }, [nestedAdvertiser?.id, nestedAdvertiser?.name, advertiserId]);
+  }, [nestedAdvertiser?.id, nestedAdvertiser?.contacts, advertiserId]);
 
   const partnerData = useMemo((): ProductPartnerData => {
     const source = nestedAdvertiser ?? fetchedAdvertiser;
@@ -111,5 +116,8 @@ export function useProductPartner({ product, ad, advertiserId, routeProduct, pro
     partnerData,
     hasSpecialistPartner,
     partnerDisplayName,
+    partnerContacts: hasUsableContacts(nestedAdvertiser?.contacts)
+      ? nestedAdvertiser?.contacts
+      : fetchedAdvertiser?.contacts,
   };
 }
