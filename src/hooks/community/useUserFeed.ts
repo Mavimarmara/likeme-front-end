@@ -186,19 +186,20 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
 
         const receivedCount = mappedPosts.length;
         const hasNextToken = nextFromFeed != null;
-        const paginationHasMore =
+        let hasMorePages = false;
+        if (receivedCount === 0 && page === 1) {
+          hasMorePages = false;
+        } else if (hasNextToken) {
+          hasMorePages = true;
+        } else if (
           pagination &&
           typeof pagination.page === 'number' &&
           typeof pagination.totalPages === 'number' &&
-          pagination.totalPages > 0 &&
-          pagination.page < pagination.totalPages;
-        let hasMorePages = false;
-        if (receivedCount === 0) {
-          hasMorePages = false;
-        } else if (scopedCommunityId) {
-          hasMorePages = hasNextToken || paginationHasMore;
+          pagination.totalPages > 0
+        ) {
+          hasMorePages = pagination.page < pagination.totalPages;
         } else {
-          hasMorePages = hasNextToken || paginationHasMore || receivedCount >= pageSize;
+          hasMorePages = receivedCount >= pageSize;
         }
         setHasMore(hasMorePages);
 
