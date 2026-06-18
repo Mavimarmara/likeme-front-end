@@ -100,6 +100,14 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
   const isLoadingMoreRef = useRef(false);
   const hasErrorRef = useRef(false);
   const backgroundRefreshStartedRef = useRef(false);
+  const hasMoreRef = useRef(hasMore);
+  const loadingRef = useRef(loading);
+  const loadingMoreRef = useRef(loadingMore);
+  const enabledRef = useRef(enabled);
+  hasMoreRef.current = hasMore;
+  loadingRef.current = loading;
+  loadingMoreRef.current = loadingMore;
+  enabledRef.current = enabled;
 
   const loadPosts = useCallback(
     async (page: number, search?: string, append = false) => {
@@ -122,6 +130,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
       ) {
         logger.warn('[useUserFeed] loadMore sem cursor: paging.next ausente na página anterior.');
         setHasMore(false);
+        hasMoreRef.current = false;
         return;
       }
 
@@ -130,10 +139,12 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
       try {
         if (page > 1) {
           isLoadingMoreRef.current = true;
+          loadingMoreRef.current = true;
           setLoadingMore(true);
         } else {
           isLoadingFirstPageRef.current = true;
           if (postsRef.current.length === 0) {
+            loadingRef.current = true;
             setLoading(true);
           }
         }
@@ -202,11 +213,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
         if (receivedCount === 0 && page === 1) {
           hasMorePages = false;
         } else if (scopedCommunityId) {
-          if (page > 1 && receivedCount === 0) {
-            hasMorePages = false;
-          } else {
-            hasMorePages = paginationSaysMore || hasNextToken;
-          }
+          hasMorePages = Boolean(paginationSaysMore);
         } else if (hasNextToken) {
           hasMorePages = true;
         } else if (paginationSaysMore) {
@@ -215,6 +222,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
           hasMorePages = receivedCount >= pageSize;
         }
         setHasMore(hasMorePages);
+        hasMoreRef.current = hasMorePages;
 
         feedCache.write(cacheKey, {
           posts: nextPosts,
@@ -228,6 +236,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
         const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar posts';
         setError(errorMessage);
         setHasMore(false);
+        hasMoreRef.current = false;
 
         if (page === 1) {
           setPosts([]);
@@ -235,9 +244,11 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
       } finally {
         if (page > 1) {
           isLoadingMoreRef.current = false;
+          loadingMoreRef.current = false;
           setLoadingMore(false);
         } else {
           isLoadingFirstPageRef.current = false;
+          loadingRef.current = false;
           setLoading(false);
         }
       }
@@ -246,10 +257,11 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
   );
 
   const loadMore = useCallback(() => {
-    if (!loadingMore && hasMore && !loading && enabled) {
-      loadPosts(currentPageRef.current + 1, searchQuery, true);
+    if (loadingMoreRef.current || !hasMoreRef.current || loadingRef.current || !enabledRef.current) {
+      return;
     }
-  }, [hasMore, loadingMore, loading, searchQuery, enabled, loadPosts]);
+    void loadPosts(currentPageRef.current + 1, searchQuery, true);
+  }, [searchQuery, loadPosts]);
 
   const refresh = useCallback(() => {
     feedCache.invalidate(cacheKey);
@@ -259,6 +271,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
     setCurrentPage(1);
     currentPageRef.current = 1;
     setHasMore(true);
+    hasMoreRef.current = true;
     loadPosts(1, searchQuery);
   }, [searchQuery, loadPosts, feedCache, cacheKey]);
 
@@ -270,6 +283,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
       setCurrentPage(1);
       currentPageRef.current = 1;
       setHasMore(true);
+      hasMoreRef.current = true;
       loadPosts(1, query);
     },
     [loadPosts],
@@ -299,6 +313,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
         setCurrentPage(1);
         currentPageRef.current = 1;
         setHasMore(true);
+        hasMoreRef.current = true;
       }
       loadPosts(1, searchQuery);
     }
@@ -309,11 +324,11 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
       return;
     }
     backgroundRefreshStartedRef.current = true;
-    if (scopedCommunityId) {
+    if (currentPageRef.current > 1) {
       return;
     }
     void loadPosts(1, searchQuery);
-  }, [enabled, initialCacheIsFresh, loadPosts, searchQuery, scopedCommunityId]);
+  }, [enabled, initialCacheIsFresh, loadPosts, searchQuery]);
 
   return {
     posts,

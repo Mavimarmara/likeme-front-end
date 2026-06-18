@@ -1,6 +1,8 @@
+import React, { useRef } from 'react';
 import { renderHook, waitFor, act } from '@testing-library/react-native';
 import { useUserFeed } from './useUserFeed';
 import { communityService } from '@/services';
+import { FeedCacheProvider, useFeedCache, type FeedCacheEntry } from '@/contexts/FeedCacheContext';
 
 jest.mock('@/services', () => ({
   communityService: {
@@ -51,6 +53,29 @@ const feedPayload = (options: {
     ...(options.pagination !== undefined ? { pagination: options.pagination } : {}),
   },
 });
+
+const COMMUNITY_ID = 'community-abc';
+const COMMUNITY_FEED_CACHE_KEY = `::||||||||${COMMUNITY_ID}::community-feed-v2`;
+
+function createFeedCacheWrapper(cacheKey: string, entry: FeedCacheEntry) {
+  function Seeder({ children }: { children: React.ReactNode }) {
+    const cache = useFeedCache();
+    const didSeed = useRef(false);
+    if (!didSeed.current) {
+      cache.write(cacheKey, entry);
+      didSeed.current = true;
+    }
+    return <>{children}</>;
+  }
+
+  return function Wrapper({ children }: { children: React.ReactNode }) {
+    return (
+      <FeedCacheProvider>
+        <Seeder>{children}</Seeder>
+      </FeedCacheProvider>
+    );
+  };
+}
 
 describe('useUserFeed (scroll infinito / paginação)', () => {
   beforeEach(() => {
@@ -303,6 +328,33 @@ describe('useUserFeed (scroll infinito / paginação)', () => {
     expect(getCommunityPostsMock).toHaveBeenCalledTimes(1);
   });
 
+  it('com communityId ignora paging.next quando pagination.totalPages não sinaliza próxima página', async () => {
+    getCommunityPostsMock.mockResolvedValue(
+      feedPayload({
+        posts: [{ postId: 'c-only' }],
+        paging: { next: 'provider-cursor-orphan' },
+        pagination: { page: 1, limit: 10, total: 1, totalPages: 1 },
+      }),
+    );
+
+    const { result } = renderHook(() =>
+      useUserFeed({
+        pageSize: 10,
+        searchQuery: '',
+        params: { communityId: COMMUNITY_ID },
+      }),
+    );
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.hasMore).toBe(false);
+
+    await act(async () => {
+      result.current.loadMore();
+    });
+
+    expect(getCommunityPostsMock).toHaveBeenCalledTimes(1);
+  });
+
   it('com communityId page 2 vazia no backend define hasMore false no client', async () => {
     getCommunityPostsMock
       .mockResolvedValueOnce(
@@ -338,6 +390,220 @@ describe('useUserFeed (scroll infinito / paginação)', () => {
     await waitFor(() => expect(result.current.loadingMore).toBe(false));
     expect(result.current.posts.map((p) => p.id)).toEqual(['c1']);
     expect(result.current.hasMore).toBe(false);
+    expect(getCommunityPostsMock).toHaveBeenCalledTimes(2);
+  });
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // TDD: contratos do bug de load more na comunidade (APP community feed)
+  // ──────────────────────────────────────────────────────────────────────────
+
+  it('com communityId page cheia + paging.next + totalPages=2: loadMore append page 2', async () => {
+    const pageOnePosts = Array.from({ length: 10 }, (_, index) => ({ postId: `c-page1-${index}` }));
+    getCommunityPostsMock
+      .mockResolvedValueOnce(
+        feedPayload({
+          posts: pageOnePosts,
+          paging: { next: 'provider-cursor-2' },
+          pagination: { page: 1, limit: 10, total: 10, totalPages: 2 },
+        }),
+      )
+      .mockResolvedValueOnce(
+        feedPayload({
+          posts: [{ postId: 'c-page2-0' }, { postId: 'c-page2-1' }],
+          paging: {},
+          pagination: { page: 2, limit: 10, total: 2, totalPages: 2 },
+        }),
+      );
+
+    const { result } = renderHook(() =>
+      useUserFeed({
+        pageSize: 10,
+        searchQuery: '',
+        params: { communityId: COMMUNITY_ID },
+      }),
+    );
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.hasMore).toBe(true);
+    expect(result.current.posts).toHaveLength(10);
+
+    await act(async () => {
+      result.current.loadMore();
+    });
+
+    await waitFor(() => expect(result.current.loadingMore).toBe(false));
+    expect(getCommunityPostsMock).toHaveBeenCalledTimes(2);
+    expect(result.current.posts.map((p) => p.id)).toEqual([
+      ...pageOnePosts.map((p) => p.postId),
+      'c-page2-0',
+      'c-page2-1',
+    ]);
+    expect(result.current.hasMore).toBe(false);
+  });
+
+  it('loadMore dispara page 2 na mesma act após page 1 resolver (hasMoreRef sincronizado)', async () => {
+    const pageOnePosts = Array.from({ length: 10 }, (_, index) => ({ postId: `sync-${index}` }));
+    let resolvePageOne: ((value: ReturnType<typeof feedPayload>) => void) | undefined;
+    const pageOneGate = new Promise<ReturnType<typeof feedPayload>>((resolve) => {
+      resolvePageOne = resolve;
+    });
+
+    getCommunityPostsMock
+      .mockImplementationOnce(() => pageOneGate)
+      .mockResolvedValueOnce(
+        feedPayload({
+          posts: [{ postId: 'sync-page2' }],
+          paging: {},
+          pagination: { page: 2, limit: 10, total: 1, totalPages: 2 },
+        }),
+      );
+
+    const { result } = renderHook(() =>
+      useUserFeed({
+        pageSize: 10,
+        searchQuery: '',
+        params: { communityId: COMMUNITY_ID },
+      }),
+    );
+
+    await act(async () => {
+      resolvePageOne!(
+        feedPayload({
+          posts: pageOnePosts,
+          paging: { next: 'cursor-2' },
+          pagination: { page: 1, limit: 10, total: 10, totalPages: 2 },
+        }),
+      );
+      await pageOneGate;
+      result.current.loadMore();
+    });
+
+    await waitFor(() => expect(result.current.loadingMore).toBe(false));
+    expect(getCommunityPostsMock).toHaveBeenCalledTimes(2);
+    expect(getCommunityPostsMock).toHaveBeenNthCalledWith(
+      2,
+      COMMUNITY_ID,
+      expect.objectContaining({ page: 2, limit: 10 }),
+    );
+    expect(result.current.posts.map((p) => p.id)).toContain('sync-page2');
+  });
+
+  it('cache com hasMore false stale revalida page 1 e permite loadMore', async () => {
+    const cachedPosts = Array.from({ length: 10 }, (_, index) => ({
+      id: `cached-${index}`,
+      content: '',
+      comments: [],
+      createdAt: new Date('2026-01-01T00:00:00.000Z'),
+    }));
+
+    let resolveBackgroundRefresh: ((value: ReturnType<typeof feedPayload>) => void) | undefined;
+    const backgroundRefreshGate = new Promise<ReturnType<typeof feedPayload>>((resolve) => {
+      resolveBackgroundRefresh = resolve;
+    });
+
+    getCommunityPostsMock
+      .mockImplementationOnce(() => backgroundRefreshGate)
+      .mockResolvedValueOnce(
+        feedPayload({
+          posts: [{ postId: 'fresh-page2' }],
+          paging: {},
+          pagination: { page: 2, limit: 10, total: 1, totalPages: 2 },
+        }),
+      );
+
+    const wrapper = createFeedCacheWrapper(COMMUNITY_FEED_CACHE_KEY, {
+      posts: cachedPosts,
+      nextCursor: undefined,
+      hasMore: false,
+      currentPage: 1,
+      fetchedAt: Date.now(),
+    });
+
+    const { result } = renderHook(
+      () =>
+        useUserFeed({
+          pageSize: 10,
+          searchQuery: '',
+          params: { communityId: COMMUNITY_ID },
+        }),
+      { wrapper },
+    );
+
+    expect(result.current.hasMore).toBe(false);
+    expect(result.current.posts).toHaveLength(10);
+    expect(result.current.loading).toBe(false);
+
+    await act(async () => {
+      resolveBackgroundRefresh!(
+        feedPayload({
+          posts: cachedPosts.map((p) => ({ postId: p.id })),
+          paging: { next: 'cursor-2' },
+          pagination: { page: 1, limit: 10, total: 10, totalPages: 2 },
+        }),
+      );
+      await backgroundRefreshGate;
+    });
+
+    await waitFor(() => expect(result.current.hasMore).toBe(true));
+    expect(getCommunityPostsMock).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      result.current.loadMore();
+    });
+
+    await waitFor(() => expect(result.current.loadingMore).toBe(false));
+    expect(getCommunityPostsMock).toHaveBeenCalledTimes(2);
+    expect(result.current.posts.map((p) => p.id)).toContain('fresh-page2');
+  });
+
+  it('loadMore bloqueado enquanto page 1 carrega e dispara depois que hasMore fica true', async () => {
+    let resolvePageOne: ((value: ReturnType<typeof feedPayload>) => void) | undefined;
+    const pageOneGate = new Promise<ReturnType<typeof feedPayload>>((resolve) => {
+      resolvePageOne = resolve;
+    });
+
+    getCommunityPostsMock
+      .mockImplementationOnce(() => pageOneGate)
+      .mockResolvedValueOnce(
+        feedPayload({
+          posts: [{ postId: 'after-loading' }],
+          paging: {},
+          pagination: { page: 2, limit: 10, total: 1, totalPages: 2 },
+        }),
+      );
+
+    const { result } = renderHook(() =>
+      useUserFeed({
+        pageSize: 10,
+        searchQuery: '',
+        params: { communityId: COMMUNITY_ID },
+      }),
+    );
+
+    expect(result.current.loading).toBe(true);
+    await act(async () => {
+      result.current.loadMore();
+    });
+    expect(getCommunityPostsMock).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      resolvePageOne!(
+        feedPayload({
+          posts: Array.from({ length: 10 }, (_, index) => ({ postId: `gate-${index}` })),
+          paging: { next: 'cursor-2' },
+          pagination: { page: 1, limit: 10, total: 10, totalPages: 2 },
+        }),
+      );
+      await pageOneGate;
+    });
+
+    await waitFor(() => expect(result.current.hasMore).toBe(true));
+
+    await act(async () => {
+      result.current.loadMore();
+    });
+
+    await waitFor(() => expect(result.current.loadingMore).toBe(false));
     expect(getCommunityPostsMock).toHaveBeenCalledTimes(2);
   });
 });

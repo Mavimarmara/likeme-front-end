@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { View, ScrollView, FlatList, Text, ActivityIndicator, type ListRenderItem } from 'react-native';
+import { View, ScrollView, FlatList, Text, ActivityIndicator, type ListRenderItem, type ViewToken } from 'react-native';
 import type { RouteProp } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -172,6 +172,14 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     pageSize: COMMUNITY_FEED_POSTS_PAGE_SIZE,
     params: feedParams,
   });
+
+  const feedLoadMoreLockedRef = useRef(false);
+  const feedHasMoreRef = useRef(feedHasMore);
+  const feedLoadingRef = useRef(feedLoading);
+  const feedLoadingMoreRef = useRef(loadingMore);
+  feedHasMoreRef.current = feedHasMore;
+  feedLoadingRef.current = feedLoading;
+  feedLoadingMoreRef.current = loadingMore;
 
   const communityAdvertiserFetchEnabled = !!selectedCommunityId && (solutionsMode || !feedLoading || posts.length > 0);
 
@@ -401,11 +409,48 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     logger.debug('[CommunityScreen] event save (stub)', { eventId: event.id });
   }, []);
 
-  const handleLoadMore = useCallback(() => {
-    if (selectedMode === COMMUNITY_VIEW.FEED && feedHasMore) {
-      loadMore();
+  const tryLoadMoreFeed = useCallback(() => {
+    if (selectedMode !== COMMUNITY_VIEW.FEED) {
+      return;
     }
-  }, [selectedMode, feedHasMore, loadMore]);
+    if (
+      feedLoadMoreLockedRef.current ||
+      feedLoadingRef.current ||
+      feedLoadingMoreRef.current ||
+      !feedHasMoreRef.current
+    ) {
+      return;
+    }
+    feedLoadMoreLockedRef.current = true;
+    loadMore();
+  }, [loadMore, selectedMode]);
+
+  useEffect(() => {
+    if (!feedLoading && !loadingMore) {
+      feedLoadMoreLockedRef.current = false;
+    }
+  }, [feedLoading, loadingMore]);
+
+  const feedPostsCountRef = useRef(0);
+  const tryLoadMoreFeedRef = useRef(tryLoadMoreFeed);
+  tryLoadMoreFeedRef.current = tryLoadMoreFeed;
+
+  const feedViewabilityConfig = useRef({ itemVisiblePercentThreshold: 20 }).current;
+
+  const onFeedViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
+    const lastIndex = feedPostsCountRef.current - 1;
+    if (lastIndex < 0) {
+      return;
+    }
+    const lastPostVisible = viewableItems.some((token) => token.index === lastIndex && token.isViewable);
+    if (lastPostVisible) {
+      tryLoadMoreFeedRef.current();
+    }
+  }).current;
+
+  const handleLoadMore = useCallback(() => {
+    tryLoadMoreFeed();
+  }, [tryLoadMoreFeed]);
 
   const handlePostCardPress = useCallback(
     (selectedPost: Post) => {
@@ -543,6 +588,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   const showVirtualizedFeed = isFeedMode && activeInfoTab === 'posts';
   const featuredPost = useMemo(() => posts.find((post) => post.isFeatured) ?? null, [posts]);
   const feedPosts = useMemo(() => posts.filter((post) => !post.isFeatured), [posts]);
+  feedPostsCountRef.current = feedPosts.length;
   const showFeedInitialLoading = showVirtualizedFeed && feedLoading && posts.length === 0;
   const showFeedRecommendations = isFeedMode && (activeInfoTab === 'posts' || activeInfoTab === 'about');
 
@@ -697,6 +743,11 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
             ListEmptyComponent={feedListEmpty}
             onEndReached={handleLoadMore}
             onEndReachedThreshold={0.5}
+            viewabilityConfig={feedViewabilityConfig}
+            onViewableItemsChanged={onFeedViewableItemsChanged}
+            onMomentumScrollBegin={() => {
+              feedLoadMoreLockedRef.current = false;
+            }}
             removeClippedSubviews
             initialNumToRender={6}
             maxToRenderPerBatch={4}
