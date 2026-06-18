@@ -55,7 +55,7 @@ const feedPayload = (options: {
 });
 
 const COMMUNITY_ID = 'community-abc';
-const COMMUNITY_FEED_CACHE_KEY = `::||||||||${COMMUNITY_ID}::community-feed-v2`;
+const COMMUNITY_FEED_CACHE_KEY = `::||||||||${COMMUNITY_ID}::community-feed-v3`;
 
 function createFeedCacheWrapper(cacheKey: string, entry: FeedCacheEntry) {
   function Seeder({ children }: { children: React.ReactNode }) {
@@ -368,7 +368,7 @@ describe('useUserFeed (scroll infinito / paginação)', () => {
         feedPayload({
           posts: [],
           paging: {},
-          pagination: { page: 2, limit: 10, total: 0, totalPages: 2 },
+          pagination: { page: 2, limit: 10, total: 0, totalPages: 1 },
         }),
       );
 

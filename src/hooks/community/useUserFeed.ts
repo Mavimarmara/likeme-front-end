@@ -67,7 +67,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
   const paramsKey = buildFeedParamsKey(params);
   const scopedCommunityId = (params.communityId ?? '').trim();
   const cacheKey = scopedCommunityId
-    ? `${searchQuery}::${paramsKey}::community-feed-v2`
+    ? `${searchQuery}::${paramsKey}::community-feed-v3`
     : `${searchQuery}::${paramsKey}`;
   const initialCacheEntry = feedCache.read(cacheKey);
   const initialCacheIsFresh = initialCacheEntry != null && isFeedCacheEntryFresh(initialCacheEntry);
