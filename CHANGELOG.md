@@ -103,18 +103,26 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ### Adicionado
 - Post em destaque (fixado) no topo da aba Posts da comunidade (APP-246)
+- Título da seção de post em destaque na comunidade (APP-246)
 - Contatos do provider na página de serviço do marketplace (APP-278)
 - Navegação ao tocar notificação push de atividade criada (APP-287)
-- Busca e filtros da home integrados na listagem do marketplace (APP-296)
-- Curadoria por categoria na PLP do marketplace (APP-296)
+- Push de confirmação ao reagendar atividade (APP-287)
+- Busca e filtros da home integrados na listagem do marketplace (APP-282, APP-296)
+- Curadoria por categoria na PLP do marketplace (APP-255, APP-296)
 
 ### Alterado
-- Loja da comunidade alinhada ao layout Figma
+- Loja da comunidade alinhada ao layout Figma (APP-206)
 - Tipografia padronizada na PLP do marketplace (APP-296)
 - Protocolos limitados a 1 unidade no carrinho (APP-279)
+- Espaçamento do post em destaque na comunidade (APP-246)
+- Data e hora da push de atividade no fuso de São Paulo (APP-287)
 
 ### Corrigido
 - Scroll infinito do feed da comunidade (load more e paginação)
+- Posts de protocolo fora de comunidades abertas (APP-317)
 - Checkout bloqueado para protocolo já ativo (APP-279)
 - Tags de modalidade Presencial no marketplace (APP-265)
 - Filtro selecionado destacado com borda azul na PLP (APP-296)
+- Espaçamento do hero no perfil do provider (APP-266)
+- Botões secundários consistentes no Android (APP-294)
+- Label Recomendado por na PDP do marketplace (APP-283)
