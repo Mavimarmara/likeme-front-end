@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Build / archive / export Production no CI (sem conta Apple no Xcode).
-# Prioridade: Automatic + ASC API Key quando configurada; senão manual (perfil App Store + P12).
-# Export: automático primeiro; se falhar e houver perfil instalado, fallback manual.
+# Prioridade: manual (P12 + perfil App Store instalados no runner); senão Automatic + ASC API Key.
+# Manual evita -allowProvisioningUpdates e criação de certificados na conta Apple a cada run.
 set -euo pipefail
 
 ACTION="${1:?Uso: ci-xcode-production.sh build|archive|export}"
@@ -10,7 +10,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT/ios"
 
 TEAM_ID="${IOS_DEVELOPMENT_TEAM:-VS752K4DT8}"
-ALLOW=( -allowProvisioningUpdates )
+DIST_IDENTITY="${IOS_CODE_SIGN_IDENTITY:-Apple Distribution}"
 
 XCODE_AUTH=()
 if [[ -n "${ASC_API_KEY_PATH:-}" && -f "${ASC_API_KEY_PATH}" ]]; then
@@ -26,26 +26,27 @@ HAS_ASC=false
 
 USE_MANUAL_SIGNING=false
 SIGNING_ARGS=()
-if [[ "$HAS_ASC" == true ]]; then
-  SIGNING_ARGS=(
-    "DEVELOPMENT_TEAM=${TEAM_ID}"
-    CODE_SIGN_STYLE=Automatic
-  )
-  echo "Assinatura CI: Automatic + App Store Connect API Key"
-  if [[ -n "${IOS_PROVISIONING_PROFILE_UUID:-}" ]]; then
-    echo "Perfil manual (${IOS_PROVISIONING_PROFILE_UUID}) instalado — usado só se o export automático falhar."
-  fi
-elif [[ -n "${IOS_PROVISIONING_PROFILE_UUID:-}" ]]; then
+XCODE_PROVISIONING=()
+
+if [[ -n "${IOS_PROVISIONING_PROFILE_UUID:-}" ]]; then
   USE_MANUAL_SIGNING=true
   SIGNING_ARGS=(
     "DEVELOPMENT_TEAM=${TEAM_ID}"
     CODE_SIGN_STYLE=Manual
-    "CODE_SIGN_IDENTITY=${IOS_CODE_SIGN_IDENTITY:-Apple Distribution}"
+    "CODE_SIGN_IDENTITY=${DIST_IDENTITY}"
     "PROVISIONING_PROFILE_SPECIFIER=${IOS_PROVISIONING_PROFILE_UUID}"
   )
-  echo "Assinatura CI: manual (profile ${IOS_PROVISIONING_PROFILE_UUID})"
+  echo "Assinatura CI: manual (P12 + perfil App Store ${IOS_PROVISIONING_PROFILE_UUID})"
+elif [[ "$HAS_ASC" == true ]]; then
+  SIGNING_ARGS=(
+    "DEVELOPMENT_TEAM=${TEAM_ID}"
+    CODE_SIGN_STYLE=Automatic
+    "CODE_SIGN_IDENTITY=${DIST_IDENTITY}"
+  )
+  XCODE_PROVISIONING=( -allowProvisioningUpdates )
+  echo "Assinatura CI: Automatic + App Store Connect API Key (sem perfil manual instalado)"
 else
-  echo "::error::Configure ASC_API_KEY_P8 no GitHub, ou IOS_PROVISIONING_PROFILE_BASE64 com perfil App Store Distribution (sem ProvisionedDevices)." >&2
+  echo "::error::Configure IOS_PROVISIONING_PROFILE_BASE64 + IOS_CERTIFICATE_P12_BASE64, ou ASC_API_KEY_P8." >&2
   exit 1
 fi
 
@@ -93,7 +94,7 @@ run_export_archive() {
     -archivePath "$PWD/build/LikeMe.xcarchive" \
     -exportPath "$PWD/build/export" \
     -exportOptionsPlist "$export_plist" \
-    "${ALLOW[@]}" \
+    "${XCODE_PROVISIONING[@]}" \
     "${XCODE_AUTH[@]}" \
     2>&1 | tee "$export_log"
   local status="${PIPESTATUS[0]}"
@@ -119,7 +120,7 @@ case "$ACTION" in
       -configuration Production \
       -destination 'generic/platform=iOS' \
       -sdk iphoneos \
-      "${ALLOW[@]}" \
+      "${XCODE_PROVISIONING[@]}" \
       "${XCODE_AUTH[@]}" \
       "${SIGNING_ARGS[@]}" \
       build
@@ -131,7 +132,7 @@ case "$ACTION" in
       -configuration Production \
       -destination 'generic/platform=iOS' \
       -archivePath "$PWD/build/LikeMe.xcarchive" \
-      "${ALLOW[@]}" \
+      "${XCODE_PROVISIONING[@]}" \
       "${XCODE_AUTH[@]}" \
       "${SIGNING_ARGS[@]}" \
       archive
@@ -145,15 +146,7 @@ case "$ACTION" in
       run_export_archive "$EXPORT_PLIST" && export_status=0 || export_status=$?
     else
       echo "ExportOptions: $PWD/ExportOptions-AppStore.plist (signingStyle automatic)"
-      if run_export_archive "$PWD/ExportOptions-AppStore.plist"; then
-        export_status=0
-      elif [[ -n "${IOS_PROVISIONING_PROFILE_UUID:-}" ]]; then
-        echo "Export automático falhou — tentando export manual com perfil instalado..."
-        write_manual_export_plist
-        run_export_archive "$EXPORT_PLIST" && export_status=0 || export_status=$?
-      else
-        export_status=1
-      fi
+      run_export_archive "$PWD/ExportOptions-AppStore.plist" && export_status=0 || export_status=$?
     fi
 
     if [[ "$export_status" -ne 0 ]]; then

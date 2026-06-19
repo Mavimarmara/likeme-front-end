@@ -3,7 +3,7 @@
 set -euo pipefail
 
 if [[ -z "${IOS_PROVISIONING_PROFILE_BASE64:-}" ]]; then
-  echo "IOS_PROVISIONING_PROFILE_BASE64 vazio — CI usará assinatura automática (ASC API Key)."
+  echo "IOS_PROVISIONING_PROFILE_BASE64 vazio — CI usará assinatura automática (ASC API Key) se configurada."
   exit 0
 fi
 
