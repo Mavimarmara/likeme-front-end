@@ -84,18 +84,34 @@ EPLIST
   echo "ExportOptions: manual (perfil ${profile_ref})"
 }
 
+# Bash 3.2 (macOS runners) + set -u: "${arr[@]}" em array vazio falha.
+xcode_optional_args() {
+  XCODE_OPTIONAL_ARGS=()
+  if ((${#XCODE_PROVISIONING[@]} > 0)); then
+    XCODE_OPTIONAL_ARGS+=("${XCODE_PROVISIONING[@]}")
+  fi
+  if ((${#XCODE_AUTH[@]} > 0)); then
+    XCODE_OPTIONAL_ARGS+=("${XCODE_AUTH[@]}")
+  fi
+}
+
+xcode_build_args() {
+  xcode_optional_args
+  XCODE_BUILD_ARGS=("${XCODE_OPTIONAL_ARGS[@]}" "${SIGNING_ARGS[@]}")
+}
+
 run_export_archive() {
   local export_plist="$1"
   local export_log
   export_log="$(mktemp)"
+  xcode_optional_args
   set +e
   xcodebuild \
     -exportArchive \
     -archivePath "$PWD/build/LikeMe.xcarchive" \
     -exportPath "$PWD/build/export" \
     -exportOptionsPlist "$export_plist" \
-    "${XCODE_PROVISIONING[@]}" \
-    "${XCODE_AUTH[@]}" \
+    "${XCODE_OPTIONAL_ARGS[@]}" \
     2>&1 | tee "$export_log"
   local status="${PIPESTATUS[0]}"
   set -e
@@ -114,27 +130,25 @@ run_export_archive() {
 
 case "$ACTION" in
   build)
+    xcode_build_args
     xcodebuild \
       -workspace LikeMe.xcworkspace \
       -scheme LikeMe \
       -configuration Production \
       -destination 'generic/platform=iOS' \
       -sdk iphoneos \
-      "${XCODE_PROVISIONING[@]}" \
-      "${XCODE_AUTH[@]}" \
-      "${SIGNING_ARGS[@]}" \
+      "${XCODE_BUILD_ARGS[@]}" \
       build
     ;;
   archive)
+    xcode_build_args
     xcodebuild \
       -workspace LikeMe.xcworkspace \
       -scheme LikeMe \
       -configuration Production \
       -destination 'generic/platform=iOS' \
       -archivePath "$PWD/build/LikeMe.xcarchive" \
-      "${XCODE_PROVISIONING[@]}" \
-      "${XCODE_AUTH[@]}" \
-      "${SIGNING_ARGS[@]}" \
+      "${XCODE_BUILD_ARGS[@]}" \
       archive
     ;;
   export)
