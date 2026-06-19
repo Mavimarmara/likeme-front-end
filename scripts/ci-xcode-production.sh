@@ -33,11 +33,9 @@ apply_automatic_signing() {
   SIGNING_ARGS=(
     "DEVELOPMENT_TEAM=${TEAM_ID}"
     CODE_SIGN_STYLE=Automatic
-    "CODE_SIGN_IDENTITY=${DIST_IDENTITY}"
-    "CODE_SIGN_IDENTITY[sdk=iphoneos*]=${DIST_IDENTITY}"
   )
   XCODE_PROVISIONING=( -allowProvisioningUpdates )
-  echo "Assinatura CI: Automatic + ASC (${DIST_IDENTITY})"
+  echo "Assinatura CI: Automatic + ASC (Distribution via project Production)"
 }
 
 apply_manual_signing() {
@@ -46,7 +44,6 @@ apply_manual_signing() {
     "DEVELOPMENT_TEAM=${TEAM_ID}"
     CODE_SIGN_STYLE=Manual
     "CODE_SIGN_IDENTITY=${DIST_IDENTITY}"
-    "CODE_SIGN_IDENTITY[sdk=iphoneos*]=${DIST_IDENTITY}"
     "PROVISIONING_PROFILE_SPECIFIER=${IOS_PROVISIONING_PROFILE_UUID}"
   )
   XCODE_PROVISIONING=()
