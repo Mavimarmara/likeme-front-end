@@ -34,7 +34,7 @@ export function JoinCard({
   const footerSection = (
     <View style={styles.bottom}>
       <View style={styles.footerTextBlock}>
-        <Text style={styles.title} numberOfLines={2}>
+        <Text style={styles.title} {...(square ? {} : { numberOfLines: 2 })}>
           {title}
         </Text>
         {price !== undefined ? <Text style={styles.price}>{formatPriceLabel(price)}</Text> : null}

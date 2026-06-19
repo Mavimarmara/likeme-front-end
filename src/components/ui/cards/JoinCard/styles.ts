@@ -20,7 +20,7 @@ export const styles = StyleSheet.create({
     marginRight: 0,
   },
   cardSquare: {
-    aspectRatio: 1,
+    minHeight: JOIN_CARD_CAROUSEL_WIDTH,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 28,
     borderBottomLeftRadius: 12,

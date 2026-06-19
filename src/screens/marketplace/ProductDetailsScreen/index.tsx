@@ -15,7 +15,8 @@ import {
 import { Checkbox } from '@/components/ui/inputs';
 import { MarkdownText } from '@/components/ui/text/MarkdownText';
 import { PartnerSection } from '@/components/sections/advertiser/PartnerSection';
-import { AdvertiserContactButtonsRow } from '@/components/sections/advertiser/AdvertiserContactButtonsRow';
+// release/1.7.1: contatos do provider ocultos na PDP de serviço
+// import { AdvertiserContactButtonsRow } from '@/components/sections/advertiser/AdvertiserContactButtonsRow';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
 import { useMenuItems, useProductDetails, useProductPartner, useSuggestedProducts } from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
@@ -83,7 +84,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
     navigation,
   });
 
-  const { partnerData, hasSpecialistPartner, partnerDisplayName, partnerContacts } = useProductPartner({
+  const { partnerData, hasSpecialistPartner, partnerDisplayName } = useProductPartner({
     product,
     ad,
     advertiserId,
@@ -386,6 +387,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
               </View>
             )}
             <View style={styles.content}>
+              {/* release/1.7.1: contatos do provider ocultos na PDP de serviço
               {isServiceProduct ? (
                 <AdvertiserContactButtonsRow
                   contacts={partnerContacts}
@@ -393,6 +395,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({ navigation,
                   testID='product-details-provider-contacts'
                 />
               ) : null}
+              */}
               {usesPhysicalProductDetailLayout ? (
                 <>
                   <View style={styles.contentCard}>

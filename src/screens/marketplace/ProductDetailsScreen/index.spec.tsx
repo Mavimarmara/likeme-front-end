@@ -489,7 +489,7 @@ describe('ProductDetailsScreen', () => {
     });
   });
 
-  it('exibe ícones de contato do provider na PDP de serviço', async () => {
+  it.skip('exibe ícones de contato do provider na PDP de serviço (release/1.7.1: seção comentada)', async () => {
     mockUseProductDetails.mockReturnValue({
       product: { ...mockProduct, type: PRODUCT_CATALOG_TYPE.SERVICE },
       ad: null,

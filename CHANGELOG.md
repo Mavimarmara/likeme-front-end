@@ -126,3 +126,9 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - Espaçamento do hero no perfil do provider (APP-266)
 - Botões secundários consistentes no Android (APP-294)
 - Label Recomendado por na PDP do marketplace (APP-283)
+
+## [1.7.1] - 2026-06-19
+
+### Alterado
+- Título completo nos cards de destaque e serviços do marketplace
+- Contatos do provider ocultos na PDP de serviço
