@@ -2,7 +2,7 @@
   "version": "1.7.1",
   "releasedAt": "2026-06-19",
   "android": {
-    "versionCode": 240
+    "versionCode": 241
   },
   "ios": {
     "buildNumber": 17
