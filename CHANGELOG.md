@@ -98,3 +98,23 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - Botões secundários com visual consistente no Android
 - Botão Comprar na Amazon centralizado na tela de afiliado
 - Documentos do profissional no perfil exibem apenas o valor cadastrado
+
+## [1.7.0] - 2026-06-18
+
+### Adicionado
+- Post em destaque (fixado) no topo da aba Posts da comunidade (APP-246)
+- Contatos do provider na página de serviço do marketplace (APP-278)
+- Navegação ao tocar notificação push de atividade criada (APP-287)
+- Busca e filtros da home integrados na listagem do marketplace (APP-296)
+- Curadoria por categoria na PLP do marketplace (APP-296)
+
+### Alterado
+- Loja da comunidade alinhada ao layout Figma
+- Tipografia padronizada na PLP do marketplace (APP-296)
+- Protocolos limitados a 1 unidade no carrinho (APP-279)
+
+### Corrigido
+- Scroll infinito do feed da comunidade (load more e paginação)
+- Checkout bloqueado para protocolo já ativo (APP-279)
+- Tags de modalidade Presencial no marketplace (APP-265)
+- Filtro selecionado destacado com borda azul na PLP (APP-296)
