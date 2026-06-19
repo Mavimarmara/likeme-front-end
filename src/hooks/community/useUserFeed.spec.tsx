@@ -55,7 +55,7 @@ const feedPayload = (options: {
 });
 
 const COMMUNITY_ID = 'community-abc';
-const COMMUNITY_FEED_CACHE_KEY = `::||||||||${COMMUNITY_ID}::community-feed-v3`;
+const COMMUNITY_FEED_CACHE_KEY = `::||||||||${COMMUNITY_ID}::community-feed-v8`;
 
 function createFeedCacheWrapper(cacheKey: string, entry: FeedCacheEntry) {
   function Seeder({ children }: { children: React.ReactNode }) {
@@ -229,12 +229,12 @@ describe('useUserFeed (scroll infinito / paginação)', () => {
     expect(result.current.posts).toEqual([]);
   });
 
-  it('com communityId usa getCommunityPosts e loadMore pagina por page sem token', async () => {
+  it('com communityId usa getCommunityPosts e loadMore envia token do paging.next', async () => {
     getCommunityPostsMock
       .mockResolvedValueOnce(
         feedPayload({
           posts: [{ postId: 'c1' }],
-          paging: {},
+          paging: { next: 'provider-cursor-2' },
           pagination: { page: 1, limit: 10, total: 1, totalPages: 2 },
         }),
       )
@@ -272,9 +272,8 @@ describe('useUserFeed (scroll infinito / paginação)', () => {
     expect(getCommunityPostsMock).toHaveBeenNthCalledWith(
       2,
       'community-abc',
-      expect.objectContaining({ page: 2, limit: 10 }),
+      expect.objectContaining({ page: 2, limit: 10, token: 'provider-cursor-2' }),
     );
-    expect(getCommunityPostsMock.mock.calls[1][1]).not.toHaveProperty('token');
     expect(result.current.posts.map((p) => p.id)).toEqual(['c1', 'c2']);
   });
 
@@ -328,7 +327,7 @@ describe('useUserFeed (scroll infinito / paginação)', () => {
     expect(getCommunityPostsMock).toHaveBeenCalledTimes(1);
   });
 
-  it('com communityId ignora paging.next quando pagination.totalPages não sinaliza próxima página', async () => {
+  it('com communityId usa paging.next para hasMore mesmo quando totalPages=1', async () => {
     getCommunityPostsMock.mockResolvedValue(
       feedPayload({
         posts: [{ postId: 'c-only' }],
@@ -346,13 +345,18 @@ describe('useUserFeed (scroll infinito / paginação)', () => {
     );
 
     await waitFor(() => expect(result.current.loading).toBe(false));
-    expect(result.current.hasMore).toBe(false);
+    expect(result.current.hasMore).toBe(true);
 
     await act(async () => {
       result.current.loadMore();
     });
 
-    expect(getCommunityPostsMock).toHaveBeenCalledTimes(1);
+    expect(getCommunityPostsMock).toHaveBeenCalledTimes(2);
+    expect(getCommunityPostsMock).toHaveBeenNthCalledWith(
+      2,
+      COMMUNITY_ID,
+      expect.objectContaining({ token: 'provider-cursor-orphan' }),
+    );
   });
 
   it('com communityId page 2 vazia no backend define hasMore false no client', async () => {
@@ -360,7 +364,7 @@ describe('useUserFeed (scroll infinito / paginação)', () => {
       .mockResolvedValueOnce(
         feedPayload({
           posts: [{ postId: 'c1' }],
-          paging: {},
+          paging: { next: 'provider-cursor-2' },
           pagination: { page: 1, limit: 10, total: 1, totalPages: 2 },
         }),
       )
@@ -483,7 +487,7 @@ describe('useUserFeed (scroll infinito / paginação)', () => {
     expect(getCommunityPostsMock).toHaveBeenNthCalledWith(
       2,
       COMMUNITY_ID,
-      expect.objectContaining({ page: 2, limit: 10 }),
+      expect.objectContaining({ page: 2, limit: 10, token: 'cursor-2' }),
     );
     expect(result.current.posts.map((p) => p.id)).toContain('sync-page2');
   });

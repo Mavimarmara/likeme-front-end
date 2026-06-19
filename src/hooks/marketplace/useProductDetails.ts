@@ -13,6 +13,7 @@ import type { ApiError } from '@/types/infrastructure';
 import { logger } from '@/utils/logger';
 import { buildApiProductFromRouteFallback, type RouteFallbackProduct } from '@/utils/marketplace/routeProductFallback';
 import { advertiserToRouteProductProvider } from '@/utils/marketplace/routeProductProvider';
+import { marketplaceAdvertiserId } from '@/utils/marketplace/marketplaceAdvertiserId';
 function isAdRequestNotFound(error: unknown): boolean {
   if (typeof error !== 'object' || error === null) {
     return false;
@@ -97,7 +98,7 @@ export const useProductDetails = ({
   const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
 
-  const advertiserId = product?.advertiserId ?? ad?.advertiserId;
+  const advertiserId = marketplaceAdvertiserId(product, ad);
 
   const mergeSupplementalExternalUrl = useCallback(
     (p: ApiProduct): ApiProduct => {

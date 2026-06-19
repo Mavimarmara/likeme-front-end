@@ -9,6 +9,11 @@ export { useUserFeed } from './community/useUserFeed';
 export { useCommunities } from './community/useCommunities';
 export { useCommunity } from './community/useCommunity';
 export type { UseCommunityOptions, UseCommunityReturn } from './community/useCommunity';
+export { useCommunityFeaturedPost } from './community/useCommunityFeaturedPost';
+export type {
+  UseCommunityFeaturedPostOptions,
+  UseCommunityFeaturedPostReturn,
+} from './community/useCommunityFeaturedPost';
 export { usePostReplies } from './community/usePostReplies';
 export type { PostLikeEngagement } from './community/usePostReplies';
 export { usePost } from './community/usePost';

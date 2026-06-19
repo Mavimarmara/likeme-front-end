@@ -35,7 +35,7 @@ export interface CommunityPost {
   commentsCount?: number;
   createdAt: string;
   updatedAt?: string;
-  /** Post em destaque na comunidade (page 1 do feed). */
+  /** Post em destaque na comunidade (`GET /api/communities/:id/featured-posts`). */
   isFeatured?: boolean;
 }
 
@@ -136,6 +136,19 @@ export interface CommunityFeedData {
   paging?: {
     next?: string;
     previous?: string;
+  };
+}
+
+export interface CommunityFeaturedPostData extends CommunityFeedData {
+  post: CommunityPost | null;
+}
+
+export interface CommunityFeaturedPostApiResponse {
+  success?: boolean;
+  message?: string;
+  data?: {
+    status?: string;
+    data?: CommunityFeaturedPostData;
   };
 }
 

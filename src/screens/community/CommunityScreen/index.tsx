@@ -24,6 +24,7 @@ import { styles } from './styles';
 import type { CommunityStackParamList, RootStackParamList } from '@/types/navigation';
 import {
   useUserFeed,
+  useCommunityFeaturedPost,
   useCommunities,
   useCommunity,
   useSuggestedProducts,
@@ -171,6 +172,11 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     searchQuery: '',
     pageSize: COMMUNITY_FEED_POSTS_PAGE_SIZE,
     params: feedParams,
+  });
+
+  const { post: featuredPost } = useCommunityFeaturedPost({
+    communityId: selectedCommunityId,
+    enabled: isFeedMode && activeInfoTab === 'posts' && Boolean(selectedCommunityId?.trim()),
   });
 
   const feedLoadMoreLockedRef = useRef(false);
@@ -586,8 +592,12 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   }, [selectedCommunityId, isCommunityFavorite]);
 
   const showVirtualizedFeed = isFeedMode && activeInfoTab === 'posts';
-  const featuredPost = useMemo(() => posts.find((post) => post.isFeatured) ?? null, [posts]);
-  const feedPosts = useMemo(() => posts.filter((post) => !post.isFeatured), [posts]);
+  const feedPosts = useMemo(() => {
+    if (!featuredPost?.id) {
+      return posts;
+    }
+    return posts.filter((post) => post.id !== featuredPost.id);
+  }, [posts, featuredPost?.id]);
   feedPostsCountRef.current = feedPosts.length;
   const showFeedInitialLoading = showVirtualizedFeed && feedLoading && posts.length === 0;
   const showFeedRecommendations = isFeedMode && (activeInfoTab === 'posts' || activeInfoTab === 'about');

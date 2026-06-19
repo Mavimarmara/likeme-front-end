@@ -29,6 +29,8 @@ type Props = {
   onCommentsOpenChange?: (open: boolean) => void;
   styles?: StyleProp<ViewStyle>;
   forceContentExpanded?: boolean;
+  /** Post fixado no topo da comunidade: mesmo layout do card normal com fundo e ícone de pin. */
+  isPinned?: boolean;
   /** Quando definido (ex.: tela de detalhe com `usePostReplies`), evita segunda instância de likes. */
   postEngagement?: PostLikeEngagement;
 };
@@ -44,6 +46,7 @@ const PostCardView: React.FC<ViewProps> = ({
   onCommentsOpenChange,
   styles: containerStyles,
   forceContentExpanded = false,
+  isPinned = false,
   engagement,
 }) => {
   const { t } = useTranslation();
@@ -185,19 +188,30 @@ const PostCardView: React.FC<ViewProps> = ({
             <Badge label={contentTypeLabel} color={typeBadgeColor} />
           </View>
 
-          <View style={cardStyles.authorSection}>
-            {post.userAvatar ? (
-              <CachedImage
-                source={{ uri: post.userAvatar }}
-                style={cardStyles.avatar}
-                recyclingKey={`post-${post.id}-avatar`}
+          <View style={[cardStyles.authorSection, isPinned && cardStyles.authorSectionPinned]}>
+            <View style={cardStyles.authorRow}>
+              {post.userAvatar ? (
+                <CachedImage
+                  source={{ uri: post.userAvatar }}
+                  style={cardStyles.avatar}
+                  recyclingKey={`post-${post.id}-avatar`}
+                />
+              ) : (
+                <View style={cardStyles.avatarPlaceholder}>
+                  <Icon name='person' size={12} color={COLORS.TEXT_LIGHT} />
+                </View>
+              )}
+              {post.userName && <Text style={cardStyles.authorName}>{capitalizeWords(post.userName)}</Text>}
+            </View>
+            {isPinned ? (
+              <Icon
+                name='push-pin'
+                size={24}
+                color={COLORS.NEUTRAL.LOW.PURE}
+                style={cardStyles.pinIcon}
+                accessibilityLabel='Post fixado'
               />
-            ) : (
-              <View style={cardStyles.avatarPlaceholder}>
-                <Icon name='person' size={12} color={COLORS.TEXT_LIGHT} />
-              </View>
-            )}
-            {post.userName && <Text style={cardStyles.authorName}>{capitalizeWords(post.userName)}</Text>}
+            ) : null}
           </View>
 
           {postTitle ? (
@@ -291,7 +305,9 @@ const PostCardView: React.FC<ViewProps> = ({
     </>
   );
 
-  return <View style={[cardStyles.container, containerStyles]}>{cardInner}</View>;
+  return (
+    <View style={[cardStyles.container, isPinned && cardStyles.pinnedContainer, containerStyles]}>{cardInner}</View>
+  );
 };
 
 const PostCardWithRepliesLikes: React.FC<Omit<Props, 'postEngagement'>> = (props) => {
@@ -342,6 +358,7 @@ const PostCard = React.memo(PostCardInner, (prev, next) => {
     prev.onCommentsOpenChange === next.onCommentsOpenChange &&
     prev.styles === next.styles &&
     prev.forceContentExpanded === next.forceContentExpanded &&
+    prev.isPinned === next.isPinned &&
     prev.postEngagement === next.postEngagement
   );
 });

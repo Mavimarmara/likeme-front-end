@@ -3,6 +3,7 @@ import { logger } from '@/utils/logger';
 import type { ApiResponse } from '@/types/infrastructure';
 import type {
   CommunityFeedData,
+  CommunityFeaturedPostApiResponse,
   UserFeedApiResponse,
   UserFeedParams,
   ListCommunitiesParams,
@@ -119,6 +120,23 @@ class CommunityService {
       return response;
     } catch (error) {
       logger.error('Error fetching community posts:', error);
+      throw error;
+    }
+  }
+
+  async getCommunityFeaturedPost(communityId: string): Promise<CommunityFeaturedPostApiResponse> {
+    const trimmedCommunityId = communityId?.trim();
+    if (!trimmedCommunityId) {
+      throw new Error('communityId is required');
+    }
+
+    try {
+      const endpoint = `${this.communitiesEndpoint}/${encodeURIComponent(trimmedCommunityId)}/featured-posts`;
+      const response = await apiClient.get<CommunityFeaturedPostApiResponse>(endpoint, undefined, true, false);
+      logger.debug('[CommunityService] communityFeaturedPost response', response);
+      return response;
+    } catch (error) {
+      logger.error('Error fetching community featured post:', error);
       throw error;
     }
   }

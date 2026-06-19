@@ -67,3 +67,24 @@ describe('communityService.getMyCommunityTermsAccepted', () => {
     });
   });
 });
+
+describe('communityService.getCommunityFeaturedPost', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('chama GET /api/communities/:id/featured-posts', async () => {
+    (apiClient.get as jest.Mock).mockResolvedValue({
+      success: true,
+      data: { status: 'ok', data: { post: null, posts: [] } },
+    });
+
+    await communityService.getCommunityFeaturedPost('community-a');
+
+    expect(apiClient.get).toHaveBeenCalledWith('/api/communities/community-a/featured-posts', undefined, true, false);
+  });
+
+  it('falha sem communityId', async () => {
+    await expect(communityService.getCommunityFeaturedPost('  ')).rejects.toThrow('communityId is required');
+  });
+});

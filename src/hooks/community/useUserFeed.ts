@@ -67,7 +67,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
   const paramsKey = buildFeedParamsKey(params);
   const scopedCommunityId = (params.communityId ?? '').trim();
   const cacheKey = scopedCommunityId
-    ? `${searchQuery}::${paramsKey}::community-feed-v3`
+    ? `${searchQuery}::${paramsKey}::community-feed-v8`
     : `${searchQuery}::${paramsKey}`;
   const initialCacheEntry = feedCache.read(cacheKey);
   const initialCacheIsFresh = initialCacheEntry != null && isFeedCacheEntryFresh(initialCacheEntry);
@@ -123,11 +123,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
         nextFeedCursorRef.current = undefined;
       }
 
-      if (
-        page > 1 &&
-        !scopedCommunityId &&
-        (nextFeedCursorRef.current == null || nextFeedCursorRef.current.trim() === '')
-      ) {
+      if (page > 1 && (nextFeedCursorRef.current == null || nextFeedCursorRef.current.trim() === '')) {
         logger.warn('[useUserFeed] loadMore sem cursor: paging.next ausente na página anterior.');
         setHasMore(false);
         hasMoreRef.current = false;
@@ -155,7 +151,7 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
           page,
           limit: pageSize,
           search: search,
-          ...(feedCursor != null && feedCursor.length > 0 && !scopedCommunityId ? { token: feedCursor } : {}),
+          ...(feedCursor != null && feedCursor.length > 0 ? { token: feedCursor } : {}),
           ...feedFilterParams,
         };
 
@@ -212,14 +208,14 @@ export const useUserFeed = (options: UseUserFeedOptions = {}): UseUserFeedReturn
         let hasMorePages = false;
         if (receivedCount === 0 && page === 1) {
           hasMorePages = false;
-        } else if (scopedCommunityId) {
-          hasMorePages = Boolean(paginationSaysMore);
         } else if (hasNextToken) {
           hasMorePages = true;
         } else if (paginationSaysMore) {
           hasMorePages = true;
+        } else if (!scopedCommunityId && receivedCount >= pageSize) {
+          hasMorePages = true;
         } else {
-          hasMorePages = receivedCount >= pageSize;
+          hasMorePages = false;
         }
         setHasMore(hasMorePages);
         hasMoreRef.current = hasMorePages;

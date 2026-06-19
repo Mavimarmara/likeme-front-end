@@ -4,6 +4,7 @@ import type { Ad, Advertiser } from '@/types/ad';
 import type { Contact } from '@/types/contact';
 import type { Product as ApiProduct } from '@/types/product';
 import { logger } from '@/utils/logger';
+import { marketplaceAdvertiserId } from '@/utils/marketplace/marketplaceAdvertiserId';
 
 function hasUsableContacts(contacts: Contact[] | undefined): boolean {
   return Array.isArray(contacts) && contacts.some((contact) => String(contact.value ?? '').trim().length > 0);
@@ -39,7 +40,8 @@ type Params = {
 export function useProductPartner({ product, ad, advertiserId, routeProduct, productIdFallback }: Params) {
   const [fetchedAdvertiser, setFetchedAdvertiser] = useState<Advertiser | null>(null);
 
-  const nestedAdvertiser = ad?.advertiser;
+  const nestedAdvertiser = (ad?.advertiser ?? product?.ads?.[0]?.advertiser) as Advertiser | undefined;
+  const resolvedAdvertiserId = marketplaceAdvertiserId(product, ad) ?? (advertiserId?.trim() || undefined);
 
   useEffect(() => {
     if (hasUsableContacts(nestedAdvertiser?.contacts)) {
@@ -47,7 +49,7 @@ export function useProductPartner({ product, ad, advertiserId, routeProduct, pro
       return;
     }
 
-    const id = advertiserId?.trim();
+    const id = resolvedAdvertiserId;
     if (!id) {
       setFetchedAdvertiser(null);
       return;
@@ -75,7 +77,7 @@ export function useProductPartner({ product, ad, advertiserId, routeProduct, pro
     return () => {
       cancelled = true;
     };
-  }, [nestedAdvertiser?.id, nestedAdvertiser?.contacts, advertiserId]);
+  }, [nestedAdvertiser?.id, nestedAdvertiser?.contacts, resolvedAdvertiserId]);
 
   const partnerData = useMemo((): ProductPartnerData => {
     const source = nestedAdvertiser ?? fetchedAdvertiser;
@@ -94,14 +96,14 @@ export function useProductPartner({ product, ad, advertiserId, routeProduct, pro
     const provider = routeProduct?.provider ?? productWithProvider?.provider;
 
     return {
-      id: advertiserId ?? product?.id ?? productIdFallback ?? '',
+      id: resolvedAdvertiserId ?? product?.id ?? productIdFallback ?? '',
       name: provider?.name ?? '',
       avatar: provider?.avatar ?? '',
       description: provider?.description ?? '',
       title: provider?.title ?? '',
       specialties: provider?.specialties ?? [],
     };
-  }, [nestedAdvertiser, fetchedAdvertiser, product, routeProduct, advertiserId, productIdFallback]);
+  }, [nestedAdvertiser, fetchedAdvertiser, product, routeProduct, resolvedAdvertiserId, productIdFallback]);
 
   const hasSpecialistPartner = useMemo(() => Boolean(partnerData.name?.trim()), [partnerData.name]);
 

@@ -33,6 +33,25 @@ export const styles = StyleSheet.create({
     gap: SPACING.XS,
     marginBottom: SPACING.SM,
   },
+  authorSectionPinned: {
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
+  authorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.XS,
+    flex: 1,
+  },
+  pinIcon: {
+    width: 24,
+    height: 24,
+  },
+  pinnedContainer: {
+    backgroundColor: COLORS.PRIMARY.LIGHT,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+  },
   avatar: {
     width: 24,
     height: 24,

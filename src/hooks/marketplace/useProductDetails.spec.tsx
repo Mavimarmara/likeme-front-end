@@ -304,4 +304,50 @@ describe('useProductDetails', () => {
     expect(storageService.addToCart).not.toHaveBeenCalled();
     expect(navigation.navigate).not.toHaveBeenCalled();
   });
+
+  it('expõe advertiserId a partir de product.ads antes do ad detalhado carregar', async () => {
+    (productService.getProductById as jest.Mock).mockResolvedValue({
+      success: true,
+      data: physicalProduct({
+        id: 'svc-1',
+        type: PRODUCT_CATALOG_TYPE.SERVICE,
+        ads: [
+          {
+            id: 'ad-embedded',
+            advertiserId: 'adv-from-product-ads',
+            status: 'active',
+            createdAt: '',
+            updatedAt: '',
+          },
+        ],
+      }),
+    });
+
+    let resolveListAds: (value: unknown) => void = () => undefined;
+    (adService.listAds as jest.Mock).mockReturnValue(
+      new Promise((resolve) => {
+        resolveListAds = resolve;
+      }),
+    );
+
+    const { result } = renderHook(() =>
+      useProductDetails({
+        productId: 'svc-1',
+        navigation,
+      }),
+    );
+
+    await waitFor(() => expect(result.current.loading).toBe(false), { timeout: 8000 });
+
+    expect(result.current.ad).toBeNull();
+    expect(result.current.advertiserId).toBe('adv-from-product-ads');
+
+    resolveListAds({
+      success: true,
+      data: {
+        ads: [{ id: 'ad-embedded', advertiserId: 'adv-from-product-ads' }],
+        pagination: { page: 1, limit: 1, total: 1, totalPages: 1 },
+      },
+    });
+  });
 });

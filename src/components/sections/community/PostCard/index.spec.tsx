@@ -272,4 +272,16 @@ describe('PostCard', () => {
     fireEvent.press(seeMore);
     expect(queryByTestId('post-card-description-measure', { includeHiddenElements: true })).toBeNull();
   });
+
+  it('renderiza ícone de pin quando isPinned', () => {
+    const { getByLabelText } = render(
+      <PostCard
+        post={{ ...basePost(), userName: 'Autor' }}
+        isPinned
+        postEngagement={{ likeCount: 0, isLiked: false, isLiking: false, togglePostLike: jest.fn() }}
+      />,
+    );
+
+    expect(getByLabelText('Post fixado')).toBeTruthy();
+  });
 });
