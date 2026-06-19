@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Build / archive / export Production no CI (sem conta Apple no Xcode).
-# Prioridade: manual (P12 + perfil App Store instalados no runner); senão Automatic + ASC API Key.
-# Manual evita -allowProvisioningUpdates e criação de certificados na conta Apple a cada run.
+# 1) Automatic + ASC API Key (Distribution — não cria cert Development).
+# 2) Fallback manual só se P12 e perfil App Store batem (ci-ios-manual-signing-viable.sh).
 set -euo pipefail
 
 ACTION="${1:?Uso: ci-xcode-production.sh build|archive|export}"
@@ -28,25 +28,44 @@ USE_MANUAL_SIGNING=false
 SIGNING_ARGS=()
 XCODE_PROVISIONING=()
 
-if [[ -n "${IOS_PROVISIONING_PROFILE_UUID:-}" ]]; then
+apply_automatic_signing() {
+  USE_MANUAL_SIGNING=false
+  SIGNING_ARGS=(
+    "DEVELOPMENT_TEAM=${TEAM_ID}"
+    CODE_SIGN_STYLE=Automatic
+    "CODE_SIGN_IDENTITY=${DIST_IDENTITY}"
+    "CODE_SIGN_IDENTITY[sdk=iphoneos*]=${DIST_IDENTITY}"
+  )
+  XCODE_PROVISIONING=( -allowProvisioningUpdates )
+  echo "Assinatura CI: Automatic + ASC (${DIST_IDENTITY})"
+}
+
+apply_manual_signing() {
   USE_MANUAL_SIGNING=true
   SIGNING_ARGS=(
     "DEVELOPMENT_TEAM=${TEAM_ID}"
     CODE_SIGN_STYLE=Manual
     "CODE_SIGN_IDENTITY=${DIST_IDENTITY}"
+    "CODE_SIGN_IDENTITY[sdk=iphoneos*]=${DIST_IDENTITY}"
     "PROVISIONING_PROFILE_SPECIFIER=${IOS_PROVISIONING_PROFILE_UUID}"
   )
-  echo "Assinatura CI: manual (P12 + perfil App Store ${IOS_PROVISIONING_PROFILE_UUID})"
-elif [[ "$HAS_ASC" == true ]]; then
-  SIGNING_ARGS=(
-    "DEVELOPMENT_TEAM=${TEAM_ID}"
-    CODE_SIGN_STYLE=Automatic
-    "CODE_SIGN_IDENTITY=${DIST_IDENTITY}"
-  )
-  XCODE_PROVISIONING=( -allowProvisioningUpdates )
-  echo "Assinatura CI: Automatic + App Store Connect API Key (sem perfil manual instalado)"
+  XCODE_PROVISIONING=()
+  echo "Assinatura CI: manual (P12 + perfil ${IOS_PROVISIONING_PROFILE_NAME:-${IOS_PROVISIONING_PROFILE_UUID}})"
+}
+
+manual_signing_viable() {
+  bash "$ROOT/scripts/ci-ios-manual-signing-viable.sh"
+}
+
+if [[ "$HAS_ASC" == true ]]; then
+  apply_automatic_signing
+elif [[ -n "${IOS_PROVISIONING_PROFILE_UUID:-}" ]] && manual_signing_viable; then
+  apply_manual_signing
+elif [[ -n "${IOS_PROVISIONING_PROFILE_UUID:-}" ]]; then
+  echo "::error::Perfil App Store instalado mas P12 não corresponde ao perfil. Alinhe IOS_CERTIFICATE_P12_BASE64 e IOS_PROVISIONING_PROFILE_BASE64, ou configure ASC_API_KEY_P8." >&2
+  exit 1
 else
-  echo "::error::Configure IOS_PROVISIONING_PROFILE_BASE64 + IOS_CERTIFICATE_P12_BASE64, ou ASC_API_KEY_P8." >&2
+  echo "::error::Configure ASC_API_KEY_P8 ou IOS_PROVISIONING_PROFILE_BASE64 + IOS_CERTIFICATE_P12_BASE64 alinhados." >&2
   exit 1
 fi
 
@@ -84,7 +103,6 @@ EPLIST
   echo "ExportOptions: manual (perfil ${profile_ref})"
 }
 
-# Bash 3.2 (macOS runners) + set -u: "${arr[@]}" em array vazio falha.
 xcode_optional_args() {
   XCODE_OPTIONAL_ARGS=()
   if ((${#XCODE_PROVISIONING[@]} > 0)); then
@@ -128,28 +146,65 @@ run_export_archive() {
   return "$status"
 }
 
+run_xcodebuild_production() {
+  local xcode_action="$1"
+  shift
+  local build_log
+  build_log="$(mktemp)"
+  set +e
+  xcodebuild \
+    -workspace LikeMe.xcworkspace \
+    -scheme LikeMe \
+    -configuration Production \
+    "$@" \
+    "${XCODE_BUILD_ARGS[@]}" \
+    "$xcode_action" \
+    2>&1 | tee "$build_log"
+  local status="${PIPESTATUS[0]}"
+  set -e
+
+  if [[ "$status" -ne 0 && "$USE_MANUAL_SIGNING" == false && "$HAS_ASC" == true ]]; then
+    if manual_signing_viable; then
+      echo "Automatic falhou — tentando assinatura manual (P12 + perfil alinhados)..."
+      apply_manual_signing
+      xcode_build_args
+      set +e
+      xcodebuild \
+        -workspace LikeMe.xcworkspace \
+        -scheme LikeMe \
+        -configuration Production \
+        "$@" \
+        "${XCODE_BUILD_ARGS[@]}" \
+        "$xcode_action" \
+        2>&1 | tee "$build_log"
+      status="${PIPESTATUS[0]}"
+      set -e
+    else
+      echo "::warning::Fallback manual indisponível: P12 e perfil App Store não correspondem." >&2
+      echo "Revogue certificados Development expirados em developer.apple.com ou regenere perfil + P12 do mesmo certificado Distribution." >&2
+    fi
+  fi
+
+  if [[ "$status" -ne 0 ]]; then
+    echo "===== Últimas 40 linhas do xcodebuild ====="
+    tail -n 40 "$build_log" || true
+  fi
+  rm -f "$build_log"
+  return "$status"
+}
+
 case "$ACTION" in
   build)
     xcode_build_args
-    xcodebuild \
-      -workspace LikeMe.xcworkspace \
-      -scheme LikeMe \
-      -configuration Production \
+    run_xcodebuild_production build \
       -destination 'generic/platform=iOS' \
-      -sdk iphoneos \
-      "${XCODE_BUILD_ARGS[@]}" \
-      build
+      -sdk iphoneos
     ;;
   archive)
     xcode_build_args
-    xcodebuild \
-      -workspace LikeMe.xcworkspace \
-      -scheme LikeMe \
-      -configuration Production \
+    run_xcodebuild_production archive \
       -destination 'generic/platform=iOS' \
-      -archivePath "$PWD/build/LikeMe.xcarchive" \
-      "${XCODE_BUILD_ARGS[@]}" \
-      archive
+      -archivePath "$PWD/build/LikeMe.xcarchive"
     ;;
   export)
     mkdir -p "$PWD/build/export"
@@ -160,11 +215,20 @@ case "$ACTION" in
       run_export_archive "$EXPORT_PLIST" && export_status=0 || export_status=$?
     else
       echo "ExportOptions: $PWD/ExportOptions-AppStore.plist (signingStyle automatic)"
-      run_export_archive "$PWD/ExportOptions-AppStore.plist" && export_status=0 || export_status=$?
+      if run_export_archive "$PWD/ExportOptions-AppStore.plist"; then
+        export_status=0
+      elif manual_signing_viable; then
+        echo "Export automático falhou — tentando export manual..."
+        apply_manual_signing
+        write_manual_export_plist
+        run_export_archive "$EXPORT_PLIST" && export_status=0 || export_status=$?
+      else
+        export_status=1
+      fi
     fi
 
     if [[ "$export_status" -ne 0 ]]; then
-      echo "::error::Export falhou. Corrija permissões da API Key ASC (Admin + Certificates/Profiles) ou atualize IOS_PROVISIONING_PROFILE_BASE64 com perfil App Store do mesmo certificado do P12." >&2
+      echo "::error::Export falhou. Verifique permissões ASC (Admin + Certificates/Profiles) ou alinhe P12 e perfil App Store." >&2
       exit "$export_status"
     fi
 
