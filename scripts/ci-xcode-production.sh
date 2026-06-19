@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Build / archive / export Production no CI (sem conta Apple no Xcode).
-# 1) Automatic + ASC API Key (Distribution — não cria cert Development).
-# 2) Fallback manual só se P12 e perfil App Store batem (ci-ios-manual-signing-viable.sh).
+# Automatic + ASC API Key; fallback manual só no export se automático falhar.
 set -euo pipefail
 
 ACTION="${1:?Uso: ci-xcode-production.sh build|archive|export}"
@@ -10,7 +9,6 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT/ios"
 
 TEAM_ID="${IOS_DEVELOPMENT_TEAM:-VS752K4DT8}"
-DIST_IDENTITY="${IOS_CODE_SIGN_IDENTITY:-Apple Distribution}"
 
 XCODE_AUTH=()
 if [[ -n "${ASC_API_KEY_PATH:-}" && -f "${ASC_API_KEY_PATH}" ]]; then
@@ -26,43 +24,29 @@ HAS_ASC=false
 
 USE_MANUAL_SIGNING=false
 SIGNING_ARGS=()
-XCODE_PROVISIONING=()
+XCODE_PROVISIONING=( -allowProvisioningUpdates )
 
-apply_automatic_signing() {
-  USE_MANUAL_SIGNING=false
+if [[ "$HAS_ASC" == true ]]; then
   SIGNING_ARGS=(
     "DEVELOPMENT_TEAM=${TEAM_ID}"
     CODE_SIGN_STYLE=Automatic
   )
-  XCODE_PROVISIONING=( -allowProvisioningUpdates )
-  echo "Assinatura CI: Automatic + ASC (Distribution via project Production)"
-}
-
-apply_manual_signing() {
+  echo "Assinatura CI: Automatic + App Store Connect API Key"
+  if [[ -n "${IOS_PROVISIONING_PROFILE_UUID:-}" ]]; then
+    echo "Perfil manual (${IOS_PROVISIONING_PROFILE_UUID}) instalado — usado só se o export automático falhar."
+  fi
+elif [[ -n "${IOS_PROVISIONING_PROFILE_UUID:-}" ]]; then
   USE_MANUAL_SIGNING=true
+  XCODE_PROVISIONING=()
   SIGNING_ARGS=(
     "DEVELOPMENT_TEAM=${TEAM_ID}"
     CODE_SIGN_STYLE=Manual
-    "CODE_SIGN_IDENTITY=${DIST_IDENTITY}"
+    "CODE_SIGN_IDENTITY=${IOS_CODE_SIGN_IDENTITY:-Apple Distribution}"
     "PROVISIONING_PROFILE_SPECIFIER=${IOS_PROVISIONING_PROFILE_UUID}"
   )
-  XCODE_PROVISIONING=()
-  echo "Assinatura CI: manual (P12 + perfil ${IOS_PROVISIONING_PROFILE_NAME:-${IOS_PROVISIONING_PROFILE_UUID}})"
-}
-
-manual_signing_viable() {
-  bash "$ROOT/scripts/ci-ios-manual-signing-viable.sh"
-}
-
-if [[ "$HAS_ASC" == true ]]; then
-  apply_automatic_signing
-elif [[ -n "${IOS_PROVISIONING_PROFILE_UUID:-}" ]] && manual_signing_viable; then
-  apply_manual_signing
-elif [[ -n "${IOS_PROVISIONING_PROFILE_UUID:-}" ]]; then
-  echo "::error::Perfil App Store instalado mas P12 não corresponde ao perfil. Alinhe IOS_CERTIFICATE_P12_BASE64 e IOS_PROVISIONING_PROFILE_BASE64, ou configure ASC_API_KEY_P8." >&2
-  exit 1
+  echo "Assinatura CI: manual (profile ${IOS_PROVISIONING_PROFILE_UUID})"
 else
-  echo "::error::Configure ASC_API_KEY_P8 ou IOS_PROVISIONING_PROFILE_BASE64 + IOS_CERTIFICATE_P12_BASE64 alinhados." >&2
+  echo "::error::Configure ASC_API_KEY_P8 no GitHub, ou IOS_PROVISIONING_PROFILE_BASE64 com perfil App Store Distribution (sem ProvisionedDevices)." >&2
   exit 1
 fi
 
@@ -143,65 +127,28 @@ run_export_archive() {
   return "$status"
 }
 
-run_xcodebuild_production() {
-  local xcode_action="$1"
-  shift
-  local build_log
-  build_log="$(mktemp)"
-  set +e
-  xcodebuild \
-    -workspace LikeMe.xcworkspace \
-    -scheme LikeMe \
-    -configuration Production \
-    "$@" \
-    "${XCODE_BUILD_ARGS[@]}" \
-    "$xcode_action" \
-    2>&1 | tee "$build_log"
-  local status="${PIPESTATUS[0]}"
-  set -e
-
-  if [[ "$status" -ne 0 && "$USE_MANUAL_SIGNING" == false && "$HAS_ASC" == true ]]; then
-    if manual_signing_viable; then
-      echo "Automatic falhou — tentando assinatura manual (P12 + perfil alinhados)..."
-      apply_manual_signing
-      xcode_build_args
-      set +e
-      xcodebuild \
-        -workspace LikeMe.xcworkspace \
-        -scheme LikeMe \
-        -configuration Production \
-        "$@" \
-        "${XCODE_BUILD_ARGS[@]}" \
-        "$xcode_action" \
-        2>&1 | tee "$build_log"
-      status="${PIPESTATUS[0]}"
-      set -e
-    else
-      echo "::warning::Fallback manual indisponível: P12 e perfil App Store não correspondem." >&2
-      echo "Revogue certificados Development expirados em developer.apple.com ou regenere perfil + P12 do mesmo certificado Distribution." >&2
-    fi
-  fi
-
-  if [[ "$status" -ne 0 ]]; then
-    echo "===== Últimas 40 linhas do xcodebuild ====="
-    tail -n 40 "$build_log" || true
-  fi
-  rm -f "$build_log"
-  return "$status"
-}
-
 case "$ACTION" in
   build)
     xcode_build_args
-    run_xcodebuild_production build \
+    xcodebuild \
+      -workspace LikeMe.xcworkspace \
+      -scheme LikeMe \
+      -configuration Production \
       -destination 'generic/platform=iOS' \
-      -sdk iphoneos
+      -sdk iphoneos \
+      "${XCODE_BUILD_ARGS[@]}" \
+      build
     ;;
   archive)
     xcode_build_args
-    run_xcodebuild_production archive \
+    xcodebuild \
+      -workspace LikeMe.xcworkspace \
+      -scheme LikeMe \
+      -configuration Production \
       -destination 'generic/platform=iOS' \
-      -archivePath "$PWD/build/LikeMe.xcarchive"
+      -archivePath "$PWD/build/LikeMe.xcarchive" \
+      "${XCODE_BUILD_ARGS[@]}" \
+      archive
     ;;
   export)
     mkdir -p "$PWD/build/export"
@@ -214,9 +161,8 @@ case "$ACTION" in
       echo "ExportOptions: $PWD/ExportOptions-AppStore.plist (signingStyle automatic)"
       if run_export_archive "$PWD/ExportOptions-AppStore.plist"; then
         export_status=0
-      elif manual_signing_viable; then
-        echo "Export automático falhou — tentando export manual..."
-        apply_manual_signing
+      elif [[ -n "${IOS_PROVISIONING_PROFILE_UUID:-}" ]]; then
+        echo "Export automático falhou — tentando export manual com perfil instalado..."
         write_manual_export_plist
         run_export_archive "$EXPORT_PLIST" && export_status=0 || export_status=$?
       else
@@ -225,7 +171,7 @@ case "$ACTION" in
     fi
 
     if [[ "$export_status" -ne 0 ]]; then
-      echo "::error::Export falhou. Verifique permissões ASC (Admin + Certificates/Profiles) ou alinhe P12 e perfil App Store." >&2
+      echo "::error::Export falhou. Corrija permissões da API Key ASC (Admin + Certificates/Profiles) ou atualize IOS_PROVISIONING_PROFILE_BASE64 com perfil App Store do mesmo certificado do P12." >&2
       exit "$export_status"
     fi
 

@@ -38,7 +38,7 @@ O job **Aprovar envio para lojas** pausa até aprovação; builds e submits segu
 | `IOS_CERTIFICATE_P12_BASE64` | Certificado de distribuição |
 | `IOS_CERTIFICATE_PASSWORD` | Senha do P12 |
 | `KEYCHAIN_PASSWORD` | Senha temporária do keychain no runner |
-| `IOS_PROVISIONING_PROFILE_BASE64` | Perfil App Store — fallback manual se P12 e perfil baterem (script `ci-ios-manual-signing-viable.sh`) |
+| `IOS_PROVISIONING_PROFILE_BASE64` | Perfil App Store (opcional; fallback manual só no export) |
 | `ASC_API_KEY_P8` | Conteúdo do `.p8` App Store Connect |
 | `ASC_API_KEY_ID` | ID da chave (ex. `74BTTLL273`) |
 | `ASC_API_ISSUER_ID` | Issuer UUID (Integrations) |
