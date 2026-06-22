@@ -28,6 +28,26 @@ const OBJECTIVE_NAME_TO_MARKER_ID: Record<string, MarkerId> = {
   'Find wellbeing programs': 'environment',
 };
 
+/** Nomes do catálogo `personalObjective` (seed/API) para cada marcador do onboarding. */
+export const MARKER_ID_TO_OBJECTIVE_NAME: Record<MarkerId, string> = {
+  sleep: 'Improve my sleep',
+  activity: 'Move more',
+  connection: 'Find a comunity',
+  stress: 'Gain insights on my wellbeing',
+  smile: 'Buy health products',
+  nutrition: 'Eat better',
+  'purpose-vision': 'Get to know me better',
+  'self-esteem': 'Improve my habits',
+  spirituality: 'Track my mood',
+  environment: 'Find wellbeing programs',
+};
+
+export function markerIdToObjectiveName(markerId: string): string | null {
+  const normalizedId = markerId.toLowerCase().replace(/\s+/g, '-') as MarkerId;
+  if (!VALID_MARKER_IDS.has(normalizedId)) return null;
+  return MARKER_ID_TO_OBJECTIVE_NAME[normalizedId] ?? null;
+}
+
 export function objectiveNameToMarkerId(name: string): string | null {
   const markerId = OBJECTIVE_NAME_TO_MARKER_ID[name];
   if (markerId != null && VALID_MARKER_IDS.has(markerId)) return markerId;

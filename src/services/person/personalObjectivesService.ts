@@ -1,10 +1,14 @@
 import apiClient from '../infrastructure/apiClient';
+import storageService from '../auth/storageService';
+import { markerIdToObjectiveName } from '@/screens/auth/PersonalObjectivesScreen/useMarkers';
+import { logger } from '@/utils/logger';
 import {
   PersonalObjectivesResponse,
   PersonalObjectivesParams,
   PersonalObjective,
   MyObjectivesResponse,
 } from '@/types/personalObjectives';
+import type { ApiError } from '@/types/infrastructure';
 
 class PersonalObjectivesService {
   async getPersonalObjectives(params: PersonalObjectivesParams = {}): Promise<PersonalObjectivesResponse> {
@@ -20,6 +24,67 @@ class PersonalObjectivesService {
       true,
     );
     return (response.data ?? []).map((uo) => uo.objective);
+  }
+
+  async addMyObjective(objectiveId: string): Promise<void> {
+    await apiClient.post('/api/user-personal-objectives/me/objectives', { objectiveId }, true);
+  }
+
+  async saveMyObjectivesFromMarkerIds(markerIds: string[]): Promise<void> {
+    if (markerIds.length === 0) {
+      return;
+    }
+
+    const allObjectives = await this.getAllPersonalObjectives();
+    const objectiveIdByName = new Map(allObjectives.map((objective) => [objective.name, objective.id]));
+
+    const objectiveIds = new Set<string>();
+    for (const markerId of markerIds) {
+      const objectiveName = markerIdToObjectiveName(markerId);
+      if (!objectiveName) {
+        logger.warn('[personalObjectivesService] Marcador sem objetivo no catálogo', { markerId });
+        continue;
+      }
+      const objectiveId = objectiveIdByName.get(objectiveName);
+      if (!objectiveId) {
+        logger.warn('[personalObjectivesService] Objetivo não encontrado na API', { objectiveName });
+        continue;
+      }
+      objectiveIds.add(objectiveId);
+    }
+
+    if (objectiveIds.size === 0) {
+      throw new Error('Nenhum objetivo válido para salvar');
+    }
+
+    for (const objectiveId of objectiveIds) {
+      try {
+        await this.addMyObjective(objectiveId);
+      } catch (error) {
+        const status = (error as ApiError).status;
+        if (status === 409) {
+          continue;
+        }
+        throw error;
+      }
+    }
+  }
+
+  async backfillMyObjectivesFromLocalStorageIfNeeded(): Promise<void> {
+    const localMarkerIds = await storageService.getSelectedObjectivesIds();
+    if (localMarkerIds.length === 0) {
+      return;
+    }
+
+    try {
+      const existing = await this.getMySelectedObjectives();
+      if (existing.length > 0) {
+        return;
+      }
+      await this.saveMyObjectivesFromMarkerIds(localMarkerIds);
+    } catch (error) {
+      logger.warn('[personalObjectivesService] backfill de objetivos locais falhou', { cause: error });
+    }
   }
 
   async getAllPersonalObjectives(): Promise<PersonalObjective[]> {

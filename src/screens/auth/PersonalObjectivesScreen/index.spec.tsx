@@ -122,6 +122,7 @@ jest.mock('@/components/ui', () => {
 jest.mock('@/services', () => ({
   personalObjectivesService: {
     getMySelectedObjectives: jest.fn().mockResolvedValue([]),
+    saveMyObjectivesFromMarkerIds: jest.fn().mockResolvedValue(undefined),
   },
   storageService: {
     setObjectivesSelectedAt: jest.fn().mockResolvedValue(undefined),
@@ -200,6 +201,7 @@ describe('PersonalObjectivesScreen', () => {
     fireEvent.press(getByText('Iniciar'));
 
     await waitFor(() => {
+      expect(getServices().personalObjectivesService.saveMyObjectivesFromMarkerIds).toHaveBeenCalledWith(['sleep']);
       expect(getServices().storageService.setSelectedObjectivesIds).toHaveBeenCalledWith(['sleep']);
       expect(getServices().storageService.setObjectivesSelectedAt).toHaveBeenCalled();
       expect(mockNavigation.navigate).toHaveBeenCalledWith('Home');
@@ -291,10 +293,32 @@ describe('PersonalObjectivesScreen', () => {
     alertSpy.mockRestore();
   });
 
+  it('shows alert and does not navigate when API fails on submit', async () => {
+    const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
+    const mockRoute = { params: { firstName: 'John' } };
+    const alertSpy = jest.spyOn(require('react-native').Alert, 'alert');
+    getServices().personalObjectivesService.saveMyObjectivesFromMarkerIds.mockRejectedValue(new Error('API error'));
+
+    const { getByText } = render(<PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />);
+
+    await waitFor(() => expect(getByText('Iniciar')).toBeTruthy());
+    fireEvent.press(getByText('Sono'));
+    fireEvent.press(getByText('Iniciar'));
+
+    await waitFor(() => {
+      expect(alertSpy).toHaveBeenCalledWith('Erro', 'Não foi possível salvar os objetivos. Tente novamente.');
+    });
+    expect(getServices().storageService.setSelectedObjectivesIds).not.toHaveBeenCalled();
+    expect(mockNavigation.navigate).not.toHaveBeenCalled();
+
+    alertSpy.mockRestore();
+  });
+
   it('shows alert and does not navigate when storage fails on submit', async () => {
     const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
     const mockRoute = { params: { firstName: 'John' } };
     const alertSpy = jest.spyOn(require('react-native').Alert, 'alert');
+    getServices().personalObjectivesService.saveMyObjectivesFromMarkerIds.mockResolvedValue(undefined);
     getServices().storageService.setSelectedObjectivesIds.mockRejectedValue(new Error('Storage error'));
 
     const { getByText } = render(<PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />);
@@ -315,6 +339,7 @@ describe('PersonalObjectivesScreen', () => {
     const submitPromise = new Promise<void>(() => {
       /* noop */
     });
+    getServices().personalObjectivesService.saveMyObjectivesFromMarkerIds.mockReturnValue(submitPromise);
     getServices().storageService.setSelectedObjectivesIds.mockReturnValue(submitPromise);
     getServices().storageService.setObjectivesSelectedAt.mockReturnValue(submitPromise);
 
@@ -329,7 +354,7 @@ describe('PersonalObjectivesScreen', () => {
     fireEvent.press(getByText('Iniciar'));
 
     await waitFor(() => {
-      expect(getServices().storageService.setSelectedObjectivesIds).toHaveBeenCalledTimes(1);
+      expect(getServices().personalObjectivesService.saveMyObjectivesFromMarkerIds).toHaveBeenCalledTimes(1);
     });
     expect(mockNavigation.navigate).not.toHaveBeenCalled();
   });

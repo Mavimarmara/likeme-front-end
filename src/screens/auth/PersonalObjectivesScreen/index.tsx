@@ -80,7 +80,9 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
     try {
       setIsSubmitting(true);
       const now = new Date().toISOString();
-      await storageService.setSelectedObjectivesIds(Array.from(selectedMarkers));
+      const markerIds = Array.from(selectedMarkers);
+      await personalObjectivesService.saveMyObjectivesFromMarkerIds(markerIds);
+      await storageService.setSelectedObjectivesIds(markerIds);
       await storageService.setObjectivesSelectedAt(now);
       logEvent(CUSTOM_EVENTS.OBJECTIVES_SUBMITTED, {
         [ANALYTICS_PARAMS.SCREEN_NAME]: 'personal_objectives',

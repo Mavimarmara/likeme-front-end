@@ -408,14 +408,7 @@ class AuthService {
 
       await storageService.setUser(authResult.user);
 
-      const registerCompletedAt =
-        backendResponse.registerCompletedAt || backendResponse.data?.registerCompletedAt || null;
-
-      const objectivesSelectedAt =
-        backendResponse.objectivesSelectedAt || backendResponse.data?.objectivesSelectedAt || null;
-
-      await storageService.setRegisterCompletedAt(registerCompletedAt);
-      await storageService.setObjectivesSelectedAt(objectivesSelectedAt);
+      await setOnboardingStep(backendResponse);
 
       invalidateApiClientAuthTokenMemoryCache();
 
