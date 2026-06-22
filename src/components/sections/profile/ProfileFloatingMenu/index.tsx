@@ -43,12 +43,18 @@ const ProfileFloatingMenu: React.FC<Props> = ({ visible, navigation, onClose }) 
     void loadUser();
   }, [visible]);
 
-  const handleLogout = () => {
-    rootNavigation.reset({
-      index: 0,
-      routes: [{ name: 'Unauthenticated' as never }],
-    });
-  };
+  const handleLogout = useCallback(async () => {
+    try {
+      await AuthService.logout();
+      rootNavigation.reset({
+        index: 0,
+        routes: [{ name: 'Unauthenticated' as never }],
+      });
+    } catch (error) {
+      logger.error('[ProfileFloatingMenu] Falha ao fazer logout pelo menu de perfil', { cause: error });
+      Alert.alert(t('common.error'), 'Não foi possível fazer logout. Tente novamente.');
+    }
+  }, [rootNavigation, t]);
 
   const runDeleteAccount = useCallback(async () => {
     setDeletingAccount(true);

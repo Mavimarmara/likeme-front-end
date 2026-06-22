@@ -62,7 +62,7 @@ describe('setOnboardingStep', () => {
     expect(mockStorage.setPrivacyPolicyAcceptedAt).toHaveBeenCalledWith('2026-01-02T00:00:00.000Z');
   });
 
-  it('não sobrescreve flags quando backend devolve null (ex.: objectivesSelectedAt ausente)', async () => {
+  it('não sobrescreve flags nulas e restaura welcome quando backend devolve progresso parcial', async () => {
     await setOnboardingStep({
       data: {
         onboarding: {
@@ -76,7 +76,7 @@ describe('setOnboardingStep', () => {
     expect(mockStorage.setRegisterCompletedAt).toHaveBeenCalled();
     expect(mockStorage.setObjectivesSelectedAt).not.toHaveBeenCalled();
     expect(mockStorage.setPrivacyPolicyAcceptedAt).toHaveBeenCalled();
-    expect(mockStorage.setWelcomeScreenAccessedAt).not.toHaveBeenCalled();
+    expect(mockStorage.setWelcomeScreenAccessedAt).toHaveBeenCalledWith(expect.any(String));
   });
 
   it('marca welcomeScreenAccessedAt quando onboarding do backend está completo', async () => {

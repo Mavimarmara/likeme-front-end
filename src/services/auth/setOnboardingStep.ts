@@ -22,16 +22,16 @@ function readOnboardingSnapshot(envelope: unknown): OnboardingSnapshot | null {
   return source;
 }
 
-function isBackendOnboardingComplete(snapshot: OnboardingSnapshot): boolean {
+function hasBackendOnboardingProgress(snapshot: OnboardingSnapshot): boolean {
   return (
-    snapshot.registerCompletedAt != null &&
-    snapshot.objectivesSelectedAt != null &&
+    snapshot.registerCompletedAt != null ||
+    snapshot.objectivesSelectedAt != null ||
     snapshot.privacyPolicyAcceptedAt != null
   );
 }
 
-async function markWelcomeWhenBackendOnboardingComplete(snapshot: OnboardingSnapshot): Promise<void> {
-  if (!isBackendOnboardingComplete(snapshot)) {
+async function markWelcomeWhenBackendOnboardingHasProgress(snapshot: OnboardingSnapshot): Promise<void> {
+  if (!hasBackendOnboardingProgress(snapshot)) {
     return;
   }
   const welcomeScreenAccessedAt = await storageService.getWelcomeScreenAccessedAt();
@@ -56,5 +56,5 @@ export async function setOnboardingStep(envelope: unknown): Promise<void> {
     await storageService.setPrivacyPolicyAcceptedAt(String(source.privacyPolicyAcceptedAt));
   }
 
-  await markWelcomeWhenBackendOnboardingComplete(source);
+  await markWelcomeWhenBackendOnboardingHasProgress(source);
 }

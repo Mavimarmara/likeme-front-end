@@ -342,7 +342,13 @@ const CheckoutScreen: React.FC<Props> = ({ navigation, route }) => {
         orderData.shippingCost = isShippingDisabled ? 0 : appliedVoucher.shippingCost;
       }
 
-      logger.debug('Dados do pedido completos:', orderData);
+      logger.debug('[CheckoutScreen] Pedido pronto para criação', {
+        totalItems: orderItems.length,
+        paymentMethod: orderData.paymentMethod,
+        shippingCost: orderData.shippingCost,
+        hasVoucher: Boolean(orderData.voucherCode),
+        hasBillingPeriod: Boolean(orderData.billingPeriod),
+      });
 
       const orderResponse = await orderService.createOrder(orderData);
 
