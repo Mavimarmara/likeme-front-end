@@ -9,7 +9,6 @@ const mockGetRegisterCompletedAt = jest.fn();
 const mockGetObjectivesSelectedAt = jest.fn();
 const mockGetUser = jest.fn();
 const mockRefreshBackendSession = jest.fn();
-const mockBackfill = jest.fn();
 
 jest.mock('@/constants', () => ({
   AUTH_BOOTSTRAP_HTTP_TIMEOUT_MS: 100,
@@ -41,9 +40,6 @@ jest.mock('@/services', () => ({
   AuthService: {
     refreshBackendSessionFromStoredCredentials: (...args: unknown[]) => mockRefreshBackendSession(...args),
   },
-  personalObjectivesService: {
-    backfillMyObjectivesFromLocalStorageIfNeeded: (...args: unknown[]) => mockBackfill(...args),
-  },
   userService: {
     getProfile: jest.fn(),
   },
@@ -58,7 +54,6 @@ describe('useOnboardingRedirect', () => {
     jest.clearAllMocks();
     mockGetToken.mockResolvedValue('session-token');
     mockGetUser.mockResolvedValue({ name: 'João Souza' });
-    mockBackfill.mockResolvedValue(undefined);
     mockRefreshBackendSession.mockImplementation(async () => {
       await mockSetOnboardingStep({
         data: {
@@ -73,7 +68,7 @@ describe('useOnboardingRedirect', () => {
     });
   });
 
-  it('sincroniza com backend, faz backfill e redireciona para Home após login (regressão APP-334)', async () => {
+  it('sincroniza com backend e redireciona para Home quando snapshot está completo', async () => {
     mockSetOnboardingStep.mockImplementation(async () => {
       mockGetWelcomeScreenAccessedAt.mockResolvedValue('2026-01-01T00:00:00.000Z');
       mockGetPrivacyPolicyAcceptedAt.mockResolvedValue('2026-01-02T00:00:00.000Z');
@@ -84,8 +79,7 @@ describe('useOnboardingRedirect', () => {
     renderHook(() => useOnboardingRedirect(navigationReplace));
 
     await waitFor(() => {
-      expect(mockRefreshBackendSession).toHaveBeenCalledTimes(2);
-      expect(mockBackfill).toHaveBeenCalledTimes(1);
+      expect(mockRefreshBackendSession).toHaveBeenCalledTimes(1);
       expect(navigationReplace).toHaveBeenCalledWith('Home', undefined);
     });
   });
@@ -115,7 +109,6 @@ describe('useOnboardingRedirect', () => {
 
     await waitFor(() => {
       expect(mockRefreshBackendSession).not.toHaveBeenCalled();
-      expect(mockBackfill).not.toHaveBeenCalled();
     });
   });
 });

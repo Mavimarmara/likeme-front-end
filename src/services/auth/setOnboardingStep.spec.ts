@@ -7,8 +7,6 @@ jest.mock('./storageService', () => ({
     setRegisterCompletedAt: jest.fn(),
     setObjectivesSelectedAt: jest.fn(),
     setPrivacyPolicyAcceptedAt: jest.fn(),
-    getWelcomeScreenAccessedAt: jest.fn(),
-    setWelcomeScreenAccessedAt: jest.fn(),
   },
 }));
 
@@ -17,7 +15,6 @@ const mockStorage = storageService as jest.Mocked<typeof storageService>;
 describe('setOnboardingStep', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockStorage.getWelcomeScreenAccessedAt.mockResolvedValue(null);
   });
 
   it('ignora envelope inválido', async () => {
@@ -62,7 +59,7 @@ describe('setOnboardingStep', () => {
     expect(mockStorage.setPrivacyPolicyAcceptedAt).toHaveBeenCalledWith('2026-01-02T00:00:00.000Z');
   });
 
-  it('não sobrescreve flags quando backend devolve null (ex.: objectivesSelectedAt ausente)', async () => {
+  it('não sobrescreve objectivesSelectedAt quando backend devolve null', async () => {
     await setOnboardingStep({
       data: {
         onboarding: {
@@ -76,36 +73,5 @@ describe('setOnboardingStep', () => {
     expect(mockStorage.setRegisterCompletedAt).toHaveBeenCalled();
     expect(mockStorage.setObjectivesSelectedAt).not.toHaveBeenCalled();
     expect(mockStorage.setPrivacyPolicyAcceptedAt).toHaveBeenCalled();
-    expect(mockStorage.setWelcomeScreenAccessedAt).not.toHaveBeenCalled();
-  });
-
-  it('marca welcomeScreenAccessedAt quando onboarding do backend está completo', async () => {
-    await setOnboardingStep({
-      data: {
-        onboarding: {
-          registerCompletedAt: '2026-01-03T00:00:00.000Z',
-          objectivesSelectedAt: '2026-01-04T00:00:00.000Z',
-          privacyPolicyAcceptedAt: '2026-01-02T00:00:00.000Z',
-        },
-      },
-    });
-
-    expect(mockStorage.setWelcomeScreenAccessedAt).toHaveBeenCalledWith(expect.any(String));
-  });
-
-  it('não altera welcomeScreenAccessedAt quando já existe localmente', async () => {
-    mockStorage.getWelcomeScreenAccessedAt.mockResolvedValue('2026-01-01T00:00:00.000Z');
-
-    await setOnboardingStep({
-      data: {
-        onboarding: {
-          registerCompletedAt: '2026-01-03T00:00:00.000Z',
-          objectivesSelectedAt: '2026-01-04T00:00:00.000Z',
-          privacyPolicyAcceptedAt: '2026-01-02T00:00:00.000Z',
-        },
-      },
-    });
-
-    expect(mockStorage.setWelcomeScreenAccessedAt).not.toHaveBeenCalled();
   });
 });

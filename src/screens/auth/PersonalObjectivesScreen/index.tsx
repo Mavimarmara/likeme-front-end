@@ -81,9 +81,13 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
       setIsSubmitting(true);
       const now = new Date().toISOString();
       const markerIds = Array.from(selectedMarkers);
-      await personalObjectivesService.saveMyObjectivesFromMarkerIds(markerIds);
       await storageService.setSelectedObjectivesIds(markerIds);
       await storageService.setObjectivesSelectedAt(now);
+      try {
+        await personalObjectivesService.saveMyObjectivesFromMarkerIds(markerIds);
+      } catch (error) {
+        logger.warn('[PersonalObjectivesScreen] Falha ao persistir objetivos no backend (local já gravado)', error);
+      }
       logEvent(CUSTOM_EVENTS.OBJECTIVES_SUBMITTED, {
         [ANALYTICS_PARAMS.SCREEN_NAME]: 'personal_objectives',
         [ANALYTICS_PARAMS.VALUE]: selectedMarkers.size,

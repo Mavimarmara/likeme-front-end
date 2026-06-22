@@ -46,23 +46,15 @@ describe('getNextOnboardingDestination', () => {
     });
   });
 
-  describe('regressão APP-334 (pós-logout + login)', () => {
-    it('não manda para PersonalObjectives quando backend hidratou objectivesSelectedAt após storage limpo', () => {
-      const afterBackendSync = getNextOnboardingDestination(
-        WELCOME_AT,
-        PRIVACY_AT,
-        REGISTER_AT,
-        OBJECTIVES_AT,
-        'João Souza',
-      );
-
-      expect(afterBackendSync).toEqual({ screen: 'Home' });
+  describe('regressão APP-334 (pós-logout + login via snapshot do backend)', () => {
+    it('vai para Home quando storage foi hidratado com objectivesSelectedAt do backend', () => {
+      expect(getNextOnboardingDestination(WELCOME_AT, PRIVACY_AT, REGISTER_AT, OBJECTIVES_AT, 'João Souza')).toEqual({
+        screen: 'Home',
+      });
     });
 
-    it('reproduz o bug antigo quando só registro e privacidade vêm do backend (sem objetivos)', () => {
-      const buggyDestination = getNextOnboardingDestination(WELCOME_AT, PRIVACY_AT, REGISTER_AT, null, 'João Souza');
-
-      expect(buggyDestination).toEqual({
+    it('vai para PersonalObjectives quando backend não devolve objectivesSelectedAt', () => {
+      expect(getNextOnboardingDestination(WELCOME_AT, PRIVACY_AT, REGISTER_AT, null, 'João Souza')).toEqual({
         screen: 'PersonalObjectives',
         params: { userName: 'João Souza', firstName: 'João' },
       });

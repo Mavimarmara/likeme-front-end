@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { AUTH_BOOTSTRAP_HTTP_TIMEOUT_MS, FORCE_START_ONBOARDING_LOCALLY } from '@/constants';
 import { getNextOnboardingDestination } from '@/utils';
-import { storageService, AuthService, userService, personalObjectivesService } from '@/services';
+import { storageService, AuthService, userService } from '@/services';
 import { invalidateApiClientAuthTokenMemoryCache } from '@/services/infrastructure/apiClient';
 import { logger } from '@/utils/logger';
 
@@ -18,8 +18,6 @@ async function syncOnboardingStateFromBackend(): Promise<void> {
   const token = await storageService.getToken();
   if (!token) return;
   try {
-    await AuthService.refreshBackendSessionFromStoredCredentials();
-    await personalObjectivesService.backfillMyObjectivesFromLocalStorageIfNeeded();
     await AuthService.refreshBackendSessionFromStoredCredentials();
   } catch (error) {
     logger.warn('[useOnboardingRedirect] syncOnboardingStateFromBackend falhou; segue com flags do storage', {
