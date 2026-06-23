@@ -4,6 +4,8 @@ describe('useMarkers objective mapping', () => {
   it('mapeia nomes do catálogo do backend para marcadores do onboarding', () => {
     expect(objectiveNameToMarkerId('Improve my sleep')).toBe('sleep');
     expect(objectiveNameToMarkerId('Move more')).toBe('activity');
+    expect(objectiveNameToMarkerId('Gain insights on my wellbeing')).toBe('stress');
+    expect(objectiveNameToMarkerId('Buy health products')).toBe('smile');
     expect(objectiveNameToMarkerId('Eat better')).toBe('nutrition');
   });
 
