@@ -1,4 +1,5 @@
 import apiClient from '../infrastructure/apiClient';
+import storageService from '../auth/storageService';
 import { logger } from '@/utils/logger';
 import type { Contact, ContactType } from '@/types/contact';
 import type { ApiResponse } from '@/types/infrastructure';
@@ -40,6 +41,8 @@ export interface UserProfile extends User {
 }
 
 export type GetProfileResponse = ApiResponse<UserProfile>;
+
+type UploadProfileImageResponse = ApiResponse<{ url: string; path: string }>;
 
 export interface ShippingAddressFromProfile {
   fullName: string;
@@ -152,6 +155,46 @@ class UserService {
       !(response as ApiResponse<null>).success
     ) {
       throw new Error((response as ApiResponse<null>)?.message || 'Erro ao eliminar a conta.');
+    }
+  }
+
+  async uploadProfileAvatar(localUri: string, mimeType = 'image/jpeg', fileName = 'avatar.jpg'): Promise<string> {
+    const formData = new FormData();
+    formData.append('file', {
+      uri: localUri,
+      type: mimeType,
+      name: fileName,
+    } as unknown as Blob);
+
+    const response = await apiClient.postMultipart<UploadProfileImageResponse>('/api/upload/profile-image', formData);
+    const url = response.data?.url?.trim();
+    if (!response.success || !url) {
+      throw new Error(response.message || 'Erro ao enviar foto de perfil.');
+    }
+    return url;
+  }
+
+  async updateProfileAvatar(avatarUrl: string | null): Promise<GetProfileResponse> {
+    const response = await apiClient.put<GetProfileResponse>('/api/auth/profile', { avatar: avatarUrl }, true);
+    if (!response.success) {
+      throw new Error(response.message || 'Erro ao atualizar foto de perfil.');
+    }
+    return response;
+  }
+
+  async syncStoredUserPicture(avatarUri: string | null): Promise<void> {
+    try {
+      const user = await storageService.getUser();
+      if (!user) return;
+      const next = { ...user };
+      if (avatarUri) {
+        next.picture = avatarUri;
+      } else {
+        delete next.picture;
+      }
+      await storageService.setUser(next);
+    } catch (error) {
+      logger.warn('[userService] Falha ao sincronizar avatar no storage local', { cause: error });
     }
   }
 }

@@ -78,6 +78,7 @@ type RootStackParamListCore = {
     };
   };
   Profile: undefined;
+  UserProfileHome: undefined;
   SubscriptionList: undefined;
   ProtocolDetail: {
     protocol: {

@@ -8,7 +8,7 @@ import { ScreenWithHeader } from '@/components/ui/layout';
 import { CTACard } from '@/components/ui/cards';
 import { COLORS, SPACING } from '@/constants';
 import { GradientSplash6 } from '@/assets/auth';
-import { personalObjectivesService, storageService } from '@/services';
+import { AuthService, personalObjectivesService } from '@/services';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen, logEvent } from '@/analytics';
 import { CUSTOM_EVENTS, ANALYTICS_PARAMS } from '@/analytics/constants';
@@ -48,16 +48,9 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
         const ids = objectives.map((obj) => objectiveNameToMarkerId(obj.name)).filter((id): id is string => id != null);
         if (ids.length > 0) {
           setSelectedMarkers(new Set(ids));
-          return;
         }
       } catch (error) {
         logger.error('[PersonalObjectivesScreen] Falha ao carregar objetivos do backend.', error);
-      }
-      try {
-        const ids = await storageService.getSelectedObjectivesIds();
-        if (ids.length > 0) setSelectedMarkers(new Set(ids));
-      } catch (error) {
-        logger.error('[PersonalObjectivesScreen] Falha ao carregar objetivos salvos localmente.', error);
       }
     };
     loadSelection();
@@ -79,22 +72,17 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
     }
     try {
       setIsSubmitting(true);
-      const now = new Date().toISOString();
       const markerIds = Array.from(selectedMarkers);
-      await storageService.setSelectedObjectivesIds(markerIds);
-      await storageService.setObjectivesSelectedAt(now);
-      try {
-        await personalObjectivesService.saveMyObjectivesFromMarkerIds(markerIds);
-      } catch (error) {
-        logger.warn('[PersonalObjectivesScreen] Falha ao persistir objetivos no backend (local já gravado)', error);
-      }
+      await personalObjectivesService.saveMyObjectivesFromMarkerIds(markerIds);
+      await AuthService.refreshBackendSessionFromStoredCredentials();
       logEvent(CUSTOM_EVENTS.OBJECTIVES_SUBMITTED, {
         [ANALYTICS_PARAMS.SCREEN_NAME]: 'personal_objectives',
         [ANALYTICS_PARAMS.VALUE]: selectedMarkers.size,
       });
       const nextScreen = getNextOnboardingScreen('PersonalObjectives');
       navigation.navigate(nextScreen as never);
-    } catch {
+    } catch (error) {
+      logger.error('[PersonalObjectivesScreen] Falha ao salvar objetivos no backend.', error);
       Alert.alert(t('common.error'), t('auth.objectivesSaveError'));
     } finally {
       setIsSubmitting(false);

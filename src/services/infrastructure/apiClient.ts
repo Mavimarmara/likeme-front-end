@@ -324,6 +324,43 @@ class ApiClient {
     }
   }
 
+  async postMultipart<T>(
+    endpoint: string,
+    formData: FormData,
+    includeAuth = true,
+    timeoutMs: number = 60_000,
+  ): Promise<T> {
+    try {
+      const execute = async () => {
+        const url = `${this.baseUrl}${endpoint}`;
+        const token = includeAuth ? await this.resolveAuthTokenForRequest() : null;
+        const headers: Record<string, string> = { accept: '*/*' };
+        if (includeAuth && token) {
+          headers.Authorization = `Bearer ${token}`;
+        }
+        this.logAuthHeader('POST', url, headers);
+        return this.fetchWithRequestTimeout(
+          url,
+          {
+            method: 'POST',
+            headers,
+            body: formData,
+          },
+          timeoutMs,
+        );
+      };
+
+      const response = await this.requestWithRefresh(execute, includeAuth);
+      return this.handleResponse<T>(response);
+    } catch (error) {
+      logger.error('API POST multipart error:', error);
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Falha no upload da imagem');
+    }
+  }
+
   async delete<T>(endpoint: string, data?: any, includeAuth = true): Promise<T> {
     try {
       const execute = async () => {

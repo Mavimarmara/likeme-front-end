@@ -107,6 +107,11 @@ const ProfileFloatingMenu: React.FC<Props> = ({ visible, navigation, onClose }) 
     rootNavigation.navigate('Activities' as never, { initialTab: 'actives' } as never);
   };
 
+  const handleGoToUserProfile = () => {
+    onClose();
+    rootNavigation.navigate('UserProfileHome' as never);
+  };
+
   const userName = useMemo(() => user?.name?.trim() || user?.nickname?.trim() || 'Usuário', [user]);
   const userEmail = useMemo(() => user?.email?.trim() || '', [user]);
 
@@ -135,13 +140,13 @@ const ProfileFloatingMenu: React.FC<Props> = ({ visible, navigation, onClose }) 
           </View>
 
           <View style={styles.itemsContainer}>
-            <View style={styles.menuItemDisabled}>
+            <TouchableOpacity onPress={handleGoToUserProfile} style={styles.menuItem} activeOpacity={0.7}>
               <View style={styles.menuItemLeft}>
-                <Icon name='person-outline' size={22} color='#9aa2b1' />
-                <Text style={styles.menuItemDisabledLabel}>Meu Perfil</Text>
+                <Icon name='person-outline' size={22} color={COLORS.TEXT} />
+                <Text style={styles.menuItemLabel}>Meu Perfil</Text>
               </View>
-              <Icon name='chevron-right' size={22} color='#C7CED8' />
-            </View>
+              <Icon name='chevron-right' size={22} color='#6e6a6a' />
+            </TouchableOpacity>
             <View style={styles.separator} />
 
             <TouchableOpacity onPress={handleGoToOrders} style={styles.menuItem} activeOpacity={0.7}>

@@ -221,6 +221,13 @@ module.exports = {
       'expo-asset',
       'expo-font',
       [
+        'expo-image-picker',
+        {
+          photosPermission: 'Precisamos acessar suas fotos para você escolher uma imagem de perfil.',
+          cameraPermission: 'Precisamos da câmera para você tirar uma foto de perfil.',
+        },
+      ],
+      [
         'expo-splash-screen',
         {
           image: './assets/app/icon.png',
@@ -301,10 +308,10 @@ module.exports = {
         UIBackgroundModes: ['remote-notification'],
         NSBluetoothPeripheralUsageDescription:
           'Usamos Bluetooth para áudio em chamadas de vídeo quando você usa fones compatíveis.',
-        NSCameraUsageDescription: 'Precisamos da câmera para você participar das lives e reuniões com vídeo.',
+        NSCameraUsageDescription:
+          'Precisamos da câmera para você tirar uma foto de perfil e participar de lives com vídeo.',
         NSMicrophoneUsageDescription: 'Precisamos do microfone para você participar das lives e reuniões com áudio.',
-        NSPhotoLibraryUsageDescription:
-          'Precisamos acessar fotos apenas se você compartilhar imagens durante uma reunião.',
+        NSPhotoLibraryUsageDescription: 'Precisamos acessar suas fotos para você escolher uma imagem de perfil.',
         LSApplicationQueriesSchemes: ['itms-apps', 'itms'],
       },
       entitlements: {

@@ -204,6 +204,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'flex-end',
+    gap: SPACING.MD,
   },
   actionButton: {
     flexDirection: 'row',

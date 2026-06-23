@@ -40,6 +40,7 @@ import {
   getCheckoutScreen,
   getProviderProfileScreen,
   getProfileScreen,
+  getUserProfileHomeScreen,
   getProtocolDetailScreen,
   getSubscriptionListScreen,
   getPrivacyPoliciesScreen,
@@ -206,6 +207,11 @@ const RootNavigator: React.FC = () => {
                       options={{ title: 'Provider Profile' }}
                     />
                     <Stack.Screen name='Profile' getComponent={getProfileScreen} options={{ title: 'Perfil' }} />
+                    <Stack.Screen
+                      name='UserProfileHome'
+                      getComponent={getUserProfileHomeScreen}
+                      options={{ title: 'Meu Perfil' }}
+                    />
                     <Stack.Screen
                       name='ProtocolDetail'
                       getComponent={getProtocolDetailScreen}

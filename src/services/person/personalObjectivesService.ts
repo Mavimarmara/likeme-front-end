@@ -1,5 +1,4 @@
 import apiClient from '../infrastructure/apiClient';
-import storageService from '../auth/storageService';
 import { markerIdToObjectiveName } from '@/screens/auth/PersonalObjectivesScreen/useMarkers';
 import { logger } from '@/utils/logger';
 import {
@@ -67,23 +66,6 @@ class PersonalObjectivesService {
         }
         throw error;
       }
-    }
-  }
-
-  async backfillMyObjectivesFromLocalStorageIfNeeded(): Promise<void> {
-    const localMarkerIds = await storageService.getSelectedObjectivesIds();
-    if (localMarkerIds.length === 0) {
-      return;
-    }
-
-    try {
-      const existing = await this.getMySelectedObjectives();
-      if (existing.length > 0) {
-        return;
-      }
-      await this.saveMyObjectivesFromMarkerIds(localMarkerIds);
-    } catch (error) {
-      logger.warn('[personalObjectivesService] backfill de objetivos locais falhou', { cause: error });
     }
   }
 
