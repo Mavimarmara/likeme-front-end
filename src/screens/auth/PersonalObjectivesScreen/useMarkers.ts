@@ -21,6 +21,8 @@ const OBJECTIVE_NAME_TO_MARKER_ID: Record<string, MarkerId> = {
   'Improve my sleep': 'sleep',
   'Move more': 'activity',
   'Find a comunity': 'connection',
+  'Gain insights on my wellbeing': 'stress',
+  'Buy health products': 'smile',
   'Eat better': 'nutrition',
   'Get to know me better': 'purpose-vision',
   'Improve my habits': 'self-esteem',

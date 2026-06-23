@@ -8,8 +8,10 @@ const mockGetPrivacyPolicyAcceptedAt = jest.fn();
 const mockGetRegisterCompletedAt = jest.fn();
 const mockGetObjectivesSelectedAt = jest.fn();
 const mockGetUser = jest.fn();
+const mockSetObjectivesSelectedAt = jest.fn();
 const mockRefreshBackendSession = jest.fn();
 const mockBackfill = jest.fn();
+const mockGetMySelectedObjectives = jest.fn();
 
 jest.mock('@/constants', () => ({
   AUTH_BOOTSTRAP_HTTP_TIMEOUT_MS: 100,
@@ -36,6 +38,7 @@ jest.mock('@/services', () => ({
     getRegisterCompletedAt: (...args: unknown[]) => mockGetRegisterCompletedAt(...args),
     getObjectivesSelectedAt: (...args: unknown[]) => mockGetObjectivesSelectedAt(...args),
     getUser: (...args: unknown[]) => mockGetUser(...args),
+    setObjectivesSelectedAt: (...args: unknown[]) => mockSetObjectivesSelectedAt(...args),
     clearAll: jest.fn(),
   },
   AuthService: {
@@ -43,6 +46,7 @@ jest.mock('@/services', () => ({
   },
   personalObjectivesService: {
     backfillMyObjectivesFromLocalStorageIfNeeded: (...args: unknown[]) => mockBackfill(...args),
+    getMySelectedObjectives: (...args: unknown[]) => mockGetMySelectedObjectives(...args),
   },
   userService: {
     getProfile: jest.fn(),
@@ -59,6 +63,10 @@ describe('useOnboardingRedirect', () => {
     mockGetToken.mockResolvedValue('session-token');
     mockGetUser.mockResolvedValue({ name: 'João Souza' });
     mockBackfill.mockResolvedValue(undefined);
+    mockGetMySelectedObjectives.mockResolvedValue([]);
+    mockSetObjectivesSelectedAt.mockImplementation(async (date: string) => {
+      mockGetObjectivesSelectedAt.mockResolvedValue(date);
+    });
     mockRefreshBackendSession.mockImplementation(async () => {
       await mockSetOnboardingStep({
         data: {
@@ -70,6 +78,24 @@ describe('useOnboardingRedirect', () => {
         },
       });
       return { ok: true, responseBody: {} };
+    });
+  });
+
+  it('marca objetivos como concluídos quando o backend tem seleção mas não devolve objectivesSelectedAt', async () => {
+    mockGetMySelectedObjectives.mockResolvedValue([{ id: 'obj-sleep', name: 'Improve my sleep' }]);
+    mockSetOnboardingStep.mockImplementation(async () => {
+      mockGetWelcomeScreenAccessedAt.mockResolvedValue('2026-01-01T00:00:00.000Z');
+      mockGetPrivacyPolicyAcceptedAt.mockResolvedValue('2026-01-02T00:00:00.000Z');
+      mockGetRegisterCompletedAt.mockResolvedValue('2026-01-03T00:00:00.000Z');
+      mockGetObjectivesSelectedAt.mockResolvedValue(null);
+    });
+
+    renderHook(() => useOnboardingRedirect(navigationReplace));
+
+    await waitFor(() => {
+      expect(mockGetMySelectedObjectives).toHaveBeenCalledTimes(1);
+      expect(mockSetObjectivesSelectedAt).toHaveBeenCalledWith(expect.any(String));
+      expect(navigationReplace).toHaveBeenCalledWith('Home', undefined);
     });
   });
 

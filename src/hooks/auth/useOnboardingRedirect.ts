@@ -21,6 +21,13 @@ async function syncOnboardingStateFromBackend(): Promise<void> {
     await AuthService.refreshBackendSessionFromStoredCredentials();
     await personalObjectivesService.backfillMyObjectivesFromLocalStorageIfNeeded();
     await AuthService.refreshBackendSessionFromStoredCredentials();
+    const objectivesSelectedAt = await storageService.getObjectivesSelectedAt();
+    if (!objectivesSelectedAt) {
+      const selectedObjectives = await personalObjectivesService.getMySelectedObjectives();
+      if (selectedObjectives.length > 0) {
+        await storageService.setObjectivesSelectedAt(new Date().toISOString());
+      }
+    }
   } catch (error) {
     logger.warn('[useOnboardingRedirect] syncOnboardingStateFromBackend falhou; segue com flags do storage', {
       cause: error,
