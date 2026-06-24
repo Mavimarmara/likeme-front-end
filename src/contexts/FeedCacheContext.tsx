@@ -1,5 +1,6 @@
-import React, { createContext, useCallback, useContext, useMemo, useRef } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef } from 'react';
 import type { Post } from '@/types';
+import { registerFeedCacheInvalidationHandler } from '@/utils/community/feedCacheInvalidation';
 
 interface FeedCacheEntry {
   posts: Post[];
@@ -46,6 +47,8 @@ export const FeedCacheProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
     cacheRef.current.delete(key);
   }, []);
+
+  useEffect(() => registerFeedCacheInvalidationHandler(invalidate), [invalidate]);
 
   const value = useMemo(() => ({ read, write, invalidate }), [read, write, invalidate]);
 

@@ -3,6 +3,7 @@ import { renderHook, waitFor, act } from '@testing-library/react-native';
 import { useUserFeed } from './useUserFeed';
 import { communityService } from '@/services';
 import { FeedCacheProvider, useFeedCache, type FeedCacheEntry } from '@/contexts/FeedCacheContext';
+import { invalidateFeedCache } from '@/utils/community/feedCacheInvalidation';
 
 jest.mock('@/services', () => ({
   communityService: {
@@ -80,6 +81,36 @@ function createFeedCacheWrapper(cacheKey: string, entry: FeedCacheEntry) {
 describe('useUserFeed (scroll infinito / paginação)', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  it('invalidação global limpa cache do provider ativo', () => {
+    const cacheEntry: FeedCacheEntry = {
+      posts: [
+        {
+          id: 'user-a-post',
+          content: '',
+          comments: [],
+          createdAt: new Date('2026-01-01T00:00:00.000Z'),
+        },
+      ],
+      nextCursor: undefined,
+      hasMore: false,
+      currentPage: 1,
+      fetchedAt: Date.now(),
+    };
+
+    const { result } = renderHook(() => useFeedCache(), { wrapper: FeedCacheProvider });
+
+    act(() => {
+      result.current.write('::', cacheEntry);
+    });
+    expect(result.current.read('::')?.posts[0]?.id).toBe('user-a-post');
+
+    act(() => {
+      invalidateFeedCache();
+    });
+
+    expect(result.current.read('::')).toBeUndefined();
   });
 
   it('na primeira página não envia token e define hasMore quando há paging.next', async () => {
