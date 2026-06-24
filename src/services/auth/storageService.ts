@@ -148,8 +148,8 @@ class StorageService {
 
     try {
       // require lazy evita ciclo storage → personCategory → apiClient → storage na carga do módulo
-      // eslint-disable-next-line @typescript-eslint/no-var-requires -- lazy load intencional
       const { default: personCategoryService } =
+        // eslint-disable-next-line @typescript-eslint/no-var-requires -- lazy load intencional
         require('../person/personCategoryService') as typeof import('../person/personCategoryService');
       const categoryIds = await personCategoryService.getMySelectedCategoryIds();
       if (categoryIds.length === 0) {
