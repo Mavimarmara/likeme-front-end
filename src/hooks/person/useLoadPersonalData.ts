@@ -3,6 +3,7 @@ import { userService, personsService, storageService, AuthService } from '@/serv
 import type { PersonWithContacts } from '@/services/user/userService';
 import type { PersonResponse } from '@/types/person';
 import { isoToBirthdateMask } from '@/utils/formatters/personFormats';
+import { logger } from '@/utils/logger';
 
 /** Dados da pessoa no formato do formulário de registro (para preencher campos). */
 export interface PersonFormData {
@@ -41,38 +42,62 @@ function mapPersonToFormData(person: PersonWithContacts | PersonResponse): Perso
   return { fullName, birthdate, gender, weight, height };
 }
 
+function emptyPersonFormData(fallbackName = ''): PersonFormData {
+  return {
+    fullName: fallbackName.trim(),
+    birthdate: '',
+    gender: '',
+    weight: '',
+    height: '',
+  };
+}
+
 /**
  * Hook do domínio person: carrega dados do perfil para preencher o formulário de registro.
- * Usa GET /api/auth/profile; se gender, peso ou altura não vierem no perfil, busca a pessoa
- * completa com GET /api/persons/:id.
+ * Usa GET /api/auth/profile; quando há person.id, complementa com GET /api/persons/:id.
  */
 export function useLoadPersonalData() {
   const loadPersonalData = useCallback(async (): Promise<PersonFormData | null> => {
     try {
       const token = await storageService.getToken();
       if (!token) {
+        logger.warn('[useLoadPersonalData] token ausente no storage');
         return null;
       }
-      const { ok } = await AuthService.refreshBackendSessionFromStoredCredentials();
-      if (!ok) {
-        return null;
+
+      const refresh = await AuthService.refreshBackendSessionFromStoredCredentials();
+      if (!refresh.ok) {
+        logger.warn('[useLoadPersonalData] refresh de sessão não confirmado; tentando perfil com token atual');
       }
+
       const response = await userService.getProfile();
-      if (!response.success || !response.data?.person) return null;
+      if (!response.success || !response.data) {
+        logger.warn('[useLoadPersonalData] GET /api/auth/profile sem dados utilizáveis', {
+          success: response.success,
+        });
+        return null;
+      }
 
-      const profilePerson = response.data.person;
-      let formData = mapPersonToFormData(profilePerson);
+      const profile = response.data;
+      const profilePerson = profile.person;
 
-      const missingFields = !formData.gender.trim() || !formData.weight.trim() || !formData.height.trim();
-      if (missingFields && profilePerson.id) {
+      if (!profilePerson) {
+        return emptyPersonFormData(profile.name);
+      }
+
+      if (profilePerson.id) {
         const fullPerson = await personsService.getPerson(profilePerson.id);
         if (fullPerson) {
-          formData = mapPersonToFormData(fullPerson);
+          return mapPersonToFormData(fullPerson);
         }
+        logger.warn('[useLoadPersonalData] GET /api/persons/:id indisponível; usando person do perfil', {
+          personId: profilePerson.id,
+        });
       }
 
-      return formData;
-    } catch {
+      return mapPersonToFormData(profilePerson);
+    } catch (error) {
+      logger.error('[useLoadPersonalData] falha ao carregar dados pessoais', { cause: error });
       return null;
     }
   }, []);

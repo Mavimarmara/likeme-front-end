@@ -74,6 +74,8 @@ export const getUserProfileHomeScreen = (): RootStackScreen =>
   asScreen(require('../screens/profile/UserProfileHomeScreen') as { default: RootStackScreen });
 export const getInterestCategoriesEditScreen = (): RootStackScreen =>
   asScreen(require('../screens/profile/InterestCategoriesEditScreen') as { default: RootStackScreen });
+export const getPersonalDataEditScreen = (): RootStackScreen =>
+  asScreen(require('../screens/profile/PersonalDataEditScreen') as { default: RootStackScreen });
 export const getProtocolDetailScreen = (): RootStackScreen =>
   asScreen(require('../screens/profile/ProtocolDetailScreen') as { default: RootStackScreen });
 export const getSubscriptionListScreen = (): RootStackScreen =>

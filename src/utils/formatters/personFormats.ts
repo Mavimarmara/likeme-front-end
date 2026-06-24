@@ -62,9 +62,15 @@ export function ageFromBirthdateISO(iso: string): number | null {
   return age;
 }
 
-/** Converte ISO (YYYY-MM-DD) para DD/MM/AAAA para exibição. */
+/** Converte ISO (YYYY-MM-DD ou datetime) para DD/MM/AAAA para exibição. */
 export function isoToBirthdateMask(iso: string): string {
-  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
-  if (!match) return '';
-  return `${match[3]}/${match[2]}/${match[1]}`;
+  const normalized = iso.trim();
+  const isoDateMatch = /^(\d{4})-(\d{2})-(\d{2})/.exec(normalized);
+  if (isoDateMatch) {
+    return `${isoDateMatch[3]}/${isoDateMatch[2]}/${isoDateMatch[1]}`;
+  }
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(normalized)) {
+    return normalized;
+  }
+  return '';
 }

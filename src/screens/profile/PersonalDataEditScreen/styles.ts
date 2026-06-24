@@ -1,31 +1,21 @@
-import { ImageStyle, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { COLORS, SPACING } from '@/constants';
 
 export const styles = StyleSheet.create({
-  safeArea: {
+  container: {
     flex: 1,
     backgroundColor: COLORS.BACKGROUND,
     paddingBottom: 0,
   },
+
   scrollView: {
     flex: 1,
   },
+
   scrollContent: {
     flexGrow: 1,
   },
-  topSection: {
-    width: '100%',
-  },
-  headerContent: {
-    width: '100%',
-    paddingBottom: SPACING.XL,
-    gap: 24,
-    marginTop: 31,
-    paddingHorizontal: SPACING.MD,
-  },
-  titleAdornment: {
-    position: 'absolute',
-  } as ImageStyle,
+
   content: {
     alignItems: 'stretch',
     display: 'flex',
@@ -36,21 +26,33 @@ export const styles = StyleSheet.create({
     paddingTop: SPACING.XL,
     paddingBottom: SPACING.LG,
   },
+
+  title: {
+    color: COLORS.NEUTRAL.LOW.PURE,
+    fontFamily: 'DM Sans',
+    fontSize: 20,
+    fontWeight: '700',
+    lineHeight: 28,
+  },
+
   footer: {
     width: '100%',
-    backgroundColor: COLORS.BACKGROUND,
     paddingHorizontal: SPACING.MD,
   },
-  buttonGroup: {
-    position: 'relative',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    paddingBottom: 0,
-    paddingTop: 0,
+
+  loadErrorBlock: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: SPACING.LG,
+    gap: SPACING.MD,
   },
-  scrollContentInner: {
-    flexGrow: 1,
-    width: '100%',
+
+  loadErrorText: {
+    color: COLORS.TEXT,
+    fontFamily: 'DM Sans',
+    fontSize: 16,
+    lineHeight: 24,
+    textAlign: 'center',
   },
 });

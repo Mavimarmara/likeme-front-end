@@ -79,6 +79,7 @@ type RootStackParamListCore = {
   };
   Profile: undefined;
   UserProfileHome: undefined;
+  PersonalDataEdit: undefined;
   InterestCategoriesEdit: undefined;
   SubscriptionList: undefined;
   ProtocolDetail: {

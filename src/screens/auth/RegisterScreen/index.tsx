@@ -1,35 +1,18 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  Platform,
-  Alert,
-  Keyboard,
-  Modal,
-  TouchableOpacity,
-  TextInput as RNTextInput,
-  LayoutChangeEvent,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { View, ScrollView, Alert } from 'react-native';
 import type { StackScreenProps } from '@react-navigation/stack';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Title, TextInput, PrimaryButton, SecondaryButton, ButtonGroup } from '@/components/ui';
-import { ScreenWithHeader } from '@/components/ui/layout';
+import { Title, PrimaryButton, SecondaryButton, ButtonGroup } from '@/components/ui';
+import { KeyboardAwareScreen, ScreenWithHeader } from '@/components/ui/layout';
+import PersonalDataFieldsForm, {
+  type PersonalDataFieldErrors,
+} from '@/components/sections/person/PersonalDataFieldsForm';
 import { personsService } from '@/services';
 import { useTranslation } from '@/hooks/i18n';
+import { useLoadPersonalData, useScrollToFocusedField } from '@/hooks';
 import type { PersonData } from '@/types/person';
 import type { RootStackParamList } from '@/types/navigation';
 import { getNextOnboardingScreen } from '@/utils';
-import {
-  BIRTHDATE_MASK,
-  parseWeightInput,
-  parseHeightInput,
-  formatBirthdateInput,
-  birthdateToISO,
-  ageFromBirthdateISO,
-} from '@/utils/formatters/personFormats';
-import { useLoadPersonalData } from '@/hooks';
+import { birthdateToISO, ageFromBirthdateISO } from '@/utils/formatters/personFormats';
 import { styles } from './styles';
 import { COLORS, SPACING } from '@/constants';
 import { useAnalyticsScreen } from '@/analytics';
@@ -37,26 +20,12 @@ import { logger } from '@/utils/logger';
 import { getReadableErrorMessage } from '@/utils/error/readableErrorMessage';
 import { parseFullName, validateFullNameForPerson } from '@/utils/person/fullNameValidation';
 
-/** Valores enviados à API; labels vêm do i18n */
-const GENDER_OPTIONS = [
-  { value: 'female', i18nKey: 'auth.genderFemale' },
-  { value: 'male', i18nKey: 'auth.genderMale' },
-  { value: 'non_binary', i18nKey: 'auth.genderNonBinary' },
-  { value: 'other', i18nKey: 'auth.genderOther' },
-  { value: 'prefer_not_to_say', i18nKey: 'auth.genderPreferNotToSay' },
-] as const;
-
-const KEYBOARD_RESPIRATION = 24;
-const SCROLL_FOCUS_OFFSET_PX = 80;
-const SCROLL_PADDING_WHEN_KEYBOARD_OPEN = 120;
-
 type Props = StackScreenProps<RootStackParamList, 'Register'>;
 
 const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
   useAnalyticsScreen({ screenName: 'Register', screenClass: 'RegisterScreen' });
   const { t } = useTranslation();
   const { loadPersonalData } = useLoadPersonalData();
-  const insets = useSafeAreaInsets();
   const [fullName, setFullName] = useState(route.params?.userName || '');
   const [birthdate, setBirthdate] = useState('');
   const [gender, setGender] = useState('');
@@ -64,42 +33,11 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
   const [height, setHeight] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSkipLoading, setIsSkipLoading] = useState(false);
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
-  const [genderModalVisible, setGenderModalVisible] = useState(false);
-  const [fieldErrors, setFieldErrors] = useState<{
-    fullName?: string;
-    birthdate?: string;
-    gender?: string;
-    weight?: string;
-    height?: string;
-  }>({});
+  const [fieldErrors, setFieldErrors] = useState<PersonalDataFieldErrors>({});
 
   const scrollViewRef = useRef<ScrollView>(null);
-  const scrollContentRef = useRef<View>(null);
-  const contentYRef = useRef(0);
-  const containerYRef = useRef(0);
-  const fieldYRef = useRef<Record<string, number>>({});
-  const fullNameRowRef = useRef<View>(null);
-  const birthdateRowRef = useRef<View>(null);
-  const weightRowRef = useRef<View>(null);
-  const heightRowRef = useRef<View>(null);
-  const fullNameInputRef = useRef<RNTextInput>(null);
-  const birthdateInputRef = useRef<RNTextInput>(null);
-  const weightInputRef = useRef<RNTextInput>(null);
-  const heightInputRef = useRef<RNTextInput>(null);
-
-  useEffect(() => {
-    const showSub = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', (e) =>
-      setKeyboardHeight(e.endCoordinates.height),
-    );
-    const hideSub = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', () =>
-      setKeyboardHeight(0),
-    );
-    return () => {
-      showSub.remove();
-      hideSub.remove();
-    };
-  }, []);
+  const { scrollToFocusedField, handleContentLayout, handleContainerLayout, handleFieldLayout } =
+    useScrollToFocusedField(scrollViewRef);
 
   useEffect(() => {
     let cancelled = false;
@@ -116,29 +54,6 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
     };
   }, [loadPersonalData]);
 
-  const scrollToFocusedField = useCallback((fieldKey: string) => {
-    const scrollView = scrollViewRef.current;
-    const y = fieldYRef.current[fieldKey];
-    if (scrollView == null || typeof y !== 'number') return;
-    const offsetY = Math.max(0, y - SCROLL_FOCUS_OFFSET_PX);
-    scrollView.scrollTo({ y: offsetY, animated: true });
-  }, []);
-
-  const handleContentLayout = useCallback((e: LayoutChangeEvent) => {
-    contentYRef.current = e.nativeEvent.layout.y;
-  }, []);
-
-  const handleContainerLayout = useCallback((e: LayoutChangeEvent) => {
-    containerYRef.current = e.nativeEvent.layout.y;
-  }, []);
-
-  const handleFieldLayout = useCallback(
-    (fieldKey: string) => (e: LayoutChangeEvent) => {
-      fieldYRef.current[fieldKey] = contentYRef.current + containerYRef.current + e.nativeEvent.layout.y;
-    },
-    [],
-  );
-
   const topSectionStyle = useMemo(() => [styles.topSection], []);
 
   const validateNumericField = useCallback(
@@ -154,18 +69,27 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
     [t],
   );
 
+  const handleFormChange = useCallback(
+    (patch: Partial<{ fullName: string; birthdate: string; gender: string; weight: string; height: string }>) => {
+      if (patch.fullName !== undefined) setFullName(patch.fullName);
+      if (patch.birthdate !== undefined) setBirthdate(patch.birthdate);
+      if (patch.gender !== undefined) setGender(patch.gender);
+      if (patch.weight !== undefined) setWeight(patch.weight);
+      if (patch.height !== undefined) setHeight(patch.height);
+    },
+    [],
+  );
+
+  const handleClearFieldError = useCallback((field: keyof PersonalDataFieldErrors) => {
+    setFieldErrors((current) => (current[field] ? { ...current, [field]: undefined } : current));
+  }, []);
+
   const handleNext = useCallback(async () => {
     try {
       setIsLoading(true);
       setFieldErrors({});
 
-      const errors: {
-        fullName?: string;
-        birthdate?: string;
-        gender?: string;
-        weight?: string;
-        height?: string;
-      } = {};
+      const errors: PersonalDataFieldErrors = {};
 
       const fullNameIssue = validateFullNameForPerson(fullName);
       if (fullNameIssue === 'empty') {
@@ -251,23 +175,6 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
     }
   }, [fullName, navigation, route.params?.userName, t]);
 
-  const genderLabel = useMemo(() => {
-    if (!gender) return '';
-    const opt = GENDER_OPTIONS.find((o) => o.value === gender);
-    return opt ? t(opt.i18nKey) : gender;
-  }, [gender, t]);
-
-  const footerStyle = useMemo(
-    () => [
-      styles.footer,
-      {
-        bottom: keyboardHeight > 0 ? keyboardHeight + KEYBOARD_RESPIRATION : 0,
-        paddingBottom: keyboardHeight > 0 ? 0 : Math.max(insets.bottom, SPACING.MD),
-      },
-    ],
-    [keyboardHeight, insets.bottom],
-  );
-
   return (
     <ScreenWithHeader
       navigation={navigation}
@@ -275,225 +182,51 @@ const RegisterScreen: React.FC<Props> = ({ navigation, route }) => {
       contentContainerStyle={styles.safeArea}
       contentBackgroundColor={COLORS.BACKGROUND}
     >
-      <View style={styles.container}>
-        <ScrollView
-          ref={scrollViewRef}
-          style={styles.scrollView}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={[
-            styles.scrollContent,
-            keyboardHeight > 0 && {
-              paddingBottom: keyboardHeight + SCROLL_PADDING_WHEN_KEYBOARD_OPEN,
-            },
-          ]}
-          keyboardShouldPersistTaps='handled'
-        >
-          <View ref={scrollContentRef} collapsable={false} style={styles.scrollContentInner}>
-            <View style={topSectionStyle}>
-              <View style={styles.headerContent}>
-                <Title title={t('auth.registerTitle')} />
-              </View>
-            </View>
-
-            <View style={styles.content} onLayout={handleContentLayout}>
-              <View style={styles.infoSection}>
-                <Text style={styles.infoText}>{t('auth.registerInfoMessage')}</Text>
-                <Text style={styles.sectionLabel}>Dados Pessoais</Text>
-
-                <View style={styles.fieldsContainer} onLayout={handleContainerLayout}>
-                  <View
-                    ref={fullNameRowRef}
-                    collapsable={false}
-                    style={styles.fieldRow}
-                    onLayout={handleFieldLayout('fullName')}
-                  >
-                    <TextInput
-                      ref={fullNameInputRef}
-                      label={t('auth.fullName')}
-                      value={fullName}
-                      onChangeText={(v) => {
-                        setFullName(v);
-                        setFieldErrors((e) => (e.fullName ? { ...e, fullName: undefined } : e));
-                      }}
-                      placeholder={t('auth.fullNamePlaceholder')}
-                      onFocus={() => scrollToFocusedField('fullName')}
-                      returnKeyType='next'
-                      onSubmitEditing={() => birthdateInputRef.current?.focus()}
-                      blurOnSubmit={false}
-                      errorText={fieldErrors.fullName}
-                      required
-                    />
-                  </View>
-
-                  <View
-                    ref={birthdateRowRef}
-                    collapsable={false}
-                    style={styles.fieldRow}
-                    onLayout={handleFieldLayout('birthdate')}
-                  >
-                    <TextInput
-                      ref={birthdateInputRef}
-                      label={t('auth.birthdate')}
-                      value={birthdate}
-                      onChangeText={(v) => {
-                        setBirthdate(formatBirthdateInput(v));
-                        setFieldErrors((e) => (e.birthdate ? { ...e, birthdate: undefined } : e));
-                      }}
-                      placeholder={BIRTHDATE_MASK}
-                      keyboardType={Platform.OS === 'ios' ? 'number-pad' : 'numeric'}
-                      onFocus={() => scrollToFocusedField('birthdate')}
-                      errorText={fieldErrors.birthdate}
-                      required
-                    />
-                  </View>
-
-                  <View collapsable={false} style={styles.fieldRow} onLayout={handleFieldLayout('gender')}>
-                    <View style={styles.genderLabelRow}>
-                      <Text style={styles.genderLabel}>{t('auth.gender')}</Text>
-                      <Text style={styles.requiredMark}> *</Text>
-                    </View>
-                    <TouchableOpacity
-                      style={styles.genderTouchable}
-                      onPress={() => {
-                        Keyboard.dismiss();
-                        setGenderModalVisible(true);
-                      }}
-                      activeOpacity={0.7}
-                      accessibilityLabel={
-                        genderLabel ? `${t('auth.gender')}: ${genderLabel}` : t('auth.genderPlaceholder')
-                      }
-                      accessibilityRole='button'
-                      accessibilityHint={t('auth.genderPlaceholder')}
-                    >
-                      <Text
-                        style={[styles.genderTouchableText, !genderLabel && styles.genderPlaceholder]}
-                        numberOfLines={1}
-                      >
-                        {genderLabel || t('auth.genderPlaceholder')}
-                      </Text>
-                      <Icon name='keyboard-arrow-down' size={24} color={COLORS.NEUTRAL.LOW.DARK} />
-                    </TouchableOpacity>
-                    {fieldErrors.gender ? <Text style={styles.fieldErrorText}>{fieldErrors.gender}</Text> : null}
-                  </View>
-
-                  <View
-                    ref={weightRowRef}
-                    collapsable={false}
-                    style={styles.fieldRow}
-                    onLayout={handleFieldLayout('weight')}
-                  >
-                    <TextInput
-                      ref={weightInputRef}
-                      label={t('auth.weight')}
-                      value={weight}
-                      onChangeText={(v) => {
-                        setWeight(parseWeightInput(v));
-                        setFieldErrors((e) => (e.weight ? { ...e, weight: undefined } : e));
-                      }}
-                      placeholder='60'
-                      suffix=' Kg'
-                      keyboardType='decimal-pad'
-                      onFocus={() => scrollToFocusedField('weight')}
-                      errorText={fieldErrors.weight}
-                      required
-                    />
-                  </View>
-
-                  <View
-                    ref={heightRowRef}
-                    collapsable={false}
-                    style={styles.fieldRow}
-                    onLayout={handleFieldLayout('height')}
-                  >
-                    <TextInput
-                      ref={heightInputRef}
-                      label={t('auth.height')}
-                      value={height}
-                      onChangeText={(v) => {
-                        setHeight(parseHeightInput(v));
-                        setFieldErrors((e) => (e.height ? { ...e, height: undefined } : e));
-                      }}
-                      placeholder='1,60'
-                      suffix=' m'
-                      keyboardType='decimal-pad'
-                      onFocus={() => scrollToFocusedField('height')}
-                      errorText={fieldErrors.height}
-                      required
-                    />
-                  </View>
-                </View>
-              </View>
-            </View>
+      <KeyboardAwareScreen
+        scrollRef={scrollViewRef}
+        scrollViewStyle={styles.scrollView}
+        scrollContentContainerStyle={styles.scrollContent}
+        keyboardFooterLiftExtra={SPACING.MD}
+        footer={
+          <View style={styles.footer}>
+            <ButtonGroup style={styles.buttonGroup}>
+              <PrimaryButton
+                label={isLoading ? t('common.saving') : t('common.save')}
+                onPress={handleNext}
+                disabled={isLoading || isSkipLoading}
+                size='large'
+              />
+              <SecondaryButton
+                label={t('common.configureLater')}
+                onPress={handleSkip}
+                disabled={isLoading || isSkipLoading}
+                size='large'
+              />
+            </ButtonGroup>
           </View>
-        </ScrollView>
-
-        <View style={footerStyle}>
-          <ButtonGroup style={styles.buttonGroup}>
-            <PrimaryButton
-              label={isLoading ? t('common.saving') : t('common.save')}
-              onPress={handleNext}
-              disabled={isLoading || isSkipLoading}
-              size='large'
-            />
-            <SecondaryButton
-              label={t('common.configureLater')}
-              onPress={handleSkip}
-              disabled={isLoading || isSkipLoading}
-              size='large'
-            />
-          </ButtonGroup>
-        </View>
-      </View>
-
-      <Modal
-        visible={genderModalVisible}
-        transparent
-        animationType='fade'
-        onRequestClose={() => setGenderModalVisible(false)}
-        accessibilityLabel={t('auth.gender')}
+        }
       >
-        <TouchableOpacity
-          style={styles.genderModalOverlay}
-          activeOpacity={1}
-          onPress={() => setGenderModalVisible(false)}
-          accessibilityLabel={t('common.close')}
-          accessibilityRole='button'
-        >
-          <View style={styles.genderModalContent} onStartShouldSetResponder={() => true}>
-            <View style={styles.genderModalHeader}>
-              <Text style={styles.genderModalTitle}>{t('auth.gender')}</Text>
-              <TouchableOpacity
-                onPress={() => setGenderModalVisible(false)}
-                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-                accessibilityLabel={t('common.close')}
-                accessibilityRole='button'
-              >
-                <Icon name='close' size={24} color={COLORS.NEUTRAL.LOW.PURE} />
-              </TouchableOpacity>
+        <View collapsable={false} style={styles.scrollContentInner}>
+          <View style={topSectionStyle}>
+            <View style={styles.headerContent}>
+              <Title title={t('auth.registerTitle')} />
             </View>
-            {GENDER_OPTIONS.map((opt) => (
-              <TouchableOpacity
-                key={opt.value}
-                style={[styles.genderOption, gender === opt.value && styles.genderOptionSelected]}
-                onPress={() => {
-                  setGender(opt.value);
-                  setGenderModalVisible(false);
-                  setFieldErrors((e) => (e.gender ? { ...e, gender: undefined } : e));
-                }}
-                activeOpacity={0.7}
-                accessibilityLabel={t(opt.i18nKey)}
-                accessibilityRole='button'
-                accessibilityState={{ selected: gender === opt.value }}
-              >
-                <Text style={[styles.genderOptionText, gender === opt.value && styles.genderOptionTextSelected]}>
-                  {t(opt.i18nKey)}
-                </Text>
-                {gender === opt.value && <Icon name='check' size={22} color={COLORS.PRIMARY.PURE} />}
-              </TouchableOpacity>
-            ))}
           </View>
-        </TouchableOpacity>
-      </Modal>
+
+          <View style={styles.content} onLayout={handleContentLayout}>
+            <PersonalDataFieldsForm
+              variant='register'
+              values={{ fullName, birthdate, gender, weight, height }}
+              fieldErrors={fieldErrors}
+              onChange={handleFormChange}
+              onClearFieldError={handleClearFieldError}
+              scrollToFocusedField={scrollToFocusedField}
+              onFieldLayout={handleFieldLayout}
+              onContainerLayout={handleContainerLayout}
+            />
+          </View>
+        </View>
+      </KeyboardAwareScreen>
     </ScreenWithHeader>
   );
 };

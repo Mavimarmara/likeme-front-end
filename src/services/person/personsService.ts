@@ -1,4 +1,5 @@
 import apiClient from '../infrastructure/apiClient';
+import { logger } from '@/utils/logger';
 import type { ApiResponse } from '@/types/infrastructure';
 import type { PersonData, PersonResponse } from '@/types/person';
 
@@ -18,8 +19,16 @@ class PersonsService {
   async getPerson(id: string): Promise<PersonResponse | null> {
     try {
       const response = await apiClient.get<ApiResponse<PersonResponse>>(`/api/persons/${id}`, undefined, true, false);
-      return response?.data ?? null;
-    } catch {
+      if (!response?.success || !response.data) {
+        logger.warn('[personsService.getPerson] resposta sem dados da pessoa', {
+          personId: id,
+          success: response?.success,
+        });
+        return null;
+      }
+      return response.data;
+    } catch (error) {
+      logger.error('[personsService.getPerson] falha ao buscar pessoa', { personId: id, cause: error });
       return null;
     }
   }

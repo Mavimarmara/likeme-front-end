@@ -47,8 +47,8 @@ const UserProfileHomeScreen: React.FC<Props> = ({ navigation }) => {
   }, [navigation]);
 
   const handlePersonalDataPress = useCallback(() => {
-    navigation.navigate('Register', { userName: data.displayName.split(' ')[0] || undefined });
-  }, [data.displayName, navigation]);
+    navigation.navigate('PersonalDataEdit');
+  }, [navigation]);
 
   const handleInterestCategoriesPress = useCallback(() => {
     navigation.navigate('InterestCategoriesEdit');

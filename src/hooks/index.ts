@@ -53,6 +53,7 @@ export { useCartShippingPolicy } from './marketplace/useCartShippingPolicy';
 
 // Layout
 export { useKeyboardInset } from './useKeyboardInset';
+export { useScrollToFocusedField } from './useScrollToFocusedField';
 
 // Formatted input hook
 export { useFormattedInput } from './useFormattedInput';

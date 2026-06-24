@@ -42,6 +42,7 @@ import {
   getProfileScreen,
   getUserProfileHomeScreen,
   getInterestCategoriesEditScreen,
+  getPersonalDataEditScreen,
   getProtocolDetailScreen,
   getSubscriptionListScreen,
   getPrivacyPoliciesScreen,
@@ -217,6 +218,11 @@ const RootNavigator: React.FC = () => {
                       name='InterestCategoriesEdit'
                       getComponent={getInterestCategoriesEditScreen}
                       options={{ title: 'Categorias de Interesse' }}
+                    />
+                    <Stack.Screen
+                      name='PersonalDataEdit'
+                      getComponent={getPersonalDataEditScreen}
+                      options={{ title: 'Dados Pessoais' }}
                     />
                     <Stack.Screen
                       name='ProtocolDetail'
