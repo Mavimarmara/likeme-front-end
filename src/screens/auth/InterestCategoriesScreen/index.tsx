@@ -13,9 +13,10 @@ import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen, logEvent } from '@/analytics';
 import { CUSTOM_EVENTS, ANALYTICS_PARAMS } from '@/analytics/constants';
 import type { RootStackParamList } from '@/types/navigation';
+import type { CategoryName } from '@/types/category';
 import { getNextOnboardingScreen } from '@/utils';
 import { logger } from '@/utils/logger';
-import { useInterestCategoryMarkers } from '@/hooks/interestCategories/useInterestCategoryMarkers';
+import { useInterestCategories } from '@/hooks/interestCategories/useInterestCategories';
 import { styles } from './styles';
 import { getMarkerGradient } from '@/constants/markers';
 
@@ -26,8 +27,8 @@ const InterestCategoriesScreen: React.FC<Props> = ({ navigation, route }) => {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const firstName = route.params?.firstName || 'Usuário';
-  const { markers } = useInterestCategoryMarkers();
-  const [selectedMarkers, setSelectedMarkers] = useState<Set<string>>(new Set());
+  const { categories } = useInterestCategories();
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<Set<CategoryName>>(new Set());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [welcomeHighlightVisible, setWelcomeHighlightVisible] = useState(true);
   const { width: windowWidth } = useWindowDimensions();
@@ -44,9 +45,9 @@ const InterestCategoriesScreen: React.FC<Props> = ({ navigation, route }) => {
   useEffect(() => {
     const loadSelection = async () => {
       try {
-        const markerIds = await personCategoryService.getMySelectedMarkerIds();
-        if (markerIds.length > 0) {
-          setSelectedMarkers(new Set(markerIds));
+        const categoryIds = await personCategoryService.getMySelectedCategoryIds();
+        if (categoryIds.length > 0) {
+          setSelectedCategoryIds(new Set(categoryIds));
         }
       } catch (error) {
         logger.error('[InterestCategoriesScreen] Falha ao carregar categorias do backend.', error);
@@ -55,28 +56,28 @@ const InterestCategoriesScreen: React.FC<Props> = ({ navigation, route }) => {
     loadSelection();
   }, []);
 
-  const toggleMarker = useCallback((markerId: string) => {
-    setSelectedMarkers((prev) => {
+  const toggleCategory = useCallback((categoryId: CategoryName) => {
+    setSelectedCategoryIds((prev) => {
       const next = new Set(prev);
-      if (next.has(markerId)) next.delete(markerId);
-      else next.add(markerId);
+      if (next.has(categoryId)) next.delete(categoryId);
+      else next.add(categoryId);
       return next;
     });
   }, []);
 
   const handleSubmit = useCallback(async () => {
-    if (selectedMarkers.size === 0) {
+    if (selectedCategoryIds.size === 0) {
       Alert.alert(t('auth.requiredField'), t('auth.objectivesSelectAtLeastOne'));
       return;
     }
     try {
       setIsSubmitting(true);
-      const markerIds = Array.from(selectedMarkers);
-      await personCategoryService.saveMyCategoriesFromMarkerIds(markerIds);
+      const categoryIds = Array.from(selectedCategoryIds);
+      await personCategoryService.saveMyCategories(categoryIds);
       await AuthService.refreshBackendSessionFromStoredCredentials();
       logEvent(CUSTOM_EVENTS.OBJECTIVES_SUBMITTED, {
         [ANALYTICS_PARAMS.SCREEN_NAME]: 'personal_objectives',
-        [ANALYTICS_PARAMS.VALUE]: selectedMarkers.size,
+        [ANALYTICS_PARAMS.VALUE]: selectedCategoryIds.size,
       });
       const nextScreen = getNextOnboardingScreen('InterestCategories');
       navigation.navigate(nextScreen as never);
@@ -86,7 +87,7 @@ const InterestCategoriesScreen: React.FC<Props> = ({ navigation, route }) => {
     } finally {
       setIsSubmitting(false);
     }
-  }, [selectedMarkers, navigation, t]);
+  }, [selectedCategoryIds, navigation, t]);
 
   const handleSkip = useCallback(() => {
     const nextScreen = getNextOnboardingScreen('InterestCategories');
@@ -123,19 +124,19 @@ const InterestCategoriesScreen: React.FC<Props> = ({ navigation, route }) => {
             <Text style={styles.description}>{t('auth.personalObjectivesQuestioDescription')}</Text>
           </View>
 
-          <View style={styles.markersList}>
-            {markers.map((marker) => {
-              const label = t(marker.i18nKey);
-              const selected = selectedMarkers.has(marker.id);
-              const gradient = getMarkerGradient(marker.id);
+          <View style={styles.categoriesList}>
+            {categories.map((category) => {
+              const label = t(category.i18nKey);
+              const selected = selectedCategoryIds.has(category.id);
+              const gradient = getMarkerGradient(category.id);
               return (
                 <SelectionButtonQuiz
-                  key={marker.id}
+                  key={category.id}
                   label={label}
                   selected={selected}
                   size='small'
-                  onPress={() => toggleMarker(marker.id)}
-                  style={styles.markerButton}
+                  onPress={() => toggleCategory(category.id)}
+                  style={styles.categoryButton}
                   iconRight={<IconSilhouette tintColor={gradient} size='xsmall' />}
                 />
               );

@@ -26,8 +26,8 @@ describe('personCategoryService', () => {
     mockApiClient.put.mockResolvedValue({ success: true });
   });
 
-  describe('getMySelectedMarkerIds', () => {
-    it('mapeia categorias da person para marcadores de interesse', async () => {
+  describe('getMySelectedCategoryIds', () => {
+    it('mapeia categorias da person para ids de interesse', async () => {
       mockApiClient.get.mockResolvedValue({
         success: true,
         data: [
@@ -36,14 +36,14 @@ describe('personCategoryService', () => {
         ],
       });
 
-      await expect(personCategoryService.getMySelectedMarkerIds()).resolves.toEqual(['sleep', 'activity']);
+      await expect(personCategoryService.getMySelectedCategoryIds()).resolves.toEqual(['sleep', 'activity']);
       expect(mockApiClient.get).toHaveBeenCalledWith('/api/person-categories/me/categories', undefined, true);
     });
   });
 
-  describe('saveMyCategoriesFromMarkerIds', () => {
+  describe('saveMyCategories', () => {
     it('sincroniza categorias selecionadas via PUT', async () => {
-      await personCategoryService.saveMyCategoriesFromMarkerIds(['sleep', 'activity', 'nutrition']);
+      await personCategoryService.saveMyCategories(['sleep', 'activity', 'nutrition']);
 
       expect(mockApiClient.put).toHaveBeenCalledWith(
         '/api/person-categories/me/categories',
@@ -52,16 +52,16 @@ describe('personCategoryService', () => {
       );
     });
 
-    it('lança erro quando nenhum marcador mapeia para categoria do catálogo', async () => {
-      await expect(personCategoryService.saveMyCategoriesFromMarkerIds(['marcador-inexistente'])).rejects.toThrow(
+    it('lança erro quando nenhuma categoria mapeia para o catálogo', async () => {
+      await expect(personCategoryService.saveMyCategories(['categoria-inexistente'])).rejects.toThrow(
         'Nenhuma categoria válida para salvar',
       );
     });
   });
 
-  describe('syncMyCategoriesFromMarkerIds', () => {
+  describe('syncMyCategories', () => {
     it('sincroniza lista vazia removendo todas as categorias', async () => {
-      await personCategoryService.syncMyCategoriesFromMarkerIds([]);
+      await personCategoryService.syncMyCategories([]);
 
       expect(mockApiClient.put).toHaveBeenCalledWith('/api/person-categories/me/categories', { categoryIds: [] }, true);
     });
@@ -69,7 +69,7 @@ describe('personCategoryService', () => {
     it('propaga erro quando API falha', async () => {
       mockApiClient.put.mockRejectedValue(Object.assign(new Error('Erro interno'), { status: 500 }));
 
-      await expect(personCategoryService.syncMyCategoriesFromMarkerIds(['sleep'])).rejects.toThrow('Erro interno');
+      await expect(personCategoryService.syncMyCategories(['sleep'])).rejects.toThrow('Erro interno');
     });
   });
 });

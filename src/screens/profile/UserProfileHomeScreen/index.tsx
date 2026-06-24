@@ -12,12 +12,12 @@ import { useAnalyticsScreen } from '@/analytics';
 import type { RootStackParamList } from '@/types/navigation';
 import { COLORS, SPACING } from '@/constants';
 import { getMarkerGradient } from '@/constants/markers';
-import { INTEREST_CATEGORY_MARKERS } from '@/hooks/interestCategories/useInterestCategoryMarkers';
+import { INTEREST_CATEGORIES } from '@/hooks/interestCategories/useInterestCategories';
 import { useUserProfileHome } from './useUserProfileHome';
 import { useProfileAvatarEditor } from './useProfileAvatarEditor';
 import { styles } from './styles';
 
-const MARKER_LABEL_KEY = Object.fromEntries(INTEREST_CATEGORY_MARKERS.map((marker) => [marker.id, marker.i18nKey]));
+const CATEGORY_LABEL_KEY = Object.fromEntries(INTEREST_CATEGORIES.map((category) => [category.id, category.i18nKey]));
 
 type Props = StackScreenProps<RootStackParamList, 'UserProfileHome'>;
 
@@ -159,14 +159,14 @@ const UserProfileHomeScreen: React.FC<Props> = ({ navigation }) => {
 
             {loading ? (
               <View style={[styles.skeletonLine, { width: '80%', height: 32 }]} />
-            ) : data.markerIds.length > 0 ? (
+            ) : data.categoryIds.length > 0 ? (
               <View style={styles.interestsTagsRow}>
-                {data.markerIds.map((markerId) => {
-                  const labelKey = MARKER_LABEL_KEY[markerId] ?? markerId;
-                  const label = t(labelKey, { defaultValue: markerId });
-                  const gradient = getMarkerGradient(markerId);
+                {data.categoryIds.map((categoryId) => {
+                  const labelKey = CATEGORY_LABEL_KEY[categoryId] ?? categoryId;
+                  const label = t(labelKey, { defaultValue: categoryId });
+                  const gradient = getMarkerGradient(categoryId);
                   return (
-                    <View key={markerId} style={styles.interestTag}>
+                    <View key={categoryId} style={styles.interestTag}>
                       <IconSilhouette tintColor={gradient} size='xsmall' />
                       <Text style={styles.interestTagLabel} numberOfLines={1}>
                         {label}

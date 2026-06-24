@@ -80,21 +80,21 @@ jest.mock('@/components/ui', () => {
 
 jest.mock('@/services', () => ({
   personCategoryService: {
-    getMySelectedMarkerIds: jest.fn().mockResolvedValue([]),
-    syncMyCategoriesFromMarkerIds: jest.fn().mockResolvedValue(undefined),
+    getMySelectedCategoryIds: jest.fn().mockResolvedValue([]),
+    syncMyCategories: jest.fn().mockResolvedValue(undefined),
   },
 }));
 
 const getServices = () => require('@/services');
 
-jest.mock('@/hooks/interestCategories/useInterestCategoryMarkers', () => {
-  const actual = jest.requireActual<typeof import('@/hooks/interestCategories/useInterestCategoryMarkers')>(
-    '@/hooks/interestCategories/useInterestCategoryMarkers',
+jest.mock('@/hooks/interestCategories/useInterestCategories', () => {
+  const actual = jest.requireActual<typeof import('@/hooks/interestCategories/useInterestCategories')>(
+    '@/hooks/interestCategories/useInterestCategories',
   );
   return {
     ...actual,
-    useInterestCategoryMarkers: () => ({
-      markers: [
+    useInterestCategories: () => ({
+      categories: [
         { id: 'sleep', i18nKey: 'auth.objectiveSleep' },
         { id: 'activity', i18nKey: 'auth.objectiveMovement' },
       ],
@@ -110,12 +110,12 @@ const mockRoute = { params: undefined };
 describe('InterestCategoriesEditScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    getServices().personCategoryService.getMySelectedMarkerIds.mockResolvedValue(['sleep']);
-    getServices().personCategoryService.syncMyCategoriesFromMarkerIds.mockResolvedValue(undefined);
+    getServices().personCategoryService.getMySelectedCategoryIds.mockResolvedValue(['sleep']);
+    getServices().personCategoryService.syncMyCategories.mockResolvedValue(undefined);
   });
 
   it('exibe loading enquanto carrega categorias', () => {
-    getServices().personCategoryService.getMySelectedMarkerIds.mockReturnValue(new Promise(() => {}));
+    getServices().personCategoryService.getMySelectedCategoryIds.mockReturnValue(new Promise(() => {}));
 
     const { getByText } = render(<InterestCategoriesEditScreen navigation={mockNavigation} route={mockRoute as any} />);
 
@@ -136,7 +136,7 @@ describe('InterestCategoriesEditScreen', () => {
 
   it('exibe erro e recarrega ao tocar Tentar novamente', async () => {
     getServices()
-      .personCategoryService.getMySelectedMarkerIds.mockRejectedValueOnce(new Error('API error'))
+      .personCategoryService.getMySelectedCategoryIds.mockRejectedValueOnce(new Error('API error'))
       .mockResolvedValueOnce(['sleep']);
 
     const { getByText } = render(<InterestCategoriesEditScreen navigation={mockNavigation} route={mockRoute as any} />);
@@ -148,8 +148,19 @@ describe('InterestCategoriesEditScreen', () => {
     fireEvent.press(getByText('Tentar novamente'));
 
     await waitFor(() => {
-      expect(getServices().personCategoryService.getMySelectedMarkerIds).toHaveBeenCalledTimes(2);
+      expect(getServices().personCategoryService.getMySelectedCategoryIds).toHaveBeenCalledTimes(2);
       expect(getByText('Categorias de interesse')).toBeTruthy();
+    });
+  });
+
+  it('carrega seleção salva ao montar', async () => {
+    getServices().personCategoryService.getMySelectedCategoryIds.mockResolvedValue(['sleep']);
+
+    const { getByText } = render(<InterestCategoriesEditScreen navigation={mockNavigation} route={mockRoute as any} />);
+
+    await waitFor(() => {
+      expect(getServices().personCategoryService.getMySelectedCategoryIds).toHaveBeenCalled();
+      expect(getByText('Sono')).toBeTruthy();
     });
   });
 
@@ -159,16 +170,13 @@ describe('InterestCategoriesEditScreen', () => {
     await waitFor(() => expect(getByText('Salvar')).toBeTruthy());
 
     fireEvent.press(getByText('Salvar'));
-    expect(getServices().personCategoryService.syncMyCategoriesFromMarkerIds).not.toHaveBeenCalled();
+    expect(getServices().personCategoryService.syncMyCategories).not.toHaveBeenCalled();
 
     fireEvent.press(getByText('Movimento'));
     fireEvent.press(getByText('Salvar'));
 
     await waitFor(() => {
-      expect(getServices().personCategoryService.syncMyCategoriesFromMarkerIds).toHaveBeenCalledWith([
-        'sleep',
-        'activity',
-      ]);
+      expect(getServices().personCategoryService.syncMyCategories).toHaveBeenCalledWith(['sleep', 'activity']);
     });
   });
 
@@ -180,10 +188,7 @@ describe('InterestCategoriesEditScreen', () => {
     fireEvent.press(getByText('Salvar'));
 
     await waitFor(() => {
-      expect(getServices().personCategoryService.syncMyCategoriesFromMarkerIds).toHaveBeenCalledWith([
-        'sleep',
-        'activity',
-      ]);
+      expect(getServices().personCategoryService.syncMyCategories).toHaveBeenCalledWith(['sleep', 'activity']);
       expect(mockNavigation.goBack).toHaveBeenCalled();
       expect(mockNavigation.navigate).not.toHaveBeenCalled();
     });
@@ -191,7 +196,7 @@ describe('InterestCategoriesEditScreen', () => {
 
   it('mostra alerta e não volta quando API falha ao salvar', async () => {
     const alertSpy = jest.spyOn(Alert, 'alert');
-    getServices().personCategoryService.syncMyCategoriesFromMarkerIds.mockRejectedValue(new Error('API error'));
+    getServices().personCategoryService.syncMyCategories.mockRejectedValue(new Error('API error'));
 
     const { getByText } = render(<InterestCategoriesEditScreen navigation={mockNavigation} route={mockRoute as any} />);
 

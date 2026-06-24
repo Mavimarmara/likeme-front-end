@@ -67,7 +67,7 @@ export const styles = StyleSheet.create({
     lineHeight: 22,
   },
 
-  markersList: {
+  categoriesList: {
     width: '100%',
     maxWidth: 300,
     alignSelf: 'center',
@@ -75,7 +75,7 @@ export const styles = StyleSheet.create({
     marginBottom: SPACING.XL,
   },
 
-  markerButton: {
+  categoryButton: {
     width: '100%',
     maxWidth: 300,
     alignSelf: 'center',

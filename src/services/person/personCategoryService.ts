@@ -1,72 +1,72 @@
 import apiClient from '../infrastructure/apiClient';
 import categoryService from '../category/categoryService';
-import { categoryApiNameToMarkerId } from '@/types/category';
+import { categoryApiNameToCategoryId, type CategoryName } from '@/types/category';
 import type { MyPersonCategoriesResponse } from '@/types/personCategory';
 import { logger } from '@/utils/logger';
 
 class PersonCategoryService {
   private readonly myCategoriesEndpoint = '/api/person-categories/me/categories';
 
-  private async buildMarkerToCategoryIdMap(): Promise<Map<string, string>> {
+  private async buildCategoryKeyToApiIdMap(): Promise<Map<string, string>> {
     const categories = await categoryService.listCategories();
-    const markerToCategoryId = new Map<string, string>();
+    const categoryKeyToApiId = new Map<string, string>();
 
     for (const category of categories) {
-      const markerId = categoryApiNameToMarkerId(category.name);
-      if (!markerId) {
-        logger.warn('[personCategoryService] Categoria da API sem marcador de interesse', { name: category.name });
-        continue;
-      }
-      markerToCategoryId.set(markerId, category.categoryId);
-    }
-
-    return markerToCategoryId;
-  }
-
-  private markerIdsToCategoryIds(markerIds: string[], markerToCategoryId: Map<string, string>): string[] {
-    const categoryIds: string[] = [];
-
-    for (const markerId of markerIds) {
-      const categoryId = markerToCategoryId.get(markerId);
+      const categoryId = categoryApiNameToCategoryId(category.name);
       if (!categoryId) {
-        logger.warn('[personCategoryService] Marcador sem categoria no catálogo', { markerId });
+        logger.warn('[personCategoryService] Categoria da API sem id de interesse', { name: category.name });
         continue;
       }
-      categoryIds.push(categoryId);
+      categoryKeyToApiId.set(categoryId, category.categoryId);
     }
 
-    return categoryIds;
+    return categoryKeyToApiId;
   }
 
-  async getMySelectedMarkerIds(): Promise<string[]> {
+  private categoryIdsToApiIds(categoryIds: CategoryName[], categoryKeyToApiId: Map<string, string>): string[] {
+    const apiCategoryIds: string[] = [];
+
+    for (const categoryId of categoryIds) {
+      const apiCategoryId = categoryKeyToApiId.get(categoryId);
+      if (!apiCategoryId) {
+        logger.warn('[personCategoryService] Categoria sem correspondência no catálogo', { categoryId });
+        continue;
+      }
+      apiCategoryIds.push(apiCategoryId);
+    }
+
+    return apiCategoryIds;
+  }
+
+  async getMySelectedCategoryIds(): Promise<CategoryName[]> {
     const response = await apiClient.get<MyPersonCategoriesResponse>(this.myCategoriesEndpoint, undefined, true);
     const items = response.data ?? [];
 
     return items
-      .map((item) => categoryApiNameToMarkerId(item.name))
-      .filter((markerId): markerId is string => markerId != null);
+      .map((item) => categoryApiNameToCategoryId(item.name))
+      .filter((categoryId): categoryId is CategoryName => categoryId != null);
   }
 
-  async syncMyCategoriesFromMarkerIds(markerIds: string[]): Promise<void> {
-    const markerToCategoryId = await this.buildMarkerToCategoryIdMap();
-    const categoryIds = this.markerIdsToCategoryIds(markerIds, markerToCategoryId);
+  async syncMyCategories(categoryIds: CategoryName[]): Promise<void> {
+    const categoryKeyToApiId = await this.buildCategoryKeyToApiIdMap();
+    const apiCategoryIds = this.categoryIdsToApiIds(categoryIds, categoryKeyToApiId);
 
-    await apiClient.put(this.myCategoriesEndpoint, { categoryIds }, true);
+    await apiClient.put(this.myCategoriesEndpoint, { categoryIds: apiCategoryIds }, true);
   }
 
-  async saveMyCategoriesFromMarkerIds(markerIds: string[]): Promise<void> {
-    if (markerIds.length === 0) {
+  async saveMyCategories(categoryIds: CategoryName[]): Promise<void> {
+    if (categoryIds.length === 0) {
       return;
     }
 
-    const markerToCategoryId = await this.buildMarkerToCategoryIdMap();
-    const categoryIds = this.markerIdsToCategoryIds(markerIds, markerToCategoryId);
+    const categoryKeyToApiId = await this.buildCategoryKeyToApiIdMap();
+    const apiCategoryIds = this.categoryIdsToApiIds(categoryIds, categoryKeyToApiId);
 
-    if (categoryIds.length === 0) {
+    if (apiCategoryIds.length === 0) {
       throw new Error('Nenhuma categoria válida para salvar');
     }
 
-    await apiClient.put(this.myCategoriesEndpoint, { categoryIds }, true);
+    await apiClient.put(this.myCategoriesEndpoint, { categoryIds: apiCategoryIds }, true);
   }
 }
 

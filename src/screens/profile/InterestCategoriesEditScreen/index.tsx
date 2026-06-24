@@ -9,17 +9,18 @@ import { personCategoryService } from '@/services';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen } from '@/analytics';
 import type { RootStackParamList } from '@/types/navigation';
+import type { CategoryName } from '@/types/category';
 import { logger } from '@/utils/logger';
-import { useInterestCategoryMarkers } from '@/hooks/interestCategories/useInterestCategoryMarkers';
+import { useInterestCategories } from '@/hooks/interestCategories/useInterestCategories';
 import { getMarkerGradient } from '@/constants/markers';
 import { styles } from './styles';
 
 type Props = StackScreenProps<RootStackParamList, 'InterestCategoriesEdit'>;
 
-function markerSetsEqual(left: Set<string>, right: Set<string>): boolean {
+function categorySelectionEqual(left: Set<CategoryName>, right: Set<CategoryName>): boolean {
   if (left.size !== right.size) return false;
-  for (const markerId of left) {
-    if (!right.has(markerId)) return false;
+  for (const categoryId of left) {
+    if (!right.has(categoryId)) return false;
   }
   return true;
 }
@@ -31,26 +32,26 @@ const InterestCategoriesEditScreen: React.FC<Props> = ({ navigation }) => {
   });
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { markers } = useInterestCategoryMarkers();
-  const [selectedMarkers, setSelectedMarkers] = useState<Set<string>>(new Set());
-  const [savedMarkerIds, setSavedMarkerIds] = useState<Set<string>>(new Set());
+  const { categories } = useInterestCategories();
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<Set<CategoryName>>(new Set());
+  const [savedCategoryIds, setSavedCategoryIds] = useState<Set<CategoryName>>(new Set());
   const [isLoadingSelection, setIsLoadingSelection] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const hasPendingChanges = useMemo(
-    () => !markerSetsEqual(selectedMarkers, savedMarkerIds),
-    [savedMarkerIds, selectedMarkers],
+    () => !categorySelectionEqual(selectedCategoryIds, savedCategoryIds),
+    [savedCategoryIds, selectedCategoryIds],
   );
 
   const loadSelection = useCallback(async () => {
     setIsLoadingSelection(true);
     setLoadFailed(false);
     try {
-      const markerIds = await personCategoryService.getMySelectedMarkerIds();
-      const nextSelection = new Set(markerIds);
-      setSelectedMarkers(nextSelection);
-      setSavedMarkerIds(new Set(markerIds));
+      const categoryIds = await personCategoryService.getMySelectedCategoryIds();
+      const nextSelection = new Set(categoryIds);
+      setSelectedCategoryIds(nextSelection);
+      setSavedCategoryIds(new Set(categoryIds));
     } catch (error) {
       logger.error('[InterestCategoriesEditScreen] Falha ao carregar categorias do backend.', error);
       setLoadFailed(true);
@@ -63,11 +64,11 @@ const InterestCategoriesEditScreen: React.FC<Props> = ({ navigation }) => {
     void loadSelection();
   }, [loadSelection]);
 
-  const toggleMarker = useCallback((markerId: string) => {
-    setSelectedMarkers((prev) => {
+  const toggleCategory = useCallback((categoryId: CategoryName) => {
+    setSelectedCategoryIds((prev) => {
       const next = new Set(prev);
-      if (next.has(markerId)) next.delete(markerId);
-      else next.add(markerId);
+      if (next.has(categoryId)) next.delete(categoryId);
+      else next.add(categoryId);
       return next;
     });
   }, []);
@@ -75,9 +76,9 @@ const InterestCategoriesEditScreen: React.FC<Props> = ({ navigation }) => {
   const handleSave = useCallback(async () => {
     try {
       setIsSubmitting(true);
-      const markerIds = Array.from(selectedMarkers);
-      await personCategoryService.syncMyCategoriesFromMarkerIds(markerIds);
-      setSavedMarkerIds(new Set(markerIds));
+      const categoryIds = Array.from(selectedCategoryIds);
+      await personCategoryService.syncMyCategories(categoryIds);
+      setSavedCategoryIds(new Set(categoryIds));
       navigation.goBack();
     } catch (error) {
       logger.error('[InterestCategoriesEditScreen] Falha ao salvar categorias no backend.', error);
@@ -85,7 +86,7 @@ const InterestCategoriesEditScreen: React.FC<Props> = ({ navigation }) => {
     } finally {
       setIsSubmitting(false);
     }
-  }, [navigation, selectedMarkers, t]);
+  }, [navigation, selectedCategoryIds, t]);
 
   const saveDisabled = !hasPendingChanges || isSubmitting || (isLoadingSelection && !loadFailed);
 
@@ -124,19 +125,19 @@ const InterestCategoriesEditScreen: React.FC<Props> = ({ navigation }) => {
                 </View>
               </View>
 
-              <View style={styles.markersList}>
-                {markers.map((marker) => {
-                  const label = t(marker.i18nKey);
-                  const selected = selectedMarkers.has(marker.id);
-                  const gradient = getMarkerGradient(marker.id);
+              <View style={styles.categoriesList}>
+                {categories.map((category) => {
+                  const label = t(category.i18nKey);
+                  const selected = selectedCategoryIds.has(category.id);
+                  const gradient = getMarkerGradient(category.id);
                   return (
                     <SelectionButtonQuiz
-                      key={marker.id}
+                      key={category.id}
                       label={label}
                       selected={selected}
                       variant='profile'
-                      onPress={() => toggleMarker(marker.id)}
-                      style={styles.markerButton}
+                      onPress={() => toggleCategory(category.id)}
+                      style={styles.categoryButton}
                       iconRight={<IconSilhouette tintColor={gradient} size='xsmall' />}
                     />
                   );

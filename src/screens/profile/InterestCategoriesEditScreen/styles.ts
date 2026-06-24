@@ -70,14 +70,14 @@ export const styles = StyleSheet.create({
     lineHeight: 18,
   },
 
-  markersList: {
+  categoriesList: {
     width: '100%',
     gap: SPACING.MD,
     marginBottom: SPACING.XL,
     paddingHorizontal: SPACING.LG,
   },
 
-  markerButton: {
+  categoryButton: {
     width: '100%',
   },
 

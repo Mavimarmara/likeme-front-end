@@ -9,14 +9,14 @@ export type UserProfileHomeData = {
   displayName: string;
   email: string;
   avatarUri: string | null;
-  markerIds: string[];
+  categoryIds: string[];
 };
 
 const EMPTY_DATA: UserProfileHomeData = {
   displayName: '',
   email: '',
   avatarUri: null,
-  markerIds: [],
+  categoryIds: [],
 };
 
 function profileDisplayName(
@@ -30,10 +30,10 @@ function profileDisplayName(
   return (fallbackName ?? '').trim();
 }
 
-async function loadSelectedMarkerIds(): Promise<string[]> {
+async function loadSelectedCategoryIds(): Promise<string[]> {
   try {
-    const markerIds = await personCategoryService.getMySelectedMarkerIds();
-    return markerIds.slice(0, PROFILE_HOME_MAX_VISIBLE_INTERESTS);
+    const categoryIds = await personCategoryService.getMySelectedCategoryIds();
+    return categoryIds.slice(0, PROFILE_HOME_MAX_VISIBLE_INTERESTS);
   } catch (error) {
     logger.warn('[useUserProfileHome] Falha ao carregar categorias do backend', { cause: error });
     return [];
@@ -47,9 +47,9 @@ export function useUserProfileHome() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [profileResponse, markerIds, storedUser] = await Promise.all([
+      const [profileResponse, categoryIds, storedUser] = await Promise.all([
         userService.getProfile(),
-        loadSelectedMarkerIds(),
+        loadSelectedCategoryIds(),
         storageService.getUser(),
       ]);
 
@@ -61,7 +61,7 @@ export function useUserProfileHome() {
       const email = (profile?.email ?? storedUser?.email ?? '').trim();
       const avatarUri = profile?.picture?.trim() || profile?.avatar?.trim() || storedUser?.picture?.trim() || null;
 
-      setData({ displayName, email, avatarUri, markerIds });
+      setData({ displayName, email, avatarUri, categoryIds });
     } catch (error) {
       logger.error('[useUserProfileHome] Falha ao carregar perfil', { cause: error });
       setData(EMPTY_DATA);

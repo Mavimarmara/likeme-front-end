@@ -3,7 +3,6 @@ export * from './community';
 export * from './auth';
 export * from './person';
 export * from './infrastructure';
-export * from './personalObjectives';
 export * from './event';
 export * from './program';
 export * from './product';
