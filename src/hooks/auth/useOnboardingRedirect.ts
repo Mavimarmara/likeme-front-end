@@ -73,7 +73,7 @@ export function useOnboardingRedirect(navigationReplace: NavigationReplace): voi
         const welcomeScreenAccessedAt = await storageService.getWelcomeScreenAccessedAt();
         const privacyPolicyAcceptedAt = await storageService.getPrivacyPolicyAcceptedAt();
         const registerCompletedAt = await storageService.getRegisterCompletedAt();
-        const objectivesSelectedAt = await storageService.getObjectivesSelectedAt();
+        const objectivesSelectedAt = await storageService.getCategorySelectedAt();
         const userDisplayName = await getLoggedInUserDisplayName();
 
         const destination = getNextOnboardingDestination(

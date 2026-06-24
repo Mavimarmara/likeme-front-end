@@ -139,6 +139,32 @@ class StorageService {
     }
   }
 
+  /** Cache local + fallback em person-categories quando o sync ainda não hidratou objectivesSelectedAt. */
+  async getCategorySelectedAt(): Promise<string | null> {
+    const storedAt = await this.getObjectivesSelectedAt();
+    if (storedAt) {
+      return storedAt;
+    }
+
+    try {
+      // require lazy evita ciclo storage → personCategory → apiClient → storage na carga do módulo
+      // eslint-disable-next-line @typescript-eslint/no-var-requires -- lazy load intencional
+      const { default: personCategoryService } =
+        require('../person/personCategoryService') as typeof import('../person/personCategoryService');
+      const categoryIds = await personCategoryService.getMySelectedCategoryIds();
+      if (categoryIds.length === 0) {
+        return null;
+      }
+
+      const hydratedAt = new Date().toISOString();
+      await this.setObjectivesSelectedAt(hydratedAt);
+      return hydratedAt;
+    } catch (error) {
+      logger.warn('[storageService] Falha ao verificar categorias de interesse no backend', { cause: error });
+      return null;
+    }
+  }
+
   async setSelectedObjectivesIds(ids: string[]): Promise<void> {
     try {
       await AsyncStorage.setItem(SELECTED_OBJECTIVES_IDS_KEY, JSON.stringify(ids));

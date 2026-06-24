@@ -6,7 +6,7 @@ const mockGetToken = jest.fn();
 const mockGetWelcomeScreenAccessedAt = jest.fn();
 const mockGetPrivacyPolicyAcceptedAt = jest.fn();
 const mockGetRegisterCompletedAt = jest.fn();
-const mockGetObjectivesSelectedAt = jest.fn();
+const mockGetCategorySelectedAt = jest.fn();
 const mockGetUser = jest.fn();
 const mockRefreshBackendSession = jest.fn();
 
@@ -33,7 +33,7 @@ jest.mock('@/services', () => ({
     getWelcomeScreenAccessedAt: (...args: unknown[]) => mockGetWelcomeScreenAccessedAt(...args),
     getPrivacyPolicyAcceptedAt: (...args: unknown[]) => mockGetPrivacyPolicyAcceptedAt(...args),
     getRegisterCompletedAt: (...args: unknown[]) => mockGetRegisterCompletedAt(...args),
-    getObjectivesSelectedAt: (...args: unknown[]) => mockGetObjectivesSelectedAt(...args),
+    getCategorySelectedAt: (...args: unknown[]) => mockGetCategorySelectedAt(...args),
     getUser: (...args: unknown[]) => mockGetUser(...args),
     clearAll: jest.fn(),
   },
@@ -54,6 +54,7 @@ describe('useOnboardingRedirect', () => {
     jest.clearAllMocks();
     mockGetToken.mockResolvedValue('session-token');
     mockGetUser.mockResolvedValue({ name: 'João Souza' });
+    mockGetCategorySelectedAt.mockResolvedValue('2026-01-04T00:00:00.000Z');
     mockRefreshBackendSession.mockImplementation(async () => {
       await mockSetOnboardingStep({
         data: {
@@ -73,23 +74,24 @@ describe('useOnboardingRedirect', () => {
       mockGetWelcomeScreenAccessedAt.mockResolvedValue('2026-01-01T00:00:00.000Z');
       mockGetPrivacyPolicyAcceptedAt.mockResolvedValue('2026-01-02T00:00:00.000Z');
       mockGetRegisterCompletedAt.mockResolvedValue('2026-01-03T00:00:00.000Z');
-      mockGetObjectivesSelectedAt.mockResolvedValue('2026-01-04T00:00:00.000Z');
+      mockGetCategorySelectedAt.mockResolvedValue('2026-01-04T00:00:00.000Z');
     });
 
     renderHook(() => useOnboardingRedirect(navigationReplace));
 
     await waitFor(() => {
       expect(mockRefreshBackendSession).toHaveBeenCalledTimes(1);
+      expect(mockGetCategorySelectedAt).toHaveBeenCalled();
       expect(navigationReplace).toHaveBeenCalledWith('Home', undefined);
     });
   });
 
-  it('redireciona para InterestCategories quando backend não devolve objectivesSelectedAt', async () => {
+  it('redireciona para InterestCategories quando categorias ainda não foram selecionadas', async () => {
     mockSetOnboardingStep.mockImplementation(async () => {
       mockGetWelcomeScreenAccessedAt.mockResolvedValue('2026-01-01T00:00:00.000Z');
       mockGetPrivacyPolicyAcceptedAt.mockResolvedValue('2026-01-02T00:00:00.000Z');
       mockGetRegisterCompletedAt.mockResolvedValue('2026-01-03T00:00:00.000Z');
-      mockGetObjectivesSelectedAt.mockResolvedValue(null);
+      mockGetCategorySelectedAt.mockResolvedValue(null);
     });
 
     renderHook(() => useOnboardingRedirect(navigationReplace));
