@@ -59,7 +59,7 @@ export function useUserProfileHome() {
         profileDisplayName(storedUser?.name ? { firstName: storedUser.name } : null) ||
         '';
       const email = (profile?.email ?? storedUser?.email ?? '').trim();
-      const avatarUri = profile?.picture?.trim() || profile?.avatar?.trim() || storedUser?.picture?.trim() || null;
+      const avatarUri = profile?.avatar?.trim() || profile?.picture?.trim() || storedUser?.picture?.trim() || null;
 
       setData({ displayName, email, avatarUri, categoryIds });
     } catch (error) {

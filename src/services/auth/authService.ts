@@ -406,7 +406,12 @@ class AuthService {
         await storageService.setToken(authResult.accessToken);
       }
 
-      await storageService.setUser(authResult.user);
+      await storageService.setUser({
+        ...authResult.user,
+        picture:
+          (typeof backendResponse.data?.user?.avatar === 'string' && backendResponse.data.user.avatar.trim()) ||
+          authResult.user.picture,
+      });
 
       await setOnboardingStep(backendResponse);
 
