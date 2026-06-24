@@ -1,13 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, Linking, Modal, Pressable, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { SecondaryButton } from '@/components/ui/buttons';
+import type { SvgProps } from 'react-native-svg';
+import { PrimaryButton } from '@/components/ui/buttons';
 import { CachedImage } from '@/components/ui/media/CachedImage';
 import { AuthService, storageService, userService } from '@/services';
 import { useTranslation } from '@/hooks/i18n';
 import type { StoredUser } from '@/types/auth';
-import { MenuChevronRightIcon } from '@/assets/profile';
-import { COLORS } from '@/constants';
+import { PROFILE_FLOATING_MENU_ICONS, PROFILE_MENU_CHEVRON_SIZE, PROFILE_MENU_ICON_SIZE } from '@/assets/profile';
+import { COLORS, SPACING } from '@/constants';
 import { ACCOUNT_CONFIG } from '@/config/environment';
 import { logger } from '@/utils/logger';
 import { navigateToActivitiesOrders } from '@/utils/navigation/activitiesNavigation';
@@ -17,6 +18,13 @@ type Props = {
   visible: boolean;
   navigation: any;
   onClose: () => void;
+};
+
+type ProfileMenuItem = {
+  key: string;
+  label: string;
+  IconComponent: React.FC<SvgProps>;
+  onPress: () => void;
 };
 
 const ProfileFloatingMenu: React.FC<Props> = ({ visible, navigation, onClose }) => {
@@ -93,35 +101,75 @@ const ProfileFloatingMenu: React.FC<Props> = ({ visible, navigation, onClose }) 
     }
   }, [t]);
 
-  const handleGoToSubscriptions = () => {
+  const handleGoToSubscriptions = useCallback(() => {
     onClose();
     rootNavigation.navigate('SubscriptionList' as never);
-  };
+  }, [onClose, rootNavigation]);
 
-  const handleGoToOrders = () => {
+  const handleGoToOrders = useCallback(() => {
     onClose();
     navigateToActivitiesOrders(rootNavigation);
-  };
+  }, [onClose, rootNavigation]);
 
-  const handleGoToActivities = () => {
+  const handleGoToActivities = useCallback(() => {
     onClose();
     rootNavigation.navigate('Activities' as never, { initialTab: 'actives' } as never);
-  };
+  }, [onClose, rootNavigation]);
 
-  const handleGoToUserProfile = () => {
+  const handleGoToUserProfile = useCallback(() => {
     onClose();
     rootNavigation.navigate('UserProfileHome' as never);
-  };
+  }, [onClose, rootNavigation]);
+
+  const menuItems: ProfileMenuItem[] = useMemo(
+    () => [
+      {
+        key: 'my-profile',
+        label: 'Meu Perfil',
+        IconComponent: PROFILE_FLOATING_MENU_ICONS.myProfile,
+        onPress: handleGoToUserProfile,
+      },
+      {
+        key: 'my-orders',
+        label: 'Meus Pedidos',
+        IconComponent: PROFILE_FLOATING_MENU_ICONS.myOrders,
+        onPress: handleGoToOrders,
+      },
+      {
+        key: 'my-protocols',
+        label: 'Meus Protocolos e Serviços',
+        IconComponent: PROFILE_FLOATING_MENU_ICONS.myProtocols,
+        onPress: handleGoToSubscriptions,
+      },
+      {
+        key: 'my-activities',
+        label: 'Minhas Atividades',
+        IconComponent: PROFILE_FLOATING_MENU_ICONS.myActivities,
+        onPress: handleGoToActivities,
+      },
+    ],
+    [handleGoToActivities, handleGoToOrders, handleGoToSubscriptions, handleGoToUserProfile],
+  );
 
   const userName = useMemo(() => user?.name?.trim() || user?.nickname?.trim() || 'Usuário', [user]);
   const userEmail = useMemo(() => user?.email?.trim() || '', [user]);
+  const CloseIcon = PROFILE_FLOATING_MENU_ICONS.close;
 
   return (
     <Modal visible={visible} transparent animationType='fade' onRequestClose={onClose}>
       <View style={styles.modalRoot}>
         <Pressable style={styles.backdrop} onPress={onClose} />
         <View style={styles.panel}>
-          <View style={styles.headerRow}>
+          <View style={styles.profileMenu}>
+            <TouchableOpacity
+              onPress={onClose}
+              style={styles.closeButton}
+              activeOpacity={0.8}
+              accessibilityRole='button'
+            >
+              <CloseIcon width={24} height={24} />
+            </TouchableOpacity>
+
             <View style={styles.avatarWithText}>
               {user?.picture ? (
                 <CachedImage source={{ uri: user.picture }} style={styles.avatar} />
@@ -135,74 +183,48 @@ const ProfileFloatingMenu: React.FC<Props> = ({ visible, navigation, onClose }) 
                 {userEmail ? <Text style={styles.userEmail}>{userEmail}</Text> : null}
               </View>
             </View>
-            <TouchableOpacity onPress={onClose} style={styles.closeButton} activeOpacity={0.8}>
-              <Icon name='close' size={20} color={COLORS.TEXT} />
-            </TouchableOpacity>
-          </View>
 
-          <View style={styles.itemsContainer}>
-            <TouchableOpacity onPress={handleGoToUserProfile} style={styles.menuItem} activeOpacity={0.7}>
-              <View style={styles.menuItemLeft}>
-                <Icon name='person-outline' size={22} color={COLORS.TEXT} />
-                <Text style={styles.menuItemLabel}>Meu Perfil</Text>
-              </View>
-              <MenuChevronRightIcon width={22} height={22} />
-            </TouchableOpacity>
-            <View style={styles.separator} />
+            <View style={styles.itemsContainer}>
+              {menuItems.map((item) => {
+                const MenuIcon = item.IconComponent;
+                return (
+                  <View key={item.key} style={styles.menuItemBlock}>
+                    <TouchableOpacity style={styles.menuItem} onPress={item.onPress} activeOpacity={0.7}>
+                      <View style={styles.menuItemLeft}>
+                        <MenuIcon width={PROFILE_MENU_ICON_SIZE.width} height={PROFILE_MENU_ICON_SIZE.height} />
+                        <Text style={styles.menuItemLabel}>{item.label}</Text>
+                      </View>
+                      <PROFILE_FLOATING_MENU_ICONS.chevronRight
+                        width={PROFILE_MENU_CHEVRON_SIZE}
+                        height={PROFILE_MENU_CHEVRON_SIZE}
+                      />
+                    </TouchableOpacity>
+                    <View style={styles.separator} />
+                  </View>
+                );
+              })}
+            </View>
 
-            <TouchableOpacity onPress={handleGoToOrders} style={styles.menuItem} activeOpacity={0.7}>
-              <View style={styles.menuItemLeft}>
-                <Icon name='shopping-cart' size={22} color={COLORS.TEXT} />
-                <Text style={styles.menuItemLabel}>Meus Pedidos</Text>
-              </View>
-              <MenuChevronRightIcon width={22} height={22} />
-            </TouchableOpacity>
-            <View style={styles.separator} />
-
-            <TouchableOpacity onPress={handleGoToSubscriptions} style={styles.menuItem} activeOpacity={0.7}>
-              <View style={styles.menuItemLeft}>
-                <Icon name='credit-card' size={22} color={COLORS.TEXT} />
-                <Text style={styles.menuItemLabel}>Meus Protocolos e Serviços</Text>
-              </View>
-              <MenuChevronRightIcon width={22} height={22} />
-            </TouchableOpacity>
-            <View style={styles.separator} />
-
-            <TouchableOpacity onPress={handleGoToActivities} style={styles.menuItem} activeOpacity={0.7}>
-              <View style={styles.menuItemLeft}>
-                <Icon name='event-note' size={22} color={COLORS.TEXT} />
-                <Text style={styles.menuItemLabel}>Minhas Atividades</Text>
-              </View>
-              <MenuChevronRightIcon width={22} height={22} />
-            </TouchableOpacity>
-            <View style={styles.separator} />
-          </View>
-
-          <View style={styles.bottomButtons}>
-            <SecondaryButton
-              label='Logout'
-              onPress={handleLogout}
-              loading={false}
-              disabled={false}
-              testID='profile-logout'
-            />
-            <SecondaryButton
-              label='Encerrar a conta'
-              onPress={handleDeleteAccountPress}
-              loading={deletingAccount}
-              disabled={deletingAccount}
-              size='large'
-              testID='profile-delete-account'
-            />
-            {ACCOUNT_CONFIG.deletionWebUrl ? (
+            <View style={styles.bottomButtons}>
+              <PrimaryButton label='Logout' onPress={handleLogout} size='large' />
               <Text
-                onPress={() => void handleOpenDeletionWebUrl()}
-                accessibilityRole='link'
-                style={styles.webDeletionLinkText}
+                onPress={handleDeleteAccountPress}
+                accessibilityRole='button'
+                style={styles.deleteAccountLink}
+                testID='profile-delete-account'
               >
-                {t('profile.deleteAccountWebLinkLabel')}
+                {deletingAccount ? t('profile.loading') : 'Encerrar a conta'}
               </Text>
-            ) : null}
+              {ACCOUNT_CONFIG.deletionWebUrl ? (
+                <Text
+                  onPress={() => void handleOpenDeletionWebUrl()}
+                  accessibilityRole='link'
+                  style={styles.webDeletionLinkText}
+                >
+                  {t('profile.deleteAccountWebLinkLabel')}
+                </Text>
+              ) : null}
+            </View>
           </View>
         </View>
       </View>

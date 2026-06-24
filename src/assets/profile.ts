@@ -10,6 +10,13 @@ import MenuChevronRightIconSvg from '../../assets/profile/menu-chevron-right.svg
 import MenuDataUsagePolicyIcon from '../../assets/profile/menu-data-usage-policy.svg';
 import MenuInterestCategoriesIcon from '../../assets/profile/menu-interest-categories.svg';
 import MenuPersonalDataIcon from '../../assets/profile/menu-personal-data.svg';
+import FloatingMenuCloseIcon from '../../assets/profile/floating-menu-close.svg';
+import FloatingMenuMyActivitiesIcon from '../../assets/profile/floating-menu-my-activities.svg';
+import FloatingMenuMyOrdersIcon from '../../assets/profile/floating-menu-my-orders.svg';
+import FloatingMenuMyProtocolsIcon from '../../assets/profile/floating-menu-my-protocols.svg';
+
+export const PROFILE_MENU_ICON_SIZE = { width: 30, height: 26 } as const;
+export const PROFILE_MENU_CHEVRON_SIZE = 28;
 
 export const MindAvatar = MindAvatarDisabledPng;
 export const BodyAvatar = BodyAvatarDisabledPng;
@@ -23,5 +30,14 @@ export const PROFILE_HOME_MENU_ICONS = {
   interestCategories: MenuInterestCategoriesIcon,
   dataUsagePolicy: MenuDataUsagePolicyIcon,
   accountSettings: MenuAccountSettingsIcon,
+  chevronRight: MenuChevronRightIconSvg,
+} as const satisfies Record<string, FC<SvgProps>>;
+
+export const PROFILE_FLOATING_MENU_ICONS = {
+  myProfile: MenuPersonalDataIcon,
+  myOrders: FloatingMenuMyOrdersIcon,
+  myProtocols: FloatingMenuMyProtocolsIcon,
+  myActivities: FloatingMenuMyActivitiesIcon,
+  close: FloatingMenuCloseIcon,
   chevronRight: MenuChevronRightIconSvg,
 } as const satisfies Record<string, FC<SvgProps>>;
