@@ -86,25 +86,25 @@ describe('userService profile avatar', () => {
 
   describe('syncStoredUserPicture', () => {
     it('atualiza picture no storage local quando há avatar', async () => {
-      mockStorage.getUser.mockResolvedValue({ id: 'u1', email: 'a@b.com', picture: 'old.jpg' });
+      mockStorage.getUser.mockResolvedValue({ email: 'a@b.com', name: 'Ana', picture: 'old.jpg' });
 
       await userService.syncStoredUserPicture('https://cdn.example.com/new.jpg');
 
       expect(mockStorage.setUser).toHaveBeenCalledWith({
-        id: 'u1',
         email: 'a@b.com',
+        name: 'Ana',
         picture: 'https://cdn.example.com/new.jpg',
       });
     });
 
     it('remove picture do storage local quando avatar é null', async () => {
-      mockStorage.getUser.mockResolvedValue({ id: 'u1', email: 'a@b.com', picture: 'old.jpg' });
+      mockStorage.getUser.mockResolvedValue({ email: 'a@b.com', name: 'Ana', picture: 'old.jpg' });
 
       await userService.syncStoredUserPicture(null);
 
       expect(mockStorage.setUser).toHaveBeenCalledWith({
-        id: 'u1',
         email: 'a@b.com',
+        name: 'Ana',
       });
     });
 
