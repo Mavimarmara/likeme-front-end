@@ -4,6 +4,7 @@ import { AUTH_BOOTSTRAP_HTTP_TIMEOUT_MS, AUTH_LOGOUT_AND_POLICY_HTTP_TIMEOUT_MS 
 import { invalidateApiClientAuthTokenMemoryCache } from '@/services/infrastructure/apiClient';
 import notificationService from '@/services/notification/notificationService';
 import { clearPublicUserCache } from '@/services/user/publicUserCache';
+import { invalidateFeedCache } from '@/utils/community/feedCacheInvalidation';
 import { fetchWithTimeout } from '@/utils/network/fetchWithTimeout';
 import { setOnboardingStep } from './setOnboardingStep';
 import storageService from './storageService';
@@ -247,6 +248,7 @@ class AuthService {
       try {
         await storageService.clearAll();
         invalidateApiClientAuthTokenMemoryCache();
+        invalidateFeedCache();
       } catch (clearError) {
         logger.warn('Falha ao limpar sessão local após erro de login', { cause: clearError });
       }
@@ -411,6 +413,7 @@ class AuthService {
       await setOnboardingStep(backendResponse);
 
       invalidateApiClientAuthTokenMemoryCache();
+      invalidateFeedCache();
 
       return backendResponse;
     } catch (error) {
@@ -506,11 +509,13 @@ class AuthService {
       await storageService.clearAll();
       invalidateApiClientAuthTokenMemoryCache();
       clearPublicUserCache();
+      invalidateFeedCache();
     } catch (error) {
       logger.error('Logout error:', error);
       await storageService.clearAll();
       invalidateApiClientAuthTokenMemoryCache();
       clearPublicUserCache();
+      invalidateFeedCache();
     }
   }
 
