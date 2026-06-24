@@ -5,15 +5,12 @@ import { View, Text, ScrollView, Alert } from 'react-native';
 import { IconSilhouette, Loading, PrimaryButton, SelectionButtonQuiz } from '@/components/ui';
 import { ScreenWithHeader, GradientBackground } from '@/components/ui/layout';
 import { COLORS } from '@/constants';
-import { personalObjectivesService } from '@/services';
+import { personCategoryService } from '@/services';
 import { useTranslation } from '@/hooks/i18n';
 import { useAnalyticsScreen } from '@/analytics';
 import type { RootStackParamList } from '@/types/navigation';
 import { logger } from '@/utils/logger';
-import {
-  useInterestCategoryMarkers,
-  objectiveNameToMarkerId,
-} from '@/hooks/interestCategories/useInterestCategoryMarkers';
+import { useInterestCategoryMarkers } from '@/hooks/interestCategories/useInterestCategoryMarkers';
 import { getMarkerGradient } from '@/constants/markers';
 import { styles } from './styles';
 
@@ -50,11 +47,10 @@ const InterestCategoriesEditScreen: React.FC<Props> = ({ navigation }) => {
     setIsLoadingSelection(true);
     setLoadFailed(false);
     try {
-      const objectives = await personalObjectivesService.getMySelectedObjectives();
-      const ids = objectives.map((obj) => objectiveNameToMarkerId(obj.name)).filter((id): id is string => id != null);
-      const nextSelection = new Set(ids);
+      const markerIds = await personCategoryService.getMySelectedMarkerIds();
+      const nextSelection = new Set(markerIds);
       setSelectedMarkers(nextSelection);
-      setSavedMarkerIds(new Set(ids));
+      setSavedMarkerIds(new Set(markerIds));
     } catch (error) {
       logger.error('[InterestCategoriesEditScreen] Falha ao carregar categorias do backend.', error);
       setLoadFailed(true);
@@ -80,7 +76,7 @@ const InterestCategoriesEditScreen: React.FC<Props> = ({ navigation }) => {
     try {
       setIsSubmitting(true);
       const markerIds = Array.from(selectedMarkers);
-      await personalObjectivesService.syncMyObjectivesFromMarkerIds(markerIds);
+      await personCategoryService.syncMyCategoriesFromMarkerIds(markerIds);
       setSavedMarkerIds(new Set(markerIds));
       navigation.goBack();
     } catch (error) {

@@ -79,9 +79,9 @@ jest.mock('@/components/ui', () => {
 });
 
 jest.mock('@/services', () => ({
-  personalObjectivesService: {
-    getMySelectedObjectives: jest.fn().mockResolvedValue([]),
-    syncMyObjectivesFromMarkerIds: jest.fn().mockResolvedValue(undefined),
+  personCategoryService: {
+    getMySelectedMarkerIds: jest.fn().mockResolvedValue([]),
+    syncMyCategoriesFromMarkerIds: jest.fn().mockResolvedValue(undefined),
   },
 }));
 
@@ -110,14 +110,12 @@ const mockRoute = { params: undefined };
 describe('InterestCategoriesEditScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    getServices().personalObjectivesService.getMySelectedObjectives.mockResolvedValue([
-      { id: 'obj-sleep', name: 'Improve my sleep' },
-    ]);
-    getServices().personalObjectivesService.syncMyObjectivesFromMarkerIds.mockResolvedValue(undefined);
+    getServices().personCategoryService.getMySelectedMarkerIds.mockResolvedValue(['sleep']);
+    getServices().personCategoryService.syncMyCategoriesFromMarkerIds.mockResolvedValue(undefined);
   });
 
   it('exibe loading enquanto carrega categorias', () => {
-    getServices().personalObjectivesService.getMySelectedObjectives.mockReturnValue(new Promise(() => {}));
+    getServices().personCategoryService.getMySelectedMarkerIds.mockReturnValue(new Promise(() => {}));
 
     const { getByText } = render(<InterestCategoriesEditScreen navigation={mockNavigation} route={mockRoute as any} />);
 
@@ -138,8 +136,8 @@ describe('InterestCategoriesEditScreen', () => {
 
   it('exibe erro e recarrega ao tocar Tentar novamente', async () => {
     getServices()
-      .personalObjectivesService.getMySelectedObjectives.mockRejectedValueOnce(new Error('API error'))
-      .mockResolvedValueOnce([{ id: 'obj-sleep', name: 'Improve my sleep' }]);
+      .personCategoryService.getMySelectedMarkerIds.mockRejectedValueOnce(new Error('API error'))
+      .mockResolvedValueOnce(['sleep']);
 
     const { getByText } = render(<InterestCategoriesEditScreen navigation={mockNavigation} route={mockRoute as any} />);
 
@@ -150,7 +148,7 @@ describe('InterestCategoriesEditScreen', () => {
     fireEvent.press(getByText('Tentar novamente'));
 
     await waitFor(() => {
-      expect(getServices().personalObjectivesService.getMySelectedObjectives).toHaveBeenCalledTimes(2);
+      expect(getServices().personCategoryService.getMySelectedMarkerIds).toHaveBeenCalledTimes(2);
       expect(getByText('Categorias de interesse')).toBeTruthy();
     });
   });
@@ -161,13 +159,13 @@ describe('InterestCategoriesEditScreen', () => {
     await waitFor(() => expect(getByText('Salvar')).toBeTruthy());
 
     fireEvent.press(getByText('Salvar'));
-    expect(getServices().personalObjectivesService.syncMyObjectivesFromMarkerIds).not.toHaveBeenCalled();
+    expect(getServices().personCategoryService.syncMyCategoriesFromMarkerIds).not.toHaveBeenCalled();
 
     fireEvent.press(getByText('Movimento'));
     fireEvent.press(getByText('Salvar'));
 
     await waitFor(() => {
-      expect(getServices().personalObjectivesService.syncMyObjectivesFromMarkerIds).toHaveBeenCalledWith([
+      expect(getServices().personCategoryService.syncMyCategoriesFromMarkerIds).toHaveBeenCalledWith([
         'sleep',
         'activity',
       ]);
@@ -182,7 +180,7 @@ describe('InterestCategoriesEditScreen', () => {
     fireEvent.press(getByText('Salvar'));
 
     await waitFor(() => {
-      expect(getServices().personalObjectivesService.syncMyObjectivesFromMarkerIds).toHaveBeenCalledWith([
+      expect(getServices().personCategoryService.syncMyCategoriesFromMarkerIds).toHaveBeenCalledWith([
         'sleep',
         'activity',
       ]);
@@ -193,7 +191,7 @@ describe('InterestCategoriesEditScreen', () => {
 
   it('mostra alerta e não volta quando API falha ao salvar', async () => {
     const alertSpy = jest.spyOn(Alert, 'alert');
-    getServices().personalObjectivesService.syncMyObjectivesFromMarkerIds.mockRejectedValue(new Error('API error'));
+    getServices().personCategoryService.syncMyCategoriesFromMarkerIds.mockRejectedValue(new Error('API error'));
 
     const { getByText } = render(<InterestCategoriesEditScreen navigation={mockNavigation} route={mockRoute as any} />);
 

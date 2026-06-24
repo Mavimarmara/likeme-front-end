@@ -1,7 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { personalObjectivesService, storageService, userService } from '@/services';
-import { objectiveNameToMarkerId } from '@/hooks/interestCategories/useInterestCategoryMarkers';
+import { personCategoryService, storageService, userService } from '@/services';
 import { logger } from '@/utils/logger';
 
 export const PROFILE_HOME_MAX_VISIBLE_INTERESTS = 4;
@@ -33,13 +32,10 @@ function profileDisplayName(
 
 async function loadSelectedMarkerIds(): Promise<string[]> {
   try {
-    const objectives = await personalObjectivesService.getMySelectedObjectives();
-    return objectives
-      .map((objective) => objectiveNameToMarkerId(objective.name))
-      .filter((id): id is string => id != null)
-      .slice(0, PROFILE_HOME_MAX_VISIBLE_INTERESTS);
+    const markerIds = await personCategoryService.getMySelectedMarkerIds();
+    return markerIds.slice(0, PROFILE_HOME_MAX_VISIBLE_INTERESTS);
   } catch (error) {
-    logger.warn('[useUserProfileHome] Falha ao carregar objetivos do backend', { cause: error });
+    logger.warn('[useUserProfileHome] Falha ao carregar categorias do backend', { cause: error });
     return [];
   }
 }

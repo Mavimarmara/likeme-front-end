@@ -38,3 +38,10 @@ export const NAME_TO_CATEGORY_ID: Record<string, CategoryName> = {
   activity: 'activity',
   movimento: 'activity',
 };
+
+export function categoryApiNameToMarkerId(name: string): CategoryName | null {
+  const key = name.toLowerCase().trim().replace(/\s+/g, '-');
+  if (NAME_TO_CATEGORY_ID[key]) return NAME_TO_CATEGORY_ID[key];
+  const nameKey = name.toLowerCase().trim().replace(/\s+/g, ' ');
+  return NAME_TO_CATEGORY_ID[nameKey] ?? null;
+}
