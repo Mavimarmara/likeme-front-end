@@ -26,7 +26,7 @@ describe('personalObjectivesService', () => {
   });
 
   describe('saveMyObjectivesFromMarkerIds', () => {
-    it('persiste objetivos únicos no backend a partir dos marcadores do onboarding', async () => {
+    it('persiste categorias únicas no backend a partir dos marcadores selecionados', async () => {
       await personalObjectivesService.saveMyObjectivesFromMarkerIds(['sleep', 'activity', 'nutrition']);
 
       expect(mockApiClient.post).toHaveBeenCalledTimes(3);
@@ -67,6 +67,47 @@ describe('personalObjectivesService', () => {
       await expect(personalObjectivesService.saveMyObjectivesFromMarkerIds(['marcador-inexistente'])).rejects.toThrow(
         'Nenhum objetivo válido para salvar',
       );
+    });
+  });
+
+  describe('syncMyObjectivesFromMarkerIds', () => {
+    beforeEach(() => {
+      mockApiClient.get.mockImplementation((url: string) => {
+        if (url === '/api/user-personal-objectives/me/objectives') {
+          return Promise.resolve({
+            success: true,
+            data: [{ objective: { id: 'obj-sleep', name: 'Improve my sleep' } }],
+          });
+        }
+        return Promise.resolve(catalogObjectives);
+      });
+      mockApiClient.delete.mockResolvedValue({ success: true });
+    });
+
+    it('adiciona novas categorias e remove as desmarcadas', async () => {
+      await personalObjectivesService.syncMyObjectivesFromMarkerIds(['activity']);
+
+      expect(mockApiClient.delete).toHaveBeenCalledWith(
+        '/api/user-personal-objectives/me/objectives/obj-sleep',
+        undefined,
+        true,
+      );
+      expect(mockApiClient.post).toHaveBeenCalledWith(
+        '/api/user-personal-objectives/me/objectives',
+        { objectiveId: 'obj-activity' },
+        true,
+      );
+    });
+
+    it('remove todas as categorias quando seleção fica vazia', async () => {
+      await personalObjectivesService.syncMyObjectivesFromMarkerIds([]);
+
+      expect(mockApiClient.delete).toHaveBeenCalledWith(
+        '/api/user-personal-objectives/me/objectives/obj-sleep',
+        undefined,
+        true,
+      );
+      expect(mockApiClient.post).not.toHaveBeenCalled();
     });
   });
 });

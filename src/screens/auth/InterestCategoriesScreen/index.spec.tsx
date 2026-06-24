@@ -1,5 +1,5 @@
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
-import PersonalObjectivesScreen from './index';
+import InterestCategoriesScreen from './index';
 
 const t = (key: string, opts?: Record<string, string>) => {
   const map: Record<string, string> = {
@@ -135,11 +135,13 @@ jest.mock('@/utils', () => ({
 
 const getServices = () => require('@/services');
 
-jest.mock('./useMarkers', () => {
-  const actual = jest.requireActual<typeof import('./useMarkers')>('./useMarkers');
+jest.mock('@/hooks/interestCategories/useInterestCategoryMarkers', () => {
+  const actual = jest.requireActual<typeof import('@/hooks/interestCategories/useInterestCategoryMarkers')>(
+    '@/hooks/interestCategories/useInterestCategoryMarkers',
+  );
   return {
     ...actual,
-    useMarkers: () => ({
+    useInterestCategoryMarkers: () => ({
       markers: [
         { id: 'sleep', i18nKey: 'auth.objectiveSleep' },
         { id: 'activity', i18nKey: 'auth.objectiveMovement' },
@@ -150,7 +152,7 @@ jest.mock('./useMarkers', () => {
   };
 });
 
-describe('PersonalObjectivesScreen', () => {
+describe('InterestCategoriesScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     getServices().personalObjectivesService.getMySelectedObjectives.mockResolvedValue([]);
@@ -172,7 +174,7 @@ describe('PersonalObjectivesScreen', () => {
       },
     };
 
-    const { getByText } = render(<PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />);
+    const { getByText } = render(<InterestCategoriesScreen navigation={mockNavigation} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(getByText('John,')).toBeTruthy();
@@ -182,7 +184,7 @@ describe('PersonalObjectivesScreen', () => {
     });
   });
 
-  it('navigates to Home when Iniciar button is pressed with at least one objective selected', async () => {
+  it('navega para Home ao tocar Iniciar com ao menos uma categoria selecionada', async () => {
     const mockNavigation = {
       navigate: jest.fn(),
       goBack: jest.fn(),
@@ -193,7 +195,7 @@ describe('PersonalObjectivesScreen', () => {
       },
     };
 
-    const { getByText } = render(<PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />);
+    const { getByText } = render(<InterestCategoriesScreen navigation={mockNavigation} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(getByText('Iniciar')).toBeTruthy();
@@ -209,7 +211,7 @@ describe('PersonalObjectivesScreen', () => {
     });
   });
 
-  it('navigates to Home when Pular is pressed without saving', async () => {
+  it('navega para Home ao tocar Pular sem salvar', async () => {
     const mockNavigation = {
       navigate: jest.fn(),
       goBack: jest.fn(),
@@ -220,7 +222,7 @@ describe('PersonalObjectivesScreen', () => {
       },
     };
 
-    const { getByText } = render(<PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />);
+    const { getByText } = render(<InterestCategoriesScreen navigation={mockNavigation} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(getByText('Pular')).toBeTruthy();
@@ -245,7 +247,7 @@ describe('PersonalObjectivesScreen', () => {
       },
     };
 
-    const { getByText } = render(<PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />);
+    const { getByText } = render(<InterestCategoriesScreen navigation={mockNavigation} route={mockRoute as any} />);
 
     await waitFor(() => {
       expect(getByText('Sono')).toBeTruthy();
@@ -253,36 +255,52 @@ describe('PersonalObjectivesScreen', () => {
     });
   });
 
-  it('toggles marker selection when row is pressed', async () => {
-    const mockNavigation = {
-      navigate: jest.fn(),
-      goBack: jest.fn(),
-    };
-    const mockRoute = {
-      params: {
-        firstName: 'John',
-      },
-    };
+  it('restaura categorias já selecionadas ao carregar', async () => {
+    getServices().personalObjectivesService.getMySelectedObjectives.mockResolvedValue([
+      { id: 'obj-sleep', name: 'Improve my sleep' },
+    ]);
 
-    const { getByText } = render(<PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />);
+    const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
+    const mockRoute = { params: { firstName: 'John' } };
+
+    const { getByText } = render(<InterestCategoriesScreen navigation={mockNavigation} route={mockRoute as any} />);
+
+    await waitFor(() => expect(getByText('Iniciar')).toBeTruthy());
+    fireEvent.press(getByText('Iniciar'));
 
     await waitFor(() => {
-      expect(getByText('Sono')).toBeTruthy();
+      expect(getServices().personalObjectivesService.saveMyObjectivesFromMarkerIds).toHaveBeenCalledWith(['sleep']);
+      expect(mockNavigation.navigate).toHaveBeenCalledWith('Home');
     });
-
-    const row = getByText('Sono');
-    fireEvent.press(row);
-    fireEvent.press(row); // Toggle again
-
-    expect(row).toBeTruthy();
   });
 
-  it('shows alert when Iniciar is pressed without selecting any marker', async () => {
+  it('desmarca categoria ao tocar novamente na linha', async () => {
+    getServices().personalObjectivesService.getMySelectedObjectives.mockResolvedValue([
+      { id: 'obj-sleep', name: 'Improve my sleep' },
+    ]);
+    const alertSpy = jest.spyOn(require('react-native').Alert, 'alert');
+
+    const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
+    const mockRoute = { params: { firstName: 'John' } };
+
+    const { getByText } = render(<InterestCategoriesScreen navigation={mockNavigation} route={mockRoute as any} />);
+
+    await waitFor(() => expect(getByText('Sono')).toBeTruthy());
+    fireEvent.press(getByText('Sono'));
+    fireEvent.press(getByText('Iniciar'));
+
+    expect(alertSpy).toHaveBeenCalledWith('Campo obrigatório', 'Selecione ao menos um objetivo para continuar.');
+    expect(getServices().personalObjectivesService.saveMyObjectivesFromMarkerIds).not.toHaveBeenCalled();
+
+    alertSpy.mockRestore();
+  });
+
+  it('exibe alerta quando Iniciar é pressionado sem selecionar categoria', async () => {
     const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
     const mockRoute = { params: { firstName: 'John' } };
     const alertSpy = jest.spyOn(require('react-native').Alert, 'alert');
 
-    const { getByText } = render(<PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />);
+    const { getByText } = render(<InterestCategoriesScreen navigation={mockNavigation} route={mockRoute as any} />);
 
     await waitFor(() => expect(getByText('Iniciar')).toBeTruthy());
     fireEvent.press(getByText('Iniciar'));
@@ -300,7 +318,7 @@ describe('PersonalObjectivesScreen', () => {
     const alertSpy = jest.spyOn(require('react-native').Alert, 'alert');
     getServices().personalObjectivesService.saveMyObjectivesFromMarkerIds.mockRejectedValue(new Error('API error'));
 
-    const { getByText } = render(<PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />);
+    const { getByText } = render(<InterestCategoriesScreen navigation={mockNavigation} route={mockRoute as any} />);
 
     await waitFor(() => expect(getByText('Iniciar')).toBeTruthy());
     fireEvent.press(getByText('Sono'));
@@ -314,7 +332,7 @@ describe('PersonalObjectivesScreen', () => {
     alertSpy.mockRestore();
   });
 
-  it('does not double-submit when Iniciar is pressed twice while submit is in progress', async () => {
+  it('não submete duas vezes enquanto o salvamento está em andamento', async () => {
     const submitPromise = new Promise<void>(() => {
       /* noop */
     });
@@ -323,7 +341,7 @@ describe('PersonalObjectivesScreen', () => {
     const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
     const mockRoute = { params: { firstName: 'John' } };
 
-    const { getByText } = render(<PersonalObjectivesScreen navigation={mockNavigation} route={mockRoute as any} />);
+    const { getByText } = render(<InterestCategoriesScreen navigation={mockNavigation} route={mockRoute as any} />);
 
     await waitFor(() => expect(getByText('Iniciar')).toBeTruthy());
     fireEvent.press(getByText('Sono'));

@@ -26,9 +26,9 @@ describe('getNextOnboardingDestination', () => {
     });
   });
 
-  it('redireciona para PersonalObjectives quando objetivos não foram selecionados', () => {
+  it('redireciona para InterestCategories quando categorias não foram selecionadas', () => {
     expect(getNextOnboardingDestination(WELCOME_AT, PRIVACY_AT, REGISTER_AT, null)).toEqual({
-      screen: 'PersonalObjectives',
+      screen: 'InterestCategories',
       params: { userName: 'Usuário', firstName: 'Usuário' },
     });
   });
@@ -41,7 +41,7 @@ describe('getNextOnboardingDestination', () => {
 
   it('usa userDisplayName nas params quando informado', () => {
     expect(getNextOnboardingDestination(WELCOME_AT, PRIVACY_AT, REGISTER_AT, null, 'Maria Silva')).toEqual({
-      screen: 'PersonalObjectives',
+      screen: 'InterestCategories',
       params: { userName: 'Maria Silva', firstName: 'Maria' },
     });
   });
@@ -53,9 +53,9 @@ describe('getNextOnboardingDestination', () => {
       });
     });
 
-    it('vai para PersonalObjectives quando backend não devolve objectivesSelectedAt', () => {
+    it('vai para InterestCategories quando backend não devolve objectivesSelectedAt', () => {
       expect(getNextOnboardingDestination(WELCOME_AT, PRIVACY_AT, REGISTER_AT, null, 'João Souza')).toEqual({
-        screen: 'PersonalObjectives',
+        screen: 'InterestCategories',
         params: { userName: 'João Souza', firstName: 'João' },
       });
     });

@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { personalObjectivesService, storageService, userService } from '@/services';
-import { objectiveNameToMarkerId } from '@/screens/auth/PersonalObjectivesScreen/useMarkers';
+import { objectiveNameToMarkerId } from '@/hooks/interestCategories/useInterestCategoryMarkers';
 import { logger } from '@/utils/logger';
 
 export const PROFILE_HOME_MAX_VISIBLE_INTERESTS = 4;

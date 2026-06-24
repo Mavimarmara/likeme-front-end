@@ -42,8 +42,8 @@ export const getAnamnesisHabitsScreen = (): RootStackScreen =>
   asScreen(require('../screens/anamnesis/AnamnesisHabitsScreen') as { default: RootStackScreen });
 export const getAnamnesisCompletionScreen = (): RootStackScreen =>
   asScreen(require('../screens/anamnesis/AnamnesisCompletionScreen') as { default: RootStackScreen });
-export const getPersonalObjectivesScreen = (): RootStackScreen =>
-  asScreen(require('../screens/auth/PersonalObjectivesScreen') as { default: RootStackScreen });
+export const getInterestCategoriesScreen = (): RootStackScreen =>
+  asScreen(require('../screens/auth/InterestCategoriesScreen') as { default: RootStackScreen });
 export const getErrorScreen = (): RootStackScreen =>
   asScreen(require('../screens/ErrorScreen') as { default: RootStackScreen });
 export const getAppLoadingScreen = (): RootStackScreen =>
@@ -72,6 +72,8 @@ export const getProfileScreen = (): RootStackScreen =>
   asScreen(require('../screens/profile/ProfileScreen') as { default: RootStackScreen });
 export const getUserProfileHomeScreen = (): RootStackScreen =>
   asScreen(require('../screens/profile/UserProfileHomeScreen') as { default: RootStackScreen });
+export const getInterestCategoriesEditScreen = (): RootStackScreen =>
+  asScreen(require('../screens/profile/InterestCategoriesEditScreen') as { default: RootStackScreen });
 export const getProtocolDetailScreen = (): RootStackScreen =>
   asScreen(require('../screens/profile/ProtocolDetailScreen') as { default: RootStackScreen });
 export const getSubscriptionListScreen = (): RootStackScreen =>

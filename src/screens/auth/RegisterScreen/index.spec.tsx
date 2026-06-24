@@ -70,7 +70,7 @@ jest.mock('@/assets', () => ({
 }));
 
 jest.mock('@/utils', () => ({
-  getNextOnboardingScreen: () => 'PersonalObjectives',
+  getNextOnboardingScreen: () => 'InterestCategories',
 }));
 
 jest.mock('@/services', () => ({
@@ -143,7 +143,7 @@ describe('RegisterScreen', () => {
     expect(getByText('Configurar depois')).toBeTruthy();
   });
 
-  it('navigates to PersonalObjectives when Salvar button is pressed with all required fields', async () => {
+  it('navigates to InterestCategories when Salvar button is pressed with all required fields', async () => {
     const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
     const mockRoute = { params: { userName: 'John' } };
 
@@ -159,7 +159,7 @@ describe('RegisterScreen', () => {
 
     await waitFor(() => {
       expect(getServices().personsService.createOrUpdatePerson).toHaveBeenCalled();
-      expect(mockNavigation.navigate).toHaveBeenCalledWith('PersonalObjectives', {
+      expect(mockNavigation.navigate).toHaveBeenCalledWith('InterestCategories', {
         firstName: 'John',
       });
     });
@@ -187,7 +187,7 @@ describe('RegisterScreen', () => {
     );
   });
 
-  it('navigates to PersonalObjectives with fullName when Salvar is pressed and fullName is set', async () => {
+  it('navigates to InterestCategories with fullName when Salvar is pressed and fullName is set', async () => {
     const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
     const mockRoute = { params: { userName: 'John' } };
 
@@ -203,13 +203,13 @@ describe('RegisterScreen', () => {
 
     await waitFor(() => {
       expect(getServices().personsService.createOrUpdatePerson).toHaveBeenCalled();
-      expect(mockNavigation.navigate).toHaveBeenCalledWith('PersonalObjectives', {
+      expect(mockNavigation.navigate).toHaveBeenCalledWith('InterestCategories', {
         firstName: 'John',
       });
     });
   });
 
-  it('navigates to PersonalObjectives when Configurar depois button is pressed', async () => {
+  it('navigates to InterestCategories when Configurar depois button is pressed', async () => {
     const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
     const mockRoute = { params: { userName: 'John' } };
 
@@ -217,7 +217,7 @@ describe('RegisterScreen', () => {
 
     fireEvent.press(getByText('Configurar depois'));
 
-    expect(mockNavigation.navigate).toHaveBeenCalledWith('PersonalObjectives', {
+    expect(mockNavigation.navigate).toHaveBeenCalledWith('InterestCategories', {
       firstName: 'John',
     });
   });

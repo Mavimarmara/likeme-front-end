@@ -1,8 +1,8 @@
 import { type MarkerId } from '@/constants/markers';
 
-export type MarkerItem = { id: MarkerId; i18nKey: string };
+export type InterestCategoryMarker = { id: MarkerId; i18nKey: string };
 
-export const PERSONAL_MARKERS_FALLBACK: MarkerItem[] = [
+export const INTEREST_CATEGORY_MARKERS: InterestCategoryMarker[] = [
   { id: 'sleep', i18nKey: 'auth.objectiveSleep' },
   { id: 'activity', i18nKey: 'auth.objectiveMovement' },
   { id: 'connection', i18nKey: 'auth.objectiveRelationship' },
@@ -15,7 +15,7 @@ export const PERSONAL_MARKERS_FALLBACK: MarkerItem[] = [
   { id: 'environment', i18nKey: 'auth.objectiveEnvironment' },
 ];
 
-const VALID_MARKER_IDS = new Set(PERSONAL_MARKERS_FALLBACK.map((m) => m.id));
+const VALID_MARKER_IDS = new Set(INTEREST_CATEGORY_MARKERS.map((marker) => marker.id));
 
 const OBJECTIVE_NAME_TO_MARKER_ID: Record<string, MarkerId> = {
   'Improve my sleep': 'sleep',
@@ -28,7 +28,7 @@ const OBJECTIVE_NAME_TO_MARKER_ID: Record<string, MarkerId> = {
   'Find wellbeing programs': 'environment',
 };
 
-/** Nomes do catálogo `personalObjective` (seed/API) para cada marcador do onboarding. */
+/** Nomes do catálogo da API para cada marcador de categoria. */
 export const MARKER_ID_TO_OBJECTIVE_NAME: Record<MarkerId, string> = {
   sleep: 'Improve my sleep',
   activity: 'Move more',
@@ -54,15 +54,15 @@ export function objectiveNameToMarkerId(name: string): string | null {
   return null;
 }
 
-type UseMarkersResult = {
-  markers: MarkerItem[];
+type UseInterestCategoryMarkersResult = {
+  markers: InterestCategoryMarker[];
   isLoading: boolean;
   error: Error | null;
 };
 
-export function useMarkers(): UseMarkersResult {
+export function useInterestCategoryMarkers(): UseInterestCategoryMarkersResult {
   return {
-    markers: PERSONAL_MARKERS_FALLBACK,
+    markers: INTEREST_CATEGORY_MARKERS,
     isLoading: false,
     error: null,
   };

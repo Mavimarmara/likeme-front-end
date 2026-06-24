@@ -78,4 +78,38 @@ export const styles = StyleSheet.create({
   labelSelected: {
     color: COLORS.TEXT,
   },
+
+  buttonProfile: {
+    minHeight: 32,
+    paddingHorizontal: SPACING.MD,
+    borderWidth: 1.5,
+    borderTopLeftRadius: 18,
+    borderTopRightRadius: 18,
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
+  },
+
+  buttonProfileDefault: {
+    backgroundColor: 'transparent',
+    borderColor: 'rgba(143, 163, 161, 0.8)',
+  },
+
+  buttonProfileSelected: {
+    backgroundColor: COLORS.HIGHLIGHT.LIGHT,
+    borderColor: COLORS.PRIMARY.MEDIUM,
+  },
+
+  labelProfile: {
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: '500',
+  },
+
+  labelProfileDefault: {
+    color: COLORS.PRIMARY.MEDIUM,
+  },
+
+  labelProfileSelected: {
+    color: COLORS.TEXT,
+  },
 });

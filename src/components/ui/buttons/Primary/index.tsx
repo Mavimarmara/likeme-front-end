@@ -22,6 +22,7 @@ type Props = {
   labelStyle?: TextStyle | TextStyle[];
   loading?: boolean;
   disabled?: boolean;
+  solidDisabled?: boolean;
   variant?: Variant;
   size?: Size;
   icon?: string;
@@ -37,6 +38,7 @@ const PrimaryButton: React.FC<Props> = ({
   labelStyle: customLabelStyle,
   loading = false,
   disabled = false,
+  solidDisabled = false,
   variant = 'dark',
   size = 'medium',
   icon,
@@ -49,7 +51,7 @@ const PrimaryButton: React.FC<Props> = ({
   const sizeStyle = size === 'medium' ? styles.buttonMedium : styles.buttonLarge;
   const buttonStyle = [baseButtonStyle, sizeStyle];
   const defaultLabelStyle = variant === 'light' ? styles.labelLight : styles.label;
-  const labelStyle = customLabelStyle ? [defaultLabelStyle, customLabelStyle] : defaultLabelStyle;
+  const labelStyle = [defaultLabelStyle, customLabelStyle, isDisabled && solidDisabled && styles.labelSolidDisabled];
   const indicatorColor = variant === 'light' ? COLORS.TEXT : COLORS.WHITE;
   const finalIconColor = iconColor || (variant === 'light' ? COLORS.TEXT : COLORS.WHITE);
 
@@ -68,7 +70,12 @@ const PrimaryButton: React.FC<Props> = ({
 
   return (
     <TouchableOpacity
-      style={[buttonStyle, style, isDisabled && styles.buttonDisabled]}
+      style={[
+        buttonStyle,
+        style,
+        isDisabled && solidDisabled && styles.buttonSolidDisabled,
+        isDisabled && !solidDisabled && styles.buttonDisabled,
+      ]}
       onPress={onPress}
       disabled={isDisabled}
       activeOpacity={0.7}

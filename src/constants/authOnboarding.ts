@@ -9,7 +9,7 @@ export const AUTH_ONBOARDING_SCREENS_ORDER = [
   'PrivacyPolicies',
   'Register',
   'Plans',
-  'PersonalObjectives',
+  'InterestCategories',
 ] as const;
 
 export type AuthOnboardingScreenName = (typeof AUTH_ONBOARDING_SCREENS_ORDER)[number];

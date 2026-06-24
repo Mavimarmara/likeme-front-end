@@ -43,6 +43,12 @@ export const styles = StyleSheet.create({
   buttonDisabled: {
     opacity: 0.6,
   },
+  buttonSolidDisabled: {
+    backgroundColor: COLORS.NEUTRAL.LOW.DARK,
+  },
+  labelSolidDisabled: {
+    color: COLORS.NEUTRAL.LOW.MEDIUM,
+  },
   buttonContent: {
     flexDirection: 'row',
     alignItems: 'center',

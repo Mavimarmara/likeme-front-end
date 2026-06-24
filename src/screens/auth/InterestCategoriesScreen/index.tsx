@@ -15,18 +15,21 @@ import { CUSTOM_EVENTS, ANALYTICS_PARAMS } from '@/analytics/constants';
 import type { RootStackParamList } from '@/types/navigation';
 import { getNextOnboardingScreen } from '@/utils';
 import { logger } from '@/utils/logger';
-import { useMarkers, objectiveNameToMarkerId } from './useMarkers';
+import {
+  useInterestCategoryMarkers,
+  objectiveNameToMarkerId,
+} from '@/hooks/interestCategories/useInterestCategoryMarkers';
 import { styles } from './styles';
 import { getMarkerGradient } from '@/constants/markers';
 
-type Props = StackScreenProps<RootStackParamList, 'PersonalObjectives'>;
+type Props = StackScreenProps<RootStackParamList, 'InterestCategories'>;
 
-const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
-  useAnalyticsScreen({ screenName: 'PersonalObjectives', screenClass: 'PersonalObjectivesScreen' });
+const InterestCategoriesScreen: React.FC<Props> = ({ navigation, route }) => {
+  useAnalyticsScreen({ screenName: 'InterestCategories', screenClass: 'InterestCategoriesScreen' });
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const firstName = route.params?.firstName || 'Usuário';
-  const { markers } = useMarkers();
+  const { markers } = useInterestCategoryMarkers();
   const [selectedMarkers, setSelectedMarkers] = useState<Set<string>>(new Set());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [welcomeHighlightVisible, setWelcomeHighlightVisible] = useState(true);
@@ -50,7 +53,7 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
           setSelectedMarkers(new Set(ids));
         }
       } catch (error) {
-        logger.error('[PersonalObjectivesScreen] Falha ao carregar objetivos do backend.', error);
+        logger.error('[InterestCategoriesScreen] Falha ao carregar categorias do backend.', error);
       }
     };
     loadSelection();
@@ -79,10 +82,10 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
         [ANALYTICS_PARAMS.SCREEN_NAME]: 'personal_objectives',
         [ANALYTICS_PARAMS.VALUE]: selectedMarkers.size,
       });
-      const nextScreen = getNextOnboardingScreen('PersonalObjectives');
+      const nextScreen = getNextOnboardingScreen('InterestCategories');
       navigation.navigate(nextScreen as never);
     } catch (error) {
-      logger.error('[PersonalObjectivesScreen] Falha ao salvar objetivos no backend.', error);
+      logger.error('[InterestCategoriesScreen] Falha ao salvar categorias no backend.', error);
       Alert.alert(t('common.error'), t('auth.objectivesSaveError'));
     } finally {
       setIsSubmitting(false);
@@ -90,7 +93,7 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
   }, [selectedMarkers, navigation, t]);
 
   const handleSkip = useCallback(() => {
-    const nextScreen = getNextOnboardingScreen('PersonalObjectives');
+    const nextScreen = getNextOnboardingScreen('InterestCategories');
     navigation.navigate(nextScreen as never);
   }, [navigation]);
 
@@ -160,4 +163,4 @@ const PersonalObjectivesScreen: React.FC<Props> = ({ navigation, route }) => {
   );
 };
 
-export default PersonalObjectivesScreen;
+export default InterestCategoriesScreen;

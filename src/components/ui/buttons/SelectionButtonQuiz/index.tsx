@@ -5,12 +5,14 @@ import { COLORS } from '@/constants';
 import { styles } from './styles';
 
 export type SelectionButtonQuizSize = 'small' | 'medium';
+export type SelectionButtonQuizVariant = 'default' | 'profile';
 
 export type SelectionButtonQuizProps = {
   label: string;
   onPress: (event: GestureResponderEvent) => void;
   selected?: boolean;
   size?: SelectionButtonQuizSize;
+  variant?: SelectionButtonQuizVariant;
   icon?: string;
   iconSize?: number;
   iconRight?: ReactNode;
@@ -24,6 +26,7 @@ const SelectionButtonQuiz: React.FC<SelectionButtonQuizProps> = ({
   onPress,
   selected = false,
   size = 'medium',
+  variant = 'default',
   icon,
   iconSize = 24,
   iconRight,
@@ -31,13 +34,36 @@ const SelectionButtonQuiz: React.FC<SelectionButtonQuizProps> = ({
   labelStyle,
   disabled = false,
 }) => {
-  const iconColor = selected ? COLORS.TEXT : COLORS.NEUTRAL.LOW.DARK;
-  const sizeStyle = size === 'small' ? styles.buttonSmall : styles.buttonMedium;
-  const labelSizeStyle = size === 'small' ? styles.labelSmall : styles.labelMedium;
+  const isProfileVariant = variant === 'profile';
+  const iconColor = selected ? COLORS.TEXT : isProfileVariant ? COLORS.PRIMARY.MEDIUM : COLORS.NEUTRAL.LOW.DARK;
+  const sizeStyle = isProfileVariant
+    ? styles.buttonProfile
+    : size === 'small'
+    ? styles.buttonSmall
+    : styles.buttonMedium;
+  const labelSizeStyle = isProfileVariant
+    ? styles.labelProfile
+    : size === 'small'
+    ? styles.labelSmall
+    : styles.labelMedium;
+  const stateStyle = isProfileVariant
+    ? selected
+      ? styles.buttonProfileSelected
+      : styles.buttonProfileDefault
+    : selected
+    ? styles.buttonSelected
+    : styles.buttonDefault;
+  const labelStateStyle = isProfileVariant
+    ? selected
+      ? styles.labelProfileSelected
+      : styles.labelProfileDefault
+    : selected
+    ? styles.labelSelected
+    : styles.labelDefault;
 
   return (
     <TouchableOpacity
-      style={[styles.button, sizeStyle, selected ? styles.buttonSelected : styles.buttonDefault, style]}
+      style={[styles.button, sizeStyle, stateStyle, style]}
       onPress={onPress}
       disabled={disabled}
       activeOpacity={0.7}
@@ -48,10 +74,7 @@ const SelectionButtonQuiz: React.FC<SelectionButtonQuizProps> = ({
       <View style={styles.buttonContent}>
         <View style={styles.buttonContentLeft}>
           {icon != null && <Icon name={icon} size={iconSize} color={iconColor} style={styles.iconLeft} />}
-          <Text
-            style={[styles.label, labelSizeStyle, selected ? styles.labelSelected : styles.labelDefault, labelStyle]}
-            numberOfLines={2}
-          >
+          <Text style={[styles.label, labelSizeStyle, labelStateStyle, labelStyle]} numberOfLines={2}>
             {label}
           </Text>
         </View>

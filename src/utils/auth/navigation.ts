@@ -13,7 +13,7 @@ export function getNextOnboardingScreen(current: AuthOnboardingScreenName): Auth
     return 'Home';
   }
   const next = AUTH_ONBOARDING_SCREENS_ORDER[idx + 1];
-  // Pula Plans temporariamente; Register → PersonalObjectives
+  // Pula Plans temporariamente; Register → InterestCategories
   if (next === 'Plans') {
     return AUTH_ONBOARDING_SCREENS_ORDER[idx + 2] ?? 'Home';
   }
@@ -55,7 +55,7 @@ export function getNextOnboardingDestination(
   if (!objectivesSelectedAt) {
     const registerIdx = order.indexOf('Register');
     const nextScreen = order[registerIdx + 1];
-    const screen = nextScreen === 'Plans' ? 'PersonalObjectives' : nextScreen;
+    const screen = nextScreen === 'Plans' ? 'InterestCategories' : nextScreen;
     return { screen, params: { userName: name, firstName } };
   }
   return { screen: 'Home' };

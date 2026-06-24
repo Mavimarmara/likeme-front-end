@@ -12,12 +12,12 @@ import { useAnalyticsScreen } from '@/analytics';
 import type { RootStackParamList } from '@/types/navigation';
 import { COLORS, SPACING } from '@/constants';
 import { getMarkerGradient } from '@/constants/markers';
-import { PERSONAL_MARKERS_FALLBACK } from '@/screens/auth/PersonalObjectivesScreen/useMarkers';
+import { INTEREST_CATEGORY_MARKERS } from '@/hooks/interestCategories/useInterestCategoryMarkers';
 import { useUserProfileHome } from './useUserProfileHome';
 import { useProfileAvatarEditor } from './useProfileAvatarEditor';
 import { styles } from './styles';
 
-const MARKER_LABEL_KEY = Object.fromEntries(PERSONAL_MARKERS_FALLBACK.map((marker) => [marker.id, marker.i18nKey]));
+const MARKER_LABEL_KEY = Object.fromEntries(INTEREST_CATEGORY_MARKERS.map((marker) => [marker.id, marker.i18nKey]));
 
 type Props = StackScreenProps<RootStackParamList, 'UserProfileHome'>;
 
@@ -43,7 +43,7 @@ const UserProfileHomeScreen: React.FC<Props> = ({ navigation }) => {
   }, [navigation]);
 
   const handleAddInterestsPress = useCallback(() => {
-    navigation.navigate('PersonalObjectives');
+    navigation.navigate('InterestCategoriesEdit');
   }, [navigation]);
 
   const handlePersonalDataPress = useCallback(() => {
@@ -51,7 +51,7 @@ const UserProfileHomeScreen: React.FC<Props> = ({ navigation }) => {
   }, [data.displayName, navigation]);
 
   const handleInterestCategoriesPress = useCallback(() => {
-    navigation.navigate('PersonalObjectives');
+    navigation.navigate('InterestCategoriesEdit');
   }, [navigation]);
 
   const handleDataUsagePolicyPress = useCallback(() => {

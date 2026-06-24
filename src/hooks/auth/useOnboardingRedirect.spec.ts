@@ -84,7 +84,7 @@ describe('useOnboardingRedirect', () => {
     });
   });
 
-  it('redireciona para PersonalObjectives quando backend não devolve objectivesSelectedAt', async () => {
+  it('redireciona para InterestCategories quando backend não devolve objectivesSelectedAt', async () => {
     mockSetOnboardingStep.mockImplementation(async () => {
       mockGetWelcomeScreenAccessedAt.mockResolvedValue('2026-01-01T00:00:00.000Z');
       mockGetPrivacyPolicyAcceptedAt.mockResolvedValue('2026-01-02T00:00:00.000Z');
@@ -95,7 +95,7 @@ describe('useOnboardingRedirect', () => {
     renderHook(() => useOnboardingRedirect(navigationReplace));
 
     await waitFor(() => {
-      expect(navigationReplace).toHaveBeenCalledWith('PersonalObjectives', {
+      expect(navigationReplace).toHaveBeenCalledWith('InterestCategories', {
         userName: 'João Souza',
         firstName: 'João',
       });

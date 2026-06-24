@@ -25,7 +25,7 @@ type RootStackParamListCore = {
   AppPresentation: { userName?: string };
   Register: { userName?: string };
   Plans: { userName?: string };
-  PersonalObjectives: { firstName?: string };
+  InterestCategories: { firstName?: string };
   Anamnesis: undefined;
   AnamnesisHome: undefined;
   AnamnesisBody: undefined;
@@ -79,6 +79,7 @@ type RootStackParamListCore = {
   };
   Profile: undefined;
   UserProfileHome: undefined;
+  InterestCategoriesEdit: undefined;
   SubscriptionList: undefined;
   ProtocolDetail: {
     protocol: {

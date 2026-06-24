@@ -1,5 +1,5 @@
 import apiClient from '../infrastructure/apiClient';
-import { markerIdToObjectiveName } from '@/screens/auth/PersonalObjectivesScreen/useMarkers';
+import { markerIdToObjectiveName } from '@/hooks/interestCategories/useInterestCategoryMarkers';
 import { logger } from '@/utils/logger';
 import {
   PersonalObjectivesResponse,
@@ -29,15 +29,14 @@ class PersonalObjectivesService {
     await apiClient.post('/api/user-personal-objectives/me/objectives', { objectiveId }, true);
   }
 
-  async saveMyObjectivesFromMarkerIds(markerIds: string[]): Promise<void> {
-    if (markerIds.length === 0) {
-      return;
-    }
+  async removeMyObjective(objectiveId: string): Promise<void> {
+    await apiClient.delete(`/api/user-personal-objectives/me/objectives/${objectiveId}`, undefined, true);
+  }
 
-    const allObjectives = await this.getAllPersonalObjectives();
+  private markerIdsToObjectiveIds(markerIds: string[], allObjectives: PersonalObjective[]): Set<string> {
     const objectiveIdByName = new Map(allObjectives.map((objective) => [objective.name, objective.id]));
-
     const objectiveIds = new Set<string>();
+
     for (const markerId of markerIds) {
       const objectiveName = markerIdToObjectiveName(markerId);
       if (!objectiveName) {
@@ -52,6 +51,17 @@ class PersonalObjectivesService {
       objectiveIds.add(objectiveId);
     }
 
+    return objectiveIds;
+  }
+
+  async saveMyObjectivesFromMarkerIds(markerIds: string[]): Promise<void> {
+    if (markerIds.length === 0) {
+      return;
+    }
+
+    const allObjectives = await this.getAllPersonalObjectives();
+    const objectiveIds = this.markerIdsToObjectiveIds(markerIds, allObjectives);
+
     if (objectiveIds.size === 0) {
       throw new Error('Nenhum objetivo válido para salvar');
     }
@@ -65,6 +75,36 @@ class PersonalObjectivesService {
           continue;
         }
         throw error;
+      }
+    }
+  }
+
+  async syncMyObjectivesFromMarkerIds(markerIds: string[]): Promise<void> {
+    const [currentObjectives, allObjectives] = await Promise.all([
+      this.getMySelectedObjectives(),
+      this.getAllPersonalObjectives(),
+    ]);
+
+    const currentObjectiveIds = new Set(currentObjectives.map((objective) => objective.id));
+    const targetObjectiveIds = this.markerIdsToObjectiveIds(markerIds, allObjectives);
+
+    for (const objectiveId of currentObjectiveIds) {
+      if (!targetObjectiveIds.has(objectiveId)) {
+        await this.removeMyObjective(objectiveId);
+      }
+    }
+
+    for (const objectiveId of targetObjectiveIds) {
+      if (!currentObjectiveIds.has(objectiveId)) {
+        try {
+          await this.addMyObjective(objectiveId);
+        } catch (error) {
+          const status = (error as ApiError).status;
+          if (status === 409) {
+            continue;
+          }
+          throw error;
+        }
       }
     }
   }

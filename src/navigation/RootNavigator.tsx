@@ -26,7 +26,7 @@ import {
   getAnamnesisMindScreen,
   getAnamnesisHabitsScreen,
   getAnamnesisCompletionScreen,
-  getPersonalObjectivesScreen,
+  getInterestCategoriesScreen,
   getErrorScreen,
   getAppLoadingScreen,
   getCommunityStackNavigator,
@@ -41,6 +41,7 @@ import {
   getProviderProfileScreen,
   getProfileScreen,
   getUserProfileHomeScreen,
+  getInterestCategoriesEditScreen,
   getProtocolDetailScreen,
   getSubscriptionListScreen,
   getPrivacyPoliciesScreen,
@@ -158,9 +159,9 @@ const RootNavigator: React.FC = () => {
                       options={{ title: 'Anamnesis Conclusão' }}
                     />
                     <Stack.Screen
-                      name='PersonalObjectives'
-                      getComponent={getPersonalObjectivesScreen}
-                      options={{ title: 'Objetivos Pessoais' }}
+                      name='InterestCategories'
+                      getComponent={getInterestCategoriesScreen}
+                      options={{ title: 'Categorias de Interesse' }}
                     />
                     <Stack.Screen name='Error' getComponent={getErrorScreen} options={{ title: 'Erro' }} />
                     <Stack.Screen
@@ -211,6 +212,11 @@ const RootNavigator: React.FC = () => {
                       name='UserProfileHome'
                       getComponent={getUserProfileHomeScreen}
                       options={{ title: 'Meu Perfil' }}
+                    />
+                    <Stack.Screen
+                      name='InterestCategoriesEdit'
+                      getComponent={getInterestCategoriesEditScreen}
+                      options={{ title: 'Categorias de Interesse' }}
                     />
                     <Stack.Screen
                       name='ProtocolDetail'
