@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { PrimaryButton } from '@/components/ui';
@@ -57,6 +57,21 @@ const PrivacyPoliciesScreen: React.FC<Props> = ({ navigation, route }) => {
   const userName = route.params?.userName || 'Usuário';
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showAcceptButton, setShowAcceptButton] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    void storageService.getPrivacyPolicyAcceptedAt().then((acceptedAt) => {
+      if (!cancelled) {
+        setShowAcceptButton(!acceptedAt);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const toggleAccordion = useCallback((id: string) => {
     setExpandedId((prev) => (prev === id ? null : id));
@@ -90,7 +105,7 @@ const PrivacyPoliciesScreen: React.FC<Props> = ({ navigation, route }) => {
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, !showAcceptButton && styles.scrollContentWithoutFooter]}
       >
         <View style={styles.content}>
           <Text style={styles.title}>{t('privacyPolicies.title')}</Text>
@@ -145,19 +160,21 @@ const PrivacyPoliciesScreen: React.FC<Props> = ({ navigation, route }) => {
               </View>
             );
           })}
-          <Text style={styles.disclaimer}>{t('privacyPolicies.disclaimer')}</Text>
+          {showAcceptButton ? <Text style={styles.disclaimer}>{t('privacyPolicies.disclaimer')}</Text> : null}
         </View>
       </ScrollView>
 
-      <View style={styles.footer}>
-        <PrimaryButton
-          label={t('privacyPolicies.agreeButton')}
-          onPress={handleAgree}
-          disabled={isSubmitting}
-          loading={isSubmitting}
-          size='large'
-        />
-      </View>
+      {showAcceptButton ? (
+        <View style={styles.footer}>
+          <PrimaryButton
+            label={t('privacyPolicies.agreeButton')}
+            onPress={handleAgree}
+            disabled={isSubmitting}
+            loading={isSubmitting}
+            size='large'
+          />
+        </View>
+      ) : null}
     </ScreenWithHeader>
   );
 };

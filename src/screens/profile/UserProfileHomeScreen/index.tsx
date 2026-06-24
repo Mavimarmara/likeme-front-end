@@ -55,8 +55,8 @@ const UserProfileHomeScreen: React.FC<Props> = ({ navigation }) => {
   }, [navigation]);
 
   const handleDataUsagePolicyPress = useCallback(() => {
-    navigation.navigate('PrivacyPolicies', { userName: data.displayName.split(' ')[0] || undefined });
-  }, [data.displayName, navigation]);
+    navigation.navigate('PrivacyPolicies');
+  }, [navigation]);
 
   const handleAccountSettingsPress = useCallback(() => {
     Alert.alert(t('common.error'), t('profile.home.accountSettingsUnavailable'));

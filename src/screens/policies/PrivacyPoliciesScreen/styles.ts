@@ -14,6 +14,9 @@ export const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: 120,
   },
+  scrollContentWithoutFooter: {
+    paddingBottom: SPACING.XL,
+  },
   gradientBackground: {
     ...StyleSheet.absoluteFillObject,
     zIndex: 0,
