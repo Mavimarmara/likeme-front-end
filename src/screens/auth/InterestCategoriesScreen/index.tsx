@@ -106,10 +106,7 @@ const InterestCategoriesScreen: React.FC<Props> = ({ navigation, route }) => {
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={[
-          styles.scrollContent,
-          { paddingBottom: SPACING.XXL + Math.max(insets.bottom, SPACING.MD) },
-        ]}
+        contentContainerStyle={[styles.scrollContent]}
       >
         <View style={styles.content}>
           <CachedImage source={GradientSplash6} style={[styles.titleAdornment, adornmentStyle]} contentFit='contain' />

@@ -1,5 +1,18 @@
 import storageService from './storageService';
 
+function applyOnboardingTimestamp(
+  source: Record<string, unknown>,
+  field: 'registerCompletedAt' | 'objectivesSelectedAt' | 'privacyPolicyAcceptedAt',
+  persist: (date: string | null) => Promise<void>,
+): void {
+  if (!(field in source)) {
+    return;
+  }
+
+  const value = source[field];
+  void persist(value != null ? String(value) : null);
+}
+
 export async function setOnboardingStep(envelope: unknown): Promise<void> {
   if (envelope == null || typeof envelope !== 'object') {
     return;
@@ -14,13 +27,9 @@ export async function setOnboardingStep(envelope: unknown): Promise<void> {
   const source =
     nested != null && typeof nested === 'object' && !Array.isArray(nested) ? (nested as Record<string, unknown>) : d;
 
-  if (source.registerCompletedAt != null) {
-    await storageService.setRegisterCompletedAt(String(source.registerCompletedAt));
-  }
-  if (source.objectivesSelectedAt != null) {
-    await storageService.setObjectivesSelectedAt(String(source.objectivesSelectedAt));
-  }
-  if (source.privacyPolicyAcceptedAt != null) {
-    await storageService.setPrivacyPolicyAcceptedAt(String(source.privacyPolicyAcceptedAt));
-  }
+  applyOnboardingTimestamp(source, 'registerCompletedAt', (date) => storageService.setRegisterCompletedAt(date));
+  applyOnboardingTimestamp(source, 'objectivesSelectedAt', (date) => storageService.setObjectivesSelectedAt(date));
+  applyOnboardingTimestamp(source, 'privacyPolicyAcceptedAt', (date) =>
+    storageService.setPrivacyPolicyAcceptedAt(date),
+  );
 }

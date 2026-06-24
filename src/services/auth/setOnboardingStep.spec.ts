@@ -59,7 +59,7 @@ describe('setOnboardingStep', () => {
     expect(mockStorage.setPrivacyPolicyAcceptedAt).toHaveBeenCalledWith('2026-01-02T00:00:00.000Z');
   });
 
-  it('não sobrescreve objectivesSelectedAt quando backend devolve null', async () => {
+  it('limpa objectivesSelectedAt quando backend devolve null explicitamente', async () => {
     await setOnboardingStep({
       data: {
         onboarding: {
@@ -70,8 +70,8 @@ describe('setOnboardingStep', () => {
       },
     });
 
-    expect(mockStorage.setRegisterCompletedAt).toHaveBeenCalled();
-    expect(mockStorage.setObjectivesSelectedAt).not.toHaveBeenCalled();
-    expect(mockStorage.setPrivacyPolicyAcceptedAt).toHaveBeenCalled();
+    expect(mockStorage.setRegisterCompletedAt).toHaveBeenCalledWith('2026-01-03T00:00:00.000Z');
+    expect(mockStorage.setObjectivesSelectedAt).toHaveBeenCalledWith(null);
+    expect(mockStorage.setPrivacyPolicyAcceptedAt).toHaveBeenCalledWith('2026-01-02T00:00:00.000Z');
   });
 });
