@@ -93,8 +93,15 @@ export function useProfileAvatarEditor({ hasAvatar, onAvatarChanged }: Params) {
       try {
         await action();
       } catch (error) {
-        logger.error('[useProfileAvatarEditor] Falha ao atualizar foto de perfil', { cause: error });
-        Alert.alert(t('common.error'), t('profile.avatarSheet.uploadError'));
+        const httpError = error as Error & { status?: number };
+        logger.error('[useProfileAvatarEditor] Falha ao atualizar foto de perfil', {
+          status: httpError.status,
+          message: httpError.message,
+          cause: error,
+        });
+        const fallback = t('profile.avatarSheet.uploadError');
+        const message = httpError.message?.trim() && httpError.message !== fallback ? httpError.message : fallback;
+        Alert.alert(t('common.error'), message);
       } finally {
         setUploading(false);
       }
