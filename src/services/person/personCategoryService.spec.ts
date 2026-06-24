@@ -1,6 +1,7 @@
 import personCategoryService from './personCategoryService';
 import apiClient from '../infrastructure/apiClient';
 import categoryService from '../category/categoryService';
+import type { CategoryName } from '@/types/category';
 
 jest.mock('../infrastructure/apiClient');
 jest.mock('../category/categoryService', () => ({
@@ -53,7 +54,7 @@ describe('personCategoryService', () => {
     });
 
     it('lança erro quando nenhuma categoria mapeia para o catálogo', async () => {
-      await expect(personCategoryService.saveMyCategories(['categoria-inexistente'])).rejects.toThrow(
+      await expect(personCategoryService.saveMyCategories(['categoria-inexistente' as CategoryName])).rejects.toThrow(
         'Nenhuma categoria válida para salvar',
       );
     });
