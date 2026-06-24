@@ -2,7 +2,9 @@ import React, { useCallback } from 'react';
 import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import type { StackScreenProps } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import type { SvgProps } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { PROFILE_HOME_MENU_ICONS } from '@/assets/profile';
 import { CachedImage } from '@/components/ui/media/CachedImage';
 import { IconButton } from '@/components/ui/buttons';
 import { GradientBackground, IconSilhouette, ScreenWithHeader } from '@/components/ui/layout';
@@ -24,7 +26,7 @@ type Props = StackScreenProps<RootStackParamList, 'UserProfileHome'>;
 type AccountMenuItem = {
   key: string;
   labelKey: string;
-  icon: string;
+  IconComponent: React.FC<SvgProps>;
   onPress: () => void;
 };
 
@@ -66,25 +68,25 @@ const UserProfileHomeScreen: React.FC<Props> = ({ navigation }) => {
     {
       key: 'personal-data',
       labelKey: 'profile.home.personalData',
-      icon: 'person-outline',
+      IconComponent: PROFILE_HOME_MENU_ICONS.personalData,
       onPress: handlePersonalDataPress,
     },
     {
       key: 'interest-categories',
       labelKey: 'profile.home.interestCategories',
-      icon: 'check',
+      IconComponent: PROFILE_HOME_MENU_ICONS.interestCategories,
       onPress: handleInterestCategoriesPress,
     },
     {
       key: 'data-usage-policy',
       labelKey: 'profile.home.dataUsagePolicy',
-      icon: 'description',
+      IconComponent: PROFILE_HOME_MENU_ICONS.dataUsagePolicy,
       onPress: handleDataUsagePolicyPress,
     },
     {
       key: 'account-settings',
       labelKey: 'profile.home.accountSettings',
-      icon: 'settings',
+      IconComponent: PROFILE_HOME_MENU_ICONS.accountSettings,
       onPress: handleAccountSettingsPress,
     },
   ];
@@ -123,6 +125,7 @@ const UserProfileHomeScreen: React.FC<Props> = ({ navigation }) => {
               <IconButton
                 icon='edit'
                 onPress={avatarEditor.openSheet}
+                variant='light'
                 backgroundSize='medium'
                 containerStyle={styles.avatarEditButton}
                 disabled={avatarEditor.isBusy}
@@ -151,6 +154,7 @@ const UserProfileHomeScreen: React.FC<Props> = ({ navigation }) => {
                 <IconButton
                   icon='add'
                   onPress={handleAddInterestsPress}
+                  variant='dark'
                   backgroundSize='medium'
                   containerStyle={styles.addInterestButton}
                 />
@@ -183,18 +187,23 @@ const UserProfileHomeScreen: React.FC<Props> = ({ navigation }) => {
 
         <View style={styles.manageSection}>
           <Text style={styles.manageSectionTitle}>{t('profile.home.manageAccount')}</Text>
-          {accountMenuItems.map((item, index) => (
-            <View key={item.key}>
-              <TouchableOpacity style={styles.menuItem} onPress={item.onPress} activeOpacity={0.7}>
-                <View style={styles.menuItemLeft}>
-                  <Icon name={item.icon} size={26} color={COLORS.TEXT} />
-                  <Text style={styles.menuItemLabel}>{t(item.labelKey)}</Text>
+          <View style={styles.menuList}>
+            {accountMenuItems.map((item) => {
+              const MenuIcon = item.IconComponent;
+              return (
+                <View key={item.key} style={styles.menuItemBlock}>
+                  <TouchableOpacity style={styles.menuItem} onPress={item.onPress} activeOpacity={0.7}>
+                    <View style={styles.menuItemLeft}>
+                      <MenuIcon width={30} height={26} />
+                      <Text style={styles.menuItemLabel}>{t(item.labelKey)}</Text>
+                    </View>
+                    <PROFILE_HOME_MENU_ICONS.chevronRight width={28} height={28} />
+                  </TouchableOpacity>
+                  <View style={styles.separator} />
                 </View>
-                <Icon name='chevron-right' size={28} color={COLORS.NEUTRAL.LOW.DARK} />
-              </TouchableOpacity>
-              {index < accountMenuItems.length - 1 ? <View style={styles.separator} /> : null}
-            </View>
-          ))}
+              );
+            })}
+          </View>
         </View>
       </ScrollView>
       <ProfileAvatarSheet

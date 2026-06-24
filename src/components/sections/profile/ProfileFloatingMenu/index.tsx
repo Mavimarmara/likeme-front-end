@@ -6,6 +6,7 @@ import { CachedImage } from '@/components/ui/media/CachedImage';
 import { AuthService, storageService, userService } from '@/services';
 import { useTranslation } from '@/hooks/i18n';
 import type { StoredUser } from '@/types/auth';
+import { MenuChevronRightIcon } from '@/assets/profile';
 import { COLORS } from '@/constants';
 import { ACCOUNT_CONFIG } from '@/config/environment';
 import { logger } from '@/utils/logger';
@@ -145,7 +146,7 @@ const ProfileFloatingMenu: React.FC<Props> = ({ visible, navigation, onClose }) 
                 <Icon name='person-outline' size={22} color={COLORS.TEXT} />
                 <Text style={styles.menuItemLabel}>Meu Perfil</Text>
               </View>
-              <Icon name='chevron-right' size={22} color='#6e6a6a' />
+              <MenuChevronRightIcon width={22} height={22} />
             </TouchableOpacity>
             <View style={styles.separator} />
 
@@ -154,7 +155,7 @@ const ProfileFloatingMenu: React.FC<Props> = ({ visible, navigation, onClose }) 
                 <Icon name='shopping-cart' size={22} color={COLORS.TEXT} />
                 <Text style={styles.menuItemLabel}>Meus Pedidos</Text>
               </View>
-              <Icon name='chevron-right' size={22} color='#6e6a6a' />
+              <MenuChevronRightIcon width={22} height={22} />
             </TouchableOpacity>
             <View style={styles.separator} />
 
@@ -163,7 +164,7 @@ const ProfileFloatingMenu: React.FC<Props> = ({ visible, navigation, onClose }) 
                 <Icon name='credit-card' size={22} color={COLORS.TEXT} />
                 <Text style={styles.menuItemLabel}>Meus Protocolos e Serviços</Text>
               </View>
-              <Icon name='chevron-right' size={22} color='#6e6a6a' />
+              <MenuChevronRightIcon width={22} height={22} />
             </TouchableOpacity>
             <View style={styles.separator} />
 
@@ -172,7 +173,7 @@ const ProfileFloatingMenu: React.FC<Props> = ({ visible, navigation, onClose }) 
                 <Icon name='event-note' size={22} color={COLORS.TEXT} />
                 <Text style={styles.menuItemLabel}>Minhas Atividades</Text>
               </View>
-              <Icon name='chevron-right' size={22} color='#6e6a6a' />
+              <MenuChevronRightIcon width={22} height={22} />
             </TouchableOpacity>
             <View style={styles.separator} />
           </View>

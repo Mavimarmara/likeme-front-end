@@ -86,7 +86,6 @@ export const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     gap: SPACING.LG,
-    paddingHorizontal: SPACING.XL,
   },
   interestsHeaderRow: {
     width: '100%',
@@ -156,12 +155,17 @@ export const styles = StyleSheet.create({
     lineHeight: 24,
     color: COLORS.TEXT,
   },
+  menuList: {
+    width: '100%',
+  },
+  menuItemBlock: {
+    paddingTop: SPACING.LG,
+    gap: SPACING.MD,
+  },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: SPACING.LG,
-    paddingBottom: SPACING.MD,
   },
   menuItemLeft: {
     flexDirection: 'row',
@@ -178,7 +182,8 @@ export const styles = StyleSheet.create({
     flexShrink: 1,
   },
   separator: {
-    height: StyleSheet.hairlineWidth,
+    height: 1,
     backgroundColor: COLORS.SECONDARY.MEDIUM,
+    width: '100%',
   },
 });
