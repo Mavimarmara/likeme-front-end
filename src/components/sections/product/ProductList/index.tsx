@@ -1,6 +1,8 @@
 import { View, type StyleProp, type ViewStyle } from 'react-native';
 import { ProductRowCard } from '@/components/ui/cards';
 import { buildMarketplaceCategoryBadgeLabels } from '@/utils/marketplace/buildMarketplaceCategoryBadgeLabels';
+import { withMarketplaceFeaturedBadge } from '@/utils/marketplace/withMarketplaceFeaturedBadge';
+import { useTranslation } from '@/hooks/i18n';
 import type { Ad } from '@/types/ad';
 import type { CommunityCategory } from '@/types/community';
 import { styles } from './styles';
@@ -16,10 +18,15 @@ export type ProductListItemProps = {
 };
 
 export function ProductListItem({ ad, categories, onAdPress, fallbackTitle, outOfStockLabel }: ProductListItemProps) {
+  const { t } = useTranslation();
   const product = ad.product;
   const title = product?.name?.trim() || fallbackTitle;
   const image = product?.image?.trim() || DEFAULT_PRODUCT_IMAGE;
-  const badges = buildMarketplaceCategoryBadgeLabels(product, categories);
+  const badges = withMarketplaceFeaturedBadge(
+    buildMarketplaceCategoryBadgeLabels(product, categories),
+    ad.isFeatured,
+    t('marketplace.featured'),
+  );
 
   return (
     <ProductRowCard

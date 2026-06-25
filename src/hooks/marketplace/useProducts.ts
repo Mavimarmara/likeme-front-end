@@ -64,10 +64,12 @@ const listingAdFromProduct = (product: Product): Ad => {
   const picked = embedded.find(adIsUsableForListing) ?? embedded.find((a) => a.status === 'active') ?? embedded[0];
 
   if (picked != null) {
+    const isFeatured = picked.isFeatured === true || product.isFeatured === true;
     return {
       ...picked,
       productId: picked.productId ?? product.id,
       product: picked.product ?? product,
+      ...(isFeatured ? { isFeatured: true as const } : {}),
     };
   }
 

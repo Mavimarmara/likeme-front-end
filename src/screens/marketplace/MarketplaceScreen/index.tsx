@@ -331,6 +331,7 @@ const MarketplaceScreen: React.FC<MarketplaceScreenProps> = ({ navigation, route
       categories,
       includePrice: true,
       fallbackTitle: productFallbackTitle,
+      featuredBadgeLabel: t('marketplace.featured'),
     });
     return (
       <View style={styles.section}>

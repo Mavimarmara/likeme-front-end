@@ -41,6 +41,8 @@ export interface Ad {
   updatedAt: string;
   advertiser?: Advertiser;
   product?: Product; // Product contains: name, description, image, externalUrl, type, categoryId
+  /** Solução em destaque na busca/listagem do marketplace (APP-330). */
+  isFeatured?: boolean;
 }
 
 export interface Product {
@@ -76,6 +78,8 @@ export interface Product {
   createdAt: string;
   updatedAt: string;
   advertiserId?: string; // Dono do anúncio / parceiro
+  /** Solução em destaque na busca/listagem do marketplace (APP-330). */
+  isFeatured?: boolean;
   ads?: Ad[];
 }
 

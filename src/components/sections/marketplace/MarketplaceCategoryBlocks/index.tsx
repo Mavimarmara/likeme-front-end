@@ -30,6 +30,8 @@ export function MarketplaceProgramCardsRow({
   onAdPress,
   fallbackTitle,
 }: MarketplaceProgramCardsRowProps) {
+  const { t } = useTranslation();
+  const featuredBadgeLabel = t('marketplace.featured');
   const items = useMemo(
     (): JoinCardItem[] =>
       ads.map((ad) =>
@@ -37,9 +39,10 @@ export function MarketplaceProgramCardsRow({
           categories,
           includePrice: false,
           fallbackTitle,
+          featuredBadgeLabel,
         }),
       ),
-    [ads, categories, fallbackTitle],
+    [ads, categories, fallbackTitle, featuredBadgeLabel],
   );
 
   const handleItemPress = useCallback(
@@ -72,6 +75,8 @@ export function MarketplaceServiceCardsList({
   onAdPress,
   fallbackTitle,
 }: MarketplaceServiceCardsListProps) {
+  const { t } = useTranslation();
+  const featuredBadgeLabel = t('marketplace.featured');
   const items = useMemo(
     (): JoinCardItem[] =>
       ads.map((ad) =>
@@ -79,9 +84,10 @@ export function MarketplaceServiceCardsList({
           categories,
           includePrice: true,
           fallbackTitle,
+          featuredBadgeLabel,
         }),
       ),
-    [ads, categories, fallbackTitle],
+    [ads, categories, fallbackTitle, featuredBadgeLabel],
   );
 
   const handleItemPress = useCallback(

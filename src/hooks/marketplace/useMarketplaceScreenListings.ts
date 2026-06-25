@@ -384,7 +384,7 @@ export function useMarketplaceScreenListings({
     if (activeSource.page !== 1) {
       return null;
     }
-    return filteredAdsBySolution[0]?.id ?? null;
+    return filteredAdsBySolution.find((ad) => ad.isFeatured)?.id ?? null;
   }, [selectedSolutionTab, appliedSearchQuery, activeSource.page, filteredAdsBySolution]);
 
   const excludeHighlight = useCallback(
@@ -429,7 +429,7 @@ export function useMarketplaceScreenListings({
     categoryProgramAds.length > 0 ||
     professionalsCount > 0;
   const hasAllTabGroupedContent =
-    (highlightAdId != null && filteredAdsBySolution[0]?.product != null) ||
+    (highlightAdId != null && filteredAdsBySolution.some((ad) => ad.id === highlightAdId && ad.product != null)) ||
     allTabServiceAds.length > 0 ||
     allTabProgramAds.length > 0 ||
     allTabProductAds.length > 0 ||
@@ -493,7 +493,7 @@ export function useMarketplaceScreenListings({
     allTabProgramAds,
     listAdsForCurrentTab,
     highlightAdId,
-    weekHighlightAd: filteredAdsBySolution[0] ?? null,
+    weekHighlightAd: filteredAdsBySolution.find((ad) => ad.isFeatured && ad.product != null) ?? null,
     loading: activeSource.loading,
     hasMore: activeSource.hasMore,
     allTabLoading: allTab.loading,

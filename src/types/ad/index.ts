@@ -39,6 +39,8 @@ export interface Ad {
   updatedAt: string;
   advertiser?: Advertiser;
   product?: Product; // Product contains: name, description, image, externalUrl, type
+  /** Solução em destaque na busca/listagem do marketplace (APP-330). */
+  isFeatured?: boolean;
 }
 
 export interface AdvertiserProfile {
