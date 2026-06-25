@@ -132,3 +132,19 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ### Alterado
 - Título completo nos cards de destaque e serviços do marketplace
 - Contatos do provider ocultos na PDP de serviço
+
+## [1.8.0] - 2026-06-25
+
+### Adicionado
+- Redesign da tela inicial de Perfil com gestão da conta e interesses (APP-231)
+- Atualização da foto de perfil via Bottom Sheet: galeria, câmera ou exclusão (APP-232)
+- Edição de dados pessoais no Perfil (APP-233)
+- Gerenciamento de categorias de interesse no Perfil (APP-234)
+- Consulta da política de privacidade de dados no Perfil (APP-235)
+- Selo Destaque e destaque da semana no marketplace conforme curadoria (APP-330)
+
+### Alterado
+- Resultados do marketplace com mix equilibrado por provider na listagem e busca (APP-330)
+
+### Corrigido
+- Onboarding não reexibido após logout e novo login (APP-334)
