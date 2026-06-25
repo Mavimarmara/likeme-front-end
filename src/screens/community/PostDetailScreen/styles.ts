@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { COLORS, SPACING } from '@/constants';
+import { COLORS, KEYBOARD_AWARE_SCROLL, SPACING } from '@/constants';
 
 export const styles = StyleSheet.create({
   screenContent: {
@@ -15,11 +15,10 @@ export const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     zIndex: 1,
     paddingTop: SPACING.MD,
-    paddingBottom: SPACING.MD,
   },
   listContent: {
     flexGrow: 1,
-    paddingBottom: 0,
+    paddingBottom: KEYBOARD_AWARE_SCROLL.CONTENT_FALLBACK_PADDING_BOTTOM,
   },
   listTapCatcher: {
     flexGrow: 1,
