@@ -2,37 +2,68 @@ import { StyleSheet } from 'react-native';
 import { COLORS, SPACING } from '@/constants';
 
 export const styles = StyleSheet.create({
-  screenRoot: {
-    flex: 1,
-  },
   screenContent: {
     flex: 1,
     paddingBottom: 0,
-  },
-  composerOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 100,
-    elevation: 100,
-  },
-  composerDock: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    paddingHorizontal: 12,
-    paddingVertical: SPACING.SM,
-    backgroundColor: COLORS.PRIMARY.LIGHT,
-    overflow: 'hidden',
   },
   gradientBackground: {
     ...StyleSheet.absoluteFillObject,
     zIndex: 0,
   },
-  scroll: {
+  list: {
     flex: 1,
     backgroundColor: 'transparent',
     zIndex: 1,
     paddingTop: SPACING.MD,
+  },
+  listContent: {
+    flexGrow: 1,
+    paddingBottom: 0,
+  },
+  listTapCatcher: {
+    flexGrow: 1,
+    minHeight: 48,
+  },
+  commentRow: {
+    borderTopWidth: 1,
+    borderTopColor: '#E0E0E0',
+    backgroundColor: COLORS.SECONDARY.PURE,
+  },
+  commentsStateContainer: {
+    borderTopWidth: 1,
+    borderTopColor: '#E0E0E0',
+    backgroundColor: COLORS.SECONDARY.PURE,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 24,
+    paddingHorizontal: 16,
+    gap: 12,
+  },
+  commentsStateLabel: {
+    fontSize: 14,
+    color: COLORS.TEXT_LIGHT,
+    textAlign: 'center',
+  },
+  retryButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: COLORS.PRIMARY.LIGHT,
+  },
+  retryButtonLabel: {
+    fontSize: 14,
+    color: COLORS.PRIMARY.PURE,
+    fontWeight: '600',
+  },
+  composerFooter: {
+    width: '100%',
+    backgroundColor: COLORS.PRIMARY.LIGHT,
+    paddingHorizontal: SPACING.MD,
+    paddingTop: SPACING.MD,
+    paddingBottom: SPACING.MD,
+  },
+  composerInputRow: {
+    paddingVertical: 0,
   },
   header: {
     marginBottom: SPACING.MD,

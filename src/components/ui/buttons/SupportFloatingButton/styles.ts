@@ -2,14 +2,11 @@ import { StyleSheet } from 'react-native';
 import { COLORS, FONT_SIZES } from '@/constants';
 
 export const styles = StyleSheet.create({
-  wrapper: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 9999,
-    elevation: 9999,
-  },
   button: {
     position: 'absolute',
     right: 16,
+    zIndex: 9999,
+    elevation: 9999,
     minHeight: 36,
     paddingHorizontal: 16,
     paddingVertical: 9,

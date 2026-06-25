@@ -3,18 +3,15 @@ import { COLORS, SPACING } from '@/constants';
 
 export const styles = StyleSheet.create({
   container: {
-    marginBottom: SPACING.MD,
     paddingHorizontal: SPACING.MD,
     paddingVertical: SPACING.MD,
   },
   replyContainer: {
     marginLeft: SPACING.LG,
     marginTop: SPACING.XS,
-    marginBottom: SPACING.XS,
     paddingVertical: SPACING.XS,
   },
   containerWithReplies: {
-    marginBottom: SPACING.SM,
     paddingBottom: SPACING.SM,
   },
   avatar: {
@@ -65,11 +62,6 @@ export const styles = StyleSheet.create({
     letterSpacing: 0.2,
     marginBottom: SPACING.XS,
   },
-  verMore: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#001137',
-  },
   footerRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -94,15 +86,6 @@ export const styles = StyleSheet.create({
     color: '#0154f8',
     letterSpacing: 0.2,
     lineHeight: 14,
-  },
-  hideButton: {
-    paddingVertical: 0,
-  },
-  hideText: {
-    fontSize: 11,
-    color: '#9E9E9E',
-    fontWeight: '400',
-    letterSpacing: 0.1,
   },
   repliesContainer: {
     marginTop: SPACING.XS,

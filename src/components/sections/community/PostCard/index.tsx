@@ -305,6 +305,17 @@ const PostCardView: React.FC<ViewProps> = ({
     </>
   );
 
+  if (onPress) {
+    return (
+      <Pressable
+        onPress={() => onPress(post)}
+        style={[cardStyles.container, isPinned && cardStyles.pinnedContainer, containerStyles]}
+      >
+        {cardInner}
+      </Pressable>
+    );
+  }
+
   return (
     <View style={[cardStyles.container, isPinned && cardStyles.pinnedContainer, containerStyles]}>{cardInner}</View>
   );

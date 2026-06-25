@@ -75,19 +75,17 @@ const SupportFloatingButton: React.FC = () => {
   }
 
   return (
-    <View pointerEvents='box-none' style={styles.wrapper}>
-      <Pressable
-        accessibilityRole='button'
-        accessibilityLabel={SUPPORT_ACCESSIBILITY_LABEL}
-        onPress={() => {
-          void handlePressSupport();
-        }}
-        style={[styles.button, { bottom: bottomOffset }]}
-      >
-        <Text style={styles.label}>{SUPPORT_LABEL}</Text>
-        <ColoredTwoDotsIcon width={SUPPORT_ICON_SIZE} height={SUPPORT_ICON_SIZE} />
-      </Pressable>
-    </View>
+    <Pressable
+      accessibilityRole='button'
+      accessibilityLabel={SUPPORT_ACCESSIBILITY_LABEL}
+      onPress={() => {
+        void handlePressSupport();
+      }}
+      style={[styles.button, { bottom: bottomOffset }]}
+    >
+      <Text style={styles.label}>{SUPPORT_LABEL}</Text>
+      <ColoredTwoDotsIcon width={SUPPORT_ICON_SIZE} height={SUPPORT_ICON_SIZE} />
+    </Pressable>
   );
 };
 

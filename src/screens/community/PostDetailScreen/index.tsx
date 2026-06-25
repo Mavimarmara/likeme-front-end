@@ -1,13 +1,16 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ScrollView, View } from 'react-native';
-import { GradientBackground, KeyboardAwareScreen, ScreenWithHeader } from '@/components/ui/layout';
-import { PostCard, PostReplies } from '@/components/sections/community';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ActivityIndicator, FlatList, Keyboard, Pressable, Text, View, type ListRenderItem } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { GradientBackground, KeyboardAwareList, ScreenWithHeader } from '@/components/ui/layout';
+import { PostCard } from '@/components/sections/community';
+import { CommentCard } from '@/components/ui';
 import ReplyInput from '@/components/ui/inputs/ReplyInput';
 import { styles } from './styles';
 import type { CommunityStackParamList } from '@/types/navigation';
-import { BOTTOM_DOCK_BAR_HEIGHT, COLORS, SPACING } from '@/constants';
+import { COLORS, SPACING } from '@/constants';
 import type { Post } from '@/types';
-import { useKeyboardInset, usePostReplies, useTranslation } from '@/hooks';
+import { usePostReplies, useTranslation } from '@/hooks';
+import type { PostReplyCardComment } from '@/hooks/community/usePostReplies';
 import { communityService } from '@/services';
 import { mapCommunityPostToPost } from '@/utils';
 import { logger } from '@/utils/logger';
@@ -23,8 +26,7 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   const { post } = route.params;
   const [messageText, setMessageText] = useState('');
   const { t } = useTranslation();
-  const keyboardInset = useKeyboardInset();
-  const [composerHeight, setComposerHeight] = useState(BOTTOM_DOCK_BAR_HEIGHT);
+  const { bottom: bottomInset } = useSafeAreaInsets();
 
   const [likeBootstrap, setLikeBootstrap] = useState({
     initialLikes: post.likes ?? 0,
@@ -78,15 +80,27 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     };
   }, [post.id, post.poll]);
 
-  const { replyCardComments, addPostComment, isAddingPostComment, likeCount, isLiked, isLiking, togglePostLike } =
-    usePostReplies({
-      postId: post.id,
-      enabled: !post.poll,
-      initialLikes: likeBootstrap.initialLikes,
-      isLiked: likeBootstrap.isLiked,
-      myReactions: likeBootstrap.myReactions,
-    });
-  const scrollViewRef = useRef<ScrollView>(null);
+  const {
+    replyCardComments,
+    addPostComment,
+    isAddingPostComment,
+    likeCount,
+    isLiked,
+    isLiking,
+    togglePostLike,
+    isLoadingComments,
+    commentsError,
+    retryComments,
+  } = usePostReplies({
+    postId: post.id,
+    enabled: !post.poll,
+    initialLikes: likeBootstrap.initialLikes,
+    isLiked: likeBootstrap.isLiked,
+    myReactions: likeBootstrap.myReactions,
+  });
+
+  const listRef = useRef<FlatList<PostReplyCardComment>>(null);
+  const previousCommentCountRef = useRef(0);
 
   const postWithMedia = useMemo(
     () => ({
@@ -108,8 +122,6 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const isSendDisabled = isAddingPostComment || messageText.trim().length === 0;
 
-  const scrollPaddingBottom = composerHeight + keyboardInset + SPACING.MD;
-
   const handleSendComment = async () => {
     if (isSendDisabled) return;
 
@@ -123,65 +135,129 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     }
   };
 
+  const dismissKeyboard = useCallback(() => {
+    Keyboard.dismiss();
+  }, []);
+
   useEffect(() => {
-    if (!replyCardComments.length) return;
-    setTimeout(() => {
-      scrollViewRef.current?.scrollToEnd({ animated: true });
+    const previousCount = previousCommentCountRef.current;
+    previousCommentCountRef.current = replyCardComments.length;
+
+    if (replyCardComments.length <= previousCount) return;
+
+    const timer = setTimeout(() => {
+      listRef.current?.scrollToEnd({ animated: true });
     }, 100);
+    return () => clearTimeout(timer);
   }, [replyCardComments.length]);
 
-  return (
-    <View style={styles.screenRoot}>
-      <ScreenWithHeader
-        navigation={navigation}
-        headerProps={{
-          showBackButton: true,
-          onBackPress: () => navigation?.goBack?.(),
+  const renderComment = useCallback<ListRenderItem<PostReplyCardComment>>(
+    ({ item }) => (
+      <Pressable onPress={dismissKeyboard} style={styles.commentRow}>
+        <CommentCard comment={item} showReplies />
+      </Pressable>
+    ),
+    [dismissKeyboard],
+  );
+
+  const commentKeyExtractor = useCallback((item: PostReplyCardComment) => item.id, []);
+
+  const listHeader = useMemo(
+    () => (
+      <PostCard
+        post={postForRendering}
+        postEngagement={{ likeCount, isLiked, isLiking, togglePostLike }}
+        forceContentExpanded
+        onPress={dismissKeyboard}
+        styles={{
+          borderBottomLeftRadius: 0,
+          borderBottomRightRadius: 0,
         }}
-        contentContainerStyle={styles.screenContent}
-        contentBackgroundColor={COLORS.BACKGROUND_SECONDARY}
-      >
-        <View pointerEvents='none' style={styles.gradientBackground}>
-          <GradientBackground />
-        </View>
+      />
+    ),
+    [postForRendering, likeCount, isLiked, isLiking, togglePostLike, dismissKeyboard],
+  );
 
-        <KeyboardAwareScreen
-          scrollViewStyle={styles.scroll}
-          scrollContentContainerStyle={{ paddingBottom: scrollPaddingBottom }}
-          scrollRef={scrollViewRef}
-        >
-          <PostCard
-            post={postForRendering}
-            postEngagement={{ likeCount, isLiked, isLiking, togglePostLike }}
-            forceContentExpanded
-            styles={{
-              borderBottomLeftRadius: 0,
-              borderBottomRightRadius: 0,
-            }}
-          />
-
-          {!post.poll && <PostReplies replyCardComments={replyCardComments} />}
-        </KeyboardAwareScreen>
-      </ScreenWithHeader>
-
-      {!post.poll ? (
-        <View pointerEvents='box-none' style={styles.composerOverlay}>
-          <View
-            pointerEvents='auto'
-            style={[styles.composerDock, { bottom: keyboardInset }]}
-            onLayout={(event) => setComposerHeight(event.nativeEvent.layout.height)}
-          >
-            <ReplyInput
-              value={messageText}
-              onChangeText={setMessageText}
-              onSend={handleSendComment}
-              sendDisabled={isSendDisabled}
-              placeholder={t('chat.messagePlaceholder')}
-            />
+  const listEmptyComponent = useMemo(() => {
+    if (isLoadingComments) {
+      return (
+        <Pressable onPress={dismissKeyboard} style={styles.listTapCatcher}>
+          <View style={styles.commentsStateContainer} accessibilityLabel={t('community.loadingComments')}>
+            <ActivityIndicator size='small' color={COLORS.PRIMARY.PURE} />
+            <Text style={styles.commentsStateLabel}>{t('community.loadingComments')}</Text>
           </View>
-        </View>
-      ) : null}
+        </Pressable>
+      );
+    }
+
+    if (commentsError) {
+      return (
+        <Pressable onPress={dismissKeyboard} style={styles.listTapCatcher}>
+          <View style={styles.commentsStateContainer}>
+            <Text style={styles.commentsStateLabel}>{t('community.commentsLoadError')}</Text>
+            <Pressable
+              style={({ pressed }) => [styles.retryButton, pressed ? { opacity: 0.85 } : undefined]}
+              onPress={retryComments}
+              accessibilityRole='button'
+              accessibilityLabel={t('community.retryComments')}
+            >
+              <Text style={styles.retryButtonLabel}>{t('community.retryComments')}</Text>
+            </Pressable>
+          </View>
+        </Pressable>
+      );
+    }
+
+    return <Pressable onPress={dismissKeyboard} style={styles.listTapCatcher} />;
+  }, [commentsError, dismissKeyboard, isLoadingComments, retryComments, t]);
+
+  const listFooterComponent = useMemo(
+    () => <Pressable onPress={dismissKeyboard} style={styles.listTapCatcher} />,
+    [dismissKeyboard],
+  );
+
+  const commentComposer = !post.poll ? (
+    <View style={[styles.composerFooter, bottomInset > 0 ? { paddingBottom: bottomInset } : null]}>
+      <ReplyInput
+        value={messageText}
+        onChangeText={setMessageText}
+        onSend={handleSendComment}
+        sendDisabled={isSendDisabled}
+        placeholder={t('chat.messagePlaceholder')}
+        rowStyle={styles.composerInputRow}
+      />
     </View>
+  ) : undefined;
+
+  return (
+    <ScreenWithHeader
+      navigation={navigation}
+      headerProps={{
+        showBackButton: true,
+        onBackPress: () => navigation?.goBack?.(),
+      }}
+      contentContainerStyle={styles.screenContent}
+      contentBackgroundColor={COLORS.BACKGROUND_SECONDARY}
+    >
+      <View pointerEvents='none' style={styles.gradientBackground}>
+        <GradientBackground />
+      </View>
+
+      <KeyboardAwareList<PostReplyCardComment>
+        listRef={listRef}
+        listStyle={styles.list}
+        listContentContainerStyle={styles.listContent}
+        includeBottomSafeAreaOnFooter={false}
+        onScrollBeginDrag={dismissKeyboard}
+        data={replyCardComments}
+        renderItem={renderComment}
+        keyExtractor={commentKeyExtractor}
+        ListHeaderComponent={listHeader}
+        ListEmptyComponent={listEmptyComponent}
+        ListFooterComponent={listFooterComponent}
+        footer={commentComposer}
+      />
+    </ScreenWithHeader>
   );
 };
 

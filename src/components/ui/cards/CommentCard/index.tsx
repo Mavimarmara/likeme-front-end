@@ -34,11 +34,8 @@ type Props = {
   onUpvote?: (commentId: string) => void;
   onDownvote?: (commentId: string) => void;
   showReplies?: boolean;
-  onToggleReplies?: () => void;
   level?: number;
 };
-
-const CONTENT_COLLAPSED_LIMIT = 120;
 
 const CommentCard: React.FC<Props> = ({
   comment,
@@ -46,12 +43,9 @@ const CommentCard: React.FC<Props> = ({
   onUpvote,
   onDownvote: _onDownvote,
   showReplies = false,
-  onToggleReplies,
   level = 0,
 }) => {
-  const { t, currentLanguage } = useTranslation();
-  const [isExpanded, setIsExpanded] = useState(true);
-  const [isContentExpanded, setIsContentExpanded] = useState(false);
+  const { currentLanguage } = useTranslation();
   const hasReplies = comment.replies && comment.replies.length > 0;
   const isAvatarUri = comment.author.avatar && typeof comment.author.avatar === 'string';
   const [currentReaction, setCurrentReaction] = useState<'like' | 'dislike' | null>(comment.userReaction || null);
@@ -98,15 +92,6 @@ const CommentCard: React.FC<Props> = ({
       setReactionLoading(false);
     }
   };
-
-  const handleToggleReplies = () => {
-    setIsExpanded(!isExpanded);
-    onToggleReplies?.();
-  };
-
-  const shouldTruncate = comment.content.length > CONTENT_COLLAPSED_LIMIT;
-  const collapsedContent = comment.content.substring(0, CONTENT_COLLAPSED_LIMIT).trim();
-  const displayedContent = isContentExpanded || !shouldTruncate ? comment.content : collapsedContent;
 
   return (
     <View
@@ -158,32 +143,15 @@ const CommentCard: React.FC<Props> = ({
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.content}>
-            {displayedContent}
-            {shouldTruncate && (
-              <>
-                {!isContentExpanded && '... '}
-                <Text style={styles.verMore} onPress={() => setIsContentExpanded((v) => !v)}>
-                  Ver mais
-                </Text>
-              </>
-            )}
-          </Text>
+          <Text style={styles.content}>{comment.content}</Text>
 
           <View style={styles.footerRow}>
             <Text style={styles.timeText}>{commentCreatedAtLabel(comment.createdAt, currentLanguage)}</Text>
-            {hasReplies ? (
-              <TouchableOpacity style={styles.hideButton} onPress={handleToggleReplies} activeOpacity={0.7}>
-                <Text style={styles.hideText}>
-                  {isExpanded ? t('community.hideReplies') : t('community.showReplies')}
-                </Text>
-              </TouchableOpacity>
-            ) : null}
           </View>
         </View>
       </View>
 
-      {hasReplies && isExpanded && showReplies ? (
+      {hasReplies && showReplies ? (
         <View style={styles.repliesContainer}>
           {comment.replies?.map((reply) => (
             <CommentCard

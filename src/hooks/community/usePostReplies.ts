@@ -132,6 +132,8 @@ export const usePostReplies = ({
   const [localOptimisticComments, setLocalOptimisticComments] = useState<PostReplyCardComment[]>([]);
   const [fetchNonce, setFetchNonce] = useState(0);
   const [isAddingPostComment, setIsAddingPostComment] = useState(false);
+  const [isLoadingComments, setIsLoadingComments] = useState(false);
+  const [commentsError, setCommentsError] = useState<string | null>(null);
 
   const refresh = useCallback(() => {
     setFetchNonce((v) => v + 1);
@@ -141,9 +143,16 @@ export const usePostReplies = ({
     if (!enabled) return;
     if (!postId) return;
 
+    let cancelled = false;
+
     const run = async () => {
+      setIsLoadingComments(true);
+      setCommentsError(null);
+
       try {
         const raw = await communityService.getCommentsByReference(String(postId), 'post');
+        if (cancelled) return;
+
         const data = raw?.data ?? raw;
 
         const rootComments = Array.isArray(data?.comments) ? data.comments : [];
@@ -192,8 +201,9 @@ export const usePostReplies = ({
           let authorName = commentAuthorLabelFromPayload(remoteComment ?? {}, communityUsers, primaryUserId);
           let avatar = communityUserAvatarUrl(bundledUser, communityFiles);
 
-          const needsPublicLookup =
-            !bundledUser || authorName === 'Usuário' || authorName.startsWith('User ') || !avatar;
+          const hasDisplayName =
+            authorName !== 'Usuário' && !authorName.startsWith('User ') && authorName.trim().length > 0;
+          const needsPublicLookup = Boolean(primaryUserId) && (!hasDisplayName || !avatar);
 
           if (needsPublicLookup && primaryUserId) {
             const publicUser = await getPublicUser(primaryUserId);
@@ -270,14 +280,24 @@ export const usePostReplies = ({
           return acc;
         }, []);
 
+        if (cancelled) return;
         setRemoteReplyCardComments(merged);
       } catch (error) {
-        // Mantemos fallback do feed quando falhar.
+        if (cancelled) return;
         logger.warn('Erro ao sincronizar replies do post:', error);
+        setCommentsError('comments_load_failed');
+      } finally {
+        if (!cancelled) {
+          setIsLoadingComments(false);
+        }
       }
     };
 
     run();
+
+    return () => {
+      cancelled = true;
+    };
   }, [enabled, postId, fetchNonce, getPublicUser]);
 
   const addPostComment = useCallback(
@@ -353,5 +373,8 @@ export const usePostReplies = ({
     replyCardComments: mergedForRender,
     addPostComment,
     isAddingPostComment,
+    isLoadingComments,
+    commentsError,
+    retryComments: refresh,
   };
 };
