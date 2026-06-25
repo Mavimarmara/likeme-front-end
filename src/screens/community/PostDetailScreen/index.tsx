@@ -1,5 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, Keyboard, Pressable, Text, View, type ListRenderItem } from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  Keyboard,
+  Pressable,
+  Text,
+  TextInput,
+  View,
+  type ListRenderItem,
+} from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GradientBackground, KeyboardAwareList, ScreenWithHeader } from '@/components/ui/layout';
 import { PostCard } from '@/components/sections/community';
@@ -100,13 +110,33 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   });
 
   const listRef = useRef<FlatList<PostReplyCardComment>>(null);
-  const previousCommentCountRef = useRef(0);
-  const skipScrollAfterCommentsHydrationRef = useRef(true);
+  const commentInputRef = useRef<TextInput>(null);
+  const [isComposerActive, setIsComposerActive] = useState(false);
 
   useEffect(() => {
-    skipScrollAfterCommentsHydrationRef.current = true;
-    previousCommentCountRef.current = 0;
+    setIsComposerActive(false);
   }, [post.id]);
+
+  const pinListToTop = useCallback((animated = false) => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        listRef.current?.scrollToOffset({ offset: 0, animated });
+      });
+    });
+  }, []);
+
+  const deactivateComposer = useCallback(() => {
+    commentInputRef.current?.blur();
+    Keyboard.dismiss();
+    setIsComposerActive(false);
+  }, []);
+
+  const activateComposer = useCallback(() => {
+    setIsComposerActive(true);
+    requestAnimationFrame(() => {
+      commentInputRef.current?.focus();
+    });
+  }, []);
 
   const postWithMedia = useMemo(
     () => ({
@@ -141,28 +171,14 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     }
   };
 
-  const dismissKeyboard = useCallback(() => {
-    Keyboard.dismiss();
-  }, []);
+  const dismissKeyboard = deactivateComposer;
 
-  useEffect(() => {
-    if (isLoadingComments) return;
-
-    const previousCount = previousCommentCountRef.current;
-    previousCommentCountRef.current = replyCardComments.length;
-
-    if (skipScrollAfterCommentsHydrationRef.current) {
-      skipScrollAfterCommentsHydrationRef.current = false;
-      return;
-    }
-
-    if (replyCardComments.length <= previousCount) return;
-
-    const timer = setTimeout(() => {
-      listRef.current?.scrollToEnd({ animated: true });
-    }, 100);
-    return () => clearTimeout(timer);
-  }, [isLoadingComments, replyCardComments.length]);
+  useFocusEffect(
+    useCallback(() => {
+      deactivateComposer();
+      pinListToTop(false);
+    }, [deactivateComposer, pinListToTop, post.id]),
+  );
 
   const renderComment = useCallback<ListRenderItem<PostReplyCardComment>>(
     ({ item }) => (
@@ -177,64 +193,64 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const listHeader = useMemo(
     () => (
-      <>
-        <PostCard
-          post={postForRendering}
-          postEngagement={{ likeCount, isLiked, isLiking, togglePostLike }}
-          forceContentExpanded
-          onPress={dismissKeyboard}
-          styles={{
-            borderBottomLeftRadius: 0,
-            borderBottomRightRadius: 0,
-          }}
-        />
-        {isLoadingComments && replyCardComments.length === 0 ? (
-          <View style={styles.commentsStateContainer} accessibilityLabel={t('community.loadingComments')}>
-            <ActivityIndicator size='small' color={COLORS.PRIMARY.PURE} />
-            <Text style={styles.commentsStateLabel}>{t('community.loadingComments')}</Text>
-          </View>
-        ) : null}
-        {commentsError && replyCardComments.length === 0 ? (
-          <View style={styles.commentsStateContainer}>
-            <Text style={styles.commentsStateLabel}>{t('community.commentsLoadError')}</Text>
-            <Pressable
-              style={({ pressed }) => [styles.retryButton, pressed ? { opacity: 0.85 } : undefined]}
-              onPress={retryComments}
-              accessibilityRole='button'
-              accessibilityLabel={t('community.retryComments')}
-            >
-              <Text style={styles.retryButtonLabel}>{t('community.retryComments')}</Text>
-            </Pressable>
-          </View>
-        ) : null}
-      </>
+      <PostCard
+        post={postForRendering}
+        postEngagement={{ likeCount, isLiked, isLiking, togglePostLike }}
+        forceContentExpanded
+        styles={{
+          borderBottomLeftRadius: 0,
+          borderBottomRightRadius: 0,
+        }}
+      />
     ),
-    [
-      postForRendering,
-      likeCount,
-      isLiked,
-      isLiking,
-      togglePostLike,
-      dismissKeyboard,
-      isLoadingComments,
-      replyCardComments.length,
-      commentsError,
-      retryComments,
-      t,
-    ],
+    [postForRendering, likeCount, isLiked, isLiking, togglePostLike],
   );
 
+  const listEmptyComponent = useMemo(() => {
+    if (isLoadingComments) {
+      return (
+        <View style={styles.commentsStateContainer} accessibilityLabel={t('community.loadingComments')}>
+          <ActivityIndicator size='small' color={COLORS.PRIMARY.PURE} />
+          <Text style={styles.commentsStateLabel}>{t('community.loadingComments')}</Text>
+        </View>
+      );
+    }
+
+    if (commentsError) {
+      return (
+        <View style={styles.commentsStateContainer}>
+          <Text style={styles.commentsStateLabel}>{t('community.commentsLoadError')}</Text>
+          <Pressable
+            style={({ pressed }) => [styles.retryButton, pressed ? { opacity: 0.85 } : undefined]}
+            onPress={retryComments}
+            accessibilityRole='button'
+            accessibilityLabel={t('community.retryComments')}
+          >
+            <Text style={styles.retryButtonLabel}>{t('community.retryComments')}</Text>
+          </Pressable>
+        </View>
+      );
+    }
+
+    return null;
+  }, [commentsError, isLoadingComments, retryComments, t]);
+
   const commentComposer = !post.poll ? (
-    <View style={[styles.composerFooter, bottomInset > 0 ? { paddingBottom: bottomInset } : null]}>
-      <ReplyInput
-        value={messageText}
-        onChangeText={setMessageText}
-        onSend={handleSendComment}
-        sendDisabled={isSendDisabled}
-        placeholder={t('chat.messagePlaceholder')}
-        rowStyle={styles.composerInputRow}
-      />
-    </View>
+    <Pressable onPress={isComposerActive ? undefined : activateComposer} disabled={isComposerActive}>
+      <View style={[styles.composerFooter, bottomInset > 0 ? { paddingBottom: bottomInset } : null]}>
+        <ReplyInput
+          ref={commentInputRef}
+          value={messageText}
+          onChangeText={setMessageText}
+          onSend={handleSendComment}
+          sendDisabled={isSendDisabled}
+          placeholder={t('chat.messagePlaceholder')}
+          rowStyle={styles.composerInputRow}
+          editable={isComposerActive}
+          onFocus={() => setIsComposerActive(true)}
+        />
+      </View>
+    </Pressable>
   ) : undefined;
 
   return (
@@ -261,6 +277,7 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
         renderItem={renderComment}
         keyExtractor={commentKeyExtractor}
         ListHeaderComponent={listHeader}
+        ListEmptyComponent={listEmptyComponent}
         footer={commentComposer}
       />
     </ScreenWithHeader>

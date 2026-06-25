@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { TextInput, View, type StyleProp, type ViewStyle } from 'react-native';
 import { IconButton } from '@/components/ui/buttons';
 import { styles } from './styles';
@@ -10,38 +10,39 @@ type Props = {
   sendDisabled: boolean;
   placeholder: string;
   onFocus?: () => void;
+  editable?: boolean;
   rowStyle?: StyleProp<ViewStyle>;
   inputWrapperStyle?: StyleProp<ViewStyle>;
 };
 
-const ReplyInput: React.FC<Props> = ({
-  value,
-  onChangeText,
-  onSend,
-  sendDisabled,
-  placeholder,
-  onFocus,
-  rowStyle,
-  inputWrapperStyle,
-}) => {
-  return (
-    <View style={[styles.row, rowStyle]}>
-      <View style={[styles.textInputWrapper, inputWrapperStyle]}>
-        <TextInput
-          style={styles.textInput}
-          placeholder={placeholder}
-          placeholderTextColor='rgba(110,106,106,0.6)'
-          value={value}
-          onChangeText={onChangeText}
-          onFocus={onFocus}
-          multiline
-          showSoftInputOnFocus
-        />
-      </View>
+const ReplyInput = forwardRef<TextInput, Props>(
+  (
+    { value, onChangeText, onSend, sendDisabled, placeholder, onFocus, editable = true, rowStyle, inputWrapperStyle },
+    ref,
+  ) => {
+    return (
+      <View style={[styles.row, rowStyle]}>
+        <View style={[styles.textInputWrapper, inputWrapperStyle]}>
+          <TextInput
+            ref={ref}
+            style={styles.textInput}
+            placeholder={placeholder}
+            placeholderTextColor='rgba(110,106,106,0.6)'
+            value={value}
+            onChangeText={onChangeText}
+            onFocus={onFocus}
+            multiline
+            editable={editable}
+            focusable={editable}
+            autoFocus={false}
+            showSoftInputOnFocus={editable}
+          />
+        </View>
 
-      <IconButton icon='send' variant='dark' onPress={onSend} backgroundSize='medium' disabled={sendDisabled} />
-    </View>
-  );
-};
+        <IconButton icon='send' variant='dark' onPress={onSend} backgroundSize='medium' disabled={sendDisabled} />
+      </View>
+    );
+  },
+);
 
 export default ReplyInput;

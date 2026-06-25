@@ -19,7 +19,6 @@ export const styles = StyleSheet.create({
     paddingTop: SPACING.MD,
   },
   listContent: {
-    flexGrow: 1,
     paddingBottom: COMMENTS_LIST_END_INSET,
   },
   commentRow: {
