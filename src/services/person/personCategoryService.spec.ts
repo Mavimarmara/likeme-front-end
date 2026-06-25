@@ -32,12 +32,17 @@ describe('personCategoryService', () => {
       mockApiClient.get.mockResolvedValue({
         success: true,
         data: [
-          { categoryId: 'cat-sleep', name: 'Sono' },
-          { categoryId: 'cat-activity', name: 'Movimento' },
+          { categoryId: 'cat-sleep', name: 'Improve my sleep' },
+          { categoryId: 'cat-activity', name: 'Atividade' },
+          { categoryId: 'cat-purpose', name: 'Purpose & vision' },
         ],
       });
 
-      await expect(personCategoryService.getMySelectedCategoryIds()).resolves.toEqual(['sleep', 'activity']);
+      await expect(personCategoryService.getMySelectedCategoryIds()).resolves.toEqual([
+        'sleep',
+        'activity',
+        'purpose-vision',
+      ]);
       expect(mockApiClient.get).toHaveBeenCalledWith('/api/person-categories/me/categories', undefined, true);
     });
   });
@@ -53,10 +58,20 @@ describe('personCategoryService', () => {
       );
     });
 
-    it('lança erro quando nenhuma categoria mapeia para o catálogo', async () => {
+    it('lança erro quando alguma categoria não mapeia para o catálogo', async () => {
       await expect(personCategoryService.saveMyCategories(['categoria-inexistente' as CategoryName])).rejects.toThrow(
-        'Nenhuma categoria válida para salvar',
+        'Categorias sem correspondência no catálogo: categoria-inexistente',
       );
+      expect(mockApiClient.put).not.toHaveBeenCalled();
+    });
+
+    it('não envia PUT parcial quando o catálogo não cobre todas as categorias selecionadas', async () => {
+      mockCategoryService.listCategories.mockResolvedValue([{ categoryId: 'cat-sleep', name: 'Sono' }]);
+
+      await expect(personCategoryService.saveMyCategories(['sleep', 'activity'])).rejects.toThrow(
+        'Categorias sem correspondência no catálogo: activity',
+      );
+      expect(mockApiClient.put).not.toHaveBeenCalled();
     });
   });
 

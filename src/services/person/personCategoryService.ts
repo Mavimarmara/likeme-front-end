@@ -25,14 +25,19 @@ class PersonCategoryService {
 
   private categoryIdsToApiIds(categoryIds: CategoryName[], categoryKeyToApiId: Map<string, string>): string[] {
     const apiCategoryIds: string[] = [];
+    const missingCategoryIds: CategoryName[] = [];
 
     for (const categoryId of categoryIds) {
       const apiCategoryId = categoryKeyToApiId.get(categoryId);
       if (!apiCategoryId) {
-        logger.warn('[personCategoryService] Categoria sem correspondência no catálogo', { categoryId });
+        missingCategoryIds.push(categoryId);
         continue;
       }
       apiCategoryIds.push(apiCategoryId);
+    }
+
+    if (missingCategoryIds.length > 0) {
+      throw new Error(`Categorias sem correspondência no catálogo: ${missingCategoryIds.join(', ')}`);
     }
 
     return apiCategoryIds;
