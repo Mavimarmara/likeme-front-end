@@ -111,11 +111,6 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const listRef = useRef<FlatList<PostReplyCardComment>>(null);
   const commentInputRef = useRef<TextInput>(null);
-  const [isComposerActive, setIsComposerActive] = useState(false);
-
-  useEffect(() => {
-    setIsComposerActive(false);
-  }, [post.id]);
 
   const pinListToTop = useCallback((animated = false) => {
     requestAnimationFrame(() => {
@@ -128,14 +123,6 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   const deactivateComposer = useCallback(() => {
     commentInputRef.current?.blur();
     Keyboard.dismiss();
-    setIsComposerActive(false);
-  }, []);
-
-  const activateComposer = useCallback(() => {
-    setIsComposerActive(true);
-    requestAnimationFrame(() => {
-      commentInputRef.current?.focus();
-    });
   }, []);
 
   const postWithMedia = useMemo(
@@ -236,21 +223,17 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   }, [commentsError, isLoadingComments, retryComments, t]);
 
   const commentComposer = !post.poll ? (
-    <Pressable onPress={isComposerActive ? undefined : activateComposer} disabled={isComposerActive}>
-      <View style={[styles.composerFooter, bottomInset > 0 ? { paddingBottom: bottomInset } : null]}>
-        <ReplyInput
-          ref={commentInputRef}
-          value={messageText}
-          onChangeText={setMessageText}
-          onSend={handleSendComment}
-          sendDisabled={isSendDisabled}
-          placeholder={t('chat.messagePlaceholder')}
-          rowStyle={styles.composerInputRow}
-          editable={isComposerActive}
-          onFocus={() => setIsComposerActive(true)}
-        />
-      </View>
-    </Pressable>
+    <View style={[styles.composerFooter, bottomInset > 0 ? { paddingBottom: bottomInset } : null]}>
+      <ReplyInput
+        ref={commentInputRef}
+        value={messageText}
+        onChangeText={setMessageText}
+        onSend={handleSendComment}
+        sendDisabled={isSendDisabled}
+        placeholder={t('chat.messagePlaceholder')}
+        rowStyle={styles.composerInputRow}
+      />
+    </View>
   ) : undefined;
 
   return (

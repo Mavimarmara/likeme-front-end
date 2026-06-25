@@ -5,6 +5,7 @@ import { KEYBOARD_AWARE_SCROLL } from '@/constants';
 import { useKeyboardInset } from '@/hooks/useKeyboardInset';
 import {
   resolveBaseScrollContentPaddingBottom,
+  resolveDockedFooterReserveHeight,
   resolveKeyboardFooterOptions,
   resolveScrollContentPaddingBottom,
   type KeyboardFooterOverrides,
@@ -74,6 +75,12 @@ const KeyboardAwareScreen: React.FC<Props> = ({
   const shouldPadFooterWithBottomSafeArea =
     includeBottomSafeAreaOnFooter && bottomInset > 0 && isFooterDockedToScreenBottom;
 
+  const dockedFooterReserveHeight = resolveDockedFooterReserveHeight({
+    hasFooter: Boolean(footer),
+    footerLayoutHeight,
+    fallbackReserveHeight: KEYBOARD_AWARE_SCROLL.CONTENT_FALLBACK_PADDING_BOTTOM,
+  });
+
   const baseScrollPad = React.useMemo(
     () =>
       resolveBaseScrollContentPaddingBottom(
@@ -99,7 +106,11 @@ const KeyboardAwareScreen: React.FC<Props> = ({
       <ScrollView
         ref={scrollRef}
         testID='keyboard-aware-scroll'
-        style={[footer ? styles.scrollFill : null, scrollViewStyle]}
+        style={[
+          footer ? styles.scrollFill : null,
+          isFooterDockedToScreenBottom ? { marginBottom: dockedFooterReserveHeight } : null,
+          scrollViewStyle,
+        ]}
         contentContainerStyle={scrollContentMerged}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps='handled'

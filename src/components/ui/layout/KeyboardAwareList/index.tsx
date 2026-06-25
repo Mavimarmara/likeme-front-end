@@ -5,6 +5,7 @@ import { KEYBOARD_AWARE_SCROLL } from '@/constants';
 import { useKeyboardInset } from '@/hooks/useKeyboardInset';
 import {
   resolveBaseScrollContentPaddingBottom,
+  resolveDockedFooterReserveHeight,
   resolveKeyboardFooterOptions,
   resolveScrollContentPaddingBottom,
   type KeyboardFooterOverrides,
@@ -77,6 +78,12 @@ function KeyboardAwareList<T>({
   const shouldPadFooterWithBottomSafeArea =
     includeBottomSafeAreaOnFooter && bottomInset > 0 && isFooterDockedToScreenBottom;
 
+  const dockedFooterReserveHeight = resolveDockedFooterReserveHeight({
+    hasFooter: Boolean(footer),
+    footerLayoutHeight,
+    fallbackReserveHeight: KEYBOARD_AWARE_SCROLL.CONTENT_FALLBACK_PADDING_BOTTOM,
+  });
+
   const baseScrollPad = React.useMemo(
     () =>
       resolveBaseScrollContentPaddingBottom(
@@ -102,7 +109,11 @@ function KeyboardAwareList<T>({
       <FlatList<T>
         ref={listRef}
         testID='keyboard-aware-list'
-        style={[footer ? styles.listFill : null, listStyle]}
+        style={[
+          footer ? styles.listFill : null,
+          isFooterDockedToScreenBottom ? { marginBottom: dockedFooterReserveHeight } : null,
+          listStyle,
+        ]}
         contentContainerStyle={listContentMerged}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps='handled'

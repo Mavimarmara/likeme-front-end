@@ -55,3 +55,13 @@ export function resolveScrollContentPaddingBottom(params: {
   if (hasFooter && keyboardInset > 0) return basePaddingBottom + keyboardInset;
   return basePaddingBottom;
 }
+
+/** Reserva altura do footer fixo para a lista não interceptar toques antes do onLayout. */
+export function resolveDockedFooterReserveHeight(params: {
+  hasFooter: boolean;
+  footerLayoutHeight: number;
+  fallbackReserveHeight: number;
+}): number {
+  if (!params.hasFooter) return 0;
+  return params.footerLayoutHeight > 0 ? params.footerLayoutHeight : params.fallbackReserveHeight;
+}

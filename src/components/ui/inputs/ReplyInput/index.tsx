@@ -33,9 +33,6 @@ const ReplyInput = forwardRef<TextInput, Props>(
             onFocus={onFocus}
             multiline
             editable={editable}
-            focusable={editable}
-            autoFocus={false}
-            showSoftInputOnFocus={editable}
           />
         </View>
 

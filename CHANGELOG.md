@@ -148,3 +148,9 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ### Corrigido
 - Onboarding não reexibido após logout e novo login (APP-334)
+
+## [1.8.1] - 2026-06-25
+
+### Corrigido
+- Teclado abre no primeiro toque no campo de comentário do post
+- Lista não intercepta toques na área do footer fixo (comentários e chat)

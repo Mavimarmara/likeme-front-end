@@ -1,5 +1,6 @@
 import {
   computeKeyboardInset,
+  resolveDockedFooterReserveHeight,
   resolveKeyboardFooterOptions,
   resolveScrollContentPaddingBottom,
 } from './keyboardAwareLayout';
@@ -56,5 +57,37 @@ describe('resolveScrollContentPaddingBottom', () => {
       120,
     );
     expect(resolveScrollContentPaddingBottom({ basePaddingBottom: 120, hasFooter: true, keyboardInset: 0 })).toBe(120);
+  });
+});
+
+describe('resolveDockedFooterReserveHeight', () => {
+  it('retorna 0 sem footer', () => {
+    expect(
+      resolveDockedFooterReserveHeight({
+        hasFooter: false,
+        footerLayoutHeight: 72,
+        fallbackReserveHeight: 120,
+      }),
+    ).toBe(0);
+  });
+
+  it('usa fallback até o footer medir altura', () => {
+    expect(
+      resolveDockedFooterReserveHeight({
+        hasFooter: true,
+        footerLayoutHeight: 0,
+        fallbackReserveHeight: 120,
+      }),
+    ).toBe(120);
+  });
+
+  it('usa altura medida quando disponível', () => {
+    expect(
+      resolveDockedFooterReserveHeight({
+        hasFooter: true,
+        footerLayoutHeight: 84,
+        fallbackReserveHeight: 120,
+      }),
+    ).toBe(84);
   });
 });
