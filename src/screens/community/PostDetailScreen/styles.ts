@@ -1,6 +1,8 @@
 import { StyleSheet } from 'react-native';
 import { COLORS, KEYBOARD_AWARE_SCROLL, SPACING } from '@/constants';
 
+export const COMMENTS_LIST_END_INSET = KEYBOARD_AWARE_SCROLL.CONTENT_FALLBACK_PADDING_BOTTOM * 2;
+
 export const styles = StyleSheet.create({
   screenContent: {
     flex: 1,
@@ -18,11 +20,7 @@ export const styles = StyleSheet.create({
   },
   listContent: {
     flexGrow: 1,
-    paddingBottom: KEYBOARD_AWARE_SCROLL.CONTENT_FALLBACK_PADDING_BOTTOM,
-  },
-  listTapCatcher: {
-    flexGrow: 1,
-    minHeight: 48,
+    paddingBottom: COMMENTS_LIST_END_INSET,
   },
   commentRow: {
     borderTopWidth: 1,

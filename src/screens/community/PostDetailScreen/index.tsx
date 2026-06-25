@@ -101,6 +101,12 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const listRef = useRef<FlatList<PostReplyCardComment>>(null);
   const previousCommentCountRef = useRef(0);
+  const skipScrollAfterCommentsHydrationRef = useRef(true);
+
+  useEffect(() => {
+    skipScrollAfterCommentsHydrationRef.current = true;
+    previousCommentCountRef.current = 0;
+  }, [post.id]);
 
   const postWithMedia = useMemo(
     () => ({
@@ -140,8 +146,15 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   }, []);
 
   useEffect(() => {
+    if (isLoadingComments) return;
+
     const previousCount = previousCommentCountRef.current;
     previousCommentCountRef.current = replyCardComments.length;
+
+    if (skipScrollAfterCommentsHydrationRef.current) {
+      skipScrollAfterCommentsHydrationRef.current = false;
+      return;
+    }
 
     if (replyCardComments.length <= previousCount) return;
 
@@ -149,7 +162,7 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
       listRef.current?.scrollToEnd({ animated: true });
     }, 100);
     return () => clearTimeout(timer);
-  }, [replyCardComments.length]);
+  }, [isLoadingComments, replyCardComments.length]);
 
   const renderComment = useCallback<ListRenderItem<PostReplyCardComment>>(
     ({ item }) => (
@@ -164,35 +177,24 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const listHeader = useMemo(
     () => (
-      <PostCard
-        post={postForRendering}
-        postEngagement={{ likeCount, isLiked, isLiking, togglePostLike }}
-        forceContentExpanded
-        onPress={dismissKeyboard}
-        styles={{
-          borderBottomLeftRadius: 0,
-          borderBottomRightRadius: 0,
-        }}
-      />
-    ),
-    [postForRendering, likeCount, isLiked, isLiking, togglePostLike, dismissKeyboard],
-  );
-
-  const listEmptyComponent = useMemo(() => {
-    if (isLoadingComments) {
-      return (
-        <Pressable onPress={dismissKeyboard} style={styles.listTapCatcher}>
+      <>
+        <PostCard
+          post={postForRendering}
+          postEngagement={{ likeCount, isLiked, isLiking, togglePostLike }}
+          forceContentExpanded
+          onPress={dismissKeyboard}
+          styles={{
+            borderBottomLeftRadius: 0,
+            borderBottomRightRadius: 0,
+          }}
+        />
+        {isLoadingComments && replyCardComments.length === 0 ? (
           <View style={styles.commentsStateContainer} accessibilityLabel={t('community.loadingComments')}>
             <ActivityIndicator size='small' color={COLORS.PRIMARY.PURE} />
             <Text style={styles.commentsStateLabel}>{t('community.loadingComments')}</Text>
           </View>
-        </Pressable>
-      );
-    }
-
-    if (commentsError) {
-      return (
-        <Pressable onPress={dismissKeyboard} style={styles.listTapCatcher}>
+        ) : null}
+        {commentsError && replyCardComments.length === 0 ? (
           <View style={styles.commentsStateContainer}>
             <Text style={styles.commentsStateLabel}>{t('community.commentsLoadError')}</Text>
             <Pressable
@@ -204,16 +206,22 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
               <Text style={styles.retryButtonLabel}>{t('community.retryComments')}</Text>
             </Pressable>
           </View>
-        </Pressable>
-      );
-    }
-
-    return <Pressable onPress={dismissKeyboard} style={styles.listTapCatcher} />;
-  }, [commentsError, dismissKeyboard, isLoadingComments, retryComments, t]);
-
-  const listFooterComponent = useMemo(
-    () => <Pressable onPress={dismissKeyboard} style={styles.listTapCatcher} />,
-    [dismissKeyboard],
+        ) : null}
+      </>
+    ),
+    [
+      postForRendering,
+      likeCount,
+      isLiked,
+      isLiking,
+      togglePostLike,
+      dismissKeyboard,
+      isLoadingComments,
+      replyCardComments.length,
+      commentsError,
+      retryComments,
+      t,
+    ],
   );
 
   const commentComposer = !post.poll ? (
@@ -253,8 +261,6 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
         renderItem={renderComment}
         keyExtractor={commentKeyExtractor}
         ListHeaderComponent={listHeader}
-        ListEmptyComponent={listEmptyComponent}
-        ListFooterComponent={listFooterComponent}
         footer={commentComposer}
       />
     </ScreenWithHeader>
