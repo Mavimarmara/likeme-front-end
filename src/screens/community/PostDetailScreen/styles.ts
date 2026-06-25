@@ -15,6 +15,7 @@ export const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     zIndex: 1,
     paddingTop: SPACING.MD,
+    paddingBottom: SPACING.MD,
   },
   listContent: {
     flexGrow: 1,
