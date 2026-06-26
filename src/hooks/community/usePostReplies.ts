@@ -48,7 +48,17 @@ export function usePostLikeEngagement({
       setIsLikedState(isLiked);
       setActiveReactionName(isLiked ? 'like' : undefined);
     }
-  }, [postId, initialLikes, isLiked, hasMyReactions, derivedIsLiked, myReactionsKey]);
+  }, [postId]);
+
+  useEffect(() => {
+    if (hasMyReactions) {
+      setIsLikedState(derivedIsLiked);
+      setActiveReactionName(positiveReactions[0] ?? undefined);
+      return;
+    }
+    setIsLikedState(isLiked);
+    setActiveReactionName(isLiked ? 'like' : undefined);
+  }, [postId, myReactionsKey, hasMyReactions, derivedIsLiked, isLiked]);
 
   const likeCount = Math.max(0, initialLikes + likeDelta);
 

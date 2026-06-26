@@ -242,17 +242,14 @@ class CommunityService {
         throw new Error('Post ID is required');
       }
 
-      const endpoint = `${this.postReactionEndpoint}/${postId.trim()}/reactions`;
+      const trimmedReaction = reactionName.trim() || 'like';
+      const endpoint = `${this.postReactionEndpoint}/${postId.trim()}/reactions?reactionName=${encodeURIComponent(
+        trimmedReaction,
+      )}`;
 
-      await apiClient.delete(
-        endpoint,
-        {
-          reactionName,
-        },
-        true,
-      );
+      await apiClient.delete(endpoint, undefined, true);
 
-      logger.debug('Post reaction removed:', { postId, reactionName });
+      logger.debug('Post reaction removed:', { postId, reactionName: trimmedReaction });
       return true;
     } catch (error) {
       logger.warn('Error removing post reaction (ignored):', error);
@@ -290,17 +287,14 @@ class CommunityService {
         throw new Error('Comment ID is required');
       }
 
-      const endpoint = `${this.commentReactionEndpoint}/${commentId.trim()}/reactions`;
+      const trimmedReaction = reactionName.trim() || 'like';
+      const endpoint = `${this.commentReactionEndpoint}/${commentId.trim()}/reactions?reactionName=${encodeURIComponent(
+        trimmedReaction,
+      )}`;
 
-      await apiClient.delete(
-        endpoint,
-        {
-          reactionName,
-        },
-        true,
-      );
+      await apiClient.delete(endpoint, undefined, true);
 
-      logger.debug('Comment reaction removed:', { commentId, reactionName });
+      logger.debug('Comment reaction removed:', { commentId, reactionName: trimmedReaction });
       return true;
     } catch (error) {
       logger.warn('Error removing comment reaction (ignored):', error);
