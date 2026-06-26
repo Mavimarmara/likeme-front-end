@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DEFAULT_MARKETPLACE_SORT_ORDER, type MarketplaceSortOrderId } from '@/constants/marketplaceSortOrder';
-import { useMarketplaceAds, useProducts } from '@/hooks';
+import { useMarketplaceAds } from '@/hooks/marketplace/useMarketplaceAds';
+import { useProducts } from '@/hooks/marketplace/useProducts';
 import { filterAdsForMarketplaceTab } from '@/utils/marketplace/marketplaceAdSolutionKind';
 import { groupMarketplaceAdsBySolutionKind } from '@/utils/marketplace/groupMarketplaceAdsBySolutionKind';
 import { sortAdsByMarketplaceOrder } from '@/utils/marketplace/sorting';
@@ -95,6 +96,33 @@ export function marketplaceScreenListChrome(input: MarketplaceScreenListChromeIn
       hasMore: groupedScrollHasMore,
     },
   };
+}
+
+type MarketplaceCurrentTabAdsInput = {
+  showAllTabGroupedLayout: boolean;
+  allTabProductAds: readonly Ad[];
+  filteredAdsBySolution: readonly Ad[];
+  activePage: number;
+  appliedSearchQuery: string;
+  selectedSolutionTab: MarketplaceSolutionTab;
+};
+
+export function marketplaceCurrentTabAds({
+  showAllTabGroupedLayout,
+  allTabProductAds,
+  filteredAdsBySolution,
+  activePage,
+  appliedSearchQuery,
+  selectedSolutionTab,
+}: MarketplaceCurrentTabAdsInput): Ad[] {
+  if (showAllTabGroupedLayout) {
+    return [...allTabProductAds];
+  }
+
+  const shouldReserveFirstListingForRenderedHighlight =
+    selectedSolutionTab === SOLUTION_TAB_ALL && !hasMarketplaceSearchQuery(appliedSearchQuery) && activePage === 1;
+
+  return shouldReserveFirstListingForRenderedHighlight ? filteredAdsBySolution.slice(1) : [...filteredAdsBySolution];
 }
 
 export function useMarketplaceScreenListings({
@@ -403,17 +431,14 @@ export function useMarketplaceScreenListings({
   const allTabProgramAds = useMemo(() => excludeHighlight(categoryProgramAds), [excludeHighlight, categoryProgramAds]);
 
   const listAdsForCurrentTab = useMemo(() => {
-    if (showAllTabGroupedLayout) {
-      return allTabProductAds;
-    }
-    const skipHighlightSlice =
-      hasMarketplaceSearchQuery(appliedSearchQuery) ||
-      selectedSolutionTab === 'programs' ||
-      selectedSolutionTab === 'services';
-    if (skipHighlightSlice) {
-      return filteredAdsBySolution;
-    }
-    return activeSource.page === 1 ? filteredAdsBySolution.slice(1) : filteredAdsBySolution;
+    return marketplaceCurrentTabAds({
+      showAllTabGroupedLayout,
+      allTabProductAds,
+      filteredAdsBySolution,
+      activePage: activeSource.page,
+      appliedSearchQuery,
+      selectedSolutionTab,
+    });
   }, [
     showAllTabGroupedLayout,
     allTabProductAds,
