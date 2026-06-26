@@ -33,6 +33,7 @@ import {
   useProviderAds,
   useMenuItems,
   useEventJoin,
+  useEventList,
 } from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
@@ -120,7 +121,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     hasMore: _communitiesHasMore,
     loadMore: _loadMoreCommunities,
     refresh: _refreshCommunities,
-    events,
     feedEvents,
     communityFiles,
   } = useCommunities({
@@ -130,12 +130,16 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
       sortBy: 'createdAt',
       includeDeleted: false,
     },
-    loadEvents: loadCommunityEvents,
   });
 
   const selectedCommunity = useMemo(() => rawCommunities[0], [rawCommunities]);
 
   const selectedCommunityId = selectedCommunity?.communityId;
+
+  const { events: communityEvents } = useEventList({
+    enabled: loadCommunityEvents && Boolean(selectedCommunityId?.trim()),
+    communityId: selectedCommunityId,
+  });
 
   const { termsAccepted: communityTermsAccepted, toggleTermsAccepted: toggleCommunityTermsAccepted } = useCommunity({
     communityId: activeInfoTab === 'agreements' ? selectedCommunityId : undefined,
@@ -201,7 +205,7 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
 
   const { eventBanner, eventJoinUrl, closeEventSession, handleEventBannerPress } = useEventJoin({
     loadEvents: loadCommunityEvents,
-    events,
+    events: communityEvents,
     communityAvatarUrl: selectedCommunity?.avatarUrl,
     communityProviderName,
   });

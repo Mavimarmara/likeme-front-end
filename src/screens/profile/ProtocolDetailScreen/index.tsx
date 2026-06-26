@@ -14,7 +14,6 @@ import { useAnalyticsScreen, logTabSelect } from '@/analytics';
 import { useTranslation } from '@/hooks/i18n';
 import { MEMBER_PROTOCOL_COMMUNITY_IMAGE_FALLBACK } from '@/constants/community/communityProtocol';
 import type { RootStackParamList } from '@/types/navigation';
-import type { Event } from '@/types/event';
 import type { ModuleItem } from '@/components/sections/program/ModuleAccordion';
 import productService from '@/services/product/productService';
 import { COLORS } from '@/constants';
@@ -54,49 +53,9 @@ const ProtocolDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     communityId,
   });
 
-  const nextEvent = useMemo(() => {
-    const eventStartMillis = (event: Event) => {
-      const record = event as unknown as Record<string, unknown>;
-      const metadata =
-        record.metadata && typeof record.metadata === 'object' && !Array.isArray(record.metadata)
-          ? (record.metadata as Record<string, unknown>)
-          : null;
-
-      for (const field of ['startsAt', 'startAt', 'startTime', 'start']) {
-        const raw = record[field] ?? metadata?.[field];
-        if (typeof raw === 'string' && raw.trim()) {
-          const parsed = Date.parse(raw.trim());
-          if (!Number.isNaN(parsed)) {
-            return parsed;
-          }
-        }
-      }
-
-      return Number.POSITIVE_INFINITY;
-    };
-
-    const isUpcoming = (event: Event) => {
-      if (event.status === 'live') {
-        return true;
-      }
-      if (event.status === 'scheduled') {
-        return true;
-      }
-      if (event.status === 'unknown') {
-        return eventStartMillis(event) >= Date.now() - 2 * 60 * 60 * 1000;
-      }
-      return false;
-    };
-
-    const upcoming = events.filter(isUpcoming);
-    const liveNow = upcoming.filter((event) => event.status === 'live');
-    const candidates = liveNow.length > 0 ? liveNow : upcoming;
-    return [...candidates].sort((left, right) => eventStartMillis(left) - eventStartMillis(right))[0];
-  }, [events]);
-
   const { eventBanner, handleEventBannerPress } = useEventJoin({
     loadEvents: hasCommunity,
-    events: nextEvent ? [nextEvent] : [],
+    events,
     communityAvatarUrl: heroImageUri,
     communityProviderName: protocol.name,
     defaultThumbnailUrl: heroImageUri,
