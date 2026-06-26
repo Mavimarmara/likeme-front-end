@@ -36,7 +36,6 @@ export function useMemberProtocolCommunities(appliedSearchQuery = '') {
   const [communityFiles, setCommunityFiles] = useState<CommunityFile[]>([]);
   const [hasContent, setHasContent] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const loadingRef = useRef(false);
   const appliedSearchRef = useRef(appliedSearchQuery);
   appliedSearchRef.current = appliedSearchQuery;
@@ -50,7 +49,6 @@ export function useMemberProtocolCommunities(appliedSearchQuery = '') {
 
     try {
       setLoading(true);
-      setError(null);
 
       const response = await communityService.listMemberProtocolCommunities({
         page: 1,
@@ -76,8 +74,9 @@ export function useMemberProtocolCommunities(appliedSearchQuery = '') {
       }
     } catch (loadError) {
       logger.error('[useMemberProtocolCommunities] Falha ao carregar protocolos', loadError);
-      setError(loadError instanceof Error ? loadError.message : 'Erro ao listar protocolos');
       setCommunities([]);
+      setCategories([]);
+      setCommunityFiles([]);
     } finally {
       loadingRef.current = false;
       setLoading(false);
@@ -101,7 +100,6 @@ export function useMemberProtocolCommunities(appliedSearchQuery = '') {
 
   return {
     loading,
-    error,
     protocols: protocolCards,
     allProtocols: protocolCards,
     hasContent,

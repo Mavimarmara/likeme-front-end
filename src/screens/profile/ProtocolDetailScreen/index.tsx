@@ -3,6 +3,7 @@ import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import type { StackScreenProps } from '@react-navigation/stack';
 import { useFocusEffect } from '@react-navigation/native';
 import { ScreenWithHeader, HeroImage } from '@/components/ui/layout';
+import { EmptyState } from '@/components/ui/feedback';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
 import { ModuleAccordion } from '@/components/sections/program';
 import { EventBanner } from '@/components/sections/community';
@@ -47,8 +48,8 @@ const ProtocolDetailScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const heroImageUri = protocol.image?.trim() || (hasCommunity ? MEMBER_PROTOCOL_COMMUNITY_IMAGE_FALLBACK : '');
 
-  const { course, loading: courseLoading, error: courseError } = useProgramCourse(communityId, hasCommunity);
-  const { events, error: eventsError } = useEventList({
+  const { course, loading: courseLoading } = useProgramCourse(communityId, hasCommunity);
+  const { events } = useEventList({
     enabled: hasCommunity,
     communityId,
   });
@@ -106,12 +107,8 @@ const ProtocolDetailScreen: React.FC<Props> = ({ navigation, route }) => {
       return moduleItemsFromProgramCourse(course);
     }
 
-    return (protocol.modules ?? []).map((mod, index) => ({
-      id: mod.id ?? `module-${index}`,
-      title: mod.title ?? `Sessão ${String(index + 1).padStart(2, '0')}`,
-      completed: mod.isCompleted ?? false,
-    }));
-  }, [course, protocol.modules]);
+    return [];
+  }, [course]);
 
   const aboutText = protocol.description?.trim() || protocol.shortDescription?.trim() || null;
 
@@ -193,19 +190,14 @@ const ProtocolDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     }
 
     const showLessons = courseModules.length > 0;
+    const noCourseStepsTitle = t('profile.protocolDetail.noCourseSteps', {
+      defaultValue: 'Nenhuma aula disponível no momento.',
+    });
 
     if (!eventBanner && !showLessons) {
       return (
         <View style={styles.tabContent}>
-          {courseError ? <Text style={styles.emptyText}>{courseError}</Text> : null}
-          {eventsError ? <Text style={styles.emptyText}>{eventsError}</Text> : null}
-          {!courseError && !eventsError ? (
-            <Text style={styles.emptyText}>
-              {t('profile.protocolDetail.noCourseSteps', {
-                defaultValue: 'Nenhuma aula disponível no momento.',
-              })}
-            </Text>
-          ) : null}
+          <EmptyState title={noCourseStepsTitle} iconName='menu-book' />
         </View>
       );
     }
@@ -217,7 +209,6 @@ const ProtocolDetailScreen: React.FC<Props> = ({ navigation, route }) => {
             <EventBanner event={eventBanner} onPress={handleEventBannerPress} />
           </View>
         ) : null}
-        {courseError ? <Text style={styles.emptyText}>{courseError}</Text> : null}
         {showLessons ? (
           <ModuleAccordion
             modules={courseModules}
@@ -225,7 +216,9 @@ const ProtocolDetailScreen: React.FC<Props> = ({ navigation, route }) => {
             expandedModuleId={expandedModuleId}
             onExpandedModuleChange={setExpandedModuleId}
           />
-        ) : null}
+        ) : (
+          <EmptyState title={noCourseStepsTitle} iconName='menu-book' />
+        )}
       </View>
     );
   };

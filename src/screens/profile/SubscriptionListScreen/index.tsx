@@ -44,19 +44,15 @@ const SubscriptionListScreen: React.FC<Props> = ({ navigation }) => {
 
   const {
     loading: subscriptionLoading,
-    error: subscriptionError,
     protocols: subscriptionProtocols,
     services,
     hasContent: hasSubscriptionContent,
-    reload: reloadSubscriptions,
   } = useSubscriptionList(appliedSearchQuery);
 
   const {
     loading: communityLoading,
-    error: communityError,
     protocols: communityProtocols,
     hasContent: hasCommunityContent,
-    reload: reloadCommunityProtocols,
   } = useMemberProtocolCommunities(appliedSearchQuery);
 
   useFocusEffect(
@@ -113,7 +109,6 @@ const SubscriptionListScreen: React.FC<Props> = ({ navigation }) => {
   }, []);
 
   const loading = subscriptionLoading || communityLoading;
-  const error = subscriptionError ?? communityError;
 
   const subscriptionCommunityIds = useMemo(() => {
     const ids = new Set<string>();
@@ -132,17 +127,9 @@ const SubscriptionListScreen: React.FC<Props> = ({ navigation }) => {
   );
 
   const hasCommunityProtocols = communityProtocolsWithoutSubscription.length > 0;
-  const isFullyEmpty = !loading && !error && !hasSubscriptionContent && !hasCommunityContent;
+  const isFullyEmpty = !loading && !hasSubscriptionContent && !hasCommunityContent;
   const hasSearchResults =
-    !loading &&
-    !error &&
-    !isFullyEmpty &&
-    (subscriptionProtocols.length > 0 || services.length > 0 || hasCommunityProtocols);
-
-  const reload = useCallback(() => {
-    void reloadSubscriptions();
-    void reloadCommunityProtocols();
-  }, [reloadCommunityProtocols, reloadSubscriptions]);
+    !loading && !isFullyEmpty && (subscriptionProtocols.length > 0 || services.length > 0 || hasCommunityProtocols);
 
   return (
     <ScreenWithHeader
@@ -172,8 +159,6 @@ const SubscriptionListScreen: React.FC<Props> = ({ navigation }) => {
           <View style={styles.centered}>
             <ActivityIndicator size='large' color={COLORS.PRIMARY.PURE} />
           </View>
-        ) : error ? (
-          <EmptyState title={error} actionLabel={t('common.retry')} onActionPress={() => void reload()} />
         ) : isFullyEmpty ? (
           <View style={styles.emptyWrap}>
             <ProtocolList

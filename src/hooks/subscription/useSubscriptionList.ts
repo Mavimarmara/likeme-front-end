@@ -54,7 +54,6 @@ export function useSubscriptionList(appliedSearchQuery = '') {
   const [productMap, setProductMap] = useState<Map<string, ApiProduct>>(new Map());
   const [hasContent, setHasContent] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const loadingRef = useRef(false);
   const appliedSearchRef = useRef(appliedSearchQuery);
   appliedSearchRef.current = appliedSearchQuery;
@@ -66,7 +65,6 @@ export function useSubscriptionList(appliedSearchQuery = '') {
 
     try {
       setLoading(true);
-      setError(null);
 
       const subscriptionsResponse = await subscriptionService.listUserSubscriptions(
         searchTerm ? { search: searchTerm } : {},
@@ -94,7 +92,9 @@ export function useSubscriptionList(appliedSearchQuery = '') {
       }
     } catch (loadError) {
       logger.error('[useSubscriptionList] Erro ao carregar assinaturas', loadError);
-      setError(tRef.current('profile.subscriptionList.loadError'));
+      setSubscriptions([]);
+      setServices([]);
+      setProductMap(new Map());
     } finally {
       loadingRef.current = false;
       setLoading(false);
@@ -145,7 +145,6 @@ export function useSubscriptionList(appliedSearchQuery = '') {
 
   return {
     loading,
-    error,
     protocols,
     services: enrichedServices,
     allProtocols: protocols,

@@ -6,20 +6,17 @@ import { logger } from '@/utils/logger';
 export function useProgramCourse(communityId: string, enabled: boolean) {
   const [course, setCourse] = useState<ProgramCourse | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     const trimmed = communityId.trim();
     if (!enabled || !trimmed) {
       setCourse(null);
-      setError(null);
       setLoading(false);
       return;
     }
 
     try {
       setLoading(true);
-      setError(null);
 
       const response = await courseService.getProgramCourseByCommunityId(trimmed);
       const isSuccess = response.success === true || (response as { status?: string }).status === 'success';
@@ -31,7 +28,6 @@ export function useProgramCourse(communityId: string, enabled: boolean) {
     } catch (loadError) {
       logger.error('[useProgramCourse] Falha ao carregar curso do protocolo', loadError);
       setCourse(null);
-      setError(loadError instanceof Error ? loadError.message : 'Erro ao carregar conteúdo do protocolo');
     } finally {
       setLoading(false);
     }
@@ -44,7 +40,6 @@ export function useProgramCourse(communityId: string, enabled: boolean) {
   return {
     course,
     loading,
-    error,
     reload: load,
   };
 }
