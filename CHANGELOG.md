@@ -154,3 +154,8 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ### Corrigido
 - Teclado abre no primeiro toque no campo de comentário do post
 - Lista não intercepta toques na área do footer fixo (comentários e chat)
+
+## [1.8.2] - 2026-06-26
+
+### Corrigido
+- Empty state em protocolos sem expor erros de API ao usuário

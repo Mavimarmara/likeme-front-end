@@ -1,16 +1,15 @@
 {
-  "version": "1.8.1",
-  "releasedAt": "2026-06-25",
+  "version": "1.8.2",
+  "releasedAt": "2026-06-26",
   "android": {
-    "versionCode": 243
+    "versionCode": 244
   },
   "ios": {
-    "buildNumber": 19
+    "buildNumber": 20
   },
   "changelog": {
     "fixed": [
-      "Teclado abre no primeiro toque no campo de comentário do post",
-      "Lista não intercepta toques na área do footer fixo (comentários e chat)"
+      "Empty state em protocolos sem expor erros de API ao usuário"
     ]
   }
 }
