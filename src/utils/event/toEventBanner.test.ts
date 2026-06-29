@@ -126,4 +126,60 @@ describe('toEventBanner', () => {
 
     expect(banner?.host).toBe('Dr. Diogo');
   });
+
+  it('ignora evento encerrado quando a API retorna antes de um evento ativo', () => {
+    const events: Event[] = [
+      {
+        id: 'event-ended',
+        title: 'Evento encerrado',
+        startsAt: '2026-05-08T10:00:00.000Z',
+        endsAt: '2026-05-08T11:00:00.000Z',
+        status: 'ended',
+        provider: 'zoom',
+        source: 'social_plus',
+      },
+      {
+        id: 'event-live',
+        title: 'Evento ao vivo',
+        startsAt: '2026-05-08T12:00:00.000Z',
+        endsAt: '2026-05-08T13:00:00.000Z',
+        status: 'live',
+        provider: 'zoom',
+        source: 'social_plus',
+      },
+    ];
+
+    const banner = toEventBanner({ ...defaultParams, events });
+
+    expect(banner).toEqual(
+      expect.objectContaining({
+        id: 'event-live',
+        title: 'Evento ao vivo',
+        status: 'Live Now',
+      }),
+    );
+  });
+
+  it('não exibe banner quando só existem eventos encerrados ou com erro', () => {
+    const events: Event[] = [
+      {
+        id: 'event-ended',
+        title: 'Evento encerrado',
+        status: 'ended',
+        provider: 'zoom',
+        source: 'social_plus',
+      },
+      {
+        id: 'event-error',
+        title: 'Evento indisponível',
+        status: 'error',
+        provider: 'zoom',
+        source: 'social_plus',
+      },
+    ];
+
+    const banner = toEventBanner({ ...defaultParams, events });
+
+    expect(banner).toBeUndefined();
+  });
 });
