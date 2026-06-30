@@ -164,6 +164,28 @@ const getEnvVar = (key, defaultValue = '') => {
   return defaultValue;
 };
 
+const DEFAULT_BACKEND_URL = 'https://likeme-back-end-one.vercel.app/';
+
+// TODO(APP-332): migrar associated domain / intent filter para https://www.app.likeme.global
+function shareBaseUrl() {
+  const explicitShare = getEnvVar('EXPO_PUBLIC_SHARE_BASE_URL', '').replace(/\/+$/, '');
+  if (explicitShare) {
+    return explicitShare;
+  }
+  return getEnvVar('EXPO_PUBLIC_BACKEND_URL', DEFAULT_BACKEND_URL).replace(/\/+$/, '');
+}
+
+function shareUniversalLinkHost() {
+  const base = shareBaseUrl();
+  try {
+    return new URL(base).host;
+  } catch {
+    return 'likeme-back-end-one.vercel.app';
+  }
+}
+
+const SHARE_UNIVERSAL_LINK_HOST = shareUniversalLinkHost();
+
 const REVOPUSH_SERVER_URL = 'https://api.revopush.org';
 
 function revopushDeploymentKey(platform) {
@@ -292,6 +314,18 @@ module.exports = {
           ],
           category: ['BROWSABLE', 'DEFAULT'],
         },
+        {
+          action: 'VIEW',
+          autoVerify: true,
+          data: [
+            {
+              scheme: 'https',
+              host: SHARE_UNIVERSAL_LINK_HOST,
+              pathPrefix: '/post',
+            },
+          ],
+          category: ['BROWSABLE', 'DEFAULT'],
+        },
       ],
     },
     ios: {
@@ -317,6 +351,7 @@ module.exports = {
       entitlements: {
         'aps-environment': 'production',
         'com.apple.developer.applesignin': ['Default'],
+        'com.apple.developer.associated-domains': [`applinks:${SHARE_UNIVERSAL_LINK_HOST}`],
       },
     },
     owner: 'pixelpulselab',
@@ -349,6 +384,7 @@ module.exports = {
           'EXPO_PUBLIC_ANDROID_PLAY_STORE_URL',
           'https://play.google.com/store/apps/details?id=com.likeme.app',
         ),
+        EXPO_PUBLIC_SHARE_BASE_URL: getEnvVar('EXPO_PUBLIC_SHARE_BASE_URL', shareBaseUrl()),
         EXPO_PUBLIC_LOGGER_ON_DEVICE: getEnvVar('EXPO_PUBLIC_LOGGER_ON_DEVICE', ''),
       },
     },

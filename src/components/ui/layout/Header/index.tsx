@@ -29,6 +29,8 @@ function CartHeaderButton({ onPress }: { onPress: () => void }) {
 interface HeaderProps {
   onBackPress?: () => void;
   showBackButton?: boolean;
+  onSharePress?: () => void;
+  showShareButton?: boolean;
   onLogoutPress?: () => void;
   showLogoutButton?: boolean;
   onCartPress?: () => void;
@@ -58,6 +60,8 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({
   onBackPress,
   showBackButton = true,
+  onSharePress,
+  showShareButton = false,
   onLogoutPress,
   showLogoutButton = false,
   onCartPress,
@@ -141,6 +145,9 @@ const Header: React.FC<HeaderProps> = ({
               />
             )}
             {showCartButton && onCartPress && <CartHeaderButton onPress={onCartPress} />}
+            {showShareButton && onSharePress ? (
+              <IconButton icon='share' onPress={onSharePress} backgroundSize='medium' />
+            ) : null}
             {showLogoutButton && onLogoutPress && (
               <IconButton icon='logout' onPress={onLogoutPress} backgroundSize='medium' />
             )}

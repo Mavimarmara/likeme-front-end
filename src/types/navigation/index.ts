@@ -14,7 +14,7 @@ export type MarketplaceRouteParams = {
 
 export type CommunityStackParamList = {
   CommunityList: { openFeedFromMenu?: true } | undefined;
-  PostDetail: { post: import('@/types').Post };
+  PostDetail: { post: import('@/types').Post } | { postId: string };
 };
 
 type RootStackParamListCore = {

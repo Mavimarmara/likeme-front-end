@@ -32,30 +32,121 @@ type Props = {
   };
 };
 
+function postIdFromRouteParams(params: CommunityStackParamList['PostDetail']): string | null {
+  if ('postId' in params) {
+    const postId = params.postId?.trim();
+    return postId || null;
+  }
+  const postId = params.post?.id?.trim();
+  return postId || null;
+}
+
 const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
-  const { post } = route.params;
+  const routeParams = route.params;
+  const initialPost = 'post' in routeParams ? routeParams.post : undefined;
+  const routePostId = postIdFromRouteParams(routeParams);
+
+  const [resolvedPost, setResolvedPost] = useState<Post | null>(initialPost ?? null);
+  const [postLoadState, setPostLoadState] = useState<'idle' | 'loading' | 'error'>(initialPost ? 'idle' : 'loading');
+
+  const post = resolvedPost;
   const [messageText, setMessageText] = useState('');
   const { t } = useTranslation();
   const { bottom: bottomInset } = useSafeAreaInsets();
 
+  useEffect(() => {
+    if (initialPost) {
+      setResolvedPost(initialPost);
+      setPostLoadState('idle');
+      return;
+    }
+
+    if (!routePostId) {
+      setResolvedPost(null);
+      setPostLoadState('error');
+      return;
+    }
+
+    let cancelled = false;
+    setPostLoadState('loading');
+
+    (async () => {
+      try {
+        const feed = await communityService.getCommunityPostSnapshot(routePostId);
+        const raw = feed.posts?.[0];
+        if (cancelled) {
+          return;
+        }
+        if (!raw) {
+          setResolvedPost(null);
+          setPostLoadState('error');
+          return;
+        }
+        const mapped = mapCommunityPostToPost(
+          raw,
+          feed.files,
+          feed.users,
+          feed.comments,
+          feed.postChildren,
+          feed.posts,
+        );
+        if (cancelled) {
+          return;
+        }
+        if (!mapped) {
+          setResolvedPost(null);
+          setPostLoadState('error');
+          return;
+        }
+        setResolvedPost(mapped);
+        setPostLoadState('idle');
+      } catch (error) {
+        logger.warn('[PostDetailScreen] Falha ao carregar post compartilhado', {
+          postId: routePostId,
+          cause: error,
+        });
+        if (!cancelled) {
+          setResolvedPost(null);
+          setPostLoadState('error');
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [initialPost, routePostId]);
+
+  useEffect(() => {
+    if (postLoadState !== 'error' || initialPost) {
+      return;
+    }
+    navigation?.goBack?.();
+  }, [initialPost, navigation, postLoadState]);
+
   const [likeBootstrap, setLikeBootstrap] = useState({
-    initialLikes: post.likes ?? 0,
-    isLiked: post.isLiked ?? false,
-    myReactions: post.myReactions,
+    initialLikes: post?.likes ?? 0,
+    isLiked: post?.isLiked ?? false,
+    myReactions: post?.myReactions,
   });
   const [snapshotMedia, setSnapshotMedia] = useState<Pick<Post, 'image' | 'videoUrl' | 'attachments'> | null>(null);
 
   useEffect(() => {
+    if (!post) {
+      return;
+    }
     setLikeBootstrap({
       initialLikes: post.likes ?? 0,
       isLiked: post.isLiked ?? false,
       myReactions: post.myReactions,
     });
     setSnapshotMedia(null);
-  }, [post.id]);
+  }, [post?.id]);
 
   useEffect(() => {
-    if (post.poll) return;
+    if (!post || post.poll) {
+      return;
+    }
     let cancelled = false;
     (async () => {
       try {
@@ -88,7 +179,7 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     return () => {
       cancelled = true;
     };
-  }, [post.id, post.poll]);
+  }, [post?.id, post?.poll]);
 
   const {
     replyCardComments,
@@ -102,8 +193,8 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     commentsError,
     retryComments,
   } = usePostReplies({
-    postId: post.id,
-    enabled: !post.poll,
+    postId: post?.id ?? routePostId ?? '',
+    enabled: Boolean(post) && !post?.poll,
     initialLikes: likeBootstrap.initialLikes,
     isLiked: likeBootstrap.isLiked,
     myReactions: likeBootstrap.myReactions,
@@ -125,17 +216,22 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     Keyboard.dismiss();
   }, []);
 
-  const postWithMedia = useMemo(
-    () => ({
+  const postWithMedia = useMemo(() => {
+    if (!post) {
+      return null;
+    }
+    return {
       ...post,
       image: snapshotMedia?.image ?? post.image,
       videoUrl: snapshotMedia?.videoUrl ?? post.videoUrl,
       attachments: snapshotMedia?.attachments ?? post.attachments,
-    }),
-    [post, snapshotMedia],
-  );
+    };
+  }, [post, snapshotMedia]);
 
   const postForRendering = useMemo(() => {
+    if (!postWithMedia) {
+      return null;
+    }
     return {
       ...postWithMedia,
       comments: [] as Post['comments'],
@@ -164,7 +260,7 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     useCallback(() => {
       deactivateComposer();
       pinListToTop(false);
-    }, [deactivateComposer, pinListToTop, post.id]),
+    }, [deactivateComposer, pinListToTop, post?.id]),
   );
 
   const renderComment = useCallback<ListRenderItem<PostReplyCardComment>>(
@@ -178,8 +274,11 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const commentKeyExtractor = useCallback((item: PostReplyCardComment) => item.id, []);
 
-  const listHeader = useMemo(
-    () => (
+  const listHeader = useMemo(() => {
+    if (!postForRendering) {
+      return null;
+    }
+    return (
       <PostCard
         post={postForRendering}
         postEngagement={{ likeCount, isLiked, isLiking, togglePostLike }}
@@ -189,9 +288,8 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
           borderBottomRightRadius: 0,
         }}
       />
-    ),
-    [postForRendering, likeCount, isLiked, isLiking, togglePostLike],
-  );
+    );
+  }, [postForRendering, likeCount, isLiked, isLiking, togglePostLike]);
 
   const listEmptyComponent = useMemo(() => {
     if (isLoadingComments) {
@@ -222,19 +320,43 @@ const PostDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     return null;
   }, [commentsError, isLoadingComments, retryComments, t]);
 
-  const commentComposer = !post.poll ? (
-    <View style={[styles.composerFooter, bottomInset > 0 ? { paddingBottom: bottomInset } : null]}>
-      <ReplyInput
-        ref={commentInputRef}
-        value={messageText}
-        onChangeText={setMessageText}
-        onSend={handleSendComment}
-        sendDisabled={isSendDisabled}
-        placeholder={t('chat.messagePlaceholder')}
-        rowStyle={styles.composerInputRow}
-      />
-    </View>
-  ) : undefined;
+  const commentComposer =
+    post && !post.poll ? (
+      <View style={[styles.composerFooter, bottomInset > 0 ? { paddingBottom: bottomInset } : null]}>
+        <ReplyInput
+          ref={commentInputRef}
+          value={messageText}
+          onChangeText={setMessageText}
+          onSend={handleSendComment}
+          sendDisabled={isSendDisabled}
+          placeholder={t('chat.messagePlaceholder')}
+          rowStyle={styles.composerInputRow}
+        />
+      </View>
+    ) : undefined;
+
+  if (postLoadState === 'loading' || postLoadState === 'error') {
+    return (
+      <ScreenWithHeader
+        navigation={navigation}
+        headerProps={{
+          showBackButton: true,
+          onBackPress: () => navigation?.goBack?.(),
+        }}
+        contentContainerStyle={styles.screenContent}
+        contentBackgroundColor={COLORS.BACKGROUND_SECONDARY}
+      >
+        <View style={styles.commentsStateContainer}>
+          <ActivityIndicator size='large' color={COLORS.PRIMARY.PURE} />
+          <Text style={styles.commentsStateLabel}>{t('common.loading')}</Text>
+        </View>
+      </ScreenWithHeader>
+    );
+  }
+
+  if (!post || !postForRendering) {
+    return null;
+  }
 
   return (
     <ScreenWithHeader

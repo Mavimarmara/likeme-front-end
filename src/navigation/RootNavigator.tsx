@@ -10,6 +10,7 @@ import { FeedCacheProvider } from '@/contexts/FeedCacheContext';
 import { MarketplaceListingsCacheProvider } from '@/contexts/MarketplaceListingsCacheContext';
 import { STACK_GESTURE_ENABLED, fastFadeTransition, forSimpleFade } from '@/navigation/stackTransitions';
 import PushNotificationsRoot from '@/components/infrastructure/PushNotificationsRoot';
+import DeepLinkRoot from '@/components/infrastructure/DeepLinkRoot';
 import { COLORS } from '@/constants';
 import {
   getLoadingScreen,
@@ -94,6 +95,7 @@ const RootNavigator: React.FC = () => {
               <AdvertisersCacheProvider>
                 <FloatingMenuProvider>
                   <PushNotificationsRoot activeRouteName={activeRouteName} navigationRef={navigationRef} />
+                  <DeepLinkRoot activeRouteName={activeRouteName} navigationRef={navigationRef} />
                   <Stack.Navigator
                     initialRouteName='Loading'
                     screenOptions={{

@@ -67,8 +67,14 @@ export const AUTH0_CONFIG = {
   audience: getEnvVar('EXPO_PUBLIC_AUTH0_AUDIENCE', 'your-api-identifier'),
 };
 
+const DEFAULT_BACKEND_URL = 'https://likeme-back-end-one.vercel.app/';
+
+function normalizePublicBaseUrl(url: string): string {
+  return url.trim().replace(/\/+$/, '');
+}
+
 export const BACKEND_CONFIG = {
-  baseUrl: getEnvVar('EXPO_PUBLIC_BACKEND_URL', 'https://likeme-back-end-one.vercel.app/'),
+  baseUrl: getEnvVar('EXPO_PUBLIC_BACKEND_URL', DEFAULT_BACKEND_URL),
   apiVersion: 'v1',
 };
 
@@ -101,6 +107,14 @@ const DEFAULT_ANDROID_PLAY_STORE_URL = 'https://play.google.com/store/apps/detai
 export const STORE_URL_CONFIG = {
   ios: getEnvVar('EXPO_PUBLIC_IOS_APP_STORE_URL', DEFAULT_IOS_APP_STORE_URL).trim(),
   android: getEnvVar('EXPO_PUBLIC_ANDROID_PLAY_STORE_URL', DEFAULT_ANDROID_PLAY_STORE_URL).trim(),
+};
+
+/** Host base dos Universal/App Links (mesmo domínio do backend por padrão). */
+// TODO(APP-332): migrar base dos Universal/App Links para https://www.app.likeme.global
+export const SHARE_CONFIG = {
+  baseUrl: normalizePublicBaseUrl(
+    getEnvVar('EXPO_PUBLIC_SHARE_BASE_URL', '') || BACKEND_CONFIG.baseUrl || DEFAULT_BACKEND_URL,
+  ),
 };
 
 export const getApiUrl = (endpoint: string) => {
