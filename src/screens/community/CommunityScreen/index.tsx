@@ -32,8 +32,7 @@ import {
   useAdvertisers,
   useProviderAds,
   useMenuItems,
-  useEventJoin,
-  useEventList,
+  useCommunityEventBanner,
 } from '@/hooks';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
@@ -136,11 +135,6 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
 
   const selectedCommunityId = selectedCommunity?.communityId;
 
-  const { events: communityEvents } = useEventList({
-    enabled: loadCommunityEvents && Boolean(selectedCommunityId?.trim()),
-    communityId: selectedCommunityId,
-  });
-
   const { termsAccepted: communityTermsAccepted, toggleTermsAccepted: toggleCommunityTermsAccepted } = useCommunity({
     communityId: activeInfoTab === 'agreements' ? selectedCommunityId : undefined,
   });
@@ -203,11 +197,12 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
   const communityProviderId = advertiser?.id;
   const communityProviderName = advertiser?.name?.trim() ?? null;
 
-  const { eventBanner, eventJoinUrl, closeEventSession, handleEventBannerPress } = useEventJoin({
-    loadEvents: loadCommunityEvents,
-    events: communityEvents,
+  const { eventBanner, eventJoinUrl, closeEventSession, handleEventBannerPress } = useCommunityEventBanner({
+    enabled: loadCommunityEvents,
+    communityId: selectedCommunityId,
     communityAvatarUrl: selectedCommunity?.avatarUrl,
     communityProviderName,
+    navigation: rootNavigation as StackNavigationProp<RootStackParamList>,
   });
 
   const handleProductPress = useCallback(

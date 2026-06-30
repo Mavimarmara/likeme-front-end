@@ -7,12 +7,11 @@ import type {
   CommunityUserRelation,
   ListCommunitiesParams,
 } from '@/types/community';
-import type { Event, FeedEvent } from '@/types/event';
+import type { FeedEvent } from '@/types/event';
 import type { CategoryName } from '@/types/category';
 import { PAGINATION } from '@/constants';
 import { logger } from '@/utils/logger';
 import { prefetchImageUris } from '@/utils/image/prefetchImageUris';
-import { useEventList } from '@/hooks/event/useEventList';
 import { resolveCommunityHeroImageUri } from '@/utils/community/mappers';
 import { isCommunitiesCacheEntryFresh, useCommunitiesCache } from '@/contexts/CommunitiesCacheContext';
 import { communitiesListCacheKey } from '@/utils/community/communitiesCacheKey';
@@ -30,8 +29,6 @@ interface UseCommunitiesOptions {
   enabled?: boolean;
   pageSize?: number;
   params?: Partial<ListCommunitiesParams>;
-  /** Quando true, carrega eventos da primeira comunidade (useEventJoin monta o banner) */
-  loadEvents?: boolean;
   /** Texto para filtrar joinCommunities por título/badge (opcional) */
   searchQuery?: string;
   /** Se 'all' ou 'communities', filteredJoinCommunities inclui as comunidades; caso contrário, lista vazia */
@@ -66,8 +63,6 @@ interface UseCommunitiesReturn {
   loadCommunities: (page: number, append?: boolean) => Promise<void>;
   loadMore: () => void;
   refresh: () => void;
-  /** Eventos (API) da primeira comunidade quando loadEvents: true */
-  events: Event[];
   /** Mantido vazio; slot legado para SocialList (cards de canal) */
   feedEvents: FeedEvent[];
   /** Metadados de arquivo da última resposta de listagem (avatars, etc.). */
@@ -79,7 +74,6 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
     enabled = true,
     pageSize = DEFAULT_PAGE_SIZE,
     params = {},
-    loadEvents = false,
     searchQuery = '',
     solutionTab = 'all',
     selectedCategoryName = null,
@@ -320,12 +314,6 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
     }
   }, [enabled, loadCommunities, paramsKey]);
 
-  const firstCommunityId = communities[0]?.communityId;
-  const { events: communityApiEvents } = useEventList({
-    enabled: loadEvents && !!firstCommunityId,
-    communityId: firstCommunityId,
-  });
-
   const joinCommunities = useMemo((): JoinCommunityItem[] => {
     const defaultBadges = categories
       .map((category) => category.name.trim())
@@ -385,7 +373,6 @@ export const useCommunities = (options: UseCommunitiesOptions = {}): UseCommunit
     loadCommunities,
     loadMore,
     refresh,
-    events: communityApiEvents,
     feedEvents: emptyFeedEvents,
     communityFiles,
   };

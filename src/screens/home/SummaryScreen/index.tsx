@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { View, ScrollView, Text } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
 import { GradientBackground, ScreenWithHeader } from '@/components/ui/layout';
 import { SearchBar } from '@/components/ui/inputs';
 import { StickyFilterCarouselRow } from '@/components/ui/menu';
@@ -12,7 +13,11 @@ import {
   useSolutions,
   useSessionTokenReady,
   useCategories,
+  useCommunityEventBanner,
 } from '@/hooks';
+import { EventBanner } from '@/components/sections/community';
+import { EventWebViewSession } from '@/components/infrastructure/webview/EventWebViewSession';
+import { styles as socialListStyles } from '@/components/sections/community/SocialList/styles';
 import { FilterCategoryModal, type FilterCategoryResult } from '@/components/ui/modals';
 import { useFloatingMenuActions } from '@/contexts/FloatingMenuContext';
 import { useTranslation } from '@/hooks/i18n';
@@ -39,6 +44,7 @@ import {
 } from '@/utils/navigation/marketplaceNavigation';
 import { marketplaceSolutionOptions, SOLUTION_TAB_ALL, type MarketplaceSolutionTab } from '@/types/solution';
 import { navigateToProductDetailsScreen } from '@/utils/navigation/productNavigation';
+import type { RootStackParamList } from '@/types/navigation';
 import { styles } from './styles';
 
 type Props = {
@@ -162,6 +168,18 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
       sortBy: 'createdAt',
       includeDeleted: false,
     },
+  });
+
+  const homeBannerCommunity = filteredJoinCommunities[0];
+  const homeBannerCommunityId = homeBannerCommunity?.id?.trim() ?? '';
+
+  const { eventBanner, eventJoinUrl, closeEventSession, handleEventBannerPress } = useCommunityEventBanner({
+    enabled: hasSessionToken && Boolean(homeBannerCommunityId),
+    communityId: homeBannerCommunityId,
+    communityAvatarUrl: homeBannerCommunity?.image,
+    communityProviderName: homeBannerCommunity?.title,
+    onlyOnEventDay: true,
+    navigation: rootNavigation as StackNavigationProp<RootStackParamList>,
   });
 
   const [popularProviders, setPopularProviders] = useState<Provider[]>([]);
@@ -297,6 +315,12 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
             />
           </View>
 
+          {eventBanner ? (
+            <View style={socialListStyles.eventBannerContainer}>
+              <EventBanner event={eventBanner} onPress={handleEventBannerPress} />
+            </View>
+          ) : null}
+
           {filteredJoinCommunities.length > 0 && (
             <View style={styles.sectionDivider}>
               <Text style={styles.sectionTitle}>{t('home.recommendedCommunitySectionTitle')}</Text>
@@ -378,6 +402,7 @@ const SummaryScreen: React.FC<Props> = ({ navigation }) => {
         onFilter={handleHomeFilterApply}
         onClear={handleHomeFilterClear}
       />
+      {eventJoinUrl ? <EventWebViewSession url={eventJoinUrl} onClose={closeEventSession} /> : null}
     </ScreenWithHeader>
   );
 };

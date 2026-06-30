@@ -18,8 +18,8 @@ export { usePostReplies } from './community/usePostReplies';
 export type { PostLikeEngagement } from './community/usePostReplies';
 export { usePost } from './community/usePost';
 export { useEventList } from './event/useEventList';
-export { useEventJoin } from './event/useEventJoin';
-export type { UseEventJoinOptions, UseEventJoinReturn } from './event/useEventJoin';
+export { useCommunityEventBanner } from './event/useCommunityEventBanner';
+export type { UseCommunityEventBannerOptions, UseCommunityEventBannerReturn } from './event/useCommunityEventBanner';
 export type { UseEventListOptions, UseEventListReturn } from './event/useEventList';
 
 // Category hooks

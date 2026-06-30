@@ -7,8 +7,9 @@ import { EmptyState } from '@/components/ui/feedback';
 import { ButtonCarousel, type ButtonCarouselOption } from '@/components/ui/carousel';
 import { ModuleAccordion } from '@/components/sections/program';
 import { EventBanner } from '@/components/sections/community';
+import { EventWebViewSession } from '@/components/infrastructure/webview/EventWebViewSession';
 import { MarkdownText } from '@/components/ui/text/MarkdownText';
-import { useEventJoin, useEventList, useMenuItems, useProgramCourse } from '@/hooks';
+import { useCommunityEventBanner, useMenuItems, useProgramCourse } from '@/hooks';
 import { useFloatingMenuActions } from '@/contexts/FloatingMenuContext';
 import { useAnalyticsScreen, logTabSelect } from '@/analytics';
 import { useTranslation } from '@/hooks/i18n';
@@ -48,17 +49,15 @@ const ProtocolDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   const heroImageUri = protocol.image?.trim() || (hasCommunity ? MEMBER_PROTOCOL_COMMUNITY_IMAGE_FALLBACK : '');
 
   const { course, loading: courseLoading } = useProgramCourse(communityId, hasCommunity);
-  const { events } = useEventList({
+  const { eventBanner, eventJoinUrl, closeEventSession, handleEventBannerPress } = useCommunityEventBanner({
     enabled: hasCommunity,
     communityId,
-  });
-
-  const { eventBanner, handleEventBannerPress } = useEventJoin({
-    loadEvents: hasCommunity,
-    events,
     communityAvatarUrl: heroImageUri,
     communityProviderName: protocol.name,
     defaultThumbnailUrl: heroImageUri,
+    programProductId: productId || undefined,
+    hasProgramAccess: true,
+    navigation,
   });
 
   const courseModules: ModuleItem[] = useMemo(() => {
@@ -248,6 +247,7 @@ const ProtocolDetailScreen: React.FC<Props> = ({ navigation, route }) => {
 
         {renderTabContent()}
       </ScrollView>
+      {eventJoinUrl ? <EventWebViewSession url={eventJoinUrl} onClose={closeEventSession} /> : null}
     </ScreenWithHeader>
   );
 };

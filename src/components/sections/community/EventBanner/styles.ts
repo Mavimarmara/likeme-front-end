@@ -79,6 +79,9 @@ export const styles = StyleSheet.create({
     color: '#001137',
     textAlign: 'center',
   },
+  ctaButtonDisabled: {
+    opacity: 0.65,
+  },
   infoContainer: {
     flex: 3,
     minWidth: 0,

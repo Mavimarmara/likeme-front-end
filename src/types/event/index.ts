@@ -20,6 +20,8 @@ export interface EventParticipant {
 
 export type EventBannerStatus = 'Live Now' | 'Scheduled';
 
+export type EventBannerVariant = 'purchase' | 'reminder' | 'reminder_created' | 'live_join';
+
 export type EventJoinMode = 'external_browser' | 'none';
 
 /** Valor legado ainda aceito na API; tratado como `external_browser`. */
@@ -36,6 +38,25 @@ export interface EventBannerData {
   externalUrl?: string;
   provider?: 'zoom' | 'unknown';
   joinMode?: EventJoinModeFromApi;
+  variant?: EventBannerVariant;
+  communityId?: string;
+  programProductId?: string | null;
+}
+
+/** Banner de evento retornado pela API (domínio; sem thumbnail da tela). */
+export interface CommunityEventBannerFromApi {
+  id: string;
+  title: string;
+  host: string;
+  status: 'scheduled' | 'live';
+  startsAt: string;
+  endsAt: string;
+  externalUrl?: string;
+  provider: 'zoom' | 'unknown';
+  joinMode: EventJoinModeFromApi;
+  variant: EventBannerVariant;
+  communityId: string;
+  programProductId: string | null;
 }
 
 /** Evento retornado pela API (Social Plus / comunidade). */
@@ -59,6 +80,9 @@ export interface ListEventsApiResponse {
   message?: string;
   data?: {
     events?: Event[];
+    programProductId?: string | null;
+    hasProgramAccess?: boolean;
+    banner?: CommunityEventBannerFromApi | null;
   };
 }
 
