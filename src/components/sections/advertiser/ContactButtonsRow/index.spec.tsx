@@ -1,7 +1,7 @@
 import React from 'react';
 import { Linking } from 'react-native';
 import { render, fireEvent, within } from '@testing-library/react-native';
-import { AdvertiserContactButtonsRow } from './index';
+import { ContactButtonsRow } from './index';
 
 jest.mock('@/components/ui/buttons', () => {
   const { Pressable, Text } = require('react-native');
@@ -22,17 +22,15 @@ jest.mock('@/utils/logger', () => ({
   logger: { error: jest.fn() },
 }));
 
-describe('AdvertiserContactButtonsRow', () => {
+describe('ContactButtonsRow', () => {
   it('não renderiza quando não há contatos válidos', () => {
-    const { queryByTestId } = render(
-      <AdvertiserContactButtonsRow contacts={[]} providerId='adv-1' testID='contacts-row' />,
-    );
+    const { queryByTestId } = render(<ContactButtonsRow contacts={[]} providerId='adv-1' testID='contacts-row' />);
     expect(queryByTestId('contacts-row')).toBeNull();
   });
 
   it('renderiza botões para contatos disponíveis', () => {
     const { getByTestId } = render(
-      <AdvertiserContactButtonsRow
+      <ContactButtonsRow
         contacts={[
           { type: 'email', value: 'test@example.com' },
           { type: 'whatsapp', value: '5511999999999' },
@@ -51,7 +49,7 @@ describe('AdvertiserContactButtonsRow', () => {
     const openURL = jest.spyOn(Linking, 'openURL').mockResolvedValue(undefined as never);
 
     const { getByTestId } = render(
-      <AdvertiserContactButtonsRow
+      <ContactButtonsRow
         contacts={[{ type: 'email', value: 'test@example.com' }]}
         providerId='adv-1'
         testID='contacts-row'

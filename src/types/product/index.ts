@@ -1,5 +1,6 @@
 import type { ApiResponse } from '@/types/infrastructure';
 import type { ProductCatalogType } from './productCatalogType';
+import type { Contact } from '@/types/contact';
 
 export {
   PRODUCT_CATALOG_TYPE,
@@ -81,6 +82,7 @@ export interface Product {
   /** Solução em destaque na busca/listagem do marketplace (APP-330). */
   isFeatured?: boolean;
   ads?: Ad[];
+  contacts?: Contact[];
 }
 
 export interface ListProductsParams {

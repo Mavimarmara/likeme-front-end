@@ -25,7 +25,7 @@ import { DEFAULT_MARKETPLACE_SORT_ORDER, type MarketplaceSortOrderId } from '@/c
 import { PRODUCT_CATALOG_TYPE } from '@/types/product';
 import { useSetFloatingMenu } from '@/contexts/FloatingMenuContext';
 import { logger } from '@/utils/logger';
-import { AdvertiserContactButtonsRow } from '@/components/sections/advertiser/AdvertiserContactButtonsRow';
+import { ContactButtonsRow } from '@/components/sections/advertiser/ContactButtonsRow';
 import { formatAdvertiserDocumentsLine } from '@/utils/advertiser/documents';
 import { resolveCommunityHeroImageUri } from '@/utils/community/mappers';
 import { navigateToCommunity } from '@/utils/navigation/communityNavigation';
@@ -376,7 +376,7 @@ const ProviderProfileScreen: React.FC<ProviderProfileScreenProps> = ({ navigatio
               />
             </View>
             {activeTab === 'about' ? (
-              <AdvertiserContactButtonsRow
+              <ContactButtonsRow
                 contacts={advertiser?.contacts}
                 providerId={providerId}
                 testID='provider-profile-contacts'

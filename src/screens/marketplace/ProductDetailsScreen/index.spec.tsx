@@ -86,10 +86,10 @@ jest.mock('@/components/ui', () => {
   };
 });
 
-jest.mock('@/components/sections/advertiser/AdvertiserContactButtonsRow', () => {
+jest.mock('@/components/sections/advertiser/ContactButtonsRow', () => {
   const { View } = require('react-native');
   return {
-    AdvertiserContactButtonsRow: ({ testID, contacts }: { testID?: string; contacts?: { type: string }[] }) =>
+    ContactButtonsRow: ({ testID, contacts }: { testID?: string; contacts?: { type: string }[] }) =>
       contacts?.length ? (
         <View testID={testID}>
           {contacts.map((contact) => (
@@ -489,9 +489,13 @@ describe('ProductDetailsScreen', () => {
     });
   });
 
-  it.skip('exibe ícones de contato do provider na PDP de serviço (release/1.7.1: seção comentada)', async () => {
+  it('exibe ícones de contato do produto quando product.contacts está preenchido', async () => {
     mockUseProductDetails.mockReturnValue({
-      product: { ...mockProduct, type: PRODUCT_CATALOG_TYPE.SERVICE },
+      product: {
+        ...mockProduct,
+        type: PRODUCT_CATALOG_TYPE.SERVICE,
+        contacts: [{ type: 'email', value: 'contato@servico.com' }],
+      },
       ad: null,
       advertiserId: 'adv-1',
       relatedProducts: [],
@@ -501,21 +505,36 @@ describe('ProductDetailsScreen', () => {
       handleAddToCart: jest.fn(),
       loadAd: jest.fn(),
     });
-    mockUseProductPartner.mockReturnValue({
-      ...emptyProductPartner,
-      partnerData: { ...emptyProductPartner.partnerData, id: 'adv-1', name: 'Provider Test' },
-      hasSpecialistPartner: true,
-      partnerDisplayName: 'Provider Test',
-      partnerContacts: [{ type: 'email', value: 'provider@example.com' }],
-    });
 
     const { getByTestId } = render(
       <ProductDetailsScreen navigation={mockNavigation as any} route={{ params: { productId: 'product-1' } } as any} />,
     );
 
     await waitFor(() => {
-      expect(getByTestId('product-details-provider-contacts')).toBeTruthy();
-      expect(getByTestId('product-details-provider-contacts-email')).toBeTruthy();
+      expect(getByTestId('product-details-contacts')).toBeTruthy();
+      expect(getByTestId('product-details-contacts-email')).toBeTruthy();
+    });
+  });
+
+  it('não exibe ícones de contato quando product.contacts está vazio', async () => {
+    mockUseProductDetails.mockReturnValue({
+      product: { ...mockProduct, type: PRODUCT_CATALOG_TYPE.SERVICE, contacts: [] },
+      ad: null,
+      advertiserId: undefined,
+      relatedProducts: [],
+      loading: false,
+      isFavorite: false,
+      setIsFavorite: jest.fn(),
+      handleAddToCart: jest.fn(),
+      loadAd: jest.fn(),
+    });
+
+    const { queryByTestId } = render(
+      <ProductDetailsScreen navigation={mockNavigation as any} route={{ params: { productId: 'product-1' } } as any} />,
+    );
+
+    await waitFor(() => {
+      expect(queryByTestId('product-details-contacts')).toBeNull();
     });
   });
 });

@@ -7,19 +7,14 @@ import { resolveWaMePrefillFromI18n } from '@/utils/marketplace/resolveWaMePrefi
 import { logger } from '@/utils/logger';
 import { styles } from './styles';
 
-type AdvertiserContactButtonsRowProps = {
+type ContactButtonsRowProps = {
   contacts: Contact[] | undefined;
   providerId?: string;
   testID?: string;
   containerStyle?: ViewStyle;
 };
 
-export function AdvertiserContactButtonsRow({
-  contacts,
-  providerId,
-  testID,
-  containerStyle,
-}: AdvertiserContactButtonsRowProps) {
+export function ContactButtonsRow({ contacts, providerId, testID, containerStyle }: ContactButtonsRowProps) {
   const contactButtons = useMemo(
     () =>
       buildAdvertiserContactButtons(contacts, {
@@ -31,7 +26,7 @@ export function AdvertiserContactButtonsRow({
   const onContactPress = useCallback(
     (contactButton: AdvertiserContactButton) => {
       Linking.openURL(contactButton.url).catch((error: Error) => {
-        logger.error('[AdvertiserContactButtonsRow] Erro ao abrir contato do provider', {
+        logger.error('[ContactButtonsRow] Erro ao abrir contato', {
           providerId,
           contactType: contactButton.contact.type,
           cause: error,
@@ -49,7 +44,7 @@ export function AdvertiserContactButtonsRow({
     <View style={[styles.contactButtonsRow, containerStyle]} testID={testID}>
       {contactButtons.map((contactButton, index) => {
         const ContactIcon = contactButton.IconComponent;
-        const contactTestId = `${testID ?? 'advertiser-contact'}-${contactButton.contact.type}`;
+        const contactTestId = `${testID ?? 'contact'}-${contactButton.contact.type}`;
         return (
           <View key={`${contactButton.contact.type}-${contactButton.contact.value}-${index}`} testID={contactTestId}>
             <IconButton
