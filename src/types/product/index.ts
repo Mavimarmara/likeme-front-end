@@ -83,6 +83,11 @@ export interface Product {
   isFeatured?: boolean;
   ads?: Ad[];
   contacts?: Contact[];
+  programCommunity?: {
+    id?: string | null;
+    name?: string | null;
+    socialPlusCommunityId?: string | null;
+  } | null;
 }
 
 export interface ListProductsParams {

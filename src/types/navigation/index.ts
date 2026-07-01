@@ -17,6 +17,23 @@ export type CommunityStackParamList = {
   PostDetail: { post: import('@/types').Post } | { postId: string };
 };
 
+export type ProtocolDetailProtocol = {
+  id: string;
+  name: string;
+  image?: string;
+  badges?: string[];
+  communityId?: string;
+  rating?: number;
+  shortDescription?: string;
+  description?: string;
+  productId?: string;
+  /** Mesmo conteúdo da aba Acordos em ProductDetails (`Product.technicalSpecifications`). */
+  agreements?: string;
+  providerName?: string;
+  nextSessionDate?: string;
+  modules?: import('@/types/program').ProgramModule[];
+};
+
 type RootStackParamListCore = {
   ForcedUpdate: { storeUrl: string; message?: string };
   Unauthenticated: undefined;
@@ -82,24 +99,7 @@ type RootStackParamListCore = {
   PersonalDataEdit: undefined;
   InterestCategoriesEdit: undefined;
   SubscriptionList: undefined;
-  ProtocolDetail: {
-    protocol: {
-      id: string;
-      name: string;
-      image?: string;
-      badges?: string[];
-      communityId?: string;
-      rating?: number;
-      shortDescription?: string;
-      description?: string;
-      productId?: string;
-      /** Mesmo conteúdo da aba Acordos em ProductDetails (`Product.technicalSpecifications`). */
-      agreements?: string;
-      providerName?: string;
-      nextSessionDate?: string;
-      modules?: import('@/types/program').ProgramModule[];
-    };
-  };
+  ProtocolDetail: { protocol: ProtocolDetailProtocol } | { productId: string };
   PrivacyPolicies: { userName?: string };
   Home: undefined;
   Summary: undefined;

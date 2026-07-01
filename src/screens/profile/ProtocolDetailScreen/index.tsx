@@ -14,11 +14,13 @@ import { useFloatingMenuActions } from '@/contexts/FloatingMenuContext';
 import { useAnalyticsScreen, logTabSelect } from '@/analytics';
 import { useTranslation } from '@/hooks/i18n';
 import { MEMBER_PROTOCOL_COMMUNITY_IMAGE_FALLBACK } from '@/constants/community/communityProtocol';
-import type { RootStackParamList } from '@/types/navigation';
+import type { ProtocolDetailProtocol, RootStackParamList } from '@/types/navigation';
 import type { ModuleItem } from '@/components/sections/program/ModuleAccordion';
 import productService from '@/services/product/productService';
 import { COLORS } from '@/constants';
 import { moduleItemsFromProgramCourse } from '@/utils/course/programCourseModules';
+import { protocolDetailFromProduct } from '@/utils/profile/protocolDetailFromProduct';
+import { logger } from '@/utils/logger';
 import { styles } from './styles';
 
 type Props = StackScreenProps<RootStackParamList, 'ProtocolDetail'>;
@@ -31,29 +33,95 @@ const TAB_OPTIONS: ButtonCarouselOption<ProtocolTabId>[] = [
   { id: 'agreements', label: 'Acordos' },
 ];
 
+function protocolProductIdFromRouteParams(params: RootStackParamList['ProtocolDetail']): string | null {
+  if ('productId' in params) {
+    const productId = params.productId?.trim();
+    return productId || null;
+  }
+
+  const productId = params.protocol.productId?.trim() || params.protocol.id?.trim();
+  return productId || null;
+}
+
 const ProtocolDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   useAnalyticsScreen({ screenName: 'ProtocolDetail', screenClass: 'ProtocolDetailScreen' });
   const { t } = useTranslation();
   const menuItems = useMenuItems(navigation);
   const { setMenu } = useFloatingMenuActions();
-  const { protocol } = route.params;
+  const routeParams = route.params;
+  const initialProtocol = 'protocol' in routeParams ? routeParams.protocol : undefined;
+  const routeProductId = protocolProductIdFromRouteParams(routeParams);
 
-  const communityId = protocol.communityId?.trim() ?? '';
+  const [resolvedProtocol, setResolvedProtocol] = useState<ProtocolDetailProtocol | null>(initialProtocol ?? null);
+  const [protocolLoadState, setProtocolLoadState] = useState<'idle' | 'loading' | 'error'>(
+    initialProtocol ? 'idle' : 'loading',
+  );
+
+  useEffect(() => {
+    if (initialProtocol) {
+      setResolvedProtocol(initialProtocol);
+      setProtocolLoadState('idle');
+      return;
+    }
+
+    if (!routeProductId) {
+      setResolvedProtocol(null);
+      setProtocolLoadState('error');
+      return;
+    }
+
+    let cancelled = false;
+    setProtocolLoadState('loading');
+
+    void (async () => {
+      try {
+        const response = await productService.getProductById(routeProductId);
+        const isSuccess = response.success === true || (response as { status?: string }).status === 'success';
+        if (cancelled) {
+          return;
+        }
+        if (!isSuccess || !response.data) {
+          setResolvedProtocol(null);
+          setProtocolLoadState('error');
+          return;
+        }
+        setResolvedProtocol(protocolDetailFromProduct(response.data));
+        setProtocolLoadState('idle');
+      } catch (error) {
+        logger.warn('[ProtocolDetailScreen] Falha ao carregar protocolo compartilhado', {
+          productId: routeProductId,
+          cause: error,
+        });
+        if (!cancelled) {
+          setResolvedProtocol(null);
+          setProtocolLoadState('error');
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [initialProtocol, routeProductId]);
+
+  const protocol = resolvedProtocol;
+
+  const communityId = protocol?.communityId?.trim() ?? '';
   const hasCommunity = Boolean(communityId);
-  const productId = protocol.productId?.trim() ?? '';
+  const productId = protocol?.productId?.trim() ?? '';
 
   const [activeTab, setActiveTab] = useState<ProtocolTabId>('content');
-  const [agreementsText, setAgreementsText] = useState(protocol.agreements?.trim() ?? '');
+  const [agreementsText, setAgreementsText] = useState(protocol?.agreements?.trim() ?? '');
   const [expandedModuleId, setExpandedModuleId] = useState<string | null>(null);
 
-  const heroImageUri = protocol.image?.trim() || (hasCommunity ? MEMBER_PROTOCOL_COMMUNITY_IMAGE_FALLBACK : '');
+  const heroImageUri = protocol?.image?.trim() || (hasCommunity ? MEMBER_PROTOCOL_COMMUNITY_IMAGE_FALLBACK : '');
 
   const { course, loading: courseLoading } = useProgramCourse(communityId, hasCommunity);
   const { eventBanner, eventJoinUrl, closeEventSession, handleEventBannerPress } = useCommunityEventBanner({
     enabled: hasCommunity,
     communityId,
     communityAvatarUrl: heroImageUri,
-    communityProviderName: protocol.name,
+    communityProviderName: protocol?.name ?? '',
     defaultThumbnailUrl: heroImageUri,
     programProductId: productId || undefined,
     hasProgramAccess: true,
@@ -68,10 +136,10 @@ const ProtocolDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     return [];
   }, [course]);
 
-  const aboutText = protocol.description?.trim() || protocol.shortDescription?.trim() || null;
+  const aboutText = protocol?.description?.trim() || protocol?.shortDescription?.trim() || null;
 
   useEffect(() => {
-    const fromRoute = protocol.agreements?.trim();
+    const fromRoute = protocol?.agreements?.trim();
     if (fromRoute) {
       setAgreementsText(fromRoute);
       return;
@@ -102,10 +170,10 @@ const ProtocolDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     return () => {
       cancelled = true;
     };
-  }, [productId, protocol.agreements]);
+  }, [productId, protocol?.agreements]);
 
   const contentLoading = hasCommunity && courseLoading;
-  const moduleStorageScopeId = communityId || protocol.id || productId;
+  const moduleStorageScopeId = communityId || protocol?.id || productId;
 
   useFocusEffect(
     useCallback(() => {
@@ -121,6 +189,37 @@ const ProtocolDetailScreen: React.FC<Props> = ({ navigation, route }) => {
     logTabSelect({ screen_name: 'protocol_detail', tab_id: tabId });
     setActiveTab(tabId);
   };
+
+  if (protocolLoadState === 'loading') {
+    return (
+      <ScreenWithHeader
+        navigation={navigation}
+        headerProps={{ showBackButton: true, onBackPress: handleBack }}
+        contentContainerStyle={styles.container}
+        contentBackgroundColor={COLORS.BACKGROUND}
+      >
+        <View style={styles.loaderWrap}>
+          <ActivityIndicator size='large' color={COLORS.PRIMARY.PURE} />
+        </View>
+      </ScreenWithHeader>
+    );
+  }
+
+  if (protocolLoadState === 'error' || !protocol) {
+    return (
+      <ScreenWithHeader
+        navigation={navigation}
+        headerProps={{ showBackButton: true, onBackPress: handleBack }}
+        contentContainerStyle={styles.container}
+        contentBackgroundColor={COLORS.BACKGROUND}
+      >
+        <EmptyState
+          title={t('share.contentUnavailable', { defaultValue: 'Conteúdo indisponível' })}
+          iconName='link-off'
+        />
+      </ScreenWithHeader>
+    );
+  }
 
   const renderContentTab = () => {
     if (!hasCommunity) {

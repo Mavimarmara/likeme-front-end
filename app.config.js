@@ -186,6 +186,8 @@ function shareUniversalLinkHost() {
 
 const SHARE_UNIVERSAL_LINK_HOST = shareUniversalLinkHost();
 
+const SHARE_ANDROID_PATH_PREFIXES = ['/post', '/community', '/product', '/protocol', '/affiliate', '/provider'];
+
 const REVOPUSH_SERVER_URL = 'https://api.revopush.org';
 
 function revopushDeploymentKey(platform) {
@@ -317,18 +319,11 @@ module.exports = {
         {
           action: 'VIEW',
           autoVerify: true,
-          data: [
-            {
-              scheme: 'https',
-              host: SHARE_UNIVERSAL_LINK_HOST,
-              pathPrefix: '/post',
-            },
-            {
-              scheme: 'https',
-              host: SHARE_UNIVERSAL_LINK_HOST,
-              pathPrefix: '/community',
-            },
-          ],
+          data: SHARE_ANDROID_PATH_PREFIXES.map((pathPrefix) => ({
+            scheme: 'https',
+            host: SHARE_UNIVERSAL_LINK_HOST,
+            pathPrefix,
+          })),
           category: ['BROWSABLE', 'DEFAULT'],
         },
       ],

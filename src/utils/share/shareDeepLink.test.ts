@@ -43,6 +43,26 @@ const COMMUNITY_TARGET = {
   },
 } as const;
 
+const PRODUCT_TARGET = {
+  screen: 'ProductDetails',
+  params: { productId: 'prod-1' },
+} as const;
+
+const PROTOCOL_TARGET = {
+  screen: 'ProtocolDetail',
+  params: { productId: 'prog-1' },
+} as const;
+
+const AFFILIATE_TARGET = {
+  screen: 'AffiliateProduct',
+  params: { productId: 'aff-1', adId: 'ad-9' },
+} as const;
+
+const PROVIDER_TARGET = {
+  screen: 'ProviderProfile',
+  params: { providerId: 'prov-1' },
+} as const;
+
 const HOME_TARGET = { screen: 'Summary' } as const;
 
 const SHARE_BASE_URL = 'https://likeme-back-end-one.vercel.app';
@@ -80,28 +100,27 @@ describe('shareEntityIdFromPath', () => {
   });
 
   it('ignora paths desconhecidos', () => {
-    expect(shareEntityIdFromPath('/product/abc', '/post')).toBeNull();
+    expect(shareEntityIdFromPath('/legacy/abc', '/post')).toBeNull();
     expect(shareEntityIdFromPath('/post/', '/post')).toBeNull();
   });
 });
 
 describe('shareDeepLinkTargetFromUrl', () => {
-  it('resolve post via Universal Link', () => {
-    expect(shareDeepLinkTargetFromUrl('https://likeme-back-end-one.vercel.app/post/post-xyz')).toEqual(POST_TARGET);
-  });
-
-  it('resolve comunidade via Universal Link', () => {
-    expect(shareDeepLinkTargetFromUrl('https://likeme-back-end-one.vercel.app/community/community-abc')).toEqual(
-      COMMUNITY_TARGET,
-    );
+  it('resolve rotas de conteúdo via Universal Link', () => {
+    expect(shareDeepLinkTargetFromUrl(`${SHARE_BASE_URL}/post/post-xyz`)).toEqual(POST_TARGET);
+    expect(shareDeepLinkTargetFromUrl(`${SHARE_BASE_URL}/community/community-abc`)).toEqual(COMMUNITY_TARGET);
+    expect(shareDeepLinkTargetFromUrl(`${SHARE_BASE_URL}/product/prod-1`)).toEqual(PRODUCT_TARGET);
+    expect(shareDeepLinkTargetFromUrl(`${SHARE_BASE_URL}/protocol/prog-1`)).toEqual(PROTOCOL_TARGET);
+    expect(shareDeepLinkTargetFromUrl(`${SHARE_BASE_URL}/affiliate/aff-1?adId=ad-9`)).toEqual(AFFILIATE_TARGET);
+    expect(shareDeepLinkTargetFromUrl(`${SHARE_BASE_URL}/provider/prov-1`)).toEqual(PROVIDER_TARGET);
   });
 
   it('ignora custom scheme (somente Universal/App Link)', () => {
     expect(shareDeepLinkTargetFromUrl('likeme://post/abc123')).toBeNull();
   });
 
-  it('ignora paths desconhecidos', () => {
-    expect(shareDeepLinkTargetFromUrl('https://likeme-back-end-one.vercel.app/product/abc')).toBeNull();
+  it('retorna null para paths desconhecidos', () => {
+    expect(shareDeepLinkTargetFromUrl(`${SHARE_BASE_URL}/legacy/abc`)).toBeNull();
   });
 });
 
@@ -114,7 +133,7 @@ describe('openDeepLinkTarget', () => {
   it('navega para post quando app está pronto', () => {
     const navigationRef = createNavigationRef();
 
-    openDeepLinkTarget(navigationRef, 'https://likeme-back-end-one.vercel.app/post/post-xyz', 'Main');
+    openDeepLinkTarget(navigationRef, `${SHARE_BASE_URL}/post/post-xyz`, 'Main');
 
     expect(logEvent).toHaveBeenCalledWith(GA4_EVENTS.SELECT_CONTENT, {
       [ANALYTICS_PARAMS.CONTENT_TYPE]: SHARE_CONTENT_TYPES.COMMUNITY_POST,
@@ -130,10 +149,28 @@ describe('openDeepLinkTarget', () => {
     expect(consumePendingDeepLinkNavigation()).toBeNull();
   });
 
+  it('navega para produto quando app está pronto', () => {
+    const navigationRef = createNavigationRef();
+
+    openDeepLinkTarget(navigationRef, `${SHARE_BASE_URL}/product/prod-1`, 'Main');
+
+    expect(logEvent).toHaveBeenCalledWith(GA4_EVENTS.SELECT_CONTENT, {
+      [ANALYTICS_PARAMS.CONTENT_TYPE]: SHARE_CONTENT_TYPES.PRODUCT,
+      [ANALYTICS_PARAMS.ITEM_ID]: 'prod-1',
+      [ANALYTICS_PARAMS.ACTION_NAME]: 'deep_link_open',
+    });
+    expect(navigationRef.dispatch).toHaveBeenCalledWith(
+      CommonActions.navigate({
+        name: 'ProductDetails',
+        params: PRODUCT_TARGET.params,
+      }),
+    );
+  });
+
   it('navega para feed da comunidade quando app está pronto', () => {
     const navigationRef = createNavigationRef();
 
-    openDeepLinkTarget(navigationRef, 'https://likeme-back-end-one.vercel.app/community/community-abc', 'Main');
+    openDeepLinkTarget(navigationRef, `${SHARE_BASE_URL}/community/community-abc`, 'Main');
 
     expect(logEvent).toHaveBeenCalledWith(GA4_EVENTS.SELECT_CONTENT, {
       [ANALYTICS_PARAMS.CONTENT_TYPE]: SHARE_CONTENT_TYPES.COMMUNITY,
@@ -151,7 +188,7 @@ describe('openDeepLinkTarget', () => {
   it('enfileira destino enquanto rota de bootstrap está ativa', () => {
     const navigationRef = createNavigationRef();
 
-    openDeepLinkTarget(navigationRef, 'https://likeme-back-end-one.vercel.app/post/post-xyz', 'Loading');
+    openDeepLinkTarget(navigationRef, `${SHARE_BASE_URL}/post/post-xyz`, 'Loading');
 
     expect(navigationRef.dispatch).not.toHaveBeenCalled();
     expect(consumePendingDeepLinkNavigation()).toEqual(POST_TARGET);
@@ -170,11 +207,11 @@ describe('openDeepLinkTarget', () => {
   it('redireciona para Summary quando path do domínio de share é desconhecido', () => {
     const navigationRef = createNavigationRef();
 
-    openDeepLinkTarget(navigationRef, `${SHARE_BASE_URL}/product/abc`, 'Main');
+    openDeepLinkTarget(navigationRef, `${SHARE_BASE_URL}/legacy/abc`, 'Main');
 
     expect(logEvent).toHaveBeenCalledWith(GA4_EVENTS.SELECT_CONTENT, {
       [ANALYTICS_PARAMS.CONTENT_TYPE]: 'unknown',
-      [ANALYTICS_PARAMS.ITEM_ID]: '/product/abc',
+      [ANALYTICS_PARAMS.ITEM_ID]: '/legacy/abc',
       [ANALYTICS_PARAMS.ACTION_NAME]: 'deep_link_fallback_home',
     });
     expect(navigationRef.dispatch).toHaveBeenCalledWith(
@@ -202,7 +239,7 @@ describe('flushPendingDeepLinkNavigation', () => {
   it('navega quando há destino pendente e rota permite', () => {
     const navigationRef = createNavigationRef();
 
-    openDeepLinkTarget(navigationRef, 'https://likeme-back-end-one.vercel.app/post/post-xyz', 'Loading');
+    openDeepLinkTarget(navigationRef, `${SHARE_BASE_URL}/post/post-xyz`, 'Loading');
 
     flushPendingDeepLinkNavigation(navigationRef, 'Main');
 
@@ -218,7 +255,7 @@ describe('flushPendingDeepLinkNavigation', () => {
   it('não navega enquanto rota ainda bloqueia deep link', () => {
     const navigationRef = createNavigationRef();
 
-    openDeepLinkTarget(navigationRef, 'https://likeme-back-end-one.vercel.app/post/post-xyz', 'Loading');
+    openDeepLinkTarget(navigationRef, `${SHARE_BASE_URL}/post/post-xyz`, 'Loading');
 
     flushPendingDeepLinkNavigation(navigationRef, 'Loading');
 
