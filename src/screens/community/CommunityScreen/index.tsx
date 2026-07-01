@@ -90,6 +90,14 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     navigation.setParams({ openFeedFromMenu: undefined });
   }, [navigation, route.params?.openFeedFromMenu]);
 
+  const focusCommunityId = route.params?.focusCommunityId?.trim() || undefined;
+
+  useEffect(() => {
+    if (!focusCommunityId) return;
+    setSelectedMode(COMMUNITY_VIEW.FEED);
+    setActiveInfoTab('posts');
+  }, [focusCommunityId]);
+
   useEffect(() => {
     storageService.getCommunityWelcomeDismissed().then(setWelcomeDismissed);
   }, []);
@@ -131,9 +139,14 @@ const CommunityScreen: React.FC<Props> = ({ navigation }) => {
     },
   });
 
-  const selectedCommunity = useMemo(() => rawCommunities[0], [rawCommunities]);
+  const selectedCommunity = useMemo(() => {
+    if (focusCommunityId) {
+      return rawCommunities.find((community) => community.communityId === focusCommunityId) ?? null;
+    }
+    return rawCommunities[0] ?? null;
+  }, [rawCommunities, focusCommunityId]);
 
-  const selectedCommunityId = selectedCommunity?.communityId;
+  const selectedCommunityId = focusCommunityId ?? selectedCommunity?.communityId;
 
   const { termsAccepted: communityTermsAccepted, toggleTermsAccepted: toggleCommunityTermsAccepted } = useCommunity({
     communityId: activeInfoTab === 'agreements' ? selectedCommunityId : undefined,

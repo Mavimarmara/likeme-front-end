@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 import * as Linking from 'expo-linking';
 import type { NavigationContainerRefWithCurrent } from '@react-navigation/native';
 import type { RootStackParamList } from '@/types/navigation';
-import { flushPendingDeepLinkNavigation, openDeepLinkTarget } from '@/utils/share/communityPostShareDeepLink';
+import { flushPendingDeepLinkNavigation, openDeepLinkTarget } from '@/utils/share/shareDeepLink';
 
 type Props = {
   activeRouteName: string | undefined;

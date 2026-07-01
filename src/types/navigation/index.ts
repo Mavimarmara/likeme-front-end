@@ -13,7 +13,7 @@ export type MarketplaceRouteParams = {
 };
 
 export type CommunityStackParamList = {
-  CommunityList: { openFeedFromMenu?: true } | undefined;
+  CommunityList: { openFeedFromMenu?: true; focusCommunityId?: string } | undefined;
   PostDetail: { post: import('@/types').Post } | { postId: string };
 };
 

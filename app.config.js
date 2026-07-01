@@ -323,6 +323,11 @@ module.exports = {
               host: SHARE_UNIVERSAL_LINK_HOST,
               pathPrefix: '/post',
             },
+            {
+              scheme: 'https',
+              host: SHARE_UNIVERSAL_LINK_HOST,
+              pathPrefix: '/community',
+            },
           ],
           category: ['BROWSABLE', 'DEFAULT'],
         },
