@@ -58,13 +58,17 @@ npm install
 
 O fluxo padrão para rodar o app no emulador ou dispositivo:
 
-1. Na raiz do projeto, inicie o Metro com cache limpo:
+1. **Primeira vez ou após mudança nativa** — build do dev client:
+   - **iOS:** `npm run run:emulator:ios` (ou `npm run ios:xcode:build:debug` + instalar no Simulator)
+   - **Android:** `npm run android` ou `npm run build:android:local`
+
+2. Inicie o Metro com cache limpo:
 
 ```bash
 npm run start:clear
 ```
 
-2. Quando o menu do Expo aparecer no terminal, escolha a plataforma:
+3. Quando o menu do Expo aparecer no terminal, escolha a plataforma:
    - **`a`** — Android (emulador ou dispositivo conectado)
    - **`i`** — iOS (simulador; requer macOS + Xcode)
 
@@ -72,14 +76,17 @@ O projeto usa **Expo dev client** e módulos nativos — **Expo Go** não cobre 
 
 ### Emuladores
 
-- **iOS:** `npm run run:emulator:ios` abre o Simulator antes de pressionar `i`
+- **iOS:** `npm run start:ios` abre o Simulator e sobe o Metro
 - **Android:** `npm run run:emulator:android` sobe um AVD (se configurado)
 
 ### Outros scripts úteis
 
 | Comando | Uso |
 |---------|-----|
-| `npm run start:dev:tunnel` | Metro com dev client + tunnel (rede externa) |
+| `npm run run:emulator:ios` | Build Debug + instala e abre no Simulator iOS |
+| `npm run build:android:local` | Build local Android (APK/AAB) |
+| `npm start` | Metro com dev client (rede local) |
+| `npm run start:ios` | Simulator iOS + Metro |
 | `npm run android` | Build e instalação nativa Android |
 | `npm run doctor` | Diagnóstico do ambiente Expo |
 | `npm test` | Testes unitários |
@@ -168,7 +175,7 @@ Os scripts npm estão definidos em **`package.json`** na raiz do repositório.
 
 - **Início do dia:** `npm run start:clear` → `a` (Android) ou `i` (iOS)
 - **Cache estranho:** `start:clear` já limpa Metro e `.expo`; em casos extremos, `npm run clean`
-- **Tunnel / dev client explícito:** `npm run start:dev:tunnel`
+- **iOS (Simulator + Metro):** `npm run start:ios`
 - Documentação Expo: [Expo CLI](https://docs.expo.dev/workflow/expo-cli/)
 
 ## 🧪 Testes

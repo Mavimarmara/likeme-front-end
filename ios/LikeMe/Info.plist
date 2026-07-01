@@ -48,10 +48,19 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>20</string>
+	<key>CodePushDeploymentKey</key>
+	<string>1W6TD67lQb7jyIRwwW9XYgCtNAqrN1_zqwVbNl</string>
+	<key>CodePushServerURL</key>
+	<string>https://api.revopush.org</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<true/>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>itms-apps</string>
+		<string>itms</string>
+	</array>
 	<key>LSMinimumSystemVersion</key>
 	<string>12.0</string>
 	<key>LSRequiresIPhoneOS</key>
@@ -63,16 +72,14 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
-	<key>NSCalendarsUsageDescription</key>
-	<string>Precisamos de acesso ao calendario para permitir que voce adicione e acompanhe eventos e reunioes do app.</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Usamos Bluetooth para áudio em chamadas de vídeo quando você usa fones compatíveis.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Precisamos da camera para voce participar das lives e reunioes com video.</string>
-	<key>NSContactsUsageDescription</key>
-	<string>Precisamos dos contatos para facilitar convites e compartilhamentos com pessoas da sua agenda.</string>
+	<string>Precisamos da câmera para você tirar uma foto de perfil.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Precisamos do microfone para voce participar das lives e reunioes com audio.</string>
+	<string>Precisamos do microfone para você participar das lives e reuniões com áudio.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Precisamos acessar fotos apenas se voce compartilhar imagens durante uma reuniao.</string>
+	<string>Precisamos acessar suas fotos para você escolher uma imagem de perfil.</string>
 	<key>RCTNewArchEnabled</key>
 	<false/>
 	<key>UIBackgroundModes</key>

@@ -1,12 +1,8 @@
 package com.likeme.app
+import com.microsoft.codepush.react.CodePush
 
 import android.app.Application
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.res.Configuration
-import android.os.Build
-
-import com.microsoft.codepush.react.CodePush
 
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
@@ -35,8 +31,11 @@ class MainApplication : Application(), ReactApplication {
           override fun getJSMainModuleName(): String = ".expo/.virtual-metro-entry"
 
           override fun getUseDeveloperSupport(): Boolean = BuildConfig.DEBUG
-
-          override fun getJSBundleFile(): String = CodePush.getJSBundleFile()
+// @generated begin @revopush/main-application-kt - expo prebuild (DO NOT MODIFY) sync-bcc47f6e88e6502f2d60de9b72f3beeea162e313
+          override fun getJSBundleFile(): String {
+              return CodePush.getJSBundleFile()
+          }
+// @generated end @revopush/main-application-kt
 
           override val isNewArchEnabled: Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
       }
@@ -47,17 +46,14 @@ class MainApplication : Application(), ReactApplication {
 
   override fun onCreate() {
     super.onCreate()
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      val channel =
-        NotificationChannel(
-          "default",
-          "Default",
-          NotificationManager.IMPORTANCE_HIGH,
-        )
-      channel.description = "LikeMe"
-      val notificationManager = getSystemService(NotificationManager::class.java)
-      notificationManager.createNotificationChannel(channel)
-    }
+// @generated begin @revopush/main-application-kt-oncreate - expo prebuild (DO NOT MODIFY) sync-dff36c5e3e7a506aa1414ecee26ae96660d1074c
+super.onCreate()
+
+    try {
+        val deploymentKey = getString(R.string.CodePushDeploymentKey)
+        CodePush.getInstance(deploymentKey, this, BuildConfig.DEBUG)
+    } catch (e: Exception) {}
+// @generated end @revopush/main-application-kt-oncreate
     DefaultNewArchitectureEntryPoint.releaseLevel = try {
       ReleaseLevel.valueOf(BuildConfig.REACT_NATIVE_RELEASE_LEVEL.uppercase())
     } catch (e: IllegalArgumentException) {

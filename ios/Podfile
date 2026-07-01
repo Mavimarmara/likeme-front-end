@@ -16,21 +16,11 @@ ENV['RCT_NEW_ARCH_ENABLED'] ||= '0' if podfile_properties['newArchEnabled'] == '
 ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] ||= podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
 ENV['RCT_USE_RN_DEP'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true' && podfile_properties['newArchEnabled'] != 'false'
 ENV['RCT_USE_PREBUILT_RNCORE'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true' && podfile_properties['newArchEnabled'] != 'false'
-platform :ios, podfile_properties['ios.deploymentTarget'] || '15.5'
+platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
 
 $RNFirebaseAnalyticsWithoutAdIdSupport = true
 
 prepare_react_native_project!
-
-expo_modules_autolink_exclude = []
-if ENV['EXCLUDE_EXPO_DEV_CLIENT'] == '1'
-  expo_modules_autolink_exclude = %w[
-    expo-dev-client
-    expo-dev-launcher
-    expo-dev-menu
-    expo-dev-menu-interface
-  ]
-end
 
 target 'LikeMe' do
   pod 'GoogleUtilities', :modular_headers => true
@@ -41,7 +31,7 @@ target 'LikeMe' do
   pod 'SimpleKeychain', :modular_headers => true
   pod 'Auth0', '2.19.0', :modular_headers => true
 
-  use_expo_modules!(exclude: expo_modules_autolink_exclude)
+  use_expo_modules!
 
   if ENV['EXPO_USE_COMMUNITY_AUTOLINKING'] == '1'
     config_command = ['node', '-e', "process.argv=['', '', 'config'];require('@react-native-community/cli').run()"];
@@ -80,6 +70,7 @@ target 'LikeMe' do
       :ccache_enabled => ccache_enabled?(podfile_properties),
     )
 
+    
     # likeme-fmt-xcode26-workaround — fmt 11.0.2 + Clang Xcode 26 (react-native#55601)
     fmt_base = File.join(installer.sandbox.root, 'fmt', 'include', 'fmt', 'base.h')
     if File.exist?(fmt_base)
@@ -113,20 +104,6 @@ target 'LikeMe' do
         if Gem::Version.new(current.to_s) < Gem::Version.new(deployment_target.to_s)
           config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = deployment_target
         end
-      end
-    end
-
-    installer.pods_project.build_configurations.each do |config|
-      next unless config.name == 'Production'
-
-      config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] = '-O'
-    end
-
-    installer.pods_project.targets.each do |target|
-      target.build_configurations.each do |config|
-        next unless config.name == 'Production'
-
-        config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] = '-O'
       end
     end
 

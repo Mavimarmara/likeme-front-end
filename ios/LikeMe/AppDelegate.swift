@@ -1,6 +1,9 @@
 import Expo
 import FirebaseCore
 import React
+// @generated begin revopush-updates-header - expo prebuild (DO NOT MODIFY) sync-1ba9c8bf0aed4942895f95d6664fec89eb587603
+import CodePush
+// @generated end revopush-updates-header
 import ReactAppDependencyProvider
 
 @UIApplicationMain
@@ -27,7 +30,6 @@ public class AppDelegate: ExpoAppDelegate {
 // @generated begin @react-native-firebase/app-didFinishLaunchingWithOptions - expo prebuild (DO NOT MODIFY) sync-10e8520570672fd76b2403b7e1e27f5198a6349a
 FirebaseApp.configure()
 // @generated end @react-native-firebase/app-didFinishLaunchingWithOptions
-    application.registerForRemoteNotifications()
     factory.startReactNative(
       withModuleName: "main",
       in: window,
@@ -61,14 +63,15 @@ class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
   // Extension point for config-plugins
 
   override func sourceURL(for bridge: RCTBridge) -> URL? {
+    // needed to return the correct URL for expo-dev-client.
     bridge.bundleURL ?? bundleURL()
   }
 
   override func bundleURL() -> URL? {
-#if EXPO_CONFIGURATION_DEBUG
+#if DEBUG
     return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: ".expo/.virtual-metro-entry")
 #else
-    return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
+    return CodePush.bundleURL()
 #endif
   }
 }
