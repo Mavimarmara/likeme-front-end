@@ -29,7 +29,7 @@ describe('pendingDeepLinkNavigation queue', () => {
     const target = {
       screen: 'Community' as const,
       params: {
-        screen: 'PostDetail',
+        screen: 'PostDetail' as const,
         params: { postId: 'post-1' },
       },
     };
