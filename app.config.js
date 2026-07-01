@@ -281,6 +281,7 @@ module.exports = {
       ],
       './plugins/withPodfileModularHeaders.js',
       './plugins/withIosIphoneOnlyDestinations.js',
+      './plugins/withIosShareAssociatedDomains.js',
       '@react-native-firebase/app',
       '@react-native-firebase/messaging',
       ...(revopushPlugin ? [revopushPlugin] : []),

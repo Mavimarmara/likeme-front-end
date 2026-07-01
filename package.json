@@ -34,6 +34,7 @@
     "version:sync": "node scripts/sync-app-version.cjs",
     "version:check": "node scripts/sync-app-version.cjs --check",
     "assert:ios-apple-signin": "node scripts/assert-ios-apple-signin.cjs",
+    "assert:ios-share-links": "node scripts/assert-ios-share-associated-domains.cjs",
     "native:prebuild": "npm run version:sync && expo prebuild",
     "native:prebuild:clean": "npm run version:sync && expo prebuild --clean",
     "build:android": "env-cmd -f .env.production bash -c 'export JAVA_HOME=$(/usr/libexec/java_home -v 17) && cd android && ./gradlew :app:bundleRelease'",
